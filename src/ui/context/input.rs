@@ -15,6 +15,8 @@
 use super::*;
 
 impl GuiContext {
+    const DRAG_START_DISTANCE_PX: f32 = 4.0;
+
     fn widget_accepts_input(&self, idx: usize) -> bool {
         self.widget_in_active_input_scope(idx)
             && self.widgets.get(idx).is_some_and(|w| {
@@ -70,6 +72,83 @@ impl GuiContext {
             }
         }
         route
+    }
+    fn drag_source_at(&self, x: f32, y: f32) -> Option<usize> {
+        self.mouse_event_route(x, y).into_iter().find(|idx| {
+            let base = self.widgets[*idx].base();
+            base.drag_enabled && base.mouse_filter != MouseFilter::Ignore
+        })
+    }
+
+    fn drop_target_at(&self, source_idx: usize, x: f32, y: f32) -> Option<usize> {
+        self.mouse_event_route(x, y).into_iter().find(|idx| {
+            let base = self.widgets[*idx].base();
+            base.drop_enabled
+                && base.mouse_filter != MouseFilter::Ignore
+                && *idx != source_idx
+                && !self.contains_descendant(source_idx, *idx)
+        })
+    }
+
+    fn begin_pointer_drag_candidate(&mut self, source_idx: usize, x: f32, y: f32) {
+        self.drag_session = Some(DragSession {
+            source_idx,
+            start_x: x,
+            start_y: y,
+            started: false,
+            hover_target: None,
+        });
+        self.captured_pointer = Some(PointerCapture::DragDrop(source_idx));
+    }
+
+    fn update_pointer_drag(&mut self, source_idx: usize, x: f32, y: f32) -> bool {
+        let Some(mut session) = self.drag_session else {
+            return false;
+        };
+        if session.source_idx != source_idx {
+            return false;
+        }
+        if !session.started {
+            let dx = x - session.start_x;
+            let dy = y - session.start_y;
+            if dx * dx + dy * dy <= Self::DRAG_START_DISTANCE_PX.powi(2) {
+                return false;
+            }
+            session.started = true;
+            self.widgets[source_idx].base_mut().state = WidgetState::Normal;
+            self.pending_events.push(GuiEvent::DragStart(source_idx));
+        }
+        let next_target = self.drop_target_at(source_idx, x, y);
+        if session.hover_target != next_target {
+            if let Some(previous_target) = session.hover_target {
+                self.pending_events
+                    .push(GuiEvent::DragLeave(source_idx, previous_target));
+            }
+            if let Some(target_idx) = next_target {
+                self.pending_events
+                    .push(GuiEvent::DragEnter(source_idx, target_idx));
+            }
+            session.hover_target = next_target;
+        }
+        self.drag_session = Some(session);
+        true
+    }
+
+    fn finish_pointer_drag(&mut self, source_idx: usize) -> bool {
+        let Some(session) = self.drag_session else {
+            return false;
+        };
+        if session.source_idx != source_idx || !session.started {
+            self.drag_session = None;
+            return false;
+        }
+        if let Some(target_idx) = session.hover_target {
+            if self.drop_on(target_idx) {
+                return true;
+            }
+        }
+        self.end_drag();
+        true
     }
     fn hit_test_scroll_target(&self, x: f32, y: f32) -> Option<usize> {
         let mut hit = None;
@@ -1610,6 +1689,10 @@ impl GuiContext {
                 self.dirty = true;
                 return true;
             };
+            if self.drag_source_at(x, y) == Some(idx) {
+                self.begin_pointer_drag_candidate(idx, x, y);
+                return true;
+            }
             let widget_type = self.widgets[idx].base().widget_type;
             match widget_type {
                 WidgetType::CheckBox => {
@@ -1730,6 +1813,9 @@ impl GuiContext {
                         consumed = true;
                     }
                 }
+                PointerCapture::DragDrop(source_idx) => {
+                    consumed |= self.finish_pointer_drag(source_idx);
+                }
             }
         }
         for idx in self.mouse_event_route(x, y) {
@@ -1784,6 +1870,9 @@ impl GuiContext {
                 }
                 PointerCapture::ScrollBar(idx) => {
                     changed |= self.set_scroll_bar_position_from_point(idx, x, y);
+                }
+                PointerCapture::DragDrop(source_idx) => {
+                    changed |= self.update_pointer_drag(source_idx, x, y);
                 }
                 PointerCapture::PopupMove { idx, surface, .. } => {
                     changed |= self.update_popup_move(idx, surface, x, y);

@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-07-14T07:26:29.594587+00:00",
+    "generated": "2026-07-14T13:45:52.880549+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 7047,
+      "lua_functions": 7056,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 7047,
-      "documented": 6937,
+      "total_functions": 7056,
+      "documented": 6946,
       "coverage_pct": 98.4,
       "modules": 72
     },
@@ -159264,7 +159264,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 7448,
+            "line": 7590,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159280,7 +159280,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when automatic UI input forwarding is enabled.",
-            "line": 7459,
+            "line": 7601,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159303,7 +159303,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 7467,
+            "line": 7609,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159319,7 +159319,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when automatic UI updates are enabled.",
-            "line": 7478,
+            "line": 7620,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159335,7 +159335,7 @@
             "typed_params": [],
             "inferred_return": "string[]",
             "return_description": "Built-in icon names such as \"save\", \"settings\", and \"inventory\".",
-            "line": 7485,
+            "line": 7627,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159358,7 +159358,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the icon exists.",
-            "line": 7499,
+            "line": 7641,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159381,7 +159381,7 @@
             ],
             "inferred_return": "string|nil",
             "return_description": "The text glyph used by the built-in renderer backend.",
-            "line": 7507,
+            "line": 7649,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159404,7 +159404,7 @@
             ],
             "inferred_return": "LLabel|nil",
             "return_description": "The icon widget, or nil when the icon name is unknown.",
-            "line": 7517,
+            "line": 7659,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159427,7 +159427,7 @@
             ],
             "inferred_return": "LButton",
             "return_description": "The new button widget table.",
-            "line": 7544,
+            "line": 7686,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159450,7 +159450,7 @@
             ],
             "inferred_return": "LLabel",
             "return_description": "The new label widget table.",
-            "line": 7561,
+            "line": 7703,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159466,7 +159466,7 @@
             "typed_params": [],
             "inferred_return": "LTextInput",
             "return_description": "The new text input widget table.",
-            "line": 7577,
+            "line": 7719,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159482,7 +159482,7 @@
             "typed_params": [],
             "inferred_return": "LTextArea",
             "return_description": "The new text area widget table.",
-            "line": 7593,
+            "line": 7735,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159505,7 +159505,7 @@
             ],
             "inferred_return": "LRichLabel",
             "return_description": "The new rich label widget table.",
-            "line": 7610,
+            "line": 7752,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159528,7 +159528,7 @@
             ],
             "inferred_return": "LCheckbox",
             "return_description": "The new checkbox widget table.",
-            "line": 7627,
+            "line": 7769,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159557,7 +159557,7 @@
             ],
             "inferred_return": "LSlider",
             "return_description": "The new slider widget table.",
-            "line": 7645,
+            "line": 7787,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159586,7 +159586,7 @@
             ],
             "inferred_return": "LProgressBar",
             "return_description": "The new progress bar widget table.",
-            "line": 7663,
+            "line": 7805,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159602,7 +159602,7 @@
             "typed_params": [],
             "inferred_return": "LComboBox",
             "return_description": "The new combo box widget table.",
-            "line": 7679,
+            "line": 7821,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159618,7 +159618,7 @@
             "typed_params": [],
             "inferred_return": "LListBox",
             "return_description": "The new list box widget table.",
-            "line": 7695,
+            "line": 7837,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159634,7 +159634,7 @@
             "typed_params": [],
             "inferred_return": "LPanel",
             "return_description": "The new panel widget table.",
-            "line": 7711,
+            "line": 7853,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159650,7 +159650,7 @@
             "typed_params": [],
             "inferred_return": "LAspectRatioContainer",
             "return_description": "The new aspect-ratio container table.",
-            "line": 7727,
+            "line": 7869,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159673,7 +159673,7 @@
             ],
             "inferred_return": "LLayout",
             "return_description": "The new layout widget table.",
-            "line": 7744,
+            "line": 7886,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159689,7 +159689,7 @@
             "typed_params": [],
             "inferred_return": "LLayout",
             "return_description": "The new vertical layout widget table.",
-            "line": 7764,
+            "line": 7906,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159705,7 +159705,7 @@
             "typed_params": [],
             "inferred_return": "LLayout",
             "return_description": "The new horizontal layout widget table.",
-            "line": 7780,
+            "line": 7922,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159728,7 +159728,7 @@
             ],
             "inferred_return": "LLayout",
             "return_description": "The new grid layout widget table.",
-            "line": 7797,
+            "line": 7939,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159751,7 +159751,7 @@
             ],
             "inferred_return": "LLayout",
             "return_description": "Vertical layout containing one label per stat.",
-            "line": 7817,
+            "line": 7959,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159780,7 +159780,7 @@
             ],
             "inferred_return": "LLayout",
             "return_description": "Grid layout containing one label per slot.",
-            "line": 7834,
+            "line": 7976,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159815,7 +159815,7 @@
             ],
             "inferred_return": "LLayout",
             "return_description": "Horizontal layout with a label and two progress bars.",
-            "line": 7861,
+            "line": 8003,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159856,7 +159856,7 @@
             ],
             "inferred_return": "LLayout",
             "return_description": "The new margin container widget table.",
-            "line": 7894,
+            "line": 8036,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159872,7 +159872,7 @@
             "typed_params": [],
             "inferred_return": "LLayout",
             "return_description": "The new centered layout widget table.",
-            "line": 7927,
+            "line": 8069,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159888,7 +159888,7 @@
             "typed_params": [],
             "inferred_return": "LScrollPanel",
             "return_description": "The new scroll panel widget table.",
-            "line": 7947,
+            "line": 8089,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159904,7 +159904,7 @@
             "typed_params": [],
             "inferred_return": "LScrollPanel",
             "return_description": "The new scroll panel widget table.",
-            "line": 7963,
+            "line": 8105,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159920,7 +159920,7 @@
             "typed_params": [],
             "inferred_return": "LNinePatch",
             "return_description": "The new nine-patch widget table.",
-            "line": 7979,
+            "line": 8121,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159936,7 +159936,7 @@
             "typed_params": [],
             "inferred_return": "LTabBar",
             "return_description": "The new tab bar widget table.",
-            "line": 7995,
+            "line": 8137,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159959,7 +159959,7 @@
             ],
             "inferred_return": "LSeparator",
             "return_description": "The new separator widget table.",
-            "line": 8012,
+            "line": 8154,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -159988,7 +159988,7 @@
             ],
             "inferred_return": "LSpacer",
             "return_description": "The new spacer widget table.",
-            "line": 8030,
+            "line": 8172,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160017,7 +160017,7 @@
             ],
             "inferred_return": "LToast",
             "return_description": "The new toast widget table.",
-            "line": 8047,
+            "line": 8189,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160033,7 +160033,7 @@
             "typed_params": [],
             "inferred_return": "LTreeView",
             "return_description": "The new tree view widget table.",
-            "line": 8067,
+            "line": 8209,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160062,7 +160062,7 @@
             ],
             "inferred_return": "LRadioButton",
             "return_description": "The new radio button widget table.",
-            "line": 8085,
+            "line": 8227,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160085,7 +160085,7 @@
             ],
             "inferred_return": "LScrollBar",
             "return_description": "The new scroll bar widget table.",
-            "line": 8104,
+            "line": 8246,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160108,7 +160108,7 @@
             ],
             "inferred_return": "LGuiWindow",
             "return_description": "The new window widget table.",
-            "line": 8121,
+            "line": 8263,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160131,7 +160131,7 @@
             ],
             "inferred_return": "LSplitPanel",
             "return_description": "The new split panel widget table.",
-            "line": 8138,
+            "line": 8280,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160154,7 +160154,7 @@
             ],
             "inferred_return": "LSplitPanel",
             "return_description": "The new split panel widget table.",
-            "line": 8155,
+            "line": 8297,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160170,7 +160170,7 @@
             "typed_params": [],
             "inferred_return": "LStackContainer",
             "return_description": "The new stack container widget table.",
-            "line": 8171,
+            "line": 8313,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160186,7 +160186,7 @@
             "typed_params": [],
             "inferred_return": "LTabContainer",
             "return_description": "The new tab container widget table.",
-            "line": 8187,
+            "line": 8329,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160202,7 +160202,7 @@
             "typed_params": [],
             "inferred_return": "LDockPanel",
             "return_description": "The new dock panel widget table.",
-            "line": 8204,
+            "line": 8346,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160225,7 +160225,7 @@
             ],
             "inferred_return": "LToolbar",
             "return_description": "The new toolbar widget table.",
-            "line": 8221,
+            "line": 8363,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160241,7 +160241,7 @@
             "typed_params": [],
             "inferred_return": "LMenuBar",
             "return_description": "The new menu bar widget table.",
-            "line": 8237,
+            "line": 8379,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160264,7 +160264,7 @@
             ],
             "inferred_return": "LMenuItem",
             "return_description": "The new menu item widget table.",
-            "line": 8254,
+            "line": 8396,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160287,7 +160287,7 @@
             ],
             "inferred_return": "LDialog",
             "return_description": "The new dialog widget table.",
-            "line": 8271,
+            "line": 8413,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160303,7 +160303,7 @@
             "typed_params": [],
             "inferred_return": "LStatusBar",
             "return_description": "The new status bar widget table.",
-            "line": 8287,
+            "line": 8429,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160319,7 +160319,7 @@
             "typed_params": [],
             "inferred_return": "LAccordion",
             "return_description": "The new accordion widget table.",
-            "line": 8303,
+            "line": 8445,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160342,7 +160342,7 @@
             ],
             "inferred_return": "LTooltipPanel",
             "return_description": "The new tooltip panel widget table.",
-            "line": 8320,
+            "line": 8462,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160358,7 +160358,7 @@
             "typed_params": [],
             "inferred_return": "LColorPicker",
             "return_description": "The new color picker widget table.",
-            "line": 8336,
+            "line": 8478,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160374,7 +160374,7 @@
             "typed_params": [],
             "inferred_return": "LGuiTable",
             "return_description": "The new table widget.",
-            "line": 8352,
+            "line": 8494,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160390,7 +160390,7 @@
             "typed_params": [],
             "inferred_return": "LPropertyWidget",
             "return_description": "The new property widget table.",
-            "line": 8368,
+            "line": 8510,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160406,7 +160406,7 @@
             "typed_params": [],
             "inferred_return": "LImageWidget",
             "return_description": "The new image widget table.",
-            "line": 8384,
+            "line": 8526,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160422,7 +160422,7 @@
             "typed_params": [],
             "inferred_return": "LTheme",
             "return_description": "The new theme userdata.",
-            "line": 8398,
+            "line": 8540,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160445,7 +160445,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 8411,
+            "line": 8553,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160461,7 +160461,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True if a theme is active.",
-            "line": 8425,
+            "line": 8567,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160477,7 +160477,7 @@
             "typed_params": [],
             "inferred_return": "LPanel",
             "return_description": "The root panel widget table.",
-            "line": 8434,
+            "line": 8576,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160500,7 +160500,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 8446,
+            "line": 8588,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160516,7 +160516,7 @@
             "typed_params": [],
             "inferred_return": "LFont",
             "return_description": "Current global UI font handle.",
-            "line": 8469,
+            "line": 8611,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160532,7 +160532,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 8482,
+            "line": 8624,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160555,7 +160555,7 @@
             ],
             "inferred_return": "LFont",
             "return_description": "Font override assigned to the widget.",
-            "line": 8497,
+            "line": 8639,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160578,7 +160578,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 8518,
+            "line": 8660,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160594,7 +160594,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "The focused widget index.",
-            "line": 8534,
+            "line": 8676,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160610,7 +160610,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 8542,
+            "line": 8684,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160626,7 +160626,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 8553,
+            "line": 8695,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160649,7 +160649,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when focus was moved to a configured neighbor.",
-            "line": 8566,
+            "line": 8708,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160678,7 +160678,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "Whether focus moved.",
-            "line": 8579,
+            "line": 8721,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160694,7 +160694,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array of accessibility node tables.",
-            "line": 8590,
+            "line": 8732,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160710,7 +160710,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array of diagnostic tables containing `message` and optional `widget_idx`.",
-            "line": 8616,
+            "line": 8758,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160739,7 +160739,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 8636,
+            "line": 8778,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160768,7 +160768,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 8649,
+            "line": 8791,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160784,7 +160784,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "The scale factor.",
-            "line": 8664,
+            "line": 8806,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160819,7 +160819,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Start index (0-based).",
-            "line": 8677,
+            "line": 8819,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160878,7 +160878,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "Schedules the animation; no return value.",
-            "line": 8699,
+            "line": 8841,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160925,7 +160925,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "Schedules the animation; no return value.",
-            "line": 8731,
+            "line": 8873,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160972,7 +160972,7 @@
             ],
             "inferred_return": "nil",
             "return_description": "Schedules the animation; no return value.",
-            "line": 8754,
+            "line": 8896,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -160988,7 +160988,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Number of widgets removed from the retained UI tree.",
-            "line": 8791,
+            "line": 8933,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161004,7 +161004,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 8799,
+            "line": 8941,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161027,7 +161027,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 8811,
+            "line": 8953,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161043,7 +161043,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "The toast count.",
-            "line": 8830,
+            "line": 8972,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161078,7 +161078,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a widget consumed the event.",
-            "line": 8842,
+            "line": 8984,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161113,7 +161113,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a widget consumed the event.",
-            "line": 8856,
+            "line": 8998,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161142,7 +161142,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a widget consumed the event.",
-            "line": 8869,
+            "line": 9011,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161165,7 +161165,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a widget consumed the event.",
-            "line": 8879,
+            "line": 9021,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161188,7 +161188,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a widget consumed the event.",
-            "line": 8889,
+            "line": 9031,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161217,7 +161217,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if a widget consumed the event.",
-            "line": 8900,
+            "line": 9042,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161240,7 +161240,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 8909,
+            "line": 9051,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161256,7 +161256,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 8958,
+            "line": 9130,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161279,7 +161279,7 @@
             ],
             "inferred_return": "LUiWidget",
             "return_description": "The new custom widget table.",
-            "line": 9012,
+            "line": 9184,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161295,7 +161295,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "The widget count.",
-            "line": 9052,
+            "line": 9224,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161324,7 +161324,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "The rendered image.",
-            "line": 9062,
+            "line": 9234,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161347,7 +161347,7 @@
             ],
             "inferred_return": "string",
             "return_description": "The normalized state string, or nil if invalid.",
-            "line": 9073,
+            "line": 9245,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161376,7 +161376,7 @@
             ],
             "inferred_return": "LSpinBox",
             "return_description": "The new spin box widget table.",
-            "line": 9086,
+            "line": 9258,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161399,7 +161399,7 @@
             ],
             "inferred_return": "LSwitch",
             "return_description": "The new switch widget table.",
-            "line": 9103,
+            "line": 9275,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161422,7 +161422,7 @@
             ],
             "inferred_return": "LBadge",
             "return_description": "The new badge widget table.",
-            "line": 9120,
+            "line": 9292,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161438,7 +161438,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 9134,
+            "line": 9306,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161467,7 +161467,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 9146,
+            "line": 9318,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161483,7 +161483,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True if the cache was flushed.",
-            "line": 9157,
+            "line": 9329,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161506,7 +161506,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the drag started.",
-            "line": 9166,
+            "line": 9338,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161522,7 +161522,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "The dragged widget index.",
-            "line": 9185,
+            "line": 9357,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161545,7 +161545,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the drop succeeded.",
-            "line": 9194,
+            "line": 9366,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161561,7 +161561,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "The widget index that was being dragged, or nil if no drag was active.",
-            "line": 9213,
+            "line": 9385,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161584,7 +161584,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "The number of widgets whose state changed.",
-            "line": 9222,
+            "line": 9394,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161607,7 +161607,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "The number of widgets whose state changed.",
-            "line": 9234,
+            "line": 9406,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161630,7 +161630,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "The root widget index.",
-            "line": 9246,
+            "line": 9418,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161653,7 +161653,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "The root widget index.",
-            "line": 9262,
+            "line": 9434,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161676,7 +161676,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "The root widget index.",
-            "line": 9285,
+            "line": 9457,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161711,7 +161711,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 9309,
+            "line": 9481,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -161734,7 +161734,7 @@
             ],
             "inferred_return": "number",
             "return_description": "The token value for float tokens.",
-            "line": 9325,
+            "line": 9497,
             "file": "src/lua_api/ui_api.rs"
           }
         ],
@@ -161756,7 +161756,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The widget type name.",
-                "line": 220,
+                "line": 225,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161779,7 +161779,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the widget is of the given type.",
-                "line": 229,
+                "line": 234,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161808,7 +161808,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 241,
+                "line": 246,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161824,7 +161824,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "The x and y coordinates in pixels.",
-                "line": 264,
+                "line": 269,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161853,7 +161853,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 282,
+                "line": 287,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161869,7 +161869,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "The width and height in pixels.",
-                "line": 305,
+                "line": 310,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161892,7 +161892,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 322,
+                "line": 327,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161908,7 +161908,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 351,
+                "line": 356,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161924,7 +161924,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number, number, number",
                 "return_description": "The x, y, width, and height of the computed rect.",
-                "line": 372,
+                "line": 377,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161947,7 +161947,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the widget exists and the class was set.",
-                "line": 391,
+                "line": 396,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161963,7 +161963,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The style class name, or an empty string if none is set.",
-                "line": 413,
+                "line": 418,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -161986,7 +161986,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the icon exists and was assigned.",
-                "line": 431,
+                "line": 436,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162002,7 +162002,7 @@
                 "typed_params": [],
                 "inferred_return": "string|nil",
                 "return_description": "The assigned icon name.",
-                "line": 456,
+                "line": 461,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162018,7 +162018,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 468,
+                "line": 473,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162041,7 +162041,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the position string is recognised.",
-                "line": 491,
+                "line": 496,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162057,7 +162057,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of \"left\", \"right\", \"top\", \"bottom\", or \"only\".",
-                "line": 516,
+                "line": 521,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162080,7 +162080,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when size is finite and non-negative.",
-                "line": 533,
+                "line": 538,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162096,7 +162096,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Pixel size; 0 means the widget font size is used.",
-                "line": 558,
+                "line": 563,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162119,7 +162119,85 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for a valid filter, false when reset to \"stop\".",
-                "line": 572,
+                "line": 577,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "setDragEnabled",
+                "lua_name": "LUiWidget:setDragEnabled",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Enables or disables pointer-initiated drag-and-drop for this widget. Defaults to disabled.",
+                "full_doc": "Enables or disables pointer-initiated drag-and-drop for this widget. Defaults to disabled.\n@param | self | LUiWidget | The widget instance.\n@param | enabled | boolean | True to let pointer movement start a drag.\n@return | boolean | True when the widget exists.",
+                "params_doc": "- `enabled` â€” `boolean`: True to let pointer movement start a drag.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(enabled)",
+                "typed_params": [
+                  [
+                    "enabled",
+                    "boolean",
+                    false,
+                    "True to let pointer movement start a drag."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the widget exists.",
+                "line": 603,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "isDragEnabled",
+                "lua_name": "LUiWidget:isDragEnabled",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Returns whether pointer-initiated drag-and-drop is enabled for this widget.",
+                "full_doc": "Returns whether pointer-initiated drag-and-drop is enabled for this widget.\n@param | self | LUiWidget | The widget instance.\n@return | boolean | True when dragging is enabled.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "True when dragging is enabled.",
+                "line": 619,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "setDropEnabled",
+                "lua_name": "LUiWidget:setDropEnabled",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Enables or disables this widget as a pointer drag-and-drop target. Defaults to disabled; enabling promotes an ignored mouse filter to `\"stop\"`.",
+                "full_doc": "Enables or disables this widget as a pointer drag-and-drop target. Defaults to disabled; enabling promotes an ignored mouse filter to `\"stop\"`.\n@param | self | LUiWidget | The widget instance.\n@param | enabled | boolean | True to accept drops.\n@return | boolean | True when the widget exists.",
+                "params_doc": "- `enabled` â€” `boolean`: True to accept drops.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(enabled)",
+                "typed_params": [
+                  [
+                    "enabled",
+                    "boolean",
+                    false,
+                    "True to accept drops."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the widget exists.",
+                "line": 634,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "isDropEnabled",
+                "lua_name": "LUiWidget:isDropEnabled",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Returns whether this widget accepts pointer drag-and-drop operations.",
+                "full_doc": "Returns whether this widget accepts pointer drag-and-drop operations.\n@param | self | LUiWidget | The widget instance.\n@return | boolean | True when drops are enabled.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "True when drops are enabled.",
+                "line": 654,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162142,7 +162220,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 598,
+                "line": 670,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162165,7 +162243,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 621,
+                "line": 693,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162188,7 +162266,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the alignment string is recognised; false leaves the previous value unchanged.",
-                "line": 645,
+                "line": 717,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162211,7 +162289,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the alignment string is recognised; false leaves the previous value unchanged.",
-                "line": 667,
+                "line": 739,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162227,7 +162305,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
-                "line": 692,
+                "line": 764,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162250,7 +162328,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 709,
+                "line": 781,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162273,7 +162351,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 726,
+                "line": 798,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162296,7 +162374,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 743,
+                "line": 815,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162325,7 +162403,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when direction is valid; false otherwise.",
-                "line": 762,
+                "line": 834,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162348,7 +162426,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 790,
+                "line": 862,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162364,7 +162442,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The configured or default semantic role.",
-                "line": 806,
+                "line": 878,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162387,7 +162465,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 822,
+                "line": 894,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162403,7 +162481,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The stored accessible name, or an empty string when unset.",
-                "line": 838,
+                "line": 910,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162426,7 +162504,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 853,
+                "line": 925,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162442,7 +162520,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The linked widget index.",
-                "line": 869,
+                "line": 941,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162458,7 +162536,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The mouse filter type.",
-                "line": 882,
+                "line": 954,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162481,7 +162559,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 898,
+                "line": 970,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162497,7 +162575,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the widget is visible.",
-                "line": 919,
+                "line": 991,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162520,7 +162598,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 931,
+                "line": 1003,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162536,7 +162614,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the widget is enabled.",
-                "line": 958,
+                "line": 1030,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162559,7 +162637,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 970,
+                "line": 1042,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162575,7 +162653,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The widget ID, or an empty string if none was set.",
-                "line": 985,
+                "line": 1057,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162598,7 +162676,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 999,
+                "line": 1071,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162614,7 +162692,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The tooltip text, or an empty string if none is set.",
-                "line": 1014,
+                "line": 1086,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162630,7 +162708,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The widget state name.",
-                "line": 1028,
+                "line": 1100,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162653,7 +162731,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1043,
+                "line": 1115,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162676,7 +162754,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1065,
+                "line": 1137,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162692,7 +162770,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The child count.",
-                "line": 1087,
+                "line": 1159,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162708,7 +162786,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of child widget tables.",
-                "line": 1100,
+                "line": 1172,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162731,7 +162809,7 @@
                 ],
                 "inferred_return": "LWidget",
                 "return_description": "The found widget table, or nil if not found.",
-                "line": 1128,
+                "line": 1200,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162754,7 +162832,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1149,
+                "line": 1221,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162777,7 +162855,122 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1162,
+                "line": 1234,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "setOnDragStart",
+                "lua_name": "LUiWidget:setOnDragStart",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Registers a callback invoked when a drag starts from this widget.",
+                "full_doc": "Registers a callback invoked when a drag starts from this widget.\n@param | self | LUiWidget | The source widget.\n@param | f | function | Callback receiving the source widget index.",
+                "params_doc": "- `f` â€” `function`: Callback receiving the source widget index.",
+                "returns_doc": "",
+                "inferred_sig": "(f)",
+                "typed_params": [
+                  [
+                    "f",
+                    "function",
+                    false,
+                    "Callback receiving the source widget index."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1247,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "setOnDragEnd",
+                "lua_name": "LUiWidget:setOnDragEnd",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Registers a callback invoked when a drag from this widget ends.",
+                "full_doc": "Registers a callback invoked when a drag from this widget ends.\n@param | self | LUiWidget | The source widget.\n@param | f | function | Callback receiving source and target widget indices; target is nil when cancelled.",
+                "params_doc": "- `f` â€” `function`: Callback receiving source and target widget indices; target is nil when cancelled.",
+                "returns_doc": "",
+                "inferred_sig": "(f)",
+                "typed_params": [
+                  [
+                    "f",
+                    "function",
+                    false,
+                    "Callback receiving source and target widget indices; target is nil when cancelled."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1261,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "setOnDragEnter",
+                "lua_name": "LUiWidget:setOnDragEnter",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Registers a callback invoked when a dragged widget enters this drop target.",
+                "full_doc": "Registers a callback invoked when a dragged widget enters this drop target.\n@param | self | LUiWidget | The drop target.\n@param | f | function | Callback receiving source and target widget indices.",
+                "params_doc": "- `f` â€” `function`: Callback receiving source and target widget indices.",
+                "returns_doc": "",
+                "inferred_sig": "(f)",
+                "typed_params": [
+                  [
+                    "f",
+                    "function",
+                    false,
+                    "Callback receiving source and target widget indices."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1275,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "setOnDragLeave",
+                "lua_name": "LUiWidget:setOnDragLeave",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Registers a callback invoked when a dragged widget leaves this drop target.",
+                "full_doc": "Registers a callback invoked when a dragged widget leaves this drop target.\n@param | self | LUiWidget | The drop target.\n@param | f | function | Callback receiving source and target widget indices.",
+                "params_doc": "- `f` â€” `function`: Callback receiving source and target widget indices.",
+                "returns_doc": "",
+                "inferred_sig": "(f)",
+                "typed_params": [
+                  [
+                    "f",
+                    "function",
+                    false,
+                    "Callback receiving source and target widget indices."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1289,
+                "file": "src/lua_api/ui_api.rs"
+              },
+              {
+                "name": "setOnDrop",
+                "lua_name": "LUiWidget:setOnDrop",
+                "kind": "method",
+                "owner_type": "LUiWidget",
+                "description": "Registers a callback invoked after a dragged widget is dropped onto this target.",
+                "full_doc": "Registers a callback invoked after a dragged widget is dropped onto this target.\n@param | self | LUiWidget | The drop target.\n@param | f | function | Callback receiving source and target widget indices.",
+                "params_doc": "- `f` â€” `function`: Callback receiving source and target widget indices.",
+                "returns_doc": "",
+                "inferred_sig": "(f)",
+                "typed_params": [
+                  [
+                    "f",
+                    "function",
+                    false,
+                    "Callback receiving source and target widget indices."
+                  ]
+                ],
+                "inferred_return": "",
+                "return_description": "",
+                "line": 1303,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162800,7 +162993,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1175,
+                "line": 1317,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162829,7 +163022,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1189,
+                "line": 1331,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162864,7 +163057,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1223,
+                "line": 1365,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162893,7 +163086,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the point is within the widget.",
-                "line": 1273,
+                "line": 1415,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162934,7 +163127,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1290,
+                "line": 1432,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162950,7 +163143,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number, number, number",
                 "return_description": "Top, right, bottom, and left padding in pixels.",
-                "line": 1323,
+                "line": 1465,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -162991,7 +163184,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1343,
+                "line": 1485,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163007,7 +163200,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number, number, number",
                 "return_description": "Top, right, bottom, and left margin in pixels.",
-                "line": 1376,
+                "line": 1518,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163030,7 +163223,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1393,
+                "line": 1535,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163046,7 +163239,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The z-order value.",
-                "line": 1408,
+                "line": 1550,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163075,7 +163268,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1421,
+                "line": 1563,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163091,7 +163284,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Minimum width and height in pixels.",
-                "line": 1444,
+                "line": 1586,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163120,7 +163313,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1461,
+                "line": 1603,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163136,7 +163329,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Maximum width and height in pixels.",
-                "line": 1484,
+                "line": 1626,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163177,7 +163370,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1503,
+                "line": 1645,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163206,7 +163399,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1538,
+                "line": 1680,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163222,7 +163415,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1562,
+                "line": 1704,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163245,7 +163438,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1583,
+                "line": 1725,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163261,7 +163454,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The grow factor.",
-                "line": 1604,
+                "line": 1746,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163284,7 +163477,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1616,
+                "line": 1758,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163300,7 +163493,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The shrink factor.",
-                "line": 1637,
+                "line": 1779,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163323,7 +163516,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1649,
+                "line": 1791,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163346,7 +163539,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the widget exists and the binding key was set.",
-                "line": 1665,
+                "line": 1807,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163362,7 +163555,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1680,
+                "line": 1822,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163385,7 +163578,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1695,
+                "line": 1837,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163401,7 +163594,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The alpha value between 0.0 and 1.0.",
-                "line": 1710,
+                "line": 1852,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163417,7 +163610,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1721,
+                "line": 1863,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163433,7 +163626,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1736,
+                "line": 1878,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163462,7 +163655,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1753,
+                "line": 1895,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163491,7 +163684,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1771,
+                "line": 1913,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163526,7 +163719,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table result returned by this call.",
-                "line": 1791,
+                "line": 1933,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163561,7 +163754,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table result returned by this call.",
-                "line": 1818,
+                "line": 1960,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163577,7 +163770,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if an animation is in progress.",
-                "line": 1832,
+                "line": 1974,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163593,7 +163786,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if any animations were cancelled.",
-                "line": 1841,
+                "line": 1983,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163616,7 +163809,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1850,
+                "line": 1992,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163632,7 +163825,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1864,
+                "line": 2006,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -163661,7 +163854,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1982,
+                "line": 2124,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163677,7 +163870,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The button label.",
-                "line": 1997,
+                "line": 2139,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -163706,7 +163899,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2021,
+                "line": 2163,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163722,7 +163915,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The label text.",
-                "line": 2036,
+                "line": 2178,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -163751,7 +163944,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2060,
+                "line": 2202,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163767,7 +163960,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The input text.",
-                "line": 2075,
+                "line": 2217,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163790,7 +163983,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2090,
+                "line": 2232,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163806,7 +163999,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The placeholder text.",
-                "line": 2105,
+                "line": 2247,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163829,7 +164022,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2120,
+                "line": 2262,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163845,7 +164038,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if focused.",
-                "line": 2135,
+                "line": 2277,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163861,7 +164054,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The zero-based cursor position.",
-                "line": 2150,
+                "line": 2292,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163884,7 +164077,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2165,
+                "line": 2307,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163900,7 +164093,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if Enter submits the parent dialog default action.",
-                "line": 2180,
+                "line": 2322,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -163929,7 +164122,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2204,
+                "line": 2346,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163945,7 +164138,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The text area content.",
-                "line": 2219,
+                "line": 2361,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163968,7 +164161,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2234,
+                "line": 2376,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -163984,7 +164177,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The placeholder text.",
-                "line": 2249,
+                "line": 2391,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164007,7 +164200,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2264,
+                "line": 2406,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164023,7 +164216,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if focused.",
-                "line": 2279,
+                "line": 2421,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164039,7 +164232,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The cursor position.",
-                "line": 2294,
+                "line": 2436,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164068,7 +164261,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2318,
+                "line": 2460,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164084,7 +164277,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The rich label source text.",
-                "line": 2333,
+                "line": 2475,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164100,7 +164293,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The plain display text.",
-                "line": 2348,
+                "line": 2490,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164129,7 +164322,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2372,
+                "line": 2514,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164145,7 +164338,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Width divided by height.",
-                "line": 2387,
+                "line": 2529,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164168,7 +164361,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2402,
+                "line": 2544,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164184,7 +164377,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`contain`, `cover`, or `stretch`.",
-                "line": 2419,
+                "line": 2561,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164213,7 +164406,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2443,
+                "line": 2585,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164229,7 +164422,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if checked.",
-                "line": 2458,
+                "line": 2600,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164252,7 +164445,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2473,
+                "line": 2615,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164268,7 +164461,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The checkbox label.",
-                "line": 2488,
+                "line": 2630,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164297,7 +164490,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2512,
+                "line": 2654,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164313,7 +164506,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The slider value.",
-                "line": 2527,
+                "line": 2669,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164342,7 +164535,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2543,
+                "line": 2685,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164365,7 +164558,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2558,
+                "line": 2700,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164381,7 +164574,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The minimum value.",
-                "line": 2573,
+                "line": 2715,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164397,7 +164590,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The maximum value.",
-                "line": 2588,
+                "line": 2730,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164426,7 +164619,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2612,
+                "line": 2754,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164442,7 +164635,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The progress value.",
-                "line": 2627,
+                "line": 2769,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164458,7 +164651,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The normalized progress.",
-                "line": 2642,
+                "line": 2784,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164487,7 +164680,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2658,
+                "line": 2800,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164503,7 +164696,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The minimum value.",
-                "line": 2673,
+                "line": 2815,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164519,7 +164712,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The maximum value.",
-                "line": 2688,
+                "line": 2830,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164548,7 +164741,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2712,
+                "line": 2854,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164571,7 +164764,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the item was removed.",
-                "line": 2728,
+                "line": 2870,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164587,7 +164780,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2745,
+                "line": 2887,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164603,7 +164796,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The item count.",
-                "line": 2760,
+                "line": 2902,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164626,7 +164819,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The item text, or nil if out of range.",
-                "line": 2776,
+                "line": 2918,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164649,7 +164842,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2797,
+                "line": 2939,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164665,7 +164858,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The selected index.",
-                "line": 2814,
+                "line": 2956,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164681,7 +164874,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The selected item text.",
-                "line": 2829,
+                "line": 2971,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164704,7 +164897,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2844,
+                "line": 2986,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164720,7 +164913,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Maximum visible dropdown row count.",
-                "line": 2859,
+                "line": 3001,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164749,7 +164942,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2883,
+                "line": 3025,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164772,7 +164965,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2898,
+                "line": 3040,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164788,7 +164981,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2914,
+                "line": 3056,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164804,7 +164997,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The item count.",
-                "line": 2929,
+                "line": 3071,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164827,7 +165020,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The item text, or empty string if out of range.",
-                "line": 2945,
+                "line": 3087,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164850,7 +165043,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2966,
+                "line": 3108,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164866,7 +165059,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The selected index.",
-                "line": 2983,
+                "line": 3125,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164889,7 +165082,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2998,
+                "line": 3140,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -164918,7 +165111,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3022,
+                "line": 3164,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164941,7 +165134,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the tab was removed.",
-                "line": 3038,
+                "line": 3180,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164964,7 +165157,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The tab label, or nil if out of range.",
-                "line": 3057,
+                "line": 3199,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -164980,7 +165173,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The tab count.",
-                "line": 3078,
+                "line": 3220,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165003,7 +165196,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3093,
+                "line": 3235,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165019,7 +165212,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The active tab index.",
-                "line": 3110,
+                "line": 3252,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165048,7 +165241,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3134,
+                "line": 3276,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165064,7 +165257,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The spin box value.",
-                "line": 3149,
+                "line": 3291,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165080,7 +165273,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3163,
+                "line": 3305,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165096,7 +165289,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3177,
+                "line": 3319,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165125,7 +165318,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3193,
+                "line": 3335,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165148,7 +165341,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3208,
+                "line": 3350,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165177,7 +165370,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3232,
+                "line": 3374,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165193,7 +165386,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the switch is on.",
-                "line": 3247,
+                "line": 3389,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165209,7 +165402,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3261,
+                "line": 3403,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165238,7 +165431,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3285,
+                "line": 3427,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165254,7 +165447,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The badge count.",
-                "line": 3300,
+                "line": 3442,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165270,7 +165463,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The display text.",
-                "line": 3315,
+                "line": 3457,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165299,7 +165492,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3339,
+                "line": 3481,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165315,7 +165508,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The panel title.",
-                "line": 3354,
+                "line": 3496,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165338,7 +165531,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3369,
+                "line": 3511,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165367,7 +165560,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3393,
+                "line": 3535,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165383,7 +165576,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The direction name.",
-                "line": 3410,
+                "line": 3552,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165406,7 +165599,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3425,
+                "line": 3567,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165422,7 +165615,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The spacing in pixels.",
-                "line": 3440,
+                "line": 3582,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165445,7 +165638,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3455,
+                "line": 3597,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165468,7 +165661,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3470,
+                "line": 3612,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165484,7 +165677,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if wrapping is on.",
-                "line": 3485,
+                "line": 3627,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165507,7 +165700,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layout exists and the alignment was set.",
-                "line": 3501,
+                "line": 3643,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165523,7 +165716,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The alignment mode.",
-                "line": 3517,
+                "line": 3659,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165546,7 +165739,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layout exists and the justification was set.",
-                "line": 3533,
+                "line": 3675,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165562,7 +165755,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The justification mode.",
-                "line": 3549,
+                "line": 3691,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165591,7 +165784,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the index exists and was set.",
-                "line": 3575,
+                "line": 3717,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165607,7 +165800,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The active child index, or 0 when unavailable.",
-                "line": 3599,
+                "line": 3741,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165623,7 +165816,7 @@
                 "typed_params": [],
                 "inferred_return": "integer|nil",
                 "return_description": "The active child widget index, or nil when no child exists.",
-                "line": 3620,
+                "line": 3762,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165646,7 +165839,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3638,
+                "line": 3780,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165669,7 +165862,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "The tab label, or nil when out of range.",
-                "line": 3662,
+                "line": 3804,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165685,7 +165878,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The tab label count.",
-                "line": 3682,
+                "line": 3824,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165714,7 +165907,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the index exists and was set.",
-                "line": 3709,
+                "line": 3851,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165730,7 +165923,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The active child index, or 0 when unavailable.",
-                "line": 3731,
+                "line": 3873,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165746,7 +165939,7 @@
                 "typed_params": [],
                 "inferred_return": "integer|nil",
                 "return_description": "The active child widget index, or nil when no child exists.",
-                "line": 3752,
+                "line": 3894,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165769,7 +165962,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3769,
+                "line": 3911,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165792,7 +165985,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "The tab label, or nil when out of range.",
-                "line": 3791,
+                "line": 3933,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165808,7 +166001,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The tab label count.",
-                "line": 3808,
+                "line": 3950,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -165843,7 +166036,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3833,
+                "line": 3975,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165859,7 +166052,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Content width and height in pixels.",
-                "line": 3850,
+                "line": 3992,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165888,7 +166081,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3866,
+                "line": 4008,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165904,7 +166097,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Horizontal and vertical scroll offsets.",
-                "line": 3883,
+                "line": 4025,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165920,7 +166113,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Maximum horizontal and vertical scroll values.",
-                "line": 3898,
+                "line": 4040,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165943,7 +166136,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3913,
+                "line": 4055,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -165959,7 +166152,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The scroll speed.",
-                "line": 3928,
+                "line": 4070,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -166006,7 +166199,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3955,
+                "line": 4097,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166022,7 +166215,7 @@
                 "typed_params": [],
                 "inferred_return": "integer, integer, integer, integer",
                 "return_description": "Left, top, right, and bottom insets.",
-                "line": 3975,
+                "line": 4117,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166051,7 +166244,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3993,
+                "line": 4135,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166067,7 +166260,7 @@
                 "typed_params": [],
                 "inferred_return": "integer, integer",
                 "return_description": "Image width and height.",
-                "line": 4009,
+                "line": 4151,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166083,7 +166276,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of slice tables with sx, sy, sw, sh, dx, dy, dw, dh fields, or nil.",
-                "line": 4032,
+                "line": 4174,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -166112,7 +166305,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4080,
+                "line": 4222,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166128,7 +166321,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The toast message.",
-                "line": 4095,
+                "line": 4237,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166151,7 +166344,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4110,
+                "line": 4252,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166167,7 +166360,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The duration.",
-                "line": 4125,
+                "line": 4267,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166183,7 +166376,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The progress fraction.",
-                "line": 4140,
+                "line": 4282,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166199,7 +166392,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if expired.",
-                "line": 4155,
+                "line": 4297,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -166228,7 +166421,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4179,
+                "line": 4321,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166244,7 +166437,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if vertical.",
-                "line": 4194,
+                "line": 4336,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166267,7 +166460,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4209,
+                "line": 4351,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166283,7 +166476,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The thickness in pixels.",
-                "line": 4224,
+                "line": 4366,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -166318,7 +166511,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The 1-based index of the newly added node.",
-                "line": 4249,
+                "line": 4391,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166341,7 +166534,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node is now expanded, false if collapsed.",
-                "line": 4268,
+                "line": 4410,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166364,7 +166557,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if expanded.",
-                "line": 4286,
+                "line": 4428,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166380,7 +166573,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The node count.",
-                "line": 4302,
+                "line": 4444,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166403,7 +166596,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node was removed.",
-                "line": 4317,
+                "line": 4459,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166419,7 +166612,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4331,
+                "line": 4473,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166442,7 +166635,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The node text, or nil if the index is invalid.",
-                "line": 4346,
+                "line": 4488,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166471,7 +166664,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node text was set.",
-                "line": 4366,
+                "line": 4508,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166500,7 +166693,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the icon was set.",
-                "line": 4385,
+                "line": 4527,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166523,7 +166716,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node was expanded.",
-                "line": 4403,
+                "line": 4545,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166546,7 +166739,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node was collapsed.",
-                "line": 4420,
+                "line": 4562,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166569,7 +166762,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if expanded, false if collapsed, nil if invalid.",
-                "line": 4437,
+                "line": 4579,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166585,7 +166778,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4452,
+                "line": 4594,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166601,7 +166794,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4466,
+                "line": 4608,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166624,7 +166817,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the node was selected.",
-                "line": 4482,
+                "line": 4624,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166640,7 +166833,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The selected node index, or nil if none.",
-                "line": 4500,
+                "line": 4642,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166663,7 +166856,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "1-based child indices.",
-                "line": 4517,
+                "line": 4659,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166686,7 +166879,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The parent node index, or nil for root nodes.",
-                "line": 4538,
+                "line": 4680,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166709,7 +166902,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The depth, or nil if index is invalid.",
-                "line": 4559,
+                "line": 4701,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -166731,7 +166924,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The radio button label.",
-                "line": 4585,
+                "line": 4727,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166754,7 +166947,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4600,
+                "line": 4742,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166770,7 +166963,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if selected.",
-                "line": 4615,
+                "line": 4757,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166793,7 +166986,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4630,
+                "line": 4772,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166809,7 +167002,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The group name.",
-                "line": 4645,
+                "line": 4787,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166832,7 +167025,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4660,
+                "line": 4802,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166855,7 +167048,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4675,
+                "line": 4817,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -166877,7 +167070,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The scroll position.",
-                "line": 4698,
+                "line": 4840,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166900,7 +167093,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4713,
+                "line": 4855,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166916,7 +167109,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The content size.",
-                "line": 4728,
+                "line": 4870,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166939,7 +167132,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4743,
+                "line": 4885,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166955,7 +167148,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The view size.",
-                "line": 4758,
+                "line": 4900,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166978,7 +167171,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4773,
+                "line": 4915,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -166994,7 +167187,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if vertical.",
-                "line": 4788,
+                "line": 4930,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167017,7 +167210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4803,
+                "line": 4945,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -167039,7 +167232,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The window title.",
-                "line": 4826,
+                "line": 4968,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167062,7 +167255,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4841,
+                "line": 4983,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167078,7 +167271,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if closeable.",
-                "line": 4856,
+                "line": 4998,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167101,7 +167294,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4871,
+                "line": 5013,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167117,7 +167310,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if draggable.",
-                "line": 4886,
+                "line": 5028,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167140,7 +167333,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4901,
+                "line": 5043,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167156,7 +167349,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if resizable.",
-                "line": 4916,
+                "line": 5058,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167179,7 +167372,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4931,
+                "line": 5073,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167202,7 +167395,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4946,
+                "line": 5088,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -167224,7 +167417,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The orientation.",
-                "line": 4968,
+                "line": 5110,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167247,7 +167440,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4983,
+                "line": 5125,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167263,7 +167456,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The split fraction.",
-                "line": 4998,
+                "line": 5140,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167286,7 +167479,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5013,
+                "line": 5155,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167302,7 +167495,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The minimum size in pixels.",
-                "line": 5028,
+                "line": 5170,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167325,7 +167518,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5043,
+                "line": 5185,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167348,7 +167541,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5058,
+                "line": 5200,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167371,7 +167564,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5073,
+                "line": 5215,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167387,7 +167580,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The widget index, or nil if not set.",
-                "line": 5088,
+                "line": 5230,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167403,7 +167596,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The widget index, or nil if not set.",
-                "line": 5103,
+                "line": 5245,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -167438,7 +167631,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5128,
+                "line": 5270,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167461,7 +167654,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5145,
+                "line": 5287,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167477,7 +167670,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The docked widget count.",
-                "line": 5160,
+                "line": 5302,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167506,7 +167699,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5176,
+                "line": 5318,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167529,7 +167722,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "The size in pixels, or nil if not set.",
-                "line": 5196,
+                "line": 5338,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -167551,7 +167744,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The orientation.",
-                "line": 5224,
+                "line": 5366,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167574,7 +167767,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5239,
+                "line": 5381,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167603,7 +167796,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The 1-based index of the added button.",
-                "line": 5256,
+                "line": 5398,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167619,7 +167812,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5273,
+                "line": 5415,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167642,7 +167835,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5285,
+                "line": 5427,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167665,7 +167858,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table with id, tooltip, enabled, toggled fields, or nil if not found.",
-                "line": 5302,
+                "line": 5444,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167694,7 +167887,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the button was found.",
-                "line": 5330,
+                "line": 5472,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167723,7 +167916,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the button was found.",
-                "line": 5347,
+                "line": 5489,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167746,7 +167939,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if toggled, nil if not found.",
-                "line": 5363,
+                "line": 5505,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -167775,7 +167968,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5387,
+                "line": 5529,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167798,7 +167991,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the menu was found and removed.",
-                "line": 5405,
+                "line": 5547,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167814,7 +168007,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Menu widget indices.",
-                "line": 5422,
+                "line": 5564,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167830,7 +168023,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The menu count.",
-                "line": 5437,
+                "line": 5579,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -167852,7 +168045,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The menu item text.",
-                "line": 5462,
+                "line": 5604,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167875,7 +168068,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5477,
+                "line": 5619,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167891,7 +168084,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The shortcut text.",
-                "line": 5492,
+                "line": 5634,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167914,7 +168107,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5507,
+                "line": 5649,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167930,7 +168123,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if checked.",
-                "line": 5522,
+                "line": 5664,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167953,7 +168146,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5537,
+                "line": 5679,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167976,7 +168169,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5552,
+                "line": 5694,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -167992,7 +168185,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Sub-item widget indices.",
-                "line": 5569,
+                "line": 5711,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168015,7 +168208,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5584,
+                "line": 5726,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -168037,7 +168230,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The current dialog title, or an empty string when the widget is unavailable.",
-                "line": 5607,
+                "line": 5749,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168060,7 +168253,7 @@
                 ],
                 "inferred_return": "nil",
                 "return_description": "No value is returned.",
-                "line": 5623,
+                "line": 5765,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168076,7 +168269,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the dialog blocks outside interaction.",
-                "line": 5638,
+                "line": 5780,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168099,7 +168292,7 @@
                 ],
                 "inferred_return": "nil",
                 "return_description": "No value is returned.",
-                "line": 5651,
+                "line": 5793,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168115,7 +168308,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the dialog is open.",
-                "line": 5666,
+                "line": 5808,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168131,7 +168324,7 @@
                 "typed_params": [],
                 "inferred_return": "nil",
                 "return_description": "No value is returned.",
-                "line": 5678,
+                "line": 5820,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168147,7 +168340,7 @@
                 "typed_params": [],
                 "inferred_return": "nil",
                 "return_description": "No value is returned.",
-                "line": 5690,
+                "line": 5832,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168170,7 +168363,7 @@
                 ],
                 "inferred_return": "nil",
                 "return_description": "No value is returned.",
-                "line": 5703,
+                "line": 5845,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168193,7 +168386,7 @@
                 ],
                 "inferred_return": "nil",
                 "return_description": "No value is returned.",
-                "line": 5717,
+                "line": 5859,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168209,7 +168402,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Content widget index, or nil when no content is assigned.",
-                "line": 5732,
+                "line": 5874,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168232,7 +168425,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5747,
+                "line": 5889,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168248,7 +168441,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Footer widget index if one is assigned, or nil.",
-                "line": 5762,
+                "line": 5904,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168264,7 +168457,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the dialog can be dismissed by the user.",
-                "line": 5777,
+                "line": 5919,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168287,7 +168480,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5789,
+                "line": 5931,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168303,7 +168496,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if title-bar dragging is enabled.",
-                "line": 5804,
+                "line": 5946,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168326,7 +168519,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5816,
+                "line": 5958,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168342,7 +168535,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if resize handles are active.",
-                "line": 5831,
+                "line": 5973,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168365,7 +168558,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5843,
+                "line": 5985,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168394,7 +168587,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5859,
+                "line": 6001,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168410,7 +168603,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Minimum width and height in pixels.",
-                "line": 5876,
+                "line": 6018,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168439,7 +168632,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5892,
+                "line": 6034,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168455,7 +168648,7 @@
                 "typed_params": [],
                 "inferred_return": "number, number",
                 "return_description": "Maximum width and height, or nil values when unbounded.",
-                "line": 5915,
+                "line": 6057,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168478,7 +168671,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5941,
+                "line": 6083,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168494,7 +168687,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if outside dismissal is enabled.",
-                "line": 5956,
+                "line": 6098,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168517,7 +168710,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 5971,
+                "line": 6113,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168533,7 +168726,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the dialog recenters when opened.",
-                "line": 5986,
+                "line": 6128,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168549,7 +168742,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6000,
+                "line": 6142,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168590,7 +168783,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The new 1-based action index.",
-                "line": 6017,
+                "line": 6159,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168619,7 +168812,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "One-based action index, or 0 if this widget is not a dialog.",
-                "line": 6072,
+                "line": 6214,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168642,7 +168835,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6107,
+                "line": 6249,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168658,7 +168851,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The default action index, or nil when unset.",
-                "line": 6132,
+                "line": 6274,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168681,7 +168874,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6149,
+                "line": 6291,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168697,7 +168890,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The cancel action index, or nil when unset.",
-                "line": 6174,
+                "line": 6316,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -168732,7 +168925,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6199,
+                "line": 6341,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168761,7 +168954,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6217,
+                "line": 6359,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168784,7 +168977,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The section text, or nil if out of range.",
-                "line": 6237,
+                "line": 6379,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168800,7 +168993,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The section count.",
-                "line": 6258,
+                "line": 6400,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168823,7 +169016,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6273,
+                "line": 6415,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168852,7 +169045,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6295,
+                "line": 6437,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -168887,7 +169080,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6319,
+                "line": 6461,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168903,7 +169096,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The section count.",
-                "line": 6340,
+                "line": 6482,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168926,7 +169119,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "The new expanded state.",
-                "line": 6356,
+                "line": 6498,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168949,7 +169142,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if expanded.",
-                "line": 6381,
+                "line": 6523,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168965,7 +169158,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if exclusive.",
-                "line": 6400,
+                "line": 6542,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -168988,7 +169181,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6415,
+                "line": 6557,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169011,7 +169204,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The section title, or nil if out of range.",
-                "line": 6431,
+                "line": 6573,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -169033,7 +169226,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The tooltip text.",
-                "line": 6461,
+                "line": 6603,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169056,7 +169249,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6476,
+                "line": 6618,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169072,7 +169265,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "The delay in seconds.",
-                "line": 6491,
+                "line": 6633,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169095,7 +169288,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6506,
+                "line": 6648,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169111,7 +169304,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The target widget index, or nil if unset.",
-                "line": 6521,
+                "line": 6663,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169134,7 +169327,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6536,
+                "line": 6678,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -169156,7 +169349,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Red component.",
-                "line": 6564,
+                "line": 6706,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169197,7 +169390,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6582,
+                "line": 6724,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169213,7 +169406,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if the alpha slider is shown.",
-                "line": 6602,
+                "line": 6744,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169236,7 +169429,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6617,
+                "line": 6759,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169252,7 +169445,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The color mode.",
-                "line": 6632,
+                "line": 6774,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169275,7 +169468,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6647,
+                "line": 6789,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169298,7 +169491,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6662,
+                "line": 6804,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -169333,7 +169526,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6686,
+                "line": 6828,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169349,7 +169542,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The column count.",
-                "line": 6706,
+                "line": 6848,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169372,7 +169565,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6721,
+                "line": 6863,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169388,7 +169581,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6735,
+                "line": 6877,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169411,7 +169604,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The resulting row count.",
-                "line": 6751,
+                "line": 6893,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169440,7 +169633,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The resulting row count.",
-                "line": 6769,
+                "line": 6911,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169456,7 +169649,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The row count.",
-                "line": 6791,
+                "line": 6933,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169485,7 +169678,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The cell text, or nil if out of range.",
-                "line": 6808,
+                "line": 6950,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169520,7 +169713,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6835,
+                "line": 6977,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169536,7 +169729,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The selected row index.",
-                "line": 6858,
+                "line": 7000,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169559,7 +169752,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6873,
+                "line": 7015,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169575,7 +169768,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if sortable.",
-                "line": 6888,
+                "line": 7030,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169598,7 +169791,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6903,
+                "line": 7045,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169621,7 +169814,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 6918,
+                "line": 7060,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -169656,7 +169849,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The 1-based group index.",
-                "line": 6942,
+                "line": 7084,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169672,7 +169865,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "The group count.",
-                "line": 6963,
+                "line": 7105,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169695,7 +169888,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "The new collapsed state, or nil when the index is invalid.",
-                "line": 6979,
+                "line": 7121,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169718,7 +169911,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when collapsed, or nil when the index is invalid.",
-                "line": 7003,
+                "line": 7145,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169771,7 +169964,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The 1-based row index in the group, or 0 on failure.",
-                "line": 7027,
+                "line": 7169,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169794,7 +169987,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "The property row count.",
-                "line": 7076,
+                "line": 7218,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169817,7 +170010,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The value text, or nil when missing.",
-                "line": 7096,
+                "line": 7238,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169846,7 +170039,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a row changed.",
-                "line": 7115,
+                "line": 7257,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169869,7 +170062,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "The editor type, or nil when missing.",
-                "line": 7140,
+                "line": 7282,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169892,7 +170085,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of option strings.",
-                "line": 7158,
+                "line": 7300,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169915,7 +170108,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 7183,
+                "line": 7325,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169931,7 +170124,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Width in pixels.",
-                "line": 7199,
+                "line": 7341,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -169953,7 +170146,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The scale mode.",
-                "line": 7223,
+                "line": 7365,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169976,7 +170169,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 7238,
+                "line": 7380,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -169992,7 +170185,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Red component.",
-                "line": 7256,
+                "line": 7398,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -170033,7 +170226,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 7274,
+                "line": 7416,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -170080,7 +170273,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the style is applied.",
-                "line": 7301,
+                "line": 7443,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -170096,7 +170289,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LTheme\".",
-                "line": 7335,
+                "line": 7477,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -170119,7 +170312,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches this userdata type.",
-                "line": 7340,
+                "line": 7482,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]

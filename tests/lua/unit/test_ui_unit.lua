@@ -2156,6 +2156,82 @@ describe("supplementary ui module coverage", function()
         expect_equal(nil, lurek.ui.getActiveDrag())
     end)
 
+    -- @covers LUiWidget:setDragEnabled
+    it("setDragEnabled enables pointer drag initiation", function()
+        local w = lurek.ui.newButton("Drag")
+        expect_true(w:setDragEnabled(true))
+    end)
+
+    -- @covers LUiWidget:isDragEnabled
+    it("isDragEnabled reports the opt-in drag flag", function()
+        local w = lurek.ui.newButton("Drag")
+        w:setDragEnabled(true)
+        expect_true(w:isDragEnabled())
+    end)
+
+    -- @covers LUiWidget:setDropEnabled
+    it("setDropEnabled enables a drop target", function()
+        local w = lurek.ui.newPanel()
+        expect_true(w:setDropEnabled(true))
+    end)
+
+    -- @covers LUiWidget:isDropEnabled
+    it("isDropEnabled reports the opt-in drop flag", function()
+        local w = lurek.ui.newPanel()
+        w:setDropEnabled(true)
+        expect_true(w:isDropEnabled())
+    end)
+
+    -- @covers LUiWidget:setOnDragStart
+    it("setOnDragStart registers a drag-start callback", function()
+        local w = lurek.ui.newButton("Drag")
+        expect_no_error(function()
+            w:setOnDragStart(function(_) end)
+        end)
+    end)
+
+    -- @covers LUiWidget:setOnDragEnd
+    it("setOnDragEnd registers a drag-end callback", function()
+        local w = lurek.ui.newButton("Drag")
+        expect_no_error(function()
+            w:setOnDragEnd(function(_, _) end)
+        end)
+    end)
+
+    -- @covers LUiWidget:setOnDragEnter
+    it("setOnDragEnter registers a target-enter callback", function()
+        local w = lurek.ui.newPanel()
+        expect_no_error(function()
+            w:setOnDragEnter(function(_, _) end)
+        end)
+    end)
+
+    -- @covers LUiWidget:setOnDragLeave
+    it("setOnDragLeave registers a target-leave callback", function()
+        local w = lurek.ui.newPanel()
+        expect_no_error(function()
+            w:setOnDragLeave(function(_, _) end)
+        end)
+    end)
+
+    -- @covers LUiWidget:setOnDrop
+    it("setOnDrop receives a successful manual drop", function()
+        local source = lurek.ui.newButton("Source")
+        local target = lurek.ui.newPanel()
+        local received_source = nil
+        local received_target = nil
+        target:setDropEnabled(true)
+        target:setOnDrop(function(source_idx, target_idx)
+            received_source = source_idx
+            received_target = target_idx
+        end)
+        lurek.ui.beginDrag(source)
+        expect_true(lurek.ui.dropOn(target))
+        lurek.ui.update(0)
+        expect_not_nil(received_source)
+        expect_not_nil(received_target)
+    end)
+
     -- @covers lurek.ui.update_bindings
     it("update_bindings accepts a values table and returns a count", function()
         local w = basic_widget()

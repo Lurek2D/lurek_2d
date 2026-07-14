@@ -588,29 +588,27 @@ describe("Evidence: lurek.ui runtime input, drag, and binding flow", function()
         lurek.ui.setDefaultTheme()
         lurek.ui.setViewport(640, 360)
 
-        local source = lurek.ui.newCustomWidget({
-            x = 24,
-            y = 24,
-            width = 120,
-            height = 36,
-            id = "ui_evidence_drag_source",
-        })
+        local source = lurek.ui.newButton("Drag source")
+        source:setId("ui_evidence_drag_source")
         local target = lurek.ui.newPanel()
         target:setPosition(220, 18)
         target:setSize(180, 96)
+        local root = lurek.ui.getRoot()
+        attach(root, source)
+        attach(root, target)
 
+        source:setMouseFilter("stop")
+        source:setPosition(24, 24)
+        source:setSize(120, 36)
+        source:setDragEnabled(true)
+        target:setDropEnabled(true)
         source:bind("hp")
 
-        lurek.ui.beginDrag(source)
+        expect_no_error(function() lurek.ui.mousepressed(48, 52, 1) end)
+        expect_no_error(function() lurek.ui.mousemoved(240, 52) end)
         local drag_state = lurek.ui.getActiveDrag()
         expect_not_nil(drag_state)
-        expect_no_error(function()
-            lurek.ui.dropOn(target)
-        end)
-
-        expect_no_error(function() lurek.ui.mousemoved(48, 52) end)
-        expect_no_error(function() lurek.ui.mousepressed(48, 52, 1) end)
-        expect_no_error(function() lurek.ui.mousereleased(48, 52, 1) end)
+        expect_no_error(function() lurek.ui.mousereleased(240, 52, 1) end)
         expect_no_error(function() lurek.ui.keypressed("tab") end)
         expect_no_error(function() lurek.ui.textinput("alpha") end)
         expect_no_error(function() lurek.ui.wheelmoved(0, 1) end)
@@ -618,7 +616,6 @@ describe("Evidence: lurek.ui runtime input, drag, and binding flow", function()
         local bound_update_count = lurek.ui.update_bindings({ hp = 10 })
         local camel_update_count = lurek.ui.updateBindings({ hp = 15 })
 
-        lurek.ui.endDrag()
         expect_nil(lurek.ui.getActiveDrag())
 
         expect_no_error(function()

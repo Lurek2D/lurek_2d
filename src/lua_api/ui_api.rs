@@ -29,6 +29,11 @@ struct GuiCallbacks {
     on_change: HashMap<usize, LuaRegistryKey>,
     on_close: HashMap<usize, LuaRegistryKey>,
     on_select: HashMap<usize, LuaRegistryKey>,
+    on_drag_start: HashMap<usize, LuaRegistryKey>,
+    on_drag_end: HashMap<usize, LuaRegistryKey>,
+    on_drag_enter: HashMap<usize, LuaRegistryKey>,
+    on_drag_leave: HashMap<usize, LuaRegistryKey>,
+    on_drop: HashMap<usize, LuaRegistryKey>,
     dialog_action: HashMap<(usize, usize), LuaRegistryKey>,
     on_draw: HashMap<usize, LuaRegistryKey>,
 }
@@ -586,6 +591,73 @@ fn create_widget_table<'a>(
             } else {
                 Ok(false)
             }
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setDragEnabled --
+    /// Enables or disables pointer-initiated drag-and-drop for this widget. Defaults to disabled.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | enabled | boolean | True to let pointer movement start a drag.
+    /// @return | boolean | True when the widget exists.
+    t.set(
+        "setDragEnabled",
+        lua.create_function(move |_, (_self, enabled): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            let Some(widget) = g.widgets.get_mut(idx) else {
+                return Ok(false);
+            };
+            widget.base_mut().drag_enabled = enabled;
+            Ok(true)
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- isDragEnabled --
+    /// Returns whether pointer-initiated drag-and-drop is enabled for this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | boolean | True when dragging is enabled.
+    t.set(
+        "isDragEnabled",
+        lua.create_function(move |_, _self: LuaValue| {
+            Ok(c.borrow()
+                .widgets
+                .get(idx)
+                .is_some_and(|widget| widget.base().drag_enabled))
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- setDropEnabled --
+    /// Enables or disables this widget as a pointer drag-and-drop target. Defaults to disabled; enabling promotes an ignored mouse filter to `"stop"`.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | enabled | boolean | True to accept drops.
+    /// @return | boolean | True when the widget exists.
+    t.set(
+        "setDropEnabled",
+        lua.create_function(move |_, (_self, enabled): (LuaValue, bool)| {
+            let mut g = c.borrow_mut();
+            let Some(widget) = g.widgets.get_mut(idx) else {
+                return Ok(false);
+            };
+            let base = widget.base_mut();
+            base.drop_enabled = enabled;
+            if enabled && base.mouse_filter == MouseFilter::Ignore {
+                base.mouse_filter = MouseFilter::Stop;
+            }
+            Ok(true)
+        })?,
+    )?;
+    let c = ctx.clone();
+    // -- isDropEnabled --
+    /// Returns whether this widget accepts pointer drag-and-drop operations.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | boolean | True when drops are enabled.
+    t.set(
+        "isDropEnabled",
+        lua.create_function(move |_, _self: LuaValue| {
+            Ok(c.borrow()
+                .widgets
+                .get(idx)
+                .is_some_and(|widget| widget.base().drop_enabled))
         })?,
     )?;
 
@@ -1164,6 +1236,76 @@ fn create_widget_table<'a>(
         lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
             let key = lua.create_registry_value(f)?;
             cbs2.borrow_mut().on_change.insert(idx, key);
+            Ok(())
+        })?,
+    )?;
+    let cbs2 = cbs.clone();
+    // -- setOnDragStart --
+    /// Registers a callback invoked when a drag starts from this widget.
+    /// @param | self | LUiWidget | The source widget.
+    /// @param | f | function | Callback receiving the source widget index.
+    t.set(
+        "setOnDragStart",
+        lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
+            cbs2.borrow_mut()
+                .on_drag_start
+                .insert(idx, lua.create_registry_value(f)?);
+            Ok(())
+        })?,
+    )?;
+    let cbs2 = cbs.clone();
+    // -- setOnDragEnd --
+    /// Registers a callback invoked when a drag from this widget ends.
+    /// @param | self | LUiWidget | The source widget.
+    /// @param | f | function | Callback receiving source and target widget indices; target is nil when cancelled.
+    t.set(
+        "setOnDragEnd",
+        lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
+            cbs2.borrow_mut()
+                .on_drag_end
+                .insert(idx, lua.create_registry_value(f)?);
+            Ok(())
+        })?,
+    )?;
+    let cbs2 = cbs.clone();
+    // -- setOnDragEnter --
+    /// Registers a callback invoked when a dragged widget enters this drop target.
+    /// @param | self | LUiWidget | The drop target.
+    /// @param | f | function | Callback receiving source and target widget indices.
+    t.set(
+        "setOnDragEnter",
+        lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
+            cbs2.borrow_mut()
+                .on_drag_enter
+                .insert(idx, lua.create_registry_value(f)?);
+            Ok(())
+        })?,
+    )?;
+    let cbs2 = cbs.clone();
+    // -- setOnDragLeave --
+    /// Registers a callback invoked when a dragged widget leaves this drop target.
+    /// @param | self | LUiWidget | The drop target.
+    /// @param | f | function | Callback receiving source and target widget indices.
+    t.set(
+        "setOnDragLeave",
+        lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
+            cbs2.borrow_mut()
+                .on_drag_leave
+                .insert(idx, lua.create_registry_value(f)?);
+            Ok(())
+        })?,
+    )?;
+    let cbs2 = cbs.clone();
+    // -- setOnDrop --
+    /// Registers a callback invoked after a dragged widget is dropped onto this target.
+    /// @param | self | LUiWidget | The drop target.
+    /// @param | f | function | Callback receiving source and target widget indices.
+    t.set(
+        "setOnDrop",
+        lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
+            cbs2.borrow_mut()
+                .on_drop
+                .insert(idx, lua.create_registry_value(f)?);
             Ok(())
         })?,
     )?;
@@ -8943,6 +9085,36 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                         {
                             let f: LuaFunction = lua.registry_value(key)?;
                             f.call::<_, ()>((widget_idx as u64, (item_idx + 1) as u64))?;
+                        }
+                    }
+                    GuiEvent::DragStart(source_idx) => {
+                        if let Some(key) = cbs_update.borrow().on_drag_start.get(&source_idx) {
+                            let f: LuaFunction = lua.registry_value(key)?;
+                            f.call::<_, ()>(source_idx as u64)?;
+                        }
+                    }
+                    GuiEvent::DragEnd(source_idx, target_idx) => {
+                        if let Some(key) = cbs_update.borrow().on_drag_end.get(&source_idx) {
+                            let f: LuaFunction = lua.registry_value(key)?;
+                            f.call::<_, ()>((source_idx as u64, target_idx.map(|idx| idx as u64)))?;
+                        }
+                    }
+                    GuiEvent::DragEnter(source_idx, target_idx) => {
+                        if let Some(key) = cbs_update.borrow().on_drag_enter.get(&target_idx) {
+                            let f: LuaFunction = lua.registry_value(key)?;
+                            f.call::<_, ()>((source_idx as u64, target_idx as u64))?;
+                        }
+                    }
+                    GuiEvent::DragLeave(source_idx, target_idx) => {
+                        if let Some(key) = cbs_update.borrow().on_drag_leave.get(&target_idx) {
+                            let f: LuaFunction = lua.registry_value(key)?;
+                            f.call::<_, ()>((source_idx as u64, target_idx as u64))?;
+                        }
+                    }
+                    GuiEvent::Drop(source_idx, target_idx) => {
+                        if let Some(key) = cbs_update.borrow().on_drop.get(&target_idx) {
+                            let f: LuaFunction = lua.registry_value(key)?;
+                            f.call::<_, ()>((source_idx as u64, target_idx as u64))?;
                         }
                     }
                 }

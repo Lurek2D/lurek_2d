@@ -15125,6 +15125,62 @@ end
 
 ---
 
+#### `LUiWidget:isDragEnabled`
+
+Returns whether pointer-initiated drag-and-drop is enabled for this widget.
+
+```lua
+LUiWidget:isDragEnabled()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when dragging is enabled. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.ui.newButton("Drag source")
+    local before = source:isDragEnabled()
+    source:setDragEnabled(true)
+    local after = source:isDragEnabled()
+    lurek.log.info(tostring("drag flags = " .. tostring(before) .. ", " .. tostring(after)))
+end
+```
+
+---
+
+#### `LUiWidget:isDropEnabled`
+
+Returns whether this widget accepts pointer drag-and-drop operations.
+
+```lua
+LUiWidget:isDropEnabled()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when drops are enabled. |
+
+**Example**
+
+```lua
+do
+    local target = lurek.ui.newPanel()
+    local before = target:isDropEnabled()
+    target:setDropEnabled(true)
+    local after = target:isDropEnabled()
+    lurek.log.info(tostring("drop flags = " .. tostring(before) .. ", " .. tostring(after)))
+end
+```
+
+---
+
 #### `LUiWidget:isEnabled`
 
 Returns whether this widget is currently enabled and can receive input.
@@ -15372,6 +15428,74 @@ do
     local w, h = widget:getSize()
     lurek.log.info("Invoked setBindKey on widget size " .. w .. "x" .. h)
     if w > 0 then widget:setVisible(true) end
+end
+```
+
+---
+
+#### `LUiWidget:setDragEnabled`
+
+Enables or disables pointer-initiated drag-and-drop for this widget. Defaults to disabled.
+
+```lua
+LUiWidget:setDragEnabled(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | True to let pointer movement start a drag. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the widget exists. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.ui.newButton("Drag source")
+    local enabled = source:setDragEnabled(true)
+    source:setPosition(20, 20)
+    source:setSize(120, 32)
+    lurek.log.info(tostring("drag enabled = " .. tostring(enabled)))
+end
+```
+
+---
+
+#### `LUiWidget:setDropEnabled`
+
+Enables or disables this widget as a pointer drag-and-drop target. Defaults to disabled; enabling promotes an ignored mouse filter to `"stop"`.
+
+```lua
+LUiWidget:setDropEnabled(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | True to accept drops. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the widget exists. |
+
+**Example**
+
+```lua
+do
+    local target = lurek.ui.newPanel()
+    local enabled = target:setDropEnabled(true)
+    target:setPosition(180, 20)
+    target:setSize(140, 80)
+    lurek.log.info(tostring("drop enabled = " .. tostring(enabled)))
 end
 ```
 
@@ -15958,6 +16082,126 @@ end
 
 ---
 
+#### `LUiWidget:setOnDragEnd`
+
+Registers a callback invoked when a drag from this widget ends.
+
+```lua
+LUiWidget:setOnDragEnd(f)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `f` | function | Callback receiving source and target widget indices; target is nil when cancelled. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.ui.newButton("Drag source")
+    source:setOnDragEnd(function(source_idx, target_idx)
+        lurek.log.info(tostring("drag ended " .. source_idx .. " -> " .. tostring(target_idx)))
+    end)
+    lurek.ui.beginDrag(source)
+    lurek.ui.endDrag()
+    lurek.ui.update(0)
+end
+```
+
+---
+
+#### `LUiWidget:setOnDragEnter`
+
+Registers a callback invoked when a dragged widget enters this drop target.
+
+```lua
+LUiWidget:setOnDragEnter(f)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `f` | function | Callback receiving source and target widget indices. |
+
+**Example**
+
+```lua
+do
+    local target = lurek.ui.newPanel()
+    target:setDropEnabled(true)
+    target:setOnDragEnter(function(source_idx, target_idx)
+        lurek.log.info(tostring("drag entered " .. source_idx .. " -> " .. target_idx))
+    end)
+    target:setPosition(180, 20)
+    target:setSize(140, 80)
+end
+```
+
+---
+
+#### `LUiWidget:setOnDragLeave`
+
+Registers a callback invoked when a dragged widget leaves this drop target.
+
+```lua
+LUiWidget:setOnDragLeave(f)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `f` | function | Callback receiving source and target widget indices. |
+
+**Example**
+
+```lua
+do
+    local target = lurek.ui.newPanel()
+    target:setDropEnabled(true)
+    target:setOnDragLeave(function(source_idx, target_idx)
+        lurek.log.info(tostring("drag left " .. source_idx .. " -> " .. target_idx))
+    end)
+    target:setPosition(180, 20)
+    target:setSize(140, 80)
+end
+```
+
+---
+
+#### `LUiWidget:setOnDragStart`
+
+Registers a callback invoked when a drag starts from this widget.
+
+```lua
+LUiWidget:setOnDragStart(f)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `f` | function | Callback receiving the source widget index. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.ui.newButton("Drag source")
+    source:setDragEnabled(true)
+    source:setOnDragStart(function(source_idx)
+        lurek.log.info(tostring("drag started by " .. source_idx))
+    end)
+    lurek.ui.beginDrag(source)
+    lurek.ui.update(0)
+end
+```
+
+---
+
 #### `LUiWidget:setOnDraw`
 
 Registers a custom draw callback for this widget, invoked each frame during the draw pass.
@@ -15984,6 +16228,38 @@ do
     local id = w:getId()
     local vis = w:isVisible()
     lurek.log.info(tostring("setOnChange/setOnClick/setOnDraw ok; id:") .. " " .. tostring(id) .. " " .. tostring("vis:") .. " " .. tostring(vis))
+end
+```
+
+---
+
+#### `LUiWidget:setOnDrop`
+
+Registers a callback invoked after a dragged widget is dropped onto this target.
+
+```lua
+LUiWidget:setOnDrop(f)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `f` | function | Callback receiving source and target widget indices. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.ui.newButton("Drag source")
+    local target = lurek.ui.newPanel()
+    target:setDropEnabled(true)
+    target:setOnDrop(function(source_idx, target_idx)
+        lurek.log.info(tostring("dropped " .. source_idx .. " -> " .. target_idx))
+    end)
+    lurek.ui.beginDrag(source)
+    lurek.ui.dropOn(target)
+    lurek.ui.update(0)
 end
 ```
 

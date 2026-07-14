@@ -82,6 +82,16 @@ pub enum GuiEvent {
     Close(usize),
     /// Item selection at `(widget_idx, item_idx)` for list boxes or tab bars.
     Select(usize, usize),
+    /// A pointer or API drag began for source widget `idx`.
+    DragStart(usize),
+    /// A dragged source entered a droppable target.
+    DragEnter(usize, usize),
+    /// A dragged source left a droppable target.
+    DragLeave(usize, usize),
+    /// A dragged source was dropped successfully onto a target.
+    Drop(usize, usize),
+    /// A drag ended; the optional target is present only after a successful drop.
+    DragEnd(usize, Option<usize>),
 }
 /// Discriminated union of all concrete widget types stored in the flat `GuiContext::widgets` list.
 #[derive(Debug, Clone)]
@@ -292,9 +302,18 @@ struct PopupResizeCapture {
     start_rect: Rect,
 }
 #[derive(Debug, Clone, Copy)]
+struct DragSession {
+    source_idx: usize,
+    start_x: f32,
+    start_y: f32,
+    started: bool,
+    hover_target: Option<usize>,
+}
+#[derive(Debug, Clone, Copy)]
 enum PointerCapture {
     Slider(usize),
     ScrollBar(usize),
+    DragDrop(usize),
     PopupMove {
         idx: usize,
         surface: PopupSurface,
@@ -330,8 +349,8 @@ pub struct GuiContext {
     pub viewport_w: f32,
     /// Last-known viewport height used for layout calculations.
     pub viewport_h: f32,
-    /// Widget index currently being dragged via the drag-and-drop API, if any.
-    pub drag_widget: Option<usize>,
+    /// Active drag-and-drop session, including pointer origin and current drop target.
+    drag_session: Option<DragSession>,
     /// Current pointer capture state for sliders, scroll bars, or popup drag/resize interactions.
     captured_pointer: Option<PointerCapture>,
     /// Last known mouse position, used by wheel routing for hover-based scroll targets.
@@ -365,7 +384,7 @@ impl GuiContext {
             render_dirty: true,
             viewport_w: 0.0,
             viewport_h: 0.0,
-            drag_widget: None,
+            drag_session: None,
             captured_pointer: None,
             last_mouse_pos: None,
             last_render_signature: 0,
@@ -919,26 +938,56 @@ impl GuiContext {
         if widget_idx == 0 || widget_idx >= self.widgets.len() {
             return false;
         }
-        self.drag_widget = Some(widget_idx);
+        let base = self.widgets[widget_idx].base();
+        if !base.visible
+            || !base.is_visible
+            || !base.enabled
+            || base.mouse_filter == MouseFilter::Ignore
+        {
+            return false;
+        }
+        self.drag_session = Some(DragSession {
+            source_idx: widget_idx,
+            start_x: 0.0,
+            start_y: 0.0,
+            started: true,
+            hover_target: None,
+        });
+        self.pending_events.push(GuiEvent::DragStart(widget_idx));
         true
     }
     /// Return the widget index currently being dragged, if any.
     pub fn active_drag(&self) -> Option<usize> {
-        self.drag_widget
+        self.drag_session
+            .and_then(|session| session.started.then_some(session.source_idx))
     }
     /// End the current drag operation and return the dragged widget index, if any.
     pub fn end_drag(&mut self) -> Option<usize> {
-        self.drag_widget.take()
+        let session = self.drag_session.take()?;
+        if let Some(target_idx) = session.hover_target {
+            self.pending_events
+                .push(GuiEvent::DragLeave(session.source_idx, target_idx));
+        }
+        self.pending_events
+            .push(GuiEvent::DragEnd(session.source_idx, None));
+        Some(session.source_idx)
     }
     /// Drop the active dragged widget onto `target_idx`; returns `false` if target is not a container or would create a cycle.
     pub fn drop_on(&mut self, target_idx: usize) -> bool {
-        let Some(drag_idx) = self.drag_widget else {
+        let Some(session) = self.drag_session else {
             return false;
         };
+        let drag_idx = session.source_idx;
         if target_idx >= self.widgets.len() || drag_idx == target_idx {
             return false;
         }
-        if self.widgets[target_idx].children().is_none() {
+        let target_base = self.widgets[target_idx].base();
+        if self.widgets[target_idx].children().is_none()
+            || !target_base.visible
+            || !target_base.is_visible
+            || !target_base.enabled
+            || target_base.mouse_filter == MouseFilter::Ignore
+        {
             return false;
         }
         if self.contains_descendant(drag_idx, target_idx) {
@@ -948,8 +997,12 @@ impl GuiContext {
         if !self.add_child(target_idx, drag_idx) {
             return false;
         }
-        self.drag_widget = None;
-        self.dirty = true;
+        self.drag_session = None;
+        self.pending_events
+            .push(GuiEvent::Drop(drag_idx, target_idx));
+        self.pending_events
+            .push(GuiEvent::DragEnd(drag_idx, Some(target_idx)));
+        self.mark_dirty_flags(true, false, false, true);
         true
     }
     /// Remove `child_idx` from every container that currently holds it.

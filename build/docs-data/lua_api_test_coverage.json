@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-14T07:27:23.804947+00:00",
+    "generated": "2026-07-14T13:46:40.027779+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 7047,
-    "marker_covered": 7020,
+    "total_api_functions": 7056,
+    "marker_covered": 7029,
     "describe_covered": 150,
     "describe_coverage_pct": 2.1,
     "heuristic_covered": 0,
-    "total_covered": 7047,
+    "total_covered": 7056,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -59605,11 +59605,11 @@
       ]
     },
     "ui": {
-      "total": 498,
-      "marker_covered": 498,
+      "total": 507,
+      "marker_covered": 507,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 498,
+      "covered": 507,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -60800,6 +60800,42 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LUiWidget:setDragEnabled",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:isDragEnabled",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setDropEnabled",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:isDropEnabled",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LUiWidget:setTextWrap",
           "kind": "method",
           "marker_covered": true,
@@ -61080,6 +61116,51 @@
         },
         {
           "lua_name": "LUiWidget:setOnChange",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setOnDragStart",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setOnDragEnd",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setOnDragEnter",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setOnDragLeave",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:setOnDrop",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

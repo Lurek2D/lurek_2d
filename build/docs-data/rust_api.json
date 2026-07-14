@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-14T07:26:27.568193+00:00",
+    "generated": "2026-07-14T13:45:49.940429+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -26697,14 +26697,14 @@
             "kind": "enum",
             "description": "Discriminated union of all concrete widget types stored in the flat `GuiContext::widgets` list.",
             "file": "src/ui/context.rs",
-            "line": 88
+            "line": 98
           },
           {
             "name": "GuiContext",
             "kind": "struct",
             "description": "Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.",
             "file": "src/ui/context.rs",
-            "line": 308
+            "line": 327
           }
         ]
       },

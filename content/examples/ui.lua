@@ -8670,3 +8670,96 @@ fn fs(@location(0) color: vec4<f32>, @location(3) resolution: vec2<f32>) -> @loc
     panel:setShaderLayer("panel_tint", nil)
     lurek.log.info(tostring("ui shader layer cleared"))
 end
+
+--@api: LUiWidget:setDragEnabled
+do
+    local source = lurek.ui.newButton("Drag source")
+    local enabled = source:setDragEnabled(true)
+    source:setPosition(20, 20)
+    source:setSize(120, 32)
+    lurek.log.info(tostring("drag enabled = " .. tostring(enabled)))
+end
+
+--@api: LUiWidget:isDragEnabled
+do
+    local source = lurek.ui.newButton("Drag source")
+    local before = source:isDragEnabled()
+    source:setDragEnabled(true)
+    local after = source:isDragEnabled()
+    lurek.log.info(tostring("drag flags = " .. tostring(before) .. ", " .. tostring(after)))
+end
+
+--@api: LUiWidget:setDropEnabled
+do
+    local target = lurek.ui.newPanel()
+    local enabled = target:setDropEnabled(true)
+    target:setPosition(180, 20)
+    target:setSize(140, 80)
+    lurek.log.info(tostring("drop enabled = " .. tostring(enabled)))
+end
+
+--@api: LUiWidget:isDropEnabled
+do
+    local target = lurek.ui.newPanel()
+    local before = target:isDropEnabled()
+    target:setDropEnabled(true)
+    local after = target:isDropEnabled()
+    lurek.log.info(tostring("drop flags = " .. tostring(before) .. ", " .. tostring(after)))
+end
+
+--@api: LUiWidget:setOnDragStart
+do
+    local source = lurek.ui.newButton("Drag source")
+    source:setDragEnabled(true)
+    source:setOnDragStart(function(source_idx)
+        lurek.log.info(tostring("drag started by " .. source_idx))
+    end)
+    lurek.ui.beginDrag(source)
+    lurek.ui.update(0)
+end
+
+--@api: LUiWidget:setOnDragEnd
+do
+    local source = lurek.ui.newButton("Drag source")
+    source:setOnDragEnd(function(source_idx, target_idx)
+        lurek.log.info(tostring("drag ended " .. source_idx .. " -> " .. tostring(target_idx)))
+    end)
+    lurek.ui.beginDrag(source)
+    lurek.ui.endDrag()
+    lurek.ui.update(0)
+end
+
+--@api: LUiWidget:setOnDragEnter
+do
+    local target = lurek.ui.newPanel()
+    target:setDropEnabled(true)
+    target:setOnDragEnter(function(source_idx, target_idx)
+        lurek.log.info(tostring("drag entered " .. source_idx .. " -> " .. target_idx))
+    end)
+    target:setPosition(180, 20)
+    target:setSize(140, 80)
+end
+
+--@api: LUiWidget:setOnDragLeave
+do
+    local target = lurek.ui.newPanel()
+    target:setDropEnabled(true)
+    target:setOnDragLeave(function(source_idx, target_idx)
+        lurek.log.info(tostring("drag left " .. source_idx .. " -> " .. target_idx))
+    end)
+    target:setPosition(180, 20)
+    target:setSize(140, 80)
+end
+
+--@api: LUiWidget:setOnDrop
+do
+    local source = lurek.ui.newButton("Drag source")
+    local target = lurek.ui.newPanel()
+    target:setDropEnabled(true)
+    target:setOnDrop(function(source_idx, target_idx)
+        lurek.log.info(tostring("dropped " .. source_idx .. " -> " .. target_idx))
+    end)
+    lurek.ui.beginDrag(source)
+    lurek.ui.dropOn(target)
+    lurek.ui.update(0)
+end

@@ -37068,6 +37068,14 @@ function LUiWidget:getZOrder() end
 ---@return boolean True if an animation is in progress.
 function LUiWidget:isAnimating() end
 
+--- Returns whether pointer-initiated drag-and-drop is enabled for this widget.
+---@return boolean True when dragging is enabled.
+function LUiWidget:isDragEnabled() end
+
+--- Returns whether this widget accepts pointer drag-and-drop operations.
+---@return boolean True when drops are enabled.
+function LUiWidget:isDropEnabled() end
+
 --- Returns whether this widget is currently enabled and can receive input.
 ---@return boolean True if the widget is enabled.
 function LUiWidget:isEnabled() end
@@ -37104,6 +37112,16 @@ function LUiWidget:setAriaName(name) end
 ---@param key string The binding key name.
 ---@return boolean True when the widget exists and the binding key was set.
 function LUiWidget:setBindKey(key) end
+
+--- Enables or disables pointer-initiated drag-and-drop for this widget. Defaults to disabled.
+---@param enabled boolean True to let pointer movement start a drag.
+---@return boolean True when the widget exists.
+function LUiWidget:setDragEnabled(enabled) end
+
+--- Enables or disables this widget as a pointer drag-and-drop target. Defaults to disabled; enabling promotes an ignored mouse filter to `"stop"`.
+---@param enabled boolean True to accept drops.
+---@return boolean True when the widget exists.
+function LUiWidget:setDropEnabled(enabled) end
 
 --- Enables or disables this widget. Disabled widgets appear grayed out and ignore input.
 ---@param v boolean True to enable, false to disable.
@@ -37188,9 +37206,29 @@ function LUiWidget:setOnChange(f) end
 ---@param f function Callback receiving the widget index as argument.
 function LUiWidget:setOnClick(f) end
 
+--- Registers a callback invoked when a drag from this widget ends.
+---@param f function Callback receiving source and target widget indices; target is nil when cancelled.
+function LUiWidget:setOnDragEnd(f) end
+
+--- Registers a callback invoked when a dragged widget enters this drop target.
+---@param f function Callback receiving source and target widget indices.
+function LUiWidget:setOnDragEnter(f) end
+
+--- Registers a callback invoked when a dragged widget leaves this drop target.
+---@param f function Callback receiving source and target widget indices.
+function LUiWidget:setOnDragLeave(f) end
+
+--- Registers a callback invoked when a drag starts from this widget.
+---@param f function Callback receiving the source widget index.
+function LUiWidget:setOnDragStart(f) end
+
 --- Registers a custom draw callback for this widget, invoked each frame during the draw pass.
 ---@param f function Callback receiving a rect table {x, y, w, h} with the computed bounds.
 function LUiWidget:setOnDraw(f) end
+
+--- Registers a callback invoked after a dragged widget is dropped onto this target.
+---@param f function Callback receiving source and target widget indices.
+function LUiWidget:setOnDrop(f) end
 
 --- Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 ---@param top number Top padding in pixels (also used as default for other sides).

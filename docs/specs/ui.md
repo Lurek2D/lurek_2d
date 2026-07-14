@@ -18,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `112` functions, `45` types, `386` methods
+- Lua API surface: `112` functions, `45` types, `395` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -431,7 +431,12 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LScrollBar:setOnChange` param `f` (`function`): Callback receiving the widget index.
 - `LUiWidget:setOnChange` param `f` (`function`): Callback receiving the widget index as argument.
 - `LUiWidget:setOnClick` param `f` (`function`): Callback receiving the widget index as argument.
+- `LUiWidget:setOnDragEnd` param `f` (`function`): Callback receiving source and target widget indices; target is nil when cancelled.
+- `LUiWidget:setOnDragEnter` param `f` (`function`): Callback receiving source and target widget indices.
+- `LUiWidget:setOnDragLeave` param `f` (`function`): Callback receiving source and target widget indices.
+- `LUiWidget:setOnDragStart` param `f` (`function`): Callback receiving the source widget index.
 - `LUiWidget:setOnDraw` param `f` (`function`): Callback receiving a rect table {x, y, w, h} with the computed bounds.
+- `LUiWidget:setOnDrop` param `f` (`function`): Callback receiving source and target widget indices.
 
 ### Enums
 
@@ -1273,6 +1278,8 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:getTooltip() -> string`: Returns the tooltip text of this widget.
 - `LUiWidget:getZOrder() -> integer`: Returns the z-order (draw priority) of this widget.
 - `LUiWidget:isAnimating() -> boolean`: Returns whether this widget currently has an active animation.
+- `LUiWidget:isDragEnabled() -> boolean`: Returns whether pointer-initiated drag-and-drop is enabled for this widget.
+- `LUiWidget:isDropEnabled() -> boolean`: Returns whether this widget accepts pointer drag-and-drop operations.
 - `LUiWidget:isEnabled() -> boolean`: Returns whether this widget is currently enabled and can receive input.
 - `LUiWidget:isVisible() -> boolean`: Returns whether this widget is currently visible.
 - `LUiWidget:removeChild(child) -> nil`: Removes a child widget from this widget's hierarchy.
@@ -1281,6 +1288,8 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:setAnchorCenter(cx?, cy?) -> nil`: Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).
 - `LUiWidget:setAriaName(name) -> nil`: Sets the accessible name metadata for this widget.
 - `LUiWidget:setBindKey(key) -> boolean`: Binds this widget to a data key and reports whether the widget exists.
+- `LUiWidget:setDragEnabled(enabled) -> boolean`: Enables or disables pointer-initiated drag-and-drop for this widget. Defaults to disabled.
+- `LUiWidget:setDropEnabled(enabled) -> boolean`: Enables or disables this widget as a pointer drag-and-drop target. Defaults to disabled; enabling promotes an ignored mouse filter to `"stop"`.
 - `LUiWidget:setEnabled(v) -> nil`: Enables or disables this widget. Disabled widgets appear grayed out and ignore input.
 - `LUiWidget:setFlexGrow(grow) -> nil`: Sets the flex-grow factor controlling how much extra space this widget receives in a layout.
 - `LUiWidget:setFlexShrink(shrink) -> nil`: Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
@@ -1299,7 +1308,12 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:setMouseFilter(filter) -> boolean`: Sets the mouse filter for this widget ("stop", "pass", "ignore").
 - `LUiWidget:setOnChange(f) -> nil`: Registers a callback function invoked when this widget's value changes.
 - `LUiWidget:setOnClick(f) -> nil`: Registers a callback function invoked when this widget is clicked.
+- `LUiWidget:setOnDragEnd(f) -> nil`: Registers a callback invoked when a drag from this widget ends.
+- `LUiWidget:setOnDragEnter(f) -> nil`: Registers a callback invoked when a dragged widget enters this drop target.
+- `LUiWidget:setOnDragLeave(f) -> nil`: Registers a callback invoked when a dragged widget leaves this drop target.
+- `LUiWidget:setOnDragStart(f) -> nil`: Registers a callback invoked when a drag starts from this widget.
 - `LUiWidget:setOnDraw(f) -> nil`: Registers a custom draw callback for this widget, invoked each frame during the draw pass.
+- `LUiWidget:setOnDrop(f) -> nil`: Registers a callback invoked after a dragged widget is dropped onto this target.
 - `LUiWidget:setPadding(top, right?, bottom?, left?) -> nil`: Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
 - `LUiWidget:setPosition(x, y) -> nil`: Sets the local position of this widget relative to its parent.
 - `LUiWidget:setRole(role) -> nil`: Sets a semantic role string for this widget.

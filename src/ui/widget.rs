@@ -681,6 +681,10 @@ pub struct WidgetBase {
     pub visible: bool,
     /// Whether the widget accepts input.
     pub enabled: bool,
+    /// Whether pointer movement may start a drag-and-drop operation for this widget. Defaults to `false`.
+    pub drag_enabled: bool,
+    /// Whether this widget may receive a drag-and-drop operation. Defaults to `false`.
+    pub drop_enabled: bool,
     /// Current interaction state; used for theme lookups.
     pub state: WidgetState,
     /// Hover tooltip text; empty string disables the tooltip.
@@ -795,6 +799,8 @@ impl WidgetBase {
             height,
             visible: true,
             enabled: true,
+            drag_enabled: false,
+            drop_enabled: false,
             state: WidgetState::Normal,
             tooltip: String::new(),
             z_order: 0,

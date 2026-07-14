@@ -442,6 +442,87 @@ fn gui_window_resize_without_explicit_viewport_uses_base_resolution_fallback() {
     assert!(base.height > 120.0, "resize drag should grow height");
 }
 
+#[test]
+fn pointer_drag_requires_threshold_then_reparents_to_drop_target() {
+    let mut ctx = GuiContext::new();
+    ctx.set_viewport(320.0, 180.0);
+    let source_idx = ctx.add_button("Source");
+    let target_idx = ctx.add_panel();
+    assert!(ctx.add_child(0, source_idx));
+    assert!(ctx.add_child(0, target_idx));
+    {
+        let source = ctx.widgets[source_idx].base_mut();
+        source.x = 10.0;
+        source.y = 10.0;
+        source.width = 40.0;
+        source.height = 30.0;
+        source.drag_enabled = true;
+    }
+    {
+        let target = ctx.widgets[target_idx].base_mut();
+        target.x = 100.0;
+        target.y = 10.0;
+        target.width = 80.0;
+        target.height = 60.0;
+        target.drop_enabled = true;
+        target.mouse_filter = MouseFilter::Stop;
+    }
+
+    assert!(ctx.mouse_pressed(20.0, 20.0, 1));
+    assert!(!ctx.mouse_moved(23.0, 20.0));
+    assert_eq!(
+        ctx.active_drag(),
+        None,
+        "movement at the threshold must not start a drag"
+    );
+    let target_rect = ctx.widgets[target_idx].base().computed_rect;
+    let target_x = target_rect.x + target_rect.width * 0.5;
+    let target_y = target_rect.y + target_rect.height * 0.5;
+    assert!(ctx.mouse_moved(target_x, target_y));
+    assert_eq!(ctx.active_drag(), Some(source_idx));
+    assert!(ctx.mouse_released(target_x, target_y, 1));
+    assert_eq!(ctx.active_drag(), None);
+    assert!(ctx.validate_tree().is_empty());
+    assert!(ctx
+        .drain_events()
+        .iter()
+        .any(|event| matches!(event, GuiEvent::Drop(source, target) if *source == source_idx && *target == target_idx)));
+}
+
+#[test]
+fn drag_rejects_descendant_target_without_ending_manual_session() {
+    let mut ctx = GuiContext::new();
+    let source_idx = ctx.add_panel();
+    let child_idx = ctx.add_panel();
+    assert!(ctx.add_child(0, source_idx));
+    assert!(ctx.add_child(source_idx, child_idx));
+    ctx.widgets[source_idx].base_mut().mouse_filter = MouseFilter::Stop;
+    ctx.widgets[child_idx].base_mut().mouse_filter = MouseFilter::Stop;
+
+    assert!(ctx.begin_drag(source_idx));
+    assert!(!ctx.drop_on(child_idx));
+    assert_eq!(ctx.active_drag(), Some(source_idx));
+    assert_eq!(ctx.end_drag(), Some(source_idx));
+}
+
+#[test]
+fn drag_rejects_hidden_sources_and_disabled_targets() {
+    let mut ctx = GuiContext::new();
+    let source_idx = ctx.add_button("Source");
+    let target_idx = ctx.add_panel();
+    assert!(ctx.add_child(0, source_idx));
+    assert!(ctx.add_child(0, target_idx));
+    ctx.widgets[target_idx].base_mut().mouse_filter = MouseFilter::Stop;
+
+    ctx.widgets[source_idx].base_mut().visible = false;
+    assert!(!ctx.begin_drag(source_idx));
+    ctx.widgets[source_idx].base_mut().visible = true;
+    ctx.widgets[target_idx].base_mut().enabled = false;
+    assert!(ctx.begin_drag(source_idx));
+    assert!(!ctx.drop_on(target_idx));
+    assert_eq!(ctx.end_drag(), Some(source_idx));
+}
+
 // â”€â”€â”€ EasingFunction evaluations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 use lurek2d::ui::widget::EasingFunction;
