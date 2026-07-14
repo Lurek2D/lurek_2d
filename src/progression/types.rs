@@ -927,4 +927,3 @@ pub struct SeasonArchiveRecord {
     /// Full progression snapshot captured before resets were applied.
     pub snapshot: JsonValue,
 }
-

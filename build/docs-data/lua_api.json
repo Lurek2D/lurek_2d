@@ -1,19 +1,19 @@
 {
   "meta": {
-    "generated": "2026-07-13T07:28:33.400618+00:00",
+    "generated": "2026-07-14T07:26:29.594587+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 7008,
+      "lua_functions": 7047,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 7008,
-      "documented": 6748,
-      "coverage_pct": 96.3,
+      "total_functions": 7047,
+      "documented": 6937,
+      "coverage_pct": 98.4,
       "modules": 72
     },
     "enums": {},
@@ -115962,7 +115962,7 @@
         }
       },
       "progression": {
-        "description": "Registers the public `lurek.progression` Lua API for deterministic offline progression state.",
+        "description": "Registers the public `lurek.progression` Lua API for deterministic offline progression state\nand owns its typed userdata wrappers.",
         "source_file": "src/lua_api/progression_api.rs",
         "functions": [
           {
@@ -115970,8 +115970,8 @@
             "lua_name": "lurek.progression.define",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Define.",
+            "full_doc": "Define.\n\n@param this : table\n@param name : string\n@param base : number\n@param opts : table?",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name, base, [opts])",
@@ -116003,7 +116003,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 863,
+            "line": 876,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116011,8 +116011,8 @@
             "lua_name": "lurek.progression.get",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns a value.",
+            "full_doc": "Returns a value.\n\n@param this : table\n@param name : string\n@return number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -116032,7 +116032,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 901,
+            "line": 919,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116040,8 +116040,8 @@
             "lua_name": "lurek.progression.getBase",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the base.",
+            "full_doc": "Returns the base.\n\n@param this : table\n@param name : string\n@return number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -116061,7 +116061,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 915,
+            "line": 938,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116069,8 +116069,8 @@
             "lua_name": "lurek.progression.setBase",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the base.",
+            "full_doc": "Sets the base.\n\n@param this : table\n@param name : string\n@param value : number\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name, value)",
@@ -116096,7 +116096,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 929,
+            "line": 958,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116104,8 +116104,8 @@
             "lua_name": "lurek.progression.setMin",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the min.",
+            "full_doc": "Sets the min.\n\n@param this : table\n@param name : string\n@param value : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name, value)",
@@ -116124,70 +116124,6 @@
               ],
               [
                 "value",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 943,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "setMax",
-            "lua_name": "lurek.progression.setMax",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, name, value)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "name",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "value",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 960,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "getMin",
-            "lua_name": "lurek.progression.getMin",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, name)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "name",
                 "any",
                 false,
                 ""
@@ -116199,41 +116135,12 @@
             "file": "src/lua_api/progression_api.rs"
           },
           {
-            "name": "getMax",
-            "lua_name": "lurek.progression.getMax",
+            "name": "setMax",
+            "lua_name": "lurek.progression.setMax",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, name)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "name",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 986,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "setRegen",
-            "lua_name": "lurek.progression.setRegen",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the max.",
+            "full_doc": "Sets the max.\n\n@param this : table\n@param name : string\n@param value : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name, value)",
@@ -116259,16 +116166,16 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 995,
+            "line": 999,
             "file": "src/lua_api/progression_api.rs"
           },
           {
-            "name": "getRegen",
-            "lua_name": "lurek.progression.getRegen",
+            "name": "getMin",
+            "lua_name": "lurek.progression.getMin",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the min.",
+            "full_doc": "Returns the min.\n\n@param this : table\n@param name : string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -116288,7 +116195,100 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1005,
+            "line": 1020,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "getMax",
+            "lua_name": "lurek.progression.getMax",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns the max.",
+            "full_doc": "Returns the max.\n\n@param this : table\n@param name : string",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, name)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1033,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "setRegen",
+            "lua_name": "lurek.progression.setRegen",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Sets the regen.",
+            "full_doc": "Sets the regen.\n\n@param this : table\n@param name : string\n@param value : number",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, name, value)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "value",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1047,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "getRegen",
+            "lua_name": "lurek.progression.getRegen",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns the regen.",
+            "full_doc": "Returns the regen.\n\n@param this : table\n@param name : string",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, name)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1061,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116296,8 +116296,8 @@
             "lua_name": "lurek.progression.getStatNames",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the stat names.",
+            "full_doc": "Returns the stat names.\n\n@param this : table\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -116311,7 +116311,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1014,
+            "line": 1074,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116319,15 +116319,15 @@
             "lua_name": "lurek.progression.addBuff",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Adds buff.",
+            "full_doc": "Adds buff.\n\n@return string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "",
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1032,
+            "line": 1095,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116335,8 +116335,8 @@
             "lua_name": "lurek.progression.removeBuff",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Removes buff.",
+            "full_doc": "Removes buff.\n\n@param this : table\n@param handle : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, handle)",
@@ -116356,7 +116356,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1064,
+            "line": 1132,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116364,8 +116364,8 @@
             "lua_name": "lurek.progression.clearBuffs",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Clears buffs.",
+            "full_doc": "Clears buffs.\n\n@param this : table\n@param stat : string?",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, [stat])",
@@ -116385,7 +116385,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1078,
+            "line": 1150,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116393,8 +116393,8 @@
             "lua_name": "lurek.progression.getBuffCount",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the buff count.",
+            "full_doc": "Returns the buff count.\n\n@param this : table\n@param stat : string?\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, [stat])",
@@ -116414,7 +116414,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1103,
+            "line": 1180,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116422,8 +116422,8 @@
             "lua_name": "lurek.progression.applyTraitBuffs",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Apply trait buffs.",
+            "full_doc": "Apply trait buffs.\n\n@param this : table\n@param trait_name : string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, trait_name)",
@@ -116443,7 +116443,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1125,
+            "line": 1206,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116451,8 +116451,8 @@
             "lua_name": "lurek.progression.removeTraitBuffs",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Removes trait buffs.",
+            "full_doc": "Removes trait buffs.\n\n@param this : table\n@param trait_name : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, trait_name)",
@@ -116472,7 +116472,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1141,
+            "line": 1227,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116480,8 +116480,8 @@
             "lua_name": "lurek.progression.hasTrait",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns true if trait.",
+            "full_doc": "Returns true if trait.\n\n@param this : table\n@param trait_name : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, trait_name)",
@@ -116501,7 +116501,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1157,
+            "line": 1248,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116509,8 +116509,8 @@
             "lua_name": "lurek.progression.getActiveTraits",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the active traits.",
+            "full_doc": "Returns the active traits.\n\n@param this : table\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -116524,7 +116524,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1171,
+            "line": 1266,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116532,8 +116532,8 @@
             "lua_name": "lurek.progression.getBuffs",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the buffs.",
+            "full_doc": "Returns the buffs.\n\n@param this : table\n@param stat : string?\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, [stat])",
@@ -116553,7 +116553,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1188,
+            "line": 1288,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116561,8 +116561,8 @@
             "lua_name": "lurek.progression.addXP",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Adds xp.",
+            "full_doc": "Adds xp.\n\n@param this : table\n@param amount : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, amount)",
@@ -116582,7 +116582,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1222,
+            "line": 1326,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116590,8 +116590,8 @@
             "lua_name": "lurek.progression.getXP",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the xp.",
+            "full_doc": "Returns the xp.\n\n@param this : table\n@return number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -116605,7 +116605,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1243,
+            "line": 1351,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116613,8 +116613,8 @@
             "lua_name": "lurek.progression.setXP",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the xp.",
+            "full_doc": "Sets the xp.\n\n@param this : table\n@param value : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, value)",
@@ -116634,7 +116634,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1257,
+            "line": 1369,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116642,8 +116642,8 @@
             "lua_name": "lurek.progression.getLevel",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the level.",
+            "full_doc": "Returns the level.\n\n@param this : table\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -116657,7 +116657,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1281,
+            "line": 1397,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116665,8 +116665,8 @@
             "lua_name": "lurek.progression.setLevel",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the level.",
+            "full_doc": "Sets the level.\n\n@param this : table\n@param value : integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, value)",
@@ -116686,7 +116686,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1295,
+            "line": 1415,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116694,8 +116694,8 @@
             "lua_name": "lurek.progression.setLevelThresholds",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the level thresholds.",
+            "full_doc": "Sets the level thresholds.\n\n@param this : table\n@param thresholds : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, thresholds)",
@@ -116715,7 +116715,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1319,
+            "line": 1443,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116723,8 +116723,8 @@
             "lua_name": "lurek.progression.defineSkill",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Define skill.",
+            "full_doc": "Define skill.\n\n@param this : table\n@param name : string\n@param opts : table?",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name, [opts])",
@@ -116750,7 +116750,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1363,
+            "line": 1496,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116758,8 +116758,8 @@
             "lua_name": "lurek.progression.learnSkill",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Learn skill.",
+            "full_doc": "Learn skill.\n\n@param this : table\n@param name : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -116779,7 +116779,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1384,
+            "line": 1522,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116787,10 +116787,10 @@
             "lua_name": "lurek.progression.useSkill",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Use skill.",
+            "full_doc": "Use skill.\n\n@param this : table\n@param name : string\n@return | boolean, string? | Success flag followed by an optional failure reason.",
             "params_doc": "",
-            "returns_doc": "",
+            "returns_doc": "boolean, string?",
             "inferred_sig": "(this, name)",
             "typed_params": [
               [
@@ -116806,9 +116806,9 @@
                 ""
               ]
             ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1398,
+            "inferred_return": "boolean, string?",
+            "return_description": "Success flag followed by an optional failure reason.",
+            "line": 1541,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -116816,8 +116816,8 @@
             "lua_name": "lurek.progression.getSkillLevel",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the skill level.",
+            "full_doc": "Returns the skill level.\n\n@param this : table\n@param name : string\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -116830,209 +116830,6 @@
               ],
               [
                 "name",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1414,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "getCooldownRemaining",
-            "lua_name": "lurek.progression.getCooldownRemaining",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, name)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "name",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1428,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "definePerk",
-            "lua_name": "lurek.progression.definePerk",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, name, [opts])",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "name",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "opts",
-                "any",
-                true,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1444,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "acquirePerk",
-            "lua_name": "lurek.progression.acquirePerk",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, name)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "name",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1484,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "hasPerk",
-            "lua_name": "lurek.progression.hasPerk",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, name)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "name",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1498,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "setActionPoints",
-            "lua_name": "lurek.progression.setActionPoints",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, max_val)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "max_val",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1512,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "getActionPoints",
-            "lua_name": "lurek.progression.getActionPoints",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, )",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ]
-            ],
-            "inferred_return": "",
-            "return_description": "",
-            "line": 1542,
-            "file": "src/lua_api/progression_api.rs"
-          },
-          {
-            "name": "spendActionPoints",
-            "lua_name": "lurek.progression.spendActionPoints",
-            "kind": "function",
-            "owner_type": "",
-            "description": "",
-            "full_doc": "",
-            "params_doc": "",
-            "returns_doc": "",
-            "inferred_sig": "(this, amount)",
-            "typed_params": [
-              [
-                "this",
-                "any",
-                false,
-                ""
-              ],
-              [
-                "amount",
                 "any",
                 false,
                 ""
@@ -117044,15 +116841,15 @@
             "file": "src/lua_api/progression_api.rs"
           },
           {
-            "name": "recoverActionPoints",
-            "lua_name": "lurek.progression.recoverActionPoints",
+            "name": "getCooldownRemaining",
+            "lua_name": "lurek.progression.getCooldownRemaining",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the cooldown remaining.",
+            "full_doc": "Returns the cooldown remaining.\n\n@param this : table\n@param name : string\n@return number",
             "params_doc": "",
             "returns_doc": "",
-            "inferred_sig": "(this, amount)",
+            "inferred_sig": "(this, name)",
             "typed_params": [
               [
                 "this",
@@ -117061,7 +116858,7 @@
                 ""
               ],
               [
-                "amount",
+                "name",
                 "any",
                 false,
                 ""
@@ -117069,39 +116866,109 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1579,
+            "line": 1581,
             "file": "src/lua_api/progression_api.rs"
           },
           {
-            "name": "beginTurn",
-            "lua_name": "lurek.progression.beginTurn",
+            "name": "definePerk",
+            "lua_name": "lurek.progression.definePerk",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Define perk.",
+            "full_doc": "Define perk.\n\n@param this : table\n@param name : string\n@param opts : table?",
             "params_doc": "",
             "returns_doc": "",
-            "inferred_sig": "(this, )",
+            "inferred_sig": "(this, name, [opts])",
             "typed_params": [
               [
                 "this",
                 "any",
                 false,
                 ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "opts",
+                "any",
+                true,
+                ""
               ]
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1596,
+            "line": 1602,
             "file": "src/lua_api/progression_api.rs"
           },
           {
-            "name": "setMorale",
-            "lua_name": "lurek.progression.setMorale",
+            "name": "acquirePerk",
+            "lua_name": "lurek.progression.acquirePerk",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Acquire perk.",
+            "full_doc": "Acquire perk.\n\n@param this : table\n@param name : string\n@return boolean",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, name)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1647,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "hasPerk",
+            "lua_name": "lurek.progression.hasPerk",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns true if perk.",
+            "full_doc": "Returns true if perk.\n\n@param this : table\n@param name : string\n@return boolean",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, name)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "name",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1666,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "setActionPoints",
+            "lua_name": "lurek.progression.setActionPoints",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Sets the action points.",
+            "full_doc": "Sets the action points.\n\n@param this : table\n@param max_val : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, max_val)",
@@ -117121,16 +116988,97 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1611,
+            "line": 1684,
             "file": "src/lua_api/progression_api.rs"
           },
           {
-            "name": "getMorale",
-            "lua_name": "lurek.progression.getMorale",
+            "name": "getActionPoints",
+            "lua_name": "lurek.progression.getActionPoints",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the action points.",
+            "full_doc": "Returns the action points.\n\n@param this : table\n@return | number, number | Current action points followed by the configured maximum.",
+            "params_doc": "",
+            "returns_doc": "number, number",
+            "inferred_sig": "(this, )",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "number, number",
+            "return_description": "Current action points followed by the configured maximum.",
+            "line": 1718,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "spendActionPoints",
+            "lua_name": "lurek.progression.spendActionPoints",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Spend action points.",
+            "full_doc": "Spend action points.\n\n@param this : table\n@param amount : number\n@return boolean",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, amount)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "amount",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1743,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "recoverActionPoints",
+            "lua_name": "lurek.progression.recoverActionPoints",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Recover action points.",
+            "full_doc": "Recover action points.\n\n@param this : table\n@param amount : number",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, amount)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "amount",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1764,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "beginTurn",
+            "lua_name": "lurek.progression.beginTurn",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Begin turn.",
+            "full_doc": "Begin turn.\n\n@param this : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117144,7 +117092,59 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1637,
+            "line": 1784,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "setMorale",
+            "lua_name": "lurek.progression.setMorale",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Sets the morale.",
+            "full_doc": "Sets the morale.\n\n@param this : table\n@param max_val : number",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(this, max_val)",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ],
+              [
+                "max_val",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "",
+            "return_description": "",
+            "line": 1803,
+            "file": "src/lua_api/progression_api.rs"
+          },
+          {
+            "name": "getMorale",
+            "lua_name": "lurek.progression.getMorale",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns the morale.",
+            "full_doc": "Returns the morale.\n\n@param this : table\n@return | number, number | Current morale followed by the configured maximum.",
+            "params_doc": "",
+            "returns_doc": "number, number",
+            "inferred_sig": "(this, )",
+            "typed_params": [
+              [
+                "this",
+                "any",
+                false,
+                ""
+              ]
+            ],
+            "inferred_return": "number, number",
+            "return_description": "Current morale followed by the configured maximum.",
+            "line": 1833,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117152,8 +117152,8 @@
             "lua_name": "lurek.progression.adjustMorale",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Adjust morale.",
+            "full_doc": "Adjust morale.\n\n@param this : table\n@param delta : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, delta)",
@@ -117173,7 +117173,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1655,
+            "line": 1855,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117181,8 +117181,8 @@
             "lua_name": "lurek.progression.setPanicThreshold",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the panic threshold.",
+            "full_doc": "Sets the panic threshold.\n\n@param this : table\n@param value : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, value)",
@@ -117202,7 +117202,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1675,
+            "line": 1879,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117210,8 +117210,8 @@
             "lua_name": "lurek.progression.setBerserkThreshold",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the berserk threshold.",
+            "full_doc": "Sets the berserk threshold.\n\n@param this : table\n@param value : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, value)",
@@ -117231,7 +117231,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1683,
+            "line": 1891,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117239,8 +117239,8 @@
             "lua_name": "lurek.progression.checkMorale",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Check morale.",
+            "full_doc": "Check morale.\n\n@param this : table\n@return string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117254,7 +117254,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1691,
+            "line": 1903,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117262,8 +117262,8 @@
             "lua_name": "lurek.progression.setFlag",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the flag.",
+            "full_doc": "Sets the flag.\n\n@param this : table\n@param name : string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -117283,7 +117283,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1729,
+            "line": 1945,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117291,8 +117291,8 @@
             "lua_name": "lurek.progression.clearFlag",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Clears flag.",
+            "full_doc": "Clears flag.\n\n@param this : table\n@param name : string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -117312,7 +117312,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1737,
+            "line": 1957,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117320,8 +117320,8 @@
             "lua_name": "lurek.progression.hasFlag",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns true if flag.",
+            "full_doc": "Returns true if flag.\n\n@param this : table\n@param name : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -117341,7 +117341,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1745,
+            "line": 1970,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117349,8 +117349,8 @@
             "lua_name": "lurek.progression.getFlags",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the flags.",
+            "full_doc": "Returns the flags.\n\n@param this : table\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117364,7 +117364,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1752,
+            "line": 1981,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117372,8 +117372,8 @@
             "lua_name": "lurek.progression.setResistance",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the resistance.",
+            "full_doc": "Sets the resistance.\n\n@param this : table\n@param dtype : string\n@param value : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, dtype, value)",
@@ -117399,7 +117399,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1772,
+            "line": 2006,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117407,8 +117407,8 @@
             "lua_name": "lurek.progression.getResistance",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the resistance.",
+            "full_doc": "Returns the resistance.\n\n@param this : table\n@param dtype : string\n@return number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, dtype)",
@@ -117428,7 +117428,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1780,
+            "line": 2019,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117436,8 +117436,8 @@
             "lua_name": "lurek.progression.applyDamage",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Apply damage.",
+            "full_doc": "Apply damage.\n\n@param this : table\n@param stat : string\n@param amount : number\n@param dtype : string?\n@return number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, stat, amount, [dtype])",
@@ -117469,7 +117469,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1788,
+            "line": 2034,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117477,8 +117477,8 @@
             "lua_name": "lurek.progression.recordUse",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Record use.",
+            "full_doc": "Record use.\n\n@param this : table\n@param name : string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -117498,7 +117498,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1810,
+            "line": 2060,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117506,8 +117506,8 @@
             "lua_name": "lurek.progression.getUseCount",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the use count.",
+            "full_doc": "Returns the use count.\n\n@param this : table\n@param name : string\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, name)",
@@ -117527,7 +117527,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1819,
+            "line": 2074,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117535,8 +117535,8 @@
             "lua_name": "lurek.progression.setEncumbrance",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the encumbrance.",
+            "full_doc": "Sets the encumbrance.\n\n@param this : table\n@param cur : number\n@param max_val : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, cur, max_val)",
@@ -117562,7 +117562,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1827,
+            "line": 2087,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117570,8 +117570,8 @@
             "lua_name": "lurek.progression.getEncumbrance",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the encumbrance.",
+            "full_doc": "Returns the encumbrance.\n\n@param this : table\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117585,7 +117585,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1836,
+            "line": 2100,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117593,8 +117593,8 @@
             "lua_name": "lurek.progression.isEncumbered",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns true if encumbered.",
+            "full_doc": "Returns true if encumbered.\n\n@param this : table\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117608,7 +117608,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1849,
+            "line": 2117,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117616,8 +117616,8 @@
             "lua_name": "lurek.progression.setInitiative",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the initiative.",
+            "full_doc": "Sets the initiative.\n\n@param this : table\n@param value : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, value)",
@@ -117637,7 +117637,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1859,
+            "line": 2131,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117645,8 +117645,8 @@
             "lua_name": "lurek.progression.getInitiative",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the initiative.",
+            "full_doc": "Returns the initiative.\n\n@param this : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117660,7 +117660,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1866,
+            "line": 2141,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117668,8 +117668,8 @@
             "lua_name": "lurek.progression.update",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Update.",
+            "full_doc": "Update.\n\n@param this : table\n@param dt : number",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, dt)",
@@ -117689,7 +117689,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1874,
+            "line": 2153,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117697,8 +117697,8 @@
             "lua_name": "lurek.progression.snapshot",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Snapshot.",
+            "full_doc": "Snapshot.\n\n@param this : table\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117712,7 +117712,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1887,
+            "line": 2170,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117720,8 +117720,8 @@
             "lua_name": "lurek.progression.restore",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Restore.",
+            "full_doc": "Restore.\n\n@param this : table\n@param snap : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, snap)",
@@ -117741,7 +117741,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1919,
+            "line": 2206,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117749,15 +117749,15 @@
             "lua_name": "lurek.progression.type",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Type.",
+            "full_doc": "Type.\n\n@return string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1965,
+            "line": 2255,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117765,8 +117765,8 @@
             "lua_name": "lurek.progression.typeOf",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Type of.",
+            "full_doc": "Type of.\n\n@param name : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(name)",
@@ -117780,7 +117780,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1969,
+            "line": 2263,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117788,8 +117788,8 @@
             "lua_name": "lurek.progression.addQuest",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Adds quest.",
+            "full_doc": "Adds quest.\n\n@param this : table\n@param quest : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, quest)",
@@ -117809,7 +117809,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1994,
+            "line": 2292,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117817,8 +117817,8 @@
             "lua_name": "lurek.progression.questCount",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Quest count.",
+            "full_doc": "Quest count.\n\n@param this : table\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117832,7 +117832,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2068,
+            "line": 2370,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117840,8 +117840,8 @@
             "lua_name": "lurek.progression.questIds",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Quest ids.",
+            "full_doc": "Quest ids.\n\n@param this : table\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -117855,7 +117855,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2081,
+            "line": 2387,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117863,8 +117863,8 @@
             "lua_name": "lurek.progression.removeQuest",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Removes quest.",
+            "full_doc": "Removes quest.\n\n@param this : table\n@param id : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id)",
@@ -117884,7 +117884,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2094,
+            "line": 2405,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117892,8 +117892,8 @@
             "lua_name": "lurek.progression.startQuest",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Start quest.",
+            "full_doc": "Start quest.\n\n@param this : table\n@param id : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id)",
@@ -117913,7 +117913,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2119,
+            "line": 2435,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117921,8 +117921,8 @@
             "lua_name": "lurek.progression.completeQuest",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Complete quest.",
+            "full_doc": "Complete quest.\n\n@param this : table\n@param id : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id)",
@@ -117942,7 +117942,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2133,
+            "line": 2454,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117950,8 +117950,8 @@
             "lua_name": "lurek.progression.failQuest",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Fail quest.",
+            "full_doc": "Fail quest.\n\n@param this : table\n@param id : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id)",
@@ -117971,7 +117971,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2147,
+            "line": 2473,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117979,15 +117979,15 @@
             "lua_name": "lurek.progression.advanceObjective",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Advance objective.",
+            "full_doc": "Advance objective.\n\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "",
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 2161,
+            "line": 2490,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -117995,8 +117995,8 @@
             "lua_name": "lurek.progression.addJournalEntry",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Adds journal entry.",
+            "full_doc": "Adds journal entry.\n\n@param this : table\n@param quest_id : string\n@param text : string\n@param tag : string?\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, quest_id, text, [tag])",
@@ -118028,7 +118028,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2206,
+            "line": 2542,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118036,8 +118036,8 @@
             "lua_name": "lurek.progression.getQuest",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the quest.",
+            "full_doc": "Returns the quest.\n\n@param this : table\n@param id : string\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id)",
@@ -118057,7 +118057,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2240,
+            "line": 2581,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118065,8 +118065,8 @@
             "lua_name": "lurek.progression.questsWithStatus",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Quests with status.",
+            "full_doc": "Quests with status.\n\n@param this : table\n@param wanted : string\n@return table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, wanted)",
@@ -118086,7 +118086,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2270,
+            "line": 2616,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118094,8 +118094,8 @@
             "lua_name": "lurek.progression.activeIds",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Active ids.",
+            "full_doc": "Active ids.\n\n@param this : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -118109,7 +118109,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2290,
+            "line": 2639,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118117,8 +118117,8 @@
             "lua_name": "lurek.progression.completedIds",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Completed ids.",
+            "full_doc": "Completed ids.\n\n@param this : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -118132,7 +118132,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2297,
+            "line": 2649,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118140,8 +118140,8 @@
             "lua_name": "lurek.progression.failedIds",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Failed ids.",
+            "full_doc": "Failed ids.\n\n@param this : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -118155,7 +118155,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2304,
+            "line": 2659,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118163,8 +118163,8 @@
             "lua_name": "lurek.progression.activeCount",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Active count.",
+            "full_doc": "Active count.\n\n@param this : table\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -118178,7 +118178,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2312,
+            "line": 2671,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118186,8 +118186,8 @@
             "lua_name": "lurek.progression.completedCount",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Completed count.",
+            "full_doc": "Completed count.\n\n@param this : table\n@return integer",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, )",
@@ -118201,7 +118201,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2320,
+            "line": 2683,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118209,8 +118209,8 @@
             "lua_name": "lurek.progression.setQuestReward",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Sets the quest reward.",
+            "full_doc": "Sets the quest reward.\n\n@param this : table\n@param id : string\n@param reward : string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id, reward)",
@@ -118236,7 +118236,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2329,
+            "line": 2697,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118244,8 +118244,8 @@
             "lua_name": "lurek.progression.getQuestReward",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Returns the quest reward.",
+            "full_doc": "Returns the quest reward.\n\n@param this : table\n@param id : string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id)",
@@ -118265,7 +118265,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2338,
+            "line": 2710,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118273,8 +118273,8 @@
             "lua_name": "lurek.progression.resetQuest",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Clears quest.",
+            "full_doc": "Clears quest.\n\n@param this : table\n@param id : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(this, id)",
@@ -118294,7 +118294,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2349,
+            "line": 2726,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118302,15 +118302,15 @@
             "lua_name": "lurek.progression.type",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Type.",
+            "full_doc": "Type.\n\n@return string",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 2366,
+            "line": 2746,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118318,8 +118318,8 @@
             "lua_name": "lurek.progression.typeOf",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Type of.",
+            "full_doc": "Type of.\n\n@param name : string\n@return boolean",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(name)",
@@ -118333,7 +118333,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2370,
+            "line": 2754,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118341,8 +118341,8 @@
             "lua_name": "lurek.progression.newStore",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "New store.",
+            "full_doc": "New store.\n\n@param options : table?",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "([options])",
@@ -118356,7 +118356,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4273,
+            "line": 4800,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118364,8 +118364,8 @@
             "lua_name": "lurek.progression.loadStore",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Load store.",
+            "full_doc": "Load store.\n\n@param snapshot : any",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(snapshot)",
@@ -118379,7 +118379,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4283,
+            "line": 4813,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118387,8 +118387,8 @@
             "lua_name": "lurek.progression.importLegacyStatsSnapshot",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Import legacy stats snapshot.",
+            "full_doc": "Import legacy stats snapshot.\n\n@param snapshot : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(snapshot)",
@@ -118402,7 +118402,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4293,
+            "line": 4826,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118410,8 +118410,8 @@
             "lua_name": "lurek.progression.importLegacyQuestSnapshot",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Import legacy quest snapshot.",
+            "full_doc": "Import legacy quest snapshot.\n\n@param snapshot : table",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(snapshot)",
@@ -118425,7 +118425,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4297,
+            "line": 4833,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118433,8 +118433,8 @@
             "lua_name": "lurek.progression.createLegacyStatsAdapter",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Create legacy stats adapter.",
+            "full_doc": "Create legacy stats adapter.\n\n@param store : AnyUserData\n@param profile : any\n@param options : table?",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(store, profile, [options])",
@@ -118460,7 +118460,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4301,
+            "line": 4842,
             "file": "src/lua_api/progression_api.rs"
           },
           {
@@ -118468,8 +118468,8 @@
             "lua_name": "lurek.progression.createLegacyQuestAdapter",
             "kind": "function",
             "owner_type": "",
-            "description": "",
-            "full_doc": "",
+            "description": "Create legacy quest adapter.",
+            "full_doc": "Create legacy quest adapter.\n\n@param store : AnyUserData\n@param profile : any\n@param options : table?",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(store, profile, [options])",
@@ -118495,7 +118495,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 4311,
+            "line": 4857,
             "file": "src/lua_api/progression_api.rs"
           }
         ],
@@ -118509,15 +118509,31 @@
                 "lua_name": "LProgressionProfile:getId",
                 "kind": "method",
                 "owner_type": "LProgressionProfile",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the id.",
+                "full_doc": "Returns the id.\n\n@return string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2381,
+                "line": 2768,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getPendingRewards",
+                "lua_name": "LProgressionProfile:getPendingRewards",
+                "kind": "method",
+                "owner_type": "LProgressionProfile",
+                "description": "Returns this profile's pending reward records as typed reward handles.",
+                "full_doc": "Returns this profile's pending reward records as typed reward handles.\n\n@return | table | Array of `LReward` values still waiting for claim.",
+                "params_doc": "",
+                "returns_doc": "table",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "table",
+                "return_description": "Array of `LReward` values still waiting for claim.",
+                "line": 2772,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118525,15 +118541,15 @@
                 "lua_name": "LProgressionProfile:type",
                 "kind": "method",
                 "owner_type": "LProgressionProfile",
-                "description": "",
-                "full_doc": "",
+                "description": "Type.",
+                "full_doc": "Type.\n\n@return string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2382,
+                "line": 2796,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118541,8 +118557,8 @@
                 "lua_name": "LProgressionProfile:typeOf",
                 "kind": "method",
                 "owner_type": "LProgressionProfile",
-                "description": "",
-                "full_doc": "",
+                "description": "Type of.",
+                "full_doc": "Type of.\n\n@param name : string\n@return boolean",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(name)",
@@ -118556,7 +118572,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2383,
+                "line": 2801,
                 "file": "src/lua_api/progression_api.rs"
               }
             ]
@@ -118597,7 +118613,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2391,
+                "line": 2809,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118632,7 +118648,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2401,
+                "line": 2819,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118667,7 +118683,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2411,
+                "line": 2829,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118702,7 +118718,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2421,
+                "line": 2839,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118737,7 +118753,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2431,
+                "line": 2849,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118778,7 +118794,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2443,
+                "line": 2861,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118813,7 +118829,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2453,
+                "line": 2871,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118821,15 +118837,15 @@
                 "lua_name": "LProgressionTransaction:commit",
                 "kind": "method",
                 "owner_type": "LProgressionTransaction",
-                "description": "",
-                "full_doc": "",
+                "description": "Commit.",
+                "full_doc": "Commit.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2463,
+                "line": 2883,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118837,15 +118853,15 @@
                 "lua_name": "LProgressionTransaction:rollback",
                 "kind": "method",
                 "owner_type": "LProgressionTransaction",
-                "description": "",
-                "full_doc": "",
+                "description": "Rollback.",
+                "full_doc": "Rollback.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2477,
+                "line": 2899,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118853,15 +118869,15 @@
                 "lua_name": "LProgressionTransaction:type",
                 "kind": "method",
                 "owner_type": "LProgressionTransaction",
-                "description": "",
-                "full_doc": "",
+                "description": "Type.",
+                "full_doc": "Type.\n\n@return string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2481,
+                "line": 2906,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118869,8 +118885,8 @@
                 "lua_name": "LProgressionTransaction:typeOf",
                 "kind": "method",
                 "owner_type": "LProgressionTransaction",
-                "description": "",
-                "full_doc": "",
+                "description": "Type of.",
+                "full_doc": "Type of.\n\n@param name : string\n@return boolean",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(name)",
@@ -118884,7 +118900,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2482,
+                "line": 2911,
                 "file": "src/lua_api/progression_api.rs"
               }
             ]
@@ -118898,15 +118914,15 @@
                 "lua_name": "LProgressionStore:getId",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the id.",
+                "full_doc": "Returns the id.\n\n@return string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2490,
+                "line": 2922,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118914,15 +118930,15 @@
                 "lua_name": "LProgressionStore:getRevision",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the revision.",
+                "full_doc": "Returns the revision.\n\n@return integer",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2493,
+                "line": 2928,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118930,15 +118946,15 @@
                 "lua_name": "LProgressionStore:getSchemaVersion",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the schema version.",
+                "full_doc": "Returns the schema version.\n\n@return integer",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2496,
+                "line": 2934,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118946,15 +118962,15 @@
                 "lua_name": "LProgressionStore:getDefinitionHash",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the definition hash.",
+                "full_doc": "Returns the definition hash.\n\n@return string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2499,
+                "line": 2940,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118962,15 +118978,15 @@
                 "lua_name": "LProgressionStore:getTime",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the time.",
+                "full_doc": "Returns the time.\n\n@return number",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2502,
+                "line": 2946,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -118978,8 +118994,8 @@
                 "lua_name": "LProgressionStore:setTime",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Sets the time.",
+                "full_doc": "Sets the time.\n\n@param seconds : number",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(seconds)",
@@ -118993,7 +119009,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2503,
+                "line": 2950,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119001,8 +119017,8 @@
                 "lua_name": "LProgressionStore:advanceTime",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Advance time.",
+                "full_doc": "Advance time.\n\n@param seconds : number",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(seconds)",
@@ -119016,7 +119032,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2509,
+                "line": 2959,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119045,7 +119061,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2515,
+                "line": 2965,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119053,15 +119069,15 @@
                 "lua_name": "LProgressionStore:stats",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Stats.",
+                "full_doc": "Stats.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2527,
+                "line": 2979,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119069,15 +119085,15 @@
                 "lua_name": "LProgressionStore:clear",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Clears the state.",
+                "full_doc": "Clears the state.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2530,
+                "line": 2984,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119085,15 +119101,15 @@
                 "lua_name": "LProgressionStore:validate",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Validate.",
+                "full_doc": "Validate.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2534,
+                "line": 2990,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119101,8 +119117,8 @@
                 "lua_name": "LProgressionStore:compileCondition",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Compile condition.",
+                "full_doc": "Compile condition.\n\n@param condition : table",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(condition)",
@@ -119116,7 +119132,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2537,
+                "line": 2996,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119124,8 +119140,8 @@
                 "lua_name": "LProgressionStore:validateCondition",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Validate condition.",
+                "full_doc": "Validate condition.\n\n@param condition : table",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(condition)",
@@ -119139,7 +119155,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2546,
+                "line": 3008,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119168,7 +119184,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2554,
+                "line": 3016,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119197,7 +119213,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2564,
+                "line": 3026,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119205,15 +119221,15 @@
                 "lua_name": "LProgressionStore:debugSnapshot",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Debug snapshot.",
+                "full_doc": "Debug snapshot.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2577,
+                "line": 3041,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119221,15 +119237,15 @@
                 "lua_name": "LProgressionStore:exportSnapshot",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Export snapshot.",
+                "full_doc": "Export snapshot.\n\n@return table",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2580,
+                "line": 3047,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119237,8 +119253,8 @@
                 "lua_name": "LProgressionStore:exportChangesSince",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Export changes since.",
+                "full_doc": "Export changes since.\n\n@param revision : integer\n@return table",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(revision)",
@@ -119252,7 +119268,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2585,
+                "line": 3056,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119281,7 +119297,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2591,
+                "line": 3062,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119289,8 +119305,8 @@
                 "lua_name": "LProgressionStore:loadSnapshot",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Load snapshot.",
+                "full_doc": "Load snapshot.\n\n@param snapshot : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(snapshot)",
@@ -119304,7 +119320,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2609,
+                "line": 3083,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119312,8 +119328,8 @@
                 "lua_name": "LProgressionStore:applyChangeset",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Apply changeset.",
+                "full_doc": "Apply changeset.\n\n@param changeset : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(changeset)",
@@ -119327,7 +119343,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2615,
+                "line": 3092,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119356,7 +119372,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2627,
+                "line": 3104,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119364,8 +119380,8 @@
                 "lua_name": "LProgressionStore:ackChangesThrough",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Ack changes through.",
+                "full_doc": "Ack changes through.\n\n@param revision : integer",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(revision)",
@@ -119379,7 +119395,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2656,
+                "line": 3136,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119387,8 +119403,8 @@
                 "lua_name": "LProgressionStore:compactChanges",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Compact changes.",
+                "full_doc": "Compact changes.\n\n@param max_records : integer",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(max_records)",
@@ -119402,7 +119418,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2664,
+                "line": 3147,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119410,15 +119426,15 @@
                 "lua_name": "LProgressionStore:drainEvents",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Drain events.",
+                "full_doc": "Drain events.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2673,
+                "line": 3158,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119426,15 +119442,15 @@
                 "lua_name": "LProgressionStore:clearEvents",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Clears events.",
+                "full_doc": "Clears events.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2679,
+                "line": 3166,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119463,7 +119479,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2683,
+                "line": 3170,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119492,7 +119508,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2693,
+                "line": 3183,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119500,8 +119516,8 @@
                 "lua_name": "LProgressionStore:hasProfile",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns true if profile.",
+                "full_doc": "Returns true if profile.\n\n@param id : string\n@return boolean",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(id)",
@@ -119515,7 +119531,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2704,
+                "line": 3204,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119523,8 +119539,8 @@
                 "lua_name": "LProgressionStore:getProfile",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the profile.",
+                "full_doc": "Returns the profile.\n\n@param id : string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(id)",
@@ -119538,7 +119554,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2707,
+                "line": 3210,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119567,7 +119583,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2716,
+                "line": 3219,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119596,7 +119612,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2725,
+                "line": 3228,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119604,8 +119620,8 @@
                 "lua_name": "LProgressionStore:listProfiles",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List profiles.",
+                "full_doc": "List profiles.\n\n@param  : table?",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "([])",
@@ -119619,7 +119635,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2734,
+                "line": 3240,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119627,8 +119643,8 @@
                 "lua_name": "LProgressionStore:countProfiles",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the number of items.",
+                "full_doc": "Returns the number of items.\n\n@param  : table?\n@return integer",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "([])",
@@ -119642,7 +119658,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2737,
+                "line": 3247,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119650,8 +119666,8 @@
                 "lua_name": "LProgressionStore:addProfileTag",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Adds profile tag.",
+                "full_doc": "Adds profile tag.\n\n@param id : string\n@param tag : string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(id, tag)",
@@ -119671,7 +119687,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2740,
+                "line": 3254,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119700,7 +119716,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2746,
+                "line": 3260,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119735,7 +119751,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2755,
+                "line": 3269,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119764,7 +119780,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2764,
+                "line": 3278,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119793,7 +119809,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2773,
+                "line": 3287,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119828,7 +119844,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2782,
+                "line": 3296,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119863,7 +119879,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2792,
+                "line": 3306,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119892,7 +119908,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2802,
+                "line": 3316,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119921,7 +119937,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2812,
+                "line": 3326,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119929,8 +119945,8 @@
                 "lua_name": "LProgressionStore:listCounters",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List counters.",
+                "full_doc": "List counters.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, )",
@@ -119944,7 +119960,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2825,
+                "line": 3342,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -119973,7 +119989,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2837,
+                "line": 3354,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120008,7 +120024,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2846,
+                "line": 3363,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120037,7 +120053,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2856,
+                "line": 3373,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120072,7 +120088,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2869,
+                "line": 3386,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120107,7 +120123,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2879,
+                "line": 3396,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120136,7 +120152,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2889,
+                "line": 3406,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120171,7 +120187,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2908,
+                "line": 3425,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120200,7 +120216,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2918,
+                "line": 3435,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120208,8 +120224,8 @@
                 "lua_name": "LProgressionStore:listModifiers",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List modifiers.",
+                "full_doc": "List modifiers.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, )",
@@ -120223,7 +120239,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2928,
+                "line": 3448,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120252,7 +120268,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2940,
+                "line": 3460,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120281,7 +120297,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2949,
+                "line": 3469,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120316,7 +120332,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2962,
+                "line": 3482,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120351,7 +120367,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2972,
+                "line": 3492,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120386,7 +120402,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2982,
+                "line": 3502,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120421,7 +120437,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2992,
+                "line": 3512,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120456,7 +120472,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3002,
+                "line": 3522,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120485,7 +120501,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3012,
+                "line": 3532,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120514,7 +120530,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3021,
+                "line": 3541,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120543,7 +120559,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3030,
+                "line": 3550,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120572,7 +120588,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3039,
+                "line": 3559,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120601,7 +120617,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3048,
+                "line": 3568,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120630,7 +120646,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3058,
+                "line": 3578,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120659,7 +120675,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3068,
+                "line": 3588,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120667,8 +120683,8 @@
                 "lua_name": "LProgressionStore:listTraits",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List traits.",
+                "full_doc": "List traits.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, )",
@@ -120682,7 +120698,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3078,
+                "line": 3601,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120711,7 +120727,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3093,
+                "line": 3616,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120740,7 +120756,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3102,
+                "line": 3625,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120769,7 +120785,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3111,
+                "line": 3634,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120798,7 +120814,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3121,
+                "line": 3644,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120827,7 +120843,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3134,
+                "line": 3657,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120856,7 +120872,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3144,
+                "line": 3667,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120885,7 +120901,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3154,
+                "line": 3677,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120914,7 +120930,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3164,
+                "line": 3687,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120943,7 +120959,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3174,
+                "line": 3697,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -120972,7 +120988,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3187,
+                "line": 3710,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121001,7 +121017,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3196,
+                "line": 3719,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121030,7 +121046,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3205,
+                "line": 3728,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121059,7 +121075,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3221,
+                "line": 3744,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121067,8 +121083,8 @@
                 "lua_name": "LProgressionStore:getSeason",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the season.",
+                "full_doc": "Returns the season.\n\n@param id : string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(id)",
@@ -121082,7 +121098,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3241,
+                "line": 3767,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121090,8 +121106,8 @@
                 "lua_name": "LProgressionStore:listSeasons",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List seasons.",
+                "full_doc": "List seasons.\n\n@param query : table?",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "([query])",
@@ -121105,7 +121121,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3250,
+                "line": 3779,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121134,7 +121150,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3260,
+                "line": 3794,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121163,7 +121179,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3276,
+                "line": 3822,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121192,7 +121208,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3285,
+                "line": 3831,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121221,7 +121237,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3295,
+                "line": 3841,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121250,7 +121266,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3308,
+                "line": 3854,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121258,8 +121274,8 @@
                 "lua_name": "LProgressionStore:listPrestiges",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List prestiges.",
+                "full_doc": "List prestiges.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, )",
@@ -121273,7 +121289,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3321,
+                "line": 3870,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121302,7 +121318,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3333,
+                "line": 3883,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121337,7 +121353,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3342,
+                "line": 3892,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121366,7 +121382,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3355,
+                "line": 3905,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121374,8 +121390,8 @@
                 "lua_name": "LProgressionStore:listCollections",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List collections.",
+                "full_doc": "List collections.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, )",
@@ -121389,7 +121405,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3368,
+                "line": 3921,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121424,7 +121440,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3380,
+                "line": 3934,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121453,7 +121469,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3398,
+                "line": 3952,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121461,8 +121477,8 @@
                 "lua_name": "LProgressionStore:listRivals",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List rivals.",
+                "full_doc": "List rivals.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, )",
@@ -121476,7 +121492,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3412,
+                "line": 3969,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121505,7 +121521,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3424,
+                "line": 3982,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121513,8 +121529,8 @@
                 "lua_name": "LProgressionStore:getActivityFeed",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns one typed activity-feed selection object.",
+                "full_doc": "Returns one typed activity-feed selection object.\n\n@param query : table?",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "([query])",
@@ -121528,7 +121544,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3438,
+                "line": 3999,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121557,7 +121573,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3476,
+                "line": 4042,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121565,8 +121581,8 @@
                 "lua_name": "LProgressionStore:validatePopulationTemplate",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Validate population template.",
+                "full_doc": "Validate population template.\n\n@param id : string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(id)",
@@ -121580,7 +121596,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3488,
+                "line": 4057,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121609,7 +121625,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3497,
+                "line": 4066,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121617,8 +121633,8 @@
                 "lua_name": "LProgressionStore:getPopulation",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the population.",
+                "full_doc": "Returns the population.\n\n@param handle_or_id : string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(handle_or_id)",
@@ -121632,7 +121648,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3513,
+                "line": 4085,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121667,7 +121683,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3522,
+                "line": 4094,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121702,7 +121718,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3534,
+                "line": 4106,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121710,8 +121726,8 @@
                 "lua_name": "LProgressionStore:pausePopulation",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Pause population.",
+                "full_doc": "Pause population.\n\n@param handle_or_id : string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(handle_or_id)",
@@ -121725,7 +121741,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3546,
+                "line": 4121,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121733,8 +121749,8 @@
                 "lua_name": "LProgressionStore:resumePopulation",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Resume population.",
+                "full_doc": "Resume population.\n\n@param handle_or_id : string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(handle_or_id)",
@@ -121748,7 +121764,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3555,
+                "line": 4133,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121777,7 +121793,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3564,
+                "line": 4142,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121806,7 +121822,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3579,
+                "line": 4157,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121835,7 +121851,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3597,
+                "line": 4175,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121864,7 +121880,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3613,
+                "line": 4191,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121887,7 +121903,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3635,
+                "line": 4214,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121916,7 +121932,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3647,
+                "line": 4226,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121924,8 +121940,8 @@
                 "lua_name": "LProgressionStore:removeDerivedValue",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Removes derived value.",
+                "full_doc": "Removes derived value.\n\n@param id : string\n@return boolean",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(id)",
@@ -121939,7 +121955,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3662,
+                "line": 4245,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121968,7 +121984,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3665,
+                "line": 4248,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -121997,7 +122013,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3675,
+                "line": 4258,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122005,15 +122021,15 @@
                 "lua_name": "LProgressionStore:validateDerivedValues",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Validate derived values.",
+                "full_doc": "Validate derived values.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3688,
+                "line": 4273,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122048,7 +122064,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3691,
+                "line": 4276,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122077,7 +122093,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3704,
+                "line": 4289,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122106,7 +122122,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3717,
+                "line": 4302,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122141,7 +122157,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3731,
+                "line": 4317,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122157,7 +122173,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3745,
+                "line": 4332,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122192,7 +122208,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3774,
+                "line": 4360,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122221,7 +122237,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3787,
+                "line": 4373,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122256,7 +122272,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3800,
+                "line": 4386,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122285,7 +122301,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3813,
+                "line": 4399,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122320,7 +122336,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3823,
+                "line": 4409,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122349,7 +122365,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3836,
+                "line": 4422,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122378,7 +122394,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3846,
+                "line": 4432,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122407,7 +122423,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3855,
+                "line": 4441,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122442,7 +122458,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3867,
+                "line": 4453,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122477,7 +122493,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3885,
+                "line": 4471,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122506,7 +122522,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3898,
+                "line": 4484,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122535,7 +122551,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3911,
+                "line": 4497,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122564,7 +122580,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3931,
+                "line": 4518,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122593,7 +122609,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3940,
+                "line": 4527,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122622,7 +122638,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3953,
+                "line": 4540,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122630,8 +122646,8 @@
                 "lua_name": "LProgressionStore:listAchievements",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "List achievements.",
+                "full_doc": "List achievements.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, )",
@@ -122645,129 +122661,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3966,
-                "file": "src/lua_api/progression_api.rs"
-              },
-              {
-                "name": "getPendingRewards",
-                "lua_name": "LProgressionStore:getPendingRewards",
-                "kind": "method",
-                "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "(profile, )",
-                "typed_params": [
-                  [
-                    "profile",
-                    "any",
-                    false,
-                    ""
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 3978,
-                "file": "src/lua_api/progression_api.rs"
-              },
-              {
-                "name": "claimReward",
-                "lua_name": "LProgressionStore:claimReward",
-                "kind": "method",
-                "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "(profile, reward_id)",
-                "typed_params": [
-                  [
-                    "profile",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "reward_id",
-                    "any",
-                    false,
-                    ""
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 3992,
-                "file": "src/lua_api/progression_api.rs"
-              },
-              {
-                "name": "markRewardApplied",
-                "lua_name": "LProgressionStore:markRewardApplied",
-                "kind": "method",
-                "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "(profile, reward_id, [external_receipt])",
-                "typed_params": [
-                  [
-                    "profile",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "reward_id",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "external_receipt",
-                    "any",
-                    true,
-                    ""
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 4010,
-                "file": "src/lua_api/progression_api.rs"
-              },
-              {
-                "name": "rejectReward",
-                "lua_name": "LProgressionStore:rejectReward",
-                "kind": "method",
-                "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "(profile, reward_id, [reason])",
-                "typed_params": [
-                  [
-                    "profile",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "reward_id",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "reason",
-                    "any",
-                    true,
-                    ""
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 4026,
+                "line": 4556,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122775,8 +122669,8 @@
                 "lua_name": "LProgressionStore:acceptQuest",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Returns the pending rewards.",
+                "full_doc": "Returns the pending rewards.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile, quest_id)",
@@ -122796,7 +122690,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4044,
+                "line": 4572,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122825,77 +122719,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4054,
-                "file": "src/lua_api/progression_api.rs"
-              },
-              {
-                "name": "addQuestJournalEntry",
-                "lua_name": "LProgressionStore:addQuestJournalEntry",
-                "kind": "method",
-                "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "(profile, quest_id, text, [tag])",
-                "typed_params": [
-                  [
-                    "profile",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "quest_id",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "text",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "tag",
-                    "any",
-                    true,
-                    ""
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 4067,
-                "file": "src/lua_api/progression_api.rs"
-              },
-              {
-                "name": "listQuestJournalEntries",
-                "lua_name": "LProgressionStore:listQuestJournalEntries",
-                "kind": "method",
-                "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
-                "params_doc": "",
-                "returns_doc": "",
-                "inferred_sig": "(profile, quest_id)",
-                "typed_params": [
-                  [
-                    "profile",
-                    "any",
-                    false,
-                    ""
-                  ],
-                  [
-                    "quest_id",
-                    "any",
-                    false,
-                    ""
-                  ]
-                ],
-                "inferred_return": "",
-                "return_description": "",
-                "line": 4083,
+                "line": 4582,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122903,8 +122727,8 @@
                 "lua_name": "LProgressionStore:refreshQuestLifecycle",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Refresh quest lifecycle.",
+                "full_doc": "Refresh quest lifecycle.\n\n@param profile : any",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(profile)",
@@ -122918,7 +122742,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4101,
+                "line": 4600,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122947,7 +122771,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4108,
+                "line": 4607,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -122976,7 +122800,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4118,
+                "line": 4617,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -123017,7 +122841,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4128,
+                "line": 4627,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -123058,7 +122882,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4141,
+                "line": 4642,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -123099,7 +122923,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4154,
+                "line": 4662,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -123128,7 +122952,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4167,
+                "line": 4682,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -123151,7 +122975,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4180,
+                "line": 4697,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -123159,15 +122983,15 @@
                 "lua_name": "LProgressionStore:type",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Type.",
+                "full_doc": "Type.\n\n@return string",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4194,
+                "line": 4714,
                 "file": "src/lua_api/progression_api.rs"
               },
               {
@@ -123175,8 +122999,8 @@
                 "lua_name": "LProgressionStore:typeOf",
                 "kind": "method",
                 "owner_type": "LProgressionStore",
-                "description": "",
-                "full_doc": "",
+                "description": "Type of.",
+                "full_doc": "Type of.\n\n@param name : string\n@return boolean",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "(name)",
@@ -123190,7 +123014,840 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 4195,
+                "line": 4719,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LAchievement": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LAchievement:getId",
+                "kind": "method",
+                "owner_type": "LAchievement",
+                "description": "Returns the authored achievement id.",
+                "full_doc": "Returns the authored achievement id.\n@return | string | Stable achievement identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Stable achievement identifier.",
+                "line": 5309,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getTitle",
+                "lua_name": "LAchievement:getTitle",
+                "kind": "method",
+                "owner_type": "LAchievement",
+                "description": "Returns the authored achievement title.",
+                "full_doc": "Returns the authored achievement title.\n@return | string | Local presentation title.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Local presentation title.",
+                "line": 5312,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "isUnlocked",
+                "lua_name": "LAchievement:isUnlocked",
+                "kind": "method",
+                "owner_type": "LAchievement",
+                "description": "Returns whether the achievement is currently unlocked for the owning profile.",
+                "full_doc": "Returns whether the achievement is currently unlocked for the owning profile.\n@return | boolean | `true` when the achievement was unlocked.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "`true` when the achievement was unlocked.",
+                "line": 5317,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LChallenge": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LChallenge:getId",
+                "kind": "method",
+                "owner_type": "LChallenge",
+                "description": "Returns the authored challenge id.",
+                "full_doc": "Returns the authored challenge id.\n@return | string | Stable challenge identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Stable challenge identifier.",
+                "line": 5356,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getStatus",
+                "lua_name": "LChallenge:getStatus",
+                "kind": "method",
+                "owner_type": "LChallenge",
+                "description": "Returns the current challenge lifecycle status.",
+                "full_doc": "Returns the current challenge lifecycle status.\n@return | string | One of `\"inactive\"`, `\"active\"`, `\"completed\"`, or `\"expired\"`.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "One of `\"inactive\"`, `\"active\"`, `\"completed\"`, or `\"expired\"`.",
+                "line": 5359,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LCollection": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LCollection:getId",
+                "kind": "method",
+                "owner_type": "LCollection",
+                "description": "Returns the authored collection id.",
+                "full_doc": "Returns the authored collection id.\n@return | string | Stable collection identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Stable collection identifier.",
+                "line": 5388,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "isComplete",
+                "lua_name": "LCollection:isComplete",
+                "kind": "method",
+                "owner_type": "LCollection",
+                "description": "Returns whether every collection item is currently collected.",
+                "full_doc": "Returns whether every collection item is currently collected.\n@return | boolean | `true` when the collection is complete.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "`true` when the collection is complete.",
+                "line": 5391,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LLeaderboardEntry": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getLeaderboardId",
+                "lua_name": "LLeaderboardEntry:getLeaderboardId",
+                "kind": "method",
+                "owner_type": "LLeaderboardEntry",
+                "description": "Returns the leaderboard that produced this row.",
+                "full_doc": "Returns the leaderboard that produced this row.\n@return | string | Leaderboard identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Leaderboard identifier.",
+                "line": 5416,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getProfileId",
+                "lua_name": "LLeaderboardEntry:getProfileId",
+                "kind": "method",
+                "owner_type": "LLeaderboardEntry",
+                "description": "Returns the profile that owns this row.",
+                "full_doc": "Returns the profile that owns this row.\n@return | string | Profile identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Profile identifier.",
+                "line": 5421,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getRank",
+                "lua_name": "LLeaderboardEntry:getRank",
+                "kind": "method",
+                "owner_type": "LLeaderboardEntry",
+                "description": "Returns the one-based rank currently assigned to this row.",
+                "full_doc": "Returns the one-based rank currently assigned to this row.\n@return | integer | Deterministic rank for the current ordering.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Deterministic rank for the current ordering.",
+                "line": 5426,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LPopulation": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LPopulation:getId",
+                "kind": "method",
+                "owner_type": "LPopulation",
+                "description": "Returns the population id.",
+                "full_doc": "Returns the population id.\n@return | string | Population identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Population identifier.",
+                "line": 5454,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "isPaused",
+                "lua_name": "LPopulation:isPaused",
+                "kind": "method",
+                "owner_type": "LPopulation",
+                "description": "Returns whether logical simulation for this population is paused.",
+                "full_doc": "Returns whether logical simulation for this population is paused.\n@return | boolean | `true` when updates are paused.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "`true` when updates are paused.",
+                "line": 5457,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LPopulationProfile": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getProfileId",
+                "lua_name": "LPopulationProfile:getProfileId",
+                "kind": "method",
+                "owner_type": "LPopulationProfile",
+                "description": "Returns the virtual profile id.",
+                "full_doc": "Returns the virtual profile id.\n@return | string | Virtual profile identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Virtual profile identifier.",
+                "line": 5488,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "isMaterialized",
+                "lua_name": "LPopulationProfile:isMaterialized",
+                "kind": "method",
+                "owner_type": "LPopulationProfile",
+                "description": "Returns whether this virtual profile is materialized as a normal store profile.",
+                "full_doc": "Returns whether this virtual profile is materialized as a normal store profile.\n@return | boolean | `true` when the virtual profile was materialized.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "`true` when the virtual profile was materialized.",
+                "line": 5493,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LPrestige": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LPrestige:getId",
+                "kind": "method",
+                "owner_type": "LPrestige",
+                "description": "Returns the authored prestige id.",
+                "full_doc": "Returns the authored prestige id.\n@return | string | Prestige identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Prestige identifier.",
+                "line": 5522,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "isAvailable",
+                "lua_name": "LPrestige:isAvailable",
+                "kind": "method",
+                "owner_type": "LPrestige",
+                "description": "Returns whether the owning profile currently satisfies the prestige condition.",
+                "full_doc": "Returns whether the owning profile currently satisfies the prestige condition.\n@return | boolean | `true` when the prestige is currently available.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "`true` when the prestige is currently available.",
+                "line": 5525,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LActivityFeed": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "count",
+                "lua_name": "LActivityFeed:count",
+                "kind": "method",
+                "owner_type": "LActivityFeed",
+                "description": "Returns the number of retained activity-feed entries in this selection.",
+                "full_doc": "Returns the number of retained activity-feed entries in this selection.\n@return | integer | Number of feed entries currently stored in this feed snapshot.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Number of feed entries currently stored in this feed snapshot.",
+                "line": 5540,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "listEntries",
+                "lua_name": "LActivityFeed:listEntries",
+                "kind": "method",
+                "owner_type": "LActivityFeed",
+                "description": "Returns every retained activity-feed entry as typed userdata.",
+                "full_doc": "Returns every retained activity-feed entry as typed userdata.\n@return | table | Array of `LActivityFeedEntry` userdata values.",
+                "params_doc": "",
+                "returns_doc": "table",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "table",
+                "return_description": "Array of `LActivityFeedEntry` userdata values.",
+                "line": 5548,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LQuestState": {
+            "description": "Lua-side immutable progression quest state wrapper with optional live store context.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getQuestId",
+                "lua_name": "LQuestState:getQuestId",
+                "kind": "method",
+                "owner_type": "LQuestState",
+                "description": "Returns the authored quest id.",
+                "full_doc": "Returns the authored quest id.\n@return | string | Quest identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Quest identifier.",
+                "line": 5581,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getStatus",
+                "lua_name": "LQuestState:getStatus",
+                "kind": "method",
+                "owner_type": "LQuestState",
+                "description": "Returns the current quest lifecycle status.",
+                "full_doc": "Returns the current quest lifecycle status.\n@return | string | Current quest state such as `\"hidden\"`, `\"available\"`, or `\"active\"`.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Current quest state such as `\"hidden\"`, `\"available\"`, or `\"active\"`.",
+                "line": 5586,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "isRevealed",
+                "lua_name": "LQuestState:isRevealed",
+                "kind": "method",
+                "owner_type": "LQuestState",
+                "description": "Returns whether the quest is currently revealed to the owning profile.",
+                "full_doc": "Returns whether the quest is currently revealed to the owning profile.\n@return | boolean | `true` when the quest is visible.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "`true` when the quest is visible.",
+                "line": 5591,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getJournal",
+                "lua_name": "LQuestState:getJournal",
+                "kind": "method",
+                "owner_type": "LQuestState",
+                "description": "Returns the retained quest journal as a typed journal object.",
+                "full_doc": "Returns the retained quest journal as a typed journal object.\n@return | LQuestJournal | Journal handle for the current quest state.",
+                "params_doc": "",
+                "returns_doc": "LQuestJournal",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "LQuestJournal",
+                "return_description": "Journal handle for the current quest state.",
+                "line": 5596,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LReward": {
+            "description": "Lua-side immutable reward wrapper with optional live store context for state transitions.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LReward:getId",
+                "kind": "method",
+                "owner_type": "LReward",
+                "description": "Returns the reward record id.",
+                "full_doc": "Returns the reward record id.\n@return | string | Stable reward identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Stable reward identifier.",
+                "line": 5636,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getState",
+                "lua_name": "LReward:getState",
+                "kind": "method",
+                "owner_type": "LReward",
+                "description": "Returns the current reward state.",
+                "full_doc": "Returns the current reward state.\n@return | string | One of `\"pending\"`, `\"claimed\"`, `\"applied\"`, or `\"rejected\"`.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "One of `\"pending\"`, `\"claimed\"`, `\"applied\"`, or `\"rejected\"`.",
+                "line": 5639,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "claim",
+                "lua_name": "LReward:claim",
+                "kind": "method",
+                "owner_type": "LReward",
+                "description": "Claims this pending reward and returns the updated reward object.",
+                "full_doc": "Claims this pending reward and returns the updated reward object.\n@return | LReward | Updated reward handle after the claim transition.",
+                "params_doc": "",
+                "returns_doc": "LReward",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "LReward",
+                "return_description": "Updated reward handle after the claim transition.",
+                "line": 5644,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "markApplied",
+                "lua_name": "LReward:markApplied",
+                "kind": "method",
+                "owner_type": "LReward",
+                "description": "Marks this claimed reward as applied and returns the updated reward object.",
+                "full_doc": "Marks this claimed reward as applied and returns the updated reward object.\n@param | external_receipt | string? | Optional game-specific receipt or transaction token.\n@return | LReward | Updated reward handle after the apply transition.",
+                "params_doc": "- `external_receipt` â€” `string?`: Optional game-specific receipt or transaction token.",
+                "returns_doc": "LReward",
+                "inferred_sig": "([external_receipt])",
+                "typed_params": [
+                  [
+                    "external_receipt",
+                    "string?",
+                    true,
+                    "Optional game-specific receipt or transaction token."
+                  ]
+                ],
+                "inferred_return": "LReward",
+                "return_description": "Updated reward handle after the apply transition.",
+                "line": 5672,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "reject",
+                "lua_name": "LReward:reject",
+                "kind": "method",
+                "owner_type": "LReward",
+                "description": "Rejects this reward and returns the updated reward object.",
+                "full_doc": "Rejects this reward and returns the updated reward object.\n@param | reason | string? | Optional rejection reason for logs or external flow control.\n@return | LReward | Updated reward handle after the rejection transition.",
+                "params_doc": "- `reason` â€” `string?`: Optional rejection reason for logs or external flow control.",
+                "returns_doc": "LReward",
+                "inferred_sig": "([reason])",
+                "typed_params": [
+                  [
+                    "reason",
+                    "string?",
+                    true,
+                    "Optional rejection reason for logs or external flow control."
+                  ]
+                ],
+                "inferred_return": "LReward",
+                "return_description": "Updated reward handle after the rejection transition.",
+                "line": 5706,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LQuestJournalEntry": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getIndex",
+                "lua_name": "LQuestJournalEntry:getIndex",
+                "kind": "method",
+                "owner_type": "LQuestJournalEntry",
+                "description": "Returns the stable monotonically increasing journal index.",
+                "full_doc": "Returns the stable monotonically increasing journal index.\n@return | integer | Zero-based journal entry index.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Zero-based journal entry index.",
+                "line": 5743,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getText",
+                "lua_name": "LQuestJournalEntry:getText",
+                "kind": "method",
+                "owner_type": "LQuestJournalEntry",
+                "description": "Returns the authored journal entry text.",
+                "full_doc": "Returns the authored journal entry text.\n@return | string | Retained journal body text.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Retained journal body text.",
+                "line": 5748,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getTag",
+                "lua_name": "LQuestJournalEntry:getTag",
+                "kind": "method",
+                "owner_type": "LQuestJournalEntry",
+                "description": "Returns the optional journal entry tag.",
+                "full_doc": "Returns the optional journal entry tag.\n@return | string | Journal entry tag, or an empty string when no tag was stored.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Journal entry tag, or an empty string when no tag was stored.",
+                "line": 5753,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LQuestJournal": {
+            "description": "Lua-side quest journal wrapper that owns retained entries and optional live mutation context.",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getQuestId",
+                "lua_name": "LQuestJournal:getQuestId",
+                "kind": "method",
+                "owner_type": "LQuestJournal",
+                "description": "Returns the quest id that owns this journal.",
+                "full_doc": "Returns the quest id that owns this journal.\n@return | string | Authored quest identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Authored quest identifier.",
+                "line": 5768,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "count",
+                "lua_name": "LQuestJournal:count",
+                "kind": "method",
+                "owner_type": "LQuestJournal",
+                "description": "Returns the number of retained entries currently stored in this journal.",
+                "full_doc": "Returns the number of retained entries currently stored in this journal.\n@return | integer | Journal entry count after retention trimming.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Journal entry count after retention trimming.",
+                "line": 5773,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "listEntries",
+                "lua_name": "LQuestJournal:listEntries",
+                "kind": "method",
+                "owner_type": "LQuestJournal",
+                "description": "Returns every retained journal entry as typed entry userdata.",
+                "full_doc": "Returns every retained journal entry as typed entry userdata.\n@return | table | Array of `LQuestJournalEntry` userdata values.",
+                "params_doc": "",
+                "returns_doc": "table",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "table",
+                "return_description": "Array of `LQuestJournalEntry` userdata values.",
+                "line": 5781,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "addEntry",
+                "lua_name": "LQuestJournal:addEntry",
+                "kind": "method",
+                "owner_type": "LQuestJournal",
+                "description": "Appends one entry to the live quest journal and returns the stored entry object.",
+                "full_doc": "Appends one entry to the live quest journal and returns the stored entry object.\n@param | text | string | Non-empty journal body text to append.\n@param | tag | string? | Optional tag that categorizes the new journal entry.\n@return | LQuestJournalEntry | Retained journal entry after store-side indexing and trimming.",
+                "params_doc": "- `text` â€” `string`: Non-empty journal body text to append.\n- `tag` â€” `string?`: Optional tag that categorizes the new journal entry.",
+                "returns_doc": "LQuestJournalEntry",
+                "inferred_sig": "(text, [tag])",
+                "typed_params": [
+                  [
+                    "text",
+                    "string",
+                    false,
+                    "Non-empty journal body text to append."
+                  ],
+                  [
+                    "tag",
+                    "string?",
+                    true,
+                    "Optional tag that categorizes the new journal entry."
+                  ]
+                ],
+                "inferred_return": "LQuestJournalEntry",
+                "return_description": "Retained journal entry after store-side indexing and trimming.",
+                "line": 5792,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LRival": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getProfileId",
+                "lua_name": "LRival:getProfileId",
+                "kind": "method",
+                "owner_type": "LRival",
+                "description": "Returns the owner profile id for this rivalry.",
+                "full_doc": "Returns the owner profile id for this rivalry.\n@return | string | Profile identifier that pinned the rival.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Profile identifier that pinned the rival.",
+                "line": 5863,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getRivalProfileId",
+                "lua_name": "LRival:getRivalProfileId",
+                "kind": "method",
+                "owner_type": "LRival",
+                "description": "Returns the pinned rival profile id.",
+                "full_doc": "Returns the pinned rival profile id.\n@return | string | Rival profile identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Rival profile identifier.",
+                "line": 5868,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LRivalDelta": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getLeaderboardId",
+                "lua_name": "LRivalDelta:getLeaderboardId",
+                "kind": "method",
+                "owner_type": "LRivalDelta",
+                "description": "Returns the leaderboard used to compute this rivalry delta.",
+                "full_doc": "Returns the leaderboard used to compute this rivalry delta.\n@return | string | Leaderboard identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Leaderboard identifier.",
+                "line": 5895,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getRankDelta",
+                "lua_name": "LRivalDelta:getRankDelta",
+                "kind": "method",
+                "owner_type": "LRivalDelta",
+                "description": "Returns the signed rank gap between the owner and rival profiles.",
+                "full_doc": "Returns the signed rank gap between the owner and rival profiles.\n@return | integer | Positive when the rival is behind, negative when ahead.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Positive when the rival is behind, negative when ahead.",
+                "line": 5900,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LSeason": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LSeason:getId",
+                "kind": "method",
+                "owner_type": "LSeason",
+                "description": "Returns the authored season id.",
+                "full_doc": "Returns the authored season id.\n@return | string | Season identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Season identifier.",
+                "line": 5929,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "isActive",
+                "lua_name": "LSeason:isActive",
+                "kind": "method",
+                "owner_type": "LSeason",
+                "description": "Returns whether this season is currently active.",
+                "full_doc": "Returns whether this season is currently active.\n@return | boolean | `true` when the season is active.",
+                "params_doc": "",
+                "returns_doc": "boolean",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "boolean",
+                "return_description": "`true` when the season is active.",
+                "line": 5932,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LSeasonArchive": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getId",
+                "lua_name": "LSeasonArchive:getId",
+                "kind": "method",
+                "owner_type": "LSeasonArchive",
+                "description": "Returns the season id that owns this archive record.",
+                "full_doc": "Returns the season id that owns this archive record.\n@return | string | Season identifier.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Season identifier.",
+                "line": 5958,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getArchiveIndex",
+                "lua_name": "LSeasonArchive:getArchiveIndex",
+                "kind": "method",
+                "owner_type": "LSeasonArchive",
+                "description": "Returns the monotonically increasing archive index for this season.",
+                "full_doc": "Returns the monotonically increasing archive index for this season.\n@return | integer | Archive sequence number.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Archive sequence number.",
+                "line": 5961,
+                "file": "src/lua_api/progression_api.rs"
+              }
+            ]
+          },
+          "LActivityFeedEntry": {
+            "description": "",
+            "fields": [],
+            "methods": [
+              {
+                "name": "getSequence",
+                "lua_name": "LActivityFeedEntry:getSequence",
+                "kind": "method",
+                "owner_type": "LActivityFeedEntry",
+                "description": "Returns the retained event sequence number.",
+                "full_doc": "Returns the retained event sequence number.\n@return | integer | Event sequence in feed order.",
+                "params_doc": "",
+                "returns_doc": "integer",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "integer",
+                "return_description": "Event sequence in feed order.",
+                "line": 5987,
+                "file": "src/lua_api/progression_api.rs"
+              },
+              {
+                "name": "getEventType",
+                "lua_name": "LActivityFeedEntry:getEventType",
+                "kind": "method",
+                "owner_type": "LActivityFeedEntry",
+                "description": "Returns the canonical activity event type name.",
+                "full_doc": "Returns the canonical activity event type name.\n@return | string | Event type such as `\"achievement_unlocked\"`.",
+                "params_doc": "",
+                "returns_doc": "string",
+                "inferred_sig": "()",
+                "typed_params": [],
+                "inferred_return": "string",
+                "return_description": "Event type such as `\"achievement_unlocked\"`.",
+                "line": 5992,
                 "file": "src/lua_api/progression_api.rs"
               }
             ]

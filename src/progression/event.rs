@@ -1,11 +1,14 @@
-//! Owns bounded activity-feed projections over retained progression events for one profile or rivalry context.
-//! Shapes event records into reviewer-facing summaries without changing the canonical store mutation pipeline.
-//! Exposes public helpers that filter, bound, and serialize recent activity while remaining fully headless.
-//! Open this file when activity feed selection, event shaping, or retained-event presentation needs adjustment.
+//! Owns filtered activity-feed projections over the store's retained progression event history.
+//! Shapes canonical event records into transport-neutral JSON snapshots without mutating or reordering store history.
+//! Exposes headless helpers that validate requested profile filters, apply type filters, and bound feed size.
+//! Open this file when activity-feed selection, event payload shape, or retained-event presentation needs adjustment.
 use super::*;
 
 impl ProgressionStore {
-    /// Return a filtered bounded local activity feed derived from retained progression events.
+    /// Return a chronological activity feed filtered by optional profiles and event types.
+    ///
+    /// The feed validates every requested profile id, applies a default limit of `50`, and clamps any smaller
+    /// requested limit up to `1` before selecting from the store's retained event deque.
     pub fn get_activity_feed(
         &self,
         profile_ids: Option<Vec<String>>,

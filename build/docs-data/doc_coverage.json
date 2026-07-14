@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-07-13T07:29:02.666931+00:00",
+  "generated_at": "2026-07-14T07:27:04.827757+00:00",
   "summary": {
     "rust": {
-      "total": 9813,
-      "covered": 9797,
-      "missing": 16,
-      "pct": 99.8
+      "total": 9856,
+      "covered": 9856,
+      "missing": 0,
+      "pct": 100.0
     },
     "lua_api": {
       "total": 248,
@@ -14,158 +14,13 @@
       "pct": 100.0
     },
     "total": {
-      "total": 10061,
-      "covered": 10045,
-      "missing": 16,
-      "pct": 99.8
+      "total": 10104,
+      "covered": 10104,
+      "missing": 0,
+      "pct": 100.0
     }
   },
-  "missing": [
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/challenge.rs",
-      "line": 289,
-      "kind": "fn",
-      "name": "validate_challenge_template_definition",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/challenge.rs",
-      "line": 334,
-      "kind": "fn",
-      "name": "evaluate_counter_challenges",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/challenge.rs",
-      "line": 367,
-      "kind": "fn",
-      "name": "expire_active_challenges",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/collection.rs",
-      "line": 125,
-      "kind": "fn",
-      "name": "validate_collection_definition",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/collection.rs",
-      "line": 214,
-      "kind": "fn",
-      "name": "sync_collections_for_achievement",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/leaderboard.rs",
-      "line": 249,
-      "kind": "fn",
-      "name": "refresh_counter_leaderboards",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/leaderboard.rs",
-      "line": 264,
-      "kind": "fn",
-      "name": "sync_counter_bound_leaderboards_silent",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/persistence.rs",
-      "line": 385,
-      "kind": "fn",
-      "name": "validate_change_records",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/population.rs",
-      "line": 526,
-      "kind": "fn",
-      "name": "validate_population_template_definition",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/prestige.rs",
-      "line": 141,
-      "kind": "fn",
-      "name": "validate_prestige_definition",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/profile.rs",
-      "line": 7,
-      "kind": "fn",
-      "name": "validate_profile_template_definition",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/profile.rs",
-      "line": 49,
-      "kind": "fn",
-      "name": "validate_trait_definition",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/profile.rs",
-      "line": 67,
-      "kind": "fn",
-      "name": "apply_profile_template_inner",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/rival.rs",
-      "line": 160,
-      "kind": "fn",
-      "name": "capture_rival_relations",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/rival.rs",
-      "line": 195,
-      "kind": "fn",
-      "name": "emit_rival_overtake_events",
-      "has_doc": false
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/season.rs",
-      "line": 239,
-      "kind": "fn",
-      "name": "validate_season_definition",
-      "has_doc": false
-    }
-  ],
+  "missing": [],
   "items": [
     {
       "source": "rust",
@@ -38547,9 +38402,234 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 4271,
+      "line": 4795,
       "kind": "fn",
       "name": "register",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5013,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5043,
+      "kind": "struct",
+      "name": "LuaQuestState",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5051,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5072,
+      "kind": "struct",
+      "name": "LuaReward",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5080,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5101,
+      "kind": "struct",
+      "name": "LuaQuestJournal",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5109,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5129,
+      "kind": "fn",
+      "name": "achievement",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5134,
+      "kind": "fn",
+      "name": "challenge",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5139,
+      "kind": "fn",
+      "name": "collection",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5144,
+      "kind": "fn",
+      "name": "leaderboard_entry",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5149,
+      "kind": "fn",
+      "name": "population",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5154,
+      "kind": "fn",
+      "name": "population_profile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5159,
+      "kind": "fn",
+      "name": "prestige",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5164,
+      "kind": "fn",
+      "name": "activity_feed",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5206,
+      "kind": "fn",
+      "name": "quest_state_bound",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5215,
+      "kind": "fn",
+      "name": "quest_journal_entry",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5220,
+      "kind": "fn",
+      "name": "quest_journal_bound",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5241,
+      "kind": "fn",
+      "name": "reward_bound",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5250,
+      "kind": "fn",
+      "name": "rival",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5255,
+      "kind": "fn",
+      "name": "rival_delta",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5260,
+      "kind": "fn",
+      "name": "season",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5265,
+      "kind": "fn",
+      "name": "season_archive",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5270,
+      "kind": "fn",
+      "name": "activity_feed_entry",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/progression_api.rs",
+      "line": 5275,
+      "kind": "fn",
+      "name": "userdata_list",
       "has_doc": true
     },
     {
@@ -60254,8 +60334,224 @@
     {
       "source": "rust",
       "module": "progression",
+      "file": "src/progression/achievement.rs",
+      "line": 11,
+      "kind": "fn",
+      "name": "define_achievement",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/achievement.rs",
+      "line": 59,
+      "kind": "fn",
+      "name": "unlock_achievement",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/achievement.rs",
+      "line": 77,
+      "kind": "fn",
+      "name": "get_achievement",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/achievement.rs",
+      "line": 106,
+      "kind": "fn",
+      "name": "list_achievements",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/achievement.rs",
+      "line": 119,
+      "kind": "fn",
+      "name": "evaluate_counter_achievements",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/achievement.rs",
+      "line": 144,
+      "kind": "fn",
+      "name": "apply_achievement_unlock",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 12,
+      "kind": "fn",
+      "name": "define_attribute",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 24,
+      "kind": "fn",
+      "name": "define_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 41,
+      "kind": "fn",
+      "name": "set_attribute_base",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 72,
+      "kind": "fn",
+      "name": "set_attribute_bounds",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 91,
+      "kind": "fn",
+      "name": "add_attribute_base",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 102,
+      "kind": "fn",
+      "name": "get_attribute",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 140,
+      "kind": "fn",
+      "name": "explain_attribute",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 175,
+      "kind": "fn",
+      "name": "get_attribute_state",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 189,
+      "kind": "fn",
+      "name": "add_modifier",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 225,
+      "kind": "fn",
+      "name": "remove_modifier",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 245,
+      "kind": "fn",
+      "name": "list_modifiers",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 268,
+      "kind": "fn",
+      "name": "set_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 299,
+      "kind": "fn",
+      "name": "add_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 310,
+      "kind": "fn",
+      "name": "can_spend_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 321,
+      "kind": "fn",
+      "name": "spend_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 347,
+      "kind": "fn",
+      "name": "refill_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 369,
+      "kind": "fn",
+      "name": "get_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/attribute.rs",
+      "line": 390,
+      "kind": "fn",
+      "name": "get_resource_value",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 8,
+      "line": 13,
       "kind": "fn",
       "name": "define_challenge_template",
       "has_doc": true
@@ -60264,7 +60560,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 42,
+      "line": 47,
       "kind": "fn",
       "name": "activate_challenge",
       "has_doc": true
@@ -60273,7 +60569,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 129,
+      "line": 134,
       "kind": "fn",
       "name": "set_challenge_progress",
       "has_doc": true
@@ -60282,7 +60578,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 231,
+      "line": 236,
       "kind": "fn",
       "name": "get_challenge",
       "has_doc": true
@@ -60291,7 +60587,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 254,
+      "line": 259,
       "kind": "fn",
       "name": "list_challenges",
       "has_doc": true
@@ -60300,34 +60596,34 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 289,
+      "line": 295,
       "kind": "fn",
       "name": "validate_challenge_template_definition",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 334,
+      "line": 341,
       "kind": "fn",
       "name": "evaluate_counter_challenges",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/challenge.rs",
-      "line": 367,
+      "line": 375,
       "kind": "fn",
       "name": "expire_active_challenges",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/collection.rs",
-      "line": 8,
+      "line": 12,
       "kind": "fn",
       "name": "define_collection",
       "has_doc": true
@@ -60336,7 +60632,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/collection.rs",
-      "line": 53,
+      "line": 57,
       "kind": "fn",
       "name": "collect_collection_item",
       "has_doc": true
@@ -60345,7 +60641,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/collection.rs",
-      "line": 95,
+      "line": 99,
       "kind": "fn",
       "name": "get_collection",
       "has_doc": true
@@ -60354,7 +60650,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/collection.rs",
-      "line": 114,
+      "line": 118,
       "kind": "fn",
       "name": "list_collections",
       "has_doc": true
@@ -60363,25 +60659,142 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/collection.rs",
-      "line": 125,
+      "line": 130,
       "kind": "fn",
       "name": "validate_collection_definition",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/collection.rs",
-      "line": 214,
+      "line": 220,
       "kind": "fn",
       "name": "sync_collections_for_achievement",
-      "has_doc": false
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/condition.rs",
+      "line": 12,
+      "kind": "fn",
+      "name": "compile_condition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/condition.rs",
+      "line": 22,
+      "kind": "fn",
+      "name": "validate_condition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/condition.rs",
+      "line": 35,
+      "kind": "fn",
+      "name": "evaluate_condition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/condition.rs",
+      "line": 45,
+      "kind": "fn",
+      "name": "explain_condition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/condition.rs",
+      "line": 55,
+      "kind": "fn",
+      "name": "validate_condition_inner",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/condition.rs",
+      "line": 164,
+      "kind": "fn",
+      "name": "evaluate_condition_inner",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/condition.rs",
+      "line": 235,
+      "kind": "fn",
+      "name": "explain_condition_inner",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/counter.rs",
+      "line": 10,
+      "kind": "fn",
+      "name": "define_counter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/counter.rs",
+      "line": 21,
+      "kind": "fn",
+      "name": "add_counter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/counter.rs",
+      "line": 87,
+      "kind": "fn",
+      "name": "set_counter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/counter.rs",
+      "line": 136,
+      "kind": "fn",
+      "name": "get_counter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/counter.rs",
+      "line": 154,
+      "kind": "fn",
+      "name": "get_counter_state",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/counter.rs",
+      "line": 166,
+      "kind": "fn",
+      "name": "list_counters",
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/event.rs",
-      "line": 8,
+      "line": 12,
       "kind": "fn",
       "name": "get_activity_feed",
       "has_doc": true
@@ -60389,8 +60802,98 @@
     {
       "source": "rust",
       "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 13,
+      "kind": "fn",
+      "name": "get_derived_value",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 26,
+      "kind": "fn",
+      "name": "explain_derived_value",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 54,
+      "kind": "fn",
+      "name": "validate_derived_values",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 68,
+      "kind": "fn",
+      "name": "resolve_derived_inputs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 100,
+      "kind": "fn",
+      "name": "evaluate_derived_formula",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 113,
+      "kind": "enum",
+      "name": "FormulaToken",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 127,
+      "kind": "enum",
+      "name": "FormulaExpr",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 143,
+      "kind": "fn",
+      "name": "parse_formula_expression",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 348,
+      "kind": "fn",
+      "name": "evaluate_formula_ast",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/formula.rs",
+      "line": 452,
+      "kind": "fn",
+      "name": "apply_derived_result_policy",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 8,
+      "line": 12,
       "kind": "fn",
       "name": "define_leaderboard",
       "has_doc": true
@@ -60399,7 +60902,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 64,
+      "line": 68,
       "kind": "fn",
       "name": "submit_score",
       "has_doc": true
@@ -60408,7 +60911,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 131,
+      "line": 135,
       "kind": "fn",
       "name": "get_leaderboard_entry",
       "has_doc": true
@@ -60417,7 +60920,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 163,
+      "line": 167,
       "kind": "fn",
       "name": "list_leaderboard_top",
       "has_doc": true
@@ -60426,7 +60929,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 185,
+      "line": 189,
       "kind": "fn",
       "name": "list_leaderboard_range",
       "has_doc": true
@@ -60435,7 +60938,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 214,
+      "line": 218,
       "kind": "fn",
       "name": "list_leaderboard_around_profile",
       "has_doc": true
@@ -60444,25 +60947,79 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 249,
+      "line": 254,
       "kind": "fn",
       "name": "refresh_counter_leaderboards",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/leaderboard.rs",
-      "line": 264,
+      "line": 270,
       "kind": "fn",
       "name": "sync_counter_bound_leaderboards_silent",
-      "has_doc": false
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/level.rs",
+      "line": 10,
+      "kind": "fn",
+      "name": "add_experience",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/level.rs",
+      "line": 74,
+      "kind": "fn",
+      "name": "set_experience",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/level.rs",
+      "line": 89,
+      "kind": "fn",
+      "name": "get_experience",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/level.rs",
+      "line": 117,
+      "kind": "fn",
+      "name": "get_level",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/level.rs",
+      "line": 126,
+      "kind": "fn",
+      "name": "set_level",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/level.rs",
+      "line": 171,
+      "kind": "fn",
+      "name": "get_experience_to_next_level",
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/persistence.rs",
-      "line": 15,
+      "line": 20,
       "kind": "fn",
       "name": "export_changeset",
       "has_doc": true
@@ -60471,7 +61028,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/persistence.rs",
-      "line": 51,
+      "line": 56,
       "kind": "fn",
       "name": "apply_changeset_envelope",
       "has_doc": true
@@ -60480,7 +61037,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/persistence.rs",
-      "line": 68,
+      "line": 73,
       "kind": "fn",
       "name": "apply_changeset_envelope_with_options",
       "has_doc": true
@@ -60489,7 +61046,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/persistence.rs",
-      "line": 184,
+      "line": 189,
       "kind": "fn",
       "name": "acknowledge_changes_through",
       "has_doc": true
@@ -60498,7 +61055,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/persistence.rs",
-      "line": 205,
+      "line": 210,
       "kind": "fn",
       "name": "compact_changes",
       "has_doc": true
@@ -60507,16 +61064,16 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/persistence.rs",
-      "line": 385,
+      "line": 391,
       "kind": "fn",
       "name": "validate_change_records",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 8,
+      "line": 15,
       "kind": "fn",
       "name": "define_population_template",
       "has_doc": true
@@ -60525,7 +61082,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 20,
+      "line": 27,
       "kind": "fn",
       "name": "validate_population_template",
       "has_doc": true
@@ -60534,7 +61091,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 39,
+      "line": 46,
       "kind": "fn",
       "name": "generate_population",
       "has_doc": true
@@ -60543,7 +61100,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 82,
+      "line": 89,
       "kind": "fn",
       "name": "get_population",
       "has_doc": true
@@ -60552,7 +61109,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 88,
+      "line": 95,
       "kind": "fn",
       "name": "update_population",
       "has_doc": true
@@ -60561,7 +61118,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 215,
+      "line": 222,
       "kind": "fn",
       "name": "simulate_population_until",
       "has_doc": true
@@ -60570,7 +61127,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 232,
+      "line": 239,
       "kind": "fn",
       "name": "pause_population",
       "has_doc": true
@@ -60579,7 +61136,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 250,
+      "line": 257,
       "kind": "fn",
       "name": "resume_population",
       "has_doc": true
@@ -60588,7 +61145,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 268,
+      "line": 275,
       "kind": "fn",
       "name": "remove_population",
       "has_doc": true
@@ -60597,7 +61154,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 304,
+      "line": 311,
       "kind": "fn",
       "name": "regenerate_population",
       "has_doc": true
@@ -60606,7 +61163,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 352,
+      "line": 359,
       "kind": "fn",
       "name": "get_population_statistics",
       "has_doc": true
@@ -60615,7 +61172,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 399,
+      "line": 406,
       "kind": "fn",
       "name": "list_population_profiles",
       "has_doc": true
@@ -60624,7 +61181,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 421,
+      "line": 428,
       "kind": "fn",
       "name": "materialize_population_profile",
       "has_doc": true
@@ -60633,7 +61190,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 493,
+      "line": 500,
       "kind": "fn",
       "name": "dematerialize_population_profile",
       "has_doc": true
@@ -60642,16 +61199,16 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/population.rs",
-      "line": 526,
+      "line": 534,
       "kind": "fn",
       "name": "validate_population_template_definition",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/prestige.rs",
-      "line": 8,
+      "line": 11,
       "kind": "fn",
       "name": "define_prestige",
       "has_doc": true
@@ -60660,7 +61217,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/prestige.rs",
-      "line": 20,
+      "line": 23,
       "kind": "fn",
       "name": "can_prestige",
       "has_doc": true
@@ -60669,7 +61226,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/prestige.rs",
-      "line": 35,
+      "line": 38,
       "kind": "fn",
       "name": "apply_prestige",
       "has_doc": true
@@ -60678,7 +61235,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/prestige.rs",
-      "line": 102,
+      "line": 105,
       "kind": "fn",
       "name": "get_prestige",
       "has_doc": true
@@ -60687,7 +61244,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/prestige.rs",
-      "line": 125,
+      "line": 128,
       "kind": "fn",
       "name": "list_prestiges",
       "has_doc": true
@@ -60696,43 +61253,475 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/prestige.rs",
-      "line": 141,
+      "line": 145,
       "kind": "fn",
       "name": "validate_prestige_definition",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/profile.rs",
-      "line": 7,
+      "line": 15,
       "kind": "fn",
       "name": "validate_profile_template_definition",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/profile.rs",
-      "line": 49,
+      "line": 58,
       "kind": "fn",
       "name": "validate_trait_definition",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/profile.rs",
-      "line": 67,
+      "line": 77,
       "kind": "fn",
       "name": "apply_profile_template_inner",
-      "has_doc": false
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 196,
+      "kind": "fn",
+      "name": "create_profile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 244,
+      "kind": "fn",
+      "name": "ensure_profile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 257,
+      "kind": "fn",
+      "name": "update_profile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 289,
+      "kind": "fn",
+      "name": "remove_profile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 311,
+      "kind": "fn",
+      "name": "add_profile_tag",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 326,
+      "kind": "fn",
+      "name": "remove_profile_tag",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 341,
+      "kind": "fn",
+      "name": "set_profile_metadata",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 360,
+      "kind": "fn",
+      "name": "remove_profile_metadata",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 374,
+      "kind": "fn",
+      "name": "has_profile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 379,
+      "kind": "fn",
+      "name": "get_profile_snapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 410,
+      "kind": "fn",
+      "name": "list_profiles",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 425,
+      "kind": "fn",
+      "name": "count_profiles",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 430,
+      "kind": "fn",
+      "name": "define_profile_template",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 442,
+      "kind": "fn",
+      "name": "apply_profile_template",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 459,
+      "kind": "fn",
+      "name": "define_trait",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 471,
+      "kind": "fn",
+      "name": "apply_trait",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 523,
+      "kind": "fn",
+      "name": "remove_trait",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 549,
+      "kind": "fn",
+      "name": "has_trait",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 558,
+      "kind": "fn",
+      "name": "list_traits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 567,
+      "kind": "fn",
+      "name": "define_perk",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 596,
+      "kind": "fn",
+      "name": "define_skill",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 631,
+      "kind": "fn",
+      "name": "learn_skill",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 670,
+      "kind": "fn",
+      "name": "use_skill",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 740,
+      "kind": "fn",
+      "name": "get_skill_level",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 763,
+      "kind": "fn",
+      "name": "get_skill_cooldown",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 786,
+      "kind": "fn",
+      "name": "acquire_perk",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/profile.rs",
+      "line": 835,
+      "kind": "fn",
+      "name": "has_perk",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 15,
+      "kind": "fn",
+      "name": "define_quest",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 83,
+      "kind": "fn",
+      "name": "accept_quest",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 178,
+      "kind": "fn",
+      "name": "complete_quest",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 187,
+      "kind": "fn",
+      "name": "fail_quest",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 210,
+      "kind": "fn",
+      "name": "reveal_quest",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 242,
+      "kind": "fn",
+      "name": "add_quest_journal_entry",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 295,
+      "kind": "fn",
+      "name": "list_quest_journal_entries",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 314,
+      "kind": "fn",
+      "name": "refresh_quest_lifecycle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 323,
+      "kind": "fn",
+      "name": "set_quest_objective",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 504,
+      "kind": "fn",
+      "name": "set_quest_objective_status",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 590,
+      "kind": "fn",
+      "name": "set_quest_objective_visibility",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 624,
+      "kind": "fn",
+      "name": "get_quest_state",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 687,
+      "kind": "fn",
+      "name": "evaluate_counter_quests",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 729,
+      "kind": "fn",
+      "name": "refresh_quest_lifecycle_for",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 831,
+      "kind": "fn",
+      "name": "compute_inactive_quest_status",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 857,
+      "kind": "fn",
+      "name": "sync_active_stage_counter_objectives",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/quest.rs",
+      "line": 904,
+      "kind": "fn",
+      "name": "finish_quest",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/reward.rs",
+      "line": 10,
+      "kind": "fn",
+      "name": "get_pending_rewards",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/reward.rs",
+      "line": 27,
+      "kind": "fn",
+      "name": "claim_reward",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/reward.rs",
+      "line": 60,
+      "kind": "fn",
+      "name": "mark_reward_applied",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/reward.rs",
+      "line": 95,
+      "kind": "fn",
+      "name": "reject_reward",
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/rival.rs",
-      "line": 8,
+      "line": 11,
       "kind": "fn",
       "name": "pin_rival",
       "has_doc": true
@@ -60741,7 +61730,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/rival.rs",
-      "line": 67,
+      "line": 70,
       "kind": "fn",
       "name": "get_rival",
       "has_doc": true
@@ -60750,7 +61739,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/rival.rs",
-      "line": 89,
+      "line": 92,
       "kind": "fn",
       "name": "list_rivals",
       "has_doc": true
@@ -60759,7 +61748,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/rival.rs",
-      "line": 102,
+      "line": 105,
       "kind": "fn",
       "name": "get_rival_delta",
       "has_doc": true
@@ -60768,25 +61757,25 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/rival.rs",
-      "line": 160,
+      "line": 164,
       "kind": "fn",
       "name": "capture_rival_relations",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/rival.rs",
-      "line": 195,
+      "line": 200,
       "kind": "fn",
       "name": "emit_rival_overtake_events",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/season.rs",
-      "line": 8,
+      "line": 12,
       "kind": "fn",
       "name": "define_season",
       "has_doc": true
@@ -60795,7 +61784,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/season.rs",
-      "line": 29,
+      "line": 33,
       "kind": "fn",
       "name": "start_season",
       "has_doc": true
@@ -60804,7 +61793,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/season.rs",
-      "line": 84,
+      "line": 88,
       "kind": "fn",
       "name": "end_season",
       "has_doc": true
@@ -60813,7 +61802,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/season.rs",
-      "line": 163,
+      "line": 167,
       "kind": "fn",
       "name": "get_season",
       "has_doc": true
@@ -60822,7 +61811,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/season.rs",
-      "line": 186,
+      "line": 190,
       "kind": "fn",
       "name": "list_seasons",
       "has_doc": true
@@ -60831,7 +61820,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/season.rs",
-      "line": 214,
+      "line": 218,
       "kind": "fn",
       "name": "get_season_archive",
       "has_doc": true
@@ -60840,16 +61829,16 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/season.rs",
-      "line": 239,
+      "line": 244,
       "kind": "fn",
       "name": "validate_season_definition",
-      "has_doc": false
+      "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 24,
+      "line": 34,
       "kind": "enum",
       "name": "ProgressionError",
       "has_doc": true
@@ -60858,7 +61847,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 47,
+      "line": 57,
       "kind": "struct",
       "name": "ChangeSummary",
       "has_doc": true
@@ -60867,7 +61856,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 56,
+      "line": 66,
       "kind": "struct",
       "name": "AttributeExplanation",
       "has_doc": true
@@ -60876,7 +61865,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 252,
+      "line": 262,
       "kind": "enum",
       "name": "ProgressionOperation",
       "has_doc": true
@@ -60885,7 +61874,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 331,
+      "line": 341,
       "kind": "struct",
       "name": "ProgressionTransaction",
       "has_doc": true
@@ -60894,7 +61883,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 339,
+      "line": 349,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -60903,7 +61892,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 347,
+      "line": 357,
       "kind": "fn",
       "name": "add_counter",
       "has_doc": true
@@ -60912,18 +61901,9 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 356,
+      "line": 366,
       "kind": "fn",
       "name": "set_counter",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 365,
-      "kind": "fn",
-      "name": "set_attribute_base",
       "has_doc": true
     },
     {
@@ -60932,6 +61912,15 @@
       "file": "src/progression/store.rs",
       "line": 375,
       "kind": "fn",
+      "name": "set_attribute_base",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 385,
+      "kind": "fn",
       "name": "set_resource",
       "has_doc": true
     },
@@ -60939,7 +61928,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 384,
+      "line": 394,
       "kind": "fn",
       "name": "add_modifier",
       "has_doc": true
@@ -60948,7 +61937,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 398,
+      "line": 408,
       "kind": "fn",
       "name": "set_quest_objective",
       "has_doc": true
@@ -60957,7 +61946,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 415,
+      "line": 425,
       "kind": "fn",
       "name": "add_experience",
       "has_doc": true
@@ -60966,7 +61955,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 424,
+      "line": 434,
       "kind": "fn",
       "name": "submit_score",
       "has_doc": true
@@ -60975,7 +61964,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 433,
+      "line": 443,
       "kind": "fn",
       "name": "operations",
       "has_doc": true
@@ -60984,7 +61973,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 440,
+      "line": 450,
       "kind": "struct",
       "name": "ProgressionStore",
       "has_doc": true
@@ -60993,7 +61982,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 511,
+      "line": 531,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -61002,7 +61991,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 570,
+      "line": 590,
       "kind": "fn",
       "name": "id",
       "has_doc": true
@@ -61011,7 +62000,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 575,
+      "line": 595,
       "kind": "fn",
       "name": "revision",
       "has_doc": true
@@ -61020,7 +62009,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 580,
+      "line": 600,
       "kind": "fn",
       "name": "schema_version",
       "has_doc": true
@@ -61029,7 +62018,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 585,
+      "line": 605,
       "kind": "fn",
       "name": "definition_hash",
       "has_doc": true
@@ -61038,7 +62027,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 612,
+      "line": 632,
       "kind": "fn",
       "name": "time",
       "has_doc": true
@@ -61047,7 +62036,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 617,
+      "line": 637,
       "kind": "fn",
       "name": "set_time",
       "has_doc": true
@@ -61056,7 +62045,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 625,
+      "line": 645,
       "kind": "fn",
       "name": "advance_time",
       "has_doc": true
@@ -61065,7 +62054,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 640,
+      "line": 660,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -61074,7 +62063,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 656,
+      "line": 676,
       "kind": "fn",
       "name": "stats",
       "has_doc": true
@@ -61083,7 +62072,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 687,
+      "line": 707,
       "kind": "fn",
       "name": "validate",
       "has_doc": true
@@ -61092,43 +62081,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 738,
-      "kind": "fn",
-      "name": "compile_condition",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 748,
-      "kind": "fn",
-      "name": "validate_condition",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 761,
-      "kind": "fn",
-      "name": "evaluate_condition",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 771,
-      "kind": "fn",
-      "name": "explain_condition",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 781,
+      "line": 758,
       "kind": "fn",
       "name": "export_snapshot",
       "has_doc": true
@@ -61137,7 +62090,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 786,
+      "line": 763,
       "kind": "fn",
       "name": "load_snapshot",
       "has_doc": true
@@ -61146,7 +62099,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 796,
+      "line": 773,
       "kind": "fn",
       "name": "from_snapshot",
       "has_doc": true
@@ -61155,277 +62108,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 802,
-      "kind": "fn",
-      "name": "create_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 850,
-      "kind": "fn",
-      "name": "ensure_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 863,
-      "kind": "fn",
-      "name": "update_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 895,
-      "kind": "fn",
-      "name": "remove_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 917,
-      "kind": "fn",
-      "name": "add_profile_tag",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 932,
-      "kind": "fn",
-      "name": "remove_profile_tag",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 947,
-      "kind": "fn",
-      "name": "set_profile_metadata",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 966,
-      "kind": "fn",
-      "name": "remove_profile_metadata",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 980,
-      "kind": "fn",
-      "name": "has_profile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 985,
-      "kind": "fn",
-      "name": "get_profile_snapshot",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1016,
-      "kind": "fn",
-      "name": "list_profiles",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1031,
-      "kind": "fn",
-      "name": "count_profiles",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1036,
-      "kind": "fn",
-      "name": "define_profile_template",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1048,
-      "kind": "fn",
-      "name": "apply_profile_template",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1065,
-      "kind": "fn",
-      "name": "define_trait",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1077,
-      "kind": "fn",
-      "name": "apply_trait",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1129,
-      "kind": "fn",
-      "name": "remove_trait",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1155,
-      "kind": "fn",
-      "name": "has_trait",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1164,
-      "kind": "fn",
-      "name": "list_traits",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1173,
-      "kind": "fn",
-      "name": "define_perk",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1202,
-      "kind": "fn",
-      "name": "define_skill",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1237,
-      "kind": "fn",
-      "name": "learn_skill",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1276,
-      "kind": "fn",
-      "name": "use_skill",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1346,
-      "kind": "fn",
-      "name": "get_skill_level",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1369,
-      "kind": "fn",
-      "name": "get_skill_cooldown",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1392,
-      "kind": "fn",
-      "name": "acquire_perk",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1441,
-      "kind": "fn",
-      "name": "has_perk",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1450,
-      "kind": "fn",
-      "name": "define_counter",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1461,
-      "kind": "fn",
-      "name": "define_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1473,
-      "kind": "fn",
-      "name": "define_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1490,
+      "line": 779,
       "kind": "fn",
       "name": "define_level_track",
       "has_doc": true
@@ -61434,7 +62117,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 1502,
+      "line": 791,
       "kind": "fn",
       "name": "define_derived_value",
       "has_doc": true
@@ -61443,7 +62126,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 1515,
+      "line": 804,
       "kind": "fn",
       "name": "remove_derived_value",
       "has_doc": true
@@ -61452,448 +62135,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 1520,
-      "kind": "fn",
-      "name": "define_quest",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1588,
-      "kind": "fn",
-      "name": "get_derived_value",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1601,
-      "kind": "fn",
-      "name": "explain_derived_value",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1629,
-      "kind": "fn",
-      "name": "validate_derived_values",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1643,
-      "kind": "fn",
-      "name": "define_achievement",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1691,
-      "kind": "fn",
-      "name": "add_counter",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1757,
-      "kind": "fn",
-      "name": "set_counter",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1806,
-      "kind": "fn",
-      "name": "unlock_achievement",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1824,
-      "kind": "fn",
-      "name": "get_achievement",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1853,
-      "kind": "fn",
-      "name": "list_achievements",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1866,
-      "kind": "fn",
-      "name": "get_pending_rewards",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1883,
-      "kind": "fn",
-      "name": "claim_reward",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1916,
-      "kind": "fn",
-      "name": "mark_reward_applied",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1951,
-      "kind": "fn",
-      "name": "reject_reward",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 1985,
-      "kind": "fn",
-      "name": "get_counter",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2003,
-      "kind": "fn",
-      "name": "get_counter_state",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2015,
-      "kind": "fn",
-      "name": "list_counters",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2028,
-      "kind": "fn",
-      "name": "set_attribute_base",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2059,
-      "kind": "fn",
-      "name": "set_attribute_bounds",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2078,
-      "kind": "fn",
-      "name": "add_attribute_base",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2089,
-      "kind": "fn",
-      "name": "get_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2127,
-      "kind": "fn",
-      "name": "explain_attribute",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2162,
-      "kind": "fn",
-      "name": "get_attribute_state",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2176,
-      "kind": "fn",
-      "name": "add_modifier",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2212,
-      "kind": "fn",
-      "name": "remove_modifier",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2232,
-      "kind": "fn",
-      "name": "list_modifiers",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2255,
-      "kind": "fn",
-      "name": "set_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2286,
-      "kind": "fn",
-      "name": "add_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2297,
-      "kind": "fn",
-      "name": "can_spend_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2308,
-      "kind": "fn",
-      "name": "spend_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2334,
-      "kind": "fn",
-      "name": "refill_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2356,
-      "kind": "fn",
-      "name": "get_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2398,
-      "kind": "fn",
-      "name": "add_experience",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2462,
-      "kind": "fn",
-      "name": "set_experience",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2477,
-      "kind": "fn",
-      "name": "get_experience",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2505,
-      "kind": "fn",
-      "name": "get_level",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2514,
-      "kind": "fn",
-      "name": "set_level",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2559,
-      "kind": "fn",
-      "name": "get_experience_to_next_level",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2582,
-      "kind": "fn",
-      "name": "accept_quest",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2677,
-      "kind": "fn",
-      "name": "complete_quest",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2686,
-      "kind": "fn",
-      "name": "fail_quest",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2709,
-      "kind": "fn",
-      "name": "reveal_quest",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2741,
-      "kind": "fn",
-      "name": "add_quest_journal_entry",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2794,
-      "kind": "fn",
-      "name": "list_quest_journal_entries",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2813,
-      "kind": "fn",
-      "name": "refresh_quest_lifecycle",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2822,
-      "kind": "fn",
-      "name": "set_quest_objective",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 2995,
-      "kind": "fn",
-      "name": "set_quest_objective_status",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 3081,
-      "kind": "fn",
-      "name": "set_quest_objective_visibility",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 3115,
-      "kind": "fn",
-      "name": "get_quest_state",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 3178,
+      "line": 809,
       "kind": "fn",
       "name": "begin_transaction",
       "has_doc": true
@@ -61902,7 +62144,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3183,
+      "line": 814,
       "kind": "fn",
       "name": "commit_transaction",
       "has_doc": true
@@ -61911,7 +62153,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3261,
+      "line": 892,
       "kind": "fn",
       "name": "drain_events",
       "has_doc": true
@@ -61920,7 +62162,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3266,
+      "line": 897,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -61929,7 +62171,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3291,
+      "line": 922,
       "kind": "fn",
       "name": "list_events",
       "has_doc": true
@@ -61938,7 +62180,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3296,
+      "line": 927,
       "kind": "fn",
       "name": "clear_events",
       "has_doc": true
@@ -61947,7 +62189,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3301,
+      "line": 932,
       "kind": "fn",
       "name": "export_changes_since",
       "has_doc": true
@@ -61956,7 +62198,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3310,
+      "line": 941,
       "kind": "fn",
       "name": "apply_changeset",
       "has_doc": true
@@ -61965,7 +62207,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 3339,
+      "line": 970,
       "kind": "fn",
       "name": "debug_snapshot",
       "has_doc": true
@@ -61974,7 +62216,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 11,
+      "line": 17,
       "kind": "struct",
       "name": "ProgressionStoreOptions",
       "has_doc": true
@@ -61983,7 +62225,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 44,
+      "line": 50,
       "kind": "struct",
       "name": "ProfileOptions",
       "has_doc": true
@@ -61992,7 +62234,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 61,
+      "line": 67,
       "kind": "enum",
       "name": "CounterKind",
       "has_doc": true
@@ -62001,7 +62243,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 78,
+      "line": 84,
       "kind": "struct",
       "name": "CounterDefinition",
       "has_doc": true
@@ -62010,7 +62252,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 108,
+      "line": 114,
       "kind": "struct",
       "name": "AttributeDefinition",
       "has_doc": true
@@ -62019,7 +62261,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 135,
+      "line": 141,
       "kind": "enum",
       "name": "AttributeMode",
       "has_doc": true
@@ -62028,7 +62270,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 150,
+      "line": 156,
       "kind": "struct",
       "name": "ResourceDefinition",
       "has_doc": true
@@ -62037,7 +62279,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 177,
+      "line": 183,
       "kind": "struct",
       "name": "LevelTrackDefinition",
       "has_doc": true
@@ -62046,7 +62288,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 208,
+      "line": 214,
       "kind": "enum",
       "name": "DerivedValueInput",
       "has_doc": true
@@ -62055,7 +62297,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 240,
+      "line": 246,
       "kind": "struct",
       "name": "DerivedValueDefinition",
       "has_doc": true
@@ -62064,7 +62306,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 255,
+      "line": 261,
       "kind": "struct",
       "name": "ProfileTemplateDefinition",
       "has_doc": true
@@ -62073,7 +62315,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 278,
+      "line": 284,
       "kind": "struct",
       "name": "TraitModifierDefinition",
       "has_doc": true
@@ -62082,7 +62324,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 289,
+      "line": 295,
       "kind": "struct",
       "name": "TraitDefinition",
       "has_doc": true
@@ -62091,7 +62333,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 296,
+      "line": 302,
       "kind": "struct",
       "name": "PerkDefinition",
       "has_doc": true
@@ -62100,7 +62342,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 307,
+      "line": 313,
       "kind": "struct",
       "name": "SkillDefinition",
       "has_doc": true
@@ -62109,7 +62351,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 320,
+      "line": 326,
       "kind": "struct",
       "name": "QuestJournalEntry",
       "has_doc": true
@@ -62118,7 +62360,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 332,
+      "line": 338,
       "kind": "enum",
       "name": "LeaderboardSort",
       "has_doc": true
@@ -62127,7 +62369,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 342,
+      "line": 348,
       "kind": "enum",
       "name": "LeaderboardRankMode",
       "has_doc": true
@@ -62136,7 +62378,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 353,
+      "line": 359,
       "kind": "struct",
       "name": "LeaderboardDefinition",
       "has_doc": true
@@ -62145,7 +62387,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 370,
+      "line": 376,
       "kind": "struct",
       "name": "SeasonResetDefinition",
       "has_doc": true
@@ -62154,7 +62396,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 379,
+      "line": 385,
       "kind": "struct",
       "name": "SeasonDefinition",
       "has_doc": true
@@ -62163,7 +62405,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 395,
+      "line": 401,
       "kind": "enum",
       "name": "ProgressionCondition",
       "has_doc": true
@@ -62172,7 +62414,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 452,
+      "line": 458,
       "kind": "struct",
       "name": "QuestObjectiveDefinition",
       "has_doc": true
@@ -62181,7 +62423,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 469,
+      "line": 475,
       "kind": "struct",
       "name": "QuestStageDefinition",
       "has_doc": true
@@ -62190,7 +62432,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 480,
+      "line": 486,
       "kind": "struct",
       "name": "QuestDefinition",
       "has_doc": true
@@ -62199,7 +62441,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 501,
+      "line": 507,
       "kind": "struct",
       "name": "ChallengeTemplateDefinition",
       "has_doc": true
@@ -62208,7 +62450,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 527,
+      "line": 533,
       "kind": "enum",
       "name": "ComparisonOp",
       "has_doc": true
@@ -62217,7 +62459,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 542,
+      "line": 548,
       "kind": "struct",
       "name": "CounterTriggerDefinition",
       "has_doc": true
@@ -62226,7 +62468,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 553,
+      "line": 559,
       "kind": "struct",
       "name": "AchievementDefinition",
       "has_doc": true
@@ -62235,7 +62477,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 574,
+      "line": 580,
       "kind": "struct",
       "name": "PrestigeResetDefinition",
       "has_doc": true
@@ -62244,7 +62486,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 583,
+      "line": 589,
       "kind": "struct",
       "name": "PrestigePreserveDefinition",
       "has_doc": true
@@ -62253,7 +62495,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 592,
+      "line": 598,
       "kind": "struct",
       "name": "PrestigeDefinition",
       "has_doc": true
@@ -62262,7 +62504,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 605,
+      "line": 611,
       "kind": "struct",
       "name": "CollectionItemDefinition",
       "has_doc": true
@@ -62271,7 +62513,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 618,
+      "line": 624,
       "kind": "struct",
       "name": "CollectionDefinition",
       "has_doc": true
@@ -62280,7 +62522,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 633,
+      "line": 639,
       "kind": "struct",
       "name": "RivalDefinition",
       "has_doc": true
@@ -62289,7 +62531,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 644,
+      "line": 650,
       "kind": "struct",
       "name": "PopulationNameGeneratorDefinition",
       "has_doc": true
@@ -62298,7 +62540,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 658,
+      "line": 664,
       "kind": "struct",
       "name": "PopulationIdentityDefinition",
       "has_doc": true
@@ -62307,7 +62549,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 672,
+      "line": 678,
       "kind": "struct",
       "name": "PopulationActivityDefinition",
       "has_doc": true
@@ -62316,7 +62558,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 683,
+      "line": 689,
       "kind": "struct",
       "name": "PopulationSkillDefinition",
       "has_doc": true
@@ -62325,7 +62567,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 694,
+      "line": 700,
       "kind": "struct",
       "name": "PopulationArchetypeDefinition",
       "has_doc": true
@@ -62334,7 +62576,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 707,
+      "line": 713,
       "kind": "struct",
       "name": "PopulationInitialScoreDefinition",
       "has_doc": true
@@ -62343,7 +62585,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 714,
+      "line": 720,
       "kind": "struct",
       "name": "PopulationScoreProgressionDefinition",
       "has_doc": true
@@ -62352,7 +62594,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 725,
+      "line": 731,
       "kind": "struct",
       "name": "PopulationLeaderboardDefinition",
       "has_doc": true
@@ -62361,7 +62603,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 739,
+      "line": 745,
       "kind": "struct",
       "name": "PopulationTemplateDefinition",
       "has_doc": true
@@ -62370,7 +62612,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 757,
+      "line": 763,
       "kind": "enum",
       "name": "RewardState",
       "has_doc": true
@@ -62379,7 +62621,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 770,
+      "line": 776,
       "kind": "struct",
       "name": "RewardRecord",
       "has_doc": true
@@ -62388,7 +62630,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 787,
+      "line": 793,
       "kind": "struct",
       "name": "ModifierAddOptions",
       "has_doc": true
@@ -62397,7 +62639,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 802,
+      "line": 808,
       "kind": "struct",
       "name": "EventRecord",
       "has_doc": true
@@ -62406,7 +62648,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 819,
+      "line": 825,
       "kind": "struct",
       "name": "ChangeRecord",
       "has_doc": true
@@ -62415,7 +62657,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 828,
+      "line": 834,
       "kind": "struct",
       "name": "ChangesetEnvelope",
       "has_doc": true
@@ -62424,7 +62666,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 846,
+      "line": 852,
       "kind": "enum",
       "name": "ChangesetMergePolicy",
       "has_doc": true
@@ -62433,7 +62675,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 857,
+      "line": 863,
       "kind": "struct",
       "name": "ChangesetApplyOptions",
       "has_doc": true
@@ -62442,7 +62684,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 878,
+      "line": 884,
       "kind": "struct",
       "name": "ChangesetConflict",
       "has_doc": true
@@ -62451,7 +62693,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 895,
+      "line": 901,
       "kind": "struct",
       "name": "SeasonState",
       "has_doc": true
@@ -62460,7 +62702,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/types.rs",
-      "line": 910,
+      "line": 916,
       "kind": "struct",
       "name": "SeasonArchiveRecord",
       "has_doc": true

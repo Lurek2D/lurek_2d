@@ -1,11 +1,11 @@
 {
   "meta": {
-    "generated": "2026-07-13T07:28:30.358500+00:00",
+    "generated": "2026-07-14T07:26:27.568193+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
       "rust_items": 3342,
-      "rust_modules": 784,
+      "rust_modules": 789,
       "rust_tests": 499,
       "lua_tests": 283
     }
@@ -14,7 +14,7 @@
     "summary": {
       "total_items": 3342,
       "documented": 3340,
-      "modules": 784
+      "modules": 789
     },
     "modules": {
       "agent::chat": {
@@ -17503,43 +17503,58 @@
           }
         ]
       },
+      "progression::achievement": {
+        "module_doc": "Owns authored achievement definitions plus per-profile unlock state and queued reward records. Exposes the store entrypoints that define achievements, unlock them, and query earned snapshots. Tracks repeatable completions, hidden presentation flags, and counter-trigger reverse indexes. Re-evaluates authored conditions before mutating profile records or emitting unlock-side events. Keeps achievement lifecycle rules out of `store.rs` so shared mutation plumbing stays narrower. Open this file when changing achievement authoring, unlock semantics, or reward-producing trophies.",
+        "source_file": "src/progression/achievement.rs",
+        "items": []
+      },
       "progression::attribute": {
-        "module_doc": "`src/progression/attribute.rs` reserves the attribute-focused extraction surface planned for base values, modifiers, and explanations. This file exists to align the progression module layout with the implementation roadmap.",
+        "module_doc": "Owns attribute, resource, and modifier definitions plus per-profile state for stat-like progression data. Exposes canonical helpers that define, mutate, explain, spend, refill, and snapshot these profile values. Applies bounds, effective-value math, modifier storage, and resource normalization before state persists. Emits attribute, modifier, and resource events so other progression slices observe deterministic changes. Provides crate-local resource accessors reused by formulas and sibling owners without state duplication. Keeps stat and spendable-value behavior out of store-wide plumbing so growth rules stay cohesive. Open this file when changing attribute math, modifier handling, or resource spending semantics.",
         "source_file": "src/progression/attribute.rs",
         "items": []
       },
       "progression::challenge": {
-        "module_doc": "`src/progression/challenge.rs` owns reusable challenge templates, per-profile challenge runs, and challenge progression helpers. It keeps engagement-style timed challenge logic out of `store.rs` while preserving deterministic offline behavior.",
+        "module_doc": "Owns reusable challenge templates, per-profile challenge runs, expiry logic, and counter-driven progress updates. Stores authored challenge contracts alongside runtime state transitions for activation, completion, and timeout. Exposes the public store entrypoints that create runs, mutate progress, query snapshots, and list active work. Validates challenge definitions against existing counters, reward payloads, and authored time-window invariants. Re-evaluates counter-bound challenges after mutations so offline progression remains deterministic and evented. Expires active runs against the logical store clock instead of any wall-clock or platform-driven scheduler. Integrates with rewards, events, and retained profile state without depending on rendering, UI, or networking. Open this file when changing challenge authoring, lifecycle rules, or reward-bearing engagement mechanics.",
         "source_file": "src/progression/challenge.rs",
         "items": []
       },
       "progression::collection": {
-        "module_doc": "`src/progression/collection.rs` owns collections, achievement-linked discovery, completion checks, and collection snapshots. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "module_doc": "Owns authored collections, per-profile collection state, hidden item discovery, and completion snapshots. Stores the rules that bind collection items to achievements and optional meta-achievement unlock behavior. Exposes public store helpers for definition, manual collection, querying, and deterministic list serialization. Validates collection definitions so item ids stay unique and referenced achievements exist before persistence. Synchronizes collection completion whenever achievements change, including hidden unlock and meta-owner checks. Integrates with rewards and achievements without adding renderer, inventory, or narrative-specific concerns. Open this file when changing collection authoring, discovery rules, or achievement-linked completion logic.",
         "source_file": "src/progression/collection.rs",
         "items": []
       },
       "progression::condition": {
-        "module_doc": "`src/progression/condition.rs` reserves the condition-focused extraction surface planned for authored conditions and explanations. This file exists to align the progression module layout with the implementation roadmap.",
+        "module_doc": "Owns authored condition trees, validation rules, evaluation helpers, and explanation payload generation. Exposes canonical helpers that compile, validate, evaluate, and explain progression predicates. Applies depth, fan-out, identifier, and reference checks before conditions run against store state. Resolves counter, level, achievement, quest, and tag predicates against canonical profile-owned data. Provides crate-local recursive helpers reused by quests, achievements, and prestige definitions. Keeps reusable predicate semantics out of store-wide plumbing so conditional logic stays cohesive. Open this file when changing predicate validation, evaluation semantics, or explanation structure.",
         "source_file": "src/progression/condition.rs",
         "items": []
       },
       "progression::counter": {
-        "module_doc": "`src/progression/counter.rs` reserves the counter-focused extraction surface planned for mutation, thresholds, and history helpers. This file exists to align the progression module layout with the implementation roadmap.",
+        "module_doc": "Owns counter definitions, per-profile counter state, and threshold-aware mutation semantics. Exposes canonical helpers that define, add, set, list, and snapshot counters across the engine. Applies finite checks, monotonic rules, bounds, and value normalization before state persists. Refreshes quests, leaderboards, challenges, and achievements after writes so flow stays in sync. Keeps shared counter behavior out of store-wide plumbing so progression inputs stay cohesive.",
         "source_file": "src/progression/counter.rs",
         "items": []
       },
       "progression::event": {
-        "module_doc": "`src/progression/event.rs` owns bounded activity-feed projections over retained progression events. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "module_doc": "Owns filtered activity-feed projections over the store's retained progression event history. Shapes canonical event records into transport-neutral JSON snapshots without mutating or reordering store history. Exposes headless helpers that validate requested profile filters, apply type filters, and bound feed size. Open this file when activity-feed selection, event payload shape, or retained-event presentation needs adjustment.",
         "source_file": "src/progression/event.rs",
         "items": []
       },
+      "progression::formula": {
+        "module_doc": "Owns derived-value validation, parsing, AST evaluation, and bounded result normalization rules. Exposes the store entrypoints that read or explain derived values through one safe formula pipeline. Resolves counter, attribute, resource, level, and XP inputs into deterministic numeric maps. Stores the expression token and AST shapes used by validation, explanation, and runtime evaluation. Rejects malformed expressions, unsupported helpers, and non-finite results before they reach APIs. Keeps parser and evaluator internals out of `store.rs` so numeric derivation has a focused owner. Avoids Lua eval, runtime code execution, and rendering concerns so formulas stay headless and safe. Open this file when changing derived expressions, parser limits, supported math helpers, or payloads.",
+        "source_file": "src/progression/formula.rs",
+        "items": []
+      },
       "progression::leaderboard": {
-        "module_doc": "`src/progression/leaderboard.rs` owns leaderboard definitions, score mutation, rank queries, and leaderboard-side event helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "module_doc": "Owns leaderboard definitions, score mutation, rank queries, and threshold-style leaderboard event emission. Stores deterministic ordering rules, tie handling, partitions, and query shaping for offline ranked state. Exposes public store helpers for authoring leaderboards, submitting scores, and reading ranked projections. Recomputes counter-bound leaderboards after source mutations while avoiding duplicate synchronization events. Integrates with rivals, seasons, and virtual populations without depending on UI tables or online services. Keeps ranking semantics local to progression so tests can prove ordering, ranges, and around-profile queries. Open this file when changing score ownership, ranking behavior, or leaderboard-derived progression events.",
         "source_file": "src/progression/leaderboard.rs",
         "items": []
       },
+      "progression::level": {
+        "module_doc": "Owns level-track progression, stored experience totals, and normalized level snapshots for profiles. Exposes the store entrypoints that add XP, set absolute XP, set explicit levels, and query state. Applies authored track bounds, carry-over policy, and capped level advancement in canonical data. Emits level and experience events so downstream systems observe one deterministic growth sequence. Open this file when changing XP accumulation, level caps, carry-over semantics, or level snapshots.",
+        "source_file": "src/progression/level.rs",
+        "items": []
+      },
       "progression": {
-        "module_doc": "`src/progression/mod.rs` declares the headless progression domain used by `lurek.progression`. This module owns offline progression state, deterministic mutations, and snapshot-shaped data. Lua bindings live in `src/lua_api/progression_api.rs` and should stay thin over these types. The store is CPU-only and does not depend on rendering, audio, networking, or a live Lua VM.",
+        "module_doc": "Declares the headless progression domain that backs the public `lurek.progression` Lua module. Exports the store, data contracts, and focused subsystem files that own deterministic progression behavior. Separates profiles, leaderboards, populations, seasons, persistence, and event helpers into navigable owners. Reexports the symbols that Rust tests and Lua bindings need without requiring callers to know file layout. Marks the progression domain as CPU-only and independent from rendering, audio, networking, or live Lua state. Open this index when routing a change to the correct progression owner or tracing reexports into sibling files.",
         "source_file": "src/progression/mod.rs",
         "items": [
           {
@@ -17547,49 +17562,59 @@
             "kind": "mod",
             "description": "",
             "file": "src/progression/mod.rs",
-            "line": 6
+            "line": 7
           },
           {
             "name": "types",
             "kind": "mod",
             "description": "",
             "file": "src/progression/mod.rs",
-            "line": 7
+            "line": 8
           }
         ]
       },
       "progression::persistence": {
-        "module_doc": "`src/progression/persistence.rs` owns snapshot and incremental-sync helpers for progression state. It adds bounded changeset envelopes, validation, acknowledgements, and compaction without changing the headless store model.",
+        "module_doc": "Owns progression snapshot transport, retained change records, and bounded changeset envelope validation. Stores the rules for exporting retained revisions, applying envelopes, acknowledging history, and compaction. Exposes public persistence helpers that keep sync payloads deterministic, versioned, and transport-neutral. Validates record counts and serialized sizes before export or import so malformed payloads fail early. Encodes merge-policy outcomes, conflict reports, and source-target revision metadata for caller inspection. Integrates with the main store snapshot model without adding backend concerns, auth state, or network code. Keeps offline sync semantics local to progression so tests can prove replay, ack, and compaction behavior. Open this file when changing save transport, incremental replication, or retained-history validation rules.",
         "source_file": "src/progression/persistence.rs",
         "items": []
       },
       "progression::population": {
-        "module_doc": "`src/progression/population.rs` owns offline population templates, simulation, materialization, and population validation helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "module_doc": "Owns offline population templates, generated virtual profiles, simulation ticks, and materialization helpers. Stores deterministic identity generation, archetype weighting, leaderboard seeding, and activity simulation. Exposes public store helpers for defining templates, generating runs, advancing time, and querying statistics. Validates population templates so seeded generation remains bounded, deterministic, and leaderboard-aware. Simulates virtual profile progress without requiring remote services, hidden threads, or nondeterministic timers. Materializes virtual profiles into canonical store state only when callers explicitly need concrete profile data. Maintains reverse indexes between virtual handles and real profiles so dematerialization stays lossless and safe. Integrates with leaderboards, rivals, and events while keeping population-specific bookkeeping out of `store.rs`. Keeps simulation-side state local to progression so tests can prove seeded replay and budgeted catch-up behavior. Open this file when changing bot generation, offline simulation, or virtual profile persistence boundaries.",
         "source_file": "src/progression/population.rs",
         "items": []
       },
       "progression::prestige": {
-        "module_doc": "`src/progression/prestige.rs` owns prestige definitions, reset application, lifetime tracking, and prestige serialization. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "module_doc": "Owns prestige definitions, reset application, preserved-history rules, and prestige snapshot serialization. Stores the contracts that decide when a profile may prestige and which counters or tracks survive the reset. Exposes public store helpers for authoring prestiges, checking eligibility, applying resets, and querying state. Validates prestige definitions against authored counters, level tracks, and preserved-history configuration. Integrates with achievements, counters, and experience without coupling prestige rules to UI or narrative flow. Open this file when changing rebirth semantics, retained history, or level-gated reset progression behavior.",
         "source_file": "src/progression/prestige.rs",
         "items": []
       },
       "progression::profile": {
-        "module_doc": "`src/progression/profile.rs` owns profile-template application helpers and trait-definition validation shared by progression profiles. It keeps profile-shaping helper logic out of `store.rs` while preserving the same store API surface.",
+        "module_doc": "Owns profile lifecycle, templates, traits, perks, skills, and the profile-facing identity mutation surface. Stores canonical profile identity, tags, metadata, trait handles, skill levels, and acquired perk ownership. Exposes public store helpers for creating profiles, applying templates, mutating identity, and querying shape. Validates template and trait definitions against authored counters, attributes, resources, and level tracks. Applies template payloads into canonical profile state while preserving caller-selected identity overrides. Owns trait, perk, and skill rules so profile progression stays separate from counters, quests, and snapshots. Spends attribute-backed skill costs and cooldown state here because learned-skill behavior is profile-local. Integrates with quests, achievements, and rewards through store events without pulling those systems inside. Keeps profile-shaped rules out of `store.rs` so identity and advancement changes have a focused maintenance home. Open this file when changing profile creation, template application, traits, perks, or learned-skill behavior.",
         "source_file": "src/progression/profile.rs",
         "items": []
       },
+      "progression::quest": {
+        "module_doc": "Owns authored quest definitions, materialized quest state, retained journals, and stage progress for profiles. Exposes store-facing helpers for definition, reveal, accept, fail, complete, journal writes, and snapshot queries. Stores reverse bindings from counters to objectives so writes refresh only the affected active quest state. Applies hidden, revealed, available, active, completed, and failed transitions inside canonical engine state. Advances mandatory stage objectives, trims retained journals by authored limits, and preserves completion counts. Emits quest lifecycle, objective, journal, and reward-availability events in deterministic store order. Keeps authored availability and reveal conditions near quest-state transitions so discovery rules stay aligned. Reuses shared condition evaluation and reward records without duplicating attribute, counter, or payout logic. Keeps branching objective behavior out of store-wide plumbing so quest rules stay cohesive and testable. Open this file when changing quest validation, objective sync, journal retention, or lifecycle semantics.",
+        "source_file": "src/progression/quest.rs",
+        "items": []
+      },
+      "progression::reward": {
+        "module_doc": "Owns profile-scoped reward records and the canonical pending-claimed-applied-rejected state machine. Defines the store helpers that list outstanding reward work and transition records without applying game payloads. Persists optional external receipts, emits reward lifecycle events, and bumps revisions for every accepted change. Keeps payout-state rules separate from achievements, quests, and downstream economy code so producers stay decoupled. Open this file when changing reward transitions, external receipt storage, or queue-facing reward semantics.",
+        "source_file": "src/progression/reward.rs",
+        "items": []
+      },
       "progression::rival": {
-        "module_doc": "`src/progression/rival.rs` owns pinned rival relationships, rival deltas, and rivalry overtake event helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "module_doc": "Owns pinned rival relationships, rivalry deltas, and overtake event emission derived from leaderboard changes. Stores the profile-local rival contracts that connect chosen rivals to one or more authored leaderboards. Exposes public store helpers for pinning rivals, reading rival snapshots, and querying score or rank deltas. Captures pre-refresh rival relations so score updates can emit stable overtake events after ordering changes. Integrates with leaderboards and the activity feed without introducing matchmaking, social, or network features. Open this file when changing rivalry tracking, delta semantics, or overtake event generation rules.",
         "source_file": "src/progression/rival.rs",
         "items": []
       },
       "progression::season": {
-        "module_doc": "`src/progression/season.rs` owns authored seasons, archive snapshots, resets, and season serialization helpers. It keeps virtual-profile simulation and related store helpers out of `store.rs` while preserving the same API surface.",
+        "module_doc": "Owns authored seasons, archive snapshots, reset application, and season lifecycle serialization helpers. Stores season definitions, active windows, archive outputs, and reset targets for counters and leaderboards. Exposes public store helpers for defining seasons, starting runs, ending runs, and querying archives or status. Validates season definitions against existing counters and leaderboards before any runtime lifecycle changes. Applies configured resets and archive snapshots against logical time so offline tests can prove exact behavior. Integrates with leaderboards and counters without coupling season rules to rewards, UI, or external services. Open this file when changing season boundaries, archive contents, or reset semantics for cyclical progression.",
         "source_file": "src/progression/season.rs",
         "items": []
       },
       "progression::store": {
-        "module_doc": "`src/progression/store.rs` owns the deterministic in-memory progression store. It implements store mutation rules, profile state, transactions, event emission, and snapshots. Rendering, networking, UI text, and Lua conversion are intentionally out of scope here.",
+        "module_doc": "Owns deterministic progression store state, shared indexes, retained events, and retained change history. Stores profiles, authored definitions, revision counters, snapshots, and transaction bookkeeping at the root. Exposes creation, snapshot, update, and cross-slice seams reused by focused progression owners in sibling files. Applies shared validation, event buffering, change retention, and revision bumps before domain-specific slices fan out. Defines the private runtime structs that back counters, attributes, quests, rewards, populations, rivals, and peers. Keeps serialization, migration snapshots, and debug export close to the data they persist, replay, and compare. Integrates focused owners for profile, counter, attribute, quest, level, formula, reward, population, and sync logic. Leaves domain rules in sibling files and keeps only the shared seams those owners depend on together. Avoids renderer, network, audio, and Lua conversion concerns so progression state stays fully headless. Provides mutation plumbing that Rust tests, Lua bindings, changesets, and evidence artifacts rely on. Retains store-wide helpers for ids, bounds, formulas, deterministic sampling, and population setup. Open this file when a change touches shared tables, snapshots, transactions, or multi-slice coordination.",
         "source_file": "src/progression/store.rs",
         "items": [
           {
@@ -17597,47 +17622,47 @@
             "kind": "enum",
             "description": "Stable error type returned by progression domain operations.",
             "file": "src/progression/store.rs",
-            "line": 24
+            "line": 34
           },
           {
             "name": "ChangeSummary",
             "kind": "struct",
             "description": "Summary returned after a committed mutation batch.",
             "file": "src/progression/store.rs",
-            "line": 47
+            "line": 57
           },
           {
             "name": "AttributeExplanation",
             "kind": "struct",
             "description": "Human-readable explanation of one attribute value.",
             "file": "src/progression/store.rs",
-            "line": 56
+            "line": 66
           },
           {
             "name": "ProgressionOperation",
             "kind": "enum",
             "description": "One queued progression mutation used by transactions.",
             "file": "src/progression/store.rs",
-            "line": 252
+            "line": 262
           },
           {
             "name": "ProgressionTransaction",
             "kind": "struct",
             "description": "Transaction object used to batch operations into a single revision.",
             "file": "src/progression/store.rs",
-            "line": 331
+            "line": 341
           },
           {
             "name": "ProgressionStore",
             "kind": "struct",
             "description": "Headless progression store used by `lurek.progression`.",
             "file": "src/progression/store.rs",
-            "line": 440
+            "line": 450
           }
         ]
       },
       "progression::types": {
-        "module_doc": "`src/progression/types.rs` owns the data contracts for the progression store. These types are serializable, deterministic, and reusable by Rust tests and Lua bindings. Runtime mutation logic stays in `store.rs`; this file only defines durable shapes and enums.",
+        "module_doc": "Owns the serializable data contracts, enums, and durable state shapes used by the progression store. Stores authored definitions, retained runtime snapshots, and helper structs shared across progression subsystems. Exposes the canonical types that Rust tests, persistence code, and Lua bindings serialize or inspect directly. Keeps durable field layout separate from mutation logic so snapshots can evolve without hiding in store methods. Defines profile, quest, leaderboard, population, challenge, season, and reward state in one reusable contract set. Anchors deterministic serde behavior for snapshots, changesets, and debug payloads that cross module boundaries. Integrates with `store.rs` as the state schema owner while sibling files focus on behavior and mutation rules. Avoids renderer, filesystem, and Lua-specific adapters so these types stay transport-neutral and domain-focused. Open this file when adding stored fields, authored definition shapes, or snapshot-visible progression contracts. Reach here before changing persistence, docs generation, or Lua serialization that depends on stable type layout.",
         "source_file": "src/progression/types.rs",
         "items": [
           {
@@ -17645,385 +17670,385 @@
             "kind": "struct",
             "description": "Configuration used when creating a new progression store.",
             "file": "src/progression/types.rs",
-            "line": 11
+            "line": 17
           },
           {
             "name": "ProfileOptions",
             "kind": "struct",
             "description": "Creation and patch data for a progression profile.",
             "file": "src/progression/types.rs",
-            "line": 44
+            "line": 50
           },
           {
             "name": "CounterKind",
             "kind": "enum",
             "description": "Supported counter storage modes in the initial progression slice.",
             "file": "src/progression/types.rs",
-            "line": 61
+            "line": 67
           },
           {
             "name": "CounterDefinition",
             "kind": "struct",
             "description": "Definition for one named counter.",
             "file": "src/progression/types.rs",
-            "line": 78
+            "line": 84
           },
           {
             "name": "AttributeDefinition",
             "kind": "struct",
             "description": "Definition for one named attribute.",
             "file": "src/progression/types.rs",
-            "line": 108
+            "line": 114
           },
           {
             "name": "AttributeMode",
             "kind": "enum",
             "description": "View mode for attribute reads.",
             "file": "src/progression/types.rs",
-            "line": 135
+            "line": 141
           },
           {
             "name": "ResourceDefinition",
             "kind": "struct",
             "description": "Definition for one named spendable resource.",
             "file": "src/progression/types.rs",
-            "line": 150
+            "line": 156
           },
           {
             "name": "LevelTrackDefinition",
             "kind": "struct",
             "description": "Definition for a level/experience track.",
             "file": "src/progression/types.rs",
-            "line": 177
+            "line": 183
           },
           {
             "name": "DerivedValueInput",
             "kind": "enum",
             "description": "Named input binding for one derived value definition.",
             "file": "src/progression/types.rs",
-            "line": 208
+            "line": 214
           },
           {
             "name": "DerivedValueDefinition",
             "kind": "struct",
             "description": "Author-time definition for one named derived value.",
             "file": "src/progression/types.rs",
-            "line": 240
+            "line": 246
           },
           {
             "name": "ProfileTemplateDefinition",
             "kind": "struct",
             "description": "Author-time definition for one reusable profile template.",
             "file": "src/progression/types.rs",
-            "line": 255
+            "line": 261
           },
           {
             "name": "TraitModifierDefinition",
             "kind": "struct",
             "description": "One modifier entry authored inside a trait definition.",
             "file": "src/progression/types.rs",
-            "line": 278
+            "line": 284
           },
           {
             "name": "TraitDefinition",
             "kind": "struct",
             "description": "Author-time definition for one reusable trait.",
             "file": "src/progression/types.rs",
-            "line": 289
+            "line": 295
           },
           {
             "name": "PerkDefinition",
             "kind": "struct",
             "description": "Author-time definition for one perk unlock.",
             "file": "src/progression/types.rs",
-            "line": 296
+            "line": 302
           },
           {
             "name": "SkillDefinition",
             "kind": "struct",
             "description": "Author-time definition for one skill track.",
             "file": "src/progression/types.rs",
-            "line": 307
+            "line": 313
           },
           {
             "name": "QuestJournalEntry",
             "kind": "struct",
             "description": "One structured quest journal entry retained in canonical progression state.",
             "file": "src/progression/types.rs",
-            "line": 320
+            "line": 326
           },
           {
             "name": "LeaderboardSort",
             "kind": "enum",
             "description": "Sort direction for one leaderboard.",
             "file": "src/progression/types.rs",
-            "line": 332
+            "line": 338
           },
           {
             "name": "LeaderboardRankMode",
             "kind": "enum",
             "description": "Rank numbering mode for one leaderboard.",
             "file": "src/progression/types.rs",
-            "line": 342
+            "line": 348
           },
           {
             "name": "LeaderboardDefinition",
             "kind": "struct",
             "description": "Author-time definition for one leaderboard.",
             "file": "src/progression/types.rs",
-            "line": 353
+            "line": 359
           },
           {
             "name": "SeasonResetDefinition",
             "kind": "struct",
             "description": "Reset targets applied when a season ends.",
             "file": "src/progression/types.rs",
-            "line": 370
+            "line": 376
           },
           {
             "name": "SeasonDefinition",
             "kind": "struct",
             "description": "Author-time definition for one named season.",
             "file": "src/progression/types.rs",
-            "line": 379
+            "line": 385
           },
           {
             "name": "ProgressionCondition",
             "kind": "enum",
             "description": "Declarative condition tree used by progression definitions and queries.",
             "file": "src/progression/types.rs",
-            "line": 395
+            "line": 401
           },
           {
             "name": "QuestObjectiveDefinition",
             "kind": "struct",
             "description": "Author-time definition for one quest objective.",
             "file": "src/progression/types.rs",
-            "line": 452
+            "line": 458
           },
           {
             "name": "QuestStageDefinition",
             "kind": "struct",
             "description": "Author-time definition for one quest stage.",
             "file": "src/progression/types.rs",
-            "line": 469
+            "line": 475
           },
           {
             "name": "QuestDefinition",
             "kind": "struct",
             "description": "Author-time definition for one quest.",
             "file": "src/progression/types.rs",
-            "line": 480
+            "line": 486
           },
           {
             "name": "ChallengeTemplateDefinition",
             "kind": "struct",
             "description": "Author-time definition for one reusable challenge template.",
             "file": "src/progression/types.rs",
-            "line": 501
+            "line": 507
           },
           {
             "name": "ComparisonOp",
             "kind": "enum",
             "description": "Simple comparison operators supported by the initial achievement trigger slice.",
             "file": "src/progression/types.rs",
-            "line": 527
+            "line": 533
           },
           {
             "name": "CounterTriggerDefinition",
             "kind": "struct",
             "description": "Counter-based trigger definition for an authored achievement.",
             "file": "src/progression/types.rs",
-            "line": 542
+            "line": 548
           },
           {
             "name": "AchievementDefinition",
             "kind": "struct",
             "description": "Author-time definition for one achievement.",
             "file": "src/progression/types.rs",
-            "line": 553
+            "line": 559
           },
           {
             "name": "PrestigeResetDefinition",
             "kind": "struct",
             "description": "Reset targets applied when a prestige action is accepted.",
             "file": "src/progression/types.rs",
-            "line": 574
+            "line": 580
           },
           {
             "name": "PrestigePreserveDefinition",
             "kind": "struct",
             "description": "Preserve flags applied during prestige.",
             "file": "src/progression/types.rs",
-            "line": 583
+            "line": 589
           },
           {
             "name": "PrestigeDefinition",
             "kind": "struct",
             "description": "Author-time definition for one prestige/rebirth path.",
             "file": "src/progression/types.rs",
-            "line": 592
+            "line": 598
           },
           {
             "name": "CollectionItemDefinition",
             "kind": "struct",
             "description": "One item authored inside a collection.",
             "file": "src/progression/types.rs",
-            "line": 605
+            "line": 611
           },
           {
             "name": "CollectionDefinition",
             "kind": "struct",
             "description": "Author-time definition for one collection or achievement set.",
             "file": "src/progression/types.rs",
-            "line": 618
+            "line": 624
           },
           {
             "name": "RivalDefinition",
             "kind": "struct",
             "description": "One pinned rival relationship retained in progression state.",
             "file": "src/progression/types.rs",
-            "line": 633
+            "line": 639
           },
           {
             "name": "PopulationNameGeneratorDefinition",
             "kind": "struct",
             "description": "Deterministic name generator configuration for a virtual population.",
             "file": "src/progression/types.rs",
-            "line": 644
+            "line": 650
           },
           {
             "name": "PopulationIdentityDefinition",
             "kind": "struct",
             "description": "Identity configuration applied to generated virtual profiles.",
             "file": "src/progression/types.rs",
-            "line": 658
+            "line": 664
           },
           {
             "name": "PopulationActivityDefinition",
             "kind": "struct",
             "description": "Min/max activity band for one archetype.",
             "file": "src/progression/types.rs",
-            "line": 672
+            "line": 678
           },
           {
             "name": "PopulationSkillDefinition",
             "kind": "struct",
             "description": "Score/skill distribution config for one archetype.",
             "file": "src/progression/types.rs",
-            "line": 683
+            "line": 689
           },
           {
             "name": "PopulationArchetypeDefinition",
             "kind": "struct",
             "description": "One weighted archetype used when generating a population.",
             "file": "src/progression/types.rs",
-            "line": 694
+            "line": 700
           },
           {
             "name": "PopulationInitialScoreDefinition",
             "kind": "struct",
             "description": "Initial score distribution config for one simulated leaderboard.",
             "file": "src/progression/types.rs",
-            "line": 707
+            "line": 713
           },
           {
             "name": "PopulationScoreProgressionDefinition",
             "kind": "struct",
             "description": "Progression rule for one simulated leaderboard.",
             "file": "src/progression/types.rs",
-            "line": 714
+            "line": 720
           },
           {
             "name": "PopulationLeaderboardDefinition",
             "kind": "struct",
             "description": "Per-leaderboard simulation config inside a population template.",
             "file": "src/progression/types.rs",
-            "line": 725
+            "line": 731
           },
           {
             "name": "PopulationTemplateDefinition",
             "kind": "struct",
             "description": "Author-time definition for one virtual population template.",
             "file": "src/progression/types.rs",
-            "line": 739
+            "line": 745
           },
           {
             "name": "RewardState",
             "kind": "enum",
             "description": "Reward state tracked by the store.",
             "file": "src/progression/types.rs",
-            "line": 757
+            "line": 763
           },
           {
             "name": "RewardRecord",
             "kind": "struct",
             "description": "One reward record emitted by progression systems.",
             "file": "src/progression/types.rs",
-            "line": 770
+            "line": 776
           },
           {
             "name": "ModifierAddOptions",
             "kind": "struct",
             "description": "Options accepted when creating a modifier.",
             "file": "src/progression/types.rs",
-            "line": 787
+            "line": 793
           },
           {
             "name": "EventRecord",
             "kind": "struct",
             "description": "One structured event emitted by the store.",
             "file": "src/progression/types.rs",
-            "line": 802
+            "line": 808
           },
           {
             "name": "ChangeRecord",
             "kind": "struct",
             "description": "One retained transport-neutral change record.",
             "file": "src/progression/types.rs",
-            "line": 819
+            "line": 825
           },
           {
             "name": "ChangesetEnvelope",
             "kind": "struct",
             "description": "Bounded transport-neutral changeset envelope for incremental sync.",
             "file": "src/progression/types.rs",
-            "line": 828
+            "line": 834
           },
           {
             "name": "ChangesetMergePolicy",
             "kind": "enum",
             "description": "Merge policy used when applying a transport-neutral changeset envelope.",
             "file": "src/progression/types.rs",
-            "line": 846
+            "line": 852
           },
           {
             "name": "ChangesetApplyOptions",
             "kind": "struct",
             "description": "Options controlling validated changeset-envelope application.",
             "file": "src/progression/types.rs",
-            "line": 857
+            "line": 863
           },
           {
             "name": "ChangesetConflict",
             "kind": "struct",
             "description": "One detected conflict while comparing a local store against an incoming changeset snapshot.",
             "file": "src/progression/types.rs",
-            "line": 878
+            "line": 884
           },
           {
             "name": "SeasonState",
             "kind": "struct",
             "description": "Runtime lifecycle state for one season definition.",
             "file": "src/progression/types.rs",
-            "line": 895
+            "line": 901
           },
           {
             "name": "SeasonArchiveRecord",
             "kind": "struct",
             "description": "Retained archive entry for one completed season run.",
             "file": "src/progression/types.rs",
-            "line": 910
+            "line": 916
           }
         ]
       },

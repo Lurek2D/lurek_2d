@@ -696,12 +696,15 @@ def _collect_module_doc(api_file: Path) -> str:
 
 def _determine_module_name(api_file: Path) -> str:
     stem = api_file.stem.replace("_api", "")
-    return stem
+    return {
+        "progression_objects": "progression",
+    }.get(stem, stem)
 
 
 def _lua_namespace(module: str) -> str:
     """Return the Lua-visible namespace key for a Rust module name."""
     return {
+        "progression_objects": "progression",
         "system": "runtime",
     }.get(module, module)
 

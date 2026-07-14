@@ -54,7 +54,10 @@ SOURCE_DIR_RELATIVE = "src/lua_api"
 CODE_SNAPSHOT_RELATIVE = "logs/data/lua_api_bindings_from_code.json"
 DOCSTRING_SNAPSHOT_RELATIVE = "logs/data/lua_api_bindings_from_docstrings.json"
 VALIDATION_REPORT_RELATIVE = "logs/reports/lua_api_binding_validation.json"
-MODULE_NAMESPACE_OVERRIDES = {"system": "runtime"}
+MODULE_NAMESPACE_OVERRIDES = {
+    "progression_objects": "progression",
+    "system": "runtime",
+}
 
 TABLE_WRAPPER_NAMES = {
     "Vec",

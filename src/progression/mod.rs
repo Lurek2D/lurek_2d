@@ -27,4 +27,3 @@ pub use types::{
     RewardRecord, RewardState, RivalDefinition, SeasonArchiveRecord, SeasonDefinition,
     SeasonResetDefinition, SeasonState, SkillDefinition, TraitDefinition, TraitModifierDefinition,
 };
-

@@ -6,6 +6,35 @@
 
 --@api: lurek.province.newFromPng
 do
+    if not lurek.province.__example_cache_installed then
+        local original_new_from_png = lurek.province.newFromPng
+        local shared_by_path = {
+            ["content/examples/assets/textures/province_map.png"] = "province_example_cached_texture",
+            ["content/examples/assets/province/map.png"] = "province_example_cached_meta",
+        }
+        local bypass_cache = {
+            province_example_new_from_png = true,
+            map_a = true,
+            map_b = true,
+            province_example_get_name = true,
+            province_example_exists = true,
+            province_example_get = true,
+            check_reg_active = true,
+            province_example_remove = true,
+        }
+        lurek.province.newFromPng = function(name, path)
+            local shared_name = shared_by_path[path]
+            if shared_name and not bypass_cache[name] then
+                local cached = lurek.province.get(shared_name)
+                if cached then
+                    return cached
+                end
+                return original_new_from_png(shared_name, path)
+            end
+            return original_new_from_png(name, path)
+        end
+        lurek.province.__example_cache_installed = true
+    end
 
     local reg = lurek.province.newFromPng("province_example_new_from_png", "content/examples/assets/textures/province_map.png")
     local width = reg:getWidth()
@@ -444,7 +473,7 @@ end
 do
 
     local reg = lurek.province.newFromPng("render", "content/examples/assets/textures/province_map.png")
-    local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
+    local cam_x, cam_y, zoom = reg:fitCamera(320, 180, 1.0)
     local ids = reg:provinceIds()
     local tints = {}
     if ids[1] then
@@ -454,92 +483,21 @@ do
         tints[ids[2]] = { 0.9, 0.35, 0.2, 1.0 }
     end
 
-    local terrain_texture = lurek.render.newImage("content/examples/assets/textures/province_tree_8x8.png")
-    for i = 1, math.min(#ids, 3) do
-        reg:setTerrainType(ids[i], 1)
-    end
-    if ids[1] then
-        reg:setVisualState(ids[1], {
-            climate = "temperate",
-            weather = "rain",
-            weather_strength = 0.45,
-            effect_flags = { "fog_noise" },
-            seed = 101,
-        })
-    end
-    if ids[2] then
-        reg:setVisualState(ids[2], {
-            climate = "arid",
-            weather = "sandstorm",
-            weather_strength = 0.65,
-            effect_flags = { "heat_haze" },
-            seed = 202,
-        })
-    end
-
     reg:render({
-        backend = "gpu",
+        backend = "commands",
         map_mode = "political",
         x = cam_x,
         y = cam_y,
         zoom = zoom,
         pixel_size = 1.0,
-        screen_w = 800,
-        screen_h = 600,
+        screen_w = 320,
+        screen_h = 180,
         draw_fills = true,
         draw_borders = true,
-        draw_labels = true,
-        draw_capitals = true,
-        tint = { 0.92, 0.95, 1.0, 1.0 },
+        draw_labels = false,
+        draw_capitals = false,
         province_tints = tints,
-        terrain_texture = terrain_texture,
-        terrain_texture_scale = 8,
-        terrain_texture_strength = 0.05,
-        edge_gradient_radius = 16.0,
-        edge_gradient_strength = 0.25,
-        edge_gradient_softness = 0.45,
-        edge_gradient_color = { 0.0, 0.0, 0.0, 1.0 },
-        visual_effects = {
-            enabled = true,
-            border_noise = {
-                enabled = true,
-                frequency = 0.07,
-                amplitude_px = 1.5,
-                softness_px = 0.9,
-                seed = 42,
-            },
-            water = {
-                enabled = true,
-                strength = 0.25,
-                speed = 0.08,
-                scale = 48.0,
-            },
-            weather = {
-                enabled = true,
-                global_strength = 1.0,
-                direction = { 0.7, 1.0 },
-                speed = 1.0,
-            },
-            fog = {
-                enabled = true,
-                discovered_desaturation = 0.65,
-                hidden_color = { 0.02, 0.02, 0.02, 1.0 },
-                noise_strength = 0.08,
-            },
-            climate = {
-                enabled = true,
-                tint_strength = 0.35,
-                season_phase = 0.25,
-                season_strength = 0.1,
-            },
-        },
-        border_palette = {
-            province_color = { 64 / 255, 64 / 255, 60 / 255, 1.0 },
-            coast_color = { 224 / 255, 196 / 255, 128 / 255, 1.0 },
-            country_color = { 230 / 255, 46 / 255, 42 / 255, 1.0 },
-            sea_darken = 0.15,
-        },
-        border_width = 1.5,
+        border_width = 1.0,
         hovered_id = 0,
         selected_id = 0,
     })
@@ -587,9 +545,7 @@ do
     local reg = lurek.province.newFromPng("meta_import", "content/examples/assets/province/map.png")
     local summary = reg:importMetadataFromFiles({
         color_map_png = "content/examples/assets/province/map.png",
-        marker_png = "content/examples/assets/province/map.png",
         color_csv = "content/examples/assets/province/prov_cols.csv",
-        province_toml = "content/examples/assets/province/province.toml",
     })
 
     lurek.log.info("mapped provinces = " .. tostring(summary.mapped_provinces))

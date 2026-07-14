@@ -1,5 +1,11 @@
-//! Registers the public `lurek.progression` Lua API for deterministic offline progression state.
+//! Registers the public `lurek.progression` Lua API for deterministic offline progression state
+//! and owns its typed userdata wrappers.
 
+use self::progression_objects_api_impl::{
+    achievement, activity_feed, challenge, collection, leaderboard_entry, population,
+    population_profile, prestige, quest_state_bound, reward_bound, rival, rival_delta, season,
+    season_archive, userdata_list,
+};
 use super::SharedState;
 use crate::progression::{
     AchievementDefinition, AttributeDefinition, AttributeMode, ChallengeTemplateDefinition,
@@ -8,10 +14,10 @@ use crate::progression::{
     DerivedValueInput, LeaderboardDefinition, LeaderboardRankMode, LeaderboardSort,
     LevelTrackDefinition, ModifierAddOptions, PerkDefinition, PopulationTemplateDefinition,
     PrestigeDefinition, PrestigePreserveDefinition, PrestigeResetDefinition, ProfileOptions,
-    ProfileTemplateDefinition, ProgressionCondition, ProgressionStore,
-    ProgressionStoreOptions, ProgressionTransaction, QuestDefinition, QuestObjectiveDefinition,
-    QuestStageDefinition, ResourceDefinition, SeasonDefinition, SeasonResetDefinition,
-    SkillDefinition, TraitDefinition, TraitModifierDefinition,
+    ProfileTemplateDefinition, ProgressionCondition, ProgressionStore, ProgressionStoreOptions,
+    ProgressionTransaction, QuestDefinition, QuestObjectiveDefinition, QuestStageDefinition,
+    ResourceDefinition, SeasonDefinition, SeasonResetDefinition, SkillDefinition, TraitDefinition,
+    TraitModifierDefinition,
 };
 use mlua::prelude::*;
 use mlua::{AnyUserData, UserData, UserDataMethods, Value as LuaValue};
@@ -101,6 +107,7 @@ struct LuaProgressionStore {
 #[derive(Clone)]
 struct LuaProfileHandle {
     id: String,
+    store: Rc<RefCell<ProgressionStore>>,
 }
 
 #[derive(Clone)]
@@ -860,6 +867,12 @@ fn build_legacy_stats_adapter<'lua>(
     adapter.set("_encumbrance", lua.create_table()?)?;
     adapter.set("_initiative", 10.0)?;
 
+    /// Define.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @param base : number
+    /// @param opts : table?
     adapter.set(
         "define",
         lua.create_function(
@@ -898,6 +911,11 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
+    /// Returns a value.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return number
     adapter.set(
         "get",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -912,6 +930,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the base.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return number
     adapter.set(
         "getBase",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -926,6 +949,12 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the base.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @param value : number
+    /// @return boolean
     adapter.set(
         "setBase",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -940,6 +969,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the min.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @param value : number
     adapter.set(
         "setMin",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -957,6 +991,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the max.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @param value : number
     adapter.set(
         "setMax",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -974,6 +1013,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the min.
+    ///
+    /// @param this : table
+    /// @param name : string
     adapter.set(
         "getMin",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -983,6 +1026,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the max.
+    ///
+    /// @param this : table
+    /// @param name : string
     adapter.set(
         "getMax",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -992,6 +1039,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the regen.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @param value : number
     adapter.set(
         "setRegen",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -1002,6 +1054,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the regen.
+    ///
+    /// @param this : table
+    /// @param name : string
     adapter.set(
         "getRegen",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1011,6 +1067,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the stat names.
+    ///
+    /// @param this : table
+    /// @return table
     adapter.set(
         "getStatNames",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -1029,6 +1089,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Adds buff.
+    ///
+    /// @return string
     adapter.set(
         "addBuff",
         lua.create_function(
@@ -1061,6 +1124,11 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
+    /// Removes buff.
+    ///
+    /// @param this : table
+    /// @param handle : string
+    /// @return boolean
     adapter.set(
         "removeBuff",
         lua.create_function(|_, (this, handle): (LuaTable, String)| {
@@ -1075,6 +1143,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Clears buffs.
+    ///
+    /// @param this : table
+    /// @param stat : string?
     adapter.set(
         "clearBuffs",
         lua.create_function(|_, (this, stat): (LuaTable, Option<String>)| {
@@ -1100,6 +1172,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the buff count.
+    ///
+    /// @param this : table
+    /// @param stat : string?
+    /// @return integer
     adapter.set(
         "getBuffCount",
         lua.create_function(|_, (this, stat): (LuaTable, Option<String>)| {
@@ -1122,6 +1199,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Apply trait buffs.
+    ///
+    /// @param this : table
+    /// @param trait_name : string
     adapter.set(
         "applyTraitBuffs",
         lua.create_function(|_, (this, trait_name): (LuaTable, String)| {
@@ -1138,6 +1219,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Removes trait buffs.
+    ///
+    /// @param this : table
+    /// @param trait_name : string
+    /// @return boolean
     adapter.set(
         "removeTraitBuffs",
         lua.create_function(|_, (this, trait_name): (LuaTable, String)| {
@@ -1154,6 +1240,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns true if trait.
+    ///
+    /// @param this : table
+    /// @param trait_name : string
+    /// @return boolean
     adapter.set(
         "hasTrait",
         lua.create_function(|_, (this, trait_name): (LuaTable, String)| {
@@ -1168,6 +1259,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the active traits.
+    ///
+    /// @param this : table
+    /// @return table
     adapter.set(
         "getActiveTraits",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -1185,6 +1280,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the buffs.
+    ///
+    /// @param this : table
+    /// @param stat : string?
+    /// @return table
     adapter.set(
         "getBuffs",
         lua.create_function(|lua, (this, stat): (LuaTable, Option<String>)| {
@@ -1219,6 +1319,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Adds xp.
+    ///
+    /// @param this : table
+    /// @param amount : number
     adapter.set(
         "addXP",
         lua.create_function(|_, (this, amount): (LuaTable, f64)| {
@@ -1240,6 +1344,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the xp.
+    ///
+    /// @param this : table
+    /// @return number
     adapter.set(
         "getXP",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1254,6 +1362,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the xp.
+    ///
+    /// @param this : table
+    /// @param value : number
     adapter.set(
         "setXP",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -1278,6 +1390,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the level.
+    ///
+    /// @param this : table
+    /// @return integer
     adapter.set(
         "getLevel",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1292,6 +1408,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the level.
+    ///
+    /// @param this : table
+    /// @param value : integer
     adapter.set(
         "setLevel",
         lua.create_function(|_, (this, value): (LuaTable, i64)| {
@@ -1316,6 +1436,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the level thresholds.
+    ///
+    /// @param this : table
+    /// @param thresholds : table
     adapter.set(
         "setLevelThresholds",
         lua.create_function(|_, (this, thresholds): (LuaTable, LuaTable)| {
@@ -1324,7 +1448,11 @@ fn build_legacy_stats_adapter<'lua>(
             let values = thresholds.get::<_, Option<LuaTable>>("values")?;
             let base_xp = thresholds
                 .get::<_, Option<f64>>("base")?
-                .or_else(|| values.as_ref().and_then(|table| table.get::<_, Option<f64>>(1).ok().flatten()))
+                .or_else(|| {
+                    values
+                        .as_ref()
+                        .and_then(|table| table.get::<_, Option<f64>>(1).ok().flatten())
+                })
                 .unwrap_or(100.0);
             let increment_xp = thresholds
                 .get::<_, Option<f64>>("increment")?
@@ -1360,6 +1488,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Define skill.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @param opts : table?
     adapter.set(
         "defineSkill",
         lua.create_function(
@@ -1381,6 +1514,11 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
+    /// Learn skill.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return boolean
     adapter.set(
         "learnSkill",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1395,6 +1533,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Use skill.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return | boolean, string? | Success flag followed by an optional failure reason.
     adapter.set(
         "useSkill",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1411,6 +1554,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the skill level.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return integer
     adapter.set(
         "getSkillLevel",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1425,6 +1573,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the cooldown remaining.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return number
     adapter.set(
         "getCooldownRemaining",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1441,6 +1594,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Define perk.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @param opts : table?
     adapter.set(
         "definePerk",
         lua.create_function(
@@ -1481,6 +1639,11 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
+    /// Acquire perk.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return boolean
     adapter.set(
         "acquirePerk",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1495,6 +1658,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns true if perk.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return boolean
     adapter.set(
         "hasPerk",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1509,6 +1677,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the action points.
+    ///
+    /// @param this : table
+    /// @param max_val : number
     adapter.set(
         "setActionPoints",
         lua.create_function(|_, (this, max_val): (LuaTable, f64)| {
@@ -1539,6 +1711,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the action points.
+    ///
+    /// @param this : table
+    /// @return | number, number | Current action points followed by the configured maximum.
     adapter.set(
         "getActionPoints",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1559,6 +1735,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Spend action points.
+    ///
+    /// @param this : table
+    /// @param amount : number
+    /// @return boolean
     adapter.set(
         "spendActionPoints",
         lua.create_function(|_, (this, amount): (LuaTable, f64)| {
@@ -1576,6 +1757,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Recover action points.
+    ///
+    /// @param this : table
+    /// @param amount : number
     adapter.set(
         "recoverActionPoints",
         lua.create_function(|_, (this, amount): (LuaTable, f64)| {
@@ -1593,6 +1778,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Begin turn.
+    ///
+    /// @param this : table
     adapter.set(
         "beginTurn",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1608,6 +1796,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the morale.
+    ///
+    /// @param this : table
+    /// @param max_val : number
     adapter.set(
         "setMorale",
         lua.create_function(|_, (this, max_val): (LuaTable, f64)| {
@@ -1634,6 +1826,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Returns the morale.
+    ///
+    /// @param this : table
+    /// @return | number, number | Current morale followed by the configured maximum.
     adapter.set(
         "getMorale",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1652,6 +1848,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Adjust morale.
+    ///
+    /// @param this : table
+    /// @param delta : number
     adapter.set(
         "adjustMorale",
         lua.create_function(|_, (this, delta): (LuaTable, f64)| {
@@ -1672,6 +1872,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the panic threshold.
+    ///
+    /// @param this : table
+    /// @param value : number
     adapter.set(
         "setPanicThreshold",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -1680,6 +1884,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the berserk threshold.
+    ///
+    /// @param this : table
+    /// @param value : number
     adapter.set(
         "setBerserkThreshold",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -1688,6 +1896,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Check morale.
+    ///
+    /// @param this : table
+    /// @return string
     adapter.set(
         "checkMorale",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1726,6 +1938,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the flag.
+    ///
+    /// @param this : table
+    /// @param name : string
     adapter.set(
         "setFlag",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1734,6 +1950,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
+    /// Clears flag.
+    ///
+    /// @param this : table
+    /// @param name : string
     adapter.set(
         "clearFlag",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1742,6 +1962,11 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
+    /// Returns true if flag.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return boolean
     adapter.set(
         "hasFlag",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1749,6 +1974,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(flags.get::<_, Option<bool>>(name)?.unwrap_or(false))
         })?,
     )?;
+    /// Returns the flags.
+    ///
+    /// @param this : table
+    /// @return table
     adapter.set(
         "getFlags",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -1769,6 +1998,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the resistance.
+    ///
+    /// @param this : table
+    /// @param dtype : string
+    /// @param value : number
     adapter.set(
         "setResistance",
         lua.create_function(|_, (this, dtype, value): (LuaTable, String, f64)| {
@@ -1777,6 +2011,11 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
+    /// Returns the resistance.
+    ///
+    /// @param this : table
+    /// @param dtype : string
+    /// @return number
     adapter.set(
         "getResistance",
         lua.create_function(|_, (this, dtype): (LuaTable, String)| {
@@ -1785,6 +2024,13 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Apply damage.
+    ///
+    /// @param this : table
+    /// @param stat : string
+    /// @param amount : number
+    /// @param dtype : string?
+    /// @return number
     adapter.set(
         "applyDamage",
         lua.create_function(
@@ -1807,6 +2053,10 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
+    /// Record use.
+    ///
+    /// @param this : table
+    /// @param name : string
     adapter.set(
         "recordUse",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1816,6 +2066,11 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
+    /// Returns the use count.
+    ///
+    /// @param this : table
+    /// @param name : string
+    /// @return integer
     adapter.set(
         "getUseCount",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1824,6 +2079,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the encumbrance.
+    ///
+    /// @param this : table
+    /// @param cur : number
+    /// @param max_val : number
     adapter.set(
         "setEncumbrance",
         lua.create_function(|_, (this, cur, max_val): (LuaTable, f64, f64)| {
@@ -1833,6 +2093,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
+    /// Returns the encumbrance.
+    ///
+    /// @param this : table
+    /// @return table
     adapter.set(
         "getEncumbrance",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -1846,6 +2110,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(out)
         })?,
     )?;
+    /// Returns true if encumbered.
+    ///
+    /// @param this : table
+    /// @return boolean
     adapter.set(
         "isEncumbered",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1856,6 +2124,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the initiative.
+    ///
+    /// @param this : table
+    /// @param value : number
     adapter.set(
         "setInitiative",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -1863,6 +2135,9 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
+    /// Returns the initiative.
+    ///
+    /// @param this : table
     adapter.set(
         "getInitiative",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1871,6 +2146,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Update.
+    ///
+    /// @param this : table
+    /// @param dt : number
     adapter.set(
         "update",
         lua.create_function(|_, (this, dt): (LuaTable, f64)| {
@@ -1884,6 +2163,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Snapshot.
+    ///
+    /// @param this : table
+    /// @return table
     adapter.set(
         "snapshot",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -1916,6 +2199,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Restore.
+    ///
+    /// @param this : table
+    /// @param snap : table
     adapter.set(
         "restore",
         lua.create_function(|_, (this, snap): (LuaTable, LuaTable)| {
@@ -1962,10 +2249,17 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
+    /// Type.
+    ///
+    /// @return string
     adapter.set(
         "type",
         lua.create_function(|_, ()| Ok("LLegacyStatsAdapter"))?,
     )?;
+    /// Type of.
+    ///
+    /// @param name : string
+    /// @return boolean
     adapter.set(
         "typeOf",
         lua.create_function(|_, name: String| {
@@ -1991,6 +2285,10 @@ fn build_legacy_quest_adapter<'lua>(
     adapter.set("_quest_defs", lua.create_table()?)?;
     adapter.set("_quest_order", lua.create_table()?)?;
 
+    /// Adds quest.
+    ///
+    /// @param this : table
+    /// @param quest : table
     adapter.set(
         "addQuest",
         lua.create_function(|_, (this, quest): (LuaTable, LuaTable)| {
@@ -2065,6 +2363,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Quest count.
+    ///
+    /// @param this : table
+    /// @return integer
     adapter.set(
         "questCount",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2078,6 +2380,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Quest ids.
+    ///
+    /// @param this : table
+    /// @return table
     adapter.set(
         "questIds",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -2091,6 +2397,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Removes quest.
+    ///
+    /// @param this : table
+    /// @param id : string
+    /// @return boolean
     adapter.set(
         "removeQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2116,6 +2427,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Start quest.
+    ///
+    /// @param this : table
+    /// @param id : string
+    /// @return boolean
     adapter.set(
         "startQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2130,6 +2446,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Complete quest.
+    ///
+    /// @param this : table
+    /// @param id : string
+    /// @return boolean
     adapter.set(
         "completeQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2144,6 +2465,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Fail quest.
+    ///
+    /// @param this : table
+    /// @param id : string
+    /// @return boolean
     adapter.set(
         "failQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2158,6 +2484,9 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Advance objective.
+    ///
+    /// @return boolean
     adapter.set(
         "advanceObjective",
         lua.create_function(
@@ -2203,6 +2532,13 @@ fn build_legacy_quest_adapter<'lua>(
         )?,
     )?;
 
+    /// Adds journal entry.
+    ///
+    /// @param this : table
+    /// @param quest_id : string
+    /// @param text : string
+    /// @param tag : string?
+    /// @return integer
     adapter.set(
         "addJournalEntry",
         lua.create_function(
@@ -2237,6 +2573,11 @@ fn build_legacy_quest_adapter<'lua>(
         )?,
     )?;
 
+    /// Returns the quest.
+    ///
+    /// @param this : table
+    /// @param id : string
+    /// @return table
     adapter.set(
         "getQuest",
         lua.create_function(|lua, (this, id): (LuaTable, String)| {
@@ -2267,6 +2608,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Quests with status.
+    ///
+    /// @param this : table
+    /// @param wanted : string
+    /// @return table
     adapter.set(
         "questsWithStatus",
         lua.create_function(|lua, (this, wanted): (LuaTable, String)| {
@@ -2287,6 +2633,9 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Active ids.
+    ///
+    /// @param this : table
     adapter.set(
         "activeIds",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2294,6 +2643,9 @@ fn build_legacy_quest_adapter<'lua>(
             fn_ref.call::<_, LuaTable>((this, "active"))
         })?,
     )?;
+    /// Completed ids.
+    ///
+    /// @param this : table
     adapter.set(
         "completedIds",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2301,6 +2653,9 @@ fn build_legacy_quest_adapter<'lua>(
             fn_ref.call::<_, LuaTable>((this, "completed"))
         })?,
     )?;
+    /// Failed ids.
+    ///
+    /// @param this : table
     adapter.set(
         "failedIds",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2309,6 +2664,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Active count.
+    ///
+    /// @param this : table
+    /// @return integer
     adapter.set(
         "activeCount",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2317,6 +2676,10 @@ fn build_legacy_quest_adapter<'lua>(
             Ok(ids.raw_len() as i64)
         })?,
     )?;
+    /// Completed count.
+    ///
+    /// @param this : table
+    /// @return integer
     adapter.set(
         "completedCount",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2326,6 +2689,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Sets the quest reward.
+    ///
+    /// @param this : table
+    /// @param id : string
+    /// @param reward : string
     adapter.set(
         "setQuestReward",
         lua.create_function(|_, (this, id, reward): (LuaTable, String, String)| {
@@ -2335,6 +2703,10 @@ fn build_legacy_quest_adapter<'lua>(
             Ok(())
         })?,
     )?;
+    /// Returns the quest reward.
+    ///
+    /// @param this : table
+    /// @param id : string
     adapter.set(
         "getQuestReward",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2346,6 +2718,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Clears quest.
+    ///
+    /// @param this : table
+    /// @param id : string
+    /// @return boolean
     adapter.set(
         "resetQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2363,10 +2740,17 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
+    /// Type.
+    ///
+    /// @return string
     adapter.set(
         "type",
         lua.create_function(|_, ()| Ok("LLegacyQuestAdapter"))?,
     )?;
+    /// Type of.
+    ///
+    /// @param name : string
+    /// @return boolean
     adapter.set(
         "typeOf",
         lua.create_function(|_, name: String| {
@@ -2378,8 +2762,42 @@ fn build_legacy_quest_adapter<'lua>(
 
 impl UserData for LuaProfileHandle {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Returns the id.
+        ///
+        /// @return string
         methods.add_method("getId", |_, this, ()| Ok(this.id.clone()));
+        /// Returns this profile's pending reward records as typed reward handles.
+        ///
+        /// @return | table | Array of `LReward` values still waiting for claim.
+        methods.add_method("getPendingRewards", |lua, this, ()| {
+            let rewards = this
+                .store
+                .borrow()
+                .get_pending_rewards(&this.id)
+                .map_err(|err| progression_error("getPendingRewards", err))?;
+            match serde_json::to_value(rewards).map_err(|err| {
+                LuaError::RuntimeError(format!("reward serialization failed: {err}"))
+            })? {
+                JsonValue::Array(values) => userdata_list(
+                    lua,
+                    values
+                        .into_iter()
+                        .map(|value| reward_bound(value, this.store.clone(), this.id.clone()))
+                        .collect(),
+                ),
+                _ => Err(LuaError::RuntimeError(
+                    "lurek.progression.getPendingRewards: expected reward array".to_string(),
+                )),
+            }
+        });
+        /// Type.
+        ///
+        /// @return string
         methods.add_method("type", |_, _, ()| Ok("LProgressionProfile"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return boolean
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LProgressionProfile" || name == "LObject")
         });
@@ -2460,6 +2878,8 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
+        /// Commit.
+        ///
         methods.add_method_mut("commit", |lua, this, ()| {
             let summary = this
                 .store
@@ -2474,11 +2894,20 @@ impl UserData for LuaProgressionTransaction {
                 }),
             )
         });
+        /// Rollback.
+        ///
         methods.add_method_mut("rollback", |_, this, ()| {
             *this.tx.borrow_mut() = ProgressionTransaction::new(None);
             Ok(())
         });
+        /// Type.
+        ///
+        /// @return string
         methods.add_method("type", |_, _, ()| Ok("LProgressionTransaction"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return boolean
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LProgressionTransaction" || name == "LObject")
         });
@@ -2487,25 +2916,46 @@ impl UserData for LuaProgressionTransaction {
 
 impl UserData for LuaProgressionStore {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Returns the id.
+        ///
+        /// @return string
         methods.add_method("getId", |_, this, ()| {
             Ok(this.store.borrow().id().to_string())
         });
+        /// Returns the revision.
+        ///
+        /// @return integer
         methods.add_method("getRevision", |_, this, ()| {
             Ok(this.store.borrow().revision())
         });
+        /// Returns the schema version.
+        ///
+        /// @return integer
         methods.add_method("getSchemaVersion", |_, this, ()| {
             Ok(this.store.borrow().schema_version())
         });
+        /// Returns the definition hash.
+        ///
+        /// @return string
         methods.add_method("getDefinitionHash", |_, this, ()| {
             Ok(this.store.borrow().definition_hash())
         });
+        /// Returns the time.
+        ///
+        /// @return number
         methods.add_method("getTime", |_, this, ()| Ok(this.store.borrow().time()));
+        /// Sets the time.
+        ///
+        /// @param seconds : number
         methods.add_method_mut("setTime", |_, this, seconds: f64| {
             this.store
                 .borrow_mut()
                 .set_time(seconds)
                 .map_err(|err| progression_error("setTime", err))
         });
+        /// Advance time.
+        ///
+        /// @param seconds : number
         methods.add_method_mut("advanceTime", |_, this, seconds: f64| {
             this.store
                 .borrow_mut()
@@ -2524,16 +2974,25 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Stats.
+        ///
         methods.add_method("stats", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().stats())
         });
+        /// Clears the state.
+        ///
         methods.add_method_mut("clear", |_, this, ()| {
             this.store.borrow_mut().clear();
             Ok(())
         });
+        /// Validate.
+        ///
         methods.add_method("validate", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().validate())
         });
+        /// Compile condition.
+        ///
+        /// @param condition : table
         methods.add_method("compileCondition", |lua, this, condition: LuaTable| {
             json_to_lua(
                 lua,
@@ -2543,6 +3002,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("compileCondition", err))?,
             )
         });
+        /// Validate condition.
+        ///
+        /// @param condition : table
         methods.add_method("validateCondition", |lua, this, condition: LuaTable| {
             json_to_lua(
                 lua,
@@ -2574,14 +3036,23 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Debug snapshot.
+        ///
         methods.add_method("debugSnapshot", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().debug_snapshot())
         });
+        /// Export snapshot.
+        ///
+        /// @return table
         methods.add_method("exportSnapshot", |lua, this, ()| {
             let encoded = serde_json::to_string(&this.store.borrow().export_snapshot())
                 .map_err(|err| progression_error("exportSnapshot", err))?;
             Ok(LuaValue::String(lua.create_string(&encoded)?))
         });
+        /// Export changes since.
+        ///
+        /// @param revision : integer
+        /// @return table
         methods.add_method("exportChangesSince", |lua, this, revision: u64| {
             let encoded =
                 serde_json::to_string(&this.store.borrow().export_changes_since(revision))
@@ -2606,12 +3077,18 @@ impl UserData for LuaProgressionStore {
                 Ok(LuaValue::String(lua.create_string(&encoded)?))
             },
         );
+        /// Load snapshot.
+        ///
+        /// @param snapshot : any
         methods.add_method_mut("loadSnapshot", |_, this, snapshot: LuaValue| {
             this.store
                 .borrow_mut()
                 .load_snapshot(snapshot_arg_to_json(snapshot)?)
                 .map_err(|err| progression_error("loadSnapshot", err))
         });
+        /// Apply changeset.
+        ///
+        /// @param changeset : any
         methods.add_method_mut("applyChangeset", |lua, this, changeset: LuaValue| {
             let changes: Vec<crate::progression::ChangeRecord> =
                 serde_json::from_value(snapshot_arg_to_json(changeset)?)
@@ -2653,6 +3130,9 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Ack changes through.
+        ///
+        /// @param revision : integer
         methods.add_method_mut("ackChangesThrough", |lua, this, revision: u64| {
             json_to_lua(
                 lua,
@@ -2661,6 +3141,9 @@ impl UserData for LuaProgressionStore {
                     .acknowledge_changes_through(revision),
             )
         });
+        /// Compact changes.
+        ///
+        /// @param max_records : integer
         methods.add_method_mut("compactChanges", |lua, this, max_records: usize| {
             json_to_lua(
                 lua,
@@ -2670,12 +3153,16 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("compactChanges", err))?,
             )
         });
+        /// Drain events.
+        ///
         methods.add_method_mut("drainEvents", |lua, this, ()| {
             let events = this.store.borrow_mut().drain_events();
             let values = serde_json::to_value(events)
                 .map_err(|err| progression_error("drainEvents", err))?;
             json_to_lua(lua, values)
         });
+        /// Clears events.
+        ///
         methods.add_method_mut("clearEvents", |_, this, ()| {
             this.store.borrow_mut().clear_events();
             Ok(())
@@ -2687,7 +3174,10 @@ impl UserData for LuaProgressionStore {
                     .borrow_mut()
                     .create_profile(&id, parse_profile_options(options)?)
                     .map_err(|err| progression_error("createProfile", err))?;
-                lua.create_userdata(LuaProfileHandle { id })
+                lua.create_userdata(LuaProfileHandle {
+                    id,
+                    store: this.store.clone(),
+                })
             },
         );
         methods.add_method_mut(
@@ -2698,12 +3188,25 @@ impl UserData for LuaProgressionStore {
                     .borrow_mut()
                     .ensure_profile(&id, parse_profile_options(options)?)
                     .map_err(|err| progression_error("ensureProfile", err))?;
-                Ok((lua.create_userdata(LuaProfileHandle { id })?, created))
+                Ok((
+                    lua.create_userdata(LuaProfileHandle {
+                        id,
+                        store: this.store.clone(),
+                    })?,
+                    created,
+                ))
             },
         );
+        /// Returns true if profile.
+        ///
+        /// @param id : string
+        /// @return boolean
         methods.add_method("hasProfile", |_, this, id: String| {
             Ok(this.store.borrow().has_profile(&id))
         });
+        /// Returns the profile.
+        ///
+        /// @param id : string
         methods.add_method("getProfile", |lua, this, id: String| {
             json_to_lua(
                 lua,
@@ -2731,12 +3234,23 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removeProfile", err))
             },
         );
+        /// List profiles.
+        ///
+        /// @param  : table?
         methods.add_method("listProfiles", |lua, this, _: Option<LuaTable>| {
             json_to_lua(lua, JsonValue::Array(this.store.borrow().list_profiles()))
         });
+        /// Returns the number of items.
+        ///
+        /// @param  : table?
+        /// @return integer
         methods.add_method("countProfiles", |_, this, _: Option<LuaTable>| {
             Ok(this.store.borrow().count_profiles() as i64)
         });
+        /// Adds profile tag.
+        ///
+        /// @param id : string
+        /// @param tag : string
         methods.add_method_mut("addProfileTag", |_, this, (id, tag): (String, String)| {
             this.store
                 .borrow_mut()
@@ -2822,6 +3336,9 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// List counters.
+        ///
+        /// @param profile : any
         methods.add_method("listCounters", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             json_to_lua(
@@ -2925,6 +3442,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removeModifier", err))
             },
         );
+        /// List modifiers.
+        ///
+        /// @param profile : any
         methods.add_method("listModifiers", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             json_to_lua(
@@ -3075,6 +3595,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("hasTrait", err))
             },
         );
+        /// List traits.
+        ///
+        /// @param profile : any
         methods.add_method("listTraits", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             json_to_lua(
@@ -3209,13 +3732,13 @@ impl UserData for LuaProgressionStore {
                     Some(ref opts) => opts.get::<_, Option<f64>>("time")?,
                     None => None,
                 };
-                json_to_lua(
-                    lua,
+                lua.create_userdata(season(
                     this.store
                         .borrow_mut()
                         .start_season(&id, time_override)
                         .map_err(|err| progression_error("startSeason", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method_mut(
@@ -3229,32 +3752,43 @@ impl UserData for LuaProgressionStore {
                     Some(ref opts) => opts.get::<_, Option<bool>>("archive")?,
                     None => None,
                 };
-                json_to_lua(
-                    lua,
+                lua.create_userdata(season(
                     this.store
                         .borrow_mut()
                         .end_season(&id, time_override, archive_override)
                         .map_err(|err| progression_error("endSeason", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
+        /// Returns the season.
+        ///
+        /// @param id : string
         methods.add_method("getSeason", |lua, this, id: String| {
-            json_to_lua(
-                lua,
+            lua.create_userdata(season(
                 this.store
                     .borrow()
                     .get_season(&id)
                     .map_err(|err| progression_error("getSeason", err))?,
-            )
+            ))
+            .map(LuaValue::UserData)
         });
+        /// List seasons.
+        ///
+        /// @param query : table?
         methods.add_method("listSeasons", |lua, this, query: Option<LuaTable>| {
             let active_only = match query {
                 Some(ref table) => table.get::<_, Option<bool>>("active")?,
                 None => None,
             };
-            json_to_lua(
+            userdata_list(
                 lua,
-                JsonValue::Array(this.store.borrow().list_seasons(active_only)),
+                this.store
+                    .borrow()
+                    .list_seasons(active_only)
+                    .into_iter()
+                    .map(season)
+                    .collect(),
             )
         });
         methods.add_method(
@@ -3264,13 +3798,25 @@ impl UserData for LuaProgressionStore {
                     Some(ref table) => table.get::<_, Option<bool>>("latest")?.unwrap_or(false),
                     None => false,
                 };
-                json_to_lua(
-                    lua,
-                    this.store
-                        .borrow()
-                        .get_season_archive(&id, latest_only)
-                        .map_err(|err| progression_error("getSeasonArchive", err))?,
-                )
+                let archive = this
+                    .store
+                    .borrow()
+                    .get_season_archive(&id, latest_only)
+                    .map_err(|err| progression_error("getSeasonArchive", err))?;
+                if latest_only {
+                    if archive.is_null() {
+                        Ok(LuaValue::Nil)
+                    } else {
+                        lua.create_userdata(season_archive(archive))
+                            .map(LuaValue::UserData)
+                    }
+                } else if let JsonValue::Array(values) = archive {
+                    userdata_list(lua, values.into_iter().map(season_archive).collect())
+                } else {
+                    Err(LuaError::RuntimeError(
+                        "lurek.progression.getSeasonArchive: expected archive array".to_string(),
+                    ))
+                }
             },
         );
         methods.add_method_mut(
@@ -3296,38 +3842,42 @@ impl UserData for LuaProgressionStore {
             "applyPrestige",
             |lua, this, (profile, prestige_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(prestige(
                     this.store
                         .borrow_mut()
                         .apply_prestige(&profile_id, &prestige_id)
                         .map_err(|err| progression_error("applyPrestige", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
             "getPrestige",
             |lua, this, (profile, prestige_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(prestige(
                     this.store
                         .borrow()
                         .get_prestige(&profile_id, &prestige_id)
                         .map_err(|err| progression_error("getPrestige", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
+        /// List prestiges.
+        ///
+        /// @param profile : any
         methods.add_method("listPrestiges", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
-            json_to_lua(
+            userdata_list(
                 lua,
-                JsonValue::Array(
-                    this.store
-                        .borrow()
-                        .list_prestiges(&profile_id)
-                        .map_err(|err| progression_error("listPrestiges", err))?,
-                ),
+                this.store
+                    .borrow()
+                    .list_prestiges(&profile_id)
+                    .map_err(|err| progression_error("listPrestiges", err))?
+                    .into_iter()
+                    .map(prestige)
+                    .collect(),
             )
         });
         methods.add_method_mut(
@@ -3343,38 +3893,42 @@ impl UserData for LuaProgressionStore {
             "collectCollectionItem",
             |lua, this, (profile, collection_id, item_id): (LuaValue, String, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(collection(
                     this.store
                         .borrow_mut()
                         .collect_collection_item(&profile_id, &collection_id, &item_id)
                         .map_err(|err| progression_error("collectCollectionItem", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
             "getCollection",
             |lua, this, (profile, collection_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(collection(
                     this.store
                         .borrow()
                         .get_collection(&profile_id, &collection_id)
                         .map_err(|err| progression_error("getCollection", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
+        /// List collections.
+        ///
+        /// @param profile : any
         methods.add_method("listCollections", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
-            json_to_lua(
+            userdata_list(
                 lua,
-                JsonValue::Array(
-                    this.store
-                        .borrow()
-                        .list_collections(&profile_id)
-                        .map_err(|err| progression_error("listCollections", err))?,
-                ),
+                this.store
+                    .borrow()
+                    .list_collections(&profile_id)
+                    .map_err(|err| progression_error("listCollections", err))?
+                    .into_iter()
+                    .map(collection)
+                    .collect(),
             )
         });
         methods.add_method_mut(
@@ -3386,13 +3940,13 @@ impl UserData for LuaProgressionStore {
                     Some(ref table) => table.get::<_, Option<String>>("leaderboard_id")?,
                     None => None,
                 };
-                json_to_lua(
-                    lua,
+                lua.create_userdata(rival(
                     this.store
                         .borrow_mut()
                         .pin_rival(&profile_id, &rival_profile_id, leaderboard_id)
                         .map_err(|err| progression_error("pinRival", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
@@ -3400,25 +3954,29 @@ impl UserData for LuaProgressionStore {
             |lua, this, (profile, rival_profile): (LuaValue, LuaValue)| {
                 let profile_id = coerce_profile_id(profile)?;
                 let rival_profile_id = coerce_profile_id(rival_profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(rival(
                     this.store
                         .borrow()
                         .get_rival(&profile_id, &rival_profile_id)
                         .map_err(|err| progression_error("getRival", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
+        /// List rivals.
+        ///
+        /// @param profile : any
         methods.add_method("listRivals", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
-            json_to_lua(
+            userdata_list(
                 lua,
-                JsonValue::Array(
-                    this.store
-                        .borrow()
-                        .list_rivals(&profile_id)
-                        .map_err(|err| progression_error("listRivals", err))?,
-                ),
+                this.store
+                    .borrow()
+                    .list_rivals(&profile_id)
+                    .map_err(|err| progression_error("listRivals", err))?
+                    .into_iter()
+                    .map(rival)
+                    .collect(),
             )
         });
         methods.add_method(
@@ -3426,15 +3984,18 @@ impl UserData for LuaProgressionStore {
             |lua, this, (profile, rival_profile): (LuaValue, LuaValue)| {
                 let profile_id = coerce_profile_id(profile)?;
                 let rival_profile_id = coerce_profile_id(rival_profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(rival_delta(
                     this.store
                         .borrow()
                         .get_rival_delta(&profile_id, &rival_profile_id)
                         .map_err(|err| progression_error("getRivalDelta", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
+        /// Returns one typed activity-feed selection object.
+        ///
+        /// @param query : table?
         methods.add_method("getActivityFeed", |lua, this, query: Option<LuaTable>| {
             let profiles = match query {
                 Some(ref table) => match table.get::<_, Option<LuaTable>>("profiles")? {
@@ -3463,15 +4024,20 @@ impl UserData for LuaProgressionStore {
                 Some(ref table) => table.get::<_, Option<usize>>("limit")?,
                 None => None,
             };
-            json_to_lua(
-                lua,
-                JsonValue::Array(
-                    this.store
-                        .borrow()
-                        .get_activity_feed(profiles, types, limit)
-                        .map_err(|err| progression_error("getActivityFeed", err))?,
-                ),
+            let entries = serde_json::to_value(
+                this.store
+                    .borrow()
+                    .get_activity_feed(profiles.clone(), types.clone(), limit)
+                    .map_err(|err| progression_error("getActivityFeed", err))?,
             )
+            .map_err(|err| {
+                progression_error(
+                    "getActivityFeed",
+                    format!("feed serialization failed: {err}"),
+                )
+            })?;
+            lua.create_userdata(activity_feed(entries, profiles, types, limit))
+                .map(LuaValue::UserData)
         });
         methods.add_method_mut(
             "definePopulationTemplate",
@@ -3485,6 +4051,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("definePopulationTemplate", err))
             },
         );
+        /// Validate population template.
+        ///
+        /// @param id : string
         methods.add_method("validatePopulationTemplate", |lua, this, id: String| {
             json_to_lua(
                 lua,
@@ -3501,23 +4070,26 @@ impl UserData for LuaProgressionStore {
                     Some(ref table) => table.get::<_, Option<String>>("id")?,
                     None => None,
                 };
-                json_to_lua(
-                    lua,
+                lua.create_userdata(population(
                     this.store
                         .borrow_mut()
                         .generate_population(&template_id, population_id)
                         .map_err(|err| progression_error("generatePopulation", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
+        /// Returns the population.
+        ///
+        /// @param handle_or_id : string
         methods.add_method("getPopulation", |lua, this, handle_or_id: String| {
-            json_to_lua(
-                lua,
+            lua.create_userdata(population(
                 this.store
                     .borrow()
                     .get_population(&handle_or_id)
                     .map_err(|err| progression_error("getPopulation", err))?,
-            )
+            ))
+            .map(LuaValue::UserData)
         });
         methods.add_method_mut(
             "updatePopulation",
@@ -3543,6 +4115,9 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Pause population.
+        ///
+        /// @param handle_or_id : string
         methods.add_method_mut("pausePopulation", |lua, this, handle_or_id: String| {
             json_to_lua(
                 lua,
@@ -3552,6 +4127,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("pausePopulation", err))?,
             )
         });
+        /// Resume population.
+        ///
+        /// @param handle_or_id : string
         methods.add_method_mut("resumePopulation", |lua, this, handle_or_id: String| {
             json_to_lua(
                 lua,
@@ -3621,14 +4199,15 @@ impl UserData for LuaProgressionStore {
                     Some(ref table) => table.get::<_, Option<usize>>("limit")?,
                     None => None,
                 };
-                json_to_lua(
+                userdata_list(
                     lua,
-                    JsonValue::Array(
-                        this.store
-                            .borrow()
-                            .list_population_profiles(&handle_or_id, materialized, limit)
-                            .map_err(|err| progression_error("listPopulationProfiles", err))?,
-                    ),
+                    this.store
+                        .borrow()
+                        .list_population_profiles(&handle_or_id, materialized, limit)
+                        .map_err(|err| progression_error("listPopulationProfiles", err))?
+                        .into_iter()
+                        .map(population_profile)
+                        .collect(),
                 )
             },
         );
@@ -3659,6 +4238,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("dematerializePopulationProfile", err))
             },
         );
+        /// Removes derived value.
+        ///
+        /// @param id : string
+        /// @return boolean
         methods.add_method_mut("removeDerivedValue", |_, this, id: String| {
             Ok(this.store.borrow_mut().remove_derived_value(&id))
         });
@@ -3685,6 +4268,8 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Validate derived values.
+        ///
         methods.add_method("validateDerivedValues", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().validate_derived_values())
         });
@@ -3692,53 +4277,55 @@ impl UserData for LuaProgressionStore {
             "submitScore",
             |lua, this, (profile, leaderboard_id, score): (LuaValue, String, f64)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(leaderboard_entry(
                     this.store
                         .borrow_mut()
                         .submit_score(&profile_id, &leaderboard_id, score)
                         .map_err(|err| progression_error("submitScore", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
             "getLeaderboardEntry",
             |lua, this, (profile, leaderboard_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(leaderboard_entry(
                     this.store
                         .borrow()
                         .get_leaderboard_entry(&profile_id, &leaderboard_id)
                         .map_err(|err| progression_error("getLeaderboardEntry", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
             "listLeaderboardTop",
             |lua, this, (leaderboard_id, limit): (String, Option<usize>)| {
-                json_to_lua(
+                userdata_list(
                     lua,
-                    JsonValue::Array(
-                        this.store
-                            .borrow()
-                            .list_leaderboard_top(&leaderboard_id, limit)
-                            .map_err(|err| progression_error("listLeaderboardTop", err))?,
-                    ),
+                    this.store
+                        .borrow()
+                        .list_leaderboard_top(&leaderboard_id, limit)
+                        .map_err(|err| progression_error("listLeaderboardTop", err))?
+                        .into_iter()
+                        .map(leaderboard_entry)
+                        .collect(),
                 )
             },
         );
         methods.add_method(
             "listLeaderboardRange",
             |lua, this, (leaderboard_id, start_rank, limit): (String, u64, Option<usize>)| {
-                json_to_lua(
+                userdata_list(
                     lua,
-                    JsonValue::Array(
-                        this.store
-                            .borrow()
-                            .list_leaderboard_range(&leaderboard_id, start_rank, limit)
-                            .map_err(|err| progression_error("listLeaderboardRange", err))?,
-                    ),
+                    this.store
+                        .borrow()
+                        .list_leaderboard_range(&leaderboard_id, start_rank, limit)
+                        .map_err(|err| progression_error("listLeaderboardRange", err))?
+                        .into_iter()
+                        .map(leaderboard_entry)
+                        .collect(),
                 )
             },
         );
@@ -3753,21 +4340,20 @@ impl UserData for LuaProgressionStore {
                 Option<usize>,
             )| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
+                userdata_list(
                     lua,
-                    JsonValue::Array(
-                        this.store
-                            .borrow()
-                            .list_leaderboard_around_profile(
-                                &leaderboard_id,
-                                &profile_id,
-                                before,
-                                after,
-                            )
-                            .map_err(|err| {
-                                progression_error("listLeaderboardAroundProfile", err)
-                            })?,
-                    ),
+                    this.store
+                        .borrow()
+                        .list_leaderboard_around_profile(
+                            &leaderboard_id,
+                            &profile_id,
+                            before,
+                            after,
+                        )
+                        .map_err(|err| progression_error("listLeaderboardAroundProfile", err))?
+                        .into_iter()
+                        .map(leaderboard_entry)
+                        .collect(),
                 )
             },
         );
@@ -3873,39 +4459,39 @@ impl UserData for LuaProgressionStore {
                 } else {
                     None
                 };
-                json_to_lua(
-                    lua,
+                lua.create_userdata(challenge(
                     this.store
                         .borrow_mut()
                         .activate_challenge(&profile_id, &challenge_id, time)
                         .map_err(|err| progression_error("activateChallenge", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method_mut(
             "setChallengeProgress",
             |lua, this, (profile, challenge_id, value): (LuaValue, String, f64)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(challenge(
                     this.store
                         .borrow_mut()
                         .set_challenge_progress(&profile_id, &challenge_id, value)
                         .map_err(|err| progression_error("setChallengeProgress", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
             "getChallenge",
             |lua, this, (profile, challenge_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(challenge(
                     this.store
                         .borrow()
                         .get_challenge(&profile_id, &challenge_id)
                         .map_err(|err| progression_error("getChallenge", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
@@ -3917,14 +4503,15 @@ impl UserData for LuaProgressionStore {
                 } else {
                     None
                 };
-                json_to_lua(
+                userdata_list(
                     lua,
-                    JsonValue::Array(
-                        this.store
-                            .borrow()
-                            .list_challenges(&profile_id, status.as_deref())
-                            .map_err(|err| progression_error("listChallenges", err))?,
-                    ),
+                    this.store
+                        .borrow()
+                        .list_challenges(&profile_id, status.as_deref())
+                        .map_err(|err| progression_error("listChallenges", err))?
+                        .into_iter()
+                        .map(challenge)
+                        .collect(),
                 )
             },
         );
@@ -3941,106 +4528,47 @@ impl UserData for LuaProgressionStore {
             "unlockAchievement",
             |lua, this, (profile, achievement_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(achievement(
                     this.store
                         .borrow_mut()
                         .unlock_achievement(&profile_id, &achievement_id)
                         .map_err(|err| progression_error("unlockAchievement", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
             "getAchievement",
             |lua, this, (profile, achievement_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(achievement(
                     this.store
                         .borrow()
                         .get_achievement(&profile_id, &achievement_id)
                         .map_err(|err| progression_error("getAchievement", err))?,
-                )
+                ))
+                .map(LuaValue::UserData)
             },
         );
+        /// List achievements.
+        ///
+        /// @param profile : any
         methods.add_method("listAchievements", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
-            json_to_lua(
+            userdata_list(
                 lua,
-                JsonValue::Array(
-                    this.store
-                        .borrow()
-                        .list_achievements(&profile_id)
-                        .map_err(|err| progression_error("listAchievements", err))?,
-                ),
+                this.store
+                    .borrow()
+                    .list_achievements(&profile_id)
+                    .map_err(|err| progression_error("listAchievements", err))?
+                    .into_iter()
+                    .map(achievement)
+                    .collect(),
             )
         });
-        methods.add_method("getPendingRewards", |lua, this, (profile,): (LuaValue,)| {
-            let profile_id = coerce_profile_id(profile)?;
-            let rewards = this
-                .store
-                .borrow()
-                .get_pending_rewards(&profile_id)
-                .map_err(|err| progression_error("getPendingRewards", err))?;
-            json_to_lua(
-                lua,
-                serde_json::to_value(rewards).map_err(|err| {
-                    LuaError::RuntimeError(format!("reward serialization failed: {err}"))
-                })?,
-            )
-        });
-        methods.add_method_mut(
-            "claimReward",
-            |lua, this, (profile, reward_id): (LuaValue, String)| {
-                let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
-                    serde_json::to_value(
-                        this.store
-                            .borrow_mut()
-                            .claim_reward(&profile_id, &reward_id)
-                            .map_err(|err| progression_error("claimReward", err))?,
-                    )
-                    .map_err(|err| {
-                        LuaError::RuntimeError(format!("reward serialization failed: {err}"))
-                    })?,
-                )
-            },
-        );
-        methods.add_method_mut(
-            "markRewardApplied",
-            |lua, this, (profile, reward_id, external_receipt): (LuaValue, String, Option<String>)| {
-                let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
-                    serde_json::to_value(
-                        this.store
-                            .borrow_mut()
-                            .mark_reward_applied(&profile_id, &reward_id, external_receipt)
-                            .map_err(|err| progression_error("markRewardApplied", err))?,
-                    )
-                    .map_err(|err| LuaError::RuntimeError(format!("reward serialization failed: {err}")))?,
-                )
-            },
-        );
-        methods.add_method_mut(
-            "rejectReward",
-            |lua, this, (profile, reward_id, reason): (LuaValue, String, Option<String>)| {
-                let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
-                    serde_json::to_value(
-                        this.store
-                            .borrow_mut()
-                            .reject_reward(&profile_id, &reward_id, reason)
-                            .map_err(|err| progression_error("rejectReward", err))?,
-                    )
-                    .map_err(|err| {
-                        LuaError::RuntimeError(format!("reward serialization failed: {err}"))
-                    })?,
-                )
-            },
-        );
+        /// Returns the pending rewards.
+        ///
+        /// @param profile : any
         methods.add_method_mut(
             "acceptQuest",
             |_, this, (profile, quest_id): (LuaValue, String)| {
@@ -4055,49 +4583,20 @@ impl UserData for LuaProgressionStore {
             "revealQuest",
             |lua, this, (profile, quest_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(quest_state_bound(
                     this.store
                         .borrow_mut()
                         .reveal_quest(&profile_id, &quest_id)
                         .map_err(|err| progression_error("revealQuest", err))?,
-                )
+                    this.store.clone(),
+                    profile_id,
+                ))
+                .map(LuaValue::UserData)
             },
         );
-        methods.add_method_mut(
-            "addQuestJournalEntry",
-            |lua, this, (profile, quest_id, text, tag): (LuaValue, String, String, Option<String>)| {
-                let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
-                    serde_json::to_value(
-                        this.store
-                            .borrow_mut()
-                            .add_quest_journal_entry(&profile_id, &quest_id, &text, tag)
-                            .map_err(|err| progression_error("addQuestJournalEntry", err))?,
-                    )
-                    .map_err(|err| LuaError::RuntimeError(format!("journal serialization failed: {err}")))?,
-                )
-            },
-        );
-        methods.add_method(
-            "listQuestJournalEntries",
-            |lua, this, (profile, quest_id): (LuaValue, String)| {
-                let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
-                    serde_json::to_value(
-                        this.store
-                            .borrow()
-                            .list_quest_journal_entries(&profile_id, &quest_id)
-                            .map_err(|err| progression_error("listQuestJournalEntries", err))?,
-                    )
-                    .map_err(|err| {
-                        LuaError::RuntimeError(format!("journal serialization failed: {err}"))
-                    })?,
-                )
-            },
-        );
+        /// Refresh quest lifecycle.
+        ///
+        /// @param profile : any
         methods.add_method_mut("refreshQuestLifecycle", |_, this, profile: LuaValue| {
             let profile_id = coerce_profile_id(profile)?;
             this.store
@@ -4129,52 +4628,70 @@ impl UserData for LuaProgressionStore {
             "setQuestObjective",
             |lua, this, (profile, quest_id, objective_id, value): (LuaValue, String, String, f64)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(quest_state_bound(
                     this.store
                         .borrow_mut()
                         .set_quest_objective(&profile_id, &quest_id, &objective_id, value)
                         .map_err(|err| progression_error("setQuestObjective", err))?,
-                    )
+                    this.store.clone(),
+                    profile_id,
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method_mut(
             "setQuestObjectiveStatus",
             |lua, this, (profile, quest_id, objective_id, status): (LuaValue, String, String, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(quest_state_bound(
                     this.store
                         .borrow_mut()
-                        .set_quest_objective_status(&profile_id, &quest_id, &objective_id, &status)
+                        .set_quest_objective_status(
+                            &profile_id,
+                            &quest_id,
+                            &objective_id,
+                            &status,
+                        )
                         .map_err(|err| progression_error("setQuestObjectiveStatus", err))?,
-                )
+                    this.store.clone(),
+                    profile_id,
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method_mut(
             "setQuestObjectiveVisibility",
             |lua, this, (profile, quest_id, objective_id, visible): (LuaValue, String, String, bool)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(quest_state_bound(
                     this.store
                         .borrow_mut()
-                        .set_quest_objective_visibility(&profile_id, &quest_id, &objective_id, visible)
+                        .set_quest_objective_visibility(
+                            &profile_id,
+                            &quest_id,
+                            &objective_id,
+                            visible,
+                        )
                         .map_err(|err| progression_error("setQuestObjectiveVisibility", err))?,
-                )
+                    this.store.clone(),
+                    profile_id,
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
             "getQuestState",
             |lua, this, (profile, quest_id): (LuaValue, String)| {
                 let profile_id = coerce_profile_id(profile)?;
-                json_to_lua(
-                    lua,
+                lua.create_userdata(quest_state_bound(
                     this.store
                         .borrow()
                         .get_quest_state(&profile_id, &quest_id)
                         .map_err(|err| progression_error("getQuestState", err))?,
-                )
+                    this.store.clone(),
+                    profile_id,
+                ))
+                .map(LuaValue::UserData)
             },
         );
         methods.add_method(
@@ -4191,7 +4708,14 @@ impl UserData for LuaProgressionStore {
                 })
             },
         );
+        /// Type.
+        ///
+        /// @return string
         methods.add_method("type", |_, _, ()| Ok("LProgressionStore"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return boolean
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LProgressionStore" || name == "LObject")
         });
@@ -4270,6 +4794,9 @@ fn import_legacy_quest_snapshot<'lua>(
 /// Register the `lurek.progression` module into the Lua runtime.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let table = lua.create_table()?;
+    /// New store.
+    ///
+    /// @param options : table?
     table.set(
         "newStore",
         lua.create_function(|lua, options: Option<LuaTable>| {
@@ -4280,6 +4807,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
+    /// Load store.
+    ///
+    /// @param snapshot : any
     table.set(
         "loadStore",
         lua.create_function(|lua, snapshot: LuaValue| {
@@ -4290,14 +4820,25 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
+    /// Import legacy stats snapshot.
+    ///
+    /// @param snapshot : table
     table.set(
         "importLegacyStatsSnapshot",
         lua.create_function(|lua, snapshot: LuaTable| import_legacy_stats_snapshot(lua, snapshot))?,
     )?;
+    /// Import legacy quest snapshot.
+    ///
+    /// @param snapshot : table
     table.set(
         "importLegacyQuestSnapshot",
         lua.create_function(|lua, snapshot: LuaTable| import_legacy_quest_snapshot(lua, snapshot))?,
     )?;
+    /// Create legacy stats adapter.
+    ///
+    /// @param store : AnyUserData
+    /// @param profile : any
+    /// @param options : table?
     table.set(
         "createLegacyStatsAdapter",
         lua.create_function(
@@ -4308,6 +4849,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             },
         )?,
     )?;
+    /// Create legacy quest adapter.
+    ///
+    /// @param store : AnyUserData
+    /// @param profile : any
+    /// @param options : table?
     table.set(
         "createLegacyQuestAdapter",
         lua.create_function(
@@ -4320,4 +4866,1133 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     lurek.set("progression", table)?;
     Ok(())
+}
+
+mod progression_objects_api_impl {
+    //! Owns typed Lua userdata wrappers for `lurek.progression` snapshot entities and legacy
+    //! field-compatible accessors.
+
+    use crate::progression::ProgressionStore;
+    use mlua::prelude::*;
+    use mlua::{UserData, UserDataFields, UserDataMethods, Value as LuaValue};
+    use serde_json::{Map as JsonMap, Value as JsonValue};
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    fn json_to_lua<'lua>(lua: &'lua Lua, value: &JsonValue) -> LuaResult<LuaValue<'lua>> {
+        match value {
+            JsonValue::Null => Ok(LuaValue::Nil),
+            JsonValue::Bool(value) => Ok(LuaValue::Boolean(*value)),
+            JsonValue::Number(value) => {
+                if let Some(integer) = value.as_i64() {
+                    Ok(LuaValue::Integer(integer))
+                } else {
+                    Ok(LuaValue::Number(value.as_f64().unwrap_or(0.0)))
+                }
+            }
+            JsonValue::String(value) => Ok(LuaValue::String(lua.create_string(value)?)),
+            JsonValue::Array(values) => {
+                let table = lua.create_table()?;
+                for (index, value) in values.iter().enumerate() {
+                    table.set(index + 1, json_to_lua(lua, value)?)?;
+                }
+                Ok(LuaValue::Table(table))
+            }
+            JsonValue::Object(values) => {
+                let table = lua.create_table()?;
+                for (key, value) in values {
+                    table.set(key.as_str(), json_to_lua(lua, value)?)?;
+                }
+                Ok(LuaValue::Table(table))
+            }
+        }
+    }
+
+    fn snapshot_object(snapshot: &JsonValue) -> LuaResult<&JsonMap<String, JsonValue>> {
+        snapshot.as_object().ok_or_else(|| {
+            LuaError::RuntimeError(
+                "progression snapshot wrapper expected an object value".to_string(),
+            )
+        })
+    }
+
+    fn snapshot_value<'a>(snapshot: &'a JsonValue, key: &str) -> LuaResult<&'a JsonValue> {
+        snapshot_object(snapshot)?.get(key).ok_or_else(|| {
+            LuaError::RuntimeError(format!("progression snapshot is missing '{key}'"))
+        })
+    }
+
+    fn snapshot_string(snapshot: &JsonValue, key: &str) -> LuaResult<String> {
+        snapshot_value(snapshot, key)?
+            .as_str()
+            .map(str::to_string)
+            .ok_or_else(|| {
+                LuaError::RuntimeError(format!("progression snapshot '{key}' must be a string"))
+            })
+    }
+
+    fn snapshot_bool(snapshot: &JsonValue, key: &str) -> LuaResult<bool> {
+        snapshot_value(snapshot, key)?.as_bool().ok_or_else(|| {
+            LuaError::RuntimeError(format!("progression snapshot '{key}' must be a boolean"))
+        })
+    }
+
+    fn snapshot_u64(snapshot: &JsonValue, key: &str) -> LuaResult<u64> {
+        snapshot_value(snapshot, key)?.as_u64().ok_or_else(|| {
+            LuaError::RuntimeError(format!("progression snapshot '{key}' must be an integer"))
+        })
+    }
+
+    fn snapshot_i64(snapshot: &JsonValue, key: &str) -> LuaResult<i64> {
+        snapshot_value(snapshot, key)?.as_i64().ok_or_else(|| {
+            LuaError::RuntimeError(format!("progression snapshot '{key}' must be an integer"))
+        })
+    }
+
+    fn progression_object_error(method: &str, err: impl std::fmt::Display) -> LuaError {
+        LuaError::RuntimeError(format!("lurek.progression.{method}: {err}"))
+    }
+
+    fn snapshot_field_to_lua<'lua>(
+        lua: &'lua Lua,
+        snapshot: &JsonValue,
+        key: &'static str,
+    ) -> LuaResult<LuaValue<'lua>> {
+        json_to_lua(lua, snapshot_value(snapshot, key)?)
+    }
+
+    trait SnapshotUserData {
+        fn snapshot(&self) -> &JsonValue;
+    }
+
+    fn add_snapshot_field<'lua, T, F>(fields: &mut F, key: &'static str)
+    where
+        T: SnapshotUserData + 'static,
+        F: UserDataFields<'lua, T>,
+    {
+        fields.add_field_method_get(key, move |lua, this| {
+            snapshot_field_to_lua(lua, this.snapshot(), key)
+        });
+    }
+
+    macro_rules! add_snapshot_fields {
+    ($fields:ident, $type_name:ty, [$($key:literal),+ $(,)?]) => {
+        $(
+            add_snapshot_field::<$type_name, _>($fields, $key);
+        )+
+    };
+}
+
+    macro_rules! add_common_snapshot_methods {
+        ($methods:ident, $type_name:literal) => {
+            /// Returns the immutable snapshot data as a plain Lua table.
+            /// @return | table | Snapshot table for this progression object.
+            $methods.add_method("snapshot", |lua, this, ()| json_to_lua(lua, &this.snapshot));
+            /// Returns the runtime userdata type name.
+            /// @return | string | Canonical Lua userdata type name.
+            $methods.add_method("type", |_, _, ()| Ok($type_name));
+            /// Returns whether this userdata matches `name` or the shared base object type.
+            /// @param | name | string | Candidate type name to compare against.
+            /// @return | boolean | `true` when `name` matches this userdata type or `LObject`.
+            $methods.add_method("typeOf", |_, _, name: String| {
+                Ok(name == $type_name || name == "LObject")
+            });
+        };
+    }
+
+    macro_rules! define_snapshot_type {
+        ($name:ident, $type_name:literal) => {
+            #[derive(Clone)]
+            /// Lua-side immutable progression snapshot userdata wrapper.
+            pub(crate) struct $name {
+                snapshot: JsonValue,
+            }
+
+            impl $name {
+                /// Builds one immutable userdata wrapper around a progression snapshot object.
+                pub(crate) fn new(snapshot: JsonValue) -> Self {
+                    Self { snapshot }
+                }
+            }
+
+            impl SnapshotUserData for $name {
+                fn snapshot(&self) -> &JsonValue {
+                    &self.snapshot
+                }
+            }
+        };
+    }
+
+    define_snapshot_type!(LuaAchievement, "LAchievement");
+    define_snapshot_type!(LuaChallenge, "LChallenge");
+    define_snapshot_type!(LuaCollection, "LCollection");
+    define_snapshot_type!(LuaLeaderboardEntry, "LLeaderboardEntry");
+    define_snapshot_type!(LuaPopulation, "LPopulation");
+    define_snapshot_type!(LuaPopulationProfile, "LPopulationProfile");
+    define_snapshot_type!(LuaPrestige, "LPrestige");
+    define_snapshot_type!(LuaActivityFeed, "LActivityFeed");
+    define_snapshot_type!(LuaQuestJournalEntry, "LQuestJournalEntry");
+    define_snapshot_type!(LuaRival, "LRival");
+    define_snapshot_type!(LuaRivalDelta, "LRivalDelta");
+    define_snapshot_type!(LuaSeason, "LSeason");
+    define_snapshot_type!(LuaSeasonArchive, "LSeasonArchive");
+    define_snapshot_type!(LuaActivityFeedEntry, "LActivityFeedEntry");
+
+    #[derive(Clone)]
+    /// Lua-side immutable progression quest state wrapper with optional live store context.
+    pub(crate) struct LuaQuestState {
+        snapshot: JsonValue,
+        store: Option<Rc<RefCell<ProgressionStore>>>,
+        profile_id: Option<String>,
+    }
+
+    impl LuaQuestState {
+        /// Builds one quest-state userdata wrapper with optional live mutation context.
+        pub(crate) fn new(
+            snapshot: JsonValue,
+            store: Option<Rc<RefCell<ProgressionStore>>>,
+            profile_id: Option<String>,
+        ) -> Self {
+            Self {
+                snapshot,
+                store,
+                profile_id,
+            }
+        }
+    }
+
+    impl SnapshotUserData for LuaQuestState {
+        fn snapshot(&self) -> &JsonValue {
+            &self.snapshot
+        }
+    }
+
+    #[derive(Clone)]
+    /// Lua-side immutable reward wrapper with optional live store context for state transitions.
+    pub(crate) struct LuaReward {
+        snapshot: JsonValue,
+        store: Option<Rc<RefCell<ProgressionStore>>>,
+        profile_id: Option<String>,
+    }
+
+    impl LuaReward {
+        /// Builds one reward userdata wrapper with optional live mutation context.
+        pub(crate) fn new(
+            snapshot: JsonValue,
+            store: Option<Rc<RefCell<ProgressionStore>>>,
+            profile_id: Option<String>,
+        ) -> Self {
+            Self {
+                snapshot,
+                store,
+                profile_id,
+            }
+        }
+    }
+
+    impl SnapshotUserData for LuaReward {
+        fn snapshot(&self) -> &JsonValue {
+            &self.snapshot
+        }
+    }
+
+    #[derive(Clone)]
+    /// Lua-side quest journal wrapper that owns retained entries and optional live mutation context.
+    pub(crate) struct LuaQuestJournal {
+        snapshot: JsonValue,
+        store: Option<Rc<RefCell<ProgressionStore>>>,
+        profile_id: Option<String>,
+    }
+
+    impl LuaQuestJournal {
+        /// Builds one quest journal wrapper around a quest id plus retained entry list.
+        pub(crate) fn new(
+            snapshot: JsonValue,
+            store: Option<Rc<RefCell<ProgressionStore>>>,
+            profile_id: Option<String>,
+        ) -> Self {
+            Self {
+                snapshot,
+                store,
+                profile_id,
+            }
+        }
+    }
+
+    impl SnapshotUserData for LuaQuestJournal {
+        fn snapshot(&self) -> &JsonValue {
+            &self.snapshot
+        }
+    }
+
+    /// Returns one immutable `LAchievement` snapshot wrapper.
+    pub(crate) fn achievement(snapshot: JsonValue) -> LuaAchievement {
+        LuaAchievement::new(snapshot)
+    }
+
+    /// Returns one immutable `LChallenge` snapshot wrapper.
+    pub(crate) fn challenge(snapshot: JsonValue) -> LuaChallenge {
+        LuaChallenge::new(snapshot)
+    }
+
+    /// Returns one immutable `LCollection` snapshot wrapper.
+    pub(crate) fn collection(snapshot: JsonValue) -> LuaCollection {
+        LuaCollection::new(snapshot)
+    }
+
+    /// Returns one immutable `LLeaderboardEntry` snapshot wrapper.
+    pub(crate) fn leaderboard_entry(snapshot: JsonValue) -> LuaLeaderboardEntry {
+        LuaLeaderboardEntry::new(snapshot)
+    }
+
+    /// Returns one immutable `LPopulation` snapshot wrapper.
+    pub(crate) fn population(snapshot: JsonValue) -> LuaPopulation {
+        LuaPopulation::new(snapshot)
+    }
+
+    /// Returns one immutable `LPopulationProfile` snapshot wrapper.
+    pub(crate) fn population_profile(snapshot: JsonValue) -> LuaPopulationProfile {
+        LuaPopulationProfile::new(snapshot)
+    }
+
+    /// Returns one immutable `LPrestige` snapshot wrapper.
+    pub(crate) fn prestige(snapshot: JsonValue) -> LuaPrestige {
+        LuaPrestige::new(snapshot)
+    }
+
+    /// Returns one immutable `LActivityFeed` snapshot wrapper.
+    pub(crate) fn activity_feed(
+        entries: JsonValue,
+        profiles: Option<Vec<String>>,
+        types: Option<Vec<String>>,
+        limit: Option<usize>,
+    ) -> LuaActivityFeed {
+        LuaActivityFeed::new(JsonValue::Object(
+            [
+                ("entries".to_string(), entries),
+                (
+                    "profiles".to_string(),
+                    JsonValue::Array(
+                        profiles
+                            .unwrap_or_default()
+                            .into_iter()
+                            .map(JsonValue::String)
+                            .collect(),
+                    ),
+                ),
+                (
+                    "types".to_string(),
+                    JsonValue::Array(
+                        types
+                            .unwrap_or_default()
+                            .into_iter()
+                            .map(JsonValue::String)
+                            .collect(),
+                    ),
+                ),
+                (
+                    "limit".to_string(),
+                    limit
+                        .map(|value| JsonValue::Number(value.into()))
+                        .unwrap_or(JsonValue::Null),
+                ),
+            ]
+            .into_iter()
+            .collect(),
+        ))
+    }
+
+    /// Returns one context-bound `LQuestState` snapshot wrapper.
+    pub(crate) fn quest_state_bound(
+        snapshot: JsonValue,
+        store: Rc<RefCell<ProgressionStore>>,
+        profile_id: String,
+    ) -> LuaQuestState {
+        LuaQuestState::new(snapshot, Some(store), Some(profile_id))
+    }
+
+    /// Returns one immutable `LQuestJournalEntry` snapshot wrapper.
+    pub(crate) fn quest_journal_entry(snapshot: JsonValue) -> LuaQuestJournalEntry {
+        LuaQuestJournalEntry::new(snapshot)
+    }
+
+    /// Returns one context-bound `LQuestJournal` wrapper.
+    pub(crate) fn quest_journal_bound(
+        quest_id: String,
+        entries: JsonValue,
+        store: Rc<RefCell<ProgressionStore>>,
+        profile_id: String,
+    ) -> LuaQuestJournal {
+        LuaQuestJournal::new(
+            JsonValue::Object(
+                [
+                    ("quest_id".to_string(), JsonValue::String(quest_id)),
+                    ("entries".to_string(), entries),
+                ]
+                .into_iter()
+                .collect(),
+            ),
+            Some(store),
+            Some(profile_id),
+        )
+    }
+
+    /// Returns one context-bound `LReward` snapshot wrapper.
+    pub(crate) fn reward_bound(
+        snapshot: JsonValue,
+        store: Rc<RefCell<ProgressionStore>>,
+        profile_id: String,
+    ) -> LuaReward {
+        LuaReward::new(snapshot, Some(store), Some(profile_id))
+    }
+
+    /// Returns one immutable `LRival` snapshot wrapper.
+    pub(crate) fn rival(snapshot: JsonValue) -> LuaRival {
+        LuaRival::new(snapshot)
+    }
+
+    /// Returns one immutable `LRivalDelta` snapshot wrapper.
+    pub(crate) fn rival_delta(snapshot: JsonValue) -> LuaRivalDelta {
+        LuaRivalDelta::new(snapshot)
+    }
+
+    /// Returns one immutable `LSeason` snapshot wrapper.
+    pub(crate) fn season(snapshot: JsonValue) -> LuaSeason {
+        LuaSeason::new(snapshot)
+    }
+
+    /// Returns one immutable `LSeasonArchive` snapshot wrapper.
+    pub(crate) fn season_archive(snapshot: JsonValue) -> LuaSeasonArchive {
+        LuaSeasonArchive::new(snapshot)
+    }
+
+    /// Returns one immutable `LActivityFeedEntry` snapshot wrapper.
+    pub(crate) fn activity_feed_entry(snapshot: JsonValue) -> LuaActivityFeedEntry {
+        LuaActivityFeedEntry::new(snapshot)
+    }
+
+    /// Creates a Lua array of userdata wrappers for a progression snapshot list.
+    pub(crate) fn userdata_list<'lua, T>(
+        lua: &'lua Lua,
+        values: Vec<T>,
+    ) -> LuaResult<LuaValue<'lua>>
+    where
+        T: UserData + 'static,
+    {
+        let table = lua.create_table()?;
+        for (index, value) in values.into_iter().enumerate() {
+            table.set(index + 1, lua.create_userdata(value)?)?;
+        }
+        Ok(LuaValue::Table(table))
+    }
+
+    impl UserData for LuaAchievement {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "title",
+                    "description",
+                    "hidden",
+                    "repeatable",
+                    "unlock_count",
+                    "unlocked",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the authored achievement id.
+            /// @return | string | Stable achievement identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns the authored achievement title.
+            /// @return | string | Local presentation title.
+            methods.add_method("getTitle", |_, this, ()| {
+                snapshot_string(&this.snapshot, "title")
+            });
+            /// Returns whether the achievement is currently unlocked for the owning profile.
+            /// @return | boolean | `true` when the achievement was unlocked.
+            methods.add_method("isUnlocked", |_, this, ()| {
+                snapshot_bool(&this.snapshot, "unlocked")
+            });
+            add_common_snapshot_methods!(methods, "LAchievement");
+        }
+    }
+
+    impl UserData for LuaChallenge {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "profile_id",
+                    "title",
+                    "description",
+                    "status",
+                    "current",
+                    "required",
+                    "completion",
+                    "counter_id",
+                    "duration",
+                    "repeatable",
+                    "max_completions",
+                    "completion_count",
+                    "started_at",
+                    "ends_at",
+                    "expires_in",
+                    "last_completed_at",
+                    "tags",
+                    "reward_payload",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the authored challenge id.
+            /// @return | string | Stable challenge identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns the current challenge lifecycle status.
+            /// @return | string | One of `"inactive"`, `"active"`, `"completed"`, or `"expired"`.
+            methods.add_method("getStatus", |_, this, ()| {
+                snapshot_string(&this.snapshot, "status")
+            });
+            add_common_snapshot_methods!(methods, "LChallenge");
+        }
+    }
+
+    impl UserData for LuaCollection {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "title",
+                    "description",
+                    "meta_achievement_id",
+                    "items",
+                    "collected_count",
+                    "total_count",
+                    "completion",
+                    "complete",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the authored collection id.
+            /// @return | string | Stable collection identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns whether every collection item is currently collected.
+            /// @return | boolean | `true` when the collection is complete.
+            methods.add_method("isComplete", |_, this, ()| {
+                snapshot_bool(&this.snapshot, "complete")
+            });
+            add_common_snapshot_methods!(methods, "LCollection");
+        }
+    }
+
+    impl UserData for LuaLeaderboardEntry {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "leaderboard_id",
+                    "profile_id",
+                    "score",
+                    "rank",
+                    "percentile",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the leaderboard that produced this row.
+            /// @return | string | Leaderboard identifier.
+            methods.add_method("getLeaderboardId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "leaderboard_id")
+            });
+            /// Returns the profile that owns this row.
+            /// @return | string | Profile identifier.
+            methods.add_method("getProfileId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "profile_id")
+            });
+            /// Returns the one-based rank currently assigned to this row.
+            /// @return | integer | Deterministic rank for the current ordering.
+            methods.add_method("getRank", |_, this, ()| {
+                Ok(snapshot_u64(&this.snapshot, "rank")? as i64)
+            });
+            add_common_snapshot_methods!(methods, "LLeaderboardEntry");
+        }
+    }
+
+    impl UserData for LuaPopulation {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "template_id",
+                    "logical_time",
+                    "paused",
+                    "generated_count",
+                    "active_count",
+                    "materialized_count",
+                    "profiles",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the population id.
+            /// @return | string | Population identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns whether logical simulation for this population is paused.
+            /// @return | boolean | `true` when updates are paused.
+            methods.add_method("isPaused", |_, this, ()| {
+                snapshot_bool(&this.snapshot, "paused")
+            });
+            add_common_snapshot_methods!(methods, "LPopulation");
+        }
+    }
+
+    impl UserData for LuaPopulationProfile {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "population_id",
+                    "template_id",
+                    "profile_id",
+                    "display_name",
+                    "avatar",
+                    "tags",
+                    "archetype_id",
+                    "base_skill",
+                    "active",
+                    "materialized",
+                    "leaderboard_scores",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the virtual profile id.
+            /// @return | string | Virtual profile identifier.
+            methods.add_method("getProfileId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "profile_id")
+            });
+            /// Returns whether this virtual profile is materialized as a normal store profile.
+            /// @return | boolean | `true` when the virtual profile was materialized.
+            methods.add_method("isMaterialized", |_, this, ()| {
+                snapshot_bool(&this.snapshot, "materialized")
+            });
+            add_common_snapshot_methods!(methods, "LPopulationProfile");
+        }
+    }
+
+    impl UserData for LuaPrestige {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "available",
+                    "count",
+                    "last_applied_at",
+                    "last_applied_revision",
+                    "lifetime_counters",
+                    "reset",
+                    "preserve",
+                    "condition",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the authored prestige id.
+            /// @return | string | Prestige identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns whether the owning profile currently satisfies the prestige condition.
+            /// @return | boolean | `true` when the prestige is currently available.
+            methods.add_method("isAvailable", |_, this, ()| {
+                snapshot_bool(&this.snapshot, "available")
+            });
+            add_common_snapshot_methods!(methods, "LPrestige");
+        }
+    }
+
+    impl UserData for LuaActivityFeed {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(fields, Self, ["entries", "profiles", "types", "limit"]);
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the number of retained activity-feed entries in this selection.
+            /// @return | integer | Number of feed entries currently stored in this feed snapshot.
+            methods.add_method("count", |_, this, ()| {
+                Ok(snapshot_value(&this.snapshot, "entries")?
+                    .as_array()
+                    .map(|entries| entries.len() as i64)
+                    .unwrap_or(0))
+            });
+            /// Returns every retained activity-feed entry as typed userdata.
+            /// @return | table | Array of `LActivityFeedEntry` userdata values.
+            methods.add_method("listEntries", |lua, this, ()| {
+                let entries = snapshot_value(&this.snapshot, "entries")?
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default();
+                userdata_list(lua, entries.into_iter().map(activity_feed_entry).collect())
+            });
+            add_common_snapshot_methods!(methods, "LActivityFeed");
+        }
+    }
+
+    impl UserData for LuaQuestState {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "quest_id",
+                    "status",
+                    "current_stage_index",
+                    "completion_count",
+                    "revealed",
+                    "available",
+                    "revealed_override",
+                    "journal",
+                    "objectives",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the authored quest id.
+            /// @return | string | Quest identifier.
+            methods.add_method("getQuestId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "quest_id")
+            });
+            /// Returns the current quest lifecycle status.
+            /// @return | string | Current quest state such as `"hidden"`, `"available"`, or `"active"`.
+            methods.add_method("getStatus", |_, this, ()| {
+                snapshot_string(&this.snapshot, "status")
+            });
+            /// Returns whether the quest is currently revealed to the owning profile.
+            /// @return | boolean | `true` when the quest is visible.
+            methods.add_method("isRevealed", |_, this, ()| {
+                snapshot_bool(&this.snapshot, "revealed")
+            });
+            /// Returns the retained quest journal as a typed journal object.
+            /// @return | LQuestJournal | Journal handle for the current quest state.
+            methods.add_method("getJournal", |lua, this, ()| {
+                let store = this.store.clone().ok_or_else(|| {
+                    progression_object_error(
+                        "LQuestState.getJournal",
+                        "quest journal context is not available",
+                    )
+                })?;
+                let profile_id = this.profile_id.clone().ok_or_else(|| {
+                    progression_object_error(
+                        "LQuestState.getJournal",
+                        "quest profile context is not available",
+                    )
+                })?;
+                let quest_id = snapshot_string(&this.snapshot, "quest_id")?;
+                let entries = snapshot_value(&this.snapshot, "journal")?.clone();
+                lua.create_userdata(quest_journal_bound(quest_id, entries, store, profile_id))
+            });
+            add_common_snapshot_methods!(methods, "LQuestState");
+        }
+    }
+
+    impl UserData for LuaReward {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "source_kind",
+                    "source_id",
+                    "payload",
+                    "state",
+                    "external_receipt",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the reward record id.
+            /// @return | string | Stable reward identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns the current reward state.
+            /// @return | string | One of `"pending"`, `"claimed"`, `"applied"`, or `"rejected"`.
+            methods.add_method("getState", |_, this, ()| {
+                snapshot_string(&this.snapshot, "state")
+            });
+            /// Claims this pending reward and returns the updated reward object.
+            /// @return | LReward | Updated reward handle after the claim transition.
+            methods.add_method_mut("claim", |lua, this, ()| {
+                let store = this.store.clone().ok_or_else(|| {
+                    progression_object_error("LReward.claim", "reward context is not available")
+                })?;
+                let profile_id = this.profile_id.clone().ok_or_else(|| {
+                    progression_object_error(
+                        "LReward.claim",
+                        "reward profile context is not available",
+                    )
+                })?;
+                let reward_id = snapshot_string(&this.snapshot, "id")?;
+                let updated = serde_json::to_value(
+                    store
+                        .borrow_mut()
+                        .claim_reward(&profile_id, &reward_id)
+                        .map_err(|err| progression_object_error("LReward.claim", err))?,
+                )
+                .map_err(|err| {
+                    progression_object_error(
+                        "LReward.claim",
+                        format!("reward serialization failed: {err}"),
+                    )
+                })?;
+                lua.create_userdata(reward_bound(updated, store, profile_id))
+            });
+            /// Marks this claimed reward as applied and returns the updated reward object.
+            /// @param | external_receipt | string? | Optional game-specific receipt or transaction token.
+            /// @return | LReward | Updated reward handle after the apply transition.
+            methods.add_method_mut(
+                "markApplied",
+                |lua, this, external_receipt: Option<String>| {
+                    let store = this.store.clone().ok_or_else(|| {
+                        progression_object_error(
+                            "LReward.markApplied",
+                            "reward context is not available",
+                        )
+                    })?;
+                    let profile_id = this.profile_id.clone().ok_or_else(|| {
+                        progression_object_error(
+                            "LReward.markApplied",
+                            "reward profile context is not available",
+                        )
+                    })?;
+                    let reward_id = snapshot_string(&this.snapshot, "id")?;
+                    let updated = serde_json::to_value(
+                        store
+                            .borrow_mut()
+                            .mark_reward_applied(&profile_id, &reward_id, external_receipt)
+                            .map_err(|err| progression_object_error("LReward.markApplied", err))?,
+                    )
+                    .map_err(|err| {
+                        progression_object_error(
+                            "LReward.markApplied",
+                            format!("reward serialization failed: {err}"),
+                        )
+                    })?;
+                    lua.create_userdata(reward_bound(updated, store, profile_id))
+                },
+            );
+            /// Rejects this reward and returns the updated reward object.
+            /// @param | reason | string? | Optional rejection reason for logs or external flow control.
+            /// @return | LReward | Updated reward handle after the rejection transition.
+            methods.add_method_mut("reject", |lua, this, reason: Option<String>| {
+                let store = this.store.clone().ok_or_else(|| {
+                    progression_object_error("LReward.reject", "reward context is not available")
+                })?;
+                let profile_id = this.profile_id.clone().ok_or_else(|| {
+                    progression_object_error(
+                        "LReward.reject",
+                        "reward profile context is not available",
+                    )
+                })?;
+                let reward_id = snapshot_string(&this.snapshot, "id")?;
+                let updated = serde_json::to_value(
+                    store
+                        .borrow_mut()
+                        .reject_reward(&profile_id, &reward_id, reason)
+                        .map_err(|err| progression_object_error("LReward.reject", err))?,
+                )
+                .map_err(|err| {
+                    progression_object_error(
+                        "LReward.reject",
+                        format!("reward serialization failed: {err}"),
+                    )
+                })?;
+                lua.create_userdata(reward_bound(updated, store, profile_id))
+            });
+            add_common_snapshot_methods!(methods, "LReward");
+        }
+    }
+
+    impl UserData for LuaQuestJournalEntry {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(fields, Self, ["index", "text", "tag"]);
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the stable monotonically increasing journal index.
+            /// @return | integer | Zero-based journal entry index.
+            methods.add_method("getIndex", |_, this, ()| {
+                Ok(snapshot_u64(&this.snapshot, "index")? as i64)
+            });
+            /// Returns the authored journal entry text.
+            /// @return | string | Retained journal body text.
+            methods.add_method("getText", |_, this, ()| {
+                snapshot_string(&this.snapshot, "text")
+            });
+            /// Returns the optional journal entry tag.
+            /// @return | string | Journal entry tag, or an empty string when no tag was stored.
+            methods.add_method("getTag", |_, this, ()| {
+                snapshot_string(&this.snapshot, "tag")
+            });
+            add_common_snapshot_methods!(methods, "LQuestJournalEntry");
+        }
+    }
+
+    impl UserData for LuaQuestJournal {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(fields, Self, ["quest_id", "entries"]);
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the quest id that owns this journal.
+            /// @return | string | Authored quest identifier.
+            methods.add_method("getQuestId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "quest_id")
+            });
+            /// Returns the number of retained entries currently stored in this journal.
+            /// @return | integer | Journal entry count after retention trimming.
+            methods.add_method("count", |_, this, ()| {
+                Ok(snapshot_value(&this.snapshot, "entries")?
+                    .as_array()
+                    .map(|entries| entries.len() as i64)
+                    .unwrap_or(0))
+            });
+            /// Returns every retained journal entry as typed entry userdata.
+            /// @return | table | Array of `LQuestJournalEntry` userdata values.
+            methods.add_method("listEntries", |lua, this, ()| {
+                let entries = snapshot_value(&this.snapshot, "entries")?
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default();
+                userdata_list(lua, entries.into_iter().map(quest_journal_entry).collect())
+            });
+            /// Appends one entry to the live quest journal and returns the stored entry object.
+            /// @param | text | string | Non-empty journal body text to append.
+            /// @param | tag | string? | Optional tag that categorizes the new journal entry.
+            /// @return | LQuestJournalEntry | Retained journal entry after store-side indexing and trimming.
+            methods.add_method_mut(
+                "addEntry",
+                |lua, this, (text, tag): (String, Option<String>)| {
+                    let store = this.store.clone().ok_or_else(|| {
+                        progression_object_error(
+                            "LQuestJournal.addEntry",
+                            "quest journal context is not available",
+                        )
+                    })?;
+                    let profile_id = this.profile_id.clone().ok_or_else(|| {
+                        progression_object_error(
+                            "LQuestJournal.addEntry",
+                            "quest profile context is not available",
+                        )
+                    })?;
+                    let quest_id = snapshot_string(&this.snapshot, "quest_id")?;
+                    let entry = serde_json::to_value(
+                        store
+                            .borrow_mut()
+                            .add_quest_journal_entry(&profile_id, &quest_id, &text, tag)
+                            .map_err(|err| {
+                                progression_object_error("LQuestJournal.addEntry", err)
+                            })?,
+                    )
+                    .map_err(|err| {
+                        progression_object_error(
+                            "LQuestJournal.addEntry",
+                            format!("journal serialization failed: {err}"),
+                        )
+                    })?;
+                    let entries = serde_json::to_value(
+                        store
+                            .borrow()
+                            .list_quest_journal_entries(&profile_id, &quest_id)
+                            .map_err(|err| {
+                                progression_object_error("LQuestJournal.addEntry", err)
+                            })?,
+                    )
+                    .map_err(|err| {
+                        progression_object_error(
+                            "LQuestJournal.addEntry",
+                            format!("journal serialization failed: {err}"),
+                        )
+                    })?;
+                    this.snapshot = JsonValue::Object(
+                        [
+                            ("quest_id".to_string(), JsonValue::String(quest_id)),
+                            ("entries".to_string(), entries),
+                        ]
+                        .into_iter()
+                        .collect(),
+                    );
+                    lua.create_userdata(quest_journal_entry(entry))
+                },
+            );
+            add_common_snapshot_methods!(methods, "LQuestJournal");
+        }
+    }
+
+    impl UserData for LuaRival {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                ["profile_id", "rival_profile_id", "leaderboard_id", "delta"]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the owner profile id for this rivalry.
+            /// @return | string | Profile identifier that pinned the rival.
+            methods.add_method("getProfileId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "profile_id")
+            });
+            /// Returns the pinned rival profile id.
+            /// @return | string | Rival profile identifier.
+            methods.add_method("getRivalProfileId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "rival_profile_id")
+            });
+            add_common_snapshot_methods!(methods, "LRival");
+        }
+    }
+
+    impl UserData for LuaRivalDelta {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "leaderboard_id",
+                    "profile_rank",
+                    "rival_rank",
+                    "rank_delta",
+                    "profile_score",
+                    "rival_score",
+                    "score_delta",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the leaderboard used to compute this rivalry delta.
+            /// @return | string | Leaderboard identifier.
+            methods.add_method("getLeaderboardId", |_, this, ()| {
+                snapshot_string(&this.snapshot, "leaderboard_id")
+            });
+            /// Returns the signed rank gap between the owner and rival profiles.
+            /// @return | integer | Positive when the rival is behind, negative when ahead.
+            methods.add_method("getRankDelta", |_, this, ()| {
+                snapshot_i64(&this.snapshot, "rank_delta")
+            });
+            add_common_snapshot_methods!(methods, "LRivalDelta");
+        }
+    }
+
+    impl UserData for LuaSeason {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "starts_at",
+                    "ends_at",
+                    "reset",
+                    "archive",
+                    "active",
+                    "started_at",
+                    "ended_at",
+                    "archive_count",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the authored season id.
+            /// @return | string | Season identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns whether this season is currently active.
+            /// @return | boolean | `true` when the season is active.
+            methods.add_method("isActive", |_, this, ()| {
+                snapshot_bool(&this.snapshot, "active")
+            });
+            add_common_snapshot_methods!(methods, "LSeason");
+        }
+    }
+
+    impl UserData for LuaSeasonArchive {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "id",
+                    "archive_index",
+                    "started_at",
+                    "ended_at",
+                    "revision",
+                    "snapshot",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the season id that owns this archive record.
+            /// @return | string | Season identifier.
+            methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
+            /// Returns the monotonically increasing archive index for this season.
+            /// @return | integer | Archive sequence number.
+            methods.add_method("getArchiveIndex", |_, this, ()| {
+                Ok(snapshot_u64(&this.snapshot, "archive_index")? as i64)
+            });
+            add_common_snapshot_methods!(methods, "LSeasonArchive");
+        }
+    }
+
+    impl UserData for LuaActivityFeedEntry {
+        fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
+            add_snapshot_fields!(
+                fields,
+                Self,
+                [
+                    "sequence",
+                    "revision",
+                    "event_type",
+                    "profile_id",
+                    "definition_id",
+                    "payload",
+                ]
+            );
+        }
+
+        fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+            /// Returns the retained event sequence number.
+            /// @return | integer | Event sequence in feed order.
+            methods.add_method("getSequence", |_, this, ()| {
+                Ok(snapshot_u64(&this.snapshot, "sequence")? as i64)
+            });
+            /// Returns the canonical activity event type name.
+            /// @return | string | Event type such as `"achievement_unlocked"`.
+            methods.add_method("getEventType", |_, this, ()| {
+                snapshot_string(&this.snapshot, "event_type")
+            });
+            add_common_snapshot_methods!(methods, "LActivityFeedEntry");
+        }
+    }
 }

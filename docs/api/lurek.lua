@@ -2882,6 +2882,33 @@ LProcgenGrid = {}
 ---@class LProcgenScalarGrid
 LProcgenScalarGrid = {}
 
+---@class LAchievement
+LAchievement = {}
+
+---@class LActivityFeed
+LActivityFeed = {}
+
+---@class LActivityFeedEntry
+LActivityFeedEntry = {}
+
+---@class LChallenge
+LChallenge = {}
+
+---@class LCollection
+LCollection = {}
+
+---@class LLeaderboardEntry
+LLeaderboardEntry = {}
+
+---@class LPopulation
+LPopulation = {}
+
+---@class LPopulationProfile
+LPopulationProfile = {}
+
+---@class LPrestige
+LPrestige = {}
+
 ---@class LProgressionProfile
 LProgressionProfile = {}
 
@@ -2890,6 +2917,33 @@ LProgressionStore = {}
 
 ---@class LProgressionTransaction
 LProgressionTransaction = {}
+
+--- Lua-side quest journal wrapper that owns retained entries and optional live mutation context.
+---@class LQuestJournal
+LQuestJournal = {}
+
+---@class LQuestJournalEntry
+LQuestJournalEntry = {}
+
+--- Lua-side immutable progression quest state wrapper with optional live store context.
+---@class LQuestState
+LQuestState = {}
+
+--- Lua-side immutable reward wrapper with optional live store context for state transitions.
+---@class LReward
+LReward = {}
+
+---@class LRival
+LRival = {}
+
+---@class LRivalDelta
+LRivalDelta = {}
+
+---@class LSeason
+LSeason = {}
+
+---@class LSeasonArchive
+LSeasonArchive = {}
 
 --- Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 ---@class LProvinceRegistry
@@ -27093,17 +27147,106 @@ lurek.procgen.wfcGenerateGrid = function(opts) end
 ---@return LProcgenWorldGraphResult Table with regions and edges arrays.
 lurek.procgen.worldGraph = function(width, height, regionCount, seed) end
 
+--- Returns the authored achievement id.
+---@return string Stable achievement identifier.
+function LAchievement:getId() end
+
+--- Returns the authored achievement title.
+---@return string Local presentation title.
+function LAchievement:getTitle() end
+
+--- Returns whether the achievement is currently unlocked for the owning profile.
+---@return boolean `true` when the achievement was unlocked.
+function LAchievement:isUnlocked() end
+
+--- Returns the number of retained activity-feed entries in this selection.
+---@return number Number of feed entries currently stored in this feed snapshot.
+function LActivityFeed:count() end
+
+--- Returns every retained activity-feed entry as typed userdata.
+---@return table Array of `LActivityFeedEntry` userdata values.
+function LActivityFeed:listEntries() end
+
+--- Returns the canonical activity event type name.
+---@return string Event type such as `"achievement_unlocked"`.
+function LActivityFeedEntry:getEventType() end
+
+--- Returns the retained event sequence number.
+---@return number Event sequence in feed order.
+function LActivityFeedEntry:getSequence() end
+
+--- Returns the authored challenge id.
+---@return string Stable challenge identifier.
+function LChallenge:getId() end
+
+--- Returns the current challenge lifecycle status.
+---@return string One of `"inactive"`, `"active"`, `"completed"`, or `"expired"`.
+function LChallenge:getStatus() end
+
+--- Returns the authored collection id.
+---@return string Stable collection identifier.
+function LCollection:getId() end
+
+--- Returns whether every collection item is currently collected.
+---@return boolean `true` when the collection is complete.
+function LCollection:isComplete() end
+
+--- Returns the leaderboard that produced this row.
+---@return string Leaderboard identifier.
+function LLeaderboardEntry:getLeaderboardId() end
+
+--- Returns the profile that owns this row.
+---@return string Profile identifier.
+function LLeaderboardEntry:getProfileId() end
+
+--- Returns the one-based rank currently assigned to this row.
+---@return number Deterministic rank for the current ordering.
+function LLeaderboardEntry:getRank() end
+
+--- Returns the population id.
+---@return string Population identifier.
+function LPopulation:getId() end
+
+--- Returns whether logical simulation for this population is paused.
+---@return boolean `true` when updates are paused.
+function LPopulation:isPaused() end
+
+--- Returns the virtual profile id.
+---@return string Virtual profile identifier.
+function LPopulationProfile:getProfileId() end
+
+--- Returns whether this virtual profile is materialized as a normal store profile.
+---@return boolean `true` when the virtual profile was materialized.
+function LPopulationProfile:isMaterialized() end
+
+--- Returns the authored prestige id.
+---@return string Prestige identifier.
+function LPrestige:getId() end
+
+--- Returns whether the owning profile currently satisfies the prestige condition.
+---@return boolean `true` when the prestige is currently available.
+function LPrestige:isAvailable() end
+
+--- Returns the id.
 function LProgressionProfile:getId() end
 
+--- Returns this profile's pending reward records as typed reward handles.
+---@return table Array of `LReward` values still waiting for claim.
+function LProgressionProfile:getPendingRewards() end
+
+--- Type.
 function LProgressionProfile:type() end
 
+--- Type of.
 ---@param name any
 function LProgressionProfile:typeOf(name) end
 
+--- Returns the pending rewards.
 ---@param profile any
 ---@param quest_id any
 function LProgressionStore:acceptQuest(profile, quest_id) end
 
+--- Ack changes through.
 ---@param revision any
 function LProgressionStore:ackChangesThrough(revision) end
 
@@ -27136,24 +27279,21 @@ function LProgressionStore:addExperience(profile, track_id, amount) end
 ---@param opts any
 function LProgressionStore:addModifier(profile, target_id, opts) end
 
+--- Adds profile tag.
 ---@param id any
 ---@param tag any
 function LProgressionStore:addProfileTag(id, tag) end
-
----@param profile any
----@param quest_id any
----@param text any
----@param tag? any
-function LProgressionStore:addQuestJournalEntry(profile, quest_id, text, tag) end
 
 ---@param profile any
 ---@param resource_id any
 ---@param amount any
 function LProgressionStore:addResource(profile, resource_id, amount) end
 
+--- Advance time.
 ---@param seconds any
 function LProgressionStore:advanceTime(seconds) end
 
+--- Apply changeset.
 ---@param changeset any
 function LProgressionStore:applyChangeset(changeset) end
 
@@ -27185,12 +27325,10 @@ function LProgressionStore:canPrestige(profile, prestige_id) end
 ---@param amount any
 function LProgressionStore:canSpendResource(profile, resource_id, amount) end
 
----@param profile any
----@param reward_id any
-function LProgressionStore:claimReward(profile, reward_id) end
-
+--- Clears the state.
 function LProgressionStore:clear() end
 
+--- Clears events.
 function LProgressionStore:clearEvents() end
 
 ---@param profile any
@@ -27198,9 +27336,11 @@ function LProgressionStore:clearEvents() end
 ---@param item_id any
 function LProgressionStore:collectCollectionItem(profile, collection_id, item_id) end
 
+--- Compact changes.
 ---@param max_records any
 function LProgressionStore:compactChanges(max_records) end
 
+--- Compile condition.
 ---@param condition any
 function LProgressionStore:compileCondition(condition) end
 
@@ -27208,12 +27348,14 @@ function LProgressionStore:compileCondition(condition) end
 ---@param quest_id any
 function LProgressionStore:completeQuest(profile, quest_id) end
 
+--- Returns the number of items.
 function LProgressionStore:countProfiles() end
 
 ---@param id any
 ---@param options? any
 function LProgressionStore:createProfile(id, options) end
 
+--- Debug snapshot.
 function LProgressionStore:debugSnapshot() end
 
 ---@param id any
@@ -27288,6 +27430,7 @@ function LProgressionStore:defineTrait(id, definition) end
 ---@param options? any
 function LProgressionStore:dematerializePopulationProfile(profile_id, options) end
 
+--- Drain events.
 function LProgressionStore:drainEvents() end
 
 ---@param id any
@@ -27314,6 +27457,7 @@ function LProgressionStore:explainCondition(profile, condition) end
 ---@param id any
 function LProgressionStore:explainDerivedValue(profile, id) end
 
+--- Export changes since.
 ---@param revision any
 function LProgressionStore:exportChangesSince(revision) end
 
@@ -27321,6 +27465,7 @@ function LProgressionStore:exportChangesSince(revision) end
 ---@param options? any
 function LProgressionStore:exportChangeset(revision, options) end
 
+--- Export snapshot.
 function LProgressionStore:exportSnapshot() end
 
 ---@param profile any
@@ -27335,6 +27480,7 @@ function LProgressionStore:generatePopulation(template_id, options) end
 ---@param achievement_id any
 function LProgressionStore:getAchievement(profile, achievement_id) end
 
+--- Returns one typed activity-feed selection object.
 ---@param query? any
 function LProgressionStore:getActivityFeed(query) end
 
@@ -27363,6 +27509,7 @@ function LProgressionStore:getCounter(profile, counter_id) end
 ---@param counter_id any
 function LProgressionStore:getCounterState(profile, counter_id) end
 
+--- Returns the definition hash.
 function LProgressionStore:getDefinitionHash() end
 
 ---@param profile any
@@ -27377,6 +27524,7 @@ function LProgressionStore:getExperience(profile, track_id) end
 ---@param track_id any
 function LProgressionStore:getExperienceToNextLevel(profile, track_id) end
 
+--- Returns the id.
 function LProgressionStore:getId() end
 
 ---@param profile any
@@ -27387,9 +27535,7 @@ function LProgressionStore:getLeaderboardEntry(profile, leaderboard_id) end
 ---@param track_id any
 function LProgressionStore:getLevel(profile, track_id) end
 
----@param profile any
-function LProgressionStore:getPendingRewards(profile) end
-
+--- Returns the population.
 ---@param handle_or_id any
 function LProgressionStore:getPopulation(handle_or_id) end
 
@@ -27401,6 +27547,7 @@ function LProgressionStore:getPopulationStatistics(handle_or_id, query) end
 ---@param prestige_id any
 function LProgressionStore:getPrestige(profile, prestige_id) end
 
+--- Returns the profile.
 ---@param id any
 function LProgressionStore:getProfile(id) end
 
@@ -27412,6 +27559,7 @@ function LProgressionStore:getQuestState(profile, quest_id) end
 ---@param resource_id any
 function LProgressionStore:getResource(profile, resource_id) end
 
+--- Returns the revision.
 function LProgressionStore:getRevision() end
 
 ---@param profile any
@@ -27422,8 +27570,10 @@ function LProgressionStore:getRival(profile, rival_profile) end
 ---@param rival_profile any
 function LProgressionStore:getRivalDelta(profile, rival_profile) end
 
+--- Returns the schema version.
 function LProgressionStore:getSchemaVersion() end
 
+--- Returns the season.
 ---@param id any
 function LProgressionStore:getSeason(id) end
 
@@ -27439,12 +27589,14 @@ function LProgressionStore:getSkillCooldown(profile, skill_id) end
 ---@param skill_id any
 function LProgressionStore:getSkillLevel(profile, skill_id) end
 
+--- Returns the time.
 function LProgressionStore:getTime() end
 
 ---@param profile any
 ---@param perk_id any
 function LProgressionStore:hasPerk(profile, perk_id) end
 
+--- Returns true if profile.
 ---@param id any
 function LProgressionStore:hasProfile(id) end
 
@@ -27456,6 +27608,7 @@ function LProgressionStore:hasTrait(profile, trait_id) end
 ---@param skill_id any
 function LProgressionStore:learnSkill(profile, skill_id) end
 
+--- List achievements.
 ---@param profile any
 function LProgressionStore:listAchievements(profile) end
 
@@ -27463,9 +27616,11 @@ function LProgressionStore:listAchievements(profile) end
 ---@param options? any
 function LProgressionStore:listChallenges(profile, options) end
 
+--- List collections.
 ---@param profile any
 function LProgressionStore:listCollections(profile) end
 
+--- List counters.
 ---@param profile any
 function LProgressionStore:listCounters(profile) end
 
@@ -27480,6 +27635,7 @@ function LProgressionStore:listLeaderboardRange(leaderboard_id, start_rank, limi
 ---@param limit? any
 function LProgressionStore:listLeaderboardTop(leaderboard_id, limit) end
 
+--- List modifiers.
 ---@param profile any
 function LProgressionStore:listModifiers(profile) end
 
@@ -27487,35 +27643,33 @@ function LProgressionStore:listModifiers(profile) end
 ---@param query? any
 function LProgressionStore:listPopulationProfiles(handle_or_id, query) end
 
+--- List prestiges.
 ---@param profile any
 function LProgressionStore:listPrestiges(profile) end
 
+--- List profiles.
 function LProgressionStore:listProfiles() end
 
----@param profile any
----@param quest_id any
-function LProgressionStore:listQuestJournalEntries(profile, quest_id) end
-
+--- List rivals.
 ---@param profile any
 function LProgressionStore:listRivals(profile) end
 
+--- List seasons.
 ---@param query? any
 function LProgressionStore:listSeasons(query) end
 
+--- List traits.
 ---@param profile any
 function LProgressionStore:listTraits(profile) end
 
+--- Load snapshot.
 ---@param snapshot any
 function LProgressionStore:loadSnapshot(snapshot) end
-
----@param profile any
----@param reward_id any
----@param external_receipt? any
-function LProgressionStore:markRewardApplied(profile, reward_id, external_receipt) end
 
 ---@param profile_id any
 function LProgressionStore:materializePopulationProfile(profile_id) end
 
+--- Pause population.
 ---@param handle_or_id any
 function LProgressionStore:pausePopulation(handle_or_id) end
 
@@ -27529,6 +27683,7 @@ function LProgressionStore:pinRival(profile, rival_profile, options) end
 ---@param amount? any
 function LProgressionStore:refillResource(profile, resource_id, amount) end
 
+--- Refresh quest lifecycle.
 ---@param profile any
 function LProgressionStore:refreshQuestLifecycle(profile) end
 
@@ -27536,11 +27691,7 @@ function LProgressionStore:refreshQuestLifecycle(profile) end
 ---@param options? any
 function LProgressionStore:regeneratePopulation(handle_or_id, options) end
 
----@param profile any
----@param reward_id any
----@param reason? any
-function LProgressionStore:rejectReward(profile, reward_id, reason) end
-
+--- Removes derived value.
 ---@param id any
 function LProgressionStore:removeDerivedValue(id) end
 
@@ -27568,6 +27719,7 @@ function LProgressionStore:removeProfileTag(id, tag) end
 ---@param trait_id any
 function LProgressionStore:removeTrait(profile, trait_id) end
 
+--- Resume population.
 ---@param handle_or_id any
 function LProgressionStore:resumePopulation(handle_or_id) end
 
@@ -27628,6 +27780,7 @@ function LProgressionStore:setQuestObjectiveVisibility(profile, quest_id, object
 ---@param value any
 function LProgressionStore:setResource(profile, resource_id, value) end
 
+--- Sets the time.
 ---@param seconds any
 function LProgressionStore:setTime(seconds) end
 
@@ -27645,6 +27798,7 @@ function LProgressionStore:spendResource(profile, resource_id, amount) end
 ---@param options? any
 function LProgressionStore:startSeason(id, options) end
 
+--- Stats.
 function LProgressionStore:stats() end
 
 ---@param profile any
@@ -27652,8 +27806,10 @@ function LProgressionStore:stats() end
 ---@param score any
 function LProgressionStore:submitScore(profile, leaderboard_id, score) end
 
+--- Type.
 function LProgressionStore:type() end
 
+--- Type of.
 ---@param name any
 function LProgressionStore:typeOf(name) end
 
@@ -27678,13 +27834,17 @@ function LProgressionStore:updateProfile(id, patch) end
 ---@param skill_id any
 function LProgressionStore:useSkill(profile, skill_id) end
 
+--- Validate.
 function LProgressionStore:validate() end
 
+--- Validate condition.
 ---@param condition any
 function LProgressionStore:validateCondition(condition) end
 
+--- Validate derived values.
 function LProgressionStore:validateDerivedValues() end
 
+--- Validate population template.
 ---@param id any
 function LProgressionStore:validatePopulationTemplate(id) end
 
@@ -27703,8 +27863,10 @@ function LProgressionTransaction:addExperience(profile, track_id, amount) end
 ---@param opts any
 function LProgressionTransaction:addModifier(profile, target_id, opts) end
 
+--- Commit.
 function LProgressionTransaction:commit() end
 
+--- Rollback.
 function LProgressionTransaction:rollback() end
 
 ---@param profile any
@@ -27728,356 +27890,555 @@ function LProgressionTransaction:setQuestObjective(profile, quest_id, objective_
 ---@param value any
 function LProgressionTransaction:setResource(profile, resource_id, value) end
 
+--- Type.
 function LProgressionTransaction:type() end
 
+--- Type of.
 ---@param name any
 function LProgressionTransaction:typeOf(name) end
 
+--- Appends one entry to the live quest journal and returns the stored entry object.
+---@param text string Non-empty journal body text to append.
+---@param tag? string Optional tag that categorizes the new journal entry.
+---@return LQuestJournalEntry Retained journal entry after store-side indexing and trimming.
+function LQuestJournal:addEntry(text, tag) end
+
+--- Returns the number of retained entries currently stored in this journal.
+---@return number Journal entry count after retention trimming.
+function LQuestJournal:count() end
+
+--- Returns the quest id that owns this journal.
+---@return string Authored quest identifier.
+function LQuestJournal:getQuestId() end
+
+--- Returns every retained journal entry as typed entry userdata.
+---@return table Array of `LQuestJournalEntry` userdata values.
+function LQuestJournal:listEntries() end
+
+--- Returns the stable monotonically increasing journal index.
+---@return number Zero-based journal entry index.
+function LQuestJournalEntry:getIndex() end
+
+--- Returns the optional journal entry tag.
+---@return string Journal entry tag, or an empty string when no tag was stored.
+function LQuestJournalEntry:getTag() end
+
+--- Returns the authored journal entry text.
+---@return string Retained journal body text.
+function LQuestJournalEntry:getText() end
+
+--- Returns the retained quest journal as a typed journal object.
+---@return LQuestJournal Journal handle for the current quest state.
+function LQuestState:getJournal() end
+
+--- Returns the authored quest id.
+---@return string Quest identifier.
+function LQuestState:getQuestId() end
+
+--- Returns the current quest lifecycle status.
+---@return string Current quest state such as `"hidden"`, `"available"`, or `"active"`.
+function LQuestState:getStatus() end
+
+--- Returns whether the quest is currently revealed to the owning profile.
+---@return boolean `true` when the quest is visible.
+function LQuestState:isRevealed() end
+
+--- Claims this pending reward and returns the updated reward object.
+---@return LReward Updated reward handle after the claim transition.
+function LReward:claim() end
+
+--- Returns the reward record id.
+---@return string Stable reward identifier.
+function LReward:getId() end
+
+--- Returns the current reward state.
+---@return string One of `"pending"`, `"claimed"`, `"applied"`, or `"rejected"`.
+function LReward:getState() end
+
+--- Marks this claimed reward as applied and returns the updated reward object.
+---@param external_receipt? string Optional game-specific receipt or transaction token.
+---@return LReward Updated reward handle after the apply transition.
+function LReward:markApplied(external_receipt) end
+
+--- Rejects this reward and returns the updated reward object.
+---@param reason? string Optional rejection reason for logs or external flow control.
+---@return LReward Updated reward handle after the rejection transition.
+function LReward:reject(reason) end
+
+--- Returns the owner profile id for this rivalry.
+---@return string Profile identifier that pinned the rival.
+function LRival:getProfileId() end
+
+--- Returns the pinned rival profile id.
+---@return string Rival profile identifier.
+function LRival:getRivalProfileId() end
+
+--- Returns the leaderboard used to compute this rivalry delta.
+---@return string Leaderboard identifier.
+function LRivalDelta:getLeaderboardId() end
+
+--- Returns the signed rank gap between the owner and rival profiles.
+---@return number Positive when the rival is behind, negative when ahead.
+function LRivalDelta:getRankDelta() end
+
+--- Returns the authored season id.
+---@return string Season identifier.
+function LSeason:getId() end
+
+--- Returns whether this season is currently active.
+---@return boolean `true` when the season is active.
+function LSeason:isActive() end
+
+--- Returns the monotonically increasing archive index for this season.
+---@return number Archive sequence number.
+function LSeasonArchive:getArchiveIndex() end
+
+--- Returns the season id that owns this archive record.
+---@return string Season identifier.
+function LSeasonArchive:getId() end
+
+--- Acquire perk.
 ---@param this any
 ---@param name any
 lurek.progression.acquirePerk = function(this, name) end
 
+--- Active count.
 ---@param this any
 lurek.progression.activeCount = function(this) end
 
+--- Active ids.
 ---@param this any
 lurek.progression.activeIds = function(this) end
 
+--- Adds buff.
 lurek.progression.addBuff = function() end
 
+--- Adds journal entry.
 ---@param this any
 ---@param quest_id any
 ---@param text any
 ---@param tag? any
 lurek.progression.addJournalEntry = function(this, quest_id, text, tag) end
 
+--- Adds quest.
 ---@param this any
 ---@param quest any
 lurek.progression.addQuest = function(this, quest) end
 
+--- Adds xp.
 ---@param this any
 ---@param amount any
 lurek.progression.addXP = function(this, amount) end
 
+--- Adjust morale.
 ---@param this any
 ---@param delta any
 lurek.progression.adjustMorale = function(this, delta) end
 
+--- Advance objective.
 lurek.progression.advanceObjective = function() end
 
+--- Apply damage.
 ---@param this any
 ---@param stat any
 ---@param amount any
 ---@param dtype? any
 lurek.progression.applyDamage = function(this, stat, amount, dtype) end
 
+--- Apply trait buffs.
 ---@param this any
 ---@param trait_name any
 lurek.progression.applyTraitBuffs = function(this, trait_name) end
 
+--- Begin turn.
 ---@param this any
 lurek.progression.beginTurn = function(this) end
 
+--- Check morale.
 ---@param this any
 lurek.progression.checkMorale = function(this) end
 
+--- Clears buffs.
 ---@param this any
 ---@param stat? any
 lurek.progression.clearBuffs = function(this, stat) end
 
+--- Clears flag.
 ---@param this any
 ---@param name any
 lurek.progression.clearFlag = function(this, name) end
 
+--- Complete quest.
 ---@param this any
 ---@param id any
 lurek.progression.completeQuest = function(this, id) end
 
+--- Completed count.
 ---@param this any
 lurek.progression.completedCount = function(this) end
 
+--- Completed ids.
 ---@param this any
 lurek.progression.completedIds = function(this) end
 
+--- Create legacy quest adapter.
 ---@param store any
 ---@param profile any
 ---@param options? any
 lurek.progression.createLegacyQuestAdapter = function(store, profile, options) end
 
+--- Create legacy stats adapter.
 ---@param store any
 ---@param profile any
 ---@param options? any
 lurek.progression.createLegacyStatsAdapter = function(store, profile, options) end
 
+--- Define.
 ---@param this any
 ---@param name any
 ---@param base any
 ---@param opts? any
 lurek.progression.define = function(this, name, base, opts) end
 
+--- Define perk.
 ---@param this any
 ---@param name any
 ---@param opts? any
 lurek.progression.definePerk = function(this, name, opts) end
 
+--- Define skill.
 ---@param this any
 ---@param name any
 ---@param opts? any
 lurek.progression.defineSkill = function(this, name, opts) end
 
+--- Fail quest.
 ---@param this any
 ---@param id any
 lurek.progression.failQuest = function(this, id) end
 
+--- Failed ids.
 ---@param this any
 lurek.progression.failedIds = function(this) end
 
+--- Returns a value.
 ---@param this any
 ---@param name any
 lurek.progression.get = function(this, name) end
 
+--- Returns the action points.
 ---@param this any
+---@return number Current action points followed by the configured maximum. (value 1).
+---@return number Current action points followed by the configured maximum. (value 2).
 lurek.progression.getActionPoints = function(this) end
 
+--- Returns the active traits.
 ---@param this any
 lurek.progression.getActiveTraits = function(this) end
 
+--- Returns the base.
 ---@param this any
 ---@param name any
 lurek.progression.getBase = function(this, name) end
 
+--- Returns the buff count.
 ---@param this any
 ---@param stat? any
 lurek.progression.getBuffCount = function(this, stat) end
 
+--- Returns the buffs.
 ---@param this any
 ---@param stat? any
 lurek.progression.getBuffs = function(this, stat) end
 
+--- Returns the cooldown remaining.
 ---@param this any
 ---@param name any
 lurek.progression.getCooldownRemaining = function(this, name) end
 
+--- Returns the encumbrance.
 ---@param this any
 lurek.progression.getEncumbrance = function(this) end
 
+--- Returns the flags.
 ---@param this any
 lurek.progression.getFlags = function(this) end
 
+--- Returns the initiative.
 ---@param this any
 lurek.progression.getInitiative = function(this) end
 
+--- Returns the level.
 ---@param this any
 lurek.progression.getLevel = function(this) end
 
+--- Returns the max.
 ---@param this any
 ---@param name any
 lurek.progression.getMax = function(this, name) end
 
+--- Returns the min.
 ---@param this any
 ---@param name any
 lurek.progression.getMin = function(this, name) end
 
+--- Returns the morale.
 ---@param this any
+---@return number Current morale followed by the configured maximum. (value 1).
+---@return number Current morale followed by the configured maximum. (value 2).
 lurek.progression.getMorale = function(this) end
 
+--- Returns the quest.
 ---@param this any
 ---@param id any
 lurek.progression.getQuest = function(this, id) end
 
+--- Returns the quest reward.
 ---@param this any
 ---@param id any
 lurek.progression.getQuestReward = function(this, id) end
 
+--- Returns the regen.
 ---@param this any
 ---@param name any
 lurek.progression.getRegen = function(this, name) end
 
+--- Returns the resistance.
 ---@param this any
 ---@param dtype any
 lurek.progression.getResistance = function(this, dtype) end
 
+--- Returns the skill level.
 ---@param this any
 ---@param name any
 lurek.progression.getSkillLevel = function(this, name) end
 
+--- Returns the stat names.
 ---@param this any
 lurek.progression.getStatNames = function(this) end
 
+--- Returns the use count.
 ---@param this any
 ---@param name any
 lurek.progression.getUseCount = function(this, name) end
 
+--- Returns the xp.
 ---@param this any
 lurek.progression.getXP = function(this) end
 
+--- Returns true if flag.
 ---@param this any
 ---@param name any
 lurek.progression.hasFlag = function(this, name) end
 
+--- Returns true if perk.
 ---@param this any
 ---@param name any
 lurek.progression.hasPerk = function(this, name) end
 
+--- Returns true if trait.
 ---@param this any
 ---@param trait_name any
 lurek.progression.hasTrait = function(this, trait_name) end
 
+--- Import legacy quest snapshot.
 ---@param snapshot any
 lurek.progression.importLegacyQuestSnapshot = function(snapshot) end
 
+--- Import legacy stats snapshot.
 ---@param snapshot any
 lurek.progression.importLegacyStatsSnapshot = function(snapshot) end
 
+--- Returns true if encumbered.
 ---@param this any
 lurek.progression.isEncumbered = function(this) end
 
+--- Learn skill.
 ---@param this any
 ---@param name any
 lurek.progression.learnSkill = function(this, name) end
 
+--- Load store.
 ---@param snapshot any
 lurek.progression.loadStore = function(snapshot) end
 
+--- New store.
 ---@param options? any
 lurek.progression.newStore = function(options) end
 
+--- Quest count.
 ---@param this any
 lurek.progression.questCount = function(this) end
 
+--- Quest ids.
 ---@param this any
 lurek.progression.questIds = function(this) end
 
+--- Quests with status.
 ---@param this any
 ---@param wanted any
 lurek.progression.questsWithStatus = function(this, wanted) end
 
+--- Record use.
 ---@param this any
 ---@param name any
 lurek.progression.recordUse = function(this, name) end
 
+--- Recover action points.
 ---@param this any
 ---@param amount any
 lurek.progression.recoverActionPoints = function(this, amount) end
 
+--- Removes buff.
 ---@param this any
 ---@param handle any
 lurek.progression.removeBuff = function(this, handle) end
 
+--- Removes quest.
 ---@param this any
 ---@param id any
 lurek.progression.removeQuest = function(this, id) end
 
+--- Removes trait buffs.
 ---@param this any
 ---@param trait_name any
 lurek.progression.removeTraitBuffs = function(this, trait_name) end
 
+--- Clears quest.
 ---@param this any
 ---@param id any
 lurek.progression.resetQuest = function(this, id) end
 
+--- Restore.
 ---@param this any
 ---@param snap any
 lurek.progression.restore = function(this, snap) end
 
+--- Sets the action points.
 ---@param this any
 ---@param max_val any
 lurek.progression.setActionPoints = function(this, max_val) end
 
+--- Sets the base.
 ---@param this any
 ---@param name any
 ---@param value any
 lurek.progression.setBase = function(this, name, value) end
 
+--- Sets the berserk threshold.
 ---@param this any
 ---@param value any
 lurek.progression.setBerserkThreshold = function(this, value) end
 
+--- Sets the encumbrance.
 ---@param this any
 ---@param cur any
 ---@param max_val any
 lurek.progression.setEncumbrance = function(this, cur, max_val) end
 
+--- Sets the flag.
 ---@param this any
 ---@param name any
 lurek.progression.setFlag = function(this, name) end
 
+--- Sets the initiative.
 ---@param this any
 ---@param value any
 lurek.progression.setInitiative = function(this, value) end
 
+--- Sets the level.
 ---@param this any
 ---@param value any
 lurek.progression.setLevel = function(this, value) end
 
+--- Sets the level thresholds.
 ---@param this any
 ---@param thresholds any
 lurek.progression.setLevelThresholds = function(this, thresholds) end
 
+--- Sets the max.
 ---@param this any
 ---@param name any
 ---@param value any
 lurek.progression.setMax = function(this, name, value) end
 
+--- Sets the min.
 ---@param this any
 ---@param name any
 ---@param value any
 lurek.progression.setMin = function(this, name, value) end
 
+--- Sets the morale.
 ---@param this any
 ---@param max_val any
 lurek.progression.setMorale = function(this, max_val) end
 
+--- Sets the panic threshold.
 ---@param this any
 ---@param value any
 lurek.progression.setPanicThreshold = function(this, value) end
 
+--- Sets the quest reward.
 ---@param this any
 ---@param id any
 ---@param reward any
 lurek.progression.setQuestReward = function(this, id, reward) end
 
+--- Sets the regen.
 ---@param this any
 ---@param name any
 ---@param value any
 lurek.progression.setRegen = function(this, name, value) end
 
+--- Sets the resistance.
 ---@param this any
 ---@param dtype any
 ---@param value any
 lurek.progression.setResistance = function(this, dtype, value) end
 
+--- Sets the xp.
 ---@param this any
 ---@param value any
 lurek.progression.setXP = function(this, value) end
 
+--- Snapshot.
 ---@param this any
 lurek.progression.snapshot = function(this) end
 
+--- Spend action points.
 ---@param this any
 ---@param amount any
 lurek.progression.spendActionPoints = function(this, amount) end
 
+--- Start quest.
 ---@param this any
 ---@param id any
 lurek.progression.startQuest = function(this, id) end
 
+--- Type.
 lurek.progression.type = function() end
 
+--- Type.
 lurek.progression.type = function() end
 
+--- Type of.
 ---@param name any
 lurek.progression.typeOf = function(name) end
 
+--- Type of.
 ---@param name any
 lurek.progression.typeOf = function(name) end
 
+--- Update.
 ---@param this any
 ---@param dt any
 lurek.progression.update = function(this, dt) end
 
+--- Use skill.
 ---@param this any
 ---@param name any
+---@return boolean Success flag followed by an optional failure reason. (value 1).
+---@return string? Success flag followed by an optional failure reason. (value 2).
 lurek.progression.useSkill = function(this, name) end
 
 --- Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.

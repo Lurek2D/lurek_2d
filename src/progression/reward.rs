@@ -1,12 +1,12 @@
-//! Owns pending, claimed, applied, and rejected reward records that progression systems queue for profiles.
-//! Defines the store entrypoints that list reward work and drive the claim-apply-reject state machine.
-//! Emits reward lifecycle events without applying game-specific inventory, economy, or unlock side effects.
-//! Keeps shared reward transitions separate from achievements and quests so producers stay decoupled from payout flow.
-//! Open this file when changing reward idempotency, external receipts, or the public reward-management API surface.
+//! Owns profile-scoped reward records and the canonical pending-claimed-applied-rejected state machine.
+//! Defines the store helpers that list outstanding reward work and transition records without applying game payloads.
+//! Persists optional external receipts, emits reward lifecycle events, and bumps revisions for every accepted change.
+//! Keeps payout-state rules separate from achievements, quests, and downstream economy code so producers stay decoupled.
+//! Open this file when changing reward transitions, external receipt storage, or queue-facing reward semantics.
 use super::*;
 
 impl ProgressionStore {
-    /// Return pending reward records for one profile.
+    /// Return only the reward records that are still pending for one profile.
     pub fn get_pending_rewards(
         &self,
         profile_id: &str,
@@ -23,7 +23,7 @@ impl ProgressionStore {
             .collect())
     }
 
-    /// Move a pending reward into claimed state.
+    /// Move one pending reward into claimed state and emit `reward_claimed`.
     pub fn claim_reward(
         &mut self,
         profile_id: &str,
@@ -56,7 +56,7 @@ impl ProgressionStore {
         Ok(reward)
     }
 
-    /// Mark a claimed reward as applied by game code.
+    /// Mark one claimed reward as applied, persist the optional external receipt, and emit `reward_applied`.
     pub fn mark_reward_applied(
         &mut self,
         profile_id: &str,
@@ -91,7 +91,7 @@ impl ProgressionStore {
         Ok(reward)
     }
 
-    /// Reject a reward instead of applying it.
+    /// Reject one pending or claimed reward instead of applying it and emit `reward_rejected`.
     pub fn reject_reward(
         &mut self,
         profile_id: &str,

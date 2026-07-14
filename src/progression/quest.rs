@@ -1,12 +1,12 @@
-//! Owns authored quest definitions, active quest state, journals, and stage data for profiles.
-//! Exposes registration, reveal, accept, fail, complete, and snapshot helpers for canonical quest flow.
-//! Stores reverse bindings from counters to objectives so writes refresh only affected active quests.
-//! Applies hidden, revealed, available, active, completed, and failed transitions inside engine state.
-//! Advances mandatory stage objectives, carries retained journals, and preserves completion history.
-//! Emits quest lifecycle, objective, journal, and reward-availability events in deterministic order.
-//! Provides public Lua-facing helpers plus crate-local refresh hooks reused by counter and season slices.
-//! Reuses shared condition evaluation and reward records without duplicating attribute or counter logic.
-//! Keeps branching objective behavior out of store-wide plumbing so quest rules stay cohesive.
+//! Owns authored quest definitions, materialized quest state, retained journals, and stage progress for profiles.
+//! Exposes store-facing helpers for definition, reveal, accept, fail, complete, journal writes, and snapshot queries.
+//! Stores reverse bindings from counters to objectives so writes refresh only the affected active quest state.
+//! Applies hidden, revealed, available, active, completed, and failed transitions inside canonical engine state.
+//! Advances mandatory stage objectives, trims retained journals by authored limits, and preserves completion counts.
+//! Emits quest lifecycle, objective, journal, and reward-availability events in deterministic store order.
+//! Keeps authored availability and reveal conditions near quest-state transitions so discovery rules stay aligned.
+//! Reuses shared condition evaluation and reward records without duplicating attribute, counter, or payout logic.
+//! Keeps branching objective behavior out of store-wide plumbing so quest rules stay cohesive and testable.
 //! Open this file when changing quest validation, objective sync, journal retention, or lifecycle semantics.
 use super::*;
 
@@ -238,7 +238,7 @@ impl ProgressionStore {
         self.get_quest_state(profile_id, quest_id)
     }
 
-    /// Append one canonical journal entry to a quest and return it.
+    /// Append one canonical journal entry, trim any overflow defined by the quest, and return the stored entry.
     pub fn add_quest_journal_entry(
         &mut self,
         profile_id: &str,
@@ -291,7 +291,7 @@ impl ProgressionStore {
         Ok(entry)
     }
 
-    /// Return retained quest journal entries in authored order.
+    /// Return the currently retained quest journal entries in authored order after any configured trimming.
     pub fn list_quest_journal_entries(
         &self,
         profile_id: &str,

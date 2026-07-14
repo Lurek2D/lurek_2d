@@ -321,9 +321,9 @@ impl FormulaParser {
                     Ok(FormulaExpr::Variable(name))
                 }
             }
-            Some(FormulaToken::Minus) => Ok(FormulaExpr::UnaryMinus(Box::new(
-                self.parse_factor()?,
-            ))),
+            Some(FormulaToken::Minus) => {
+                Ok(FormulaExpr::UnaryMinus(Box::new(self.parse_factor()?)))
+            }
             Some(FormulaToken::LParen) => {
                 let expr = self.parse_expression()?;
                 match self.next() {

@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-13",
+  "generated": "2026-07-14",
   "modules": [
     {
       "name": "agent",
@@ -22697,13 +22697,13 @@
     },
     {
       "name": "progression",
-      "description": "Registers the public `lurek.progression` Lua API for deterministic offline progression state.",
+      "description": "Registers the public `lurek.progression` Lua API for deterministic offline progression state\nand owns its typed userdata wrappers.",
       "functions": [
         {
           "name": "define",
           "fullPath": "lurek.progression.define",
           "signature": "(this, name, base, [opts])",
-          "description": "",
+          "description": "Define.",
           "parameters": [
             {
               "name": "this",
@@ -22739,7 +22739,7 @@
           "name": "get",
           "fullPath": "lurek.progression.get",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns a value.",
           "parameters": [
             {
               "name": "this",
@@ -22763,7 +22763,7 @@
           "name": "getBase",
           "fullPath": "lurek.progression.getBase",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the base.",
           "parameters": [
             {
               "name": "this",
@@ -22787,7 +22787,7 @@
           "name": "setBase",
           "fullPath": "lurek.progression.setBase",
           "signature": "(this, name, value)",
-          "description": "",
+          "description": "Sets the base.",
           "parameters": [
             {
               "name": "this",
@@ -22817,7 +22817,7 @@
           "name": "setMin",
           "fullPath": "lurek.progression.setMin",
           "signature": "(this, name, value)",
-          "description": "",
+          "description": "Sets the min.",
           "parameters": [
             {
               "name": "this",
@@ -22847,7 +22847,7 @@
           "name": "setMax",
           "fullPath": "lurek.progression.setMax",
           "signature": "(this, name, value)",
-          "description": "",
+          "description": "Sets the max.",
           "parameters": [
             {
               "name": "this",
@@ -22877,7 +22877,7 @@
           "name": "getMin",
           "fullPath": "lurek.progression.getMin",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the min.",
           "parameters": [
             {
               "name": "this",
@@ -22901,7 +22901,7 @@
           "name": "getMax",
           "fullPath": "lurek.progression.getMax",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the max.",
           "parameters": [
             {
               "name": "this",
@@ -22925,7 +22925,7 @@
           "name": "setRegen",
           "fullPath": "lurek.progression.setRegen",
           "signature": "(this, name, value)",
-          "description": "",
+          "description": "Sets the regen.",
           "parameters": [
             {
               "name": "this",
@@ -22955,7 +22955,7 @@
           "name": "getRegen",
           "fullPath": "lurek.progression.getRegen",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the regen.",
           "parameters": [
             {
               "name": "this",
@@ -22979,7 +22979,7 @@
           "name": "getStatNames",
           "fullPath": "lurek.progression.getStatNames",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the stat names.",
           "parameters": [
             {
               "name": "this",
@@ -22997,7 +22997,7 @@
           "name": "addBuff",
           "fullPath": "lurek.progression.addBuff",
           "signature": "lurek.progression.addBuff()",
-          "description": "",
+          "description": "Adds buff.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -23008,7 +23008,7 @@
           "name": "removeBuff",
           "fullPath": "lurek.progression.removeBuff",
           "signature": "(this, handle)",
-          "description": "",
+          "description": "Removes buff.",
           "parameters": [
             {
               "name": "this",
@@ -23032,7 +23032,7 @@
           "name": "clearBuffs",
           "fullPath": "lurek.progression.clearBuffs",
           "signature": "(this, [stat])",
-          "description": "",
+          "description": "Clears buffs.",
           "parameters": [
             {
               "name": "this",
@@ -23056,7 +23056,7 @@
           "name": "getBuffCount",
           "fullPath": "lurek.progression.getBuffCount",
           "signature": "(this, [stat])",
-          "description": "",
+          "description": "Returns the buff count.",
           "parameters": [
             {
               "name": "this",
@@ -23080,7 +23080,7 @@
           "name": "applyTraitBuffs",
           "fullPath": "lurek.progression.applyTraitBuffs",
           "signature": "(this, trait_name)",
-          "description": "",
+          "description": "Apply trait buffs.",
           "parameters": [
             {
               "name": "this",
@@ -23104,7 +23104,7 @@
           "name": "removeTraitBuffs",
           "fullPath": "lurek.progression.removeTraitBuffs",
           "signature": "(this, trait_name)",
-          "description": "",
+          "description": "Removes trait buffs.",
           "parameters": [
             {
               "name": "this",
@@ -23128,7 +23128,7 @@
           "name": "hasTrait",
           "fullPath": "lurek.progression.hasTrait",
           "signature": "(this, trait_name)",
-          "description": "",
+          "description": "Returns true if trait.",
           "parameters": [
             {
               "name": "this",
@@ -23152,7 +23152,7 @@
           "name": "getActiveTraits",
           "fullPath": "lurek.progression.getActiveTraits",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the active traits.",
           "parameters": [
             {
               "name": "this",
@@ -23170,7 +23170,7 @@
           "name": "getBuffs",
           "fullPath": "lurek.progression.getBuffs",
           "signature": "(this, [stat])",
-          "description": "",
+          "description": "Returns the buffs.",
           "parameters": [
             {
               "name": "this",
@@ -23194,7 +23194,7 @@
           "name": "addXP",
           "fullPath": "lurek.progression.addXP",
           "signature": "(this, amount)",
-          "description": "",
+          "description": "Adds xp.",
           "parameters": [
             {
               "name": "this",
@@ -23218,7 +23218,7 @@
           "name": "getXP",
           "fullPath": "lurek.progression.getXP",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the xp.",
           "parameters": [
             {
               "name": "this",
@@ -23236,7 +23236,7 @@
           "name": "setXP",
           "fullPath": "lurek.progression.setXP",
           "signature": "(this, value)",
-          "description": "",
+          "description": "Sets the xp.",
           "parameters": [
             {
               "name": "this",
@@ -23260,7 +23260,7 @@
           "name": "getLevel",
           "fullPath": "lurek.progression.getLevel",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the level.",
           "parameters": [
             {
               "name": "this",
@@ -23278,7 +23278,7 @@
           "name": "setLevel",
           "fullPath": "lurek.progression.setLevel",
           "signature": "(this, value)",
-          "description": "",
+          "description": "Sets the level.",
           "parameters": [
             {
               "name": "this",
@@ -23302,7 +23302,7 @@
           "name": "setLevelThresholds",
           "fullPath": "lurek.progression.setLevelThresholds",
           "signature": "(this, thresholds)",
-          "description": "",
+          "description": "Sets the level thresholds.",
           "parameters": [
             {
               "name": "this",
@@ -23326,7 +23326,7 @@
           "name": "defineSkill",
           "fullPath": "lurek.progression.defineSkill",
           "signature": "(this, name, [opts])",
-          "description": "",
+          "description": "Define skill.",
           "parameters": [
             {
               "name": "this",
@@ -23356,7 +23356,7 @@
           "name": "learnSkill",
           "fullPath": "lurek.progression.learnSkill",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Learn skill.",
           "parameters": [
             {
               "name": "this",
@@ -23380,7 +23380,7 @@
           "name": "useSkill",
           "fullPath": "lurek.progression.useSkill",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Use skill.",
           "parameters": [
             {
               "name": "this",
@@ -23395,8 +23395,8 @@
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean, string?",
+          "returnType": "boolean, string?",
           "isMethod": false,
           "objectType": null
         },
@@ -23404,7 +23404,7 @@
           "name": "getSkillLevel",
           "fullPath": "lurek.progression.getSkillLevel",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the skill level.",
           "parameters": [
             {
               "name": "this",
@@ -23428,7 +23428,7 @@
           "name": "getCooldownRemaining",
           "fullPath": "lurek.progression.getCooldownRemaining",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the cooldown remaining.",
           "parameters": [
             {
               "name": "this",
@@ -23452,7 +23452,7 @@
           "name": "definePerk",
           "fullPath": "lurek.progression.definePerk",
           "signature": "(this, name, [opts])",
-          "description": "",
+          "description": "Define perk.",
           "parameters": [
             {
               "name": "this",
@@ -23482,7 +23482,7 @@
           "name": "acquirePerk",
           "fullPath": "lurek.progression.acquirePerk",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Acquire perk.",
           "parameters": [
             {
               "name": "this",
@@ -23506,7 +23506,7 @@
           "name": "hasPerk",
           "fullPath": "lurek.progression.hasPerk",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns true if perk.",
           "parameters": [
             {
               "name": "this",
@@ -23530,7 +23530,7 @@
           "name": "setActionPoints",
           "fullPath": "lurek.progression.setActionPoints",
           "signature": "(this, max_val)",
-          "description": "",
+          "description": "Sets the action points.",
           "parameters": [
             {
               "name": "this",
@@ -23554,7 +23554,7 @@
           "name": "getActionPoints",
           "fullPath": "lurek.progression.getActionPoints",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the action points.",
           "parameters": [
             {
               "name": "this",
@@ -23563,8 +23563,8 @@
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number, number",
+          "returnType": "number, number",
           "isMethod": false,
           "objectType": null
         },
@@ -23572,7 +23572,7 @@
           "name": "spendActionPoints",
           "fullPath": "lurek.progression.spendActionPoints",
           "signature": "(this, amount)",
-          "description": "",
+          "description": "Spend action points.",
           "parameters": [
             {
               "name": "this",
@@ -23596,7 +23596,7 @@
           "name": "recoverActionPoints",
           "fullPath": "lurek.progression.recoverActionPoints",
           "signature": "(this, amount)",
-          "description": "",
+          "description": "Recover action points.",
           "parameters": [
             {
               "name": "this",
@@ -23620,7 +23620,7 @@
           "name": "beginTurn",
           "fullPath": "lurek.progression.beginTurn",
           "signature": "(this, )",
-          "description": "",
+          "description": "Begin turn.",
           "parameters": [
             {
               "name": "this",
@@ -23638,7 +23638,7 @@
           "name": "setMorale",
           "fullPath": "lurek.progression.setMorale",
           "signature": "(this, max_val)",
-          "description": "",
+          "description": "Sets the morale.",
           "parameters": [
             {
               "name": "this",
@@ -23662,7 +23662,7 @@
           "name": "getMorale",
           "fullPath": "lurek.progression.getMorale",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the morale.",
           "parameters": [
             {
               "name": "this",
@@ -23671,8 +23671,8 @@
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number, number",
+          "returnType": "number, number",
           "isMethod": false,
           "objectType": null
         },
@@ -23680,7 +23680,7 @@
           "name": "adjustMorale",
           "fullPath": "lurek.progression.adjustMorale",
           "signature": "(this, delta)",
-          "description": "",
+          "description": "Adjust morale.",
           "parameters": [
             {
               "name": "this",
@@ -23704,7 +23704,7 @@
           "name": "setPanicThreshold",
           "fullPath": "lurek.progression.setPanicThreshold",
           "signature": "(this, value)",
-          "description": "",
+          "description": "Sets the panic threshold.",
           "parameters": [
             {
               "name": "this",
@@ -23728,7 +23728,7 @@
           "name": "setBerserkThreshold",
           "fullPath": "lurek.progression.setBerserkThreshold",
           "signature": "(this, value)",
-          "description": "",
+          "description": "Sets the berserk threshold.",
           "parameters": [
             {
               "name": "this",
@@ -23752,7 +23752,7 @@
           "name": "checkMorale",
           "fullPath": "lurek.progression.checkMorale",
           "signature": "(this, )",
-          "description": "",
+          "description": "Check morale.",
           "parameters": [
             {
               "name": "this",
@@ -23770,7 +23770,7 @@
           "name": "setFlag",
           "fullPath": "lurek.progression.setFlag",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Sets the flag.",
           "parameters": [
             {
               "name": "this",
@@ -23794,7 +23794,7 @@
           "name": "clearFlag",
           "fullPath": "lurek.progression.clearFlag",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Clears flag.",
           "parameters": [
             {
               "name": "this",
@@ -23818,7 +23818,7 @@
           "name": "hasFlag",
           "fullPath": "lurek.progression.hasFlag",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns true if flag.",
           "parameters": [
             {
               "name": "this",
@@ -23842,7 +23842,7 @@
           "name": "getFlags",
           "fullPath": "lurek.progression.getFlags",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the flags.",
           "parameters": [
             {
               "name": "this",
@@ -23860,7 +23860,7 @@
           "name": "setResistance",
           "fullPath": "lurek.progression.setResistance",
           "signature": "(this, dtype, value)",
-          "description": "",
+          "description": "Sets the resistance.",
           "parameters": [
             {
               "name": "this",
@@ -23890,7 +23890,7 @@
           "name": "getResistance",
           "fullPath": "lurek.progression.getResistance",
           "signature": "(this, dtype)",
-          "description": "",
+          "description": "Returns the resistance.",
           "parameters": [
             {
               "name": "this",
@@ -23914,7 +23914,7 @@
           "name": "applyDamage",
           "fullPath": "lurek.progression.applyDamage",
           "signature": "(this, stat, amount, [dtype])",
-          "description": "",
+          "description": "Apply damage.",
           "parameters": [
             {
               "name": "this",
@@ -23950,7 +23950,7 @@
           "name": "recordUse",
           "fullPath": "lurek.progression.recordUse",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Record use.",
           "parameters": [
             {
               "name": "this",
@@ -23974,7 +23974,7 @@
           "name": "getUseCount",
           "fullPath": "lurek.progression.getUseCount",
           "signature": "(this, name)",
-          "description": "",
+          "description": "Returns the use count.",
           "parameters": [
             {
               "name": "this",
@@ -23998,7 +23998,7 @@
           "name": "setEncumbrance",
           "fullPath": "lurek.progression.setEncumbrance",
           "signature": "(this, cur, max_val)",
-          "description": "",
+          "description": "Sets the encumbrance.",
           "parameters": [
             {
               "name": "this",
@@ -24028,7 +24028,7 @@
           "name": "getEncumbrance",
           "fullPath": "lurek.progression.getEncumbrance",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the encumbrance.",
           "parameters": [
             {
               "name": "this",
@@ -24046,7 +24046,7 @@
           "name": "isEncumbered",
           "fullPath": "lurek.progression.isEncumbered",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns true if encumbered.",
           "parameters": [
             {
               "name": "this",
@@ -24064,7 +24064,7 @@
           "name": "setInitiative",
           "fullPath": "lurek.progression.setInitiative",
           "signature": "(this, value)",
-          "description": "",
+          "description": "Sets the initiative.",
           "parameters": [
             {
               "name": "this",
@@ -24088,7 +24088,7 @@
           "name": "getInitiative",
           "fullPath": "lurek.progression.getInitiative",
           "signature": "(this, )",
-          "description": "",
+          "description": "Returns the initiative.",
           "parameters": [
             {
               "name": "this",
@@ -24106,7 +24106,7 @@
           "name": "update",
           "fullPath": "lurek.progression.update",
           "signature": "(this, dt)",
-          "description": "",
+          "description": "Update.",
           "parameters": [
             {
               "name": "this",
@@ -24130,7 +24130,7 @@
           "name": "snapshot",
           "fullPath": "lurek.progression.snapshot",
           "signature": "(this, )",
-          "description": "",
+          "description": "Snapshot.",
           "parameters": [
             {
               "name": "this",
@@ -24148,7 +24148,7 @@
           "name": "restore",
           "fullPath": "lurek.progression.restore",
           "signature": "(this, snap)",
-          "description": "",
+          "description": "Restore.",
           "parameters": [
             {
               "name": "this",
@@ -24172,7 +24172,7 @@
           "name": "type",
           "fullPath": "lurek.progression.type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -24183,7 +24183,7 @@
           "name": "typeOf",
           "fullPath": "lurek.progression.typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -24201,7 +24201,7 @@
           "name": "addQuest",
           "fullPath": "lurek.progression.addQuest",
           "signature": "(this, quest)",
-          "description": "",
+          "description": "Adds quest.",
           "parameters": [
             {
               "name": "this",
@@ -24225,7 +24225,7 @@
           "name": "questCount",
           "fullPath": "lurek.progression.questCount",
           "signature": "(this, )",
-          "description": "",
+          "description": "Quest count.",
           "parameters": [
             {
               "name": "this",
@@ -24243,7 +24243,7 @@
           "name": "questIds",
           "fullPath": "lurek.progression.questIds",
           "signature": "(this, )",
-          "description": "",
+          "description": "Quest ids.",
           "parameters": [
             {
               "name": "this",
@@ -24261,7 +24261,7 @@
           "name": "removeQuest",
           "fullPath": "lurek.progression.removeQuest",
           "signature": "(this, id)",
-          "description": "",
+          "description": "Removes quest.",
           "parameters": [
             {
               "name": "this",
@@ -24285,7 +24285,7 @@
           "name": "startQuest",
           "fullPath": "lurek.progression.startQuest",
           "signature": "(this, id)",
-          "description": "",
+          "description": "Start quest.",
           "parameters": [
             {
               "name": "this",
@@ -24309,7 +24309,7 @@
           "name": "completeQuest",
           "fullPath": "lurek.progression.completeQuest",
           "signature": "(this, id)",
-          "description": "",
+          "description": "Complete quest.",
           "parameters": [
             {
               "name": "this",
@@ -24333,7 +24333,7 @@
           "name": "failQuest",
           "fullPath": "lurek.progression.failQuest",
           "signature": "(this, id)",
-          "description": "",
+          "description": "Fail quest.",
           "parameters": [
             {
               "name": "this",
@@ -24357,7 +24357,7 @@
           "name": "advanceObjective",
           "fullPath": "lurek.progression.advanceObjective",
           "signature": "lurek.progression.advanceObjective()",
-          "description": "",
+          "description": "Advance objective.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -24368,7 +24368,7 @@
           "name": "addJournalEntry",
           "fullPath": "lurek.progression.addJournalEntry",
           "signature": "(this, quest_id, text, [tag])",
-          "description": "",
+          "description": "Adds journal entry.",
           "parameters": [
             {
               "name": "this",
@@ -24404,7 +24404,7 @@
           "name": "getQuest",
           "fullPath": "lurek.progression.getQuest",
           "signature": "(this, id)",
-          "description": "",
+          "description": "Returns the quest.",
           "parameters": [
             {
               "name": "this",
@@ -24428,7 +24428,7 @@
           "name": "questsWithStatus",
           "fullPath": "lurek.progression.questsWithStatus",
           "signature": "(this, wanted)",
-          "description": "",
+          "description": "Quests with status.",
           "parameters": [
             {
               "name": "this",
@@ -24452,7 +24452,7 @@
           "name": "activeIds",
           "fullPath": "lurek.progression.activeIds",
           "signature": "(this, )",
-          "description": "",
+          "description": "Active ids.",
           "parameters": [
             {
               "name": "this",
@@ -24470,7 +24470,7 @@
           "name": "completedIds",
           "fullPath": "lurek.progression.completedIds",
           "signature": "(this, )",
-          "description": "",
+          "description": "Completed ids.",
           "parameters": [
             {
               "name": "this",
@@ -24488,7 +24488,7 @@
           "name": "failedIds",
           "fullPath": "lurek.progression.failedIds",
           "signature": "(this, )",
-          "description": "",
+          "description": "Failed ids.",
           "parameters": [
             {
               "name": "this",
@@ -24506,7 +24506,7 @@
           "name": "activeCount",
           "fullPath": "lurek.progression.activeCount",
           "signature": "(this, )",
-          "description": "",
+          "description": "Active count.",
           "parameters": [
             {
               "name": "this",
@@ -24524,7 +24524,7 @@
           "name": "completedCount",
           "fullPath": "lurek.progression.completedCount",
           "signature": "(this, )",
-          "description": "",
+          "description": "Completed count.",
           "parameters": [
             {
               "name": "this",
@@ -24542,7 +24542,7 @@
           "name": "setQuestReward",
           "fullPath": "lurek.progression.setQuestReward",
           "signature": "(this, id, reward)",
-          "description": "",
+          "description": "Sets the quest reward.",
           "parameters": [
             {
               "name": "this",
@@ -24572,7 +24572,7 @@
           "name": "getQuestReward",
           "fullPath": "lurek.progression.getQuestReward",
           "signature": "(this, id)",
-          "description": "",
+          "description": "Returns the quest reward.",
           "parameters": [
             {
               "name": "this",
@@ -24596,7 +24596,7 @@
           "name": "resetQuest",
           "fullPath": "lurek.progression.resetQuest",
           "signature": "(this, id)",
-          "description": "",
+          "description": "Clears quest.",
           "parameters": [
             {
               "name": "this",
@@ -24620,7 +24620,7 @@
           "name": "type",
           "fullPath": "lurek.progression.type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -24631,7 +24631,7 @@
           "name": "typeOf",
           "fullPath": "lurek.progression.typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -24649,7 +24649,7 @@
           "name": "newStore",
           "fullPath": "lurek.progression.newStore",
           "signature": "([options])",
-          "description": "",
+          "description": "New store.",
           "parameters": [
             {
               "name": "options",
@@ -24667,7 +24667,7 @@
           "name": "loadStore",
           "fullPath": "lurek.progression.loadStore",
           "signature": "(snapshot)",
-          "description": "",
+          "description": "Load store.",
           "parameters": [
             {
               "name": "snapshot",
@@ -24685,7 +24685,7 @@
           "name": "importLegacyStatsSnapshot",
           "fullPath": "lurek.progression.importLegacyStatsSnapshot",
           "signature": "(snapshot)",
-          "description": "",
+          "description": "Import legacy stats snapshot.",
           "parameters": [
             {
               "name": "snapshot",
@@ -24703,7 +24703,7 @@
           "name": "importLegacyQuestSnapshot",
           "fullPath": "lurek.progression.importLegacyQuestSnapshot",
           "signature": "(snapshot)",
-          "description": "",
+          "description": "Import legacy quest snapshot.",
           "parameters": [
             {
               "name": "snapshot",
@@ -24721,7 +24721,7 @@
           "name": "createLegacyStatsAdapter",
           "fullPath": "lurek.progression.createLegacyStatsAdapter",
           "signature": "(store, profile, [options])",
-          "description": "",
+          "description": "Create legacy stats adapter.",
           "parameters": [
             {
               "name": "store",
@@ -24751,7 +24751,7 @@
           "name": "createLegacyQuestAdapter",
           "fullPath": "lurek.progression.createLegacyQuestAdapter",
           "signature": "(store, profile, [options])",
-          "description": "",
+          "description": "Create legacy quest adapter.",
           "parameters": [
             {
               "name": "store",
@@ -39457,6 +39457,101 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LAccordion"
+        }
+      ]
+    },
+    {
+      "name": "LAchievement",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LAchievement:getId",
+          "signature": "()",
+          "description": "Returns the authored achievement id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAchievement"
+        },
+        {
+          "name": "getTitle",
+          "fullPath": "LAchievement:getTitle",
+          "signature": "()",
+          "description": "Returns the authored achievement title.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LAchievement"
+        },
+        {
+          "name": "isUnlocked",
+          "fullPath": "LAchievement:isUnlocked",
+          "signature": "()",
+          "description": "Returns whether the achievement is currently unlocked for the owning profile.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAchievement"
+        }
+      ]
+    },
+    {
+      "name": "LActivityFeed",
+      "description": "",
+      "methods": [
+        {
+          "name": "count",
+          "fullPath": "LActivityFeed:count",
+          "signature": "()",
+          "description": "Returns the number of retained activity-feed entries in this selection.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LActivityFeed"
+        },
+        {
+          "name": "listEntries",
+          "fullPath": "LActivityFeed:listEntries",
+          "signature": "()",
+          "description": "Returns every retained activity-feed entry as typed userdata.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LActivityFeed"
+        }
+      ]
+    },
+    {
+      "name": "LActivityFeedEntry",
+      "description": "",
+      "methods": [
+        {
+          "name": "getSequence",
+          "fullPath": "LActivityFeedEntry:getSequence",
+          "signature": "()",
+          "description": "Returns the retained event sequence number.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LActivityFeedEntry"
+        },
+        {
+          "name": "getEventType",
+          "fullPath": "LActivityFeedEntry:getEventType",
+          "signature": "()",
+          "description": "Returns the canonical activity event type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LActivityFeedEntry"
         }
       ]
     },
@@ -56443,6 +56538,34 @@
       ]
     },
     {
+      "name": "LChallenge",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LChallenge:getId",
+          "signature": "()",
+          "description": "Returns the authored challenge id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LChallenge"
+        },
+        {
+          "name": "getStatus",
+          "fullPath": "LChallenge:getStatus",
+          "signature": "()",
+          "description": "Returns the current challenge lifecycle status.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LChallenge"
+        }
+      ]
+    },
+    {
       "name": "LChannel",
       "description": "Creates a new unbounded channel for sending typed values between threads.",
       "methods": [
@@ -59094,6 +59217,34 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LCircle"
+        }
+      ]
+    },
+    {
+      "name": "LCollection",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LCollection:getId",
+          "signature": "()",
+          "description": "Returns the authored collection id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LCollection"
+        },
+        {
+          "name": "isComplete",
+          "fullPath": "LCollection:isComplete",
+          "signature": "()",
+          "description": "Returns whether every collection item is currently collected.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LCollection"
         }
       ]
     },
@@ -98208,6 +98359,45 @@
       ]
     },
     {
+      "name": "LLeaderboardEntry",
+      "description": "",
+      "methods": [
+        {
+          "name": "getLeaderboardId",
+          "fullPath": "LLeaderboardEntry:getLeaderboardId",
+          "signature": "()",
+          "description": "Returns the leaderboard that produced this row.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLeaderboardEntry"
+        },
+        {
+          "name": "getProfileId",
+          "fullPath": "LLeaderboardEntry:getProfileId",
+          "signature": "()",
+          "description": "Returns the profile that owns this row.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLeaderboardEntry"
+        },
+        {
+          "name": "getRank",
+          "fullPath": "LLeaderboardEntry:getRank",
+          "signature": "()",
+          "description": "Returns the one-based rank currently assigned to this row.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LLeaderboardEntry"
+        }
+      ]
+    },
+    {
       "name": "LLevelDetector",
       "description": "Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.",
       "methods": [
@@ -124622,6 +124812,62 @@
       ]
     },
     {
+      "name": "LPopulation",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LPopulation:getId",
+          "signature": "()",
+          "description": "Returns the population id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPopulation"
+        },
+        {
+          "name": "isPaused",
+          "fullPath": "LPopulation:isPaused",
+          "signature": "()",
+          "description": "Returns whether logical simulation for this population is paused.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPopulation"
+        }
+      ]
+    },
+    {
+      "name": "LPopulationProfile",
+      "description": "",
+      "methods": [
+        {
+          "name": "getProfileId",
+          "fullPath": "LPopulationProfile:getProfileId",
+          "signature": "()",
+          "description": "Returns the virtual profile id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPopulationProfile"
+        },
+        {
+          "name": "isMaterialized",
+          "fullPath": "LPopulationProfile:isMaterialized",
+          "signature": "()",
+          "description": "Returns whether this virtual profile is materialized as a normal store profile.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPopulationProfile"
+        }
+      ]
+    },
+    {
       "name": "LPositionalEncoding",
       "description": "Lua wrapper over `PositionalEncoding`.",
       "methods": [
@@ -125413,6 +125659,34 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LPostFxStack"
+        }
+      ]
+    },
+    {
+      "name": "LPrestige",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LPrestige:getId",
+          "signature": "()",
+          "description": "Returns the authored prestige id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPrestige"
+        },
+        {
+          "name": "isAvailable",
+          "fullPath": "LPrestige:isAvailable",
+          "signature": "()",
+          "description": "Returns whether the owning profile currently satisfies the prestige condition.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPrestige"
         }
       ]
     },
@@ -127376,7 +127650,7 @@
           "name": "getId",
           "fullPath": "LProgressionProfile:getId",
           "signature": "()",
-          "description": "",
+          "description": "Returns the id.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127384,10 +127658,21 @@
           "objectType": "LProgressionProfile"
         },
         {
+          "name": "getPendingRewards",
+          "fullPath": "LProgressionProfile:getPendingRewards",
+          "signature": "()",
+          "description": "Returns this profile's pending reward records as typed reward handles.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LProgressionProfile"
+        },
+        {
           "name": "type",
           "fullPath": "LProgressionProfile:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127398,7 +127683,7 @@
           "name": "typeOf",
           "fullPath": "LProgressionProfile:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -127422,7 +127707,7 @@
           "name": "getId",
           "fullPath": "LProgressionStore:getId",
           "signature": "()",
-          "description": "",
+          "description": "Returns the id.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127433,7 +127718,7 @@
           "name": "getRevision",
           "fullPath": "LProgressionStore:getRevision",
           "signature": "()",
-          "description": "",
+          "description": "Returns the revision.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127444,7 +127729,7 @@
           "name": "getSchemaVersion",
           "fullPath": "LProgressionStore:getSchemaVersion",
           "signature": "()",
-          "description": "",
+          "description": "Returns the schema version.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127455,7 +127740,7 @@
           "name": "getDefinitionHash",
           "fullPath": "LProgressionStore:getDefinitionHash",
           "signature": "()",
-          "description": "",
+          "description": "Returns the definition hash.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127466,7 +127751,7 @@
           "name": "getTime",
           "fullPath": "LProgressionStore:getTime",
           "signature": "()",
-          "description": "",
+          "description": "Returns the time.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127477,7 +127762,7 @@
           "name": "setTime",
           "fullPath": "LProgressionStore:setTime",
           "signature": "(seconds)",
-          "description": "",
+          "description": "Sets the time.",
           "parameters": [
             {
               "name": "seconds",
@@ -127495,7 +127780,7 @@
           "name": "advanceTime",
           "fullPath": "LProgressionStore:advanceTime",
           "signature": "(seconds)",
-          "description": "",
+          "description": "Advance time.",
           "parameters": [
             {
               "name": "seconds",
@@ -127537,7 +127822,7 @@
           "name": "stats",
           "fullPath": "LProgressionStore:stats",
           "signature": "()",
-          "description": "",
+          "description": "Stats.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127548,7 +127833,7 @@
           "name": "clear",
           "fullPath": "LProgressionStore:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127559,7 +127844,7 @@
           "name": "validate",
           "fullPath": "LProgressionStore:validate",
           "signature": "()",
-          "description": "",
+          "description": "Validate.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127570,7 +127855,7 @@
           "name": "compileCondition",
           "fullPath": "LProgressionStore:compileCondition",
           "signature": "(condition)",
-          "description": "",
+          "description": "Compile condition.",
           "parameters": [
             {
               "name": "condition",
@@ -127588,7 +127873,7 @@
           "name": "validateCondition",
           "fullPath": "LProgressionStore:validateCondition",
           "signature": "(condition)",
-          "description": "",
+          "description": "Validate condition.",
           "parameters": [
             {
               "name": "condition",
@@ -127654,7 +127939,7 @@
           "name": "debugSnapshot",
           "fullPath": "LProgressionStore:debugSnapshot",
           "signature": "()",
-          "description": "",
+          "description": "Debug snapshot.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127665,7 +127950,7 @@
           "name": "exportSnapshot",
           "fullPath": "LProgressionStore:exportSnapshot",
           "signature": "()",
-          "description": "",
+          "description": "Export snapshot.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127676,7 +127961,7 @@
           "name": "exportChangesSince",
           "fullPath": "LProgressionStore:exportChangesSince",
           "signature": "(revision)",
-          "description": "",
+          "description": "Export changes since.",
           "parameters": [
             {
               "name": "revision",
@@ -127718,7 +128003,7 @@
           "name": "loadSnapshot",
           "fullPath": "LProgressionStore:loadSnapshot",
           "signature": "(snapshot)",
-          "description": "",
+          "description": "Load snapshot.",
           "parameters": [
             {
               "name": "snapshot",
@@ -127736,7 +128021,7 @@
           "name": "applyChangeset",
           "fullPath": "LProgressionStore:applyChangeset",
           "signature": "(changeset)",
-          "description": "",
+          "description": "Apply changeset.",
           "parameters": [
             {
               "name": "changeset",
@@ -127778,7 +128063,7 @@
           "name": "ackChangesThrough",
           "fullPath": "LProgressionStore:ackChangesThrough",
           "signature": "(revision)",
-          "description": "",
+          "description": "Ack changes through.",
           "parameters": [
             {
               "name": "revision",
@@ -127796,7 +128081,7 @@
           "name": "compactChanges",
           "fullPath": "LProgressionStore:compactChanges",
           "signature": "(max_records)",
-          "description": "",
+          "description": "Compact changes.",
           "parameters": [
             {
               "name": "max_records",
@@ -127814,7 +128099,7 @@
           "name": "drainEvents",
           "fullPath": "LProgressionStore:drainEvents",
           "signature": "()",
-          "description": "",
+          "description": "Drain events.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127825,7 +128110,7 @@
           "name": "clearEvents",
           "fullPath": "LProgressionStore:clearEvents",
           "signature": "()",
-          "description": "",
+          "description": "Clears events.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -127884,7 +128169,7 @@
           "name": "hasProfile",
           "fullPath": "LProgressionStore:hasProfile",
           "signature": "(id)",
-          "description": "",
+          "description": "Returns true if profile.",
           "parameters": [
             {
               "name": "id",
@@ -127902,7 +128187,7 @@
           "name": "getProfile",
           "fullPath": "LProgressionStore:getProfile",
           "signature": "(id)",
-          "description": "",
+          "description": "Returns the profile.",
           "parameters": [
             {
               "name": "id",
@@ -127968,7 +128253,7 @@
           "name": "listProfiles",
           "fullPath": "LProgressionStore:listProfiles",
           "signature": "([])",
-          "description": "",
+          "description": "List profiles.",
           "parameters": [
             {
               "name": "",
@@ -127986,7 +128271,7 @@
           "name": "countProfiles",
           "fullPath": "LProgressionStore:countProfiles",
           "signature": "([])",
-          "description": "",
+          "description": "Returns the number of items.",
           "parameters": [
             {
               "name": "",
@@ -128004,7 +128289,7 @@
           "name": "addProfileTag",
           "fullPath": "LProgressionStore:addProfileTag",
           "signature": "(id, tag)",
-          "description": "",
+          "description": "Adds profile tag.",
           "parameters": [
             {
               "name": "id",
@@ -128238,7 +128523,7 @@
           "name": "listCounters",
           "fullPath": "LProgressionStore:listCounters",
           "signature": "(profile, )",
-          "description": "",
+          "description": "List counters.",
           "parameters": [
             {
               "name": "profile",
@@ -128472,7 +128757,7 @@
           "name": "listModifiers",
           "fullPath": "LProgressionStore:listModifiers",
           "signature": "(profile, )",
-          "description": "",
+          "description": "List modifiers.",
           "parameters": [
             {
               "name": "profile",
@@ -128856,7 +129141,7 @@
           "name": "listTraits",
           "fullPath": "LProgressionStore:listTraits",
           "signature": "(profile, )",
-          "description": "",
+          "description": "List traits.",
           "parameters": [
             {
               "name": "profile",
@@ -129186,7 +129471,7 @@
           "name": "getSeason",
           "fullPath": "LProgressionStore:getSeason",
           "signature": "(id)",
-          "description": "",
+          "description": "Returns the season.",
           "parameters": [
             {
               "name": "id",
@@ -129204,7 +129489,7 @@
           "name": "listSeasons",
           "fullPath": "LProgressionStore:listSeasons",
           "signature": "([query])",
-          "description": "",
+          "description": "List seasons.",
           "parameters": [
             {
               "name": "query",
@@ -129342,7 +129627,7 @@
           "name": "listPrestiges",
           "fullPath": "LProgressionStore:listPrestiges",
           "signature": "(profile, )",
-          "description": "",
+          "description": "List prestiges.",
           "parameters": [
             {
               "name": "profile",
@@ -129438,7 +129723,7 @@
           "name": "listCollections",
           "fullPath": "LProgressionStore:listCollections",
           "signature": "(profile, )",
-          "description": "",
+          "description": "List collections.",
           "parameters": [
             {
               "name": "profile",
@@ -129510,7 +129795,7 @@
           "name": "listRivals",
           "fullPath": "LProgressionStore:listRivals",
           "signature": "(profile, )",
-          "description": "",
+          "description": "List rivals.",
           "parameters": [
             {
               "name": "profile",
@@ -129552,7 +129837,7 @@
           "name": "getActivityFeed",
           "fullPath": "LProgressionStore:getActivityFeed",
           "signature": "([query])",
-          "description": "",
+          "description": "Returns one typed activity-feed selection object.",
           "parameters": [
             {
               "name": "query",
@@ -129594,7 +129879,7 @@
           "name": "validatePopulationTemplate",
           "fullPath": "LProgressionStore:validatePopulationTemplate",
           "signature": "(id)",
-          "description": "",
+          "description": "Validate population template.",
           "parameters": [
             {
               "name": "id",
@@ -129636,7 +129921,7 @@
           "name": "getPopulation",
           "fullPath": "LProgressionStore:getPopulation",
           "signature": "(handle_or_id)",
-          "description": "",
+          "description": "Returns the population.",
           "parameters": [
             {
               "name": "handle_or_id",
@@ -129714,7 +129999,7 @@
           "name": "pausePopulation",
           "fullPath": "LProgressionStore:pausePopulation",
           "signature": "(handle_or_id)",
-          "description": "",
+          "description": "Pause population.",
           "parameters": [
             {
               "name": "handle_or_id",
@@ -129732,7 +130017,7 @@
           "name": "resumePopulation",
           "fullPath": "LProgressionStore:resumePopulation",
           "signature": "(handle_or_id)",
-          "description": "",
+          "description": "Resume population.",
           "parameters": [
             {
               "name": "handle_or_id",
@@ -129888,7 +130173,7 @@
           "name": "removeDerivedValue",
           "fullPath": "LProgressionStore:removeDerivedValue",
           "signature": "(id)",
-          "description": "",
+          "description": "Removes derived value.",
           "parameters": [
             {
               "name": "id",
@@ -129954,7 +130239,7 @@
           "name": "validateDerivedValues",
           "fullPath": "LProgressionStore:validateDerivedValues",
           "signature": "()",
-          "description": "",
+          "description": "Validate derived values.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -130474,115 +130759,13 @@
           "name": "listAchievements",
           "fullPath": "LProgressionStore:listAchievements",
           "signature": "(profile, )",
-          "description": "",
+          "description": "List achievements.",
           "parameters": [
             {
               "name": "profile",
               "type": "any",
               "description": "",
               "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LProgressionStore"
-        },
-        {
-          "name": "getPendingRewards",
-          "fullPath": "LProgressionStore:getPendingRewards",
-          "signature": "(profile, )",
-          "description": "",
-          "parameters": [
-            {
-              "name": "profile",
-              "type": "any",
-              "description": "",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LProgressionStore"
-        },
-        {
-          "name": "claimReward",
-          "fullPath": "LProgressionStore:claimReward",
-          "signature": "(profile, reward_id)",
-          "description": "",
-          "parameters": [
-            {
-              "name": "profile",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "reward_id",
-              "type": "any",
-              "description": "",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LProgressionStore"
-        },
-        {
-          "name": "markRewardApplied",
-          "fullPath": "LProgressionStore:markRewardApplied",
-          "signature": "(profile, reward_id, [external_receipt])",
-          "description": "",
-          "parameters": [
-            {
-              "name": "profile",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "reward_id",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "external_receipt",
-              "type": "any",
-              "description": "",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LProgressionStore"
-        },
-        {
-          "name": "rejectReward",
-          "fullPath": "LProgressionStore:rejectReward",
-          "signature": "(profile, reward_id, [reason])",
-          "description": "",
-          "parameters": [
-            {
-              "name": "profile",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "reward_id",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "reason",
-              "type": "any",
-              "description": "",
-              "optional": true
             }
           ],
           "returns": "nil",
@@ -130594,7 +130777,7 @@
           "name": "acceptQuest",
           "fullPath": "LProgressionStore:acceptQuest",
           "signature": "(profile, quest_id)",
-          "description": "",
+          "description": "Returns the pending rewards.",
           "parameters": [
             {
               "name": "profile",
@@ -130639,70 +130822,10 @@
           "objectType": "LProgressionStore"
         },
         {
-          "name": "addQuestJournalEntry",
-          "fullPath": "LProgressionStore:addQuestJournalEntry",
-          "signature": "(profile, quest_id, text, [tag])",
-          "description": "",
-          "parameters": [
-            {
-              "name": "profile",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "quest_id",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "text",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "tag",
-              "type": "any",
-              "description": "",
-              "optional": true
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LProgressionStore"
-        },
-        {
-          "name": "listQuestJournalEntries",
-          "fullPath": "LProgressionStore:listQuestJournalEntries",
-          "signature": "(profile, quest_id)",
-          "description": "",
-          "parameters": [
-            {
-              "name": "profile",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "quest_id",
-              "type": "any",
-              "description": "",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LProgressionStore"
-        },
-        {
           "name": "refreshQuestLifecycle",
           "fullPath": "LProgressionStore:refreshQuestLifecycle",
           "signature": "(profile)",
-          "description": "",
+          "description": "Refresh quest lifecycle.",
           "parameters": [
             {
               "name": "profile",
@@ -130918,7 +131041,7 @@
           "name": "type",
           "fullPath": "LProgressionStore:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -130929,7 +131052,7 @@
           "name": "typeOf",
           "fullPath": "LProgressionStore:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -131169,7 +131292,7 @@
           "name": "commit",
           "fullPath": "LProgressionTransaction:commit",
           "signature": "()",
-          "description": "",
+          "description": "Commit.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -131180,7 +131303,7 @@
           "name": "rollback",
           "fullPath": "LProgressionTransaction:rollback",
           "signature": "()",
-          "description": "",
+          "description": "Rollback.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -131191,7 +131314,7 @@
           "name": "type",
           "fullPath": "LProgressionTransaction:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -131202,7 +131325,7 @@
           "name": "typeOf",
           "fullPath": "LProgressionTransaction:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -135072,6 +135195,158 @@
           "returnType": "integer",
           "isMethod": true,
           "objectType": "LQueryView"
+        }
+      ]
+    },
+    {
+      "name": "LQuestJournal",
+      "description": "Lua-side quest journal wrapper that owns retained entries and optional live mutation context.",
+      "methods": [
+        {
+          "name": "getQuestId",
+          "fullPath": "LQuestJournal:getQuestId",
+          "signature": "()",
+          "description": "Returns the quest id that owns this journal.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LQuestJournal"
+        },
+        {
+          "name": "count",
+          "fullPath": "LQuestJournal:count",
+          "signature": "()",
+          "description": "Returns the number of retained entries currently stored in this journal.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LQuestJournal"
+        },
+        {
+          "name": "listEntries",
+          "fullPath": "LQuestJournal:listEntries",
+          "signature": "()",
+          "description": "Returns every retained journal entry as typed entry userdata.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LQuestJournal"
+        },
+        {
+          "name": "addEntry",
+          "fullPath": "LQuestJournal:addEntry",
+          "signature": "(text, [tag])",
+          "description": "Appends one entry to the live quest journal and returns the stored entry object.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "Non-empty journal body text to append.",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Optional tag that categorizes the new journal entry.",
+              "optional": true
+            }
+          ],
+          "returns": "LQuestJournalEntry",
+          "returnType": "LQuestJournalEntry",
+          "isMethod": true,
+          "objectType": "LQuestJournal"
+        }
+      ]
+    },
+    {
+      "name": "LQuestJournalEntry",
+      "description": "",
+      "methods": [
+        {
+          "name": "getIndex",
+          "fullPath": "LQuestJournalEntry:getIndex",
+          "signature": "()",
+          "description": "Returns the stable monotonically increasing journal index.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LQuestJournalEntry"
+        },
+        {
+          "name": "getText",
+          "fullPath": "LQuestJournalEntry:getText",
+          "signature": "()",
+          "description": "Returns the authored journal entry text.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LQuestJournalEntry"
+        },
+        {
+          "name": "getTag",
+          "fullPath": "LQuestJournalEntry:getTag",
+          "signature": "()",
+          "description": "Returns the optional journal entry tag.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LQuestJournalEntry"
+        }
+      ]
+    },
+    {
+      "name": "LQuestState",
+      "description": "Lua-side immutable progression quest state wrapper with optional live store context.",
+      "methods": [
+        {
+          "name": "getQuestId",
+          "fullPath": "LQuestState:getQuestId",
+          "signature": "()",
+          "description": "Returns the authored quest id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LQuestState"
+        },
+        {
+          "name": "getStatus",
+          "fullPath": "LQuestState:getStatus",
+          "signature": "()",
+          "description": "Returns the current quest lifecycle status.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LQuestState"
+        },
+        {
+          "name": "isRevealed",
+          "fullPath": "LQuestState:isRevealed",
+          "signature": "()",
+          "description": "Returns whether the quest is currently revealed to the owning profile.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LQuestState"
+        },
+        {
+          "name": "getJournal",
+          "fullPath": "LQuestState:getJournal",
+          "signature": "()",
+          "description": "Returns the retained quest journal as a typed journal object.",
+          "parameters": [],
+          "returns": "LQuestJournal",
+          "returnType": "LQuestJournal",
+          "isMethod": true,
+          "objectType": "LQuestState"
         }
       ]
     },
@@ -139706,6 +139981,81 @@
       ]
     },
     {
+      "name": "LReward",
+      "description": "Lua-side immutable reward wrapper with optional live store context for state transitions.",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LReward:getId",
+          "signature": "()",
+          "description": "Returns the reward record id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LReward"
+        },
+        {
+          "name": "getState",
+          "fullPath": "LReward:getState",
+          "signature": "()",
+          "description": "Returns the current reward state.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LReward"
+        },
+        {
+          "name": "claim",
+          "fullPath": "LReward:claim",
+          "signature": "()",
+          "description": "Claims this pending reward and returns the updated reward object.",
+          "parameters": [],
+          "returns": "LReward",
+          "returnType": "LReward",
+          "isMethod": true,
+          "objectType": "LReward"
+        },
+        {
+          "name": "markApplied",
+          "fullPath": "LReward:markApplied",
+          "signature": "([external_receipt])",
+          "description": "Marks this claimed reward as applied and returns the updated reward object.",
+          "parameters": [
+            {
+              "name": "external_receipt",
+              "type": "string",
+              "description": "Optional game-specific receipt or transaction token.",
+              "optional": true
+            }
+          ],
+          "returns": "LReward",
+          "returnType": "LReward",
+          "isMethod": true,
+          "objectType": "LReward"
+        },
+        {
+          "name": "reject",
+          "fullPath": "LReward:reject",
+          "signature": "([reason])",
+          "description": "Rejects this reward and returns the updated reward object.",
+          "parameters": [
+            {
+              "name": "reason",
+              "type": "string",
+              "description": "Optional rejection reason for logs or external flow control.",
+              "optional": true
+            }
+          ],
+          "returns": "LReward",
+          "returnType": "LReward",
+          "isMethod": true,
+          "objectType": "LReward"
+        }
+      ]
+    },
+    {
       "name": "LRichLabel",
       "description": "Adds rich-label-specific methods to a formatted read-only label table.",
       "methods": [
@@ -141464,6 +141814,62 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LRingBuffer"
+        }
+      ]
+    },
+    {
+      "name": "LRival",
+      "description": "",
+      "methods": [
+        {
+          "name": "getProfileId",
+          "fullPath": "LRival:getProfileId",
+          "signature": "()",
+          "description": "Returns the owner profile id for this rivalry.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRival"
+        },
+        {
+          "name": "getRivalProfileId",
+          "fullPath": "LRival:getRivalProfileId",
+          "signature": "()",
+          "description": "Returns the pinned rival profile id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRival"
+        }
+      ]
+    },
+    {
+      "name": "LRivalDelta",
+      "description": "",
+      "methods": [
+        {
+          "name": "getLeaderboardId",
+          "fullPath": "LRivalDelta:getLeaderboardId",
+          "signature": "()",
+          "description": "Returns the leaderboard used to compute this rivalry delta.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LRivalDelta"
+        },
+        {
+          "name": "getRankDelta",
+          "fullPath": "LRivalDelta:getRankDelta",
+          "signature": "()",
+          "description": "Returns the signed rank gap between the owner and rival profiles.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRivalDelta"
         }
       ]
     },
@@ -147067,6 +147473,62 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LScrollPanel"
+        }
+      ]
+    },
+    {
+      "name": "LSeason",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LSeason:getId",
+          "signature": "()",
+          "description": "Returns the authored season id.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSeason"
+        },
+        {
+          "name": "isActive",
+          "fullPath": "LSeason:isActive",
+          "signature": "()",
+          "description": "Returns whether this season is currently active.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSeason"
+        }
+      ]
+    },
+    {
+      "name": "LSeasonArchive",
+      "description": "",
+      "methods": [
+        {
+          "name": "getId",
+          "fullPath": "LSeasonArchive:getId",
+          "signature": "()",
+          "description": "Returns the season id that owns this archive record.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSeasonArchive"
+        },
+        {
+          "name": "getArchiveIndex",
+          "fullPath": "LSeasonArchive:getArchiveIndex",
+          "signature": "()",
+          "description": "Returns the monotonically increasing archive index for this season.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSeasonArchive"
         }
       ]
     },

@@ -26,6 +26,9 @@ The glossary collects terms that appear across module and API pages.
 
 - `LAabbTree` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for an AABB tree spatial index.
 - `LAccordion` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds accordion-specific methods to an accordion widget table.
+- `LAchievement` ([lurek.progression](https://lurek2d.github.io/lurek_2d/modules/progression.html))
+- `LActivityFeed` ([lurek.progression](https://lurek2d.github.io/lurek_2d/modules/progression.html))
+- `LActivityFeedEntry` ([lurek.progression](https://lurek2d.github.io/lurek_2d/modules/progression.html))
 - `LAdsrEnvelope` ([lurek.dsp](https://lurek2d.github.io/lurek_2d/modules/dsp.html)) - Lua-visible ADSR envelope object for sample stepping and buffer shaping.
 - `LAgent` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for a single LLM Agent.
 - `LAgentChat` ([lurek.agent](https://lurek2d.github.io/lurek_2d/modules/agent.html)) - Lua-side handle for a stateful LLM chat session.
@@ -78,12 +81,14 @@ The glossary collects terms that appear across module and API pages.
 - `LCanvas` ([lurek.render](https://lurek2d.github.io/lurek_2d/modules/render.html)) - Off-screen render target that can be drawn to and then composited onto the screen.
 - `LCatmullRom` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Catmull-Rom spline.
 - `LCellular` ([lurek.procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
+- `LChallenge` ([lurek.progression](https://lurek2d.github.io/lurek_2d/modules/progression.html))
 - `LChannel` ([lurek.thread](https://lurek2d.github.io/lurek_2d/modules/thread.html)) - Creates a new unbounded channel for sending typed values between threads.
 - `LCheckbox` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds checkbox-specific methods to a checkbox widget table.
 - `LChunkMap` ([lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html)) - Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
 - `LCinematic` ([lurek.cinematic](https://lurek2d.github.io/lurek_2d/modules/cinematic.html)) - Lua userdata handle wrapping a [`Cinematic`] timeline.
 - `LCinematicTimeline` ([lurek.cinematic](https://lurek2d.github.io/lurek_2d/modules/cinematic.html)) - Lua userdata handle wrapping a [`CinematicTimeline`] for multi-track playback.
 - `LCircle` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a circle primitive.
+- `LCollection` ([lurek.progression](https://lurek2d.github.io/lurek_2d/modules/progression.html))
 - `LColorPicker` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds color-picker-specific methods to a color picker widget table.
 - `LCombo` ([lurek.input](https://lurek2d.github.io/lurek_2d/modules/input.html)) - Lua-side combo detector handle tracking ordered key sequences.
 - `LComboBox` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds combo-box-specific methods to a combo box widget table.
@@ -139,8 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LGoalMap` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
 - `LGOAPPlanner` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
 - `LGraph` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side graph handle storing graph state and registered event callbacks.
-- `LGraphEdge` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side edge handle referencing one edge id inside a graph.
-- `LGraphItem` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side item handle referencing one item id inside a graph.
-- `LGraphNode` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side node handle referencing one node id inside a graph.
-- `LGrepEngine` ([lurek.grep](https://lurek2d.github.io/lurek_2d/modules/grep.html)) - Lua userdata that performs search operations across game content files.
-- `LGroupedFrame` ([lurek.dataframe](https://lurek2d.github.io/lurek_2d/modules/dataframe.html)) - Lua-side grouped dataframe object containing group keys and subframes.

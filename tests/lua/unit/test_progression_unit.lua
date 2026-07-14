@@ -1282,9 +1282,11 @@ describe("LProgressionStore rivals and activity", function()
             types = { "profile_overtook_rival" },
             limit = 10,
         })
-        expect_equal(1, #feed)
-        expect_equal("profile_overtook_rival", feed[1].event_type)
-        expect_equal("rival", feed[1].payload.rivalProfileId)
+        local entries = feed:listEntries()
+        expect_equal(1, feed:count())
+        expect_equal(1, #entries)
+        expect_equal("profile_overtook_rival", entries[1].event_type)
+        expect_equal("rival", entries[1].payload.rivalProfileId)
     end)
 end)
 
@@ -1751,7 +1753,7 @@ describe("LProgressionStore quests and transactions", function()
         store:acceptQuest(profile, "rat_hunt")
         store:addCounter("player", "rats_killed", 3)
         local quest = store:getQuestState("player", "rat_hunt")
-        local rewards = store:getPendingRewards("player")
+        local rewards = profile:getPendingRewards()
         expect_equal("completed", quest.status)
         expect_equal(1, quest.completion_count)
         expect_equal(1, #rewards)
@@ -1792,7 +1794,7 @@ describe("LProgressionStore quests and transactions", function()
         expect_equal("active", store:getQuestState("player", "arena").status)
     end)
 
-    -- @covers LProgressionStore:addQuestJournalEntry
+    -- @covers LQuestJournal:addEntry
     it("quest journal entries keep stable indexes and surface through the legacy adapter", function()
         local store = new_store("quest_journal_case")
         local profile = store:createProfile("player")
@@ -1804,10 +1806,11 @@ describe("LProgressionStore quests and transactions", function()
             },
         })
         store:acceptQuest(profile, "journaled")
-        local first = store:addQuestJournalEntry("player", "journaled", "Found clue", "discover")
-        store:addQuestJournalEntry(profile, "journaled", "Opened door", "progress")
-        local third = store:addQuestJournalEntry("player", "journaled", "Reached boss")
-        local journal = store:listQuestJournalEntries("player", "journaled")
+        local journal = store:getQuestState("player", "journaled"):getJournal()
+        local first = journal:addEntry("Found clue", "discover")
+        journal:addEntry("Opened door", "progress")
+        local third = journal:addEntry("Reached boss")
+        local entries = journal:listEntries()
         local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
         local quest = new_legacy_quest("journaled", "Journaled")
         quest._max_journal = 2
@@ -1818,9 +1821,9 @@ describe("LProgressionStore quests and transactions", function()
 
         expect_equal(0, first.index)
         expect_equal(2, third.index)
-        expect_equal(2, #journal)
-        expect_equal("Opened door", journal[1].text)
-        expect_equal("Reached boss", journal[2].text)
+        expect_equal(2, #entries)
+        expect_equal("Opened door", entries[1].text)
+        expect_equal("Reached boss", entries[2].text)
         expect_equal(3, copy.journal[#copy.journal].index)
         expect_equal("Bonus note", copy.journal[#copy.journal].text)
     end)
@@ -2206,7 +2209,7 @@ describe("LProgressionStore achievements and rewards", function()
 
         local completed = store:getChallenge("player", "win_streak")
         local completed_list = store:listChallenges("player", { status = "completed" })
-        local rewards = store:getPendingRewards("player")
+        local rewards = profile:getPendingRewards()
         expect_equal("completed", completed.status)
         expect_equal(1, completed.completion_count)
         expect_equal(1, #completed_list)
@@ -2244,7 +2247,7 @@ describe("LProgressionStore achievements and rewards", function()
         store:addCounter(profile, "wins", 1)
 
         local achievement = store:getAchievement("player", "first_win")
-        local rewards = store:getPendingRewards("player")
+        local rewards = profile:getPendingRewards()
         expect_true(achievement.unlocked)
         expect_equal(1, achievement.unlock_count)
         expect_equal(1, #rewards)
@@ -2265,8 +2268,8 @@ describe("LProgressionStore achievements and rewards", function()
 
         local first = store:unlockAchievement(profile, "manual_reward")
         local reward_id = "achievement:manual_reward:" .. tostring(first.unlock_count)
-        local claimed = store:claimReward("player", reward_id)
-        local applied = store:markRewardApplied(profile, reward_id, "receipt-1")
+        local claimed = profile:getPendingRewards()[1]:claim()
+        local applied = claimed:markApplied("receipt-1")
 
         expect_equal(1, first.unlock_count)
         expect_equal("claimed", claimed.state)
@@ -2274,7 +2277,7 @@ describe("LProgressionStore achievements and rewards", function()
         expect_equal("receipt-1", applied.external_receipt)
 
         store:unlockAchievement("player", "manual_reward")
-        local rejected = store:rejectReward(profile, "achievement:manual_reward:2", "inventory_full")
+        local rejected = profile:getPendingRewards()[1]:reject("inventory_full")
         expect_equal("rejected", rejected.state)
     end)
 
@@ -3105,12 +3108,12 @@ describe("progression uncovered method owners", function()
         expect_equal("win_streak", completed[1].id)
     end)
 
-    -- @covers LProgressionStore:getPendingRewards
-    it("getPendingRewards returns challenge reward records awaiting claim", function()
+    -- @covers LProgressionProfile:getPendingRewards
+    it("profile getPendingRewards returns challenge reward records awaiting claim", function()
         local store, profile = new_challenge_store("store_pending_rewards_case")
         store:activateChallenge(profile, "win_streak")
         store:addCounter("player", "wins", 3)
-        local rewards = store:getPendingRewards("player")
+        local rewards = profile:getPendingRewards()
         expect_equal(1, #rewards)
         expect_equal("pending", rewards[1].state)
     end)
@@ -3561,24 +3564,25 @@ describe("progression heuristic owner closures", function()
         expect_true(store:getAchievement("player", "manual_reward").unlocked)
     end)
 
-    -- @covers LProgressionStore:claimReward
-    it("store claimReward moves one reward record to claimed state", function()
-        local store, _, reward_id = new_reward_store("store_claim_reward_case")
-        expect_equal("claimed", store:claimReward("player", reward_id).state)
+    -- @covers LReward:claim
+    it("reward claim moves one reward record to claimed state", function()
+        local store, profile, _ = new_reward_store("store_claim_reward_case")
+        local pending = profile:getPendingRewards()[1]
+        expect_equal("claimed", pending:claim().state)
     end)
 
-    -- @covers LProgressionStore:markRewardApplied
-    it("store markRewardApplied records an external receipt on the reward", function()
-        local store, profile, reward_id = new_reward_store("store_mark_reward_applied_case")
-        store:claimReward("player", reward_id)
-        expect_equal("applied", store:markRewardApplied(profile, reward_id, "receipt-1").state)
+    -- @covers LReward:markApplied
+    it("reward markApplied records an external receipt on the reward", function()
+        local store, profile, _ = new_reward_store("store_mark_reward_applied_case")
+        local claimed = profile:getPendingRewards()[1]:claim()
+        expect_equal("applied", claimed:markApplied("receipt-1").state)
     end)
 
-    -- @covers LProgressionStore:rejectReward
-    it("store rejectReward records a rejection state and reason", function()
+    -- @covers LReward:reject
+    it("reward reject records a rejection state and reason", function()
         local store, profile, _ = new_reward_store("store_reject_reward_case")
         store:unlockAchievement("player", "manual_reward")
-        local rejected = store:rejectReward(profile, "achievement:manual_reward:2", "inventory_full")
+        local rejected = profile:getPendingRewards()[1]:reject("inventory_full")
         expect_equal("rejected", rejected.state)
     end)
 
@@ -3589,12 +3593,13 @@ describe("progression heuristic owner closures", function()
         expect_equal("active", store:getQuestState("player", "cleanup").status)
     end)
 
-    -- @covers LProgressionStore:listQuestJournalEntries
-    it("store listQuestJournalEntries returns authored journal records in order", function()
+    -- @covers LQuestJournal:listEntries
+    it("quest journal listEntries returns authored journal records in order", function()
         local store, profile = new_store_quest("store_list_journal_case")
         store:acceptQuest(profile, "cleanup")
-        store:addQuestJournalEntry(profile, "cleanup", "First note")
-        expect_equal("First note", store:listQuestJournalEntries("player", "cleanup")[1].text)
+        local journal = store:getQuestState("player", "cleanup"):getJournal()
+        journal:addEntry("First note")
+        expect_equal("First note", journal:listEntries()[1].text)
     end)
 
     -- @covers LProgressionStore:failQuest
@@ -3621,6 +3626,451 @@ describe("progression heuristic owner closures", function()
     it("store typeOf accepts the progression store userdata name", function()
         local store = new_store("store_typeof_case")
         expect_true(store:typeOf("LProgressionStore"))
+    end)
+
+    -- @covers LAchievement:isUnlocked
+    it("achievement userdata reports whether one profile unlocked it", function()
+        local store = new_store("achievement_userdata_is_unlocked_case")
+        local profile = store:createProfile("player")
+        store:defineAchievement("manual_reward", { title = "Manual Reward" })
+        local before = store:getAchievement("player", "manual_reward")
+        store:unlockAchievement(profile, "manual_reward")
+        local after = store:getAchievement("player", "manual_reward")
+        expect_false(before:isUnlocked())
+        expect_true(after:isUnlocked())
+    end)
+
+    -- @covers LAchievement:getId
+    it("achievement userdata returns the authored achievement id", function()
+        local store = new_store("achievement_userdata_get_id_case")
+        store:createProfile("player")
+        store:defineAchievement("manual_reward", { title = "Manual Reward" })
+        local achievement = store:getAchievement("player", "manual_reward")
+        expect_equal("manual_reward", achievement:getId())
+    end)
+
+    -- @covers LAchievement:getTitle
+    it("achievement userdata returns the authored achievement title", function()
+        local store = new_store("achievement_userdata_get_title_case")
+        store:createProfile("player")
+        store:defineAchievement("manual_reward", { title = "Manual Reward" })
+        local achievement = store:getAchievement("player", "manual_reward")
+        expect_equal("Manual Reward", achievement:getTitle())
+    end)
+
+    -- @covers LChallenge:getId
+    it("challenge userdata returns the authored challenge id", function()
+        local store, profile = new_challenge_store("challenge_userdata_get_id_case")
+        store:activateChallenge(profile, "win_streak")
+        local challenge = store:getChallenge("player", "win_streak")
+        expect_equal("win_streak", challenge:getId())
+    end)
+
+    -- @covers LChallenge:getStatus
+    it("challenge userdata returns the current lifecycle status", function()
+        local store, profile = new_challenge_store("challenge_userdata_get_status_case")
+        store:activateChallenge(profile, "win_streak")
+        local challenge = store:getChallenge("player", "win_streak")
+        expect_equal("active", challenge:getStatus())
+    end)
+
+    -- @covers LCollection:getId
+    it("collection userdata returns the authored collection id", function()
+        local store = new_store("collection_userdata_get_id_case")
+        local profile = store:createProfile("player")
+        store:defineCollection("museum", {
+            title = "Museum",
+            items = {
+                { id = "entry_a", title = "Entry A" },
+            },
+        })
+        local collection = store:getCollection("player", "museum")
+        expect_equal("museum", collection:getId())
+    end)
+
+    -- @covers LCollection:isComplete
+    it("collection userdata reports whether every item was collected", function()
+        local store = new_store("collection_userdata_complete_case")
+        local profile = store:createProfile("player")
+        store:defineCollection("museum", {
+            title = "Museum",
+            items = {
+                { id = "entry_a", title = "Entry A" },
+                { id = "entry_b", title = "Entry B" },
+            },
+        })
+        local before = store:getCollection("player", "museum")
+        store:collectCollectionItem(profile, "museum", "entry_a")
+        store:collectCollectionItem(profile, "museum", "entry_b")
+        local after = store:getCollection("player", "museum")
+        expect_false(before:isComplete())
+        expect_true(after:isComplete())
+    end)
+
+    -- @covers LActivityFeedEntry:getEventType
+    it("activity feed entry userdata returns the canonical event type", function()
+        local store = new_store("activity_feed_entry_type_case")
+        local profile = store:createProfile("player")
+        store:defineAchievement("manual_reward", { title = "Manual Reward" })
+        store:unlockAchievement(profile, "manual_reward")
+        local entry = store:getActivityFeed({ profiles = { "player" }, limit = 1 }):listEntries()[1]
+        expect_equal("achievement_unlocked", entry:getEventType())
+    end)
+
+    -- @covers LActivityFeedEntry:getSequence
+    it("activity feed entry userdata returns the retained event sequence", function()
+        local store = new_store("activity_feed_entry_sequence_case")
+        local profile = store:createProfile("player")
+        store:defineAchievement("manual_reward", { title = "Manual Reward" })
+        store:unlockAchievement(profile, "manual_reward")
+        local entry = store:getActivityFeed({ profiles = { "player" }, limit = 1 }):listEntries()[1]
+        expect_true(entry:getSequence() >= 1)
+    end)
+
+    -- @covers LActivityFeed:count
+    it("activity feed userdata reports the retained entry count", function()
+        local store = new_store("activity_feed_count_case")
+        local profile = store:createProfile("player")
+        store:defineAchievement("manual_reward", { title = "Manual Reward" })
+        store:unlockAchievement(profile, "manual_reward")
+        local feed = store:getActivityFeed({
+            profiles = { profile },
+            types = { "achievement_unlocked" },
+            limit = 3,
+        })
+        expect_equal(1, feed:count())
+    end)
+
+    -- @covers LActivityFeed:listEntries
+    it("activity feed userdata returns typed retained entries", function()
+        local store = new_store("activity_feed_entries_case")
+        local profile = store:createProfile("player")
+        store:defineAchievement("manual_reward", { title = "Manual Reward" })
+        store:unlockAchievement(profile, "manual_reward")
+        local entries = store:getActivityFeed({
+            profiles = { profile },
+            types = { "achievement_unlocked" },
+            limit = 3,
+        }):listEntries()
+        expect_equal(1, #entries)
+        expect_equal("achievement_unlocked", entries[1]:getEventType())
+    end)
+
+    -- @covers LLeaderboardEntry:getLeaderboardId
+    it("leaderboard entry userdata returns the leaderboard id", function()
+        local store = new_leaderboard_store("leaderboard_entry_get_lb_case")
+        store:submitScore("alpha", "arena", 5)
+        local entry = store:getLeaderboardEntry("alpha", "arena")
+        expect_equal("arena", entry:getLeaderboardId())
+    end)
+
+    -- @covers LLeaderboardEntry:getProfileId
+    it("leaderboard entry userdata returns the owning profile id", function()
+        local store = new_leaderboard_store("leaderboard_entry_get_profile_case")
+        store:submitScore("beta", "arena", 4)
+        local entry = store:getLeaderboardEntry("beta", "arena")
+        expect_equal("beta", entry:getProfileId())
+    end)
+
+    -- @covers LLeaderboardEntry:getRank
+    it("leaderboard entry userdata returns the current one-based rank", function()
+        local store = new_leaderboard_store("leaderboard_entry_get_rank_case")
+        store:submitScore("alpha", "arena", 5)
+        store:submitScore("beta", "arena", 3)
+        local entry = store:getLeaderboardEntry("beta", "arena")
+        expect_equal(2, entry:getRank())
+    end)
+
+    -- @covers LPopulation:getId
+    it("population userdata returns the generated population id", function()
+        local store = new_store("population_userdata_get_id_case")
+        store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
+        store:definePopulationTemplate("bots", {
+            id_prefix = "bot_",
+            count = 1,
+            identity = { name_generator = { mode = "parts", prefixes = { "Iron" }, suffixes = { "Fox" } }, tags = { "bot" } },
+            archetypes = { { id = "runner", weight = 1, activity = { min = 1, max = 1 }, skill = { mean = 1000, deviation = 10 } } },
+            leaderboards = { arena = { initial_score = { distribution = "normal" }, progression = { mode = "bounded_random_walk", volatility = 2, mean_reversion = 0.1 } } },
+        })
+        local run = store:generatePopulation("bots", { id = "bot_pack" })
+        expect_equal("bot_pack", run:getId())
+    end)
+
+    -- @covers LPopulation:isPaused
+    it("population userdata reports whether logical updates are paused", function()
+        local store = new_store("population_userdata_is_paused_case")
+        store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
+        store:definePopulationTemplate("bots", {
+            id_prefix = "bot_",
+            count = 1,
+            identity = { name_generator = { mode = "parts", prefixes = { "Iron" }, suffixes = { "Fox" } }, tags = { "bot" } },
+            archetypes = { { id = "runner", weight = 1, activity = { min = 1, max = 1 }, skill = { mean = 1000, deviation = 10 } } },
+            leaderboards = { arena = { initial_score = { distribution = "normal" }, progression = { mode = "bounded_random_walk", volatility = 2, mean_reversion = 0.1 } } },
+        })
+        local before = store:generatePopulation("bots", { id = "bot_pack" })
+        store:pausePopulation("bot_pack")
+        local after = store:getPopulation("bot_pack")
+        expect_false(before:isPaused())
+        expect_true(after:isPaused())
+    end)
+
+    -- @covers LPopulationProfile:getProfileId
+    it("population profile userdata returns the virtual profile id", function()
+        local store = new_store("population_profile_get_id_case")
+        store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
+        store:definePopulationTemplate("bots", {
+            id_prefix = "bot_",
+            count = 1,
+            identity = { name_generator = { mode = "parts", prefixes = { "Iron" }, suffixes = { "Fox" } }, tags = { "bot" } },
+            archetypes = { { id = "runner", weight = 1, activity = { min = 1, max = 1 }, skill = { mean = 1000, deviation = 10 } } },
+            leaderboards = { arena = { initial_score = { distribution = "normal" }, progression = { mode = "bounded_random_walk", volatility = 2, mean_reversion = 0.1 } } },
+        })
+        store:generatePopulation("bots", { id = "bot_pack" })
+        local profile = store:listPopulationProfiles("bot_pack", { limit = 1 })[1]
+        expect_true(profile:getProfileId() ~= nil)
+    end)
+
+    -- @covers LPopulationProfile:isMaterialized
+    it("population profile userdata reports materialization state", function()
+        local store = new_store("population_profile_materialized_case")
+        store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
+        store:definePopulationTemplate("bots", {
+            id_prefix = "bot_",
+            count = 1,
+            identity = { name_generator = { mode = "parts", prefixes = { "Iron" }, suffixes = { "Fox" } }, tags = { "bot" } },
+            archetypes = { { id = "runner", weight = 1, activity = { min = 1, max = 1 }, skill = { mean = 1000, deviation = 10 } } },
+            leaderboards = { arena = { initial_score = { distribution = "normal" }, progression = { mode = "bounded_random_walk", volatility = 2, mean_reversion = 0.1 } } },
+        })
+        store:generatePopulation("bots", { id = "bot_pack" })
+        local before = store:listPopulationProfiles("bot_pack", { limit = 1 })[1]
+        store:materializePopulationProfile(before:getProfileId())
+        local after = store:listPopulationProfiles("bot_pack", { limit = 1 })[1]
+        expect_false(before:isMaterialized())
+        expect_true(after:isMaterialized())
+    end)
+
+    -- @covers LQuestState:getQuestId
+    it("quest state userdata returns the authored quest id", function()
+        local store, _ = new_store_quest("quest_state_get_id_case")
+        local state = store:getQuestState("player", "cleanup")
+        expect_equal("cleanup", state:getQuestId())
+    end)
+
+    -- @covers LQuestState:getStatus
+    it("quest state userdata returns the current quest lifecycle status", function()
+        local store, _ = new_store_quest("quest_state_get_status_case")
+        local state = store:getQuestState("player", "cleanup")
+        expect_equal("available", state:getStatus())
+    end)
+
+    -- @covers LQuestState:isRevealed
+    it("quest state userdata reports whether the quest is revealed", function()
+        local store, _ = new_store_quest("quest_state_is_revealed_case")
+        local state = store:getQuestState("player", "cleanup")
+        expect_true(state:isRevealed())
+    end)
+
+    -- @covers LQuestState:getJournal
+    it("quest state userdata returns a typed journal handle", function()
+        local store, profile = new_store_quest("quest_state_get_journal_case")
+        store:acceptQuest(profile, "cleanup")
+        local journal = store:getQuestState("player", "cleanup"):getJournal()
+        expect_equal("cleanup", journal:getQuestId())
+    end)
+
+    -- @covers LQuestJournal:getQuestId
+    it("quest journal userdata returns the owning quest id", function()
+        local store, profile = new_store_quest("quest_journal_get_id_case")
+        store:acceptQuest(profile, "cleanup")
+        local journal = store:getQuestState(profile, "cleanup"):getJournal()
+        expect_equal("cleanup", journal:getQuestId())
+    end)
+
+    -- @covers LQuestJournal:count
+    it("quest journal userdata reports the retained entry count", function()
+        local store = new_store("quest_journal_count_case")
+        local profile = store:createProfile("player")
+        store:defineQuest("journaled", {
+            title = "Journaled",
+            max_journal_entries = 2,
+            stages = {
+                { id = "stage_1", name = "Stage", objectives = { { id = "step", description = "One step", required = 1, mandatory = true } } },
+            },
+        })
+        store:acceptQuest(profile, "journaled")
+        local journal = store:getQuestState("player", "journaled"):getJournal()
+        journal:addEntry("Found clue", "discover")
+        journal:addEntry("Opened door", "progress")
+        expect_equal(2, journal:count())
+    end)
+
+    -- @covers LReward:getId
+    it("reward userdata returns the stable reward identifier", function()
+        local _, profile, reward_id = new_reward_store("reward_userdata_get_id_case")
+        local reward_record = profile:getPendingRewards()[1]
+        expect_equal(reward_id, reward_record:getId())
+    end)
+
+    -- @covers LReward:getState
+    it("reward userdata returns the current reward state", function()
+        local _, profile, _ = new_reward_store("reward_userdata_get_state_case")
+        local reward_record = profile:getPendingRewards()[1]
+        local claimed = reward_record:claim()
+        expect_equal("claimed", claimed:getState())
+    end)
+
+    -- @covers LQuestJournalEntry:getIndex
+    it("quest journal entry userdata returns the stable retained index", function()
+        local store, profile = new_store_quest("quest_journal_entry_index_case")
+        store:acceptQuest(profile, "cleanup")
+        local entry = store:getQuestState("player", "cleanup"):getJournal():addEntry("Found clue", "discover")
+        expect_equal(0, entry:getIndex())
+    end)
+
+    -- @covers LQuestJournalEntry:getText
+    it("quest journal entry userdata returns the authored text", function()
+        local store, profile = new_store_quest("quest_journal_entry_text_case")
+        store:acceptQuest(profile, "cleanup")
+        local entry = store:getQuestState(profile, "cleanup"):getJournal():addEntry("Opened door", "progress")
+        expect_equal("Opened door", entry:getText())
+    end)
+
+    -- @covers LQuestJournalEntry:getTag
+    it("quest journal entry userdata returns the stored tag", function()
+        local store, profile = new_store_quest("quest_journal_entry_tag_case")
+        store:acceptQuest(profile, "cleanup")
+        local entry = store:getQuestState("player", "cleanup"):getJournal():addEntry("Opened vault", "discover")
+        expect_equal("discover", entry:getTag())
+    end)
+
+    -- @covers LRival:getProfileId
+    it("rival userdata returns the owner profile id", function()
+        local store = new_leaderboard_store("rival_get_profile_id_case")
+        store:submitScore("alpha", "arena", 5)
+        store:submitScore("beta", "arena", 4)
+        local pinned = store:pinRival("alpha", "beta", { leaderboard_id = "arena" })
+        expect_equal("alpha", pinned:getProfileId())
+    end)
+
+    -- @covers LRival:getRivalProfileId
+    it("rival userdata returns the pinned rival profile id", function()
+        local store = new_leaderboard_store("rival_get_rival_id_case")
+        store:submitScore("alpha", "arena", 5)
+        store:submitScore("beta", "arena", 4)
+        local pinned = store:pinRival("alpha", "beta", { leaderboard_id = "arena" })
+        expect_equal("beta", pinned:getRivalProfileId())
+    end)
+
+    -- @covers LRivalDelta:getLeaderboardId
+    it("rival delta userdata returns the bound leaderboard id", function()
+        local store = new_leaderboard_store("rival_delta_get_lb_case")
+        store:submitScore("alpha", "arena", 5)
+        store:submitScore("beta", "arena", 4)
+        store:pinRival("alpha", "beta", { leaderboard_id = "arena" })
+        local delta = store:getRivalDelta("alpha", "beta")
+        expect_equal("arena", delta:getLeaderboardId())
+    end)
+
+    -- @covers LRivalDelta:getRankDelta
+    it("rival delta userdata returns the signed rank difference", function()
+        local store = new_leaderboard_store("rival_delta_get_rank_case")
+        store:submitScore("alpha", "arena", 5)
+        store:submitScore("beta", "arena", 4)
+        store:pinRival("alpha", "beta", { leaderboard_id = "arena" })
+        local delta = store:getRivalDelta("alpha", "beta")
+        expect_equal(1, delta:getRankDelta())
+    end)
+
+    -- @covers LPrestige:getId
+    it("prestige userdata returns the authored prestige id", function()
+        local store = new_store("prestige_userdata_get_id_case")
+        local profile = store:createProfile("player")
+        store:defineCounter("campaign_kills", { kind = "integer", initial = 0 })
+        store:definePrestige("career", {
+            condition = { counter = "campaign_kills", op = ">=", value = 5 },
+            reset = { counters = { "campaign_kills" } },
+            preserve = { achievements = true },
+        })
+        local prestige = store:getPrestige(profile, "career")
+        expect_equal("career", prestige:getId())
+    end)
+
+    -- @covers LPrestige:isAvailable
+    it("prestige userdata reports whether the condition is currently satisfied", function()
+        local store = new_store("prestige_userdata_is_available_case")
+        local profile = store:createProfile("player")
+        store:defineCounter("campaign_kills", { kind = "integer", initial = 0 })
+        store:definePrestige("career", {
+            condition = { counter = "campaign_kills", op = ">=", value = 5 },
+            reset = { counters = { "campaign_kills" } },
+            preserve = { achievements = true },
+        })
+        local before = store:getPrestige(profile, "career")
+        store:setCounter("player", "campaign_kills", 5)
+        local after = store:getPrestige(profile, "career")
+        expect_false(before:isAvailable())
+        expect_true(after:isAvailable())
+    end)
+
+    -- @covers LSeason:getId
+    it("season userdata returns the authored season id", function()
+        local store = new_store("season_userdata_get_id_case")
+        store:defineSeason("league", {
+            starts_at = 0,
+            ends_at = 10,
+            reset = { leaderboards = {}, counters = {} },
+            archive = true,
+        })
+        local season = store:getSeason("league")
+        expect_equal("league", season:getId())
+    end)
+
+    -- @covers LSeason:isActive
+    it("season userdata reports whether the season is active", function()
+        local store = new_store("season_userdata_is_active_case")
+        store:defineSeason("league", {
+            starts_at = 0,
+            ends_at = 10,
+            reset = { leaderboards = {}, counters = {} },
+            archive = true,
+        })
+        local before = store:getSeason("league")
+        store:startSeason("league")
+        local after = store:getSeason("league")
+        expect_false(before:isActive())
+        expect_true(after:isActive())
+    end)
+
+    -- @covers LSeasonArchive:getId
+    it("season archive userdata returns the owning season id", function()
+        local store = new_store("season_archive_get_id_case")
+        store:createProfile("player")
+        store:defineSeason("league", {
+            starts_at = 0,
+            ends_at = 10,
+            reset = { leaderboards = {}, counters = {} },
+            archive = true,
+        })
+        store:startSeason("league")
+        store:endSeason("league", { archive = true })
+        local archive = store:getSeasonArchive("league", { latest = true })
+        expect_equal("league", archive:getId())
+    end)
+
+    -- @covers LSeasonArchive:getArchiveIndex
+    it("season archive userdata returns the stored archive sequence", function()
+        local store = new_store("season_archive_get_index_case")
+        store:createProfile("player")
+        store:defineSeason("league", {
+            starts_at = 0,
+            ends_at = 10,
+            reset = { leaderboards = {}, counters = {} },
+            archive = true,
+        })
+        store:startSeason("league")
+        store:endSeason("league", { archive = true })
+        local archive = store:getSeasonArchive("league", { latest = true })
+        expect_equal(1, archive:getArchiveIndex())
     end)
 end)
 

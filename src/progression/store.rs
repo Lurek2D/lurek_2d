@@ -1,13 +1,13 @@
-//! Owns deterministic progression store state, shared tables, retained events, and change history.
-//! Stores profiles, authored definitions, revision counters, snapshots, and transaction bookkeeping.
-//! Exposes creation, snapshot, update, and cross-slice helpers reused by focused progression owners.
-//! Applies shared validation, event buffering, change retention, and revision bumps at store root.
-//! Defines private structs for counters, attributes, quests, rewards, populations, rivals, and peers.
-//! Keeps serialization, migration snapshots, and debug export close to the data they persist and replay.
-//! Integrates focused owners for profile, counter, attribute, quest, level, formula, and reward logic.
-//! Leaves domain rules in sibling files and keeps only the seams those owners depend on together.
-//! Avoids renderer, network, audio, and Lua conversion concerns so progression state stays headless.
-//! Provides mutation plumbing that Rust tests, Lua bindings, changesets, and evidence artifacts use.
+//! Owns deterministic progression store state, shared indexes, retained events, and retained change history.
+//! Stores profiles, authored definitions, revision counters, snapshots, and transaction bookkeeping at the root.
+//! Exposes creation, snapshot, update, and cross-slice seams reused by focused progression owners in sibling files.
+//! Applies shared validation, event buffering, change retention, and revision bumps before domain-specific slices fan out.
+//! Defines the private runtime structs that back counters, attributes, quests, rewards, populations, rivals, and peers.
+//! Keeps serialization, migration snapshots, and debug export close to the data they persist, replay, and compare.
+//! Integrates focused owners for profile, counter, attribute, quest, level, formula, reward, population, and sync logic.
+//! Leaves domain rules in sibling files and keeps only the shared seams those owners depend on together.
+//! Avoids renderer, network, audio, and Lua conversion concerns so progression state stays fully headless.
+//! Provides mutation plumbing that Rust tests, Lua bindings, changesets, and evidence artifacts rely on.
 //! Retains store-wide helpers for ids, bounds, formulas, deterministic sampling, and population setup.
 //! Open this file when a change touches shared tables, snapshots, transactions, or multi-slice coordination.
 use crate::progression::types::{
@@ -527,7 +527,7 @@ mod rival;
 mod season;
 
 impl ProgressionStore {
-    /// Create a new empty progression store.
+    /// Create a new empty progression store after validating the root id and configured capacity bounds.
     pub fn new(options: ProgressionStoreOptions) -> Result<Self, ProgressionError> {
         validate_id(&options.id)?;
         if options.event_capacity == 0 {
@@ -1163,7 +1163,6 @@ impl ProgressionStore {
         }
         Ok(())
     }
-
 }
 
 fn compare_f64(left: f64, op: ComparisonOp, right: f64) -> bool {

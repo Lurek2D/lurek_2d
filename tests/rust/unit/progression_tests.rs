@@ -682,9 +682,7 @@ fn malformed_and_oversized_changesets_are_rejected() {
     assert!(target
         .apply_changeset_envelope(oversized.clone(), true, true)
         .is_err());
-    assert!(target
-        .apply_changeset(oversized.records)
-        .is_err());
+    assert!(target.apply_changeset(oversized.records).is_err());
 }
 
 #[test]
