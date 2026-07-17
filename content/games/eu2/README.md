@@ -11,8 +11,7 @@ movement.
 
 The current build also acts as a live showcase for the newer GPU-side province
 presentation work: palette-driven borders, interior edge shading, subtle
-terrain watermarking, hover/selection highlighting, and province labels drawn
-from imported label lines.
+terrain watermarking and hover/selection highlighting.
 
 ## Run
 
@@ -50,7 +49,6 @@ cargo run -- content/games/eu2
 | + / - | Change speed |
 | Tab | Cycle player armies |
 | R | Reset camera |
-| L | Toggle labels |
 | F12 | Toggle debug roads/adjacency markers |
 | Esc | Quit |
 
@@ -79,10 +77,8 @@ Manual smoke checklist:
 - game starts without a crash,
 - pan/zoom works,
 - hover and select province work,
-- `Space`, `+/-`, `1..5`, `L`, `R`, `Tab`, `F12`, and RMB movement work,
+- `Space`, `+/-`, `1..5`, `R`, `Tab`, `F12`, and RMB movement work,
 - the base map is rendered by the GPU province path, while map-mode and ownership
   changes refresh registry colors and border styles,
-- province labels appear on zoomed-in views, stay centered on province
-  centroids, and use engine-side collision filtering,
 - the province showcase FX are visible: terrain watermark, edge gradient,
   palette-driven borders, and hover/selection emphasis.

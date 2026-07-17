@@ -880,6 +880,11 @@ fn lua_integration_event_entity_integration() {
 }
 
 #[test]
+fn lua_integration_ecs_progression_integration() {
+    run_lua_test("integration/test_ecs_progression_integration.lua");
+}
+
+#[test]
 fn lua_integration_i18n_ui_integration() {
     run_lua_test("integration/test_i18n_ui_integration.lua");
 }

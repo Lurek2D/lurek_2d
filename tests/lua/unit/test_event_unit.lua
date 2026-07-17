@@ -375,6 +375,121 @@ describe("LSignal methods", function()
         expect_true(sig:typeOf("LObject"))
         expect_false(sig:typeOf("LEntity"))
     end)
+
+    -- @covers lurek.event.newChangeSet
+    it("newChangeSet creates an isolated versioned change buffer", function()
+        local changes = lurek.event.newChangeSet({ schema = "test.v1", revision = 4, maxChanges = 4 })
+        expect_equal("LChangeSet", changes:type())
+        expect_equal("test.v1", changes:schema())
+        expect_equal(4, changes:revision())
+        expect_true(changes:isEmpty())
+    end)
+
+    -- @covers lurek.event.fromChangeSetTable
+    it("fromChangeSetTable restores a transport table", function()
+        local source = lurek.event.newChangeSet({ schema = "test.v1" })
+        source:append(10, "hp", "set", { value = 80 })
+        local restored = lurek.event.fromChangeSetTable(source:toTable())
+        expect_equal(1, restored:len())
+        expect_equal(10, restored:toTable().changes[1].objectId)
+    end)
+
+    -- @covers LChangeSet:append
+    it("append accepts nested payloads and returns the record count", function()
+        local changes = lurek.event.newChangeSet()
+        expect_equal(1, changes:append(1, "position", "set", { x = 3, y = { level = 2 } }))
+        expect_equal(2, changes:toTable().changes[1].payload.y.level)
+    end)
+
+    -- @covers LChangeSet:clear
+    it("clear removes all records and reports the removed count", function()
+        local changes = lurek.event.newChangeSet()
+        changes:append(1, "a", "set", true)
+        changes:append(2, "b", "set", false)
+        expect_equal(2, changes:clear())
+        expect_true(changes:isEmpty())
+    end)
+
+    -- @covers LChangeSet:hash
+    it("hash is stable for the same ordered snapshot", function()
+        local left = lurek.event.newChangeSet({ schema = "hash.v1", revision = 2 })
+        local right = lurek.event.newChangeSet({ schema = "hash.v1", revision = 2 })
+        left:append(1, "score", "set", 99)
+        right:append(1, "score", "set", 99)
+        expect_equal(left:hash(), right:hash())
+    end)
+
+    -- @covers LChangeSet:isEmpty
+    it("isEmpty changes after the first append", function()
+        local changes = lurek.event.newChangeSet()
+        expect_true(changes:isEmpty())
+        changes:append(1, "alive", "set", true)
+        expect_false(changes:isEmpty())
+    end)
+
+    -- @covers LChangeSet:len
+    it("len reports ordered record count", function()
+        local changes = lurek.event.newChangeSet()
+        expect_equal(0, changes:len())
+        changes:append(1, "a", "set", 1)
+        expect_equal(1, changes:len())
+    end)
+
+    -- @covers LChangeSet:restore
+    it("restore replaces records and rejects a mismatched hash", function()
+        local source = lurek.event.newChangeSet({ schema = "restore.v1" })
+        source:append(4, "ready", "set", true)
+        local target = lurek.event.newChangeSet({ schema = "restore.v1" })
+        target:restore(source:snapshot())
+        expect_equal(1, target:len())
+        local bad = source:snapshot()
+        bad.hash = "0"
+        expect_error(function() target:restore(bad) end)
+    end)
+
+    -- @covers LChangeSet:revision
+    it("revision returns the configured logical revision", function()
+        local changes = lurek.event.newChangeSet({ revision = 18 })
+        expect_equal(18, changes:revision())
+    end)
+
+    -- @covers LChangeSet:schema
+    it("schema returns the consumer schema identifier", function()
+        local changes = lurek.event.newChangeSet({ schema = "ecs.v2" })
+        expect_equal("ecs.v2", changes:schema())
+    end)
+
+    -- @covers LChangeSet:snapshot
+    it("snapshot contains hash and ordered records", function()
+        local changes = lurek.event.newChangeSet({ schema = "save.v1" })
+        changes:append(2, "gold", "set", 50)
+        local snapshot = changes:snapshot()
+        expect_equal("save.v1", snapshot.schema)
+        expect_equal(changes:hash(), snapshot.hash)
+        expect_equal(50, snapshot.changes[1].payload)
+    end)
+
+    -- @covers LChangeSet:toTable
+    it("toTable exposes the same transport shape as snapshot", function()
+        local changes = lurek.event.newChangeSet({ schema = "network.v1" })
+        changes:append(3, "tag", "set", "player")
+        local value = changes:toTable()
+        expect_equal("network.v1", value.schema)
+        expect_equal("player", value.changes[1].payload)
+    end)
+
+    -- @covers LChangeSet:type
+    it("type returns the concrete userdata name", function()
+        expect_equal("LChangeSet", lurek.event.newChangeSet():type())
+    end)
+
+    -- @covers LChangeSet:typeOf
+    it("typeOf accepts the concrete and base object names", function()
+        local changes = lurek.event.newChangeSet()
+        expect_true(changes:typeOf("LChangeSet"))
+        expect_true(changes:typeOf("LObject"))
+        expect_false(changes:typeOf("LSignal"))
+    end)
 end)
 end
 -- END test_event_core_unit.lua

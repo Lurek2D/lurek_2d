@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree. - Validates data against schemas. - Enforces bounded decode, encode, and Lua-conversion limits for depth, nodes, strings, rows, and input size.
+Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree and validates neutral ChangeSet envelopes. - Validates data against schemas. - Enforces bounded decode, encode, and Lua-conversion limits for depth, nodes, strings, rows, and input size.
 
 ## Summary
 
@@ -14,6 +14,7 @@ Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree.
 - That also makes migrations easier to reason about.
 - Safety is part of the contract. Lua conversion, autodetection, CSV parsing, and MessagePack decode must stay bounded and reject cyclic or non-finite inputs instead of recursing or allocating without policy.
 - Read `serialize` as the normalization layer for structured data moving between external formats and engine-facing workflows.
+- `encodeChangeSet()` and `decodeChangeSet()` are schema-light transport helpers. They validate the stable `schema`, `revision`, and ordered `{objectId, component, operation, payload}` records, then delegate actual encoding to the existing codec front door.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
@@ -90,6 +91,43 @@ do
     local stats = lurek.serialize.decode(bytes, "msgpack")
     lurek.log.info("auto-detected json score = " .. result.score)
     lurek.log.info("decoded msgpack stats hp=" .. stats.hp .. " mana=" .. stats.mana)
+end
+```
+
+---
+
+### `lurek.serialize.decodeChangeSet`
+
+Decodes and validates a ChangeSet transport payload into a Lua table.
+
+```lua
+lurek.serialize.decodeChangeSet(payload, format, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `payload` | string | Text or MessagePack ChangeSet payload. |
+| `format?` | string | Format hint; omit for text auto-detection. |
+| `opts?` | table | Standard decoder options and limits. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Validated ChangeSet table. |
+
+**Example**
+
+```lua
+do
+    local encoded = lurek.serialize.encode({ schema = "save.v1", revision = 1, changes = {
+        { objectId = 2, component = "alive", operation = "set", payload = true },
+    } }, "json")
+    local changes = lurek.serialize.decodeChangeSet(encoded, "json")
+    local row = changes.changes[1]
+    lurek.log.info("decoded schema=" .. changes.schema .. " object=" .. row.objectId .. " payload=" .. tostring(row.payload))
 end
 ```
 
@@ -232,6 +270,43 @@ do
     local detected = lurek.serialize.detectFormat(jsonOut)
     lurek.log.info("encoded quest payload as " .. tostring(detected))
     lurek.log.info("quest=" .. restored.quest .. " count=" .. restored.count)
+end
+```
+
+---
+
+### `lurek.serialize.encodeChangeSet`
+
+Encodes a validated `lurek.event` ChangeSet table for save or network transport.
+
+```lua
+lurek.serialize.encodeChangeSet(value, format, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | table | Table returned by `[LChangeSet](event.md#lchangeset):toTable()`. |
+| `format` | string | Target format: `json`, `toml`, or `msgpack`. |
+| `opts?` | table | Standard encoder options such as `pretty` and limits. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Encoded ChangeSet payload. |
+
+**Example**
+
+```lua
+do
+    local changes = { schema = "network.v1", revision = 4, changes = {
+        { objectId = 9, component = "position", operation = "set", payload = { x = 12, y = 5 } },
+    } }
+    local encoded = lurek.serialize.encodeChangeSet(changes, "json", { pretty = true })
+    local decoded = lurek.serialize.decodeChangeSet(encoded, "json")
+    lurek.log.info("changeset bytes=" .. #encoded .. " schema=" .. decoded.schema .. " rows=" .. #decoded.changes)
 end
 ```
 

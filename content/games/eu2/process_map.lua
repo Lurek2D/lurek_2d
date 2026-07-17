@@ -1,16 +1,24 @@
--- process_map.lua - helper that downsamples the authored EU2 province map.
--- Run it as main.lua inside content/games/eu2 when you want fresh processed
--- outputs under save/eu2/.
+--- EU2 map preprocessing utility.
+--- Downsamples the authored province map, removes editor-only colors, smooths
+--- isolated pixels, and writes the registry map plus capital-marker map under
+--- `save/eu2/`. Run it as `main.lua` from the EU2 game directory when assets change.
 
+--- Source authored map.
 local MAP_IN = "map.png"
+--- Registry-ready downsampled map.
 local MAP_OUT = "save/eu2/map2.png"
+--- Marker map containing stable province-center pixels.
 local MARKER_OUT = "save/eu2/map2_markers.png"
 
+--- Threshold for near-white editor/background pixels.
 local WHITE_THRESH = 240
+--- Thresholds for magenta editor markers.
 local MAGENTA_R_MIN = 180
 local MAGENTA_G_MAX = 60
+--- Maximum channel value treated as black border/background.
 local BLACK_MAX = 40
 
+--- Four-neighbor offsets used by smoothing and distance searches.
 local DIRS = {
     { -1, 0 },
     { 1, 0 },
@@ -18,26 +26,50 @@ local DIRS = {
     { 0, 1 },
 }
 
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@return boolean white True for near-white pixels.
 local function is_white(r, g, b)
     return r >= WHITE_THRESH and g >= WHITE_THRESH and b >= WHITE_THRESH
 end
 
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@return boolean marker True for magenta editor markers.
 local function is_magenta(r, g, b)
     return r >= MAGENTA_R_MIN and g <= MAGENTA_G_MAX and b >= MAGENTA_R_MIN
 end
 
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@return boolean black True for near-black pixels.
 local function is_black(r, g, b)
     return r < BLACK_MAX and g < BLACK_MAX and b < BLACK_MAX
 end
 
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@return boolean province True for authored province-color pixels.
 local function is_province(r, g, b)
     return not is_white(r, g, b) and not is_magenta(r, g, b) and not is_black(r, g, b)
 end
 
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@return integer key Packed RGB integer.
 local function ck(r, g, b)
     return r * 65536 + g * 256 + b
 end
 
+---@param k integer Packed RGB integer.
+---@return integer r Red channel.
+---@return integer g Green channel.
+---@return integer b Blue channel.
 local function ck_rgb(k)
     local r = math.floor(k / 65536)
     local g = math.floor((k / 256) % 256)
@@ -45,6 +77,15 @@ local function ck_rgb(k)
     return r, g, b
 end
 
+---@param img userdata Image data.
+---@param x number Pixel x.
+---@param y number Pixel y.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param w number Image width.
+---@param h number Image height.
+---@return boolean same True when the four cardinal neighbors match.
 local function has_4_same(img, x, y, r, g, b, w, h)
     if x <= 0 or x >= w - 1 or y <= 0 or y >= h - 1 then
         return false
@@ -58,6 +99,10 @@ local function has_4_same(img, x, y, r, g, b, w, h)
     return true
 end
 
+---@param img userdata Image data.
+---@param w number Image width.
+---@param h number Image height.
+---@return userdata smoothed New image data after one smoothing pass.
 local function smooth_once(img, w, h)
     local next = lurek.image.newImageData(w, h)
     for y = 0, h - 1 do
@@ -93,6 +138,10 @@ local function smooth_once(img, w, h)
     return next
 end
 
+---@param store table Color-keyed point store.
+---@param key integer Packed RGB key.
+---@param x number Pixel x.
+---@param y number Pixel y.
 local function remember_point(store, key, x, y)
     store[key] = store[key] or { list = {}, seen = {} }
     local dedupe_key = tostring(x) .. ":" .. tostring(y)
@@ -103,7 +152,22 @@ local function remember_point(store, key, x, y)
     table.insert(store[key].list, { x = x, y = y })
 end
 
+---@param img userdata Image data.
+---@param x number Start x.
+---@param y number Start y.
+---@param r number Target red channel.
+---@param g number Target green channel.
+---@param b number Target blue channel.
+---@param w number Image width.
+---@param h number Image height.
+---@param prefer_interior boolean Prefer pixels with matching neighbors.
+---@return number|nil px Best matching x.
+---@return number|nil py Best matching y.
 local function nearest_same_pixel(img, x, y, r, g, b, w, h, prefer_interior)
+    --- Test whether one pixel matches the requested color and image bounds.
+    ---@param px number Candidate x.
+    ---@param py number Candidate y.
+    ---@return boolean match True when the candidate is an exact match.
     local function match_at(px, py)
         local pr, pg, pb = img:getPixel(px, py)
         if pr ~= r or pg ~= g or pb ~= b then
@@ -141,6 +205,9 @@ local function nearest_same_pixel(img, x, y, r, g, b, w, h, prefer_interior)
     return nil, nil
 end
 
+---@param points table[] Candidate points with `x` and `y` fields.
+---@return table|nil a First farthest point.
+---@return table|nil b Second farthest point.
 local function farthest_pair(points)
     if not points or #points < 2 then
         return nil, nil
@@ -163,6 +230,7 @@ local function farthest_pair(points)
     return a, b
 end
 
+--- Engine callback that performs the complete preprocessing pass.
 function lurek.init()
     print("[process_map] loading " .. MAP_IN .. " ...")
     local src = lurek.image.loadImage(MAP_IN)
@@ -295,8 +363,11 @@ function lurek.init()
     lurek.event.quit()
 end
 
+--- No-op process callback required by the engine runner.
+---@param dt number Frame delta, unused.
 function lurek.process(dt) end
 
+--- No-op draw callback; this utility writes files during initialization.
 function lurek.draw()
     lurek.render.clear(0, 0, 0)
     lurek.render.print("[process_map] processing map, see console", 10, 10)

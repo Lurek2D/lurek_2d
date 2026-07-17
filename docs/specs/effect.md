@@ -13,7 +13,7 @@
 - Source path: `src/effect`
 - Binding: `src/lua_api/effect_api.rs`
 - Namespace: `lurek.effect`
-- Lua API surface: `10` functions, `3` types, `62` methods
+- Lua API surface: `10` functions, `3` types, `64` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -244,8 +244,10 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 - `LPostFxStack:len() -> integer`: Returns the number of effect handles in this stack.
 - `LPostFxStack:remove(effect_ud) -> boolean`: Removes the first matching effect handle from this stack.
 - `LPostFxStack:resize(w, h) -> nil`: Resizes the post-processing stack render target dimensions.
+- `LPostFxStack:restore(snapshot) -> nil`: Restores a stack snapshot and rebuilds its effect handles without entering capture mode.
 - `LPostFxStack:setEnabled(position, enabled) -> nil`: Enables or disables the effect pass at a one-based stack position.
 - `LPostFxStack:setFeedback(factor) -> nil`: Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
+- `LPostFxStack:snapshot() -> table`: Captures stack dimensions, feedback, enabled slots, and validated effect parameters.
 - `LPostFxStack:type() -> string`: Returns the Lua-visible type name for this post-processing stack handle.
 - `LPostFxStack:typeOf(name) -> boolean`: Returns whether this stack handle matches a supported type name.
 

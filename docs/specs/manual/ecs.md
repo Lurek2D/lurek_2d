@@ -6,6 +6,7 @@
 - Supports hierarchies, relationships, phase-aware systems, and snapshots.
 - Provides a global Lua class/object registry for richer object-oriented gameplay models when plain tables are not enough.
 - Bridges class-backed objects into `LUniverse` entities without replacing component storage or query APIs.
+- Accepts transport-neutral ChangeSet tables through `LUniverse:applyChangeSet`, with validated `set`/`replace`/`upsert`, `remove`, and `kill` operations.
 
 ## Summary
 
@@ -16,6 +17,7 @@
 - Blueprints, bulk spawning, snapshots, and serialization broaden the module from live simulation into save/load, rollback, reset, and data-driven population workflows.
 - Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
 - The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
+- ChangeSet application is an explicit Lua call and only projects known component/entity operations into this world; it does not auto-connect event, save, network, or gameplay systems.
 - That makes the ECS world a stable meeting point for subsystems that need different views of the same population.
 - The class/object registry is intentionally part of `ecs` because it is foundational object identity and type metadata, not a reusable gameplay pattern. It gives Lua developers inheritance, mixin-style multi-inheritance, defaults, methods, properties, constructors, tags, and a live object registry inside the same VM.
 - Objects created through `lurek.ecs.newObject` remain ordinary Lua tables, but they carry metatable-backed class behavior plus helper methods such as `type`, `typeOf`, `isA`, `getProperty`, and `setProperty`.

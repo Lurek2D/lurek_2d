@@ -255,6 +255,31 @@ describe("LPostFxStack methods", function()
         expect_equal(0, stack:getEffectCount())
     end)
 
+    -- @covers LPostFxStack:snapshot
+    it("snapshot captures dimensions, feedback, and effect parameters", function()
+        local stack = new_stack(640, 360)
+        stack:add(new_effect("blur"))
+        stack:setFeedback(0.4)
+        local snapshot = stack:snapshot()
+        expect_equal(640, snapshot.width)
+        expect_equal("blur", snapshot.effects[1].name)
+        expect_near(0.4, snapshot.feedback, 0.001)
+    end)
+
+    -- @covers LPostFxStack:restore
+    it("restore rebuilds an effect stack from its snapshot", function()
+        local source = new_stack(640, 360)
+        source:add(new_effect("vignette"))
+        source:setEnabled(1, false)
+        local target = new_stack()
+        target:restore(source:snapshot())
+        local width, height = target:getDimensions()
+        expect_equal(640, width)
+        expect_equal(360, height)
+        expect_equal(1, target:getEffectCount())
+        expect_false(target:isEnabled(1))
+    end)
+
     -- @covers LPostFxStack:dedup
     it("dedup removes repeated effect objects and keeps enabled handles aligned", function()
         local stack = new_stack()

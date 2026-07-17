@@ -651,11 +651,14 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     out_color = vec4<f32>(apply_climate_tint(out_color.rgb, pd), out_color.a);
 
     if (!strategic_mode()) {
-        if (u.terrain_texture_strength > 0.0 && pd.terrain_type > 0u) {
+        if (u.terrain_texture_strength > 0.0 && pd.terrain_type <= 5u) {
             let scale = max(u.terrain_texture_scale, 1.0);
-            let repeated_uv = fract(map_uv / vec2<f32>(scale, scale));
+            // A 16px atlas tile maps to one source-map cell at scale=16.
+            // Map coordinates keep the motif locked to the province and make
+            // it grow and shrink together with camera zoom.
+            let repeated_uv = fract(map_uv * vec2<f32>(16.0 / scale));
             let atlas_tiles = 6.0;
-            let terrain_slot = clamp(i32(pd.terrain_type), 1, 5) - 1;
+            let terrain_slot = clamp(i32(pd.terrain_type), 0, 5);
             let terrain_uv = vec2<f32>((repeated_uv.x + f32(terrain_slot)) / atlas_tiles, repeated_uv.y);
             let sample_color = textureSample(terrain_texture, terrain_sampler, terrain_uv);
             let watermark_mask = clamp(sample_color.a * 1.35, 0.0, 1.0);

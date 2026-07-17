@@ -19,7 +19,8 @@ use crate::progression::types::{
     PrestigePreserveDefinition, PrestigeResetDefinition, ProfileOptions, ProfileTemplateDefinition,
     ProgressionCondition, ProgressionStoreOptions, QuestDefinition, QuestJournalEntry,
     ResourceDefinition, RewardRecord, RewardState, SeasonArchiveRecord, SeasonDefinition,
-    SeasonResetDefinition, SeasonState, SkillDefinition, TraitDefinition, TraitModifierDefinition,
+    SeasonResetDefinition, SeasonState, SkillDefinition, StatusDefinition, StatusEvent,
+    StatusInstance, StatusSnapshot, TraitDefinition, TraitModifierDefinition,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value as JsonValue};
@@ -50,6 +51,285 @@ pub enum ProgressionError {
     /// The requested operation conflicts with authored state.
     #[error("invalid operation: {0}")]
     InvalidOperation(String),
+}
+
+/// Headless, deterministic status-effect tracker owned by progression.
+///
+/// The tracker owns lifecycle timing and stacking only. It emits neutral events; Lua decides
+/// whether a tick becomes damage, healing, animation, audio, or an ECS component mutation.
+#[derive(Debug, Clone, Default)]
+pub struct StatusTracker {
+    definitions: BTreeMap<String, StatusDefinition>,
+    instances: BTreeMap<u64, StatusInstance>,
+    next_id: u64,
+    events: VecDeque<StatusEvent>,
+}
+
+impl StatusTracker {
+    /// Creates an empty tracker with runtime IDs starting at one.
+    pub fn new() -> Self {
+        Self {
+            definitions: BTreeMap::new(),
+            instances: BTreeMap::new(),
+            next_id: 1,
+            events: VecDeque::new(),
+        }
+    }
+
+    /// Registers or replaces a status definition after validating lifecycle bounds.
+    pub fn define(&mut self, definition: StatusDefinition) -> Result<(), ProgressionError> {
+        if definition.id.trim().is_empty() || definition.id.len() > 128 {
+            return Err(ProgressionError::InvalidValue(
+                "status id must contain 1..=128 characters".to_string(),
+            ));
+        }
+        if definition.max_stacks == 0 {
+            return Err(ProgressionError::InvalidValue(
+                "status max_stacks must be greater than zero".to_string(),
+            ));
+        }
+        for (label, value) in [
+            ("status duration", definition.duration),
+            ("status tick_interval", definition.tick_interval),
+        ] {
+            if let Some(value) = value {
+                if !value.is_finite() || value <= 0.0 {
+                    return Err(ProgressionError::InvalidValue(format!(
+                        "{label} must be finite and positive"
+                    )));
+                }
+            }
+        }
+        if !matches!(definition.stacking.as_str(), "replace" | "refresh" | "add") {
+            return Err(ProgressionError::InvalidValue(
+                "status stacking must be replace, refresh, or add".to_string(),
+            ));
+        }
+        self.definitions.insert(definition.id.clone(), definition);
+        Ok(())
+    }
+
+    /// Applies a status to a subject and returns its stable runtime instance ID.
+    pub fn apply(
+        &mut self,
+        subject_id: u64,
+        definition_id: &str,
+        source_id: Option<u64>,
+        stacks: u32,
+    ) -> Result<u64, ProgressionError> {
+        if subject_id == 0 {
+            return Err(ProgressionError::InvalidValue(
+                "status subject_id must be greater than zero".to_string(),
+            ));
+        }
+        let definition = self
+            .definitions
+            .get(definition_id)
+            .cloned()
+            .ok_or_else(|| ProgressionError::MissingDefinition {
+                kind: "status",
+                id: definition_id.to_string(),
+            })?;
+        let requested = stacks.max(1).min(definition.max_stacks);
+        if let Some(instance_id) = self
+            .instances
+            .values()
+            .find(|instance| {
+                instance.subject_id == subject_id && instance.definition_id == definition_id
+            })
+            .map(|instance| instance.id)
+        {
+            let instance = self
+                .instances
+                .get_mut(&instance_id)
+                .expect("status instance exists");
+            let kind = match definition.stacking.as_str() {
+                "add" => {
+                    instance.stacks = instance
+                        .stacks
+                        .saturating_add(requested)
+                        .min(definition.max_stacks);
+                    "stacked"
+                }
+                "refresh" => {
+                    instance.stacks = requested;
+                    "refreshed"
+                }
+                _ => {
+                    instance.stacks = requested;
+                    "replaced"
+                }
+            };
+            instance.source_id = source_id;
+            instance.remaining = definition.duration;
+            instance.next_tick = definition.tick_interval;
+            self.events.push_back(StatusEvent {
+                kind: kind.to_string(),
+                instance_id,
+                subject_id,
+                definition_id: definition_id.to_string(),
+                stacks: instance.stacks,
+                remaining: instance.remaining,
+                tick_count: 0,
+            });
+            return Ok(instance_id);
+        }
+        let instance_id = self.next_id;
+        self.next_id = self
+            .next_id
+            .checked_add(1)
+            .ok_or_else(|| ProgressionError::LimitExceeded("status id overflow".to_string()))?;
+        let instance = StatusInstance {
+            id: instance_id,
+            definition_id: definition_id.to_string(),
+            subject_id,
+            source_id,
+            stacks: requested,
+            remaining: definition.duration,
+            next_tick: definition.tick_interval,
+        };
+        self.instances.insert(instance_id, instance.clone());
+        self.events.push_back(StatusEvent {
+            kind: "applied".to_string(),
+            instance_id,
+            subject_id,
+            definition_id: definition_id.to_string(),
+            stacks: instance.stacks,
+            remaining: instance.remaining,
+            tick_count: 0,
+        });
+        Ok(instance_id)
+    }
+
+    /// Advances all finite timers and emits periodic tick/expiry events.
+    pub fn update(&mut self, dt: f64) -> Result<usize, ProgressionError> {
+        if !dt.is_finite() || dt < 0.0 {
+            return Err(ProgressionError::InvalidValue(
+                "status update dt must be finite and non-negative".to_string(),
+            ));
+        }
+        let ids = self.instances.keys().copied().collect::<Vec<_>>();
+        let mut expired = Vec::new();
+        for id in ids {
+            let Some(instance) = self.instances.get_mut(&id) else {
+                continue;
+            };
+            let definition = self
+                .definitions
+                .get(&instance.definition_id)
+                .expect("status instance references a definition")
+                .clone();
+            if let Some(remaining) = instance.remaining.as_mut() {
+                *remaining = (*remaining - dt).max(0.0);
+            }
+            let mut tick_count = 0;
+            if let Some(next_tick) = instance.next_tick.as_mut() {
+                *next_tick -= dt;
+                if let Some(interval) = definition.tick_interval {
+                    while *next_tick <= 0.0 && tick_count < 1000 {
+                        *next_tick += interval;
+                        tick_count += 1;
+                    }
+                }
+            }
+            if tick_count > 0 {
+                self.events.push_back(StatusEvent {
+                    kind: "tick".to_string(),
+                    instance_id: instance.id,
+                    subject_id: instance.subject_id,
+                    definition_id: instance.definition_id.clone(),
+                    stacks: instance.stacks,
+                    remaining: instance.remaining,
+                    tick_count,
+                });
+            }
+            if instance.remaining.is_some_and(|remaining| remaining <= 0.0) {
+                self.events.push_back(StatusEvent {
+                    kind: "expired".to_string(),
+                    instance_id: instance.id,
+                    subject_id: instance.subject_id,
+                    definition_id: instance.definition_id.clone(),
+                    stacks: instance.stacks,
+                    remaining: Some(0.0),
+                    tick_count: 0,
+                });
+                expired.push(instance.id);
+            }
+        }
+        for id in expired {
+            self.instances.remove(&id);
+        }
+        Ok(self.events.len())
+    }
+
+    /// Removes one active status instance and returns whether it existed.
+    pub fn remove(&mut self, instance_id: u64) -> bool {
+        self.instances.remove(&instance_id).is_some()
+    }
+
+    /// Lists active instances for one subject in stable ID order.
+    pub fn list(&self, subject_id: u64) -> Vec<StatusInstance> {
+        self.instances
+            .values()
+            .filter(|instance| instance.subject_id == subject_id)
+            .cloned()
+            .collect()
+    }
+
+    /// Takes and clears pending lifecycle events.
+    pub fn drain_events(&mut self) -> Vec<StatusEvent> {
+        self.events.drain(..).collect()
+    }
+
+    /// Captures definitions, instances, and ID allocation state.
+    pub fn snapshot(&self) -> StatusSnapshot {
+        StatusSnapshot {
+            definitions: self.definitions.clone(),
+            instances: self.instances.clone(),
+            next_id: self.next_id,
+        }
+    }
+
+    /// Restores a validated status tracker snapshot.
+    pub fn restore(&mut self, snapshot: StatusSnapshot) -> Result<(), ProgressionError> {
+        if snapshot.next_id == 0
+            || snapshot
+                .instances
+                .keys()
+                .next_back()
+                .is_some_and(|id| *id >= snapshot.next_id)
+        {
+            return Err(ProgressionError::InvalidValue(
+                "status snapshot has invalid next_id".to_string(),
+            ));
+        }
+        for instance in snapshot.instances.values() {
+            if instance.id == 0 || instance.subject_id == 0 || instance.stacks == 0 {
+                return Err(ProgressionError::InvalidValue(
+                    "status snapshot contains an invalid instance".to_string(),
+                ));
+            }
+            if !snapshot.definitions.contains_key(&instance.definition_id) {
+                return Err(ProgressionError::MissingDefinition {
+                    kind: "status",
+                    id: instance.definition_id.clone(),
+                });
+            }
+        }
+        self.definitions = snapshot.definitions;
+        self.instances = snapshot.instances;
+        self.next_id = snapshot.next_id;
+        self.events.clear();
+        Ok(())
+    }
+
+    /// Removes all definitions, instances, and pending events.
+    pub fn clear(&mut self) {
+        self.definitions.clear();
+        self.instances.clear();
+        self.events.clear();
+        self.next_id = 1;
+    }
 }
 
 /// Summary returned after a committed mutation batch.

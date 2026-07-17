@@ -9,7 +9,7 @@ pub mod types;
 
 pub use store::{
     AttributeExplanation, ChangeSummary, ProgressionError, ProgressionOperation, ProgressionStore,
-    ProgressionTransaction,
+    ProgressionTransaction, StatusTracker,
 };
 pub use types::{
     AchievementDefinition, AttributeDefinition, AttributeMode, ChallengeTemplateDefinition,
@@ -25,5 +25,6 @@ pub use types::{
     ProfileTemplateDefinition, ProgressionCondition, ProgressionStoreOptions, QuestDefinition,
     QuestJournalEntry, QuestObjectiveDefinition, QuestStageDefinition, ResourceDefinition,
     RewardRecord, RewardState, RivalDefinition, SeasonArchiveRecord, SeasonDefinition,
-    SeasonResetDefinition, SeasonState, SkillDefinition, TraitDefinition, TraitModifierDefinition,
+    SeasonResetDefinition, SeasonState, SkillDefinition, StatusDefinition, StatusEvent,
+    StatusInstance, StatusSnapshot, TraitDefinition, TraitModifierDefinition,
 };

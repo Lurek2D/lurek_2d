@@ -150,6 +150,92 @@ describe("lurek.mods", function()
         expect_type("boolean", lurek.mods.newRegistry():typeOf("LObject"))
     end)
 
+    -- @covers LContentRegistry:defineType
+    it("defines a schema and validates registrations against it", function()
+        local registry = lurek.mods.newRegistry()
+        registry:defineType("item", { fields = {
+            name = { type = "string", required = true },
+            stack = { type = "integer" },
+        } })
+        registry:register("item", "iron", { name = "Iron", stack = 4 })
+        expect_equal("Iron", registry:get("item", "iron").name)
+        expect_error(function()
+            registry:register("item", "bad", { name = 4 })
+        end)
+    end)
+
+    -- @covers LContentRegistry:unregisterType
+    it("unregisterType removes a type and its values", function()
+        local registry = lurek.mods.newRegistry()
+        registry:registerType("temporary")
+        registry:register("temporary", "entry", { value = true })
+        expect_true(registry:unregisterType("temporary"))
+        expect_false(registry:unregisterType("temporary"))
+        expect_nil(registry:get("temporary", "entry"))
+    end)
+
+    -- @covers LContentRegistry:getSchema
+    it("getSchema returns normalized field definitions", function()
+        local registry = lurek.mods.newRegistry()
+        registry:defineType("npc", { fields = { hp = { type = "integer", required = true } } })
+        local schema = registry:getSchema("npc")
+        expect_equal("integer", schema.fields.hp.type)
+        expect_true(schema.fields.hp.required)
+        expect_nil(registry:getSchema("untyped"))
+    end)
+
+    -- @covers LContentRegistry:validate
+    it("validate reports successful and failed schema checks", function()
+        local registry = lurek.mods.newRegistry()
+        registry:defineType("quest", { fields = { title = { type = "string", required = true } } })
+        local valid, valid_error = registry:validate("quest", { title = "Find key" })
+        local invalid, invalid_error = registry:validate("quest", { title = 5 })
+        expect_true(valid)
+        expect_nil(valid_error)
+        expect_false(invalid)
+        expect_type("string", invalid_error)
+    end)
+
+    -- @covers LContentRegistry:freeze
+    it("freeze rejects later mutations", function()
+        local registry = lurek.mods.newRegistry()
+        registry:registerType("runtime")
+        expect_true(registry:freeze())
+        expect_false(registry:freeze())
+        expect_error(function() registry:registerType("late") end)
+        expect_error(function() registry:register("runtime", "x", {}) end)
+    end)
+
+    -- @covers LContentRegistry:isFrozen
+    it("isFrozen reports registry mutability state", function()
+        local registry = lurek.mods.newRegistry()
+        expect_false(registry:isFrozen())
+        registry:freeze()
+        expect_true(registry:isFrozen())
+    end)
+
+    -- @covers LContentRegistry:snapshot
+    it("snapshot includes deterministic types and entries", function()
+        local registry = lurek.mods.newRegistry()
+        registry:registerType("loot")
+        registry:register("loot", "coin", { value = 25 })
+        local snapshot = registry:snapshot()
+        expect_equal("loot", snapshot.types[1].name)
+        expect_equal(25, snapshot.entries.loot.coin.value)
+    end)
+
+    -- @covers LContentRegistry:restore
+    it("restore replaces registry types and values", function()
+        local source = lurek.mods.newRegistry()
+        source:registerType("prefab")
+        source:register("prefab", "room", { width = 8 })
+        local target = lurek.mods.newRegistry()
+        target:registerType("old")
+        target:restore(source:snapshot())
+        expect_nil(target:getSchema("old"))
+        expect_equal(8, target:get("prefab", "room").width)
+    end)
+
     -- @covers LMod:getId
     it("returns the mod id", function()
         expect_equal("accessor_mod", make_mod({ id = "accessor_mod" }):getId())

@@ -1,7 +1,10 @@
 //! Registers the `lurek.event` Lua API for event priorities, dispatch helpers, and runtime exit requests.
 
 use super::SharedState;
-use crate::event::{event_arg_to_lua_value, event_to_lua_multi, EventArg, EventPriority, Signal};
+use crate::event::{
+    event_arg_to_lua_value, event_to_lua_multi, ChangeRecord, ChangeSet, ChangeSetSnapshot,
+    EventArg, EventPriority, Signal,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -17,6 +20,163 @@ pub struct LuaSignal {
     once_handles: Rc<RefCell<HashSet<u64>>>,
     /// Optional Lua filter callbacks by signal handle.
     filter_fns: Rc<RefCell<HashMap<u64, LuaRegistryKey>>>,
+}
+
+/// Lua handle for a bounded, versioned collection of neutral state changes.
+pub struct LuaChangeSet {
+    /// Rust-owned ChangeSet state. Lua only supplies records and consumes snapshots.
+    inner: ChangeSet,
+}
+
+fn change_set_to_lua<'lua>(lua: &'lua Lua, changes: &ChangeSet) -> LuaResult<LuaTable<'lua>> {
+    let snapshot = changes.snapshot();
+    let table = lua.create_table()?;
+    table.set("schema", snapshot.schema.clone())?;
+    table.set("revision", snapshot.revision)?;
+    table.set("maxChanges", changes.max_changes())?;
+    // LuaJIT numbers are doubles, so expose the 64-bit hash as a decimal string
+    // instead of silently losing low bits during a save/network round-trip.
+    table.set("hash", changes.hash().to_string())?;
+    let records = lua.create_table()?;
+    for (index, record) in snapshot.changes.iter().enumerate() {
+        let value = lua.create_table()?;
+        value.set("objectId", record.object_id)?;
+        value.set("component", record.component.clone())?;
+        value.set("operation", record.operation.clone())?;
+        value.set("payload", event_arg_to_lua_value(lua, &record.payload)?)?;
+        records.set(index + 1, value)?;
+    }
+    table.set("changes", records)?;
+    Ok(table)
+}
+
+fn change_set_snapshot_from_lua(table: LuaTable) -> LuaResult<(ChangeSetSnapshot, Option<String>)> {
+    let schema: String = table.get("schema").map_err(|error| {
+        LuaError::RuntimeError(format!("event.fromChangeSetTable schema: {error}"))
+    })?;
+    let revision: u64 = table.get("revision").unwrap_or(0);
+    let expected_hash: Option<String> = table.get("hash")?;
+    let records: LuaTable = table.get("changes").map_err(|error| {
+        LuaError::RuntimeError(format!("event.fromChangeSetTable changes: {error}"))
+    })?;
+    let mut changes = Vec::new();
+    for value in records.sequence_values::<LuaTable>() {
+        let record = value?;
+        let object_id: u64 = record.get("objectId")?;
+        let component: String = record.get("component")?;
+        let operation: String = record.get("operation")?;
+        let payload: LuaValue = record.get("payload")?;
+        let payload = EventArg::from_lua_change_value(&payload, 0)?;
+        changes.push(ChangeRecord {
+            object_id,
+            component,
+            operation,
+            payload,
+        });
+    }
+    Ok((
+        ChangeSetSnapshot {
+            schema,
+            revision,
+            changes,
+        },
+        expected_hash,
+    ))
+}
+
+impl LuaUserData for LuaChangeSet {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- append --
+        /// Appends one neutral object/component mutation and returns the new record count.
+        /// @param | objectId | integer | Stable object identifier greater than zero.
+        /// @param | component | string | Caller-defined state namespace.
+        /// @param | operation | string | Caller-defined operation name.
+        /// @param | payload | any | Recursively serializable operation data.
+        /// @return | integer | Number of records after the append.
+        methods.add_method_mut(
+            "append",
+            |_, this, (object_id, component, operation, payload): (u64, String, String, LuaValue)| {
+                this.inner
+                    .append(ChangeRecord {
+                        object_id,
+                        component,
+                        operation,
+                        payload: EventArg::from_lua_change_value(&payload, 0)?,
+                    })
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+        // -- clear --
+        /// Removes all records and returns the number removed.
+        /// @return | integer | Number of records removed.
+        methods.add_method_mut("clear", |_, this, ()| Ok(this.inner.clear()));
+        // -- hash --
+        /// Returns the deterministic FNV-1a hash of schema, revision, and ordered records.
+        /// @return | string | Decimal unsigned 64-bit ChangeSet hash (string preserves LuaJIT precision).
+        methods.add_method("hash", |_, this, ()| Ok(this.inner.hash().to_string()));
+        // -- isEmpty --
+        /// Returns true when the ChangeSet contains no records.
+        /// @return | boolean | Whether the ChangeSet is empty.
+        methods.add_method("isEmpty", |_, this, ()| Ok(this.inner.is_empty()));
+        // -- len --
+        /// Returns the number of records currently stored.
+        /// @return | integer | Record count.
+        methods.add_method("len", |_, this, ()| Ok(this.inner.len()));
+        // -- restore --
+        /// Restores records from a table produced by `snapshot` or `toTable`.
+        /// @param | snapshot | table | Snapshot with schema, revision, changes, and optional hash.
+        methods.add_method_mut("restore", |_, this, snapshot: LuaTable| {
+            let (snapshot, expected_hash) = change_set_snapshot_from_lua(snapshot)?;
+            this.inner
+                .restore(snapshot)
+                .map_err(LuaError::RuntimeError)?;
+            if let Some(expected_hash) = expected_hash {
+                let expected_hash = expected_hash.parse::<u64>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "event.ChangeSet:restore hash must be a decimal u64 string".to_string(),
+                    )
+                })?;
+                let actual = this.inner.hash();
+                if actual != expected_hash {
+                    return Err(LuaError::RuntimeError(format!(
+                        "event.ChangeSet:restore hash mismatch: expected {expected_hash}, got {actual}"
+                    )));
+                }
+            }
+            Ok(())
+        });
+        // -- revision --
+        /// Returns the caller-defined monotonic revision.
+        /// @return | integer | ChangeSet revision.
+        methods.add_method("revision", |_, this, ()| Ok(this.inner.revision()));
+        // -- schema --
+        /// Returns the schema identifier used to interpret records.
+        /// @return | string | ChangeSet schema name.
+        methods.add_method("schema", |_, this, ()| Ok(this.inner.schema().to_string()));
+        // -- snapshot --
+        /// Returns a deterministic Lua snapshot including the derived hash.
+        /// @return | table | Snapshot suitable for save or network transport.
+        methods.add_method("snapshot", |lua, this, ()| {
+            change_set_to_lua(lua, &this.inner)
+        });
+        // -- toTable --
+        /// Converts the ChangeSet to a transport-neutral Lua table.
+        /// @return | table | Schema, revision, hash, and ordered change records.
+        methods.add_method("toTable", |lua, this, ()| {
+            change_set_to_lua(lua, &this.inner)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | Always `LChangeSet`.
+        methods.add_method("type", |_, _, ()| Ok("LChangeSet"));
+        // -- typeOf --
+        /// Checks whether this handle matches `LChangeSet` or `LObject`.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | Whether the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LChangeSet" || name == "LObject")
+        });
+    }
 }
 /// Provides Lua methods for connecting, emitting, filtering, and removing signal callbacks.
 impl LuaUserData for LuaSignal {
@@ -323,6 +483,59 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 once_handles: Rc::new(RefCell::new(HashSet::new())),
                 filter_fns: Rc::new(RefCell::new(HashMap::new())),
             })
+        })?,
+    )?;
+    // -- newChangeSet --
+    /// Creates an empty bounded ChangeSet for neutral state replication, save, or Lua-side module integration.
+    /// @param | options | table? | Optional `schema`, `revision`, and `maxChanges` fields. Defaults are `"game"`, `0`, and `10000`.
+    /// @return | LChangeSet | Isolated ChangeSet handle.
+    tbl.set(
+        "newChangeSet",
+        lua.create_function(|_, options: Option<LuaTable>| {
+            let schema = options
+                .as_ref()
+                .and_then(|table| table.get::<_, Option<String>>("schema").ok().flatten())
+                .unwrap_or_else(|| "game".to_string());
+            let revision = options
+                .as_ref()
+                .and_then(|table| table.get::<_, Option<u64>>("revision").ok().flatten())
+                .unwrap_or(0);
+            let max_changes = options
+                .as_ref()
+                .and_then(|table| table.get::<_, Option<usize>>("maxChanges").ok().flatten())
+                .unwrap_or(10_000);
+            let inner =
+                ChangeSet::new(schema, revision, max_changes).map_err(LuaError::RuntimeError)?;
+            Ok(LuaChangeSet { inner })
+        })?,
+    )?;
+    // -- fromChangeSetTable --
+    /// Creates a ChangeSet from a table produced by `LChangeSet:toTable()`.
+    /// @param | value | table | ChangeSet table with schema, revision, changes, and optional hash.
+    /// @param | maxChanges | integer? | Maximum accepted records; defaults to the table length or 10000.
+    /// @return | LChangeSet | Restored ChangeSet handle.
+    tbl.set(
+        "fromChangeSetTable",
+        lua.create_function(|_, (value, max_changes): (LuaTable, Option<usize>)| {
+            let (snapshot, expected_hash) = change_set_snapshot_from_lua(value)?;
+            let limit = max_changes.unwrap_or(snapshot.changes.len().max(10_000));
+            let mut inner = ChangeSet::new(snapshot.schema.clone(), snapshot.revision, limit)
+                .map_err(LuaError::RuntimeError)?;
+            inner.restore(snapshot).map_err(LuaError::RuntimeError)?;
+            if let Some(expected_hash) = expected_hash {
+                let expected_hash = expected_hash.parse::<u64>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "event.fromChangeSetTable hash must be a decimal u64 string".to_string(),
+                    )
+                })?;
+                let actual = inner.hash();
+                if actual != expected_hash {
+                    return Err(LuaError::RuntimeError(format!(
+                        "event.fromChangeSetTable hash mismatch: expected {expected_hash}, got {actual}"
+                    )));
+                }
+            }
+            Ok(LuaChangeSet { inner })
         })?,
     )?;
     let s = state.clone();

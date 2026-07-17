@@ -7,7 +7,7 @@ use crate::mods::{
 use crate::runtime::{call_function_with_policy, LuaExecutionPolicy};
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::rc::Rc;
 
 fn lua_string_sequence(tbl: &LuaTable, field: &str) -> Vec<String> {
@@ -931,12 +931,132 @@ impl LuaUserData for LuaModManager {
         });
     }
 }
+#[derive(Clone, Debug)]
+struct ContentFieldSchema {
+    type_name: String,
+    required: bool,
+}
+
+#[derive(Clone, Debug)]
+struct ContentTypeSchema {
+    fields: BTreeMap<String, ContentFieldSchema>,
+    allow_unknown: bool,
+}
+
+fn parse_content_type_schema(table: &LuaTable) -> LuaResult<ContentTypeSchema> {
+    let fields_table: LuaTable = table.get("fields").map_err(|_| {
+        LuaError::RuntimeError("mods.defineType requires a fields table".to_string())
+    })?;
+    let allow_unknown = table
+        .get::<_, Option<bool>>("allowUnknown")?
+        .unwrap_or(false);
+    let mut fields = BTreeMap::new();
+    for pair in fields_table.pairs::<String, LuaTable>() {
+        let (name, definition) = pair?;
+        validate_symbol("content field", &name, 128)?;
+        let type_name = definition
+            .get::<_, Option<String>>("type")?
+            .unwrap_or_else(|| "any".to_string())
+            .to_ascii_lowercase();
+        if !matches!(
+            type_name.as_str(),
+            "any" | "string" | "number" | "integer" | "boolean" | "table" | "array"
+        ) {
+            return Err(LuaError::RuntimeError(format!(
+                "mods.defineType field '{}' has unsupported type '{}'",
+                name, type_name
+            )));
+        }
+        fields.insert(
+            name,
+            ContentFieldSchema {
+                type_name,
+                required: definition
+                    .get::<_, Option<bool>>("required")?
+                    .unwrap_or(false),
+            },
+        );
+    }
+    Ok(ContentTypeSchema {
+        fields,
+        allow_unknown,
+    })
+}
+
+fn serial_value_matches_type(value: &crate::serialize::SerialValue, type_name: &str) -> bool {
+    use crate::serialize::SerialValue;
+    match type_name {
+        "any" => true,
+        "string" => matches!(value, SerialValue::Str(_)),
+        "number" => matches!(value, SerialValue::Int(_) | SerialValue::Float(_)),
+        "integer" => matches!(value, SerialValue::Int(_)),
+        "boolean" => matches!(value, SerialValue::Bool(_)),
+        "table" => matches!(value, SerialValue::Map(_)),
+        "array" => matches!(value, SerialValue::Seq(_)),
+        _ => false,
+    }
+}
+
+fn validate_content_value(
+    value: &LuaValue,
+    schema: &ContentTypeSchema,
+) -> LuaResult<(bool, Option<String>)> {
+    let serial = crate::serialize::lua_table::from_lua(value)
+        .map_err(|error| LuaError::RuntimeError(format!("mods registry value: {error}")))?;
+    let crate::serialize::SerialValue::Map(fields) = serial else {
+        return Ok((false, Some("registry value must be a table".to_string())));
+    };
+    for (name, definition) in &schema.fields {
+        let Some(value) = fields.get(name) else {
+            if definition.required {
+                return Ok((false, Some(format!("missing required field '{name}'"))));
+            }
+            continue;
+        };
+        if !serial_value_matches_type(value, &definition.type_name) {
+            return Ok((
+                false,
+                Some(format!("field '{name}' expected {}", definition.type_name)),
+            ));
+        }
+    }
+    if !schema.allow_unknown {
+        for name in fields.keys() {
+            if !schema.fields.contains_key(name) {
+                return Ok((false, Some(format!("unknown field '{name}'"))));
+            }
+        }
+    }
+    Ok((true, None))
+}
+
+fn content_schema_to_lua<'lua>(
+    lua: &'lua Lua,
+    schema: &ContentTypeSchema,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("allowUnknown", schema.allow_unknown)?;
+    let fields = lua.create_table()?;
+    for (name, definition) in &schema.fields {
+        let field = lua.create_table()?;
+        field.set("type", definition.type_name.as_str())?;
+        field.set("required", definition.required)?;
+        fields.set(name.as_str(), field)?;
+    }
+    table.set("fields", fields)?;
+    Ok(table)
+}
+
 /// Lua-side content registry for storing typed Lua values by id.
 pub struct LuaContentRegistry {
     /// Registry entries keyed by type name and entry id.
     entries: HashMap<String, HashMap<String, LuaRegistryKey>>,
     /// Registered content type names.
     types: HashSet<String>,
+    /// Optional validation schemas keyed by content type.
+    schemas: HashMap<String, ContentTypeSchema>,
+    /// When frozen, definitions and entries can no longer be mutated.
+    frozen: bool,
 }
 impl LuaContentRegistry {
     #[allow(clippy::new_without_default)]
@@ -945,6 +1065,8 @@ impl LuaContentRegistry {
         Self {
             entries: HashMap::new(),
             types: HashSet::new(),
+            schemas: HashMap::new(),
+            frozen: false,
         }
     }
 }
@@ -955,10 +1077,36 @@ impl LuaUserData for LuaContentRegistry {
         /// Registers a content type name. This method is available to Lua scripts.
         /// @param | type_name | string | Content type name.
         methods.add_method_mut("registerType", |_, this, type_name: String| {
+            validate_symbol("content type", &type_name, 128)?;
+            if this.frozen {
+                return Err(LuaError::RuntimeError(
+                    "mods.LContentRegistry is frozen".to_string(),
+                ));
+            }
             this.types.insert(type_name.clone());
             this.entries.entry(type_name).or_default();
             Ok(())
         });
+        // -- defineType --
+        /// Registers a content type and its field-validation schema.
+        /// @param | type_name | string | Content type name.
+        /// @param | schema | table | Schema with keyed `fields` and optional `allowUnknown`.
+        methods.add_method_mut(
+            "defineType",
+            |_, this, (type_name, schema): (String, LuaTable)| {
+                validate_symbol("content type", &type_name, 128)?;
+                if this.frozen {
+                    return Err(LuaError::RuntimeError(
+                        "mods.LContentRegistry is frozen".to_string(),
+                    ));
+                }
+                let parsed = parse_content_type_schema(&schema)?;
+                this.types.insert(type_name.clone());
+                this.entries.entry(type_name.clone()).or_default();
+                this.schemas.insert(type_name, parsed);
+                Ok(())
+            },
+        );
         // -- register --
         /// Stores a Lua value under a registered content type and id.
         /// @param | type_name | string | Content type name.
@@ -973,11 +1121,49 @@ impl LuaUserData for LuaContentRegistry {
                         type_name
                     )));
                 }
+                if this.frozen {
+                    return Err(LuaError::RuntimeError(
+                        "mods.LContentRegistry is frozen".to_string(),
+                    ));
+                }
+                validate_symbol("content id", &id, 128)?;
+                if let Some(schema) = this.schemas.get(&type_name) {
+                    let (valid, error) = validate_content_value(&obj, schema)?;
+                    if !valid {
+                        return Err(LuaError::RuntimeError(format!(
+                            "mods.LContentRegistry.register {}:{}: {}",
+                            type_name,
+                            id,
+                            error.unwrap_or_else(|| "schema validation failed".to_string())
+                        )));
+                    }
+                }
                 let key = lua.create_registry_value(obj)?;
-                this.entries.entry(type_name).or_default().insert(id, key);
+                if let Some(previous) = this.entries.entry(type_name).or_default().insert(id, key) {
+                    lua.remove_registry_value(previous)?;
+                }
                 Ok(())
             },
         );
+        // -- unregisterType --
+        /// Removes a content type and all values registered under it.
+        /// @param | type_name | string | Content type name.
+        /// @return | boolean | True when the type existed.
+        methods.add_method_mut("unregisterType", |lua, this, type_name: String| {
+            if this.frozen {
+                return Err(LuaError::RuntimeError(
+                    "mods.LContentRegistry is frozen".to_string(),
+                ));
+            }
+            let existed = this.types.remove(&type_name);
+            this.schemas.remove(&type_name);
+            if let Some(entries) = this.entries.remove(&type_name) {
+                for (_, key) in entries {
+                    lua.remove_registry_value(key)?;
+                }
+            }
+            Ok(existed)
+        });
         // -- get --
         /// Returns one stored value by content type and id.
         /// @param | type_name | string | Content type name.
@@ -1013,10 +1199,147 @@ impl LuaUserData for LuaContentRegistry {
         /// @return | string[] | Content type names.
         methods.add_method("getTypes", |lua, this, ()| {
             let tbl = lua.create_table()?;
-            for (i, t) in this.types.iter().enumerate() {
+            let mut types = this.types.iter().collect::<Vec<_>>();
+            types.sort();
+            for (i, t) in types.into_iter().enumerate() {
                 tbl.set(i + 1, t.as_str())?;
             }
             Ok(tbl)
+        });
+        // -- getSchema --
+        /// Returns a registered type schema, or nil for an untyped content type.
+        /// @param | type_name | string | Content type name.
+        /// @return | table | Schema table, or nil when no schema exists.
+        methods.add_method("getSchema", |lua, this, type_name: String| {
+            this.schemas
+                .get(&type_name)
+                .map(|schema| content_schema_to_lua(lua, schema))
+                .transpose()
+        });
+        // -- validate --
+        /// Validates a value against a registered type schema without storing it.
+        /// @param | type_name | string | Content type name.
+        /// @param | value | table | Candidate content value.
+        /// @return | boolean | True when the value satisfies the schema.
+        /// @return | string | First validation error, or nil on success.
+        methods.add_method(
+            "validate",
+            |_, this, (type_name, value): (String, LuaValue)| {
+                let Some(schema) = this.schemas.get(&type_name) else {
+                    return Ok((
+                        false,
+                        Some(format!("no schema registered for '{type_name}'")),
+                    ));
+                };
+                validate_content_value(&value, schema)
+            },
+        );
+        // -- freeze --
+        /// Freezes definitions and entries until this userdata is discarded.
+        /// @return | boolean | True when the registry transitioned to frozen state.
+        methods.add_method_mut("freeze", |_, this, ()| {
+            let changed = !this.frozen;
+            this.frozen = true;
+            Ok(changed)
+        });
+        // -- isFrozen --
+        /// Returns whether this registry rejects mutating operations.
+        /// @return | boolean | Frozen state.
+        methods.add_method("isFrozen", |_, this, ()| Ok(this.frozen));
+        // -- snapshot --
+        /// Captures schemas and registered values in a deterministic Lua table.
+        /// @return | table | Snapshot with `types` and nested `entries` tables.
+        methods.add_method("snapshot", |lua, this, ()| {
+            let snapshot = lua.create_table()?;
+            let types = lua.create_table()?;
+            let mut type_names = this.types.iter().collect::<Vec<_>>();
+            type_names.sort();
+            for (index, type_name) in type_names.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("name", type_name.as_str())?;
+                if let Some(schema) = this.schemas.get(*type_name) {
+                    entry.set("schema", content_schema_to_lua(lua, schema)?)?;
+                }
+                types.set(index + 1, entry)?;
+            }
+            snapshot.set("types", types)?;
+            let values = lua.create_table()?;
+            for type_name in type_names {
+                let rows = lua.create_table()?;
+                if let Some(entries) = this.entries.get(type_name) {
+                    let mut ids = entries.keys().collect::<Vec<_>>();
+                    ids.sort();
+                    for id in ids {
+                        rows.set(
+                            id.as_str(),
+                            lua.registry_value::<LuaValue>(
+                                entries.get(id).expect("entry key exists"),
+                            )?,
+                        )?;
+                    }
+                }
+                values.set(type_name.as_str(), rows)?;
+            }
+            snapshot.set("entries", values)?;
+            snapshot.set("frozen", this.frozen)?;
+            Ok(snapshot)
+        });
+        // -- restore --
+        /// Restores schemas and values from a previous snapshot and applies its frozen flag.
+        /// @param | snapshot | table | Snapshot returned by `snapshot`.
+        methods.add_method_mut("restore", |lua, this, snapshot: LuaTable| {
+            if this.frozen {
+                return Err(LuaError::RuntimeError(
+                    "mods.LContentRegistry is frozen".to_string(),
+                ));
+            }
+            let type_rows: LuaTable = snapshot.get("types")?;
+            let values: LuaTable = snapshot.get("entries")?;
+            let mut schemas = HashMap::new();
+            let mut types = HashSet::new();
+            for row in type_rows.sequence_values::<LuaTable>() {
+                let row = row?;
+                let type_name: String = row.get("name")?;
+                validate_symbol("content type", &type_name, 128)?;
+                types.insert(type_name.clone());
+                if let Some(schema) = row.get::<_, Option<LuaTable>>("schema")? {
+                    schemas.insert(type_name, parse_content_type_schema(&schema)?);
+                }
+            }
+            for entries in this.entries.drain().map(|(_, entries)| entries) {
+                for (_, key) in entries {
+                    lua.remove_registry_value(key)?;
+                }
+            }
+            let mut new_entries = HashMap::new();
+            for type_name in &types {
+                let source: Option<LuaTable> = values.get(type_name.as_str())?;
+                let mut rows = HashMap::new();
+                if let Some(source) = source {
+                    for pair in source.pairs::<String, LuaValue>() {
+                        let (id, value) = pair?;
+                        validate_symbol("content id", &id, 128)?;
+                        if let Some(schema) = schemas.get(type_name) {
+                            let (valid, error) = validate_content_value(&value, schema)?;
+                            if !valid {
+                                return Err(LuaError::RuntimeError(format!(
+                                    "mods.LContentRegistry.restore {}:{}: {}",
+                                    type_name,
+                                    id,
+                                    error.unwrap_or_else(|| "schema validation failed".to_string())
+                                )));
+                            }
+                        }
+                        rows.insert(id, lua.create_registry_value(value)?);
+                    }
+                }
+                new_entries.insert(type_name.clone(), rows);
+            }
+            this.types = types;
+            this.schemas = schemas;
+            this.entries = new_entries;
+            this.frozen = snapshot.get::<_, Option<bool>>("frozen")?.unwrap_or(false);
+            Ok(())
         });
         methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
             Ok(format!("ContentRegistry({} types)", this.types.len()))

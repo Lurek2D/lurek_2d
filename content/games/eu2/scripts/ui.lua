@@ -1,16 +1,24 @@
+--- EU2 presentation layer: top bar, panels, map-mode controls, log, and minimap.
+--- UI helpers read campaign state and view state; only `draw` and `mousepressed`
+--- are called by the main game loop.
 local M = {}
 
 local R = lurek.render
 
+--- Minimap logical width in cells.
 local MM_GRID_W = 180
+--- Minimap logical height in cells.
 local MM_GRID_H = 81
-local PIXEL_SIZE = 8
+--- Source map cell size used to compute the camera viewport.
+local PIXEL_SIZE = 16
 
+--- Cached minimap object and the state/view key that produced it.
 local minimap = nil
 local minimap_key = nil
 local minimap_colors = nil
 local next_minimap_color = 1
 local army_object_type = 1
+--- Map-mode buttons and their display labels.
 local MODE_BUTTONS = {
     { key = "1", mode = "political", label = "POL" },
     { key = "2", mode = "terrain", label = "TER" },
@@ -19,17 +27,26 @@ local MODE_BUTTONS = {
     { key = "5", mode = "unrest", label = "UNR" },
 }
 
+---@param v number Value to clamp.
+---@param lo number Minimum.
+---@param hi number Maximum.
+---@return number value Clamped value.
 local function clamp(v, lo, hi)
     if v < lo then return lo end
     if v > hi then return hi end
     return v
 end
 
+---@param state table Campaign state.
+---@param tag string Country tag.
+---@return string name Display country name.
 local function country_name(state, tag)
     local c = state.countries[tag]
     return c and c.name or tostring(tag or "-")
 end
 
+---@param state table Campaign state.
+---@return string label Current speed label.
 local function speed_label(state)
     if state.paused then
         return "Paused"
@@ -38,6 +55,8 @@ local function speed_label(state)
     return tostring(speeds[state.speed_index] or 1) .. "x"
 end
 
+---@param state table Campaign state.
+---@return table|nil army Selected army record.
 local function selected_army(state)
     for _, army in ipairs(state.armies) do
         if army.id == state.selected_army_id then
@@ -47,10 +66,15 @@ local function selected_army(state)
     return nil
 end
 
+---@param view table Main view state.
+---@param key string Font slot (`map`, `ui`, `small`, or `title`).
+---@return userdata|nil font Selected font object.
 local function font_for(view, key)
     return view and view.fonts and view.fonts[key] or nil
 end
 
+---@param view table Main view state.
+---@param key string Font slot.
 local function set_font(view, key)
     local font = font_for(view, key)
     if font then
@@ -59,18 +83,28 @@ local function set_font(view, key)
     return font
 end
 
-local function text_width(view, key, text, scale)
+---@param view table Main view state.
+---@param key string Font slot.
+---@param text any Text to measure.
+---@return number width Pixel width estimate.
+local function text_width(view, key, text)
     local font = font_for(view, key)
-    local factor = scale or 1
     if font and font.getWidth then
-        return font:getWidth(tostring(text or "")) * factor
+        return font:getWidth(tostring(text or ""))
     end
-    return #tostring(text or "") * 6 * factor
+    return #tostring(text or "") * 6
 end
 
-local function draw_text(view, key, text, x, y, scale, color, shadow_color)
+---@param view table Main view state.
+---@param key string Font slot.
+---@param text any Text to draw.
+---@param x number Left coordinate.
+---@param y number Top coordinate.
+---@param _scale number|nil Retained API parameter; bitmap fonts use native size.
+---@param color number[]|nil Text RGBA color.
+---@param shadow_color number[]|nil Optional shadow RGBA color.
+local function draw_text(view, key, text, x, y, _scale, color, shadow_color)
     set_font(view, key)
-    local s = scale or 1
     local value = tostring(text or "")
     local shadow = shadow_color
     if shadow == nil then
@@ -78,13 +112,18 @@ local function draw_text(view, key, text, x, y, scale, color, shadow_color)
     end
     if shadow ~= false then
         R.setColor(shadow[1], shadow[2], shadow[3], shadow[4] or 1)
-        R.print(value, x + 1, y + 1, s)
+        R.print(value, x + 1, y + 1)
     end
     local c = color or { 0.95, 0.90, 0.78, 1 }
     R.setColor(c[1], c[2], c[3], c[4] or 1)
-    R.print(value, x, y, s)
+    R.print(value, x, y)
 end
 
+---@param x number Left coordinate.
+---@param y number Top coordinate.
+---@param w number Panel width.
+---@param h number Panel height.
+---@param alpha number|nil Panel opacity.
 local function draw_panel(x, y, w, h, alpha)
     R.setColor(0.12, 0.10, 0.07, alpha or 0.90)
     R.rectangle("fill", x + 2, y + 3, w, h)
@@ -96,6 +135,10 @@ local function draw_panel(x, y, w, h, alpha)
     R.rectangle("line", x + 2, y + 2, math.max(0, w - 4), math.max(0, h - 4))
 end
 
+---@param x number Left coordinate.
+---@param y number Top coordinate.
+---@param w number Panel width.
+---@param h number Panel height.
 local function draw_paper_panel(x, y, w, h)
     R.setColor(0.16, 0.12, 0.08, 0.26)
     R.rectangle("fill", x + 3, y + 4, w, h)
@@ -107,12 +150,23 @@ local function draw_paper_panel(x, y, w, h)
     R.rectangle("line", x + 3, y + 3, math.max(0, w - 6), math.max(0, h - 6))
 end
 
+---@param x number Left coordinate.
+---@param y number Vertical coordinate.
+---@param w number Divider width.
+---@param dark boolean|nil Use dark divider variant.
 local function draw_divider(x, y, w, dark)
     local c = dark and { 0.32, 0.24, 0.14, 0.78 } or { 0.74, 0.63, 0.40, 0.42 }
     R.setColor(c[1], c[2], c[3], c[4])
     R.rectangle("fill", x, y, w, 1)
 end
 
+---@param view table Main view state.
+---@param x number Left coordinate.
+---@param y number Top coordinate.
+---@param w number Button width.
+---@param h number Button height.
+---@param text string Button label.
+---@param active boolean Active button state.
 local function draw_button(view, x, y, w, h, text, active)
     if active then
         R.setColor(0.62, 0.38, 0.20, 0.98)
@@ -126,6 +180,8 @@ local function draw_button(view, x, y, w, h, text, active)
     draw_text(view, "small", text, x + (w - label_w) * 0.5, y + 4, 1.0, { 0.98, 0.92, 0.78, 1 })
 end
 
+---@param c number[] RGBA color.
+---@return string key Stable color key for minimap palette assignment.
 local function color_key(c)
     return string.format("%d:%d:%d:%d",
         math.floor(clamp(c[1] or 0, 0, 1) * 255 + 0.5),
@@ -134,6 +190,8 @@ local function color_key(c)
         math.floor(clamp(c[4] or 1, 0, 1) * 255 + 0.5))
 end
 
+---@param c number[] RGBA color.
+---@return integer type Stable minimap object/terrain color index.
 local function terrain_type_for_color(c)
     local key = color_key(c)
     local idx = minimap_colors[key]
@@ -147,6 +205,11 @@ local function terrain_type_for_color(c)
     return idx
 end
 
+---@param state table Campaign state.
+---@param province table Province record.
+---@param mode string Active map mode.
+---@param map_modes table Map-mode module.
+---@return number[] color Province RGBA color.
 local function province_color(state, province, mode, map_modes)
     if not province then
         return { 0.0, 0.0, 0.0, 1.0 }
@@ -158,6 +221,13 @@ local function province_color(state, province, mode, map_modes)
     return (country and country.color) or { 0.18, 0.38, 0.60, 1 }
 end
 
+--- Create and populate the cached minimap for the current map/state dimensions.
+---@param state table Campaign state.
+---@param view table Main view state.
+---@param map_modes table Map-mode module.
+---@param display_w number Display width.
+---@param display_h number Display height.
+---@return userdata minimap_obj New minimap object.
 local function build_minimap(state, view, map_modes, display_w, display_h)
     local map_w = state.reg:getWidth()
     local map_h = state.reg:getHeight()
@@ -191,6 +261,12 @@ local function build_minimap(state, view, map_modes, display_w, display_h)
     return map_w, map_h
 end
 
+--- Refresh minimap colors, army markers, and camera viewport rectangle.
+---@param state table Campaign state.
+---@param view table Main view state.
+---@param map_modes table Map-mode module.
+---@param display_w number Display width.
+---@param display_h number Display height.
 local function update_minimap(state, view, map_modes, display_w, display_h)
     local map_w, map_h = build_minimap(state, view, map_modes, display_w, display_h)
     minimap:clearObjects()
@@ -221,6 +297,10 @@ local function update_minimap(state, view, map_modes, display_w, display_h)
     end
 end
 
+---@param ww number Window width.
+---@param hh number Window height.
+---@return number width Minimap width.
+---@return number height Minimap height.
 local function minimap_size(ww, hh)
     local w = math.floor(clamp(ww * 0.15, 142, 190))
     if hh < 560 then
@@ -229,6 +309,9 @@ local function minimap_size(ww, hh)
     return w, math.floor(w * 0.47)
 end
 
+---@param state table Campaign state.
+---@param view table Main view state.
+---@param ww number Window width.
 local function draw_top_bar(state, view, ww)
     local player = state.countries[state.player_tag]
 
@@ -265,6 +348,12 @@ local function draw_top_bar(state, view, ww)
     end
 end
 
+---@param state table Campaign state.
+---@param view table Main view state.
+---@param hovered_gid number|nil Hovered province id.
+---@param selected_gid number|nil Selected province id.
+---@param ww number Window width.
+---@param hh number Window height.
 local function draw_side_panel(state, view, hovered_gid, selected_gid, ww, hh)
     if ww < 720 or hh < 500 then
         return
@@ -308,6 +397,8 @@ local function draw_side_panel(state, view, hovered_gid, selected_gid, ww, hh)
     draw_text(view, "small", "Hover: " .. (hovered and hovered.name or "-"), x + 16, y + panel_h - 28, 0.98, { 0.17, 0.12, 0.08, 1 }, false)
 end
 
+---@param view table Main view state.
+---@param ww number Window width.
 local function draw_mode_panel(view, ww)
     if ww < 760 then
         return
@@ -319,11 +410,14 @@ local function draw_mode_panel(view, ww)
     for i, mode in ipairs(MODE_BUTTONS) do
         draw_button(view, x + 14 + (i - 1) * 53, y + 34, 42, 28, mode.key, view.map_mode == mode.mode)
     end
-    draw_text(view, "small", "L labels   Space pause", x + 14, y + 72, 1.0, { 0.82, 0.84, 0.80, 1 })
+    draw_text(view, "small", "Space pause", x + 14, y + 72, 1.0, { 0.82, 0.84, 0.80, 1 })
     draw_text(view, "small", "RMB move   F12 roads", x + 14, y + 90, 1.0, { 0.82, 0.84, 0.80, 1 })
     draw_text(view, "small", "X stripes   R reset   Tab army", x + 14, y + 108, 1.0, { 0.82, 0.84, 0.80, 1 })
 end
 
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@return string|nil mode Mode button under the pointer.
 local function map_mode_at(x, y)
     local ww = lurek.window.getWidth and lurek.window.getWidth() or select(1, lurek.window.getDimensions())
     if ww < 760 then
@@ -341,6 +435,12 @@ local function map_mode_at(x, y)
     return nil
 end
 
+---@param state table Campaign state.
+---@param view table Main view state.
+---@param ww number Window width.
+---@param hh number Window height.
+---@param mini_x number Minimap x coordinate.
+---@param mini_y number Minimap y coordinate.
 local function draw_log_panel(state, view, ww, hh, mini_x, mini_y)
     local log_h = 104
     local log_w = math.max(300, mini_x - 22)
@@ -357,6 +457,12 @@ local function draw_log_panel(state, view, ww, hh, mini_x, mini_y)
     end
 end
 
+--- Draw all EU2 overlay UI for the current frame.
+---@param state table Campaign state.
+---@param view table Main view state.
+---@param hovered_gid number|nil Hovered province id.
+---@param selected_gid number|nil Selected province id.
+---@param map_modes table Map-mode module.
 function M.draw(state, view, hovered_gid, selected_gid, map_modes)
     local ww, hh = lurek.window.getDimensions()
     local mini_w, mini_h = minimap_size(ww, hh)
@@ -379,6 +485,13 @@ function M.draw(state, view, hovered_gid, selected_gid, map_modes)
     R.setColor(1, 1, 1, 1)
 end
 
+--- Handle clicks on map-mode controls and the minimap.
+---@param state table Campaign state.
+---@param view table Main view state.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param button number Mouse button id.
+---@return boolean consumed True when a UI control consumed the click.
 function M.mousepressed(state, view, x, y, button)
     if button ~= 1 then
         return false

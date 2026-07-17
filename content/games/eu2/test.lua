@@ -1,4 +1,10 @@
+--- EU2 playable-slice test suite.
+--- Exercises the runtime modules with lightweight registry doubles and verifies
+--- initialization, map-mode coloring, input, movement, and province setup.
 describe("eu2 playable slice", function()
+    --- Load a game module from the runtime-local or repository-relative path.
+    ---@param name string Module filename.
+    ---@return table module Module return value.
     local function load_demo_module(name)
         local candidates = {
             "scripts/" .. name,
@@ -36,7 +42,7 @@ describe("eu2 playable slice", function()
         assert(type(input.handle_key) == "function", "input.handle_key must exist")
     end)
 
-    it("input toggles province labels and debug roads", function()
+    it("input toggles debug roads without enabling province labels", function()
         local input = load_demo_module("input.lua")
         local toggled_a = nil
         local toggled_b = nil
@@ -50,7 +56,6 @@ describe("eu2 playable slice", function()
             end,
         }
         local view = {
-            draw_labels = false,
             debug_mode = false,
             map_dirty = false,
             color_dirty = false,
@@ -58,8 +63,7 @@ describe("eu2 playable slice", function()
             hovered_gid = 14,
         }
 
-        assert(input.handle_key(state, view, "l") == true, "L should toggle province labels")
-        assert(view.draw_labels == true, "province labels should enable after pressing L")
+        assert(input.handle_key(state, view, "l") == false, "province labels must stay disabled")
 
         assert(input.handle_key(state, view, "x") == true, "X should toggle striped province overlay")
         assert(toggled_a == 9 and toggled_b == 14, "stripe toggle should use selected and hovered provinces")
@@ -138,11 +142,17 @@ describe("eu2 playable slice", function()
         assert(border_styles["1:2"].flags[1] == "country", "land owner border should stay a country border")
         assert(border_styles["1:2"].color == nil, "country border color should come from render border_palette")
         assert(border_styles["1:3"].color == nil, "coast border color should come from render border_palette")
-        assert(border_styles["1:3"].thickness == 4.0, "coast borders should be distinctly thicker at this map scale")
-        assert(border_styles["1:2"].thickness == 4.8, "country borders should be thicker than coastal borders")
+        assert(border_styles["1:3"].thickness == 2.0, "coast borders should be two map pixels wide")
+        assert(border_styles["1:2"].thickness == 3.0, "country borders should be three map pixels wide")
         assert(border_styles["2:4"].color == nil, "local borders should use palette province color")
         assert(visual_states[1].effect_flags == map_modes.stripe_effect_flag, "striped province should enable shader hatch flag")
         assert(visual_states[3].effect_flags == 0, "non-striped provinces should keep stripes disabled")
+
+        local highlights = map_modes.highlight_tints(state, "political", 2, 1)
+        local selected_base = map_modes.province_color(state, state.provinces[1], "political")
+        local hovered_base = map_modes.province_color(state, state.provinces[2], "political")
+        assert(highlights[1][1] == selected_base[1] * 0.9, "selected province should be 10% darker")
+        assert(highlights[2][1] == math.min(1, hovered_base[1] * 1.1), "hovered province should be 10% lighter")
     end)
 
     it("army movement consumes the province route adapter for non-neighbor targets", function()

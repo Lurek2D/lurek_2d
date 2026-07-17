@@ -135,7 +135,7 @@ pub struct ProvinceMapUniforms {
     pub zoom_mode: u32,
     /// Time in seconds for optional shader animation.
     pub time: f32,
-    /// Repeating terrain texture scale in map pixels per tile.
+    /// Repeating terrain texture scale in source-map pixels per tile; it follows camera zoom.
     pub terrain_texture_scale: f32,
     /// Strength of the subtle terrain texture watermark, 0 disables it.
     pub terrain_texture_strength: f32,

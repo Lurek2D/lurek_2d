@@ -737,6 +737,25 @@ do
     lurek.log.info("save=" .. tostring(ok) .. " count=" .. count)
 end
 
+--@api: LPostFxStack:snapshot
+do
+    local stack = lurek.effect.newStack(640, 360)
+    stack:add(lurek.effect.newEffect("blur"))
+    stack:setFeedback(0.35)
+    local snapshot = stack:snapshot()
+    lurek.log.info("effect snapshot effects=" .. tostring(#snapshot.effects))
+end
+
+--@api: LPostFxStack:restore
+do
+    local source = lurek.effect.newStack(640, 360)
+    source:add(lurek.effect.newEffect("vignette"))
+    local target = lurek.effect.newStack(320, 240)
+    target:restore(source:snapshot())
+    local width, height = target:getDimensions()
+    lurek.log.info("effect restored dimensions=" .. tostring(width) .. "x" .. tostring(height))
+end
+
 --@api: LImageEffect:type
 do
 

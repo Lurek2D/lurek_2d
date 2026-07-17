@@ -1,17 +1,30 @@
+--- Mutable EU2 campaign state and turn/update mechanics.
+--- `new` builds the province, country, army, date, cache-revision, and event-log
+--- tables consumed by the main loop, input dispatcher, map modes, and UI.
 local M = {}
 
+--- Real seconds represented by one in-game month at 1x speed.
 local MONTH_SECONDS = 3.0
+--- Time multipliers indexed by `state.speed_index`.
 local SPEEDS = { 0, 1, 2, 4 }
+--- Display labels indexed by calendar month.
 local MONTH_NAMES = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" }
 
+---@param v any Value to lowercase.
+---@return string text Lowercase string.
 local function lower(v)
     return tostring(v or ""):lower()
 end
 
+---@param v any Raw registry name.
+---@return string name Display name with underscores replaced by spaces.
 local function clean_name(v)
     return tostring(v or "Unknown"):gsub("_", " ")
 end
 
+---@param v any Numeric candidate.
+---@param fallback number Default when conversion fails.
+---@return number value Converted number or fallback.
 local function num(v, fallback)
     local n = tonumber(v)
     if n == nil then
@@ -20,6 +33,8 @@ local function num(v, fallback)
     return n
 end
 
+---@param terrain any Terrain name.
+---@return number income Base monthly income for the terrain.
 local function terrain_income(terrain)
     terrain = lower(terrain)
     if terrain == "sea" or terrain == "river" then return 0 end
@@ -29,6 +44,9 @@ local function terrain_income(terrain)
     return 4
 end
 
+---@param snap table|nil Registry province snapshot.
+---@return number|nil x Capital/centroid x coordinate.
+---@return number|nil y Capital/centroid y coordinate.
 local function point_from_snap(snap)
     local c = snap and (snap.capital or snap.centroid)
     if type(c) == "table" then
@@ -37,6 +55,8 @@ local function point_from_snap(snap)
     return nil, nil
 end
 
+---@param state table Campaign state.
+---@param text string Event text without date prefix.
 local function add_log(state, text)
     table.insert(state.log, 1, state:date_string() .. " - " .. text)
     while #state.log > 8 do
@@ -44,6 +64,8 @@ local function add_log(state, text)
     end
 end
 
+---@param src table Scenario country record.
+---@return table copy Mutable runtime country record.
 local function country_copy(src)
     local out = {}
     for k, v in pairs(src) do
@@ -57,6 +79,8 @@ local function country_copy(src)
     return out
 end
 
+---@param province table Province record.
+---@return string text Searchable province metadata.
 local function province_blob(province)
     return lower(table.concat({
         province.name or "",
@@ -67,6 +91,8 @@ local function province_blob(province)
     }, " "))
 end
 
+---@param tbl table|nil Source table.
+---@return number[] keys Sorted numeric keys.
 local function sorted_numeric_keys(tbl)
     local keys = {}
     for key in pairs(tbl or {}) do
@@ -78,6 +104,8 @@ local function sorted_numeric_keys(tbl)
     return keys
 end
 
+---@param tbl table|nil Source table.
+---@return string[] keys Sorted string keys.
 local function sorted_string_keys(tbl)
     local keys = {}
     for key in pairs(tbl or {}) do
@@ -89,6 +117,8 @@ local function sorted_string_keys(tbl)
     return keys
 end
 
+---@param ids table Province-id to boolean flag map.
+---@return string signature Stable comma-separated signature.
 local function striped_signature(ids)
     local out = {}
     for id, enabled in pairs(ids or {}) do
@@ -100,6 +130,9 @@ local function striped_signature(ids)
     return table.concat(out, ",")
 end
 
+---@param state table Campaign state.
+---@param army_spec table Starting-army definition.
+---@return number|nil province_id Best matching owned province.
 local function find_start_province(state, army_spec)
     local best = nil
     for _, id in ipairs(sorted_numeric_keys(state.provinces)) do
@@ -117,6 +150,8 @@ local function find_start_province(state, army_spec)
     return best
 end
 
+---@param state table Campaign state.
+---@param army_id number|nil Army id to select.
 local function set_selected_army(state, army_id)
     state.selected_army_id = army_id
     for _, army in ipairs(state.armies) do
@@ -124,10 +159,16 @@ local function set_selected_army(state, army_id)
     end
 end
 
+---@param state table Campaign state.
+---@param army table Army record.
+---@param province table|nil Destination province.
+---@return boolean occupiable True when the destination is not owned by the army and is not sea.
 local function owned_enemy_or_neutral(state, army, province)
     return province and province.owner ~= army.tag and province.owner ~= "SEA"
 end
 
+---@param state table Campaign state.
+---@param army table Army whose movement completed.
 local function finish_army_move(state, army)
     army.province_id = army.target_id
     army.target_id = nil
@@ -147,6 +188,9 @@ local function finish_army_move(state, army)
     end
 end
 
+---@param state table Campaign state.
+---@param province_id number Province to enter.
+---@return number cost Movement duration in seconds at 1x speed.
 local function movement_cost(state, province_id)
     local province = state.provinces[province_id]
     if not province then return 4 end
@@ -157,6 +201,10 @@ local function movement_cost(state, province_id)
     return 4
 end
 
+---@param state table Campaign state.
+---@param from_id number Current province id.
+---@param target_id number Desired province id.
+---@return number|nil next_id Next adjacent route step.
 local function route_next_step(state, from_id, target_id)
     if from_id == target_id then
         return nil
@@ -179,6 +227,8 @@ local function route_next_step(state, from_id, target_id)
     return nil
 end
 
+---@param state table Campaign state.
+--- Issue one opportunistic move for each eligible AI army.
 local function ai_tick(state)
     for _, army in ipairs(state.armies) do
         local country = state.countries[army.tag]
@@ -200,7 +250,14 @@ local function ai_tick(state)
     end
 end
 
+--- Construct campaign state from the province registry and scenario.
+---@param reg userdata Province registry.
+---@param scenario table Scenario returned by `scenario.build`.
+---@return table state Fully initialized mutable campaign state.
 function M.new(reg, scenario)
+    --- Runtime state fields: registry/scenario inputs; country/province/army models;
+    --- selection and map mode; clock/speed; revision counters for renderer caches;
+    --- striped-province flags; bounded event log; and current calendar date.
     local state = {
         reg = reg,
         scenario = scenario,
@@ -228,10 +285,16 @@ function M.new(reg, scenario)
         },
     }
 
+    --- Return the current date as a short month/year label.
+    ---@return string date Formatted date such as `Jan 1419`.
     function state:date_string()
         return string.format("%s %04d", MONTH_NAMES[self.date.month], self.date.year)
     end
 
+    --- Set the two provinces shown with the contested striped effect.
+    ---@param first_id number|nil First province id.
+    ---@param second_id number|nil Second province id.
+    ---@return boolean changed True when the visual revision changed.
     function state:set_striped_pair(first_id, second_id)
         local next = {}
         if type(first_id) == "number" and self.provinces[first_id] then
@@ -250,6 +313,10 @@ function M.new(reg, scenario)
         return true
     end
 
+    --- Toggle the supplied province pair off, or replace the current pair.
+    ---@param first_id number|nil First province id.
+    ---@param second_id number|nil Second province id.
+    ---@return boolean changed True when the visual revision changed.
     function state:toggle_striped_pair(first_id, second_id)
         local next = {}
         if type(first_id) == "number" and self.provinces[first_id] then
@@ -351,6 +418,9 @@ function M.new(reg, scenario)
     return state
 end
 
+--- Advance armies, calendar time, income, unrest, and periodic AI.
+---@param state table Campaign state.
+---@param dt number Frame delta in seconds.
 function M.update(state, dt)
     local speed = SPEEDS[state.speed_index] or 1
     if state.paused or speed == 0 then
@@ -371,6 +441,8 @@ function M.update(state, dt)
     end
 end
 
+--- Apply one monthly economy/unrest tick and advance the calendar.
+---@param state table Campaign state.
 function M.monthly_tick(state)
     state.month_count = state.month_count + 1
     state.date.month = state.date.month + 1
@@ -398,6 +470,9 @@ function M.monthly_tick(state)
     add_log(state, "Monthly income and manpower collected.")
 end
 
+--- Select a province and, when applicable, its player army.
+---@param state table Campaign state.
+---@param province_id number|nil Province id to select.
 function M.select_province(state, province_id)
     state.selected_province_id = province_id
     if not province_id then
@@ -411,10 +486,16 @@ function M.select_province(state, province_id)
     end
 end
 
+--- Select an army and update every army's `selected` flag.
+---@param state table Campaign state.
+---@param army_id number|nil Army id to select.
 function M.select_army(state, army_id)
     set_selected_army(state, army_id)
 end
 
+--- Select the next army belonging to the player.
+---@param state table Campaign state.
+---@return table|nil army Newly selected army, or nil when none exist.
 function M.cycle_player_army(state)
     local player = {}
     for _, army in ipairs(state.armies) do
@@ -437,6 +518,11 @@ function M.cycle_player_army(state)
     return next_army
 end
 
+--- Queue one route step for an army.
+---@param state table Campaign state.
+---@param army_id number Army id.
+---@param target_id number Destination province id.
+---@return boolean accepted True when a route step was queued.
 function M.order_move(state, army_id, target_id)
     local army = nil
     for _, candidate in ipairs(state.armies) do
@@ -460,14 +546,22 @@ function M.order_move(state, army_id, target_id)
     return true
 end
 
+--- Set the bounded time-speed index.
+---@param state table Campaign state.
+---@param index number Requested speed index.
 function M.set_speed(state, index)
     state.speed_index = math.max(1, math.min(#SPEEDS, index))
 end
 
+--- Toggle campaign pause state.
+---@param state table Campaign state.
 function M.toggle_pause(state)
     state.paused = not state.paused
 end
 
+--- Return the UI label for the current speed/pause state.
+---@param state table Campaign state.
+---@return string label `Paused` or a numeric multiplier such as `2x`.
 function M.speed_label(state)
     local speed = SPEEDS[state.speed_index] or 1
     if state.paused or speed == 0 then
@@ -476,6 +570,11 @@ function M.speed_label(state)
     return tostring(speed) .. "x"
 end
 
+--- Forward striped-pair replacement to the state object.
+---@param state table Campaign state.
+---@param first_id number|nil First province id.
+---@param second_id number|nil Second province id.
+---@return boolean changed True when the pair changed.
 function M.set_striped_pair(state, first_id, second_id)
     if state and state.set_striped_pair then
         return state:set_striped_pair(first_id, second_id)
@@ -483,6 +582,11 @@ function M.set_striped_pair(state, first_id, second_id)
     return false
 end
 
+--- Forward striped-pair toggling to the state object.
+---@param state table Campaign state.
+---@param first_id number|nil First province id.
+---@param second_id number|nil Second province id.
+---@return boolean changed True when the pair changed.
 function M.toggle_striped_pair(state, first_id, second_id)
     if state and state.toggle_striped_pair then
         return state:toggle_striped_pair(first_id, second_id)

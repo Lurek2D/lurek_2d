@@ -359,6 +359,43 @@ describe("lurek.serialize unified codec helpers", function()
         expect_equal(100, patched.hp)
         expect_equal("hero", patched.name)
     end)
+
+    -- @covers lurek.serialize.encodeChangeSet
+    it("encodeChangeSet validates and encodes the neutral envelope", function()
+        local value = {
+            schema = "network.v1",
+            revision = 4,
+            changes = {
+                { objectId = 9, component = "position", operation = "set", payload = { x = 12 } },
+            },
+        }
+        local encoded = lurek.serialize.encodeChangeSet(value, "json")
+        expect_type("string", encoded)
+        expect_true(#encoded > 0)
+        expect_error(function()
+            lurek.serialize.encodeChangeSet({ schema = "network.v1", revision = 1, changes = {
+                { objectId = 0, component = "position", operation = "set", payload = {} },
+            } }, "json")
+        end)
+    end)
+
+    -- @covers lurek.serialize.decodeChangeSet
+    it("decodeChangeSet validates decoded transport records", function()
+        local encoded = lurek.serialize.encode({
+            schema = "save.v1",
+            revision = 2,
+            changes = {
+                { objectId = 5, component = "alive", operation = "set", payload = true },
+            },
+        }, "json")
+        local value = lurek.serialize.decodeChangeSet(encoded, "json")
+        expect_equal("save.v1", value.schema)
+        expect_equal(5, value.changes[1].objectId)
+        expect_true(value.changes[1].payload)
+        expect_error(function()
+            lurek.serialize.decodeChangeSet('{"schema":"bad.v1","revision":1,"changes":[{"objectId":0}]}', "json")
+        end)
+    end)
 end)
 end
 -- END test_serialize_core_unit.lua

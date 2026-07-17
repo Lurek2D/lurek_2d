@@ -8,6 +8,7 @@
 - Supports hierarchies, relationships, phase-aware systems, and snapshots.
 - Provides a global Lua class/object registry for richer object-oriented gameplay models when plain tables are not enough.
 - Bridges class-backed objects into `LUniverse` entities without replacing component storage or query APIs.
+- Accepts transport-neutral ChangeSet tables through `LUniverse:applyChangeSet`, with validated `set`/`replace`/`upsert`, `remove`, and `kill` operations.
 
 ## General Info
 
@@ -15,7 +16,7 @@
 - Source path: `src/ecs`
 - Binding: `src/lua_api/ecs_api.rs`
 - Namespace: `lurek.ecs`
-- Lua API surface: `22` functions, `10` types, `119` methods
+- Lua API surface: `22` functions, `10` types, `120` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -28,6 +29,7 @@
 - Blueprints, bulk spawning, snapshots, and serialization broaden the module from live simulation into save/load, rollback, reset, and data-driven population workflows.
 - Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
 - The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
+- ChangeSet application is an explicit Lua call and only projects known component/entity operations into this world; it does not auto-connect event, save, network, or gameplay systems.
 - That makes the ECS world a stable meeting point for subsystems that need different views of the same population.
 - The class/object registry is intentionally part of `ecs` because it is foundational object identity and type metadata, not a reusable gameplay pattern. It gives Lua developers inheritance, mixin-style multi-inheritance, defaults, methods, properties, constructors, tags, and a live object registry inside the same VM.
 - Objects created through `lurek.ecs.newObject` remain ordinary Lua tables, but they carry metatable-backed class behavior plus helper methods such as `type`, `typeOf`, `isA`, `getProperty`, and `setProperty`.
@@ -310,6 +312,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LUniverse:addRelation(from, name, to) -> nil`: Adds a named directed relation from one entity to another.
 - `LUniverse:addSystem(system, opts?) -> nil`: Registers a Lua system table with optional phase, priority, name, and dependency metadata.
 - `LUniverse:addTag(id, tag) -> nil`: Assigns a string tag name to an entity in this universe.
+- `LUniverse:applyChangeSet(changeset) -> integer`: Applies a transport-neutral ChangeSet table to explicit ECS component operations.
 - `LUniverse:applySnapshot(snapshot) -> nil`: Replaces this universe state from a Lua table snapshot.
 - `LUniverse:attachObject(entityId, obj) -> nil`: Attaches an existing ECS object table to an entity as the `object` component.
 - `LUniverse:bitmapTag(id, name) -> integer`: Adds a bitmap tag to an entity, defining the tag if needed.

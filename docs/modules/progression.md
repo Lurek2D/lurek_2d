@@ -25,6 +25,7 @@ The current slice includes:
 - initial challenge templates with manual or counter-driven progress, activation windows, status filters, expiry, and reward records;
 - initial rivals with leaderboard-aware delta queries, overtake events, and a bounded local activity feed derived from retained progression events;
 - initial virtual population templates with deterministic identity generation, leaderboard-backed lightweight profiles, logical-time simulation, materialization/dematerialization, and leaderboard participation without a network service;
+- isolated `newStatusTracker()` handles with validated status definitions, replace/refresh/add stacking, finite duration and periodic tick scheduling, snapshots, and neutral lifecycle events;
 - attributes, resources, modifiers, and XP/level tracks;
 - achievements with manual and counter-triggered unlocks;
 - reward records with pending, claimed, applied, and rejected states;
@@ -35,6 +36,8 @@ The current slice includes:
 - legacy import helpers for snapshots produced by the former `library.stats` and `library.quest` flows.
 
 The module is intentionally headless. It owns data and mutation rules only.
+Status ticks and expiry are emitted as neutral records; Lua gameplay code explicitly decides whether
+to apply damage, healing, animation, audio, ECS changes, or other effects.
 
 ## API Reference
 
@@ -2335,6 +2338,33 @@ end
 
 ---
 
+### `lurek.progression.newStatusTracker`
+
+Creates an isolated deterministic status lifecycle tracker.
+
+```lua
+lurek.progression.newStatusTracker()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LStatusTracker](#lstatustracker) | New status tracker handle. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    local type_name = tracker:type()
+    local empty = tracker:list(1)
+    lurek.log.info("status tracker type=" .. type_name .. " empty=" .. #empty .. " isolated=" .. tostring(tracker ~= nil))
+end
+```
+
+---
+
 ### `lurek.progression.newStore`
 
 New store.
@@ -3741,6 +3771,7 @@ end
 - [LRivalDelta](#lrivaldelta)
 - [LSeason](#lseason)
 - [LSeasonArchive](#lseasonarchive)
+- [LStatusTracker](#lstatustracker)
 
 ## LAchievement
 
@@ -10298,6 +10329,342 @@ do
     store:endSeason("league", { archive = true })
     local archive = store:getSeasonArchive("league", { latest = true })
     lurek.log.info("LSeasonArchive:getId id=" .. tostring(archive:getId()) .. " index=" .. tostring(archive:getArchiveIndex()))
+end
+```
+
+---
+
+## LStatusTracker
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LStatusTracker:apply`
+
+Applies a status to a subject and returns its stable runtime instance id.
+
+```lua
+LStatusTracker:apply(subjectId, definitionId, sourceId, stacks)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `subjectId` | number | Stable subject/entity id. |
+| `definitionId` | string | Registered status definition id. |
+| `sourceId?` | number | Optional source/owner id. |
+| `stacks?` | number | Initial stack count, clamped to maxStacks. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Status instance id. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "slow", duration = 4, maxStacks = 2, stacking = "refresh" })
+    local instance = tracker:apply(7, "slow", 99, 1)
+    lurek.log.info("applied instance=" .. instance .. " subject=" .. tracker:list(7)[1].subjectId .. " source=" .. tracker:list(7)[1].sourceId)
+end
+```
+
+---
+
+#### `LStatusTracker:clear`
+
+Removes all definitions, instances, and queued events.
+
+```lua
+LStatusTracker:clear()
+```
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "shield", duration = 10 })
+    tracker:apply(1, "shield")
+    tracker:clear()
+    lurek.log.info("cleared status count=" .. #tracker:list(1) .. " events=" .. #tracker:drainEvents())
+end
+```
+
+---
+
+#### `LStatusTracker:define`
+
+Registers or replaces one status definition.
+
+```lua
+LStatusTracker:define(definition)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `definition` | table | Definition with id, duration, tickInterval, maxStacks, stacking, and tags. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "poison", duration = 5, tickInterval = 1, maxStacks = 3, stacking = "add", tags = { "damage_over_time" } })
+    lurek.log.info("defined poison statuses=" .. #tracker:list(1) .. " type=" .. tracker:type())
+end
+```
+
+---
+
+#### `LStatusTracker:drainEvents`
+
+Takes and clears neutral apply/refresh/stack/tick/expired events.
+
+```lua
+LStatusTracker:drainEvents()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Event records in deterministic emission order. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "regen", duration = 3, tickInterval = 1 })
+    tracker:apply(2, "regen")
+    local events = tracker:drainEvents()
+    lurek.log.info("status events=" .. #events .. " first=" .. events[1].kind .. " instance=" .. events[1].instanceId)
+end
+```
+
+---
+
+#### `LStatusTracker:list`
+
+Lists active status instances attached to one subject.
+
+```lua
+LStatusTracker:list(subjectId)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `subjectId` | number | Stable subject/entity id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Status instance records. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "marked", duration = 8 })
+    tracker:apply(3, "marked", nil, 2)
+    local statuses = tracker:list(3)
+    lurek.log.info("status count=" .. #statuses .. " definition=" .. statuses[1].definitionId .. " stacks=" .. statuses[1].stacks)
+end
+```
+
+---
+
+#### `LStatusTracker:remove`
+
+Removes one active status instance.
+
+```lua
+LStatusTracker:remove(instanceId)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `instanceId` | number | Runtime status instance id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when an instance was removed. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", duration = 8 })
+    local instance = tracker:apply(4, "ward")
+    local removed = tracker:remove(instance)
+    lurek.log.info("removed=" .. tostring(removed) .. " remaining=" .. #tracker:list(4) .. " second=" .. tostring(tracker:remove(instance)))
+end
+```
+
+---
+
+#### `LStatusTracker:restore`
+
+Restores definitions, active instances, and ID allocation from a snapshot.
+
+```lua
+LStatusTracker:restore(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Table returned by `snapshot`. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.progression.newStatusTracker()
+    source:define({ id = "burn", duration = 2, tickInterval = 1 })
+    source:apply(5, "burn")
+    local target = lurek.progression.newStatusTracker()
+    target:restore(source:snapshot())
+    lurek.log.info("restored statuses=" .. #target:list(5) .. " definition=" .. target:list(5)[1].definitionId)
+end
+```
+
+---
+
+#### `LStatusTracker:snapshot`
+
+Captures definitions, instances, and ID allocation state.
+
+```lua
+LStatusTracker:snapshot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Serializable status tracker snapshot. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "haste", duration = 6 })
+    tracker:apply(6, "haste")
+    local snapshot = tracker:snapshot()
+    lurek.log.info("snapshot definitions=" .. tostring(snapshot.definitions.haste.id) .. " instances=" .. #snapshot.instances .. " next=" .. snapshot.nextId)
+end
+```
+
+---
+
+#### `LStatusTracker:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LStatusTracker:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `[LStatusTracker](#lstatustracker)`. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    lurek.log.info("status tracker type=" .. tracker:type() .. " empty=" .. tostring(#tracker:list(1) == 0) .. " snapshot=" .. tostring(tracker:snapshot() ~= nil))
+end
+```
+
+---
+
+#### `LStatusTracker:typeOf`
+
+Checks whether this handle matches `[LStatusTracker](#lstatustracker)` or `LObject`.
+
+```lua
+LStatusTracker:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Whether the name matches. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    lurek.log.info("tracker=" .. tostring(tracker:typeOf("LStatusTracker")) .. " object=" .. tostring(tracker:typeOf("LObject")) .. " store=" .. tostring(tracker:typeOf("LProgressionStore")))
+end
+```
+
+---
+
+#### `LStatusTracker:update`
+
+Advances finite durations and periodic tick timers by dt seconds.
+
+```lua
+LStatusTracker:update(dt)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dt` | number | Non-negative logical seconds. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of events currently queued after the update. |
+
+**Example**
+
+```lua
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "poison", duration = 2.5, tickInterval = 1 })
+    tracker:apply(8, "poison")
+    local queued = tracker:update(1.1)
+    local events = tracker:drainEvents()
+    lurek.log.info("update queued=" .. queued .. " tick=" .. tostring(events[#events].kind == "tick") .. " remaining=" .. tracker:list(8)[1].remaining)
 end
 ```
 

@@ -82,6 +82,7 @@ The glossary collects terms that appear across module and API pages.
 - `LCatmullRom` ([lurek.math](https://lurek2d.github.io/lurek_2d/modules/math.html)) - Lua-side wrapper for a Catmull-Rom spline.
 - `LCellular` ([lurek.procgen](https://lurek2d.github.io/lurek_2d/modules/procgen.html)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
 - `LChallenge` ([lurek.progression](https://lurek2d.github.io/lurek_2d/modules/progression.html))
+- `LChangeSet` ([lurek.event](https://lurek2d.github.io/lurek_2d/modules/event.html)) - Lua handle for a bounded, versioned collection of neutral state changes.
 - `LChannel` ([lurek.thread](https://lurek2d.github.io/lurek_2d/modules/thread.html)) - Creates a new unbounded channel for sending typed values between threads.
 - `LCheckbox` ([lurek.ui](https://lurek2d.github.io/lurek_2d/modules/ui.html)) - Adds checkbox-specific methods to a checkbox widget table.
 - `LChunkMap` ([lurek.tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html)) - Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LGlobeRegistry` ([lurek.globe](https://lurek2d.github.io/lurek_2d/modules/globe.html)) - Lua-side handle for creating and locating named globes in one registry.
 - `LGoalMap` ([lurek.pathfind](https://lurek2d.github.io/lurek_2d/modules/pathfind.html)) - Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
 - `LGOAPPlanner` ([lurek.ai](https://lurek2d.github.io/lurek_2d/modules/ai.html)) - Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
-- `LGraph` ([lurek.flownet](https://lurek2d.github.io/lurek_2d/modules/flownet.html)) - Lua-side graph handle storing graph state and registered event callbacks.

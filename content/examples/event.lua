@@ -383,3 +383,121 @@ do
     local is_entity = sig:typeOf("LEntity")
     lurek.log.info("typeOf signal=" .. tostring(is_signal) .. " object=" .. tostring(is_object) .. " entity=" .. tostring(is_entity))
 end
+
+--@api: lurek.event.newChangeSet
+do
+    local changes = lurek.event.newChangeSet({ schema = "actor.v1", revision = 7, maxChanges = 16 })
+    local schema = changes:schema()
+    local revision = changes:revision()
+    local empty = changes:isEmpty()
+    lurek.log.info("changeset schema=" .. schema .. " revision=" .. revision .. " empty=" .. tostring(empty))
+end
+
+--@api: lurek.event.fromChangeSetTable
+do
+    local source = lurek.event.newChangeSet({ schema = "save.v1", revision = 2 })
+    source:append(11, "health", "set", { value = 90 })
+    local restored = lurek.event.fromChangeSetTable(source:toTable())
+    local row = restored:toTable().changes[1]
+    lurek.log.info("restored object=" .. row.objectId .. " component=" .. row.component .. " value=" .. row.payload.value)
+end
+
+--@api: LChangeSet:append
+do
+    local changes = lurek.event.newChangeSet({ schema = "world.v1" })
+    local count = changes:append(42, "position", "set", { x = 12, y = 8, level = 1 })
+    local table_value = changes:toTable()
+    lurek.log.info("appended=" .. count .. " records=" .. #table_value.changes .. " operation=" .. table_value.changes[1].operation)
+end
+
+--@api: LChangeSet:clear
+do
+    local changes = lurek.event.newChangeSet()
+    changes:append(1, "flag", "set", true)
+    changes:append(2, "flag", "set", false)
+    local removed = changes:clear()
+    lurek.log.info("cleared=" .. removed .. " remaining=" .. changes:len() .. " empty=" .. tostring(changes:isEmpty()))
+end
+
+--@api: LChangeSet:hash
+do
+    local changes = lurek.event.newChangeSet({ schema = "hash.v1", revision = 3 })
+    changes:append(7, "score", "set", 99)
+    local hash = changes:hash()
+    local snapshot_hash = changes:snapshot().hash
+    lurek.log.info("hash=" .. tostring(hash) .. " snapshot_matches=" .. tostring(hash == snapshot_hash))
+end
+
+--@api: LChangeSet:isEmpty
+do
+    local changes = lurek.event.newChangeSet()
+    local before = changes:isEmpty()
+    changes:append(3, "alive", "set", true)
+    local after = changes:isEmpty()
+    lurek.log.info("empty before=" .. tostring(before) .. " after append=" .. tostring(after))
+end
+
+--@api: LChangeSet:len
+do
+    local changes = lurek.event.newChangeSet()
+    local before = changes:len()
+    changes:append(8, "ammo", "set", 12)
+    local after = changes:len()
+    lurek.log.info("length before=" .. before .. " after=" .. after)
+end
+
+--@api: LChangeSet:restore
+do
+    local changes = lurek.event.newChangeSet({ schema = "restore.v1" })
+    local source = lurek.event.newChangeSet({ schema = "restore.v1" })
+    source:append(5, "state", "set", { ready = true })
+    changes:restore(source:snapshot())
+    lurek.log.info("restored len=" .. changes:len() .. " state=" .. tostring(changes:toTable().changes[1].payload.ready))
+end
+
+--@api: LChangeSet:revision
+do
+    local changes = lurek.event.newChangeSet({ schema = "revision.v1", revision = 18 })
+    local revision = changes:revision()
+    local snapshot_revision = changes:snapshot().revision
+    lurek.log.info("revision=" .. revision .. " snapshot=" .. snapshot_revision)
+end
+
+--@api: LChangeSet:schema
+do
+    local changes = lurek.event.newChangeSet({ schema = "content.v2" })
+    local schema = changes:schema()
+    local table_schema = changes:toTable().schema
+    lurek.log.info("schema=" .. schema .. " table_schema=" .. table_schema)
+end
+
+--@api: LChangeSet:snapshot
+do
+    local changes = lurek.event.newChangeSet({ schema = "network.v1", revision = 4 })
+    changes:append(10, "owner", "set", "player_one")
+    local snapshot = changes:snapshot()
+    lurek.log.info("snapshot schema=" .. snapshot.schema .. " revision=" .. snapshot.revision .. " rows=" .. #snapshot.changes)
+end
+
+--@api: LChangeSet:toTable
+do
+    local changes = lurek.event.newChangeSet({ schema = "table.v1" })
+    changes:append(4, "tag", "set", "quest")
+    local value = changes:toTable()
+    lurek.log.info("table schema=" .. value.schema .. " object=" .. value.changes[1].objectId .. " payload=" .. value.changes[1].payload)
+end
+
+--@api: LChangeSet:type
+do
+    local changes = lurek.event.newChangeSet()
+    local type_name = changes:type()
+    lurek.log.info("changeset type=" .. type_name .. " handle=" .. tostring(changes ~= nil))
+end
+
+--@api: LChangeSet:typeOf
+do
+    local changes = lurek.event.newChangeSet()
+    local is_changeset = changes:typeOf("LChangeSet")
+    local is_object = changes:typeOf("LObject")
+    lurek.log.info("changeset=" .. tostring(is_changeset) .. " object=" .. tostring(is_object))
+end

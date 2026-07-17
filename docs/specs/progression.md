@@ -14,7 +14,7 @@
 - Source path: `src/progression`
 - Binding: `src/lua_api/progression_api.rs`
 - Namespace: `lurek.progression`
-- Lua API surface: `91` functions, `20` types, `208` methods
+- Lua API surface: `92` functions, `21` types, `219` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -39,6 +39,7 @@ The current slice includes:
 - initial challenge templates with manual or counter-driven progress, activation windows, status filters, expiry, and reward records;
 - initial rivals with leaderboard-aware delta queries, overtake events, and a bounded local activity feed derived from retained progression events;
 - initial virtual population templates with deterministic identity generation, leaderboard-backed lightweight profiles, logical-time simulation, materialization/dematerialization, and leaderboard participation without a network service;
+- isolated `newStatusTracker()` handles with validated status definitions, replace/refresh/add stacking, finite duration and periodic tick scheduling, snapshots, and neutral lifecycle events;
 - attributes, resources, modifiers, and XP/level tracks;
 - achievements with manual and counter-triggered unlocks;
 - reward records with pending, claimed, applied, and rejected states;
@@ -49,6 +50,8 @@ The current slice includes:
 - legacy import helpers for snapshots produced by the former `library.stats` and `library.quest` flows.
 
 The module is intentionally headless. It owns data and mutation rules only.
+Status ticks and expiry are emitted as neutral records; Lua gameplay code explicitly decides whether
+to apply damage, healing, animation, audio, ECS changes, or other effects.
 
 ## Ownership
 
@@ -342,6 +345,7 @@ The module is intentionally headless. It owns data and mutation rules only.
 - `lurek.progression.isEncumbered(this) -> nil`: Returns true if encumbered.
 - `lurek.progression.learnSkill(this, name) -> nil`: Learn skill.
 - `lurek.progression.loadStore(snapshot) -> nil`: Load store.
+- `lurek.progression.newStatusTracker() -> LStatusTracker`: Creates an isolated deterministic status lifecycle tracker.
 - `lurek.progression.newStore(options?) -> nil`: New store.
 - `lurek.progression.questCount(this) -> nil`: Quest count.
 - `lurek.progression.questIds(this) -> nil`: Quest ids.
@@ -816,6 +820,28 @@ The module is intentionally headless. It owns data and mutation rules only.
 
 - `LSeasonArchive:getArchiveIndex() -> integer`: Returns the monotonically increasing archive index for this season.
 - `LSeasonArchive:getId() -> string`: Returns the season id that owns this archive record.
+
+#### LStatusTracker Type
+
+- Creates an isolated deterministic status lifecycle tracker.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LStatusTracker:apply(subjectId, definitionId, sourceId?, stacks?) -> integer`: Applies a status to a subject and returns its stable runtime instance id.
+- `LStatusTracker:clear() -> nil`: Removes all definitions, instances, and queued events.
+- `LStatusTracker:define(definition) -> nil`: Registers or replaces one status definition.
+- `LStatusTracker:drainEvents() -> table`: Takes and clears neutral apply/refresh/stack/tick/expired events.
+- `LStatusTracker:list(subjectId) -> table`: Lists active status instances attached to one subject.
+- `LStatusTracker:remove(instanceId) -> boolean`: Removes one active status instance.
+- `LStatusTracker:restore(snapshot) -> nil`: Restores definitions, active instances, and ID allocation from a snapshot.
+- `LStatusTracker:snapshot() -> table`: Captures definitions, instances, and ID allocation state.
+- `LStatusTracker:type() -> string`: Returns the Lua-visible type name.
+- `LStatusTracker:typeOf(name) -> boolean`: Checks whether this handle matches `LStatusTracker` or `LObject`.
+- `LStatusTracker:update(dt) -> integer`: Advances finite durations and periodic tick timers by dt seconds.
 
 ## Examples
 

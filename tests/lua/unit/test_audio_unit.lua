@@ -681,6 +681,27 @@ describe("audio spatial and helper state", function()
         lurek.audio.manager.resumeAll()
         expect_false(source:isPaused())
     end)
+
+    -- @covers lurek.audio.manager.playMusic
+    it("manager.playMusic creates a looping grouped source", function()
+        local source = lurek.audio.manager.playMusic(FIXTURE, {
+            group = "unit-music",
+            fadeIn = 0.2,
+            volume = 0.6,
+        })
+        expect_equal("LSource", source:type())
+        expect_true(source:isLooping())
+        expect_near(0.2, source:getFadeIn(), 0.001)
+        source:stop()
+    end)
+
+    -- @covers lurek.audio.manager.setGroupVolume
+    it("manager.setGroupVolume updates a named group", function()
+        lurek.audio.manager.setGroupVolume("unit-group", 0.45)
+        local source = lurek.audio.manager.playMusic(FIXTURE, { group = "unit-group" })
+        expect_near(0.45, lurek.audio.getSourceBus(source):getVolume(), 0.001)
+        source:stop()
+    end)
 end)
 
 -- @describe source userdata

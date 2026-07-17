@@ -17,6 +17,8 @@ Manages mod lifecycles using dependency sorting, permission sandboxing, and hot 
 - Manifest and content parsing are strict TOML decoders with byte, field, and count limits instead of line-based best-effort parsing.
 - Discovery and reload flows now build structured scan and load-plan reports so missing dependencies, cycles, checksum failures, and path-policy violations are explicit.
 - Hot reload is atomic at the registry level: the previous valid snapshot stays active when the new manifest set fails validation.
+- `newRegistry()` also supports optional typed content definitions through `defineType()`. Required fields and scalar/table/array types are checked before values enter the registry, and `freeze()` makes an admitted content set immutable for deterministic runtime use.
+- Registry snapshots contain normalized type definitions and values only. They do not instantiate ECS entities or invoke gameplay systems; Lua explicitly forwards registered data to the chosen existing owner.
 - `sandbox.max_memory` is enforced at hook execution time when the underlying Lua runtime supports memory limits; file writes and top-level network entry points are blocked through the normal Lua API surface while the sandbox is active.
 - It keeps mod power visible, explicit, and reviewable.
 - Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
@@ -188,6 +190,65 @@ end
 
 ### Type Methods
 
+#### `LContentRegistry:defineType`
+
+Registers a content type and its field-validation schema.
+
+```lua
+LContentRegistry:defineType(type_name, schema)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_name` | string | Content type name. |
+| `schema` | table | Schema with keyed `fields` and optional `allowUnknown`. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("item", { fields = {
+        name = { type = "string", required = true },
+        stack = { type = "integer" },
+    } })
+    reg:register("item", "iron", { name = "Iron", stack = 20 })
+    lurek.log.info("defined item schema=" .. tostring(reg:getSchema("item") ~= nil) .. " count=" .. #reg:getTypes())
+end
+```
+
+---
+
+#### `LContentRegistry:freeze`
+
+Freezes definitions and entries until this userdata is discarded.
+
+```lua
+LContentRegistry:freeze()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the registry transitioned to frozen state. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.mods.newRegistry()
+    reg:registerType("runtime")
+    local changed = reg:freeze()
+    local rejected = not pcall(function() reg:registerType("late") end)
+    lurek.log.info("freeze changed=" .. tostring(changed) .. " frozen=" .. tostring(reg:isFrozen()) .. " rejected=" .. tostring(rejected))
+end
+```
+
+---
+
 #### `LContentRegistry:get`
 
 Returns one stored value by content type and id.
@@ -263,6 +324,39 @@ end
 
 ---
 
+#### `LContentRegistry:getSchema`
+
+Returns a registered type schema, or nil for an untyped content type.
+
+```lua
+LContentRegistry:getSchema(type_name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_name` | string | Content type name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Schema table, or nil when no schema exists. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("npc", { fields = { hp = { type = "integer", required = true } } })
+    local schema = reg:getSchema("npc")
+    lurek.log.info("schema fields=" .. tostring(schema.fields.hp.type) .. " required=" .. tostring(schema.fields.hp.required))
+end
+```
+
+---
+
 #### `LContentRegistry:getTypes`
 
 Returns registered content type names.
@@ -287,6 +381,34 @@ do
     reg:registerType("npc")
     local types = reg:getTypes()
     lurek.log.info("type count = " .. #types)
+end
+```
+
+---
+
+#### `LContentRegistry:isFrozen`
+
+Returns whether this registry rejects mutating operations.
+
+```lua
+LContentRegistry:isFrozen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Frozen state. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.mods.newRegistry()
+    local before = reg:isFrozen()
+    reg:freeze()
+    local after = reg:isFrozen()
+    lurek.log.info("frozen before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 ```
 
@@ -348,6 +470,64 @@ do
     reg:registerType("npc")
     local types = reg:getTypes()
     lurek.log.info("types = " .. #types)
+end
+```
+
+---
+
+#### `LContentRegistry:restore`
+
+Restores schemas and values from a previous snapshot and applies its frozen flag.
+
+```lua
+LContentRegistry:restore(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Snapshot returned by `snapshot`. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.mods.newRegistry()
+    source:registerType("prefab")
+    source:register("prefab", "room", { width = 8, height = 6 })
+    local target = lurek.mods.newRegistry()
+    target:restore(source:snapshot())
+    local room = target:get("prefab", "room")
+    lurek.log.info("restored room=" .. room.width .. "x" .. room.height .. " types=" .. #target:getTypes())
+end
+```
+
+---
+
+#### `LContentRegistry:snapshot`
+
+Captures schemas and registered values in a deterministic Lua table.
+
+```lua
+LContentRegistry:snapshot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Snapshot with `types` and nested `entries` tables. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("loot", { fields = { value = { type = "integer", required = true } } })
+    reg:register("loot", "coin", { value = 25 })
+    local snapshot = reg:snapshot()
+    lurek.log.info("snapshot types=" .. #snapshot.types .. " coin=" .. snapshot.entries.loot.coin.value)
 end
 ```
 
@@ -416,6 +596,76 @@ do
     local is_manager = reg:typeOf("LModManager")
     local types = reg:getTypes()
     lurek.log.info("registry type guard registry=" .. tostring(is_registry) .. " object=" .. tostring(is_object) .. " manager=" .. tostring(is_manager) .. " type_count=" .. tostring(#types))
+end
+```
+
+---
+
+#### `LContentRegistry:unregisterType`
+
+Removes a content type and all values registered under it.
+
+```lua
+LContentRegistry:unregisterType(type_name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_name` | string | Content type name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the type existed. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.mods.newRegistry()
+    reg:registerType("temporary")
+    local removed = reg:unregisterType("temporary")
+    local missing = reg:unregisterType("temporary")
+    lurek.log.info("unregister removed=" .. tostring(removed) .. " missing=" .. tostring(missing) .. " types=" .. #reg:getTypes())
+end
+```
+
+---
+
+#### `LContentRegistry:validate`
+
+Validates a value against a registered type schema without storing it.
+
+```lua
+LContentRegistry:validate(type_name, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `type_name` | string | Content type name. |
+| `value` | table | Candidate content value. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the value satisfies the schema. |
+| string | First validation error; or nil on success. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("quest", { fields = { title = { type = "string", required = true } } })
+    local ok, err = reg:validate("quest", { title = "Find the key" })
+    local bad, bad_err = reg:validate("quest", { title = 42 })
+    lurek.log.info("valid=" .. tostring(ok) .. " invalid=" .. tostring(not bad) .. " error=" .. tostring(bad_err or err))
 end
 ```
 

@@ -2126,6 +2126,35 @@ end
 
 ---
 
+#### `LPostFxStack:restore`
+
+Restores a stack snapshot and rebuilds its effect handles without entering capture mode.
+
+```lua
+LPostFxStack:restore(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Table previously returned by `snapshot`. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.effect.newStack(640, 360)
+    source:add(lurek.effect.newEffect("vignette"))
+    local target = lurek.effect.newStack(320, 240)
+    target:restore(source:snapshot())
+    local width, height = target:getDimensions()
+    lurek.log.info("effect restored dimensions=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
+---
+
 #### `LPostFxStack:setEnabled`
 
 Enables or disables the effect pass at a one-based stack position.
@@ -2180,6 +2209,34 @@ do
     stack:add(lurek.effect.newEffect("crt"))
     local feedback = stack:getFeedback()
     lurek.log.info("feedback=" .. feedback .. " effects=" .. stack:getEffectCount())
+end
+```
+
+---
+
+#### `LPostFxStack:snapshot`
+
+Captures stack dimensions, feedback, enabled slots, and validated effect parameters.
+
+```lua
+LPostFxStack:snapshot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Serializable post-effect stack snapshot. |
+
+**Example**
+
+```lua
+do
+    local stack = lurek.effect.newStack(640, 360)
+    stack:add(lurek.effect.newEffect("blur"))
+    stack:setFeedback(0.35)
+    local snapshot = stack:snapshot()
+    lurek.log.info("effect snapshot effects=" .. tostring(#snapshot.effects))
 end
 ```
 

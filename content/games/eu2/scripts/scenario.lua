@@ -1,13 +1,28 @@
+--- EU2's 1419 scenario definition and province ownership rules.
+--- This module contains static country/army data plus the classifier used while
+--- converting province registry metadata into campaign ownership.
 local M = {}
 
+--- Convert an 8-bit RGB color to the normalized renderer format.
+---@param r integer Red channel in the range 0..255.
+---@param g integer Green channel in the range 0..255.
+---@param b integer Blue channel in the range 0..255.
+---@return table rgba Normalized four-component color.
 local function color(r, g, b)
     return { r / 255, g / 255, b / 255, 1.0 }
 end
 
+--- Normalize a value for case-insensitive matching.
+---@param v any Value to stringify.
+---@return string normalized Lowercase string, or an empty string for nil.
 local function lower(v)
     return tostring(v or ""):lower()
 end
 
+--- Test whether any literal needle occurs in text.
+---@param text any Text to inspect.
+---@param needles string[] Literal case-insensitive search terms.
+---@return boolean found True when at least one term occurs.
 local function has_any(text, needles)
     text = lower(text)
     for _, needle in ipairs(needles) do
@@ -18,11 +33,16 @@ local function has_any(text, needles)
     return false
 end
 
+--- Identify registry terrain that represents water.
+---@param terrain any Registry terrain value.
+---@return boolean water True for sea, river, or ocean.
 local function terrain_is_water(terrain)
     terrain = lower(terrain)
     return terrain == "sea" or terrain == "river" or terrain == "ocean"
 end
 
+--- Static country records used to seed a new campaign.
+--- Each record is copied by `state.new`; this table should be treated as read-only.
 local countries = {
     POL = { tag = "POL", name = "Kingdom of Poland", ruler = "King Wladyslaw II Jagiello", ai = false, color = color(191, 106, 116), treasury = 120, manpower = 22000, stability = 1 },
     LIT = { tag = "LIT", name = "Grand Duchy of Lithuania", ruler = "Grand Duke Vytautas", ai = true, color = color(173, 134, 165), treasury = 90, manpower = 26000, stability = 0 },
@@ -36,6 +56,7 @@ local countries = {
     SEA = { tag = "SEA", name = "Sea", ruler = "", ai = true, color = color(59, 92, 140), treasury = 0, manpower = 0, stability = 0 },
 }
 
+--- Ordered ownership heuristics. Earlier rules win when names overlap.
 local rules = {
     { tag = "POL", needles = { "poland", "mazovia", "silesia", "krak", "wielkopolska", "malopolska", "podolia", "galicia" } },
     { tag = "LIT", needles = { "lithuania", "belarus", "ruthenia", "smolensk", "minsk", "volhynia", "ukraine" } },
@@ -47,6 +68,9 @@ local rules = {
     { tag = "CAS", needles = { "castile", "spain", "iberia", "andalusia", "aragon", "leon", "toledo", "valencia" } },
 }
 
+--- Assign a province to a country from registry metadata.
+---@param attrs table|nil Province attributes from the registry.
+---@return string tag Country tag, or `NEU` when no rule matches.
 local function assign_owner(attrs)
     attrs = attrs or {}
     local terrain = attrs.terrain
@@ -75,6 +99,9 @@ local function assign_owner(attrs)
     return "NEU"
 end
 
+--- Build the complete 1419 scenario payload.
+---@param reg userdata Province registry (accepted for API symmetry and future rules).
+---@return table scenario Start date, countries, ownership rules, and armies.
 function M.build(reg)
     return {
         start_date = { year = 1419, month = 1, day = 1 },

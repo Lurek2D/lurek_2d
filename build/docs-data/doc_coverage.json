@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-14T13:46:22.559095+00:00",
+  "generated_at": "2026-07-16T21:32:01.971403+00:00",
   "summary": {
     "rust": {
-      "total": 9856,
-      "covered": 9856,
+      "total": 9889,
+      "covered": 9889,
       "missing": 0,
       "pct": 100.0
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 10104,
-      "covered": 10104,
+      "total": 10137,
+      "covered": 10137,
       "missing": 0,
       "pct": 100.0
     }
@@ -21473,7 +21473,16 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 538,
+      "line": 544,
+      "kind": "fn",
+      "name": "apply_changeset",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ecs",
+      "file": "src/ecs/universe.rs",
+      "line": 626,
       "kind": "fn",
       "name": "get_component_names",
       "has_doc": true
@@ -21482,7 +21491,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 554,
+      "line": 642,
       "kind": "fn",
       "name": "query",
       "has_doc": true
@@ -21491,7 +21500,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 559,
+      "line": 647,
       "kind": "fn",
       "name": "query_component_sets",
       "has_doc": true
@@ -21500,7 +21509,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 603,
+      "line": 691,
       "kind": "fn",
       "name": "each",
       "has_doc": true
@@ -21509,7 +21518,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 621,
+      "line": 709,
       "kind": "fn",
       "name": "add_tag",
       "has_doc": true
@@ -21518,7 +21527,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 635,
+      "line": 723,
       "kind": "fn",
       "name": "remove_tag",
       "has_doc": true
@@ -21527,7 +21536,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 649,
+      "line": 737,
       "kind": "fn",
       "name": "has_tag",
       "has_doc": true
@@ -21536,7 +21545,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 657,
+      "line": 745,
       "kind": "fn",
       "name": "get_tags",
       "has_doc": true
@@ -21545,7 +21554,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 662,
+      "line": 750,
       "kind": "fn",
       "name": "get_entities_by_tag",
       "has_doc": true
@@ -21554,7 +21563,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 671,
+      "line": 759,
       "kind": "fn",
       "name": "iter_entities_by_tag",
       "has_doc": true
@@ -21563,7 +21572,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 694,
+      "line": 782,
       "kind": "fn",
       "name": "define_tag",
       "has_doc": true
@@ -21572,7 +21581,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 698,
+      "line": 786,
       "kind": "fn",
       "name": "bitmap_tag",
       "has_doc": true
@@ -21581,7 +21590,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 713,
+      "line": 801,
       "kind": "fn",
       "name": "bitmap_untag",
       "has_doc": true
@@ -21590,7 +21599,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 726,
+      "line": 814,
       "kind": "fn",
       "name": "has_bitmap_tag",
       "has_doc": true
@@ -21599,7 +21608,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 736,
+      "line": 824,
       "kind": "fn",
       "name": "query_bitmap_tag",
       "has_doc": true
@@ -21608,7 +21617,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 757,
+      "line": 845,
       "kind": "fn",
       "name": "query_bitmap_any",
       "has_doc": true
@@ -21617,7 +21626,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 782,
+      "line": 870,
       "kind": "fn",
       "name": "query_bitmap_all",
       "has_doc": true
@@ -21626,7 +21635,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 809,
+      "line": 897,
       "kind": "fn",
       "name": "get_bitmap_tag_bit",
       "has_doc": true
@@ -21635,7 +21644,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 813,
+      "line": 901,
       "kind": "fn",
       "name": "set_layer",
       "has_doc": true
@@ -21644,7 +21653,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 823,
+      "line": 911,
       "kind": "fn",
       "name": "get_layer",
       "has_doc": true
@@ -21653,7 +21662,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 830,
+      "line": 918,
       "kind": "fn",
       "name": "get_entities_by_layer",
       "has_doc": true
@@ -21662,7 +21671,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 841,
+      "line": 929,
       "kind": "fn",
       "name": "get_entities_sorted",
       "has_doc": true
@@ -21671,7 +21680,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 856,
+      "line": 944,
       "kind": "fn",
       "name": "define_blueprint",
       "has_doc": true
@@ -21680,7 +21689,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 864,
+      "line": 952,
       "kind": "fn",
       "name": "extend_blueprint",
       "has_doc": true
@@ -21689,7 +21698,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 885,
+      "line": 973,
       "kind": "fn",
       "name": "spawn_blueprint",
       "has_doc": true
@@ -21698,7 +21707,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 912,
+      "line": 1000,
       "kind": "fn",
       "name": "has_blueprint",
       "has_doc": true
@@ -21707,7 +21716,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 922,
+      "line": 1010,
       "kind": "fn",
       "name": "remove_blueprint",
       "has_doc": true
@@ -21716,7 +21725,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 930,
+      "line": 1018,
       "kind": "fn",
       "name": "list_blueprints",
       "has_doc": true
@@ -21725,7 +21734,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 943,
+      "line": 1031,
       "kind": "fn",
       "name": "get_blueprint_components",
       "has_doc": true
@@ -21734,7 +21743,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 957,
+      "line": 1045,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -21743,7 +21752,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1005,
+      "line": 1093,
       "kind": "fn",
       "name": "take_component_events",
       "has_doc": true
@@ -21752,7 +21761,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1012,
+      "line": 1100,
       "kind": "fn",
       "name": "get_dirty_entities",
       "has_doc": true
@@ -21761,7 +21770,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1018,
+      "line": 1106,
       "kind": "fn",
       "name": "take_snapshot_diff",
       "has_doc": true
@@ -21770,7 +21779,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1031,
+      "line": 1119,
       "kind": "fn",
       "name": "add_relation",
       "has_doc": true
@@ -21779,7 +21788,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1039,
+      "line": 1127,
       "kind": "fn",
       "name": "get_related",
       "has_doc": true
@@ -21788,7 +21797,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1045,
+      "line": 1133,
       "kind": "fn",
       "name": "remove_relation",
       "has_doc": true
@@ -21797,7 +21806,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1053,
+      "line": 1141,
       "kind": "fn",
       "name": "clear_relations",
       "has_doc": true
@@ -21806,7 +21815,7 @@
       "source": "rust",
       "module": "ecs",
       "file": "src/ecs/universe.rs",
-      "line": 1060,
+      "line": 1148,
       "kind": "fn",
       "name": "has_relation",
       "has_doc": true
@@ -22931,7 +22940,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 13,
+      "line": 14,
       "kind": "enum",
       "name": "EventPriority",
       "has_doc": true
@@ -22940,7 +22949,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 21,
+      "line": 22,
       "kind": "enum",
       "name": "EventTableKey",
       "has_doc": true
@@ -22949,7 +22958,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 31,
+      "line": 32,
       "kind": "enum",
       "name": "EventArg",
       "has_doc": true
@@ -22958,7 +22967,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 45,
+      "line": 46,
       "kind": "struct",
       "name": "Event",
       "has_doc": true
@@ -22967,7 +22976,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 53,
+      "line": 54,
       "kind": "struct",
       "name": "EventQueue",
       "has_doc": true
@@ -22976,7 +22985,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 65,
+      "line": 66,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -22985,7 +22994,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 74,
+      "line": 75,
       "kind": "fn",
       "name": "push",
       "has_doc": true
@@ -22994,7 +23003,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 78,
+      "line": 79,
       "kind": "fn",
       "name": "push_with_priority",
       "has_doc": true
@@ -23003,7 +23012,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 86,
+      "line": 87,
       "kind": "fn",
       "name": "push_event",
       "has_doc": true
@@ -23012,7 +23021,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 90,
+      "line": 91,
       "kind": "fn",
       "name": "push_event_with_priority",
       "has_doc": true
@@ -23021,7 +23030,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 105,
+      "line": 106,
       "kind": "fn",
       "name": "poll",
       "has_doc": true
@@ -23030,7 +23039,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 111,
+      "line": 112,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -23039,7 +23048,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 116,
+      "line": 117,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -23048,7 +23057,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 120,
+      "line": 121,
       "kind": "fn",
       "name": "len",
       "has_doc": true
@@ -23057,7 +23066,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 124,
+      "line": 125,
       "kind": "fn",
       "name": "pump",
       "has_doc": true
@@ -23066,7 +23075,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 126,
+      "line": 127,
       "kind": "fn",
       "name": "wait",
       "has_doc": true
@@ -23075,7 +23084,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 227,
+      "line": 228,
       "kind": "fn",
       "name": "from_lua_val",
       "has_doc": true
@@ -23084,7 +23093,151 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 279,
+      "line": 284,
+      "kind": "fn",
+      "name": "from_lua_change_value",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 325,
+      "kind": "struct",
+      "name": "ChangeRecord",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 338,
+      "kind": "struct",
+      "name": "ChangeSet",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 347,
+      "kind": "struct",
+      "name": "ChangeSetSnapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 358,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 374,
+      "kind": "fn",
+      "name": "append",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 395,
+      "kind": "fn",
+      "name": "schema",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 400,
+      "kind": "fn",
+      "name": "revision",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 405,
+      "kind": "fn",
+      "name": "len",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 410,
+      "kind": "fn",
+      "name": "max_changes",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 415,
+      "kind": "fn",
+      "name": "is_empty",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 420,
+      "kind": "fn",
+      "name": "clear",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 427,
+      "kind": "fn",
+      "name": "changes",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 432,
+      "kind": "fn",
+      "name": "snapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 441,
+      "kind": "fn",
+      "name": "restore",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 467,
+      "kind": "fn",
+      "name": "hash",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "event",
+      "file": "src/event/event_queue.rs",
+      "line": 478,
       "kind": "fn",
       "name": "event_arg_to_lua_value",
       "has_doc": true
@@ -23093,7 +23246,7 @@
       "source": "rust",
       "module": "event",
       "file": "src/event/event_queue.rs",
-      "line": 301,
+      "line": 500,
       "kind": "fn",
       "name": "event_to_lua_multi",
       "has_doc": true
@@ -36467,7 +36620,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 2329,
+      "line": 2373,
       "kind": "struct",
       "name": "LuaBeatClock",
       "has_doc": true
@@ -37007,7 +37160,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ecs_api.rs",
-      "line": 1688,
+      "line": 1695,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -37043,7 +37196,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 341,
+      "line": 398,
       "kind": "fn",
       "name": "effect_passes",
       "has_doc": true
@@ -37052,7 +37205,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 346,
+      "line": 403,
       "kind": "fn",
       "name": "effect_passes_for_api",
       "has_doc": true
@@ -37061,7 +37214,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 623,
+      "line": 735,
       "kind": "struct",
       "name": "LuaImageEffect",
       "has_doc": true
@@ -37070,7 +37223,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/effect_api.rs",
-      "line": 739,
+      "line": 851,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -37088,7 +37241,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/event_api.rs",
-      "line": 11,
+      "line": 14,
       "kind": "struct",
       "name": "LuaSignal",
       "has_doc": true
@@ -37097,7 +37250,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/event_api.rs",
-      "line": 249,
+      "line": 26,
+      "kind": "struct",
+      "name": "LuaChangeSet",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/event_api.rs",
+      "line": 409,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -37781,7 +37943,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/mods_api.rs",
-      "line": 935,
+      "line": 1051,
       "kind": "struct",
       "name": "LuaContentRegistry",
       "has_doc": true
@@ -37790,7 +37952,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/mods_api.rs",
-      "line": 944,
+      "line": 1064,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -37799,7 +37961,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/mods_api.rs",
-      "line": 1038,
+      "line": 1361,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -38402,7 +38564,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 4795,
+      "line": 5028,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -38411,7 +38573,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5013,
+      "line": 5257,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -38420,7 +38582,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5043,
+      "line": 5287,
       "kind": "struct",
       "name": "LuaQuestState",
       "has_doc": true
@@ -38429,7 +38591,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5051,
+      "line": 5295,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -38438,7 +38600,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5072,
+      "line": 5316,
       "kind": "struct",
       "name": "LuaReward",
       "has_doc": true
@@ -38447,7 +38609,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5080,
+      "line": 5324,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -38456,7 +38618,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5101,
+      "line": 5345,
       "kind": "struct",
       "name": "LuaQuestJournal",
       "has_doc": true
@@ -38465,7 +38627,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5109,
+      "line": 5353,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -38474,7 +38636,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5129,
+      "line": 5373,
       "kind": "fn",
       "name": "achievement",
       "has_doc": true
@@ -38483,7 +38645,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5134,
+      "line": 5378,
       "kind": "fn",
       "name": "challenge",
       "has_doc": true
@@ -38492,7 +38654,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5139,
+      "line": 5383,
       "kind": "fn",
       "name": "collection",
       "has_doc": true
@@ -38501,7 +38663,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5144,
+      "line": 5388,
       "kind": "fn",
       "name": "leaderboard_entry",
       "has_doc": true
@@ -38510,7 +38672,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5149,
+      "line": 5393,
       "kind": "fn",
       "name": "population",
       "has_doc": true
@@ -38519,7 +38681,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5154,
+      "line": 5398,
       "kind": "fn",
       "name": "population_profile",
       "has_doc": true
@@ -38528,7 +38690,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5159,
+      "line": 5403,
       "kind": "fn",
       "name": "prestige",
       "has_doc": true
@@ -38537,7 +38699,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5164,
+      "line": 5408,
       "kind": "fn",
       "name": "activity_feed",
       "has_doc": true
@@ -38546,7 +38708,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5206,
+      "line": 5450,
       "kind": "fn",
       "name": "quest_state_bound",
       "has_doc": true
@@ -38555,7 +38717,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5215,
+      "line": 5459,
       "kind": "fn",
       "name": "quest_journal_entry",
       "has_doc": true
@@ -38564,7 +38726,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5220,
+      "line": 5464,
       "kind": "fn",
       "name": "quest_journal_bound",
       "has_doc": true
@@ -38573,7 +38735,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5241,
+      "line": 5485,
       "kind": "fn",
       "name": "reward_bound",
       "has_doc": true
@@ -38582,7 +38744,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5250,
+      "line": 5494,
       "kind": "fn",
       "name": "rival",
       "has_doc": true
@@ -38591,7 +38753,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5255,
+      "line": 5499,
       "kind": "fn",
       "name": "rival_delta",
       "has_doc": true
@@ -38600,7 +38762,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5260,
+      "line": 5504,
       "kind": "fn",
       "name": "season",
       "has_doc": true
@@ -38609,7 +38771,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5265,
+      "line": 5509,
       "kind": "fn",
       "name": "season_archive",
       "has_doc": true
@@ -38618,7 +38780,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5270,
+      "line": 5514,
       "kind": "fn",
       "name": "activity_feed_entry",
       "has_doc": true
@@ -38627,7 +38789,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/progression_api.rs",
-      "line": 5275,
+      "line": 5519,
       "kind": "fn",
       "name": "userdata_list",
       "has_doc": true
@@ -38942,7 +39104,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/serialize_api.rs",
-      "line": 283,
+      "line": 345,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -61838,7 +62000,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 34,
+      "line": 35,
       "kind": "enum",
       "name": "ProgressionError",
       "has_doc": true
@@ -61847,43 +62009,16 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 57,
+      "line": 61,
       "kind": "struct",
-      "name": "ChangeSummary",
+      "name": "StatusTracker",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 66,
-      "kind": "struct",
-      "name": "AttributeExplanation",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 262,
-      "kind": "enum",
-      "name": "ProgressionOperation",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 341,
-      "kind": "struct",
-      "name": "ProgressionTransaction",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 349,
+      "line": 70,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -61892,277 +62027,25 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 357,
+      "line": 80,
       "kind": "fn",
-      "name": "add_counter",
+      "name": "define",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 366,
+      "line": 113,
       "kind": "fn",
-      "name": "set_counter",
+      "name": "apply",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 375,
-      "kind": "fn",
-      "name": "set_attribute_base",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 385,
-      "kind": "fn",
-      "name": "set_resource",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 394,
-      "kind": "fn",
-      "name": "add_modifier",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 408,
-      "kind": "fn",
-      "name": "set_quest_objective",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 425,
-      "kind": "fn",
-      "name": "add_experience",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 434,
-      "kind": "fn",
-      "name": "submit_score",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 443,
-      "kind": "fn",
-      "name": "operations",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 450,
-      "kind": "struct",
-      "name": "ProgressionStore",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 531,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 590,
-      "kind": "fn",
-      "name": "id",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 595,
-      "kind": "fn",
-      "name": "revision",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 600,
-      "kind": "fn",
-      "name": "schema_version",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 605,
-      "kind": "fn",
-      "name": "definition_hash",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 632,
-      "kind": "fn",
-      "name": "time",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 637,
-      "kind": "fn",
-      "name": "set_time",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 645,
-      "kind": "fn",
-      "name": "advance_time",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 660,
-      "kind": "fn",
-      "name": "clear",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 676,
-      "kind": "fn",
-      "name": "stats",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 707,
-      "kind": "fn",
-      "name": "validate",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 758,
-      "kind": "fn",
-      "name": "export_snapshot",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 763,
-      "kind": "fn",
-      "name": "load_snapshot",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 773,
-      "kind": "fn",
-      "name": "from_snapshot",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 779,
-      "kind": "fn",
-      "name": "define_level_track",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 791,
-      "kind": "fn",
-      "name": "define_derived_value",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 804,
-      "kind": "fn",
-      "name": "remove_derived_value",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 809,
-      "kind": "fn",
-      "name": "begin_transaction",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 814,
-      "kind": "fn",
-      "name": "commit_transaction",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 892,
-      "kind": "fn",
-      "name": "drain_events",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "progression",
-      "file": "src/progression/store.rs",
-      "line": 897,
+      "line": 205,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -62171,7 +62054,385 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 922,
+      "line": 266,
+      "kind": "fn",
+      "name": "remove",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 271,
+      "kind": "fn",
+      "name": "list",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 280,
+      "kind": "fn",
+      "name": "drain_events",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 285,
+      "kind": "fn",
+      "name": "snapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 294,
+      "kind": "fn",
+      "name": "restore",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 327,
+      "kind": "fn",
+      "name": "clear",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 337,
+      "kind": "struct",
+      "name": "ChangeSummary",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 346,
+      "kind": "struct",
+      "name": "AttributeExplanation",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 542,
+      "kind": "enum",
+      "name": "ProgressionOperation",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 621,
+      "kind": "struct",
+      "name": "ProgressionTransaction",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 629,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 637,
+      "kind": "fn",
+      "name": "add_counter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 646,
+      "kind": "fn",
+      "name": "set_counter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 655,
+      "kind": "fn",
+      "name": "set_attribute_base",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 665,
+      "kind": "fn",
+      "name": "set_resource",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 674,
+      "kind": "fn",
+      "name": "add_modifier",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 688,
+      "kind": "fn",
+      "name": "set_quest_objective",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 705,
+      "kind": "fn",
+      "name": "add_experience",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 714,
+      "kind": "fn",
+      "name": "submit_score",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 723,
+      "kind": "fn",
+      "name": "operations",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 730,
+      "kind": "struct",
+      "name": "ProgressionStore",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 811,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 870,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 875,
+      "kind": "fn",
+      "name": "revision",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 880,
+      "kind": "fn",
+      "name": "schema_version",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 885,
+      "kind": "fn",
+      "name": "definition_hash",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 912,
+      "kind": "fn",
+      "name": "time",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 917,
+      "kind": "fn",
+      "name": "set_time",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 925,
+      "kind": "fn",
+      "name": "advance_time",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 940,
+      "kind": "fn",
+      "name": "clear",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 956,
+      "kind": "fn",
+      "name": "stats",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 987,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1038,
+      "kind": "fn",
+      "name": "export_snapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1043,
+      "kind": "fn",
+      "name": "load_snapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1053,
+      "kind": "fn",
+      "name": "from_snapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1059,
+      "kind": "fn",
+      "name": "define_level_track",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1071,
+      "kind": "fn",
+      "name": "define_derived_value",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1084,
+      "kind": "fn",
+      "name": "remove_derived_value",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1089,
+      "kind": "fn",
+      "name": "begin_transaction",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1094,
+      "kind": "fn",
+      "name": "commit_transaction",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1172,
+      "kind": "fn",
+      "name": "drain_events",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1177,
+      "kind": "fn",
+      "name": "update",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/store.rs",
+      "line": 1202,
       "kind": "fn",
       "name": "list_events",
       "has_doc": true
@@ -62180,7 +62441,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 927,
+      "line": 1207,
       "kind": "fn",
       "name": "clear_events",
       "has_doc": true
@@ -62189,7 +62450,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 932,
+      "line": 1212,
       "kind": "fn",
       "name": "export_changes_since",
       "has_doc": true
@@ -62198,7 +62459,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 941,
+      "line": 1221,
       "kind": "fn",
       "name": "apply_changeset",
       "has_doc": true
@@ -62207,7 +62468,7 @@
       "source": "rust",
       "module": "progression",
       "file": "src/progression/store.rs",
-      "line": 970,
+      "line": 1250,
       "kind": "fn",
       "name": "debug_snapshot",
       "has_doc": true
@@ -62705,6 +62966,42 @@
       "line": 916,
       "kind": "struct",
       "name": "SeasonArchiveRecord",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/types.rs",
+      "line": 933,
+      "kind": "struct",
+      "name": "StatusDefinition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/types.rs",
+      "line": 950,
+      "kind": "struct",
+      "name": "StatusInstance",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/types.rs",
+      "line": 969,
+      "kind": "struct",
+      "name": "StatusEvent",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "progression",
+      "file": "src/progression/types.rs",
+      "line": 988,
+      "kind": "struct",
+      "name": "StatusSnapshot",
       "has_doc": true
     },
     {
@@ -88739,7 +89036,7 @@
       "source": "lua_api",
       "module": "audio_api",
       "file": "src/lua_api/audio_api.rs",
-      "line": 2140,
+      "line": 2184,
       "kind": "fn",
       "name": "manager",
       "has_doc": true
@@ -90782,7 +91079,7 @@
       "source": "lua_api",
       "module": "serialize_api",
       "file": "src/lua_api/serialize_api.rs",
-      "line": 387,
+      "line": 449,
       "kind": "fn",
       "name": "encodeMsgPack",
       "has_doc": true

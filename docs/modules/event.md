@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Runs a dual-priority event queue and wildcard signal registry.
+Runs a dual-priority event queue, wildcard signal registry, and neutral ChangeSet envelope.
 
 ## Summary
 
@@ -10,6 +10,8 @@ Runs a dual-priority event queue and wildcard signal registry.
 - Queues, priorities, listeners, signals, and deferred dispatch work together so gameplay, input, and tooling events can move through one predictable channel.
 - Wildcard-style subscriptions and explicit listener lifecycle management make the bus practical for both large subsystems and small script integrations.
 - History and Rust-Lua payload transfer matter because the module is not only about dispatch, but also about making that dispatch inspectable and usable across the engine boundary.
+- `newChangeSet()` provides a bounded, versioned collection of object/component mutations. It owns ordering, validation, deterministic hashing, and snapshot/restore only; it does not apply changes to ECS, physics, save, or network state.
+- Lua code explicitly forwards a ChangeSet table to whichever existing module should consume it, keeping cross-system composition outside Rust.
 - Read it as the shared traffic system for runtime messages.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
@@ -177,6 +179,41 @@ end
 
 ---
 
+### `lurek.event.fromChangeSetTable`
+
+Creates a ChangeSet from a table produced by `[LChangeSet](#lchangeset):toTable()`.
+
+```lua
+lurek.event.fromChangeSetTable(value, maxChanges)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | table | ChangeSet table with schema, revision, changes, and optional hash. |
+| `maxChanges?` | number | Maximum accepted records; defaults to the table length or 10000. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LChangeSet](#lchangeset) | Restored ChangeSet handle. |
+
+**Example**
+
+```lua
+do
+    local source = lurek.event.newChangeSet({ schema = "save.v1", revision = 2 })
+    source:append(11, "health", "set", { value = 90 })
+    local restored = lurek.event.fromChangeSetTable(source:toTable())
+    local row = restored:toTable().changes[1]
+    lurek.log.info("restored object=" .. row.objectId .. " component=" .. row.component .. " value=" .. row.payload.value)
+end
+```
+
+---
+
 ### `lurek.event.getHistory`
 
 Returns retained pushed event history entries.
@@ -205,6 +242,40 @@ do
     local first = history[1]
     local arg_count = first and #first.args or 0
     lurek.log.info("getHistory entries=" .. tostring(#history) .. " name=" .. tostring(first and first.name) .. " arg_count=" .. tostring(arg_count))
+end
+```
+
+---
+
+### `lurek.event.newChangeSet`
+
+Creates an empty bounded ChangeSet for neutral state replication, save, or Lua-side module integration.
+
+```lua
+lurek.event.newChangeSet(options)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `options?` | table | Optional `schema`, `revision`, and `maxChanges` fields. Defaults are `"game"`, `0`, and `10000`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LChangeSet](#lchangeset) | Isolated ChangeSet handle. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "actor.v1", revision = 7, maxChanges = 16 })
+    local schema = changes:schema()
+    local revision = changes:revision()
+    local empty = changes:isEmpty()
+    lurek.log.info("changeset schema=" .. schema .. " revision=" .. revision .. " empty=" .. tostring(empty))
 end
 ```
 
@@ -555,7 +626,359 @@ end
 
 ## Types
 
+- [LChangeSet](#lchangeset)
 - [LSignal](#lsignal)
+
+## LChangeSet
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LChangeSet:append`
+
+Appends one neutral object/component mutation and returns the new record count.
+
+```lua
+LChangeSet:append(objectId, component, operation, payload)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `objectId` | number | Stable object identifier greater than zero. |
+| `component` | string | Caller-defined state namespace. |
+| `operation` | string | Caller-defined operation name. |
+| `payload` | any | Recursively serializable operation data. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of records after the append. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "world.v1" })
+    local count = changes:append(42, "position", "set", { x = 12, y = 8, level = 1 })
+    local table_value = changes:toTable()
+    lurek.log.info("appended=" .. count .. " records=" .. #table_value.changes .. " operation=" .. table_value.changes[1].operation)
+end
+```
+
+---
+
+#### `LChangeSet:clear`
+
+Removes all records and returns the number removed.
+
+```lua
+LChangeSet:clear()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of records removed. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet()
+    changes:append(1, "flag", "set", true)
+    changes:append(2, "flag", "set", false)
+    local removed = changes:clear()
+    lurek.log.info("cleared=" .. removed .. " remaining=" .. changes:len() .. " empty=" .. tostring(changes:isEmpty()))
+end
+```
+
+---
+
+#### `LChangeSet:hash`
+
+Returns the deterministic FNV-1a hash of schema, revision, and ordered records.
+
+```lua
+LChangeSet:hash()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Decimal unsigned 64-bit ChangeSet hash (string preserves LuaJIT precision). |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "hash.v1", revision = 3 })
+    changes:append(7, "score", "set", 99)
+    local hash = changes:hash()
+    local snapshot_hash = changes:snapshot().hash
+    lurek.log.info("hash=" .. tostring(hash) .. " snapshot_matches=" .. tostring(hash == snapshot_hash))
+end
+```
+
+---
+
+#### `LChangeSet:isEmpty`
+
+Returns true when the ChangeSet contains no records.
+
+```lua
+LChangeSet:isEmpty()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Whether the ChangeSet is empty. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet()
+    local before = changes:isEmpty()
+    changes:append(3, "alive", "set", true)
+    local after = changes:isEmpty()
+    lurek.log.info("empty before=" .. tostring(before) .. " after append=" .. tostring(after))
+end
+```
+
+---
+
+#### `LChangeSet:len`
+
+Returns the number of records currently stored.
+
+```lua
+LChangeSet:len()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Record count. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet()
+    local before = changes:len()
+    changes:append(8, "ammo", "set", 12)
+    local after = changes:len()
+    lurek.log.info("length before=" .. before .. " after=" .. after)
+end
+```
+
+---
+
+#### `LChangeSet:restore`
+
+Restores records from a table produced by `snapshot` or `toTable`.
+
+```lua
+LChangeSet:restore(snapshot)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `snapshot` | table | Snapshot with schema, revision, changes, and optional hash. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "restore.v1" })
+    local source = lurek.event.newChangeSet({ schema = "restore.v1" })
+    source:append(5, "state", "set", { ready = true })
+    changes:restore(source:snapshot())
+    lurek.log.info("restored len=" .. changes:len() .. " state=" .. tostring(changes:toTable().changes[1].payload.ready))
+end
+```
+
+---
+
+#### `LChangeSet:revision`
+
+Returns the caller-defined monotonic revision.
+
+```lua
+LChangeSet:revision()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | ChangeSet revision. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "revision.v1", revision = 18 })
+    local revision = changes:revision()
+    local snapshot_revision = changes:snapshot().revision
+    lurek.log.info("revision=" .. revision .. " snapshot=" .. snapshot_revision)
+end
+```
+
+---
+
+#### `LChangeSet:schema`
+
+Returns the schema identifier used to interpret records.
+
+```lua
+LChangeSet:schema()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | ChangeSet schema name. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "content.v2" })
+    local schema = changes:schema()
+    local table_schema = changes:toTable().schema
+    lurek.log.info("schema=" .. schema .. " table_schema=" .. table_schema)
+end
+```
+
+---
+
+#### `LChangeSet:snapshot`
+
+Returns a deterministic Lua snapshot including the derived hash.
+
+```lua
+LChangeSet:snapshot()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Snapshot suitable for save or network transport. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "network.v1", revision = 4 })
+    changes:append(10, "owner", "set", "player_one")
+    local snapshot = changes:snapshot()
+    lurek.log.info("snapshot schema=" .. snapshot.schema .. " revision=" .. snapshot.revision .. " rows=" .. #snapshot.changes)
+end
+```
+
+---
+
+#### `LChangeSet:toTable`
+
+Converts the ChangeSet to a transport-neutral Lua table.
+
+```lua
+LChangeSet:toTable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Schema, revision, hash, and ordered change records. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet({ schema = "table.v1" })
+    changes:append(4, "tag", "set", "quest")
+    local value = changes:toTable()
+    lurek.log.info("table schema=" .. value.schema .. " object=" .. value.changes[1].objectId .. " payload=" .. value.changes[1].payload)
+end
+```
+
+---
+
+#### `LChangeSet:type`
+
+Returns the Lua-visible type name.
+
+```lua
+LChangeSet:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always `[LChangeSet](#lchangeset)`. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet()
+    local type_name = changes:type()
+    lurek.log.info("changeset type=" .. type_name .. " handle=" .. tostring(changes ~= nil))
+end
+```
+
+---
+
+#### `LChangeSet:typeOf`
+
+Checks whether this handle matches `[LChangeSet](#lchangeset)` or `LObject`.
+
+```lua
+LChangeSet:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Whether the name matches. |
+
+**Example**
+
+```lua
+do
+    local changes = lurek.event.newChangeSet()
+    local is_changeset = changes:typeOf("LChangeSet")
+    local is_object = changes:typeOf("LObject")
+    lurek.log.info("changeset=" .. tostring(is_changeset) .. " object=" .. tostring(is_object))
+end
+```
+
+---
 
 ## LSignal
 

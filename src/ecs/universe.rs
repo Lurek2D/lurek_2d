@@ -534,6 +534,94 @@ impl Universe {
         }
         Ok(())
     }
+
+    /// Applies a validated neutral ChangeSet table to explicit ECS component operations.
+    ///
+    /// Supported operation names are `set`/`replace`/`upsert` (component payload),
+    /// `remove` (component removal), and `kill`/`despawn` (entity deletion). The
+    /// table is validated in order before any mutation is performed so a stale or
+    /// unsupported operation cannot leave a partially applied batch.
+    pub fn apply_changeset(&mut self, lua: &Lua, changeset: Table) -> LuaResult<usize> {
+        let schema: String = changeset.get("schema")?;
+        if schema.trim().is_empty() || schema.len() > 128 {
+            return Err(mlua::Error::runtime(
+                "ECS ChangeSet schema must contain 1..=128 characters",
+            ));
+        }
+        let changes: Table = changeset.get("changes")?;
+        if changes.raw_len() > 100_000 {
+            return Err(mlua::Error::runtime("ECS ChangeSet exceeds 100000 records"));
+        }
+        let change_count = changes.raw_len();
+        let mut operations = Vec::new();
+        let mut simulated_alive: HashSet<u32> = self.get_entities().into_iter().collect();
+        for value in changes.sequence_values::<Table>() {
+            let row = value?;
+            let object_id: u64 = row.get("objectId")?;
+            let id = u32::try_from(object_id).map_err(|_| {
+                mlua::Error::runtime("ECS ChangeSet objectId must fit a 32-bit entity id")
+            })?;
+            if id == 0 {
+                return Err(mlua::Error::runtime(
+                    "ECS ChangeSet objectId must be greater than zero",
+                ));
+            }
+            let component: String = row.get("component")?;
+            if component.trim().is_empty() || component.len() > 128 {
+                return Err(mlua::Error::runtime(
+                    "ECS ChangeSet component must contain 1..=128 characters",
+                ));
+            }
+            let operation: String = row.get("operation")?;
+            match operation.as_str() {
+                "set" | "replace" | "upsert" => {
+                    if !simulated_alive.contains(&id) {
+                        return Err(mlua::Error::runtime(format!(
+                            "ECS ChangeSet targets dead entity {id}"
+                        )));
+                    }
+                    let payload: LuaValue = row.get("payload")?;
+                    operations.push((id, component, operation, payload));
+                }
+                "remove" => {
+                    if !simulated_alive.contains(&id) {
+                        return Err(mlua::Error::runtime(format!(
+                            "ECS ChangeSet targets dead entity {id}"
+                        )));
+                    }
+                    operations.push((id, component, operation, LuaValue::Nil));
+                }
+                "kill" | "despawn" => {
+                    if !simulated_alive.remove(&id) {
+                        return Err(mlua::Error::runtime(format!(
+                            "ECS ChangeSet targets dead entity {id}"
+                        )));
+                    }
+                    operations.push((id, component, operation, LuaValue::Nil));
+                }
+                _ => {
+                    return Err(mlua::Error::runtime(format!(
+                        "unsupported ECS ChangeSet operation '{operation}'"
+                    )))
+                }
+            }
+        }
+        for (id, component, operation, payload) in operations {
+            match operation.as_str() {
+                "set" | "replace" | "upsert" => {
+                    self.set_component(lua, id, &component, payload)?;
+                }
+                "remove" => {
+                    self.remove_component(lua, id, &component)?;
+                }
+                "kill" | "despawn" => {
+                    self.kill(EntityId(id), lua)?;
+                }
+                _ => unreachable!("operation was validated above"),
+            }
+        }
+        Ok(change_count)
+    }
     /// Lists the component names currently stored on an entity row.
     pub fn get_component_names(&self, lua: &Lua, id: u32) -> LuaResult<Vec<String>> {
         let slot = Self::unpack_slot(id);

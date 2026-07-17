@@ -10,7 +10,7 @@ pub mod event_queue;
 /// Name-based and wildcard signal subscription storage.
 pub mod signal;
 pub use event_queue::{
-    event_arg_to_lua_value, event_to_lua_multi, Event, EventArg, EventPriority, EventQueue,
-    EventTableKey,
+    event_arg_to_lua_value, event_to_lua_multi, ChangeRecord, ChangeSet, ChangeSetSnapshot, Event,
+    EventArg, EventPriority, EventQueue, EventTableKey,
 };
 pub use signal::Signal;

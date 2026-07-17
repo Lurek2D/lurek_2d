@@ -1,11 +1,23 @@
+--- Province color and renderer-style policy for EU2 map modes.
+--- Public functions return colors or apply cached visual state to the province registry.
 local M = {}
+--- Shared sea color used by every map mode.
 local SEA_COLOR = { 0.23, 0.36, 0.55, 1.0 }
+--- Renderer bit flag used for the striped contested-province effect.
 local STRIPE_EFFECT_FLAG = 0x20
 
+---@param a number First scalar.
+---@param b number Second scalar.
+---@param t number Interpolation amount, normally 0..1.
+---@return number interpolated Linear interpolation result.
 local function lerp(a, b, t)
     return a + (b - a) * t
 end
 
+---@param a number[] First RGBA color.
+---@param b number[] Second RGBA color.
+---@param t number Interpolation amount.
+---@return number[] color Mixed opaque RGBA color.
 local function color_mix(a, b, t)
     return {
         lerp(a[1], b[1], t),
@@ -15,6 +27,9 @@ local function color_mix(a, b, t)
     }
 end
 
+---@param color number[] RGBA color.
+---@param amount number Desaturation amount, where 0 preserves color and 1 is grayscale.
+---@return number[] color Desaturated opaque RGBA color.
 local function desaturate(color, amount)
     local gray = color[1] * 0.299 + color[2] * 0.587 + color[3] * 0.114
     return {
@@ -25,6 +40,9 @@ local function desaturate(color, amount)
     }
 end
 
+---@param color number[] Source RGBA color.
+---@param amount number|nil Warm-paper wash amount.
+---@return number[] color Warmed opaque RGBA color.
 local function warm_wash(color, amount)
     local t = amount or 0
     if t < 0 then t = 0 end
@@ -33,12 +51,19 @@ local function warm_wash(color, amount)
     return color_mix(muted, { 0.90, 0.84, 0.72, 1.0 }, t)
 end
 
+---@param v number Value to clamp.
+---@param lo number Minimum.
+---@param hi number Maximum.
+---@return number value Clamped value.
 local function clamp(v, lo, hi)
     if v < lo then return lo end
     if v > hi then return hi end
     return v
 end
 
+---@param state table Campaign state.
+---@param owner string Country tag.
+---@return number[] color Diplomatic color for the owner relationship.
 local function relation_color(state, owner)
     if owner == "SEA" then
         return SEA_COLOR
@@ -55,6 +80,8 @@ local function relation_color(state, owner)
     return { 0.69, 0.64, 0.58, 1.0 }
 end
 
+---@param province table Province record.
+---@return number[] color Income-scaled color.
 local function economy_color(province)
     if province.owner == "SEA" then
         return SEA_COLOR
@@ -63,6 +90,8 @@ local function economy_color(province)
     return color_mix({ 0.54, 0.45, 0.28, 1.0 }, { 0.90, 0.76, 0.41, 1.0 }, t)
 end
 
+---@param province table Province record.
+---@return number[] color Unrest-scaled color.
 local function unrest_color(province)
     if province.owner == "SEA" then
         return SEA_COLOR
@@ -71,6 +100,8 @@ local function unrest_color(province)
     return color_mix({ 0.48, 0.62, 0.39, 1.0 }, { 0.86, 0.28, 0.24, 1.0 }, t)
 end
 
+---@param province table|nil Province record.
+---@return number[] color Terrain color, or sea color for water.
 local function terrain_color(province)
     local terrain = tostring(province and province.terrain or ""):lower()
     if province and province.owner == "SEA" then
@@ -91,6 +122,9 @@ local function terrain_color(province)
     return { 0.66, 0.72, 0.50, 1.0 }
 end
 
+---@param state table Campaign state.
+---@param province table Province record.
+---@return number[] color Washed country color.
 local function political_base_color(state, province)
     if province and province.owner == "SEA" then
         return SEA_COLOR
@@ -103,6 +137,10 @@ local function political_base_color(state, province)
     return warm_wash(neutral and neutral.color or { 186 / 255, 181 / 255, 169 / 255, 1.0 }, 0.12)
 end
 
+---@param state table Campaign state.
+---@param province table Province record.
+---@param mode string|nil Map mode name.
+---@return number[] color Mode-specific province color.
 local function province_color(state, province, mode)
     if province and province.owner == "SEA" then
         return SEA_COLOR
@@ -122,6 +160,11 @@ local function province_color(state, province, mode)
     return political_base_color(state, province)
 end
 
+--- Return the public color for one province.
+---@param state table Campaign state.
+---@param province table|nil Province record.
+---@param mode string|nil Map mode; defaults to `state.map_mode`.
+---@return number[] color RGBA color.
 function M.province_color(state, province, mode)
     if not province then
         return relation_color(state, "SEA")
@@ -129,6 +172,9 @@ function M.province_color(state, province, mode)
     return province_color(state, province, mode or state.map_mode or "political")
 end
 
+--- Apply country/sea border styles when ownership revision changes.
+---@param reg userdata Province registry.
+---@param state table Campaign state.
 local function apply_country_borders(reg, state)
     if not reg.adjacencies or not reg.setBorderPairStyle then
         return
@@ -145,12 +191,12 @@ local function apply_country_borders(reg, state)
             local b_sea = b.owner == "SEA"
             if a_sea ~= b_sea then
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    thickness = 4.0,
+                    thickness = 2.0,
                     flags = {},
                 })
             elseif a.owner ~= b.owner and not a_sea and not b_sea then
                 reg:setBorderPairStyle(pair.province_a, pair.province_b, {
-                    thickness = 4.8,
+                    thickness = 3.0,
                     flags = { "country" },
                 })
             elseif a_sea and b_sea then
@@ -169,6 +215,40 @@ local function apply_country_borders(reg, state)
     state.applied_border_revision = state.border_revision
 end
 
+---@param color number[] RGBA color.
+---@param factor number Brightness multiplier.
+---@return number[] color Scaled clamped color.
+local function scale_color(color, factor)
+    return {
+        clamp(color[1] * factor, 0, 1),
+        clamp(color[2] * factor, 0, 1),
+        clamp(color[3] * factor, 0, 1),
+        color[4] or 1.0,
+    }
+end
+
+-- GPU province highlights have a shared engine appearance. EU2 needs exact
+-- fill changes, so prepare transient render-only tints from the active mode.
+--- Build transient brightness tints for selected and hovered provinces.
+---@param state table Campaign state.
+---@param mode string Active map mode.
+---@param hovered_id number|nil Hovered province id.
+---@param selected_id number|nil Selected province id.
+---@return table|nil tints Province-id to RGBA tint map, or nil when empty.
+function M.highlight_tints(state, mode, hovered_id, selected_id)
+    local tints = {}
+    if selected_id and state.provinces[selected_id] then
+        tints[selected_id] = scale_color(province_color(state, state.provinces[selected_id], mode), 0.9)
+    end
+    if hovered_id and hovered_id ~= selected_id and state.provinces[hovered_id] then
+        tints[hovered_id] = scale_color(province_color(state, state.provinces[hovered_id], mode), 1.1)
+    end
+    return next(tints) and tints or nil
+end
+
+--- Map terrain names to renderer terrain-style ids.
+---@param terrain any Terrain name.
+---@return integer style Renderer style id.
 local function terrain_style_id(terrain)
     terrain = tostring(terrain or ""):lower()
     if terrain == "sea" or terrain == "river" or terrain == "ocean" then
@@ -189,6 +269,9 @@ local function terrain_style_id(terrain)
     return 1
 end
 
+--- Apply contested-province visual flags when style revision changes.
+---@param reg userdata Province registry.
+---@param state table Campaign state.
 local function apply_visual_states(reg, state)
     if not reg.setVisualState then
         return
@@ -208,6 +291,9 @@ local function apply_visual_states(reg, state)
     state.applied_visual_revision = state.style_revision
 end
 
+--- Apply renderer terrain ids when style revision changes.
+---@param reg userdata Province registry.
+---@param state table Campaign state.
 local function apply_terrain_types(reg, state)
     if not reg.setTerrainType then
         return
@@ -221,6 +307,11 @@ local function apply_terrain_types(reg, state)
     state.applied_terrain_revision = state.style_revision
 end
 
+--- Return the cache for a mode and invalidate it when its revision changes.
+---@param state table Campaign state.
+---@param mode string Map mode.
+---@param revision_key string|nil Cache revision key.
+---@return table colors Mutable mode color cache.
 local function mode_cache(state, mode, revision_key)
     revision_key = revision_key or tostring(state.style_revision or 0)
     if state.mode_color_cache_revision ~= revision_key then
@@ -231,6 +322,9 @@ local function mode_cache(state, mode, revision_key)
     return state.mode_color_cache[mode]
 end
 
+--- Update visibility based on terra incognita and water ownership.
+---@param reg userdata Province registry.
+---@param state table Campaign state.
 local function apply_visibility(reg, state)
     if not reg.setVisibilityState then
         return
@@ -249,6 +343,10 @@ local function apply_visibility(reg, state)
     state.applied_visibility_revision = state.style_revision
 end
 
+--- Build the cache key for one mode's colors.
+---@param state table Campaign state.
+---@param mode string Map mode.
+---@return string key Revision-aware cache key.
 local function color_key(state, mode)
     return table.concat({
         mode,
@@ -257,6 +355,11 @@ local function color_key(state, mode)
     }, ":")
 end
 
+--- Compute and, when supported, upload all colors for a map mode.
+---@param reg userdata Province registry.
+---@param state table Campaign state.
+---@param mode string Active map mode.
+---@return nil|table colors Cached colors only when the registry cannot upload them.
 local function apply_mode_colors(reg, state, mode)
     local key = color_key(state, mode)
     local colors = mode_cache(state, mode, key)
@@ -278,6 +381,12 @@ local function apply_mode_colors(reg, state, mode)
     return nil
 end
 
+--- Apply all renderer-facing state for a map mode.
+---@param reg userdata Province registry.
+---@param state table Campaign state.
+---@param mode string Map mode name.
+---@return string renderer_mode Always `political` for the GPU province renderer.
+---@return table|nil tints Optional color data for callers that render manually.
 function M.apply(reg, state, mode)
     state.map_mode = mode
     apply_country_borders(reg, state)

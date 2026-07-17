@@ -874,6 +874,25 @@ describe("LUniverse snapshots", function()
     end)
 end)
 
+-- @describe LUniverse ChangeSet bridge
+describe("LUniverse ChangeSet bridge", function()
+    -- @covers LUniverse:applyChangeSet
+    it("applyChangeSet validates and applies explicit component operations", function()
+        local world = new_world()
+        local entity = world:spawn()
+        local victim = world:spawn()
+        world:set(entity, "stale", true)
+        local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 3 })
+        changes:append(entity, "hp", "set", 42)
+        changes:append(entity, "stale", "remove", true)
+        changes:append(victim, "body", "kill", true)
+        expect_equal(3, world:applyChangeSet(changes:toTable()))
+        expect_equal(42, world:get(entity, "hp"))
+        expect_false(world:has(entity, "stale"))
+        expect_false(world:isAlive(victim))
+    end)
+end)
+
 -- @describe ECS class and object registry
 describe("ECS class and object registry", function()
     -- @covers lurek.ecs.defineClass

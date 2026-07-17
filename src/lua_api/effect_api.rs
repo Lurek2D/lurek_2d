@@ -331,6 +331,63 @@ pub struct LuaPostFxStack {
     feedback_factor: f32,
 }
 
+fn postfx_effect_snapshot<'lua>(
+    lua: &'lua Lua,
+    effect: &PostFxEffect,
+    slot_enabled: bool,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("name", effect.get_type_name())?;
+    table.set("enabled", effect.enabled)?;
+    table.set("slotEnabled", slot_enabled)?;
+    table.set("autoUniforms", effect.auto_uniforms)?;
+    table.set("shaderId", effect.shader_id)?;
+    let params = lua.create_table()?;
+    let mut names = effect.params.keys().cloned().collect::<Vec<_>>();
+    names.sort();
+    for name in names {
+        let value = effect.params.get(&name).copied().unwrap_or(0.0);
+        params.set(name, value)?;
+    }
+    table.set("params", params)?;
+    Ok(table)
+}
+
+fn postfx_effect_from_snapshot(
+    state: &Rc<RefCell<SharedState>>,
+    table: LuaTable,
+) -> LuaResult<(Rc<RefCell<PostFxEffect>>, bool)> {
+    let name: String = table.get("name")?;
+    let mut effect = if name == "custom" {
+        let shader_id: usize = table.get("shaderId")?;
+        let exists = shader_exists(&state.borrow(), shader_id);
+        PostFxEffect::new_custom_checked(shader_id, |_| exists)
+            .map_err(|error| postfx_runtime_error("LPostFxStack.restore", error.to_string()))?
+    } else {
+        let effect_type = PostFxEffectType::from_name(&name).ok_or_else(|| {
+            postfx_runtime_error(
+                "LPostFxStack.restore",
+                format!("unknown effect type '{name}'"),
+            )
+        })?;
+        PostFxEffect::new(effect_type)
+    };
+    effect.enabled = table.get::<_, Option<bool>>("enabled")?.unwrap_or(true);
+    effect.auto_uniforms = table
+        .get::<_, Option<bool>>("autoUniforms")?
+        .unwrap_or(false);
+    if let Some(params) = table.get::<_, Option<LuaTable>>("params")? {
+        for pair in params.pairs::<String, f32>() {
+            let (name, value) = pair?;
+            effect
+                .try_set_parameter(name, value)
+                .map_err(|error| postfx_runtime_error("LPostFxStack.restore", error.to_string()))?;
+        }
+    }
+    let slot_enabled = table.get::<_, Option<bool>>("slotEnabled")?.unwrap_or(true);
+    Ok((Rc::new(RefCell::new(effect)), slot_enabled))
+}
+
 impl LuaPostFxStack {
     fn sync_slots(&mut self, enabled: Vec<bool>) {
         self.inner.effects = (0..self.effects.len()).collect();
@@ -518,6 +575,61 @@ impl LuaUserData for LuaPostFxStack {
         methods.add_method_mut("clear", |_, this, ()| {
             this.effects.clear();
             this.sync_slots(Vec::new());
+            Ok(())
+        });
+        // -- snapshot --
+        /// Captures stack dimensions, feedback, enabled slots, and validated effect parameters.
+        /// @return | table | Serializable post-effect stack snapshot.
+        methods.add_method("snapshot", |lua, this, ()| {
+            let table = lua.create_table()?;
+            table.set("width", this.inner.width)?;
+            table.set("height", this.inner.height)?;
+            table.set("feedback", this.feedback_factor)?;
+            let effects = lua.create_table()?;
+            for (index, effect) in this.effects.iter().enumerate() {
+                let slot_enabled = this.inner.enabled.get(index).copied().unwrap_or(true);
+                effects.set(
+                    index + 1,
+                    postfx_effect_snapshot(lua, &effect.borrow(), slot_enabled)?,
+                )?;
+            }
+            table.set("effects", effects)?;
+            Ok(table)
+        });
+        // -- restore --
+        /// Restores a stack snapshot and rebuilds its effect handles without entering capture mode.
+        /// @param | snapshot | table | Table previously returned by `snapshot`.
+        methods.add_method_mut("restore", |_, this, snapshot: LuaTable| {
+            let width: u32 = snapshot.get("width")?;
+            let height: u32 = snapshot.get("height")?;
+            this.inner
+                .try_resize(width, height, &PostFxLimits::default())
+                .map_err(|error| postfx_runtime_error("LPostFxStack.restore", error.to_string()))?;
+            let feedback = snapshot.get::<_, Option<f32>>("feedback")?.unwrap_or(0.0);
+            if !feedback.is_finite() {
+                return Err(postfx_runtime_error(
+                    "LPostFxStack.restore",
+                    "feedback must be finite",
+                ));
+            }
+            let effects_table: LuaTable = snapshot.get("effects")?;
+            if effects_table.raw_len() > 128 {
+                return Err(postfx_runtime_error(
+                    "LPostFxStack.restore",
+                    "snapshot contains more than 128 effects",
+                ));
+            }
+            let mut effects = Vec::new();
+            let mut enabled = Vec::new();
+            for row in effects_table.sequence_values::<LuaTable>() {
+                let (effect, slot_enabled) = postfx_effect_from_snapshot(&this.state, row?)?;
+                effects.push(effect);
+                enabled.push(slot_enabled);
+            }
+            this.effects = effects;
+            this.sync_slots(enabled);
+            this.feedback_factor = feedback.clamp(0.0, 1.0);
+            this.inner.capturing = false;
             Ok(())
         });
         // -- dedup --

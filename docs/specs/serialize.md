@@ -4,7 +4,7 @@
 
 ## TL;DR
 
-- Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree.
+- Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree and validates neutral ChangeSet envelopes.
 - Validates data against schemas.
 - Enforces bounded decode, encode, and Lua-conversion limits for depth, nodes, strings, rows, and input size.
 
@@ -14,7 +14,7 @@
 - Source path: `src/serialize`
 - Binding: `src/lua_api/serialize_api.rs`
 - Namespace: `lurek.serialize`
-- Lua API surface: `16` functions, `0` types, `0` methods
+- Lua API surface: `18` functions, `0` types, `0` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -28,6 +28,7 @@
 - That also makes migrations easier to reason about.
 - Safety is part of the contract. Lua conversion, autodetection, CSV parsing, and MessagePack decode must stay bounded and reject cyclic or non-finite inputs instead of recursing or allocating without policy.
 - Read `serialize` as the normalization layer for structured data moving between external formats and engine-facing workflows.
+- `encodeChangeSet()` and `decodeChangeSet()` are schema-light transport helpers. They validate the stable `schema`, `revision`, and ordered `{objectId, component, operation, payload}` records, then delegate actual encoding to the existing codec front door.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
@@ -140,10 +141,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `lurek.serialize.applyDefaults(value, schema) -> table`: Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
 - `lurek.serialize.decode(payload, format?, opts?) -> table`: Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
+- `lurek.serialize.decodeChangeSet(payload, format?, opts?) -> table`: Decodes and validates a ChangeSet transport payload into a Lua table.
 - `lurek.serialize.decodeMsgPack(bytes) -> table`: Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
 - `lurek.serialize.decodeXml(text) -> table`: Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
 - `lurek.serialize.detectFormat(text) -> string`: Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
 - `lurek.serialize.encode(value, format, opts?) -> string`: Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
+- `lurek.serialize.encodeChangeSet(value, format, opts?) -> string`: Encodes a validated `lurek.event` ChangeSet table for save or network transport.
 - `lurek.serialize.encodeMsgPack(value) -> string`: Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 - `lurek.serialize.encodeMsgPack(value) -> string`: Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 - `lurek.serialize.fromCsv(text, delimiter?, hasHeaders?) -> table`: Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.

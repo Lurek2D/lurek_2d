@@ -2279,3 +2279,20 @@ do
     lurek.log.info("beat judge verdict = " .. tostring(result.verdict))
     lurek.log.info("beat judge error = " .. tostring(result.errorSeconds))
 end
+
+--@api: lurek.audio.manager.playMusic
+do
+    local music = lurek.audio.manager.playMusic("content/examples/assets/audio/sample_loop.wav", {
+        group = "music",
+        fadeIn = 0.25,
+        volume = 0.7,
+    })
+    lurek.log.info("music source=" .. tostring(music:type()) .. " looping=" .. tostring(music:isLooping()))
+    music:stop()
+end
+
+--@api: lurek.audio.manager.setGroupVolume
+do
+    lurek.audio.manager.setGroupVolume("music", 0.6)
+    lurek.log.info("music group volume updated")
+end

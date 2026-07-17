@@ -6,6 +6,7 @@
 //! Read this file when queue ordering, timeout behavior, marshalling limits, or payload shape rules need to change.
 //! Higher layers should treat it as the queued-event boundary, while signal name matching lives separately in `signal.rs`.
 
+use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::sync::{Condvar, Mutex};
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -16,7 +17,7 @@ pub enum EventPriority {
     /// Enqueues into the normal-priority queue.
     Normal,
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 /// Key types supported when copying Lua tables into event payloads.
 pub enum EventTableKey {
     /// String key copied from Lua.
@@ -26,7 +27,7 @@ pub enum EventTableKey {
     /// Boolean key copied from Lua.
     Bool(bool),
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 /// Payload value types supported by queued events.
 pub enum EventArg {
     /// String payload copied from Lua.
@@ -273,6 +274,204 @@ impl EventArg {
             LuaValue::Table(_) => Ok(EventArg::Nil),
             _ => Ok(EventArg::Nil),
         }
+    }
+
+    /// Converts a Lua value into a bounded, recursively serializable change payload.
+    ///
+    /// The regular event queue intentionally keeps nested tables shallow. ChangeSets are
+    /// durable data, so they use this separate conversion path and reject non-finite numbers
+    /// and values deeper than 32 levels instead of silently losing nested state.
+    pub fn from_lua_change_value(value: &LuaValue, depth: usize) -> LuaResult<EventArg> {
+        if depth > 32 {
+            return Err(LuaError::RuntimeError(
+                "event ChangeSet payload exceeds maximum depth 32".to_string(),
+            ));
+        }
+        match value {
+            LuaValue::Number(number) if !number.is_finite() => Err(LuaError::RuntimeError(
+                "event ChangeSet payload cannot contain NaN or infinity".to_string(),
+            )),
+            LuaValue::Table(table) => {
+                let mut entries = Vec::new();
+                for pair in table.clone().pairs::<LuaValue, LuaValue>() {
+                    let (key, value) = pair?;
+                    if let Some(converted_key) = Self::table_key_from_lua(&key)? {
+                        entries.push((
+                            converted_key,
+                            Self::from_lua_change_value(&value, depth + 1)?,
+                        ));
+                    }
+                }
+                entries.sort_by(|(left, _), (right, _)| {
+                    Self::change_key_sort_key(left).cmp(&Self::change_key_sort_key(right))
+                });
+                Ok(EventArg::Table(entries))
+            }
+            _ => Self::from_lua_val(value),
+        }
+    }
+
+    fn change_key_sort_key(key: &EventTableKey) -> String {
+        match key {
+            EventTableKey::Str(value) => format!("s:{value}"),
+            EventTableKey::Num(value) => format!("n:{value:.17}"),
+            EventTableKey::Bool(value) => format!("b:{value}"),
+        }
+    }
+}
+
+/// One durable object/component mutation carried by a [`ChangeSet`].
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ChangeRecord {
+    /// Stable object ID owned by the caller.
+    pub object_id: u64,
+    /// Caller-defined component or state namespace.
+    pub component: String,
+    /// Caller-defined operation, for example `"set"` or `"remove"`.
+    pub operation: String,
+    /// Recursively serializable operation payload.
+    pub payload: EventArg,
+}
+
+/// Versioned, deterministic collection of neutral state changes.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ChangeSet {
+    schema: String,
+    revision: u64,
+    max_changes: usize,
+    changes: Vec<ChangeRecord>,
+}
+
+/// Serializable ChangeSet representation used by Lua snapshot/restore APIs.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ChangeSetSnapshot {
+    /// Schema identifier expected by the consumer.
+    pub schema: String,
+    /// Monotonic caller-defined revision.
+    pub revision: u64,
+    /// Ordered state changes.
+    pub changes: Vec<ChangeRecord>,
+}
+
+impl ChangeSet {
+    /// Creates an empty ChangeSet with a bounded change count.
+    pub fn new(schema: String, revision: u64, max_changes: usize) -> Result<Self, String> {
+        if schema.trim().is_empty() || schema.len() > 128 {
+            return Err("event ChangeSet schema must contain 1..=128 characters".to_string());
+        }
+        if max_changes == 0 || max_changes > 100_000 {
+            return Err("event ChangeSet maxChanges must be in the range 1..=100000".to_string());
+        }
+        Ok(Self {
+            schema,
+            revision,
+            max_changes,
+            changes: Vec::new(),
+        })
+    }
+
+    /// Appends one validated mutation and returns the new change count.
+    pub fn append(&mut self, record: ChangeRecord) -> Result<usize, String> {
+        if record.object_id == 0 {
+            return Err("event ChangeSet objectId must be greater than zero".to_string());
+        }
+        if record.component.trim().is_empty() || record.component.len() > 128 {
+            return Err("event ChangeSet component must contain 1..=128 characters".to_string());
+        }
+        if record.operation.trim().is_empty() || record.operation.len() > 64 {
+            return Err("event ChangeSet operation must contain 1..=64 characters".to_string());
+        }
+        if self.changes.len() >= self.max_changes {
+            return Err(format!(
+                "event ChangeSet reached maxChanges ({})",
+                self.max_changes
+            ));
+        }
+        self.changes.push(record);
+        Ok(self.changes.len())
+    }
+
+    /// Returns the schema identifier.
+    pub fn schema(&self) -> &str {
+        &self.schema
+    }
+
+    /// Returns the caller-defined revision.
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    /// Returns the number of pending changes.
+    pub fn len(&self) -> usize {
+        self.changes.len()
+    }
+
+    /// Returns the configured maximum number of records.
+    pub fn max_changes(&self) -> usize {
+        self.max_changes
+    }
+
+    /// Returns true when the ChangeSet contains no changes.
+    pub fn is_empty(&self) -> bool {
+        self.changes.is_empty()
+    }
+
+    /// Removes all changes and returns the number removed.
+    pub fn clear(&mut self) -> usize {
+        let count = self.changes.len();
+        self.changes.clear();
+        count
+    }
+
+    /// Returns an immutable view of ordered changes.
+    pub fn changes(&self) -> &[ChangeRecord] {
+        &self.changes
+    }
+
+    /// Produces a deterministic snapshot without the derived hash field.
+    pub fn snapshot(&self) -> ChangeSetSnapshot {
+        ChangeSetSnapshot {
+            schema: self.schema.clone(),
+            revision: self.revision,
+            changes: self.changes.clone(),
+        }
+    }
+
+    /// Validates a snapshot and replaces this ChangeSet's contents.
+    pub fn restore(&mut self, snapshot: ChangeSetSnapshot) -> Result<(), String> {
+        if snapshot.schema != self.schema {
+            return Err(format!(
+                "event ChangeSet schema mismatch: expected `{}`, got `{}`",
+                self.schema, snapshot.schema
+            ));
+        }
+        if snapshot.changes.len() > self.max_changes {
+            return Err("event ChangeSet snapshot exceeds maxChanges".to_string());
+        }
+        for record in &snapshot.changes {
+            if record.object_id == 0
+                || record.component.trim().is_empty()
+                || record.component.len() > 128
+                || record.operation.trim().is_empty()
+                || record.operation.len() > 64
+            {
+                return Err("event ChangeSet snapshot contains an invalid record".to_string());
+            }
+        }
+        self.revision = snapshot.revision;
+        self.changes = snapshot.changes;
+        Ok(())
+    }
+
+    /// Returns a deterministic FNV-1a hash over schema, revision, and ordered changes.
+    pub fn hash(&self) -> u64 {
+        let bytes = serde_json::to_vec(&self.snapshot()).unwrap_or_default();
+        let mut hash = 14_695_981_039_346_656_037u64;
+        for byte in bytes {
+            hash ^= u64::from(byte);
+            hash = hash.wrapping_mul(1_099_511_628_211);
+        }
+        hash
     }
 }
 /// Converts an event payload value back into a Lua value.

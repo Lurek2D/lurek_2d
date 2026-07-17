@@ -12,7 +12,7 @@
 - Source path: `src/mods`
 - Binding: `src/lua_api/mods_api.rs`
 - Namespace: `lurek.mods`
-- Lua API surface: `4` functions, `8` types, `54` methods
+- Lua API surface: `4` functions, `8` types, `62` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -29,6 +29,8 @@
 - Manifest and content parsing are strict TOML decoders with byte, field, and count limits instead of line-based best-effort parsing.
 - Discovery and reload flows now build structured scan and load-plan reports so missing dependencies, cycles, checksum failures, and path-policy violations are explicit.
 - Hot reload is atomic at the registry level: the previous valid snapshot stays active when the new manifest set fails validation.
+- `newRegistry()` also supports optional typed content definitions through `defineType()`. Required fields and scalar/table/array types are checked before values enter the registry, and `freeze()` makes an admitted content set immutable for deterministic runtime use.
+- Registry snapshots contain normalized type definitions and values only. They do not instantiate ECS entities or invoke gameplay systems; Lua explicitly forwards registered data to the chosen existing owner.
 - `sandbox.max_memory` is enforced at hook execution time when the underlying Lua runtime supports memory limits; file writes and top-level network entry points are blocked through the normal Lua API surface while the sandbox is active.
 - It keeps mod power visible, explicit, and reviewable.
 - Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
@@ -149,13 +151,21 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ##### Methods
 
+- `LContentRegistry:defineType(type_name, schema) -> nil`: Registers a content type and its field-validation schema.
+- `LContentRegistry:freeze() -> boolean`: Freezes definitions and entries until this userdata is discarded.
 - `LContentRegistry:get(type_name, id) -> table`: Returns one stored value by content type and id.
 - `LContentRegistry:getAll(type_name) -> table`: Returns all stored values for a content type keyed by id.
+- `LContentRegistry:getSchema(type_name) -> table`: Returns a registered type schema, or nil for an untyped content type.
 - `LContentRegistry:getTypes() -> string[]`: Returns registered content type names.
+- `LContentRegistry:isFrozen() -> boolean`: Returns whether this registry rejects mutating operations.
 - `LContentRegistry:register(type_name, id, obj) -> nil`: Stores a Lua value under a registered content type and id.
 - `LContentRegistry:registerType(type_name) -> nil`: Registers a content type name. This method is available to Lua scripts.
+- `LContentRegistry:restore(snapshot) -> nil`: Restores schemas and values from a previous snapshot and applies its frozen flag.
+- `LContentRegistry:snapshot() -> table`: Captures schemas and registered values in a deterministic Lua table.
 - `LContentRegistry:type() -> string`: Returns the Lua-visible type name for this content registry handle.
 - `LContentRegistry:typeOf(name) -> boolean`: Returns whether this content registry handle matches a supported type name.
+- `LContentRegistry:unregisterType(type_name) -> boolean`: Removes a content type and all values registered under it.
+- `LContentRegistry:validate(type_name, value) -> boolean`: Validates a value against a registered type schema without storing it.
 
 #### LMod Type
 

@@ -16,7 +16,8 @@ use crate::progression::{
     PrestigeDefinition, PrestigePreserveDefinition, PrestigeResetDefinition, ProfileOptions,
     ProfileTemplateDefinition, ProgressionCondition, ProgressionStore, ProgressionStoreOptions,
     ProgressionTransaction, QuestDefinition, QuestObjectiveDefinition, QuestStageDefinition,
-    ResourceDefinition, SeasonDefinition, SeasonResetDefinition, SkillDefinition, TraitDefinition,
+    ResourceDefinition, SeasonDefinition, SeasonResetDefinition, SkillDefinition, StatusDefinition,
+    StatusEvent, StatusInstance, StatusSnapshot, StatusTracker, TraitDefinition,
     TraitModifierDefinition,
 };
 use mlua::prelude::*;
@@ -102,6 +103,238 @@ fn snapshot_arg_to_json(value: LuaValue) -> LuaResult<JsonValue> {
 #[derive(Clone)]
 struct LuaProgressionStore {
     store: Rc<RefCell<ProgressionStore>>,
+}
+
+struct LuaStatusTracker {
+    tracker: StatusTracker,
+}
+
+fn parse_status_definition(table: LuaTable) -> LuaResult<StatusDefinition> {
+    let id: String = table.get("id")?;
+    let duration = table.get::<_, Option<f64>>("duration")?;
+    let tick_interval = table.get::<_, Option<f64>>("tickInterval")?;
+    let max_stacks = table.get::<_, Option<u32>>("maxStacks")?.unwrap_or(1);
+    let stacking = table
+        .get::<_, Option<String>>("stacking")?
+        .unwrap_or_else(|| "replace".to_string());
+    let tags = table
+        .get::<_, Option<LuaTable>>("tags")?
+        .map(|values| {
+            values
+                .sequence_values::<String>()
+                .collect::<LuaResult<Vec<_>>>()
+        })
+        .transpose()?
+        .unwrap_or_default();
+    Ok(StatusDefinition {
+        id,
+        duration,
+        tick_interval,
+        max_stacks,
+        stacking,
+        tags,
+    })
+}
+
+fn status_definition_to_lua<'lua>(
+    lua: &'lua Lua,
+    definition: &StatusDefinition,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("id", definition.id.as_str())?;
+    table.set("duration", definition.duration)?;
+    table.set("tickInterval", definition.tick_interval)?;
+    table.set("maxStacks", definition.max_stacks)?;
+    table.set("stacking", definition.stacking.as_str())?;
+    let tags = lua.create_table()?;
+    for (index, tag) in definition.tags.iter().enumerate() {
+        tags.set(index + 1, tag.as_str())?;
+    }
+    table.set("tags", tags)?;
+    Ok(table)
+}
+
+fn status_instance_to_lua<'lua>(
+    lua: &'lua Lua,
+    instance: &StatusInstance,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("id", instance.id)?;
+    table.set("definitionId", instance.definition_id.as_str())?;
+    table.set("subjectId", instance.subject_id)?;
+    table.set("sourceId", instance.source_id)?;
+    table.set("stacks", instance.stacks)?;
+    table.set("remaining", instance.remaining)?;
+    table.set("nextTick", instance.next_tick)?;
+    Ok(table)
+}
+
+fn status_event_to_lua<'lua>(lua: &'lua Lua, event: &StatusEvent) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    table.set("kind", event.kind.as_str())?;
+    table.set("instanceId", event.instance_id)?;
+    table.set("subjectId", event.subject_id)?;
+    table.set("definitionId", event.definition_id.as_str())?;
+    table.set("stacks", event.stacks)?;
+    table.set("remaining", event.remaining)?;
+    table.set("tickCount", event.tick_count)?;
+    Ok(table)
+}
+
+fn status_snapshot_to_lua<'lua>(
+    lua: &'lua Lua,
+    snapshot: &StatusSnapshot,
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    let definitions = lua.create_table()?;
+    for (id, definition) in &snapshot.definitions {
+        definitions.set(id.as_str(), status_definition_to_lua(lua, definition)?)?;
+    }
+    table.set("definitions", definitions)?;
+    let instances = lua.create_table()?;
+    for (index, instance) in snapshot.instances.values().enumerate() {
+        instances.set(index + 1, status_instance_to_lua(lua, instance)?)?;
+    }
+    table.set("instances", instances)?;
+    table.set("nextId", snapshot.next_id)?;
+    Ok(table)
+}
+
+fn status_snapshot_from_lua(table: LuaTable) -> LuaResult<StatusSnapshot> {
+    let definitions_table: LuaTable = table.get("definitions")?;
+    let mut definitions = BTreeMap::new();
+    for pair in definitions_table.pairs::<String, LuaTable>() {
+        let (id, definition_table) = pair?;
+        let mut definition = parse_status_definition(definition_table)?;
+        definition.id = id.clone();
+        definitions.insert(id, definition);
+    }
+    let instances_table: LuaTable = table.get("instances")?;
+    let mut instances = BTreeMap::new();
+    for value in instances_table.sequence_values::<LuaTable>() {
+        let row = value?;
+        let instance = StatusInstance {
+            id: row.get("id")?,
+            definition_id: row.get("definitionId")?,
+            subject_id: row.get("subjectId")?,
+            source_id: row.get("sourceId")?,
+            stacks: row.get("stacks")?,
+            remaining: row.get("remaining")?,
+            next_tick: row.get("nextTick")?,
+        };
+        instances.insert(instance.id, instance);
+    }
+    Ok(StatusSnapshot {
+        definitions,
+        instances,
+        next_id: table.get("nextId")?,
+    })
+}
+
+impl UserData for LuaStatusTracker {
+    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- define --
+        /// Registers or replaces one status definition.
+        /// @param | definition | table | Definition with id, duration, tickInterval, maxStacks, stacking, and tags.
+        methods.add_method_mut("define", |_, this, definition: LuaTable| {
+            let definition = parse_status_definition(definition)?;
+            this.tracker
+                .define(definition)
+                .map_err(|error| progression_error("LStatusTracker.define", error))
+        });
+        // -- apply --
+        /// Applies a status to a subject and returns its stable runtime instance id.
+        /// @param | subjectId | integer | Stable subject/entity id.
+        /// @param | definitionId | string | Registered status definition id.
+        /// @param | sourceId | integer? | Optional source/owner id.
+        /// @param | stacks | integer? | Initial stack count, clamped to maxStacks.
+        /// @return | integer | Status instance id.
+        methods.add_method_mut(
+            "apply",
+            |_,
+             this,
+             (subject_id, definition_id, source_id, stacks): (
+                u64,
+                String,
+                Option<u64>,
+                Option<u32>,
+            )| {
+                this.tracker
+                    .apply(subject_id, &definition_id, source_id, stacks.unwrap_or(1))
+                    .map_err(|error| progression_error("LStatusTracker.apply", error))
+            },
+        );
+        // -- clear --
+        /// Removes all definitions, instances, and queued events.
+        methods.add_method_mut("clear", |_, this, ()| {
+            this.tracker.clear();
+            Ok(())
+        });
+        // -- drainEvents --
+        /// Takes and clears neutral apply/refresh/stack/tick/expired events.
+        /// @return | table | Event records in deterministic emission order.
+        methods.add_method_mut("drainEvents", |lua, this, ()| {
+            let events = this.tracker.drain_events();
+            let output = lua.create_table()?;
+            for (index, event) in events.iter().enumerate() {
+                output.set(index + 1, status_event_to_lua(lua, event)?)?;
+            }
+            Ok(output)
+        });
+        // -- list --
+        /// Lists active status instances attached to one subject.
+        /// @param | subjectId | integer | Stable subject/entity id.
+        /// @return | table | Status instance records.
+        methods.add_method("list", |lua, this, subject_id: u64| {
+            let instances = this.tracker.list(subject_id);
+            let output = lua.create_table()?;
+            for (index, instance) in instances.iter().enumerate() {
+                output.set(index + 1, status_instance_to_lua(lua, instance)?)?;
+            }
+            Ok(output)
+        });
+        // -- remove --
+        /// Removes one active status instance.
+        /// @param | instanceId | integer | Runtime status instance id.
+        /// @return | boolean | True when an instance was removed.
+        methods.add_method_mut("remove", |_, this, instance_id: u64| {
+            Ok(this.tracker.remove(instance_id))
+        });
+        // -- restore --
+        /// Restores definitions, active instances, and ID allocation from a snapshot.
+        /// @param | snapshot | table | Table returned by `snapshot`.
+        methods.add_method_mut("restore", |_, this, snapshot: LuaTable| {
+            this.tracker
+                .restore(status_snapshot_from_lua(snapshot)?)
+                .map_err(|error| progression_error("LStatusTracker.restore", error))
+        });
+        // -- snapshot --
+        /// Captures definitions, instances, and ID allocation state.
+        /// @return | table | Serializable status tracker snapshot.
+        methods.add_method("snapshot", |lua, this, ()| {
+            status_snapshot_to_lua(lua, &this.tracker.snapshot())
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | Always `LStatusTracker`.
+        methods.add_method("type", |_, _, ()| Ok("LStatusTracker"));
+        // -- typeOf --
+        /// Checks whether this handle matches `LStatusTracker` or `LObject`.
+        /// @param | name | string | Type name to compare.
+        /// @return | boolean | Whether the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LStatusTracker" || name == "LObject")
+        });
+        // -- update --
+        /// Advances finite durations and periodic tick timers by dt seconds.
+        /// @param | dt | number | Non-negative logical seconds.
+        /// @return | integer | Number of events currently queued after the update.
+        methods.add_method_mut("update", |_, this, dt: f64| {
+            this.tracker
+                .update(dt)
+                .map_err(|error| progression_error("LStatusTracker.update", error))
+        });
+    }
 }
 
 #[derive(Clone)]
@@ -4794,6 +5027,17 @@ fn import_legacy_quest_snapshot<'lua>(
 /// Register the `lurek.progression` module into the Lua runtime.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let table = lua.create_table()?;
+    // -- newStatusTracker --
+    /// Creates an isolated deterministic status lifecycle tracker.
+    /// @return | LStatusTracker | New status tracker handle.
+    table.set(
+        "newStatusTracker",
+        lua.create_function(|lua, ()| {
+            lua.create_userdata(LuaStatusTracker {
+                tracker: StatusTracker::new(),
+            })
+        })?,
+    )?;
     /// New store.
     ///
     /// @param options : table?

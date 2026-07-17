@@ -4,7 +4,7 @@
 
 ## TL;DR
 
-- Runs a dual-priority event queue and wildcard signal registry.
+- Runs a dual-priority event queue, wildcard signal registry, and neutral ChangeSet envelope.
 
 ## General Info
 
@@ -12,7 +12,7 @@
 - Source path: `src/event`
 - Binding: `src/lua_api/event_api.rs`
 - Namespace: `lurek.event`
-- Lua API surface: `16` functions, `2` types, `12` methods
+- Lua API surface: `18` functions, `3` types, `24` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -22,6 +22,8 @@
 - Queues, priorities, listeners, signals, and deferred dispatch work together so gameplay, input, and tooling events can move through one predictable channel.
 - Wildcard-style subscriptions and explicit listener lifecycle management make the bus practical for both large subsystems and small script integrations.
 - History and Rust-Lua payload transfer matter because the module is not only about dispatch, but also about making that dispatch inspectable and usable across the engine boundary.
+- `newChangeSet()` provides a bounded, versioned collection of object/component mutations. It owns ordering, validation, deterministic hashing, and snapshot/restore only; it does not apply changes to ECS, physics, save, or network state.
+- Lua code explicitly forwards a ChangeSet table to whichever existing module should consume it, keeping cross-system composition outside Rust.
 - Read it as the shared traffic system for runtime messages.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
@@ -78,7 +80,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.event.enableHistory(capacity) -> nil`: Enables event push history with a maximum retained capacity.
 - `lurek.event.exit(code?) -> nil`: Requests engine shutdown with an optional process exit code.
 - `lurek.event.flushDeferred() -> integer`: Moves all deferred events into the shared event queue and clears the deferred buffer.
+- `lurek.event.fromChangeSetTable(value, maxChanges?) -> LChangeSet`: Creates a ChangeSet from a table produced by `LChangeSet:toTable()`.
 - `lurek.event.getHistory() -> table`: Returns retained pushed event history entries.
+- `lurek.event.newChangeSet(options?) -> LChangeSet`: Creates an empty bounded ChangeSet for neutral state replication, save, or Lua-side module integration.
 - `lurek.event.newSignal() -> LSignal`: Creates an isolated signal dispatcher for Lua callbacks.
 - `lurek.event.poll() -> function`: Creates a polling function that returns the next queued event each time it is called.
 - `lurek.event.pump() -> nil`: Pumps the shared event queue without removing events for Lua.
@@ -103,6 +107,29 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - No documented module-level enums/constants.
 
 ### Types
+
+#### LChangeSet Type
+
+- Lua handle for a bounded, versioned collection of neutral state changes.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LChangeSet:append(objectId, component, operation, payload) -> integer`: Appends one neutral object/component mutation and returns the new record count.
+- `LChangeSet:clear() -> integer`: Removes all records and returns the number removed.
+- `LChangeSet:hash() -> string`: Returns the deterministic FNV-1a hash of schema, revision, and ordered records.
+- `LChangeSet:isEmpty() -> boolean`: Returns true when the ChangeSet contains no records.
+- `LChangeSet:len() -> integer`: Returns the number of records currently stored.
+- `LChangeSet:restore(snapshot) -> nil`: Restores records from a table produced by `snapshot` or `toTable`.
+- `LChangeSet:revision() -> integer`: Returns the caller-defined monotonic revision.
+- `LChangeSet:schema() -> string`: Returns the schema identifier used to interpret records.
+- `LChangeSet:snapshot() -> table`: Returns a deterministic Lua snapshot including the derived hash.
+- `LChangeSet:toTable() -> table`: Converts the ChangeSet to a transport-neutral Lua table.
+- `LChangeSet:type() -> string`: Returns the Lua-visible type name.
+- `LChangeSet:typeOf(name) -> boolean`: Checks whether this handle matches `LChangeSet` or `LObject`.
 
 #### LEventGetHistoryResult Type
 

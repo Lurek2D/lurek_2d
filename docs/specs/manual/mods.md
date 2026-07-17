@@ -17,6 +17,8 @@
 - Manifest and content parsing are strict TOML decoders with byte, field, and count limits instead of line-based best-effort parsing.
 - Discovery and reload flows now build structured scan and load-plan reports so missing dependencies, cycles, checksum failures, and path-policy violations are explicit.
 - Hot reload is atomic at the registry level: the previous valid snapshot stays active when the new manifest set fails validation.
+- `newRegistry()` also supports optional typed content definitions through `defineType()`. Required fields and scalar/table/array types are checked before values enter the registry, and `freeze()` makes an admitted content set immutable for deterministic runtime use.
+- Registry snapshots contain normalized type definitions and values only. They do not instantiate ECS entities or invoke gameplay systems; Lua explicitly forwards registered data to the chosen existing owner.
 - `sandbox.max_memory` is enforced at hook execution time when the underlying Lua runtime supports memory limits; file writes and top-level network entry points are blocked through the normal Lua API surface while the sandbox is active.
 - It keeps mod power visible, explicit, and reviewable.
 - Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.

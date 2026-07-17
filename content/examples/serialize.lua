@@ -117,6 +117,26 @@ do
     lurek.log.info("title = " .. filled.title)
 end
 
+--@api: lurek.serialize.encodeChangeSet
+do
+    local changes = { schema = "network.v1", revision = 4, changes = {
+        { objectId = 9, component = "position", operation = "set", payload = { x = 12, y = 5 } },
+    } }
+    local encoded = lurek.serialize.encodeChangeSet(changes, "json", { pretty = true })
+    local decoded = lurek.serialize.decodeChangeSet(encoded, "json")
+    lurek.log.info("changeset bytes=" .. #encoded .. " schema=" .. decoded.schema .. " rows=" .. #decoded.changes)
+end
+
+--@api: lurek.serialize.decodeChangeSet
+do
+    local encoded = lurek.serialize.encode({ schema = "save.v1", revision = 1, changes = {
+        { objectId = 2, component = "alive", operation = "set", payload = true },
+    } }, "json")
+    local changes = lurek.serialize.decodeChangeSet(encoded, "json")
+    local row = changes.changes[1]
+    lurek.log.info("decoded schema=" .. changes.schema .. " object=" .. row.objectId .. " payload=" .. tostring(row.payload))
+end
+
 --@api: lurek.serialize.decode
 do
     local jsonPayload = '{"auto": true, "score": 99}'

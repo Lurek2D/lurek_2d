@@ -42,6 +42,8 @@ _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) 
 
 ### [Europa Universalis 2 Lite](../tree/main/content/games/eu2)
 
+![Europa Universalis 2 Lite screenshot](../raw/main/content/games/eu2/screen.png)
+
 **Engine:** Lurek2D
 
 **Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [log](https://lurek2d.github.io/lurek_2d/modules/log.html), [province](https://lurek2d.github.io/lurek_2d/modules/province.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)

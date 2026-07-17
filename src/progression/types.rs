@@ -927,3 +927,69 @@ pub struct SeasonArchiveRecord {
     /// Full progression snapshot captured before resets were applied.
     pub snapshot: JsonValue,
 }
+
+/// Authored lifecycle rules for one gameplay status effect.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatusDefinition {
+    /// Stable definition identifier.
+    pub id: String,
+    /// Duration in seconds. `None` means the status does not expire automatically.
+    pub duration: Option<f64>,
+    /// Optional periodic tick interval in seconds.
+    pub tick_interval: Option<f64>,
+    /// Maximum number of stacks accepted for one subject.
+    pub max_stacks: u32,
+    /// Replace, refresh, or add stacking policy.
+    pub stacking: String,
+    /// Caller-defined tags used by Lua-side immunity and dispel rules.
+    pub tags: Vec<String>,
+}
+
+/// Runtime state for one status instance attached to a stable subject ID.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatusInstance {
+    /// Runtime instance identifier.
+    pub id: u64,
+    /// Stable status definition identifier.
+    pub definition_id: String,
+    /// Stable subject/entity identifier.
+    pub subject_id: u64,
+    /// Optional source/owner identifier.
+    pub source_id: Option<u64>,
+    /// Current stack count.
+    pub stacks: u32,
+    /// Remaining duration in seconds, or `None` for infinite duration.
+    pub remaining: Option<f64>,
+    /// Time remaining before the next periodic tick.
+    pub next_tick: Option<f64>,
+}
+
+/// Neutral status lifecycle event for Lua-side integrations.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatusEvent {
+    /// Event kind: applied, refreshed, stacked, tick, or expired.
+    pub kind: String,
+    /// Runtime status instance identifier.
+    pub instance_id: u64,
+    /// Stable subject/entity identifier.
+    pub subject_id: u64,
+    /// Stable status definition identifier.
+    pub definition_id: String,
+    /// Current stack count at the event boundary.
+    pub stacks: u32,
+    /// Remaining duration, when finite.
+    pub remaining: Option<f64>,
+    /// Number of periodic ticks represented by this event.
+    pub tick_count: u32,
+}
+
+/// Serializable status tracker snapshot.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatusSnapshot {
+    /// Authored definitions keyed by ID.
+    pub definitions: BTreeMap<String, StatusDefinition>,
+    /// Active instances keyed by runtime ID.
+    pub instances: BTreeMap<u64, StatusInstance>,
+    /// Next runtime ID reserved by the tracker.
+    pub next_id: u64,
+}

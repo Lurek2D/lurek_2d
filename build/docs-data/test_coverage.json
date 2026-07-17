@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 7657,
-    "covered": 4392,
-    "uncovered": 3265,
-    "coverage_pct": 57.4,
+    "total": 7681,
+    "covered": 4414,
+    "uncovered": 3267,
+    "coverage_pct": 57.5,
     "covered_items": [
       {
         "module": "agent",
@@ -5923,57 +5923,63 @@
       },
       {
         "module": "ecs",
+        "name": "Universe::apply_changeset",
+        "file": "src/ecs/universe.rs",
+        "line": 544
+      },
+      {
+        "module": "ecs",
         "name": "Universe::query",
         "file": "src/ecs/universe.rs",
-        "line": 554
+        "line": 642
       },
       {
         "module": "ecs",
         "name": "Universe::each",
         "file": "src/ecs/universe.rs",
-        "line": 603
+        "line": 691
       },
       {
         "module": "ecs",
         "name": "Universe::add_tag",
         "file": "src/ecs/universe.rs",
-        "line": 621
+        "line": 709
       },
       {
         "module": "ecs",
         "name": "Universe::set_layer",
         "file": "src/ecs/universe.rs",
-        "line": 813
+        "line": 901
       },
       {
         "module": "ecs",
         "name": "Universe::get_layer",
         "file": "src/ecs/universe.rs",
-        "line": 823
+        "line": 911
       },
       {
         "module": "ecs",
         "name": "Universe::clear",
         "file": "src/ecs/universe.rs",
-        "line": 957
+        "line": 1045
       },
       {
         "module": "ecs",
         "name": "Universe::take_component_events",
         "file": "src/ecs/universe.rs",
-        "line": 1005
+        "line": 1093
       },
       {
         "module": "ecs",
         "name": "Universe::get_dirty_entities",
         "file": "src/ecs/universe.rs",
-        "line": 1012
+        "line": 1100
       },
       {
         "module": "ecs",
         "name": "Universe::remove_relation",
         "file": "src/ecs/universe.rs",
-        "line": 1045
+        "line": 1133
       },
       {
         "module": "ecs",
@@ -6297,43 +6303,109 @@
         "module": "event",
         "name": "EventQueue::new",
         "file": "src/event/event_queue.rs",
-        "line": 65
+        "line": 66
       },
       {
         "module": "event",
         "name": "EventQueue::push",
         "file": "src/event/event_queue.rs",
-        "line": 74
+        "line": 75
       },
       {
         "module": "event",
         "name": "EventQueue::poll",
         "file": "src/event/event_queue.rs",
-        "line": 105
+        "line": 106
       },
       {
         "module": "event",
         "name": "EventQueue::clear",
         "file": "src/event/event_queue.rs",
-        "line": 111
+        "line": 112
       },
       {
         "module": "event",
         "name": "EventQueue::is_empty",
         "file": "src/event/event_queue.rs",
-        "line": 116
+        "line": 117
       },
       {
         "module": "event",
         "name": "EventQueue::len",
         "file": "src/event/event_queue.rs",
-        "line": 120
+        "line": 121
       },
       {
         "module": "event",
         "name": "EventQueue::wait",
         "file": "src/event/event_queue.rs",
-        "line": 126
+        "line": 127
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::new",
+        "file": "src/event/event_queue.rs",
+        "line": 358
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::append",
+        "file": "src/event/event_queue.rs",
+        "line": 374
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::schema",
+        "file": "src/event/event_queue.rs",
+        "line": 395
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::revision",
+        "file": "src/event/event_queue.rs",
+        "line": 400
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::len",
+        "file": "src/event/event_queue.rs",
+        "line": 405
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::is_empty",
+        "file": "src/event/event_queue.rs",
+        "line": 415
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::clear",
+        "file": "src/event/event_queue.rs",
+        "line": 420
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::changes",
+        "file": "src/event/event_queue.rs",
+        "line": 427
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::snapshot",
+        "file": "src/event/event_queue.rs",
+        "line": 432
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::restore",
+        "file": "src/event/event_queue.rs",
+        "line": 441
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::hash",
+        "file": "src/event/event_queue.rs",
+        "line": 467
       },
       {
         "module": "event",
@@ -11439,13 +11511,13 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1688
+        "line": 1695
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/effect_api.rs",
-        "line": 739
+        "line": 851
       },
       {
         "module": "lua_api",
@@ -11457,7 +11529,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/event_api.rs",
-        "line": 249
+        "line": 409
       },
       {
         "module": "lua_api",
@@ -11577,13 +11649,13 @@
         "module": "lua_api",
         "name": "LuaContentRegistry::new",
         "file": "src/lua_api/mods_api.rs",
-        "line": 944
+        "line": 1064
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1038
+        "line": 1361
       },
       {
         "module": "lua_api",
@@ -11697,109 +11769,109 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4795
+        "line": 5028
       },
       {
         "module": "lua_api",
         "name": "new",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5013
+        "line": 5257
       },
       {
         "module": "lua_api",
         "name": "LuaQuestState::new",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5051
+        "line": 5295
       },
       {
         "module": "lua_api",
         "name": "LuaReward::new",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5080
+        "line": 5324
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::new",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5109
+        "line": 5353
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::achievement",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5129
+        "line": 5373
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::challenge",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5134
+        "line": 5378
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::collection",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5139
+        "line": 5383
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::leaderboard_entry",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5144
+        "line": 5388
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::population",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5149
+        "line": 5393
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::population_profile",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5154
+        "line": 5398
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::prestige",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5159
+        "line": 5403
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::activity_feed",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5164
+        "line": 5408
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::quest_journal_entry",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5215
+        "line": 5459
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::rival",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5250
+        "line": 5494
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::rival_delta",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5255
+        "line": 5499
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::season",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5260
+        "line": 5504
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::season_archive",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5265
+        "line": 5509
       },
       {
         "module": "lua_api",
@@ -11865,7 +11937,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 283
+        "line": 345
       },
       {
         "module": "lua_api",
@@ -19321,171 +19393,231 @@
       },
       {
         "module": "progression",
+        "name": "StatusTracker::new",
+        "file": "src/progression/store.rs",
+        "line": 70
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::define",
+        "file": "src/progression/store.rs",
+        "line": 80
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::apply",
+        "file": "src/progression/store.rs",
+        "line": 113
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::update",
+        "file": "src/progression/store.rs",
+        "line": 205
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::remove",
+        "file": "src/progression/store.rs",
+        "line": 266
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::list",
+        "file": "src/progression/store.rs",
+        "line": 271
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::drain_events",
+        "file": "src/progression/store.rs",
+        "line": 280
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::snapshot",
+        "file": "src/progression/store.rs",
+        "line": 285
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::restore",
+        "file": "src/progression/store.rs",
+        "line": 294
+      },
+      {
+        "module": "progression",
+        "name": "StatusTracker::clear",
+        "file": "src/progression/store.rs",
+        "line": 327
+      },
+      {
+        "module": "progression",
         "name": "ProgressionTransaction::new",
         "file": "src/progression/store.rs",
-        "line": 349
+        "line": 629
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::add_counter",
         "file": "src/progression/store.rs",
-        "line": 357
+        "line": 637
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::set_attribute_base",
         "file": "src/progression/store.rs",
-        "line": 375
+        "line": 655
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::set_resource",
         "file": "src/progression/store.rs",
-        "line": 385
+        "line": 665
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::add_modifier",
         "file": "src/progression/store.rs",
-        "line": 394
+        "line": 674
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::set_quest_objective",
         "file": "src/progression/store.rs",
-        "line": 408
+        "line": 688
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::add_experience",
         "file": "src/progression/store.rs",
-        "line": 425
+        "line": 705
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::submit_score",
         "file": "src/progression/store.rs",
-        "line": 434
+        "line": 714
       },
       {
         "module": "progression",
         "name": "ProgressionTransaction::operations",
         "file": "src/progression/store.rs",
-        "line": 443
+        "line": 723
       },
       {
         "module": "progression",
         "name": "ProgressionStore::new",
         "file": "src/progression/store.rs",
-        "line": 531
+        "line": 811
       },
       {
         "module": "progression",
         "name": "ProgressionStore::id",
         "file": "src/progression/store.rs",
-        "line": 590
+        "line": 870
       },
       {
         "module": "progression",
         "name": "ProgressionStore::revision",
         "file": "src/progression/store.rs",
-        "line": 595
+        "line": 875
       },
       {
         "module": "progression",
         "name": "ProgressionStore::schema_version",
         "file": "src/progression/store.rs",
-        "line": 600
+        "line": 880
       },
       {
         "module": "progression",
         "name": "ProgressionStore::definition_hash",
         "file": "src/progression/store.rs",
-        "line": 605
+        "line": 885
       },
       {
         "module": "progression",
         "name": "ProgressionStore::time",
         "file": "src/progression/store.rs",
-        "line": 632
+        "line": 912
       },
       {
         "module": "progression",
         "name": "ProgressionStore::advance_time",
         "file": "src/progression/store.rs",
-        "line": 645
+        "line": 925
       },
       {
         "module": "progression",
         "name": "ProgressionStore::clear",
         "file": "src/progression/store.rs",
-        "line": 660
+        "line": 940
       },
       {
         "module": "progression",
         "name": "ProgressionStore::stats",
         "file": "src/progression/store.rs",
-        "line": 676
+        "line": 956
       },
       {
         "module": "progression",
         "name": "ProgressionStore::validate",
         "file": "src/progression/store.rs",
-        "line": 707
+        "line": 987
       },
       {
         "module": "progression",
         "name": "ProgressionStore::export_snapshot",
         "file": "src/progression/store.rs",
-        "line": 758
+        "line": 1038
       },
       {
         "module": "progression",
         "name": "ProgressionStore::from_snapshot",
         "file": "src/progression/store.rs",
-        "line": 773
+        "line": 1053
       },
       {
         "module": "progression",
         "name": "ProgressionStore::define_level_track",
         "file": "src/progression/store.rs",
-        "line": 779
+        "line": 1059
       },
       {
         "module": "progression",
         "name": "ProgressionStore::define_derived_value",
         "file": "src/progression/store.rs",
-        "line": 791
+        "line": 1071
       },
       {
         "module": "progression",
         "name": "ProgressionStore::drain_events",
         "file": "src/progression/store.rs",
-        "line": 892
+        "line": 1172
       },
       {
         "module": "progression",
         "name": "ProgressionStore::update",
         "file": "src/progression/store.rs",
-        "line": 897
+        "line": 1177
       },
       {
         "module": "progression",
         "name": "ProgressionStore::list_events",
         "file": "src/progression/store.rs",
-        "line": 922
+        "line": 1202
       },
       {
         "module": "progression",
         "name": "ProgressionStore::export_changes_since",
         "file": "src/progression/store.rs",
-        "line": 932
+        "line": 1212
       },
       {
         "module": "progression",
         "name": "ProgressionStore::apply_changeset",
         "file": "src/progression/store.rs",
-        "line": 941
+        "line": 1221
       },
       {
         "module": "province",
@@ -32141,175 +32273,175 @@
         "module": "ecs",
         "name": "Universe::get_component_names",
         "file": "src/ecs/universe.rs",
-        "line": 538
+        "line": 626
       },
       {
         "module": "ecs",
         "name": "Universe::query_component_sets",
         "file": "src/ecs/universe.rs",
-        "line": 559
+        "line": 647
       },
       {
         "module": "ecs",
         "name": "Universe::remove_tag",
         "file": "src/ecs/universe.rs",
-        "line": 635
+        "line": 723
       },
       {
         "module": "ecs",
         "name": "Universe::has_tag",
         "file": "src/ecs/universe.rs",
-        "line": 649
+        "line": 737
       },
       {
         "module": "ecs",
         "name": "Universe::get_tags",
         "file": "src/ecs/universe.rs",
-        "line": 657
+        "line": 745
       },
       {
         "module": "ecs",
         "name": "Universe::get_entities_by_tag",
         "file": "src/ecs/universe.rs",
-        "line": 662
+        "line": 750
       },
       {
         "module": "ecs",
         "name": "Universe::iter_entities_by_tag",
         "file": "src/ecs/universe.rs",
-        "line": 671
+        "line": 759
       },
       {
         "module": "ecs",
         "name": "Universe::define_tag",
         "file": "src/ecs/universe.rs",
-        "line": 694
+        "line": 782
       },
       {
         "module": "ecs",
         "name": "Universe::bitmap_tag",
         "file": "src/ecs/universe.rs",
-        "line": 698
+        "line": 786
       },
       {
         "module": "ecs",
         "name": "Universe::bitmap_untag",
         "file": "src/ecs/universe.rs",
-        "line": 713
+        "line": 801
       },
       {
         "module": "ecs",
         "name": "Universe::has_bitmap_tag",
         "file": "src/ecs/universe.rs",
-        "line": 726
+        "line": 814
       },
       {
         "module": "ecs",
         "name": "Universe::query_bitmap_tag",
         "file": "src/ecs/universe.rs",
-        "line": 736
+        "line": 824
       },
       {
         "module": "ecs",
         "name": "Universe::query_bitmap_any",
         "file": "src/ecs/universe.rs",
-        "line": 757
+        "line": 845
       },
       {
         "module": "ecs",
         "name": "Universe::query_bitmap_all",
         "file": "src/ecs/universe.rs",
-        "line": 782
+        "line": 870
       },
       {
         "module": "ecs",
         "name": "Universe::get_bitmap_tag_bit",
         "file": "src/ecs/universe.rs",
-        "line": 809
+        "line": 897
       },
       {
         "module": "ecs",
         "name": "Universe::get_entities_by_layer",
         "file": "src/ecs/universe.rs",
-        "line": 830
+        "line": 918
       },
       {
         "module": "ecs",
         "name": "Universe::get_entities_sorted",
         "file": "src/ecs/universe.rs",
-        "line": 841
+        "line": 929
       },
       {
         "module": "ecs",
         "name": "Universe::define_blueprint",
         "file": "src/ecs/universe.rs",
-        "line": 856
+        "line": 944
       },
       {
         "module": "ecs",
         "name": "Universe::extend_blueprint",
         "file": "src/ecs/universe.rs",
-        "line": 864
+        "line": 952
       },
       {
         "module": "ecs",
         "name": "Universe::spawn_blueprint",
         "file": "src/ecs/universe.rs",
-        "line": 885
+        "line": 973
       },
       {
         "module": "ecs",
         "name": "Universe::has_blueprint",
         "file": "src/ecs/universe.rs",
-        "line": 912
+        "line": 1000
       },
       {
         "module": "ecs",
         "name": "Universe::remove_blueprint",
         "file": "src/ecs/universe.rs",
-        "line": 922
+        "line": 1010
       },
       {
         "module": "ecs",
         "name": "Universe::list_blueprints",
         "file": "src/ecs/universe.rs",
-        "line": 930
+        "line": 1018
       },
       {
         "module": "ecs",
         "name": "Universe::get_blueprint_components",
         "file": "src/ecs/universe.rs",
-        "line": 943
+        "line": 1031
       },
       {
         "module": "ecs",
         "name": "Universe::take_snapshot_diff",
         "file": "src/ecs/universe.rs",
-        "line": 1018
+        "line": 1106
       },
       {
         "module": "ecs",
         "name": "Universe::add_relation",
         "file": "src/ecs/universe.rs",
-        "line": 1031
+        "line": 1119
       },
       {
         "module": "ecs",
         "name": "Universe::get_related",
         "file": "src/ecs/universe.rs",
-        "line": 1039
+        "line": 1127
       },
       {
         "module": "ecs",
         "name": "Universe::clear_relations",
         "file": "src/ecs/universe.rs",
-        "line": 1053
+        "line": 1141
       },
       {
         "module": "ecs",
         "name": "Universe::has_relation",
         "file": "src/ecs/universe.rs",
-        "line": 1060
+        "line": 1148
       },
       {
         "module": "ecs",
@@ -32639,43 +32771,55 @@
         "module": "event",
         "name": "EventQueue::push_with_priority",
         "file": "src/event/event_queue.rs",
-        "line": 78
+        "line": 79
       },
       {
         "module": "event",
         "name": "EventQueue::push_event",
         "file": "src/event/event_queue.rs",
-        "line": 86
+        "line": 87
       },
       {
         "module": "event",
         "name": "EventQueue::push_event_with_priority",
         "file": "src/event/event_queue.rs",
-        "line": 90
+        "line": 91
       },
       {
         "module": "event",
         "name": "EventQueue::pump",
         "file": "src/event/event_queue.rs",
-        "line": 124
+        "line": 125
       },
       {
         "module": "event",
         "name": "EventArg::from_lua_val",
         "file": "src/event/event_queue.rs",
-        "line": 227
+        "line": 228
+      },
+      {
+        "module": "event",
+        "name": "EventArg::from_lua_change_value",
+        "file": "src/event/event_queue.rs",
+        "line": 284
+      },
+      {
+        "module": "event",
+        "name": "ChangeSet::max_changes",
+        "file": "src/event/event_queue.rs",
+        "line": 410
       },
       {
         "module": "event",
         "name": "event_arg_to_lua_value",
         "file": "src/event/event_queue.rs",
-        "line": 279
+        "line": 478
       },
       {
         "module": "event",
         "name": "event_to_lua_multi",
         "file": "src/event/event_queue.rs",
-        "line": 301
+        "line": 500
       },
       {
         "module": "event",
@@ -35081,13 +35225,13 @@
         "module": "lua_api",
         "name": "LuaPostFxStack::effect_passes",
         "file": "src/lua_api/effect_api.rs",
-        "line": 341
+        "line": 398
       },
       {
         "module": "lua_api",
         "name": "LuaPostFxStack::effect_passes_for_api",
         "file": "src/lua_api/effect_api.rs",
-        "line": 346
+        "line": 403
       },
       {
         "module": "lua_api",
@@ -35207,31 +35351,31 @@
         "module": "lua_api",
         "name": "LuaQuestJournal::quest_state_bound",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5206
+        "line": 5450
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::quest_journal_bound",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5220
+        "line": 5464
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::reward_bound",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5241
+        "line": 5485
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::activity_feed_entry",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5270
+        "line": 5514
       },
       {
         "module": "lua_api",
         "name": "LuaQuestJournal::userdata_list",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5275
+        "line": 5519
       },
       {
         "module": "lua_api",
@@ -40517,49 +40661,49 @@
         "module": "progression",
         "name": "ProgressionTransaction::set_counter",
         "file": "src/progression/store.rs",
-        "line": 366
+        "line": 646
       },
       {
         "module": "progression",
         "name": "ProgressionStore::set_time",
         "file": "src/progression/store.rs",
-        "line": 637
+        "line": 917
       },
       {
         "module": "progression",
         "name": "ProgressionStore::load_snapshot",
         "file": "src/progression/store.rs",
-        "line": 763
+        "line": 1043
       },
       {
         "module": "progression",
         "name": "ProgressionStore::remove_derived_value",
         "file": "src/progression/store.rs",
-        "line": 804
+        "line": 1084
       },
       {
         "module": "progression",
         "name": "ProgressionStore::begin_transaction",
         "file": "src/progression/store.rs",
-        "line": 809
+        "line": 1089
       },
       {
         "module": "progression",
         "name": "ProgressionStore::commit_transaction",
         "file": "src/progression/store.rs",
-        "line": 814
+        "line": 1094
       },
       {
         "module": "progression",
         "name": "ProgressionStore::clear_events",
         "file": "src/progression/store.rs",
-        "line": 927
+        "line": 1207
       },
       {
         "module": "progression",
         "name": "ProgressionStore::debug_snapshot",
         "file": "src/progression/store.rs",
-        "line": 970
+        "line": 1250
       },
       {
         "module": "province",
@@ -45952,8 +46096,8 @@
     ]
   },
   "lua": {
-    "total": 7056,
-    "covered": 7056,
+    "total": 7097,
+    "covered": 7097,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -50439,339 +50583,353 @@
       },
       {
         "module": "audio",
+        "lua_name": "lurek.audio.manager.playMusic",
+        "kind": "function",
+        "file": "src/lua_api/audio_api.rs",
+        "line": 2103
+      },
+      {
+        "module": "audio",
+        "lua_name": "lurek.audio.manager.setGroupVolume",
+        "kind": "function",
+        "file": "src/lua_api/audio_api.rs",
+        "line": 2145
+      },
+      {
+        "module": "audio",
         "lua_name": "lurek.audio.manager.pauseAll",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2122
+        "line": 2166
       },
       {
         "module": "audio",
         "lua_name": "lurek.audio.manager.resumeAll",
         "kind": "function",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2132
+        "line": 2176
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:start",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2343
+        "line": 2387
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:stop",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2349
+        "line": 2393
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:reset",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2355
+        "line": 2399
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:tick",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2363
+        "line": 2407
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:update",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2375
+        "line": 2419
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:position",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2433
+        "line": 2477
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:bpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2445
+        "line": 2489
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getBpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2449
+        "line": 2493
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:setBpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2453
+        "line": 2497
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:rampBpm",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2461
+        "line": 2505
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:setSwing",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2468
+        "line": 2512
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:beatsPerBar",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2475
+        "line": 2519
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:setBeatsPerBar",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2481
+        "line": 2525
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2488
+        "line": 2532
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getBar",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2492
+        "line": 2536
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:getPhase",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2497
+        "line": 2541
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:beatTimeRemaining",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2505
+        "line": 2549
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:isOnBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2514
+        "line": 2558
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:nearestBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2528
+        "line": 2572
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:judge",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2538
+        "line": 2582
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:tap",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2582
+        "line": 2626
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:every",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2588
+        "line": 2632
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:at",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2601
+        "line": 2645
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:pattern",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2611
+        "line": 2655
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:cancel",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2624
+        "line": 2668
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:cancelAll",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2631
+        "line": 2675
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:scheduleAt",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2639
+        "line": 2683
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:drainFired",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2645
+        "line": 2689
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:secondsPerBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2656
+        "line": 2700
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:secondsToNextBeat",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2662
+        "line": 2706
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:isRunning",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2668
+        "line": 2712
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:syncToSource",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2674
+        "line": 2718
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:dump",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2684
+        "line": 2728
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:quantise",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2699
+        "line": 2743
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2705
+        "line": 2749
       },
       {
         "module": "audio",
         "lua_name": "LBeatClock:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2710
+        "line": 2754
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getSampleCount",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2721
+        "line": 2765
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getSampleRate",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2725
+        "line": 2769
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getChannelCount",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2729
+        "line": 2773
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getDuration",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2733
+        "line": 2777
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getBitDepth",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2737
+        "line": 2781
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:getSample",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2742
+        "line": 2786
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:drawWaveform",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2759
+        "line": 2803
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:setSample",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2783
+        "line": 2827
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:type",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2796
+        "line": 2840
       },
       {
         "module": "audio",
         "lua_name": "LSoundData:typeOf",
         "kind": "method",
         "file": "src/lua_api/audio_api.rs",
-        "line": 2801
+        "line": 2845
       },
       {
         "module": "automation",
@@ -59014,654 +59172,661 @@
       },
       {
         "module": "ecs",
+        "lua_name": "LUniverse:applyChangeSet",
+        "kind": "method",
+        "file": "src/lua_api/ecs_api.rs",
+        "line": 960
+      },
+      {
+        "module": "ecs",
         "lua_name": "LUniverse:takeSnapshotDiff",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 963
+        "line": 970
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:clear",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1004
+        "line": 1011
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:release",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1007
+        "line": 1014
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:addTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1014
+        "line": 1021
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:removeTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1022
+        "line": 1029
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1031
+        "line": 1038
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getTags",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1038
+        "line": 1045
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntitiesByTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1045
+        "line": 1052
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:setLayer",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1052
+        "line": 1059
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getLayer",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1060
+        "line": 1067
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntitiesByLayer",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1067
+        "line": 1074
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getEntitiesSorted",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1073
+        "line": 1080
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:defineTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1080
+        "line": 1087
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:bitmapTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1088
+        "line": 1095
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:bitmapUntag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1095
+        "line": 1102
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasBitmapTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1104
+        "line": 1111
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryBitmapTag",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1111
+        "line": 1118
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryBitmapAny",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1118
+        "line": 1125
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryBitmapAll",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1128
+        "line": 1135
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getBitmapTagBit",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1138
+        "line": 1145
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:defineBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1145
+        "line": 1152
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:extendBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1158
+        "line": 1165
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:spawnBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1171
+        "line": 1178
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1183
+        "line": 1190
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:removeBlueprint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1190
+        "line": 1197
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:listBlueprints",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1196
+        "line": 1203
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getBlueprintComponents",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1203
+        "line": 1210
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:setParent",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1210
+        "line": 1217
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getParent",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1220
+        "line": 1227
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getChildren",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1227
+        "line": 1234
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:killRecursive",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1233
+        "line": 1240
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:queryNot",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1241
+        "line": 1248
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:serialize",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1260
+        "line": 1267
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:deserialize",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1266
+        "line": 1273
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:onComponentAdded",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1275
+        "line": 1282
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:onComponentRemoved",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1291
+        "line": 1298
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:flushObservers",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1305
+        "line": 1312
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:spawnBulk",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1353
+        "line": 1360
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:addRelation",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1366
+        "line": 1373
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:getRelated",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1377
+        "line": 1384
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:removeRelation",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1390
+        "line": 1397
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:clearRelations",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1400
+        "line": 1407
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:hasRelation",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1409
+        "line": 1416
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1418
+        "line": 1425
       },
       {
         "module": "ecs",
         "lua_name": "LUniverse:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1423
+        "line": 1430
       },
       {
         "module": "ecs",
         "lua_name": "LStatBlock:get",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1435
+        "line": 1442
       },
       {
         "module": "ecs",
         "lua_name": "LStatBlock:set",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1442
+        "line": 1449
       },
       {
         "module": "ecs",
         "lua_name": "LStatBlock:add",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1453
+        "line": 1460
       },
       {
         "module": "ecs",
         "lua_name": "LStatBlock:toTable",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1463
+        "line": 1470
       },
       {
         "module": "ecs",
         "lua_name": "LStatBlock:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1469
+        "line": 1476
       },
       {
         "module": "ecs",
         "lua_name": "LStatBlock:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1474
+        "line": 1481
       },
       {
         "module": "ecs",
         "lua_name": "LSlotDef:getName",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1485
+        "line": 1492
       },
       {
         "module": "ecs",
         "lua_name": "LSlotDef:getAccepts",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1491
+        "line": 1498
       },
       {
         "module": "ecs",
         "lua_name": "LSlotDef:isRequired",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1497
+        "line": 1504
       },
       {
         "module": "ecs",
         "lua_name": "LSlotDef:getHardpoint",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1501
+        "line": 1508
       },
       {
         "module": "ecs",
         "lua_name": "LSlotDef:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1507
+        "line": 1514
       },
       {
         "module": "ecs",
         "lua_name": "LSlotDef:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1512
+        "line": 1519
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:getId",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1523
+        "line": 1530
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:getSlot",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1527
+        "line": 1534
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:getTags",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1533
+        "line": 1540
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:getStats",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1539
+        "line": 1546
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:getCost",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1545
+        "line": 1552
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:getHardpoints",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1549
+        "line": 1556
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:getVisuals",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1555
+        "line": 1562
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1565
+        "line": 1572
       },
       {
         "module": "ecs",
         "lua_name": "LPartDef:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1570
+        "line": 1577
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:addSlot",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1581
+        "line": 1588
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:equip",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1591
+        "line": 1598
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:unequip",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1620
+        "line": 1627
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:validate",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1626
+        "line": 1633
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:computeStats",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1639
+        "line": 1646
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:getHardpoints",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1647
+        "line": 1654
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:getCost",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1653
+        "line": 1660
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:toComponent",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1657
+        "line": 1664
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:type",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1676
+        "line": 1683
       },
       {
         "module": "ecs",
         "lua_name": "LLoadout:typeOf",
         "kind": "method",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1681
+        "line": 1688
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newUniverse",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1695
+        "line": 1702
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newRelationshipManager",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1709
+        "line": 1716
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newSlotDef",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1722
+        "line": 1729
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newPartDef",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1734
+        "line": 1741
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newLoadout",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1746
+        "line": 1753
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newStatBlock",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1768
+        "line": 1775
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.defineClass",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1781
+        "line": 1788
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.hasClass",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1803
+        "line": 1810
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.getClass",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1814
+        "line": 1821
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.classNames",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1828
+        "line": 1835
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.clearClasses",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1835
+        "line": 1842
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.newObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1857
+        "line": 1864
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.getObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1870
+        "line": 1877
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.hasObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1887
+        "line": 1894
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.objectIds",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1895
+        "line": 1902
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.destroyObject",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1904
+        "line": 1911
       },
       {
         "module": "ecs",
         "lua_name": "lurek.ecs.clearObjects",
         "kind": "function",
         "file": "src/lua_api/ecs_api.rs",
-        "line": 1917
+        "line": 1924
       },
       {
         "module": "effect",
@@ -59836,336 +60001,350 @@
         "lua_name": "LPostFxStack:add",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 384
+        "line": 441
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:remove",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 396
+        "line": 453
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:insert",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 415
+        "line": 472
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:setEnabled",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 431
+        "line": 488
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:isEnabled",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 445
+        "line": 502
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:getEffectCount",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 452
+        "line": 509
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:getEffect",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 457
+        "line": 514
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:getEnabledEffects",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 469
+        "line": 526
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:getWidth",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 486
+        "line": 543
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:getHeight",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 490
+        "line": 547
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:getDimensions",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 495
+        "line": 552
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:resize",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 502
+        "line": 559
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:len",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 511
+        "line": 568
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:isEmpty",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 515
+        "line": 572
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:clear",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 518
+        "line": 575
+      },
+      {
+        "module": "effect",
+        "lua_name": "LPostFxStack:snapshot",
+        "kind": "method",
+        "file": "src/lua_api/effect_api.rs",
+        "line": 583
+      },
+      {
+        "module": "effect",
+        "lua_name": "LPostFxStack:restore",
+        "kind": "method",
+        "file": "src/lua_api/effect_api.rs",
+        "line": 602
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:dedup",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 526
+        "line": 638
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:isCapturing",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 549
+        "line": 661
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:beginCapture",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 552
+        "line": 664
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:endCapture",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 564
+        "line": 676
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:apply",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 576
+        "line": 688
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:type",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 595
+        "line": 707
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:typeOf",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 600
+        "line": 712
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:setFeedback",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 606
+        "line": 718
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:getFeedback",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 613
+        "line": 725
       },
       {
         "module": "effect",
         "lua_name": "LPostFxStack:clearFeedback",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 616
+        "line": 728
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:addEffect",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 634
+        "line": 746
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:getEffect",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 645
+        "line": 757
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:removeEffect",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 667
+        "line": 779
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:clearEffects",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 675
+        "line": 787
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:clear",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 681
+        "line": 793
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:effectCount",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 688
+        "line": 800
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:getEffectCount",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 692
+        "line": 804
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:clone",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 698
+        "line": 810
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:save",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 710
+        "line": 822
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:type",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 714
+        "line": 826
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:typeOf",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 719
+        "line": 831
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:removeByIndex",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 726
+        "line": 838
       },
       {
         "module": "effect",
         "lua_name": "LImageEffect:removeByName",
         "kind": "method",
         "file": "src/lua_api/effect_api.rs",
-        "line": 733
+        "line": 845
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.newEffect",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 745
+        "line": 857
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.newCustomEffect",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 759
+        "line": 871
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.newStack",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 777
+        "line": 889
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.newPresetStack",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 804
+        "line": 916
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.newPass",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 843
+        "line": 955
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.getEffectTypes",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 858
+        "line": 970
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.getPresetNames",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 865
+        "line": 977
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.newImageEffect",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 874
+        "line": 986
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.setShaderErrorDisplay",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 945
+        "line": 1057
       },
       {
         "module": "effect",
         "lua_name": "lurek.effect.getShaderErrorDisplay",
         "kind": "function",
         "file": "src/lua_api/effect_api.rs",
-        "line": 956
+        "line": 1068
       },
       {
         "module": "engine",
@@ -60260,199 +60439,297 @@
       },
       {
         "module": "event",
+        "lua_name": "LChangeSet:append",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 96
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:clear",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 112
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:hash",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 116
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:isEmpty",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 120
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:len",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 124
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:restore",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 128
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:revision",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 151
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:schema",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 155
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:snapshot",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 159
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:toTable",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 165
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:type",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 171
+      },
+      {
+        "module": "event",
+        "lua_name": "LChangeSet:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 176
+      },
+      {
+        "module": "event",
         "lua_name": "LSignal:register",
-        "kind": "method",
-        "file": "src/lua_api/event_api.rs",
-        "line": 29
-      },
-      {
-        "module": "event",
-        "lua_name": "LSignal:emit",
-        "kind": "method",
-        "file": "src/lua_api/event_api.rs",
-        "line": 43
-      },
-      {
-        "module": "event",
-        "lua_name": "LSignal:remove",
-        "kind": "method",
-        "file": "src/lua_api/event_api.rs",
-        "line": 136
-      },
-      {
-        "module": "event",
-        "lua_name": "LSignal:clear",
-        "kind": "method",
-        "file": "src/lua_api/event_api.rs",
-        "line": 149
-      },
-      {
-        "module": "event",
-        "lua_name": "LSignal:clearAll",
-        "kind": "method",
-        "file": "src/lua_api/event_api.rs",
-        "line": 163
-      },
-      {
-        "module": "event",
-        "lua_name": "LSignal:getCount",
-        "kind": "method",
-        "file": "src/lua_api/event_api.rs",
-        "line": 175
-      },
-      {
-        "module": "event",
-        "lua_name": "LSignal:getTotalCount",
-        "kind": "method",
-        "file": "src/lua_api/event_api.rs",
-        "line": 181
-      },
-      {
-        "module": "event",
-        "lua_name": "LSignal:once",
         "kind": "method",
         "file": "src/lua_api/event_api.rs",
         "line": 189
       },
       {
         "module": "event",
+        "lua_name": "LSignal:emit",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 203
+      },
+      {
+        "module": "event",
+        "lua_name": "LSignal:remove",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 296
+      },
+      {
+        "module": "event",
+        "lua_name": "LSignal:clear",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 309
+      },
+      {
+        "module": "event",
+        "lua_name": "LSignal:clearAll",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 323
+      },
+      {
+        "module": "event",
+        "lua_name": "LSignal:getCount",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 335
+      },
+      {
+        "module": "event",
+        "lua_name": "LSignal:getTotalCount",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 341
+      },
+      {
+        "module": "event",
+        "lua_name": "LSignal:once",
+        "kind": "method",
+        "file": "src/lua_api/event_api.rs",
+        "line": 349
+      },
+      {
+        "module": "event",
         "lua_name": "LSignal:registerWithFilter",
         "kind": "method",
         "file": "src/lua_api/event_api.rs",
-        "line": 205
+        "line": 365
       },
       {
         "module": "event",
         "lua_name": "LSignal:connect",
         "kind": "method",
         "file": "src/lua_api/event_api.rs",
-        "line": 221
+        "line": 381
       },
       {
         "module": "event",
         "lua_name": "LSignal:type",
         "kind": "method",
         "file": "src/lua_api/event_api.rs",
-        "line": 237
+        "line": 397
       },
       {
         "module": "event",
         "lua_name": "LSignal:typeOf",
         "kind": "method",
         "file": "src/lua_api/event_api.rs",
-        "line": 242
+        "line": 402
       },
       {
         "module": "event",
         "lua_name": "lurek.event.exit",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 283
+        "line": 443
       },
       {
         "module": "event",
         "lua_name": "lurek.event.poll",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 294
+        "line": 454
       },
       {
         "module": "event",
         "lua_name": "lurek.event.clear",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 307
+        "line": 467
       },
       {
         "module": "event",
         "lua_name": "lurek.event.newSignal",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 317
+        "line": 477
+      },
+      {
+        "module": "event",
+        "lua_name": "lurek.event.newChangeSet",
+        "kind": "function",
+        "file": "src/lua_api/event_api.rs",
+        "line": 492
+      },
+      {
+        "module": "event",
+        "lua_name": "lurek.event.fromChangeSetTable",
+        "kind": "function",
+        "file": "src/lua_api/event_api.rs",
+        "line": 517
       },
       {
         "module": "event",
         "lua_name": "lurek.event.pump",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 331
+        "line": 544
       },
       {
         "module": "event",
         "lua_name": "lurek.event.wait",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 345
+        "line": 558
       },
       {
         "module": "event",
         "lua_name": "lurek.event.restart",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 376
+        "line": 589
       },
       {
         "module": "event",
         "lua_name": "lurek.event.quit",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 386
+        "line": 599
       },
       {
         "module": "event",
         "lua_name": "lurek.event.pushDeferred",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 400
+        "line": 613
       },
       {
         "module": "event",
         "lua_name": "lurek.event.pushDeferredPriority",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 431
+        "line": 644
       },
       {
         "module": "event",
         "lua_name": "lurek.event.flushDeferred",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 467
+        "line": 680
       },
       {
         "module": "event",
         "lua_name": "lurek.event.enableHistory",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 488
+        "line": 701
       },
       {
         "module": "event",
         "lua_name": "lurek.event.getHistory",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 505
+        "line": 718
       },
       {
         "module": "event",
         "lua_name": "lurek.event.clearHistory",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 529
+        "line": 742
       },
       {
         "module": "event",
         "lua_name": "lurek.event.push",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 543
+        "line": 756
       },
       {
         "module": "event",
         "lua_name": "lurek.event.pushPriority",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 584
+        "line": 797
       },
       {
         "module": "filesystem",
@@ -70364,77 +70641,133 @@
         "lua_name": "LContentRegistry:registerType",
         "kind": "method",
         "file": "src/lua_api/mods_api.rs",
-        "line": 957
+        "line": 1079
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:defineType",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1094
       },
       {
         "module": "mods",
         "lua_name": "LContentRegistry:register",
         "kind": "method",
         "file": "src/lua_api/mods_api.rs",
-        "line": 967
+        "line": 1115
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:unregisterType",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1152
       },
       {
         "module": "mods",
         "lua_name": "LContentRegistry:get",
         "kind": "method",
         "file": "src/lua_api/mods_api.rs",
-        "line": 987
+        "line": 1173
       },
       {
         "module": "mods",
         "lua_name": "LContentRegistry:getAll",
         "kind": "method",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1001
+        "line": 1187
       },
       {
         "module": "mods",
         "lua_name": "LContentRegistry:getTypes",
         "kind": "method",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1014
+        "line": 1200
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:getSchema",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1213
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:validate",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1225
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:freeze",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1240
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:isFrozen",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1248
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:snapshot",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1252
+      },
+      {
+        "module": "mods",
+        "lua_name": "LContentRegistry:restore",
+        "kind": "method",
+        "file": "src/lua_api/mods_api.rs",
+        "line": 1290
       },
       {
         "module": "mods",
         "lua_name": "LContentRegistry:type",
         "kind": "method",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1027
+        "line": 1350
       },
       {
         "module": "mods",
         "lua_name": "LContentRegistry:typeOf",
         "kind": "method",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1032
+        "line": 1355
       },
       {
         "module": "mods",
         "lua_name": "lurek.mods.newMod",
         "kind": "function",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1044
+        "line": 1367
       },
       {
         "module": "mods",
         "lua_name": "lurek.mods.newModManager",
         "kind": "function",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1054
+        "line": 1377
       },
       {
         "module": "mods",
         "lua_name": "lurek.mods.newRegistry",
         "kind": "function",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1061
+        "line": 1384
       },
       {
         "module": "mods",
         "lua_name": "lurek.mods.checkApiVersion",
         "kind": "function",
         "file": "src/lua_api/mods_api.rs",
-        "line": 1071
+        "line": 1394
       },
       {
         "module": "network",
@@ -79804,2096 +80137,2180 @@
       },
       {
         "module": "progression",
+        "lua_name": "LStatusTracker:define",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 239
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:apply",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 252
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:clear",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 269
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:drainEvents",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 276
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:list",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 288
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:remove",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 300
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:restore",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 306
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:snapshot",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 314
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:type",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 320
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:typeOf",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 325
+      },
+      {
+        "module": "progression",
+        "lua_name": "LStatusTracker:update",
+        "kind": "method",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 332
+      },
+      {
+        "module": "progression",
         "lua_name": "lurek.progression.define",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 876
+        "line": 1109
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.get",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 919
+        "line": 1152
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getBase",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 938
+        "line": 1171
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setBase",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 958
+        "line": 1191
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setMin",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 977
+        "line": 1210
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setMax",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 999
+        "line": 1232
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getMin",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1020
+        "line": 1253
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getMax",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1033
+        "line": 1266
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setRegen",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1047
+        "line": 1280
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getRegen",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1061
+        "line": 1294
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getStatNames",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1074
+        "line": 1307
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.addBuff",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1095
+        "line": 1328
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.removeBuff",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1132
+        "line": 1365
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.clearBuffs",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1150
+        "line": 1383
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getBuffCount",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1180
+        "line": 1413
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.applyTraitBuffs",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1206
+        "line": 1439
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.removeTraitBuffs",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1227
+        "line": 1460
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.hasTrait",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1248
+        "line": 1481
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getActiveTraits",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1266
+        "line": 1499
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getBuffs",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1288
+        "line": 1521
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.addXP",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1326
+        "line": 1559
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getXP",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1351
+        "line": 1584
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setXP",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1369
+        "line": 1602
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getLevel",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1397
+        "line": 1630
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setLevel",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1415
+        "line": 1648
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setLevelThresholds",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1443
+        "line": 1676
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.defineSkill",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1496
+        "line": 1729
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.learnSkill",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1522
+        "line": 1755
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.useSkill",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1541
+        "line": 1774
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getSkillLevel",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1562
+        "line": 1795
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getCooldownRemaining",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1581
+        "line": 1814
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.definePerk",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1602
+        "line": 1835
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.acquirePerk",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1647
+        "line": 1880
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.hasPerk",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1666
+        "line": 1899
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setActionPoints",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1684
+        "line": 1917
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getActionPoints",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1718
+        "line": 1951
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.spendActionPoints",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1743
+        "line": 1976
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.recoverActionPoints",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1764
+        "line": 1997
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.beginTurn",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1784
+        "line": 2017
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setMorale",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1803
+        "line": 2036
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getMorale",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1833
+        "line": 2066
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.adjustMorale",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1855
+        "line": 2088
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setPanicThreshold",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1879
+        "line": 2112
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setBerserkThreshold",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1891
+        "line": 2124
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.checkMorale",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1903
+        "line": 2136
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setFlag",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1945
+        "line": 2178
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.clearFlag",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1957
+        "line": 2190
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.hasFlag",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1970
+        "line": 2203
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getFlags",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 1981
+        "line": 2214
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setResistance",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2006
+        "line": 2239
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getResistance",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2019
+        "line": 2252
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.applyDamage",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2034
+        "line": 2267
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.recordUse",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2060
+        "line": 2293
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getUseCount",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2074
+        "line": 2307
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setEncumbrance",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2087
+        "line": 2320
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getEncumbrance",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2100
+        "line": 2333
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.isEncumbered",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2117
+        "line": 2350
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setInitiative",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2131
+        "line": 2364
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getInitiative",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2141
+        "line": 2374
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.update",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2153
+        "line": 2386
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.snapshot",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2170
+        "line": 2403
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.restore",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2206
+        "line": 2439
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.type",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2255
+        "line": 2488
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.typeOf",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2263
+        "line": 2496
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.addQuest",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2292
+        "line": 2525
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.questCount",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2370
+        "line": 2603
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.questIds",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2387
+        "line": 2620
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.removeQuest",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2405
+        "line": 2638
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.startQuest",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2435
+        "line": 2668
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.completeQuest",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2454
+        "line": 2687
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.failQuest",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2473
+        "line": 2706
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.advanceObjective",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2490
+        "line": 2723
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.addJournalEntry",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2542
+        "line": 2775
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getQuest",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2581
+        "line": 2814
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.questsWithStatus",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2616
+        "line": 2849
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.activeIds",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2639
+        "line": 2872
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.completedIds",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2649
+        "line": 2882
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.failedIds",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2659
+        "line": 2892
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.activeCount",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2671
+        "line": 2904
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.completedCount",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2683
+        "line": 2916
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.setQuestReward",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2697
+        "line": 2930
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.getQuestReward",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2710
+        "line": 2943
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.resetQuest",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2726
+        "line": 2959
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.type",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2746
+        "line": 2979
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.typeOf",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2754
+        "line": 2987
       },
       {
         "module": "progression",
         "lua_name": "LProgressionProfile:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2768
+        "line": 3001
       },
       {
         "module": "progression",
         "lua_name": "LProgressionProfile:getPendingRewards",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2772
+        "line": 3005
       },
       {
         "module": "progression",
         "lua_name": "LProgressionProfile:type",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2796
+        "line": 3029
       },
       {
         "module": "progression",
         "lua_name": "LProgressionProfile:typeOf",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2801
+        "line": 3034
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:addCounter",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2809
+        "line": 3042
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:setCounter",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2819
+        "line": 3052
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:setAttributeBase",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2829
+        "line": 3062
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:setResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2839
+        "line": 3072
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:addModifier",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2849
+        "line": 3082
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:setQuestObjective",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2861
+        "line": 3094
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:addExperience",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2871
+        "line": 3104
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:commit",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2883
+        "line": 3116
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:rollback",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2899
+        "line": 3132
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:type",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2906
+        "line": 3139
       },
       {
         "module": "progression",
         "lua_name": "LProgressionTransaction:typeOf",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2911
+        "line": 3144
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2922
+        "line": 3155
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getRevision",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2928
+        "line": 3161
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getSchemaVersion",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2934
+        "line": 3167
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getDefinitionHash",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2940
+        "line": 3173
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getTime",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2946
+        "line": 3179
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setTime",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2950
+        "line": 3183
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:advanceTime",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2959
+        "line": 3192
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:update",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2965
+        "line": 3198
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:stats",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2979
+        "line": 3212
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:clear",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2984
+        "line": 3217
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:validate",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2990
+        "line": 3223
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:compileCondition",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 2996
+        "line": 3229
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:validateCondition",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3008
+        "line": 3241
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:evaluateCondition",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3016
+        "line": 3249
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:explainCondition",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3026
+        "line": 3259
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:debugSnapshot",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3041
+        "line": 3274
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:exportSnapshot",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3047
+        "line": 3280
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:exportChangesSince",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3056
+        "line": 3289
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:exportChangeset",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3062
+        "line": 3295
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:loadSnapshot",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3083
+        "line": 3316
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:applyChangeset",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3092
+        "line": 3325
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:applyChangesetEnvelope",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3104
+        "line": 3337
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:ackChangesThrough",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3136
+        "line": 3369
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:compactChanges",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3147
+        "line": 3380
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:drainEvents",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3158
+        "line": 3391
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:clearEvents",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3166
+        "line": 3399
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:createProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3170
+        "line": 3403
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:ensureProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3183
+        "line": 3416
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:hasProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3204
+        "line": 3437
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3210
+        "line": 3443
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:updateProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3219
+        "line": 3452
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:removeProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3228
+        "line": 3461
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listProfiles",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3240
+        "line": 3473
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:countProfiles",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3247
+        "line": 3480
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:addProfileTag",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3254
+        "line": 3487
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:removeProfileTag",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3260
+        "line": 3493
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setProfileMetadata",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3269
+        "line": 3502
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:removeProfileMetadata",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3278
+        "line": 3511
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineCounter",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3287
+        "line": 3520
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:addCounter",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3296
+        "line": 3529
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setCounter",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3306
+        "line": 3539
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getCounter",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3316
+        "line": 3549
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getCounterState",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3326
+        "line": 3559
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listCounters",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3342
+        "line": 3575
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineAttribute",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3354
+        "line": 3587
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getAttribute",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3363
+        "line": 3596
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getAttributeState",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3373
+        "line": 3606
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setAttributeBase",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3386
+        "line": 3619
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:addAttributeBase",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3396
+        "line": 3629
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:explainAttribute",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3406
+        "line": 3639
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:addModifier",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3425
+        "line": 3658
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:removeModifier",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3435
+        "line": 3668
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listModifiers",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3448
+        "line": 3681
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3460
+        "line": 3693
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3469
+        "line": 3702
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3482
+        "line": 3715
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:addResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3492
+        "line": 3725
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:spendResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3502
+        "line": 3735
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:canSpendResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3512
+        "line": 3745
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:refillResource",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3522
+        "line": 3755
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineLevelTrack",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3532
+        "line": 3765
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineDerivedValue",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3541
+        "line": 3774
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineProfileTemplate",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3550
+        "line": 3783
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineTrait",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3559
+        "line": 3792
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:applyTrait",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3568
+        "line": 3801
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:removeTrait",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3578
+        "line": 3811
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:hasTrait",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3588
+        "line": 3821
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listTraits",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3601
+        "line": 3834
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:definePerk",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3616
+        "line": 3849
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineSkill",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3625
+        "line": 3858
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:learnSkill",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3634
+        "line": 3867
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:useSkill",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3644
+        "line": 3877
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getSkillLevel",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3657
+        "line": 3890
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getSkillCooldown",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3667
+        "line": 3900
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:acquirePerk",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3677
+        "line": 3910
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:hasPerk",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3687
+        "line": 3920
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:applyProfileTemplate",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3697
+        "line": 3930
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineLeaderboard",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3710
+        "line": 3943
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineSeason",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3719
+        "line": 3952
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:startSeason",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3728
+        "line": 3961
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:endSeason",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3744
+        "line": 3977
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getSeason",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3767
+        "line": 4000
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listSeasons",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3779
+        "line": 4012
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getSeasonArchive",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3794
+        "line": 4027
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:definePrestige",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3822
+        "line": 4055
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:canPrestige",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3831
+        "line": 4064
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:applyPrestige",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3841
+        "line": 4074
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getPrestige",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3854
+        "line": 4087
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listPrestiges",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3870
+        "line": 4103
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineCollection",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3883
+        "line": 4116
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:collectCollectionItem",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3892
+        "line": 4125
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getCollection",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3905
+        "line": 4138
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listCollections",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3921
+        "line": 4154
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:pinRival",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3934
+        "line": 4167
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getRival",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3952
+        "line": 4185
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listRivals",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3969
+        "line": 4202
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getRivalDelta",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3982
+        "line": 4215
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getActivityFeed",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 3999
+        "line": 4232
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:definePopulationTemplate",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4042
+        "line": 4275
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:validatePopulationTemplate",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4057
+        "line": 4290
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:generatePopulation",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4066
+        "line": 4299
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getPopulation",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4085
+        "line": 4318
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:updatePopulation",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4094
+        "line": 4327
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:simulatePopulationUntil",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4106
+        "line": 4339
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:pausePopulation",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4121
+        "line": 4354
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:resumePopulation",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4133
+        "line": 4366
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:removePopulation",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4142
+        "line": 4375
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:regeneratePopulation",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4157
+        "line": 4390
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getPopulationStatistics",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4175
+        "line": 4408
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listPopulationProfiles",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4191
+        "line": 4424
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:materializePopulationProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4214
+        "line": 4447
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:dematerializePopulationProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4226
+        "line": 4459
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:removeDerivedValue",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4245
+        "line": 4478
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getDerivedValue",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4248
+        "line": 4481
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:explainDerivedValue",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4258
+        "line": 4491
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:validateDerivedValues",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4273
+        "line": 4506
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:submitScore",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4276
+        "line": 4509
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getLeaderboardEntry",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4289
+        "line": 4522
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listLeaderboardTop",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4302
+        "line": 4535
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listLeaderboardRange",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4317
+        "line": 4550
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listLeaderboardAroundProfile",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4332
+        "line": 4565
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:addExperience",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4360
+        "line": 4593
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getExperience",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4373
+        "line": 4606
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setExperience",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4386
+        "line": 4619
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getLevel",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4399
+        "line": 4632
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setLevel",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4409
+        "line": 4642
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getExperienceToNextLevel",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4422
+        "line": 4655
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineQuest",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4432
+        "line": 4665
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineChallengeTemplate",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4441
+        "line": 4674
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:activateChallenge",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4453
+        "line": 4686
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setChallengeProgress",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4471
+        "line": 4704
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getChallenge",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4484
+        "line": 4717
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listChallenges",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4497
+        "line": 4730
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:defineAchievement",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4518
+        "line": 4751
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:unlockAchievement",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4527
+        "line": 4760
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getAchievement",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4540
+        "line": 4773
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:listAchievements",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4556
+        "line": 4789
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:acceptQuest",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4572
+        "line": 4805
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:revealQuest",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4582
+        "line": 4815
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:refreshQuestLifecycle",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4600
+        "line": 4833
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:completeQuest",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4607
+        "line": 4840
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:failQuest",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4617
+        "line": 4850
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setQuestObjective",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4627
+        "line": 4860
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setQuestObjectiveStatus",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4642
+        "line": 4875
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:setQuestObjectiveVisibility",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4662
+        "line": 4895
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:getQuestState",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4682
+        "line": 4915
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:beginTransaction",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4697
+        "line": 4930
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:type",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4714
+        "line": 4947
       },
       {
         "module": "progression",
         "lua_name": "LProgressionStore:typeOf",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4719
+        "line": 4952
+      },
+      {
+        "module": "progression",
+        "lua_name": "lurek.progression.newStatusTracker",
+        "kind": "function",
+        "file": "src/lua_api/progression_api.rs",
+        "line": 5033
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.newStore",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4800
+        "line": 5044
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.loadStore",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4813
+        "line": 5057
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.importLegacyStatsSnapshot",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4826
+        "line": 5070
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.importLegacyQuestSnapshot",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4833
+        "line": 5077
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.createLegacyStatsAdapter",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4842
+        "line": 5086
       },
       {
         "module": "progression",
         "lua_name": "lurek.progression.createLegacyQuestAdapter",
         "kind": "function",
         "file": "src/lua_api/progression_api.rs",
-        "line": 4857
+        "line": 5101
       },
       {
         "module": "progression",
         "lua_name": "LAchievement:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5309
+        "line": 5553
       },
       {
         "module": "progression",
         "lua_name": "LAchievement:getTitle",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5312
+        "line": 5556
       },
       {
         "module": "progression",
         "lua_name": "LAchievement:isUnlocked",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5317
+        "line": 5561
       },
       {
         "module": "progression",
         "lua_name": "LChallenge:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5356
+        "line": 5600
       },
       {
         "module": "progression",
         "lua_name": "LChallenge:getStatus",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5359
+        "line": 5603
       },
       {
         "module": "progression",
         "lua_name": "LCollection:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5388
+        "line": 5632
       },
       {
         "module": "progression",
         "lua_name": "LCollection:isComplete",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5391
+        "line": 5635
       },
       {
         "module": "progression",
         "lua_name": "LLeaderboardEntry:getLeaderboardId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5416
+        "line": 5660
       },
       {
         "module": "progression",
         "lua_name": "LLeaderboardEntry:getProfileId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5421
+        "line": 5665
       },
       {
         "module": "progression",
         "lua_name": "LLeaderboardEntry:getRank",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5426
+        "line": 5670
       },
       {
         "module": "progression",
         "lua_name": "LPopulation:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5454
+        "line": 5698
       },
       {
         "module": "progression",
         "lua_name": "LPopulation:isPaused",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5457
+        "line": 5701
       },
       {
         "module": "progression",
         "lua_name": "LPopulationProfile:getProfileId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5488
+        "line": 5732
       },
       {
         "module": "progression",
         "lua_name": "LPopulationProfile:isMaterialized",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5493
+        "line": 5737
       },
       {
         "module": "progression",
         "lua_name": "LPrestige:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5522
+        "line": 5766
       },
       {
         "module": "progression",
         "lua_name": "LPrestige:isAvailable",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5525
+        "line": 5769
       },
       {
         "module": "progression",
         "lua_name": "LActivityFeed:count",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5540
+        "line": 5784
       },
       {
         "module": "progression",
         "lua_name": "LActivityFeed:listEntries",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5548
+        "line": 5792
       },
       {
         "module": "progression",
         "lua_name": "LQuestState:getQuestId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5581
+        "line": 5825
       },
       {
         "module": "progression",
         "lua_name": "LQuestState:getStatus",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5586
+        "line": 5830
       },
       {
         "module": "progression",
         "lua_name": "LQuestState:isRevealed",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5591
+        "line": 5835
       },
       {
         "module": "progression",
         "lua_name": "LQuestState:getJournal",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5596
+        "line": 5840
       },
       {
         "module": "progression",
         "lua_name": "LReward:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5636
+        "line": 5880
       },
       {
         "module": "progression",
         "lua_name": "LReward:getState",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5639
+        "line": 5883
       },
       {
         "module": "progression",
         "lua_name": "LReward:claim",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5644
+        "line": 5888
       },
       {
         "module": "progression",
         "lua_name": "LReward:markApplied",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5672
+        "line": 5916
       },
       {
         "module": "progression",
         "lua_name": "LReward:reject",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5706
+        "line": 5950
       },
       {
         "module": "progression",
         "lua_name": "LQuestJournalEntry:getIndex",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5743
+        "line": 5987
       },
       {
         "module": "progression",
         "lua_name": "LQuestJournalEntry:getText",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5748
+        "line": 5992
       },
       {
         "module": "progression",
         "lua_name": "LQuestJournalEntry:getTag",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5753
+        "line": 5997
       },
       {
         "module": "progression",
         "lua_name": "LQuestJournal:getQuestId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5768
+        "line": 6012
       },
       {
         "module": "progression",
         "lua_name": "LQuestJournal:count",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5773
+        "line": 6017
       },
       {
         "module": "progression",
         "lua_name": "LQuestJournal:listEntries",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5781
+        "line": 6025
       },
       {
         "module": "progression",
         "lua_name": "LQuestJournal:addEntry",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5792
+        "line": 6036
       },
       {
         "module": "progression",
         "lua_name": "LRival:getProfileId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5863
+        "line": 6107
       },
       {
         "module": "progression",
         "lua_name": "LRival:getRivalProfileId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5868
+        "line": 6112
       },
       {
         "module": "progression",
         "lua_name": "LRivalDelta:getLeaderboardId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5895
+        "line": 6139
       },
       {
         "module": "progression",
         "lua_name": "LRivalDelta:getRankDelta",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5900
+        "line": 6144
       },
       {
         "module": "progression",
         "lua_name": "LSeason:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5929
+        "line": 6173
       },
       {
         "module": "progression",
         "lua_name": "LSeason:isActive",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5932
+        "line": 6176
       },
       {
         "module": "progression",
         "lua_name": "LSeasonArchive:getId",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5958
+        "line": 6202
       },
       {
         "module": "progression",
         "lua_name": "LSeasonArchive:getArchiveIndex",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5961
+        "line": 6205
       },
       {
         "module": "progression",
         "lua_name": "LActivityFeedEntry:getSequence",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5987
+        "line": 6231
       },
       {
         "module": "progression",
         "lua_name": "LActivityFeedEntry:getEventType",
         "kind": "method",
         "file": "src/lua_api/progression_api.rs",
-        "line": 5992
+        "line": 6236
       },
       {
         "module": "province",
@@ -85813,112 +86230,126 @@
         "lua_name": "lurek.serialize.fromJson",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 291
+        "line": 353
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.toJson",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 304
+        "line": 366
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.fromToml",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 316
+        "line": 378
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.fromIni",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 328
+        "line": 390
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.toToml",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 340
+        "line": 402
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.fromCsv",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 354
+        "line": 416
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.toCsv",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 371
+        "line": 433
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.encodeMsgPack",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 387
+        "line": 449
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.encodeMsgPack",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 387
+        "line": 449
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.decodeMsgPack",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 393
+        "line": 455
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.decodeXml",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 410
+        "line": 472
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.validate",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 425
+        "line": 487
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.detectFormat",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 436
+        "line": 498
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.decode",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 450
+        "line": 512
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.encode",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 465
+        "line": 527
+      },
+      {
+        "module": "serialize",
+        "lua_name": "lurek.serialize.encodeChangeSet",
+        "kind": "function",
+        "file": "src/lua_api/serialize_api.rs",
+        "line": 542
+      },
+      {
+        "module": "serialize",
+        "lua_name": "lurek.serialize.decodeChangeSet",
+        "kind": "function",
+        "file": "src/lua_api/serialize_api.rs",
+        "line": 558
       },
       {
         "module": "serialize",
         "lua_name": "lurek.serialize.applyDefaults",
         "kind": "function",
         "file": "src/lua_api/serialize_api.rs",
-        "line": 479
+        "line": 573
       },
       {
         "module": "spine",

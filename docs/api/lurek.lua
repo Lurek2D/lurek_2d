@@ -2353,6 +2353,10 @@ LPostFxEffect = {}
 ---@class LPostFxStack
 LPostFxStack = {}
 
+--- Lua handle for a bounded, versioned collection of neutral state changes.
+---@class LChangeSet
+LChangeSet = {}
+
 --- Lua-side signal object storing subscriptions and Lua callback registry keys.
 ---@class LSignal
 LSignal = {}
@@ -2944,6 +2948,10 @@ LSeason = {}
 
 ---@class LSeasonArchive
 LSeasonArchive = {}
+
+--- Creates an isolated deterministic status lifecycle tracker.
+---@class LStatusTracker
+LStatusTracker = {}
 
 --- Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 ---@class LProvinceRegistry
@@ -6410,6 +6418,12 @@ lurek.audio.play = function(source, options) end
 ---@param source LSource|number Audio source or numeric source ID.
 lurek.audio.playLooping = function(source) end
 
+--- Starts a looping streaming track and routes it through a named music group.
+---@param path string Path to audio file.
+---@param opts? table Optional `group` (default `music`), `fadeIn` seconds, and `volume`.
+---@return LSource The looping music source handle.
+lurek.audio.manager.playMusic = function(path, opts) end
+
 --- Starts playback of a queueable audio source.
 ---@param qsource_id number Queueable source handle returned by newQueueableSource.
 lurek.audio.playQueueable = function(qsource_id) end
@@ -6457,6 +6471,11 @@ lurek.audio.setDistanceModel = function(model) end
 --- Sets the global Doppler effect intensity multiplier.
 ---@param scale number Doppler scale (0 = disabled, 1.0 = realistic).
 lurek.audio.setDopplerScale = function(scale) end
+
+--- Sets the volume multiplier for one named music/SFX group.
+---@param group string Name of the audio group.
+---@param volume number Volume multiplier, clamped at zero.
+lurek.audio.manager.setGroupVolume = function(group, volume) end
 
 --- Applies a highpass filter to a source, attenuating low frequencies.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -12276,6 +12295,11 @@ function LUniverse:addSystem(system, opts) end
 ---@param tag string Tag name to add.
 function LUniverse:addTag(id, tag) end
 
+--- Applies a transport-neutral ChangeSet table to explicit ECS component operations.
+---@param changeset table Table returned by `LChangeSet:toTable()` or `serialize.decodeChangeSet`.
+---@return number Number of validated records applied in order.
+function LUniverse:applyChangeSet(changeset) end
+
 --- Replaces this universe state from a Lua table snapshot.
 ---@param snapshot table Snapshot table previously produced by `snapshot` or `serialize`.
 function LUniverse:applySnapshot(snapshot) end
@@ -12960,6 +12984,10 @@ function LPostFxStack:remove(effect_ud) end
 ---@param h number New height in pixels.
 function LPostFxStack:resize(w, h) end
 
+--- Restores a stack snapshot and rebuilds its effect handles without entering capture mode.
+---@param snapshot table Table previously returned by `snapshot`.
+function LPostFxStack:restore(snapshot) end
+
 --- Enables or disables the effect pass at a one-based stack position.
 ---@param position number One-based stack position.
 ---@param enabled boolean New enabled flag for the pass.
@@ -12968,6 +12996,10 @@ function LPostFxStack:setEnabled(position, enabled) end
 --- Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
 ---@param factor number Feedback blend factor.
 function LPostFxStack:setFeedback(factor) end
+
+--- Captures stack dimensions, feedback, enabled slots, and validated effect parameters.
+---@return table Serializable post-effect stack snapshot.
+function LPostFxStack:snapshot() end
 
 --- Returns the Lua-visible type name for this post-processing stack handle.
 ---@return string The string `LPostFxStack`.
@@ -13080,6 +13112,59 @@ lurek.engine.setResourceBudget = function(budget_bytes) end
 ---@return number Uptime in seconds.
 lurek.engine.uptime = function() end
 
+--- Appends one neutral object/component mutation and returns the new record count.
+---@param objectId number Stable object identifier greater than zero.
+---@param component string Caller-defined state namespace.
+---@param operation string Caller-defined operation name.
+---@param payload any Recursively serializable operation data.
+---@return number Number of records after the append.
+function LChangeSet:append(objectId, component, operation, payload) end
+
+--- Removes all records and returns the number removed.
+---@return number Number of records removed.
+function LChangeSet:clear() end
+
+--- Returns the deterministic FNV-1a hash of schema, revision, and ordered records.
+---@return string Decimal unsigned 64-bit ChangeSet hash (string preserves LuaJIT precision).
+function LChangeSet:hash() end
+
+--- Returns true when the ChangeSet contains no records.
+---@return boolean Whether the ChangeSet is empty.
+function LChangeSet:isEmpty() end
+
+--- Returns the number of records currently stored.
+---@return number Record count.
+function LChangeSet:len() end
+
+--- Restores records from a table produced by `snapshot` or `toTable`.
+---@param snapshot table Snapshot with schema, revision, changes, and optional hash.
+function LChangeSet:restore(snapshot) end
+
+--- Returns the caller-defined monotonic revision.
+---@return number ChangeSet revision.
+function LChangeSet:revision() end
+
+--- Returns the schema identifier used to interpret records.
+---@return string ChangeSet schema name.
+function LChangeSet:schema() end
+
+--- Returns a deterministic Lua snapshot including the derived hash.
+---@return table Snapshot suitable for save or network transport.
+function LChangeSet:snapshot() end
+
+--- Converts the ChangeSet to a transport-neutral Lua table.
+---@return table Schema, revision, hash, and ordered change records.
+function LChangeSet:toTable() end
+
+--- Returns the Lua-visible type name.
+---@return string Always `LChangeSet`.
+function LChangeSet:type() end
+
+--- Checks whether this handle matches `LChangeSet` or `LObject`.
+---@param name string Type name to compare.
+---@return boolean Whether the name matches.
+function LChangeSet:typeOf(name) end
+
 --- Removes all callbacks registered for one exact signal event name.
 ---@param name string Signal event name to clear.
 ---@return number Number of callbacks removed.
@@ -13161,9 +13246,20 @@ lurek.event.exit = function(code) end
 ---@return number Number of events flushed.
 lurek.event.flushDeferred = function() end
 
+--- Creates a ChangeSet from a table produced by `LChangeSet:toTable()`.
+---@param value table ChangeSet table with schema, revision, changes, and optional hash.
+---@param maxChanges? number Maximum accepted records; defaults to the table length or 10000.
+---@return LChangeSet Restored ChangeSet handle.
+lurek.event.fromChangeSetTable = function(value, maxChanges) end
+
 --- Returns retained pushed event history entries.
 ---@return LEventGetHistoryResult Array of entries with `name` and `args` fields.
 lurek.event.getHistory = function() end
+
+--- Creates an empty bounded ChangeSet for neutral state replication, save, or Lua-side module integration.
+---@param options? table Optional `schema`, `revision`, and `maxChanges` fields. Defaults are `"game"`, `0`, and `10000`.
+---@return LChangeSet Isolated ChangeSet handle.
+lurek.event.newChangeSet = function(options) end
 
 --- Creates an isolated signal dispatcher for Lua callbacks.
 ---@return LSignal New signal handle.
@@ -20102,6 +20198,15 @@ function LMinimap:update(dt) end
 ---@return LMinimap New minimap handle.
 lurek.minimap.newMinimap = function(grid_w, grid_h, display_w, display_h) end
 
+--- Registers a content type and its field-validation schema.
+---@param type_name string Content type name.
+---@param schema table Schema with keyed `fields` and optional `allowUnknown`.
+function LContentRegistry:defineType(type_name, schema) end
+
+--- Freezes definitions and entries until this userdata is discarded.
+---@return boolean True when the registry transitioned to frozen state.
+function LContentRegistry:freeze() end
+
 --- Returns one stored value by content type and id.
 ---@param type_name string Content type name.
 ---@param id string Entry id.
@@ -20114,9 +20219,18 @@ function LContentRegistry:get(type_name, id) end
 ---@return table Table of stored values keyed by id.
 function LContentRegistry:getAll(type_name) end
 
+--- Returns a registered type schema, or nil for an untyped content type.
+---@param type_name string Content type name.
+---@return table Schema table, or nil when no schema exists.
+function LContentRegistry:getSchema(type_name) end
+
 --- Returns registered content type names.
 ---@return string[] Content type names.
 function LContentRegistry:getTypes() end
+
+--- Returns whether this registry rejects mutating operations.
+---@return boolean Frozen state.
+function LContentRegistry:isFrozen() end
 
 --- Stores a Lua value under a registered content type and id.
 ---@param type_name string Content type name.
@@ -20128,6 +20242,14 @@ function LContentRegistry:register(type_name, id, obj) end
 ---@param type_name string Content type name.
 function LContentRegistry:registerType(type_name) end
 
+--- Restores schemas and values from a previous snapshot and applies its frozen flag.
+---@param snapshot table Snapshot returned by `snapshot`.
+function LContentRegistry:restore(snapshot) end
+
+--- Captures schemas and registered values in a deterministic Lua table.
+---@return table Snapshot with `types` and nested `entries` tables.
+function LContentRegistry:snapshot() end
+
 --- Returns the Lua-visible type name for this content registry handle.
 ---@return string The string `LContentRegistry`.
 function LContentRegistry:type() end
@@ -20136,6 +20258,18 @@ function LContentRegistry:type() end
 ---@param name string Type name to compare against `LContentRegistry` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LContentRegistry:typeOf(name) end
+
+--- Removes a content type and all values registered under it.
+---@param type_name string Content type name.
+---@return boolean True when the type existed.
+function LContentRegistry:unregisterType(type_name) end
+
+--- Validates a value against a registered type schema without storing it.
+---@param type_name string Content type name.
+---@param value table Candidate content value.
+---@return boolean True when the value satisfies the schema.
+---@return string First validation error; or nil on success.
+function LContentRegistry:validate(type_name, value) end
 
 --- Returns the optional required API version.
 ---@return string API version string, or nil when unset.
@@ -27997,6 +28131,57 @@ function LSeasonArchive:getArchiveIndex() end
 ---@return string Season identifier.
 function LSeasonArchive:getId() end
 
+--- Applies a status to a subject and returns its stable runtime instance id.
+---@param subjectId number Stable subject/entity id.
+---@param definitionId string Registered status definition id.
+---@param sourceId? number Optional source/owner id.
+---@param stacks? number Initial stack count, clamped to maxStacks.
+---@return number Status instance id.
+function LStatusTracker:apply(subjectId, definitionId, sourceId, stacks) end
+
+--- Removes all definitions, instances, and queued events.
+function LStatusTracker:clear() end
+
+--- Registers or replaces one status definition.
+---@param definition table Definition with id, duration, tickInterval, maxStacks, stacking, and tags.
+function LStatusTracker:define(definition) end
+
+--- Takes and clears neutral apply/refresh/stack/tick/expired events.
+---@return table Event records in deterministic emission order.
+function LStatusTracker:drainEvents() end
+
+--- Lists active status instances attached to one subject.
+---@param subjectId number Stable subject/entity id.
+---@return table Status instance records.
+function LStatusTracker:list(subjectId) end
+
+--- Removes one active status instance.
+---@param instanceId number Runtime status instance id.
+---@return boolean True when an instance was removed.
+function LStatusTracker:remove(instanceId) end
+
+--- Restores definitions, active instances, and ID allocation from a snapshot.
+---@param snapshot table Table returned by `snapshot`.
+function LStatusTracker:restore(snapshot) end
+
+--- Captures definitions, instances, and ID allocation state.
+---@return table Serializable status tracker snapshot.
+function LStatusTracker:snapshot() end
+
+--- Returns the Lua-visible type name.
+---@return string Always `LStatusTracker`.
+function LStatusTracker:type() end
+
+--- Checks whether this handle matches `LStatusTracker` or `LObject`.
+---@param name string Type name to compare.
+---@return boolean Whether the name matches.
+function LStatusTracker:typeOf(name) end
+
+--- Advances finite durations and periodic tick timers by dt seconds.
+---@param dt number Non-negative logical seconds.
+---@return number Number of events currently queued after the update.
+function LStatusTracker:update(dt) end
+
 --- Acquire perk.
 ---@param this any
 ---@param name any
@@ -28261,6 +28446,10 @@ lurek.progression.learnSkill = function(this, name) end
 --- Load store.
 ---@param snapshot any
 lurek.progression.loadStore = function(snapshot) end
+
+--- Creates an isolated deterministic status lifecycle tracker.
+---@return LStatusTracker New status tracker handle.
+lurek.progression.newStatusTracker = function() end
 
 --- New store.
 ---@param options? any
@@ -31521,6 +31710,13 @@ lurek.serialize.applyDefaults = function(value, schema) end
 ---@return table The decoded Lua table.
 lurek.serialize.decode = function(payload, format, opts) end
 
+--- Decodes and validates a ChangeSet transport payload into a Lua table.
+---@param payload string Text or MessagePack ChangeSet payload.
+---@param format? string Format hint; omit for text auto-detection.
+---@param opts? table Standard decoder options and limits.
+---@return table Validated ChangeSet table.
+lurek.serialize.decodeChangeSet = function(payload, format, opts) end
+
 --- Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
 ---@param bytes string A binary string containing valid MessagePack data.
 ---@return table The decoded Lua table from the MessagePack payload.
@@ -31542,6 +31738,13 @@ lurek.serialize.detectFormat = function(text) end
 ---@param opts? table Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 ---@return string The encoded string (text or binary depending on format).
 lurek.serialize.encode = function(value, format, opts) end
+
+--- Encodes a validated `lurek.event` ChangeSet table for save or network transport.
+---@param value table Table returned by `LChangeSet:toTable()`.
+---@param format string Target format: `json`, `toml`, or `msgpack`.
+---@param opts? table Standard encoder options such as `pretty` and limits.
+---@return string Encoded ChangeSet payload.
+lurek.serialize.encodeChangeSet = function(value, format, opts) end
 
 --- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 ---@param value table The Lua table to encode. Must be a table (not a primitive).

@@ -1,5 +1,10 @@
+--- EU2 keyboard command dispatcher.
+--- Converts engine key names into map-mode, time-control, selection, and debug actions.
+--- The dispatcher mutates the supplied `state` and `view` tables and returns whether
+--- the key was consumed by the game.
 local M = {}
 
+--- Numeric shortcuts mapped to province map modes.
 local modes = {
     ["1"] = "political",
     ["2"] = "terrain",
@@ -8,13 +13,14 @@ local modes = {
     ["5"] = "unrest",
 }
 
+--- Handle one keyboard event.
+---@param state table Mutable campaign state.
+---@param view table Mutable camera and UI state.
+---@param key string Engine key name, such as `space`, `tab`, or `f12`.
+---@return boolean consumed True when the key changed or was handled by EU2.
 function M.handle_key(state, view, key)
     if modes[key] then
         view.map_mode = modes[key]
-        return true
-    end
-    if key == "l" then
-        view.draw_labels = not view.draw_labels
         return true
     end
     if key == "x" or key == "X" then

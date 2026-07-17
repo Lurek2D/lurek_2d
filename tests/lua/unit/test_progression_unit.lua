@@ -4074,5 +4074,128 @@ describe("progression heuristic owner closures", function()
     end)
 end)
 
+-- @describe LStatusTracker lifecycle
+describe("LStatusTracker lifecycle", function()
+    local function new_tracker(id)
+        local tracker = lurek.progression.newStatusTracker()
+        tracker:define({
+            id = id or "burning",
+            duration = 2.5,
+            tickInterval = 1,
+            maxStacks = 3,
+            stacking = "add",
+            tags = { "harmful" },
+        })
+        return tracker
+    end
+
+    -- @covers lurek.progression.newStatusTracker
+    it("newStatusTracker creates an empty typed tracker", function()
+        local tracker = lurek.progression.newStatusTracker()
+        expect_equal("LStatusTracker", tracker:type())
+        expect_equal(0, #tracker:list(1))
+    end)
+
+    -- @covers LStatusTracker:define
+    it("define registers a status definition", function()
+        local tracker = lurek.progression.newStatusTracker()
+        tracker:define({ id = "shield", maxStacks = 1, stacking = "replace" })
+        expect_equal(0, #tracker:list(9))
+    end)
+
+    -- @covers LStatusTracker:apply
+    it("apply creates a stable status instance", function()
+        local tracker = new_tracker()
+        local instance_id = tracker:apply(7, "burning", 4, 2)
+        expect_equal(1, instance_id)
+        expect_equal(2, tracker:list(7)[1].stacks)
+    end)
+
+    -- @covers LStatusTracker:clear
+    it("clear removes definitions, instances, and queued events", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning")
+        tracker:clear()
+        expect_equal(0, #tracker:list(7))
+        expect_equal(0, #tracker:drainEvents())
+    end)
+
+    -- @covers LStatusTracker:drainEvents
+    it("drainEvents returns neutral lifecycle records", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning")
+        local events = tracker:drainEvents()
+        expect_equal(1, #events)
+        expect_equal("applied", events[1].kind)
+        expect_equal(7, events[1].subjectId)
+    end)
+
+    -- @covers LStatusTracker:list
+    it("list returns active instances for one subject", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning")
+        tracker:apply(8, "burning")
+        expect_equal(1, #tracker:list(7))
+        expect_equal(0, #tracker:list(9))
+    end)
+
+    -- @covers LStatusTracker:remove
+    it("remove deletes one active instance", function()
+        local tracker = new_tracker()
+        local instance_id = tracker:apply(7, "burning")
+        expect_true(tracker:remove(instance_id))
+        expect_false(tracker:remove(instance_id))
+        expect_equal(0, #tracker:list(7))
+    end)
+
+    -- @covers LStatusTracker:restore
+    it("restore reloads definitions and active instances from a snapshot", function()
+        local source = new_tracker()
+        source:apply(7, "burning", 4, 2)
+        local target = lurek.progression.newStatusTracker()
+        target:restore(source:snapshot())
+        expect_equal(2, target:list(7)[1].stacks)
+    end)
+
+    -- @covers LStatusTracker:snapshot
+    it("snapshot captures definitions and runtime instances", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning")
+        local snapshot = tracker:snapshot()
+        expect_true(snapshot.definitions.burning ~= nil)
+        expect_equal(1, #snapshot.instances)
+        expect_equal(2, snapshot.nextId)
+    end)
+
+    -- @covers LStatusTracker:type
+    it("type reports the status tracker userdata name", function()
+        expect_equal("LStatusTracker", lurek.progression.newStatusTracker():type())
+    end)
+
+    -- @covers LStatusTracker:typeOf
+    it("typeOf accepts the tracker and base object names", function()
+        local tracker = lurek.progression.newStatusTracker()
+        expect_true(tracker:typeOf("LStatusTracker"))
+        expect_true(tracker:typeOf("LObject"))
+        expect_false(tracker:typeOf("LProgressionStore"))
+    end)
+
+    -- @covers LStatusTracker:update
+    it("update emits ticks and expires finite statuses", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning")
+        tracker:drainEvents()
+        tracker:update(1.1)
+        local tick_events = tracker:drainEvents()
+        expect_equal("tick", tick_events[1].kind)
+        expect_equal(1, tick_events[1].tickCount)
+        expect_true(tracker:list(7)[1].remaining < 1.5)
+        tracker:update(1.5)
+        local expiry_events = tracker:drainEvents()
+        expect_equal("expired", expiry_events[#expiry_events].kind)
+        expect_equal(0, #tracker:list(7))
+    end)
+end)
+
 test_summary()
 

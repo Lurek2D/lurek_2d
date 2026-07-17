@@ -321,7 +321,7 @@ impl Default for ProvinceMapClimateOptions {
 pub struct ProvinceMapEffectOptions {
     /// Master enable flag for the newer shader-side visual effects.
     pub enabled: bool,
-    /// Repeating terrain texture scale in map pixels per tile.
+    /// Repeating terrain texture scale in source-map pixels per tile; it follows camera zoom.
     pub terrain_texture_scale: f32,
     /// Strength of the terrain texture or watermark overlay.
     pub terrain_texture_strength: f32,

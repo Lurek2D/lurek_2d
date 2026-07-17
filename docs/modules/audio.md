@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Plays static and streaming sound via voice pools and mixing buses. - Controls priority ducking, spatial panning, and Doppler shifts. - Provides beat clocks for rhythmic scheduling and timing checks. - Applies lowpass/highpass filters and manages source-level playback state.
+Plays static and streaming sound via voice pools and mixing buses. - Controls priority ducking, spatial panning, and Doppler shifts. - Provides beat clocks for rhythmic scheduling and timing checks. - Applies lowpass/highpass filters and manages source-level playback state. - lurek.audio.manager.playMusic now creates a looping streamed source, routes it through a named group, and applies optional fade-in and volume; setGroupVolume controls that group explicitly.
 
 ## Summary
 

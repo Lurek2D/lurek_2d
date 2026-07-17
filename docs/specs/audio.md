@@ -8,6 +8,7 @@
 - Controls priority ducking, spatial panning, and Doppler shifts.
 - Provides beat clocks for rhythmic scheduling and timing checks.
 - Applies lowpass/highpass filters and manages source-level playback state.
+- `lurek.audio.manager.playMusic` now creates a looping streamed source, routes it through a named group, and applies optional fade-in and volume; `setGroupVolume` controls that group explicitly.
 
 ## General Info
 
@@ -15,7 +16,7 @@
 - Source path: `src/audio`
 - Binding: `src/lua_api/audio_api.rs`
 - Namespace: `lurek.audio`
-- Lua API surface: `90` functions, `6` types, `108` methods
+- Lua API surface: `92` functions, `6` types, `108` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -183,7 +184,9 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - `lurek.audio.isStopped(source) -> boolean`: Returns whether a source is currently stopped.
 - `lurek.audio.judgeBeat(clock, division?, hit_offset?) -> string`: Judges timing against the nearest beat grid for a beat clock.
 - `lurek.audio.manager.pauseAll() -> nil`: Pauses every currently active audio source.
+- `lurek.audio.manager.playMusic(path, opts?) -> LSource`: Starts a looping streaming track and routes it through a named music group.
 - `lurek.audio.manager.resumeAll() -> nil`: Resumes every currently paused audio source.
+- `lurek.audio.manager.setGroupVolume(group, volume) -> nil`: Sets the volume multiplier for one named music/SFX group.
 - `lurek.audio.mixInto(dest_ud, src_ud) -> nil`: Mixes the samples of `src` into `dest` in-place (both must have the same format).
 - `lurek.audio.newBeatClock(bpm, beats_per_bar_or_opts, opts?) -> LBeatClock`: Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
 - `lurek.audio.newBus(name) -> LBus`: Creates a new audio mixing bus for grouping and controlling sources.

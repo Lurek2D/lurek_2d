@@ -608,6 +608,81 @@ do
     lurek.log.info("types = " .. #types)
 end
 
+--@api: LContentRegistry:defineType
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("item", { fields = {
+        name = { type = "string", required = true },
+        stack = { type = "integer" },
+    } })
+    reg:register("item", "iron", { name = "Iron", stack = 20 })
+    lurek.log.info("defined item schema=" .. tostring(reg:getSchema("item") ~= nil) .. " count=" .. #reg:getTypes())
+end
+
+--@api: LContentRegistry:unregisterType
+do
+    local reg = lurek.mods.newRegistry()
+    reg:registerType("temporary")
+    local removed = reg:unregisterType("temporary")
+    local missing = reg:unregisterType("temporary")
+    lurek.log.info("unregister removed=" .. tostring(removed) .. " missing=" .. tostring(missing) .. " types=" .. #reg:getTypes())
+end
+
+--@api: LContentRegistry:getSchema
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("npc", { fields = { hp = { type = "integer", required = true } } })
+    local schema = reg:getSchema("npc")
+    lurek.log.info("schema fields=" .. tostring(schema.fields.hp.type) .. " required=" .. tostring(schema.fields.hp.required))
+end
+
+--@api: LContentRegistry:validate
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("quest", { fields = { title = { type = "string", required = true } } })
+    local ok, err = reg:validate("quest", { title = "Find the key" })
+    local bad, bad_err = reg:validate("quest", { title = 42 })
+    lurek.log.info("valid=" .. tostring(ok) .. " invalid=" .. tostring(not bad) .. " error=" .. tostring(bad_err or err))
+end
+
+--@api: LContentRegistry:freeze
+do
+    local reg = lurek.mods.newRegistry()
+    reg:registerType("runtime")
+    local changed = reg:freeze()
+    local rejected = not pcall(function() reg:registerType("late") end)
+    lurek.log.info("freeze changed=" .. tostring(changed) .. " frozen=" .. tostring(reg:isFrozen()) .. " rejected=" .. tostring(rejected))
+end
+
+--@api: LContentRegistry:isFrozen
+do
+    local reg = lurek.mods.newRegistry()
+    local before = reg:isFrozen()
+    reg:freeze()
+    local after = reg:isFrozen()
+    lurek.log.info("frozen before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: LContentRegistry:snapshot
+do
+    local reg = lurek.mods.newRegistry()
+    reg:defineType("loot", { fields = { value = { type = "integer", required = true } } })
+    reg:register("loot", "coin", { value = 25 })
+    local snapshot = reg:snapshot()
+    lurek.log.info("snapshot types=" .. #snapshot.types .. " coin=" .. snapshot.entries.loot.coin.value)
+end
+
+--@api: LContentRegistry:restore
+do
+    local source = lurek.mods.newRegistry()
+    source:registerType("prefab")
+    source:register("prefab", "room", { width = 8, height = 6 })
+    local target = lurek.mods.newRegistry()
+    target:restore(source:snapshot())
+    local room = target:get("prefab", "room")
+    lurek.log.info("restored room=" .. room.width .. "x" .. room.height .. " types=" .. #target:getTypes())
+end
+
 --@api: LContentRegistry:type
 do
 

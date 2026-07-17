@@ -1,20 +1,30 @@
+--- EU2 game entry point.
+--- Owns engine callbacks, module loading, camera/input state, province rendering,
+--- and the frame-level orchestration between state, map modes, and UI.
 local R = lurek.render
 
-local PIXEL_SIZE = 8
+-- One source-map pixel is deliberately enlarged to a 16px game cell.
+--- Authored map pixels are rendered as this many game pixels.
+local PIXEL_SIZE = 16
+--- Zoom below this threshold uses the tactical GPU path.
 local TACTICAL_ZOOM_THRESHOLD = 0.12
+--- Processed province-color map consumed by the registry.
 local SANITIZED_MAP_PATH = "save/eu2/map2.png"
+--- Processed marker map used to recover province centers.
 local SANITIZED_MARKER_PATH = "save/eu2/map2_markers.png"
+--- Initial camera center and zoom.
 local START_VIEW = { map_x = 500, map_y = 112, zoom = 0.82 }
+--- GPU border, terrain texture, and visual-effect defaults.
 local PROVINCE_GPU_STYLE = {
     terrain_texture_scale = 16.0,
-    terrain_texture_strength = 0.16,
-    edge_gradient_radius = 10.0,
-    edge_gradient_strength = 0.18,
-    edge_gradient_softness = 0.94,
+    terrain_texture_strength = 0.30,
+    edge_gradient_radius = 12.0,
+    edge_gradient_strength = 0.28,
+    edge_gradient_softness = 0.65,
     edge_gradient_color = { 0.16, 0.13, 0.11, 0.72 },
     border_palette = {
-        province_color = { 0.25, 0.22, 0.18, 0.62 },
-        coast_color = { 0.94, 0.83, 0.64, 1.0 },
+        province_color = { 0.20, 0.17, 0.12, 0.92 },
+        coast_color = { 1.0, 1.0, 0.0, 1.0 },
         country_color = { 1.0, 0.0, 0.0, 1.0 },
         sea_darken = 0.24,
     },
@@ -23,8 +33,8 @@ local PROVINCE_GPU_STYLE = {
         border_noise = {
             enabled = true,
             frequency = 0.11,
-            amplitude_px = 1.6,
-            softness_px = 0.92,
+            amplitude_px = 0.8,
+            softness_px = 0.55,
             seed = 271828,
         },
         water = {
@@ -36,14 +46,18 @@ local PROVINCE_GPU_STYLE = {
     },
 }
 
+--- Runtime module table loaded from `scripts/`.
 local modules = {}
+--- Province registry and campaign model created during `lurek.init`.
 local reg = nil
 local game = nil
 local map_font = nil
 local ui_font = nil
 local ui_small_font = nil
 local ui_title_font = nil
+local terrain_pattern_texture = nil
 
+--- Per-window camera, selection, dirty flags, and font slots.
 local view = {
     cam = { x = 0, y = 0, zoom = 1.0 },
     drag = { active = false, sx = 0, sy = 0, cx = 0, cy = 0 },
@@ -52,7 +66,6 @@ local view = {
     map_mode = "political",
     render_mode = "political",
     province_tints = nil,
-    draw_labels = true,
     show_overlay = true,
     debug_mode = false,
     map_dirty = true,
@@ -62,12 +75,16 @@ local view = {
 }
 
 local logged_reg_errors = {}
+---@param message string Warning message.
 local function log_warn(message)
     if lurek.log and lurek.log.warn then
         lurek.log.warn(message, "eu2")
     end
 end
 
+---@param path_or_size string|number Font asset path or direct size.
+---@param size number|nil Font size when the first argument is a path.
+---@return userdata|nil font Loaded font, or nil when loading fails.
 local function new_font(path_or_size, size)
     local ok, font
     if size == nil then
@@ -81,6 +98,8 @@ local function new_font(path_or_size, size)
     return nil
 end
 
+---@param path string Relative Lua module path.
+---@return table module Loaded module return value.
 local function load_module(path)
     local chunk = lurek.filesystem.load(path)
     assert(type(chunk) == "function", "cannot load " .. path)
@@ -89,6 +108,8 @@ local function load_module(path)
     return result
 end
 
+---@param method string Registry method name.
+---@return any result First successful registry return value, or nil.
 local function reg_call(method, ...)
     if not reg then
         return nil
@@ -108,21 +129,29 @@ local function reg_call(method, ...)
     return a, b, c, d, e
 end
 
+---@param v number Value to clamp.
+---@param lo number Minimum.
+---@param hi number Maximum.
+---@return number value Clamped value.
 local function clamp(v, lo, hi)
     if v < lo then return lo end
     if v > hi then return hi end
     return v
 end
 
+--- Mark geometry/overlay rendering for refresh.
 local function mark_map_dirty()
     view.map_dirty = true
 end
 
+--- Mark map colors and geometry for refresh.
 local function mark_color_dirty()
     view.map_dirty = true
     view.color_dirty = true
 end
 
+---@return number x Camera x snapped to source-cell boundaries.
+---@return number y Camera y snapped to source-cell boundaries.
 local function snapped_camera()
     local scale = PIXEL_SIZE * view.cam.zoom
     if scale <= 0 then
@@ -132,6 +161,7 @@ local function snapped_camera()
         math.floor(view.cam.y / scale + 0.5) * scale
 end
 
+---@return boolean needed True when the processed map is absent or stale.
 local function map_needs_sanitize()
     if not lurek.filesystem.exists(SANITIZED_MAP_PATH) then
         return true
@@ -147,6 +177,7 @@ local function map_needs_sanitize()
     return false
 end
 
+---@return string path Existing marker-map path, or source map fallback.
 local function marker_map_path()
     if not lurek.filesystem.exists(SANITIZED_MARKER_PATH) then
         return "map.png"
@@ -165,6 +196,7 @@ local function marker_map_path()
     return SANITIZED_MARKER_PATH
 end
 
+--- Center the camera on the registry map bounds.
 local function fit_camera()
     local ww, hh = lurek.window.getDimensions()
     view.cam.zoom = START_VIEW.zoom
@@ -173,6 +205,7 @@ local function fit_camera()
     mark_map_dirty()
 end
 
+--- Update the hovered province from the current mouse position.
 local function update_hover()
     local mx, my = lurek.input.mouse.getPosition()
     if reg and reg.screenToProvince then
@@ -183,6 +216,9 @@ local function update_hover()
     end
 end
 
+---@param pid number Province id.
+---@return number|nil x Screen x coordinate.
+---@return number|nil y Screen y coordinate.
 local function screen_from_province(pid)
     local province = game and game.provinces[pid]
     if not province or not province.cx or not province.cy then
@@ -193,6 +229,7 @@ local function screen_from_province(pid)
         cam_y + province.cy * PIXEL_SIZE * view.cam.zoom
 end
 
+--- Draw army badges at their current province centers.
 local function draw_armies()
     if not game then
         return
@@ -225,16 +262,15 @@ local function draw_armies()
                 R.rectangle("line", x0 - 3, y0 - 3, width + 6, height + 6)
             end
             local text = tostring(math.floor(army.size / 1000))
-            local text_scale = scale * 0.9
             local font = ui_small_font or ui_font
             local tw = font and font.getWidth and font:getWidth(text) or (#text * 5)
             local th = font and font.getHeight and font:getHeight() or 7
-            local tx = x0 + (width - tw * text_scale) * 0.5
-            local ty = y0 + (height - th * text_scale) * 0.5
+            local tx = x0 + (width - tw) * 0.5
+            local ty = y0 + (height - th) * 0.5
             R.setColor(0.08, 0.07, 0.05, 0.95)
-            R.print(text, tx + 1, ty + 1, text_scale)
+            R.print(text, tx + 1, ty + 1)
             R.setColor(0.99, 0.96, 0.84, 1)
-            R.print(text, tx, ty, text_scale)
+            R.print(text, tx, ty)
             if army.target_id then
                 local tx, ty = screen_from_province(army.target_id)
                 if tx and ty then
@@ -246,6 +282,7 @@ local function draw_armies()
     end
 end
 
+--- Draw capital/city markers for initialized countries.
 local function draw_city_markers()
     if not game then
         return
@@ -288,6 +325,7 @@ local function draw_city_markers()
     end
 end
 
+--- Upload map-mode colors and visual state when dirty.
 local function apply_map_mode_if_needed()
     if not game or not modules.map_modes then
         return
@@ -302,10 +340,14 @@ local function apply_map_mode_if_needed()
     end
 end
 
+--- Engine resize callback; refreshes camera-dependent overlays.
+---@param w number New window width.
+---@param h number New window height.
 function lurek.resize(w, h)
     mark_map_dirty()
 end
 
+--- Engine initialization callback; load assets, registry, scenario, and state.
 function lurek.init()
     modules.scenario = load_module("scripts/scenario.lua")
     modules.state = load_module("scripts/state.lua")
@@ -313,10 +355,12 @@ function lurek.init()
     modules.ui = load_module("scripts/ui.lua")
     modules.input = load_module("scripts/input.lua")
 
-    map_font = new_font("fonts/OpenSans.ttf", 14) or new_font(12)
-    ui_small_font = new_font("fonts/OpenSans.ttf", 16) or new_font(14) or map_font
-    ui_font = new_font("fonts/OpenSans.ttf", 20) or new_font(17) or ui_small_font or map_font
-    ui_title_font = new_font("fonts/OpenSans.ttf", 28) or ui_font
+    map_font = new_font(10)
+    ui_small_font = map_font
+    ui_font = map_font
+    ui_title_font = map_font
+    terrain_pattern_texture = R.newImage("assets/terrain_patterns.png")
+    assert(terrain_pattern_texture, "cannot load assets/terrain_patterns.png")
     view.fonts = {
         map = map_font,
         ui = ui_font,
@@ -341,9 +385,7 @@ function lurek.init()
         water_terrain_type = 0,
         land_terrain_type = 1,
         set_political_colors = true,
-        set_label_text = true,
         set_capitals = true,
-        set_label_lines = true,
     })
     local scenario = modules.scenario.build(reg)
     game = modules.state.new(reg, scenario)
@@ -357,6 +399,8 @@ function lurek.init()
     apply_map_mode_if_needed()
 end
 
+--- Per-frame update callback for hover, UI, and campaign simulation.
+---@param dt number Frame delta in seconds.
 function lurek.update(dt)
     if not game then
         return
@@ -372,11 +416,17 @@ function lurek.update(dt)
     apply_map_mode_if_needed()
 end
 
+--- Optional engine process callback; EU2 keeps simulation in `update`.
+---@param dt number Frame delta in seconds.
 function lurek.process(dt)
     if lurek.automation then lurek.automation.update(dt) end
     lurek.update(dt)
 end
 
+--- Mouse-down callback for map selection, drag start, and UI controls.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param button number Mouse button id.
 function lurek.mousepressed(x, y, button)
     if game and modules.ui and modules.ui.mousepressed and modules.ui.mousepressed(game, view, x, y, button) then
         if game.map_mode ~= view.map_mode then
@@ -397,6 +447,10 @@ function lurek.mousepressed(x, y, button)
     end
 end
 
+--- Mouse-up callback; converts a drag into a province move order when appropriate.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param button number Mouse button id.
 function lurek.mousereleased(x, y, button)
     if button ~= 1 then return end
     local dx = x - view.drag.sx
@@ -408,6 +462,9 @@ function lurek.mousereleased(x, y, button)
     end
 end
 
+--- Mouse-wheel callback for zooming around the pointer.
+---@param dx number Horizontal wheel delta.
+---@param dy number Vertical wheel delta.
 function lurek.wheelmoved(dx, dy)
     if dy == 0 then return end
     local mx, my = lurek.input.mouse.getPosition()
@@ -423,6 +480,8 @@ function lurek.wheelmoved(dx, dy)
     mark_map_dirty()
 end
 
+--- Keyboard callback routed to EU2 input commands.
+---@param key string Engine key name.
 function lurek.keypressed(key)
     if key == "escape" then
         lurek.event.quit()
@@ -446,6 +505,7 @@ function lurek.keypressed(key)
     end
 end
 
+--- Render the province map and its transient overlays.
 local function render_map()
     local ww, hh = lurek.window.getDimensions()
     local cam_x, cam_y = snapped_camera()
@@ -453,6 +513,12 @@ local function render_map()
     if refresh_colors then
         view.render_mode, view.province_tints = modules.map_modes.apply(reg, game, view.map_mode)
     end
+    local highlight_tints = modules.map_modes.highlight_tints(
+        game,
+        view.map_mode,
+        view.hovered_gid,
+        view.selected_gid
+    )
     if map_font then
         R.setFont(map_font)
     end
@@ -465,23 +531,26 @@ local function render_map()
         screen_w = ww,
         screen_h = hh,
         map_mode = view.render_mode,
-        province_tints = view.province_tints,
+        province_tints = highlight_tints or view.province_tints,
         zoom_mode = "tactical",
         tactical_zoom_threshold = TACTICAL_ZOOM_THRESHOLD,
         draw_fills = true,
         draw_borders = true,
-        draw_labels = view.draw_labels,
+        draw_labels = false,
         draw_capitals = false,
         draw_roads = view.debug_mode,
-        border_width = 0.95,
+        -- The GPU border shader resolves one 16px source cell as a 12px line.
+        border_width = 12.0,
         terrain_texture_scale = PROVINCE_GPU_STYLE.terrain_texture_scale,
         terrain_texture_strength = PROVINCE_GPU_STYLE.terrain_texture_strength,
+        terrain_texture = terrain_pattern_texture,
         edge_gradient_radius = PROVINCE_GPU_STYLE.edge_gradient_radius,
         edge_gradient_strength = PROVINCE_GPU_STYLE.edge_gradient_strength,
         edge_gradient_softness = PROVINCE_GPU_STYLE.edge_gradient_softness,
         edge_gradient_color = PROVINCE_GPU_STYLE.edge_gradient_color,
         border_palette = PROVINCE_GPU_STYLE.border_palette,
         visual_effects = PROVINCE_GPU_STYLE.visual_effects,
+        -- EU2 supplies exact fill tints below instead of the renderer's generic outline.
         hovered_id = nil,
         selected_id = nil,
     })
@@ -489,6 +558,7 @@ local function render_map()
     view.color_dirty = false
 end
 
+--- Engine draw callback for map, armies, cities, and UI.
 function lurek.draw()
     if not reg or not game then
         return

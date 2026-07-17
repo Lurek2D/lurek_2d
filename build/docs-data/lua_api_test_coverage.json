@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-14T13:46:40.027779+00:00",
+    "generated": "2026-07-16T21:32:18.493891+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 7056,
-    "marker_covered": 7029,
+    "total_api_functions": 7097,
+    "marker_covered": 7070,
     "describe_covered": 150,
     "describe_coverage_pct": 2.1,
     "heuristic_covered": 0,
-    "total_covered": 7056,
+    "total_covered": 7097,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -4495,11 +4495,11 @@
       ]
     },
     "audio": {
-      "total": 198,
-      "marker_covered": 198,
+      "total": 200,
+      "marker_covered": 200,
       "describe_covered": 1,
       "heuristic_covered": 0,
-      "covered": 198,
+      "covered": 200,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.5,
       "describe_score": 0.005,
@@ -5297,6 +5297,24 @@
         },
         {
           "lua_name": "lurek.audio.playSfx",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.audio.manager.playMusic",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.audio.manager.setGroupVolume",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -16723,11 +16741,11 @@
       ]
     },
     "ecs": {
-      "total": 141,
-      "marker_covered": 141,
+      "total": 142,
+      "marker_covered": 142,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 141,
+      "covered": 142,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -17317,6 +17335,15 @@
         },
         {
           "lua_name": "LUniverse:applySnapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUniverse:applyChangeSet",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -18011,11 +18038,11 @@
       ]
     },
     "effect": {
-      "total": 72,
-      "marker_covered": 72,
+      "total": 74,
+      "marker_covered": 74,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 72,
+      "covered": 74,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -18467,6 +18494,24 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LPostFxStack:snapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LPostFxStack:restore",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LPostFxStack:dedup",
           "kind": "method",
           "marker_covered": true,
@@ -18812,11 +18857,11 @@
       ]
     },
     "event": {
-      "total": 28,
-      "marker_covered": 28,
+      "total": 42,
+      "marker_covered": 42,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 28,
+      "covered": 42,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -18855,6 +18900,24 @@
         },
         {
           "lua_name": "lurek.event.newSignal",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.event.newChangeSet",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.event.fromChangeSetTable",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -18964,6 +19027,114 @@
         {
           "lua_name": "lurek.event.pushPriority",
           "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:append",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:clear",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:hash",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:isEmpty",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:len",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:restore",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:revision",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:schema",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:snapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:toTable",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LChangeSet:typeOf",
+          "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
@@ -31665,11 +31836,11 @@
       ]
     },
     "mods": {
-      "total": 58,
-      "marker_covered": 58,
+      "total": 66,
+      "marker_covered": 66,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 58,
+      "covered": 66,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -32148,7 +32319,25 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "LContentRegistry:defineType",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "LContentRegistry:register",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LContentRegistry:unregisterType",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -32176,6 +32365,60 @@
         },
         {
           "lua_name": "LContentRegistry:getTypes",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LContentRegistry:getSchema",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LContentRegistry:validate",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LContentRegistry:freeze",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LContentRegistry:isFrozen",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LContentRegistry:snapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LContentRegistry:restore",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
@@ -44415,11 +44658,11 @@
       ]
     },
     "progression": {
-      "total": 299,
-      "marker_covered": 299,
+      "total": 311,
+      "marker_covered": 311,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 299,
+      "covered": 311,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -45195,6 +45438,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "lurek.progression.newStatusTracker",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "lurek.progression.newStore",
           "kind": "function",
           "marker_covered": true,
@@ -45242,6 +45494,105 @@
         {
           "lua_name": "lurek.progression.createLegacyQuestAdapter",
           "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:define",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:apply",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:clear",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:drainEvents",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:list",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:remove",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:restore",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:snapshot",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:type",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LStatusTracker:update",
+          "kind": "method",
           "marker_covered": true,
           "describe_covered": false,
           "heuristic_covered": false,
@@ -52270,11 +52621,11 @@
       ]
     },
     "serialize": {
-      "total": 16,
-      "marker_covered": 16,
+      "total": 18,
+      "marker_covered": 18,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 16,
+      "covered": 18,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -52412,6 +52763,24 @@
         },
         {
           "lua_name": "lurek.serialize.encode",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.serialize.encodeChangeSet",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.serialize.decodeChangeSet",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree.
+- Translates JSON, TOML, CSV, XML, INI, and MessagePack via one intermediate tree and validates neutral ChangeSet envelopes.
 - Validates data against schemas.
 - Enforces bounded decode, encode, and Lua-conversion limits for depth, nodes, strings, rows, and input size.
 
@@ -16,6 +16,7 @@
 - That also makes migrations easier to reason about.
 - Safety is part of the contract. Lua conversion, autodetection, CSV parsing, and MessagePack decode must stay bounded and reject cyclic or non-finite inputs instead of recursing or allocating without policy.
 - Read `serialize` as the normalization layer for structured data moving between external formats and engine-facing workflows.
+- `encodeChangeSet()` and `decodeChangeSet()` are schema-light transport helpers. They validate the stable `schema`, `revision`, and ordered `{objectId, component, operation, payload}` records, then delegate actual encoding to the existing codec front door.
 
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 

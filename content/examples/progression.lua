@@ -4536,6 +4536,106 @@ do
     lurek.log.info("LSeasonArchive:getId id=" .. tostring(archive:getId()) .. " index=" .. tostring(archive:getArchiveIndex()))
 end
 
+--@api: lurek.progression.newStatusTracker
+do
+    local tracker = lurek.progression.newStatusTracker()
+    local type_name = tracker:type()
+    local empty = tracker:list(1)
+    lurek.log.info("status tracker type=" .. type_name .. " empty=" .. #empty .. " isolated=" .. tostring(tracker ~= nil))
+end
+
+--@api: LStatusTracker:define
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "poison", duration = 5, tickInterval = 1, maxStacks = 3, stacking = "add", tags = { "damage_over_time" } })
+    lurek.log.info("defined poison statuses=" .. #tracker:list(1) .. " type=" .. tracker:type())
+end
+
+--@api: LStatusTracker:apply
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "slow", duration = 4, maxStacks = 2, stacking = "refresh" })
+    local instance = tracker:apply(7, "slow", 99, 1)
+    lurek.log.info("applied instance=" .. instance .. " subject=" .. tracker:list(7)[1].subjectId .. " source=" .. tracker:list(7)[1].sourceId)
+end
+
+--@api: LStatusTracker:clear
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "shield", duration = 10 })
+    tracker:apply(1, "shield")
+    tracker:clear()
+    lurek.log.info("cleared status count=" .. #tracker:list(1) .. " events=" .. #tracker:drainEvents())
+end
+
+--@api: LStatusTracker:drainEvents
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "regen", duration = 3, tickInterval = 1 })
+    tracker:apply(2, "regen")
+    local events = tracker:drainEvents()
+    lurek.log.info("status events=" .. #events .. " first=" .. events[1].kind .. " instance=" .. events[1].instanceId)
+end
+
+--@api: LStatusTracker:list
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "marked", duration = 8 })
+    tracker:apply(3, "marked", nil, 2)
+    local statuses = tracker:list(3)
+    lurek.log.info("status count=" .. #statuses .. " definition=" .. statuses[1].definitionId .. " stacks=" .. statuses[1].stacks)
+end
+
+--@api: LStatusTracker:remove
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", duration = 8 })
+    local instance = tracker:apply(4, "ward")
+    local removed = tracker:remove(instance)
+    lurek.log.info("removed=" .. tostring(removed) .. " remaining=" .. #tracker:list(4) .. " second=" .. tostring(tracker:remove(instance)))
+end
+
+--@api: LStatusTracker:restore
+do
+    local source = lurek.progression.newStatusTracker()
+    source:define({ id = "burn", duration = 2, tickInterval = 1 })
+    source:apply(5, "burn")
+    local target = lurek.progression.newStatusTracker()
+    target:restore(source:snapshot())
+    lurek.log.info("restored statuses=" .. #target:list(5) .. " definition=" .. target:list(5)[1].definitionId)
+end
+
+--@api: LStatusTracker:snapshot
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "haste", duration = 6 })
+    tracker:apply(6, "haste")
+    local snapshot = tracker:snapshot()
+    lurek.log.info("snapshot definitions=" .. tostring(snapshot.definitions.haste.id) .. " instances=" .. #snapshot.instances .. " next=" .. snapshot.nextId)
+end
+
+--@api: LStatusTracker:type
+do
+    local tracker = lurek.progression.newStatusTracker()
+    lurek.log.info("status tracker type=" .. tracker:type() .. " empty=" .. tostring(#tracker:list(1) == 0) .. " snapshot=" .. tostring(tracker:snapshot() ~= nil))
+end
+
+--@api: LStatusTracker:typeOf
+do
+    local tracker = lurek.progression.newStatusTracker()
+    lurek.log.info("tracker=" .. tostring(tracker:typeOf("LStatusTracker")) .. " object=" .. tostring(tracker:typeOf("LObject")) .. " store=" .. tostring(tracker:typeOf("LProgressionStore")))
+end
+
+--@api: LStatusTracker:update
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "poison", duration = 2.5, tickInterval = 1 })
+    tracker:apply(8, "poison")
+    local queued = tracker:update(1.1)
+    local events = tracker:drainEvents()
+    lurek.log.info("update queued=" .. queued .. " tick=" .. tostring(events[#events].kind == "tick") .. " remaining=" .. tracker:list(8)[1].remaining)
+end
+
 
 
 

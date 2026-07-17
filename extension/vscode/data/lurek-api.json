@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-14",
+  "generated": "2026-07-16",
   "modules": [
     {
       "name": "agent",
@@ -3273,6 +3273,54 @@
           ],
           "returns": "LSource",
           "returnType": "LSource",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "playMusic",
+          "fullPath": "lurek.audio.manager.playMusic",
+          "signature": "(path, [opts])",
+          "description": "Starts a looping streaming track and routes it through a named music group.",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "Path to audio file.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional `group` (default `music`), `fadeIn` seconds, and `volume`.",
+              "optional": true
+            }
+          ],
+          "returns": "LSource",
+          "returnType": "LSource",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setGroupVolume",
+          "fullPath": "lurek.audio.manager.setGroupVolume",
+          "signature": "(group, volume)",
+          "description": "Sets the volume multiplier for one named music/SFX group.",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Name of the audio group.",
+              "optional": false
+            },
+            {
+              "name": "volume",
+              "type": "number",
+              "description": "Volume multiplier, clamped at zero.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -9446,6 +9494,48 @@
           "parameters": [],
           "returns": "LSignal",
           "returnType": "LSignal",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newChangeSet",
+          "fullPath": "lurek.event.newChangeSet",
+          "signature": "([options])",
+          "description": "Creates an empty bounded ChangeSet for neutral state replication, save, or Lua-side module integration.",
+          "parameters": [
+            {
+              "name": "options",
+              "type": "table",
+              "description": "Optional `schema`, `revision`, and `maxChanges` fields. Defaults are `\"game\"`, `0`, and `10000`.",
+              "optional": true
+            }
+          ],
+          "returns": "LChangeSet",
+          "returnType": "LChangeSet",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "fromChangeSetTable",
+          "fullPath": "lurek.event.fromChangeSetTable",
+          "signature": "(value, [max_changes])",
+          "description": "Creates a ChangeSet from a table produced by `LChangeSet:toTable()`.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "table",
+              "description": "ChangeSet table with schema, revision, changes, and optional hash.",
+              "optional": false
+            },
+            {
+              "name": "maxChanges",
+              "type": "integer",
+              "description": "Maximum accepted records; defaults to the table length or 10000.",
+              "optional": true
+            }
+          ],
+          "returns": "LChangeSet",
+          "returnType": "LChangeSet",
           "isMethod": false,
           "objectType": null
         },
@@ -24646,6 +24736,17 @@
           "objectType": null
         },
         {
+          "name": "newStatusTracker",
+          "fullPath": "lurek.progression.newStatusTracker",
+          "signature": "()",
+          "description": "Creates an isolated deterministic status lifecycle tracker.",
+          "parameters": [],
+          "returns": "LStatusTracker",
+          "returnType": "LStatusTracker",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newStore",
           "fullPath": "lurek.progression.newStore",
           "signature": "([options])",
@@ -30426,6 +30527,66 @@
           ],
           "returns": "string",
           "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "encodeChangeSet",
+          "fullPath": "lurek.serialize.encodeChangeSet",
+          "signature": "(value, format, [opts])",
+          "description": "Encodes a validated `lurek.event` ChangeSet table for save or network transport.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "table",
+              "description": "Table returned by `LChangeSet:toTable()`.",
+              "optional": false
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "description": "Target format: `json`, `toml`, or `msgpack`.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Standard encoder options such as `pretty` and limits.",
+              "optional": true
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "decodeChangeSet",
+          "fullPath": "lurek.serialize.decodeChangeSet",
+          "signature": "(payload, [format], [opts])",
+          "description": "Decodes and validates a ChangeSet transport payload into a Lua table.",
+          "parameters": [
+            {
+              "name": "payload",
+              "type": "string",
+              "description": "Text or MessagePack ChangeSet payload.",
+              "optional": false
+            },
+            {
+              "name": "format",
+              "type": "string",
+              "description": "Format hint; omit for text auto-detection.",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Standard decoder options and limits.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -57158,6 +57319,183 @@
       ]
     },
     {
+      "name": "LChangeSet",
+      "description": "Lua handle for a bounded, versioned collection of neutral state changes.",
+      "methods": [
+        {
+          "name": "append",
+          "fullPath": "LChangeSet:append",
+          "signature": "(object_id, component, operation, payload)",
+          "description": "Appends one neutral object/component mutation and returns the new record count.",
+          "parameters": [
+            {
+              "name": "objectId",
+              "type": "integer",
+              "description": "Stable object identifier greater than zero.",
+              "optional": false
+            },
+            {
+              "name": "component",
+              "type": "string",
+              "description": "Caller-defined state namespace.",
+              "optional": false
+            },
+            {
+              "name": "operation",
+              "type": "string",
+              "description": "Caller-defined operation name.",
+              "optional": false
+            },
+            {
+              "name": "payload",
+              "type": "any",
+              "description": "Recursively serializable operation data.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LChangeSet:clear",
+          "signature": "()",
+          "description": "Removes all records and returns the number removed.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "hash",
+          "fullPath": "LChangeSet:hash",
+          "signature": "()",
+          "description": "Returns the deterministic FNV-1a hash of schema, revision, and ordered records.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "isEmpty",
+          "fullPath": "LChangeSet:isEmpty",
+          "signature": "()",
+          "description": "Returns true when the ChangeSet contains no records.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "len",
+          "fullPath": "LChangeSet:len",
+          "signature": "()",
+          "description": "Returns the number of records currently stored.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LChangeSet:restore",
+          "signature": "(snapshot)",
+          "description": "Restores records from a table produced by `snapshot` or `toTable`.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Snapshot with schema, revision, changes, and optional hash.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "revision",
+          "fullPath": "LChangeSet:revision",
+          "signature": "()",
+          "description": "Returns the caller-defined monotonic revision.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "schema",
+          "fullPath": "LChangeSet:schema",
+          "signature": "()",
+          "description": "Returns the schema identifier used to interpret records.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "LChangeSet:snapshot",
+          "signature": "()",
+          "description": "Returns a deterministic Lua snapshot including the derived hash.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "toTable",
+          "fullPath": "LChangeSet:toTable",
+          "signature": "()",
+          "description": "Converts the ChangeSet to a transport-neutral Lua table.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "type",
+          "fullPath": "LChangeSet:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LChangeSet:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this handle matches `LChangeSet` or `LObject`.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LChangeSet"
+        }
+      ]
+    },
+    {
       "name": "LChannel",
       "description": "Creates a new unbounded channel for sending typed values between threads.",
       "methods": [
@@ -64169,6 +64507,30 @@
           "objectType": "LContentRegistry"
         },
         {
+          "name": "defineType",
+          "fullPath": "LContentRegistry:defineType",
+          "signature": "(type_name, schema)",
+          "description": "Registers a content type and its field-validation schema.",
+          "parameters": [
+            {
+              "name": "type_name",
+              "type": "string",
+              "description": "Content type name.",
+              "optional": false
+            },
+            {
+              "name": "schema",
+              "type": "table",
+              "description": "Schema with keyed `fields` and optional `allowUnknown`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
           "name": "register",
           "fullPath": "LContentRegistry:register",
           "signature": "(type_name, id, obj)",
@@ -64195,6 +64557,24 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
+          "name": "unregisterType",
+          "fullPath": "LContentRegistry:unregisterType",
+          "signature": "(type_name)",
+          "description": "Removes a content type and all values registered under it.",
+          "parameters": [
+            {
+              "name": "type_name",
+              "type": "string",
+              "description": "Content type name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LContentRegistry"
         },
@@ -64248,6 +64628,99 @@
           "parameters": [],
           "returns": "string[]",
           "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
+          "name": "getSchema",
+          "fullPath": "LContentRegistry:getSchema",
+          "signature": "(type_name)",
+          "description": "Returns a registered type schema, or nil for an untyped content type.",
+          "parameters": [
+            {
+              "name": "type_name",
+              "type": "string",
+              "description": "Content type name.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
+          "name": "validate",
+          "fullPath": "LContentRegistry:validate",
+          "signature": "(type_name, value)",
+          "description": "Validates a value against a registered type schema without storing it.",
+          "parameters": [
+            {
+              "name": "type_name",
+              "type": "string",
+              "description": "Content type name.",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "table",
+              "description": "Candidate content value.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
+          "name": "freeze",
+          "fullPath": "LContentRegistry:freeze",
+          "signature": "()",
+          "description": "Freezes definitions and entries until this userdata is discarded.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
+          "name": "isFrozen",
+          "fullPath": "LContentRegistry:isFrozen",
+          "signature": "()",
+          "description": "Returns whether this registry rejects mutating operations.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "LContentRegistry:snapshot",
+          "signature": "()",
+          "description": "Captures schemas and registered values in a deterministic Lua table.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LContentRegistry"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LContentRegistry:restore",
+          "signature": "(snapshot)",
+          "description": "Restores schemas and values from a previous snapshot and applies its frozen flag.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Snapshot returned by `snapshot`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LContentRegistry"
         },
@@ -128793,6 +129266,35 @@
           "objectType": "LPostFxStack"
         },
         {
+          "name": "snapshot",
+          "fullPath": "LPostFxStack:snapshot",
+          "signature": "()",
+          "description": "Captures stack dimensions, feedback, enabled slots, and validated effect parameters.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LPostFxStack"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LPostFxStack:restore",
+          "signature": "(snapshot)",
+          "description": "Restores a stack snapshot and rebuilds its effect handles without entering capture mode.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Table previously returned by `snapshot`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPostFxStack"
+        },
+        {
           "name": "dedup",
           "fullPath": "LPostFxStack:dedup",
           "signature": "()",
@@ -169598,6 +170100,200 @@
       ]
     },
     {
+      "name": "LStatusTracker",
+      "description": "Creates an isolated deterministic status lifecycle tracker.",
+      "methods": [
+        {
+          "name": "define",
+          "fullPath": "LStatusTracker:define",
+          "signature": "(definition)",
+          "description": "Registers or replaces one status definition.",
+          "parameters": [
+            {
+              "name": "definition",
+              "type": "table",
+              "description": "Definition with id, duration, tickInterval, maxStacks, stacking, and tags.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "apply",
+          "fullPath": "LStatusTracker:apply",
+          "signature": "LStatusTracker:apply(subjectId, definitionId, [sourceId], [stacks])",
+          "description": "Applies a status to a subject and returns its stable runtime instance id.",
+          "parameters": [
+            {
+              "name": "subjectId",
+              "type": "integer",
+              "description": "Stable subject/entity id.",
+              "optional": false
+            },
+            {
+              "name": "definitionId",
+              "type": "string",
+              "description": "Registered status definition id.",
+              "optional": false
+            },
+            {
+              "name": "sourceId",
+              "type": "integer",
+              "description": "Optional source/owner id.",
+              "optional": true
+            },
+            {
+              "name": "stacks",
+              "type": "integer",
+              "description": "Initial stack count, clamped to maxStacks.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LStatusTracker:clear",
+          "signature": "()",
+          "description": "Removes all definitions, instances, and queued events.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "drainEvents",
+          "fullPath": "LStatusTracker:drainEvents",
+          "signature": "()",
+          "description": "Takes and clears neutral apply/refresh/stack/tick/expired events.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "list",
+          "fullPath": "LStatusTracker:list",
+          "signature": "(subject_id)",
+          "description": "Lists active status instances attached to one subject.",
+          "parameters": [
+            {
+              "name": "subjectId",
+              "type": "integer",
+              "description": "Stable subject/entity id.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "remove",
+          "fullPath": "LStatusTracker:remove",
+          "signature": "(instance_id)",
+          "description": "Removes one active status instance.",
+          "parameters": [
+            {
+              "name": "instanceId",
+              "type": "integer",
+              "description": "Runtime status instance id.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LStatusTracker:restore",
+          "signature": "(snapshot)",
+          "description": "Restores definitions, active instances, and ID allocation from a snapshot.",
+          "parameters": [
+            {
+              "name": "snapshot",
+              "type": "table",
+              "description": "Table returned by `snapshot`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "snapshot",
+          "fullPath": "LStatusTracker:snapshot",
+          "signature": "()",
+          "description": "Captures definitions, instances, and ID allocation state.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "type",
+          "fullPath": "LStatusTracker:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LStatusTracker:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this handle matches `LStatusTracker` or `LObject`.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        },
+        {
+          "name": "update",
+          "fullPath": "LStatusTracker:update",
+          "signature": "(dt)",
+          "description": "Advances finite durations and periodic tick timers by dt seconds.",
+          "parameters": [
+            {
+              "name": "dt",
+              "type": "number",
+              "description": "Non-negative logical seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LStatusTracker"
+        }
+      ]
+    },
+    {
       "name": "LSteeringManager",
       "description": "Lua handle for a steering behavior stack that combines movement forces for an agent.",
       "methods": [
@@ -199737,6 +200433,24 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "applyChangeSet",
+          "fullPath": "LUniverse:applyChangeSet",
+          "signature": "(changeset)",
+          "description": "Applies a transport-neutral ChangeSet table to explicit ECS component operations.",
+          "parameters": [
+            {
+              "name": "changeset",
+              "type": "table",
+              "description": "Table returned by `LChangeSet:toTable()` or `serialize.decodeChangeSet`.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LUniverse"
         },

@@ -1501,3 +1501,13 @@ do
     local base = loadout:typeOf("LObject")
     lurek.log.info("loadout typeOf exact=" .. tostring(exact) .. " base=" .. tostring(base))
 end
+
+--@api: LUniverse:applyChangeSet
+do
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    changes:append(entity, "hp", "set", 25)
+    world:applyChangeSet(changes:toTable())
+    lurek.log.info("ecs changeset hp=" .. tostring(world:get(entity, "hp")))
+end

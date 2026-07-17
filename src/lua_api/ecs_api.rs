@@ -953,6 +953,13 @@ impl LuaUserData for LuaUniverse {
                 .borrow_mut()
                 .deserialize_from_table(lua, snapshot)
         });
+        // -- applyChangeSet --
+        /// Applies a transport-neutral ChangeSet table to explicit ECS component operations.
+        /// @param | changeset | table | Table returned by `LChangeSet:toTable()` or `serialize.decodeChangeSet`.
+        /// @return | integer | Number of validated records applied in order.
+        methods.add_method("applyChangeSet", |lua, this, changeset: LuaTable| {
+            this.inner.borrow_mut().apply_changeset(lua, changeset)
+        });
         // -- takeSnapshotDiff --
         /// Returns and clears accumulated ECS snapshot diff data.
         /// @return | table | Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.

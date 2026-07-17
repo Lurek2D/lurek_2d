@@ -279,6 +279,68 @@ fn encode_payload<'lua>(
     }
 }
 
+/// Validates the public ChangeSet table envelope without coupling serialization to a gameplay owner.
+fn validate_change_set_table<'lua>(
+    value: LuaValue<'lua>,
+    operation: &str,
+) -> LuaResult<LuaValue<'lua>> {
+    let table = match &value {
+        LuaValue::Table(table) => table,
+        _ => {
+            return Err(LuaError::RuntimeError(format!(
+                "serialize.{operation}ChangeSet: expected a table"
+            )))
+        }
+    };
+    let schema: String = table.get("schema").map_err(|_| {
+        LuaError::RuntimeError(format!(
+            "serialize.{operation}ChangeSet: schema must be a string"
+        ))
+    })?;
+    if schema.trim().is_empty() || schema.len() > 128 {
+        return Err(LuaError::RuntimeError(format!(
+            "serialize.{operation}ChangeSet: schema must contain 1..=128 characters"
+        )));
+    }
+    let revision: Option<u64> = table.get("revision")?;
+    if revision.is_none() {
+        return Err(LuaError::RuntimeError(format!(
+            "serialize.{operation}ChangeSet: revision must be a non-negative integer"
+        )));
+    }
+    let changes: LuaTable = table.get("changes").map_err(|_| {
+        LuaError::RuntimeError(format!(
+            "serialize.{operation}ChangeSet: changes must be an array table"
+        ))
+    })?;
+    if changes.raw_len() > 100_000 {
+        return Err(LuaError::RuntimeError(format!(
+            "serialize.{operation}ChangeSet: changes exceeds 100000 records"
+        )));
+    }
+    for (index, row) in changes.sequence_values::<LuaTable>().enumerate() {
+        let row = row.map_err(|error| {
+            LuaError::RuntimeError(format!(
+                "serialize.{operation}ChangeSet: invalid record {}: {error}",
+                index + 1
+            ))
+        })?;
+        let object_id: Option<u64> = row.get("objectId")?;
+        let component: Option<String> = row.get("component")?;
+        let op: Option<String> = row.get("operation")?;
+        if object_id.unwrap_or(0) == 0
+            || component.as_deref().unwrap_or("").trim().is_empty()
+            || op.as_deref().unwrap_or("").trim().is_empty()
+        {
+            return Err(LuaError::RuntimeError(format!(
+                "serialize.{operation}ChangeSet: record {} requires objectId, component, and operation",
+                index + 1
+            )));
+        }
+    }
+    Ok(value)
+}
+
 /// Registers the `lurek.serialize` module into the Lua runtime.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -467,6 +529,38 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(
             |lua, (value, format, opts): (LuaValue, String, Option<LuaTable>)| {
                 encode_payload(lua, value, format, opts)
+            },
+        )?,
+    )?;
+
+    // -- encodeChangeSet --
+    /// Encodes a validated `lurek.event` ChangeSet table for save or network transport.
+    /// @param | value | table | Table returned by `LChangeSet:toTable()`.
+    /// @param | format | string | Target format: `json`, `toml`, or `msgpack`.
+    /// @param | opts | table? | Standard encoder options such as `pretty` and limits.
+    /// @return | string | Encoded ChangeSet payload.
+    tbl.set(
+        "encodeChangeSet",
+        lua.create_function(
+            |lua, (value, format, opts): (LuaValue, String, Option<LuaTable>)| {
+                let value = validate_change_set_table(value, "encode")?;
+                encode_payload(lua, value, format, opts)
+            },
+        )?,
+    )?;
+
+    // -- decodeChangeSet --
+    /// Decodes and validates a ChangeSet transport payload into a Lua table.
+    /// @param | payload | string | Text or MessagePack ChangeSet payload.
+    /// @param | format | string? | Format hint; omit for text auto-detection.
+    /// @param | opts | table? | Standard decoder options and limits.
+    /// @return | table | Validated ChangeSet table.
+    tbl.set(
+        "decodeChangeSet",
+        lua.create_function(
+            |lua, (payload, format, opts): (LuaValue, Option<String>, Option<LuaTable>)| {
+                let decoded = decode_payload(lua, payload, format, opts)?;
+                validate_change_set_table(decoded, "decode")
             },
         )?,
     )?;
