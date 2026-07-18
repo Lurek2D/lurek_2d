@@ -20,6 +20,7 @@ TITLE_OVERRIDES = {
     "finance_app": "Household Finance Lab",
     "hex_logistics": "Hex Logistics",
     "music_composer": "Music Composer",
+    "tactical_mech_shooter": "Tactical Mech Shooter",
 }
 
 DECISION_DESCRIPTIONS = {
@@ -42,6 +43,7 @@ GAME_DECISIONS: dict[str, tuple[str, str]] = {
     "hex_logistics": ("KEEP", "Hex logistics mini game kept in the current flat catalog."),
     "music_composer": ("KEEP", "Interactive music composition app kept in the current flat catalog."),
     "sensible_soccer": ("KEEP", "Top-down soccer game kept in the current flat catalog."),
+    "tactical_mech_shooter": ("KEEP", "Complete tactical mech campaign with current validation, regression, and smoke evidence."),
 }
 
 CALLBACKS = {

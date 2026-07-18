@@ -1,0 +1,19 @@
+id = "tactical_mech_core"
+name = "Tactical Mech Core"
+version = "1.0.0"
+author = "Lurek2D"
+description = "Base data pack for the Tactical Mech Shooter"
+priority = 0
+api_version = "1.0.0"
+capabilities = ["data", "layouts", "effects"]
+assets = [
+  "schemas.toml",
+  "game.toml",
+  "corpora.toml",
+  "weapons.toml",
+  "backpacks.toml",
+  "presets.toml",
+  "ai.toml",
+  "tiles.toml",
+  "maps/arena_01.toml"
+]

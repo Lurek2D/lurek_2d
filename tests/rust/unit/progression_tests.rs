@@ -305,9 +305,11 @@ fn profile_templates_seed_profiles_and_can_be_reapplied() {
             },
         )
         .expect("track");
-    let mut template = ProfileTemplateDefinition::default();
-    template.kind = Some("scout".to_string());
-    template.display_name = Some("Veteran Scout".to_string());
+    let mut template = ProfileTemplateDefinition {
+        kind: Some("scout".to_string()),
+        display_name: Some("Veteran Scout".to_string()),
+        ..ProfileTemplateDefinition::default()
+    };
     template.counters.insert("wins".to_string(), 4.0);
     template.attributes.insert("strength".to_string(), 14.0);
     template.resources.insert("stamina".to_string(), 7.0);
@@ -925,22 +927,16 @@ fn shared_conditions_validate_evaluate_and_gate_definitions() {
 
     let validation = store.validate_condition(&condition);
     assert_eq!(validation["ok"], true);
-    assert_eq!(
-        store
-            .evaluate_condition("player", &condition)
-            .expect("condition before"),
-        false
-    );
+    assert!(!store
+        .evaluate_condition("player", &condition)
+        .expect("condition before"));
     store.add_counter("player", "wins", 2.0).expect("wins");
     store
         .set_level("player", "character_xp", 3)
         .expect("set level");
-    assert_eq!(
-        store
-            .evaluate_condition("player", &condition)
-            .expect("condition after"),
-        true
-    );
+    assert!(store
+        .evaluate_condition("player", &condition)
+        .expect("condition after"));
     let explanation = store
         .explain_condition("player", &condition)
         .expect("explanation");

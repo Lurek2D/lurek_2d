@@ -1,0 +1,27 @@
+kind = "content"
+
+[ai]
+enemy_health = 80
+enemy_speed = 48
+enemy_sight = 10
+spawn_interval = 2.5
+think_interval = 0.25
+lod_far = 4
+
+[[ai.profile]]
+id="assault"
+stance="aggressive"
+preferred_weapon="projectile"
+retreat_health=0.18
+
+[[ai.profile]]
+id="sniper"
+stance="defensive"
+preferred_weapon="beam"
+retreat_health=0.30
+
+[[ai.profile]]
+id="support"
+stance="support"
+preferred_weapon="repair"
+retreat_health=0.35

@@ -234,6 +234,22 @@ name = "gui_tests"
 path = "tests/rust/unit/gui_tests.rs"
 
 [[test]]
+name = "awareness_tests"
+path = "tests/rust/unit/awareness_tests.rs"
+
+[[test]]
+name = "scene_tests"
+path = "tests/rust/unit/scene_tests.rs"
+
+[[test]]
+name = "tilelight_tests"
+path = "tests/rust/unit/tilelight_tests.rs"
+
+[[test]]
+name = "ui_tests"
+path = "tests/rust/unit/ui_tests.rs"
+
+[[test]]
 name = "globe_tests"
 path = "tests/rust/unit/globe_tests.rs"
 

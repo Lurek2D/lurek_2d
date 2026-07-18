@@ -7,6 +7,7 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::path::PathBuf;
 use std::rc::Rc;
+use std::sync::{Mutex, OnceLock};
 use std::time::Instant;
 
 use lurek2d::lua_api::{create_lua_vm, SharedState};
@@ -106,6 +107,34 @@ fn run_lua_workspace_test(path: &str) {
 }
 
 fn run_lua_test_at_path(display_name: &str, file_path: &str) {
+    with_lua_test_lock(display_name, || {
+        run_lua_test_at_path_unlocked(display_name, file_path)
+    });
+}
+
+fn with_lua_test_lock<T>(display_name: &str, run: impl FnOnce() -> T) -> T {
+    if !needs_lua_test_lock(display_name) {
+        return run();
+    }
+
+    static LUA_TEST_LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+    let lock = LUA_TEST_LOCK.get_or_init(|| Mutex::new(()));
+    let _guard = lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+    run()
+}
+
+fn needs_lua_test_lock(display_name: &str) -> bool {
+    const ASYNC_PATHFIND_TESTS: &[&str] = &[
+        "unit/test_ai_unit.lua",
+        "unit/test_pathfind_unit.lua",
+        "stress/test_ai_stress.lua",
+        "stress/test_pathfind_stress.lua",
+    ];
+    // Keep this scaffold aligned with the registered harness.
+    ASYNC_PATHFIND_TESTS.contains(&display_name) || display_name.contains("province")
+}
+
+fn run_lua_test_at_path_unlocked(display_name: &str, file_path: &str) {
     let start = Instant::now();
     let lua = create_test_vm();
 

@@ -1,0 +1,17 @@
+kind = "schema"
+
+[types.corpus]
+required = ["id", "name", "cargo", "health", "energy", "move_speed", "rotation_speed", "radius"]
+allowUnknown = true
+
+[types.weapon]
+required = ["id", "name", "kind", "size", "damage", "range", "reload", "energy", "velocity", "accuracy"]
+allowUnknown = true
+
+[types.backpack]
+required = ["id", "name", "size"]
+allowUnknown = true
+
+[types.preset]
+required = ["id", "name", "corpus", "left", "right", "backpack"]
+allowUnknown = true

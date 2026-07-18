@@ -79,7 +79,7 @@ fn snapshot_support_lists_are_deterministic() {
         .unwrap();
 
     assert_eq!(field.resource_cells()[0].1, "ore");
-    assert_eq!(field.buildable_cells()[0].1, false);
+    assert!(!field.buildable_cells()[0].1);
     assert_eq!(field.occupant_cells()[0].1, 42);
 }
 

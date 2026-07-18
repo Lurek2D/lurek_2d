@@ -73,14 +73,18 @@ CROSS_TIER_EXEMPTIONS: dict = {
     # dependency direction (automation â†’ event) is intentional and documented
     # in src/automation/docs/specs.
     ("automation", "event"): "Simulator injects synthetic input events into EventQueue â€” intentional by design",
+    ("awareness", "tilefield"): "Tile awareness intentionally projects visibility masks over TileField semantics",
     ("camera", "tilemap"): "Camera walker intentionally depends on TileMap collision for tile-follow movement",
     ("image", "animation"): "Image visualization intentionally renders animation state into debug images",
     ("runtime", "audio"): "SharedState intentionally owns audio mixer handles for runtime-wide coordination",
     ("runtime", "camera"): "SharedState intentionally stores active camera handles for runtime-wide coordination",
+    ("runtime", "cursor"): "SharedState intentionally stores the runtime cursor controller",
     ("runtime", "input"): "SharedState intentionally aggregates input state for frame-wide access",
     ("runtime", "light"): "SharedState intentionally stores lighting state for render/runtime coordination",
+    ("runtime", "mods"): "SharedState intentionally stores the active mod sandbox",
     ("runtime", "parallax"): "SharedState intentionally stores parallax layers for runtime/render coordination",
     ("runtime", "particle"): "SharedState intentionally stores particle systems for runtime/render coordination",
+    ("runtime", "province"): "SharedState intentionally stores province registries and render caches",
     ("runtime", "raycaster"): "SharedState intentionally stores raycaster scenes for runtime/render coordination",
     ("runtime", "render"): "SharedState intentionally owns render resources and command state",
     ("runtime", "tilemap"): "SharedState intentionally stores auto-managed tilemap handles for runtime coordination",
@@ -88,6 +92,12 @@ CROSS_TIER_EXEMPTIONS: dict = {
     ("math", "image"): "math re-exports rect packing helpers for legacy compatibility",
     ("log", "runtime"): "log facade intentionally delegates level storage to runtime log_messages",
     ("patterns", "runtime"): "patterns blackboard intentionally reuses runtime log message identifiers",
+    ("serialize", "runtime"): "serialize codecs reuse the centralized runtime diagnostic identifiers only",
+}
+
+MODULE_ALIASES = {
+    # lurek.system is implemented by the runtime owner rather than a standalone src/system module.
+    "system": "runtime",
 }
 
 LUA_USERDATA_DOMAIN_EXEMPTIONS: dict = {
@@ -1550,7 +1560,7 @@ def resolve_modules(args: argparse.Namespace) -> List[str]:
         }
         return sorted(tier_map.get(args.tier, set()))
     if args.modules:
-        return args.modules
+        return [MODULE_ALIASES.get(module, module) for module in args.modules]
     return []
 
 

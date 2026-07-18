@@ -1,0 +1,50 @@
+kind = "game"
+
+[game]
+world_width = 8000
+world_height = 8000
+tile_size = 32
+map_width = 250
+map_height = 250
+seed = 271828
+match_seconds = 480
+score_to_win = 100
+battle_budget = 200
+energy_regen_delay = 1.0
+aim_reset_pixels = 2.0
+awareness_hz = 3.0
+max_sight_sources_per_team = 12
+light_hz = 8.0
+vision_light_threshold = 0.045
+camera_zoom_min = 0.75
+camera_zoom_max = 1.75
+camera_zoom_step = 0.12
+max_effect_particles = 420
+burst_particles = 8
+max_enemies = 100
+max_allies = 20
+enemy_count = 100
+squad_presets = ["f1", "f2", "f3"]
+
+[economy]
+win_level_gain = 1
+win_star_gain = 3
+loss_star_gain = 1
+kill_score = 5
+
+[movement]
+run_multiplier = 1.5
+sneak_multiplier = 0.5
+aim_multiplier = 2.0
+jump_multiplier = 1.2
+run_energy_per_second = 15
+jump_energy = 25
+jump_cooldown = 1.0
+jump_duration = 0.8
+energy_regen_delay = 1.0
+
+[map]
+obstacle_count = 150
+obstacle_min_radius = 1
+obstacle_max_radius = 2
+spawn_margin = 8

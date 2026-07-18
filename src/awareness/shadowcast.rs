@@ -151,8 +151,16 @@ impl TileFov {
         if data.len() < 8 {
             return Err("fov restore: blob too short".into());
         }
-        let w = u32::from_le_bytes(data[0..4].try_into().unwrap());
-        let h = u32::from_le_bytes(data[4..8].try_into().unwrap());
+        let w = u32::from_le_bytes(
+            data[0..4]
+                .try_into()
+                .map_err(|_| "fov restore: invalid width bytes")?,
+        );
+        let h = u32::from_le_bytes(
+            data[4..8]
+                .try_into()
+                .map_err(|_| "fov restore: invalid height bytes")?,
+        );
         if w != self.width || h != self.height {
             return Err(format!(
                 "fov restore: dimension mismatch ({w}×{h} vs {}×{})",
