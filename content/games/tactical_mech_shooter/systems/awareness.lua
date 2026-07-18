@@ -1,7 +1,5 @@
 local M = {}
 
-local TEAMS = {"team1", "team2", "team3", "team4"}
-
 local function cell_key(model, x, y)
     return (y - 1) * model.width + x
 end
@@ -32,8 +30,9 @@ local function segment_hits_smoke(smoke, ax, ay, bx, by)
 end
 
 function M.create(state, model)
+    local teams = state.modules.Teams.list(model)
     model.awareness = lurek.awareness.newTileAwareness(model.field, {
-        players = TEAMS,
+        players = teams,
         rememberExplored = true,
     })
     model.visible_cells, model.explored_cells = {}, {}
@@ -82,7 +81,7 @@ function M.compute_team(state, team)
 end
 
 function M.compute(state)
-    for _, team in ipairs(TEAMS) do M.compute_team(state, team) end
+    for _, team in ipairs(state.modules.Teams.list(state.battle.model)) do M.compute_team(state, team) end
 end
 
 function M.tile_state(state, team, x, y)

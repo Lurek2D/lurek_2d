@@ -29,6 +29,8 @@ function M.load(root)
         Physics = load_module("systems/physics.lua", root),
         Camera = load_module("systems/camera.lua", root),
         Movement = load_module("systems/movement.lua", root),
+        Assets = load_module("systems/assets.lua", root),
+        Teams = load_module("systems/teams.lua", root),
         Awareness = load_module("systems/awareness.lua", root),
         Lighting = load_module("systems/lighting.lua", root),
         Navigation = load_module("systems/navigation.lua", root),

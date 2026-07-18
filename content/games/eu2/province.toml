@@ -3173,14 +3173,14 @@ name = "Northern_Caspian_Sea"
 continent = "europe"
 region = "lake"
 area = "lake"
-terrain = "river"
+terrain = "sea"
 
 [1327]
 name = "Southern_Caspian_Sea"
 continent = "asia"
 region = "lake"
 area = "lake"
-terrain = "river"
+terrain = "sea"
 
 [1328]
 name = "Coast_of_Ciskei"
@@ -3498,7 +3498,7 @@ name = "Lake_Ladoga"
 continent = "europe"
 region = "lake"
 area = "lake"
-terrain = "river"
+terrain = "sea"
 
 [1362]
 name = "The_Skagerack"
@@ -3638,10 +3638,6 @@ region = "caribbeansea"
 area = "sea"
 terrain = "sea"
 
-[1379]
-name = "Columbia_River"
-terrain = "river"
-
 [1380]
 name = "Lake_Huron"
 continent = "america"
@@ -3667,41 +3663,6 @@ colonization_difficulty = 3
 type = "coastal"
 sea_adjacency = 966
 
-[1381]
-name = "Colorado_River"
-terrain = "river"
-
-[1382]
-name = "Rio_Grande_River"
-terrain = "river"
-
-[1383]
-name = "Matagorda_River"
-terrain = "river"
-
-[1384]
-name = "Murray_River"
-terrain = "river"
-
-[1385]
-name = "Savannah_River"
-terrain = "river"
-
-[1386]
-name = "Charles_River"
-terrain = "river"
-
-[1387]
-name = "Santee_River"
-terrain = "river"
-
-[1388]
-name = "James_River"
-terrain = "river"
-
-[1389]
-name = "Ganges_River"
-terrain = "river"
 
 [139]
 name = "Guantanamo"
@@ -3721,45 +3682,6 @@ colonization_difficulty = 3
 type = "coastal"
 sea_adjacency = 967
 
-[1390]
-name = "Volga_River"
-terrain = "river"
-
-[1391]
-name = "Danube_River"
-terrain = "river"
-
-[1392]
-name = "Connecticut_River"
-terrain = "river"
-
-[1393]
-name = "Kenebec_River"
-terrain = "river"
-
-[1394]
-name = "Red_River"
-terrain = "river"
-
-[1395]
-name = "Ste._Croix_River"
-terrain = "river"
-
-[1396]
-name = "St._John_River"
-terrain = "river"
-
-[1397]
-name = "Lake_Constance"
-terrain = "river"
-
-[1398]
-name = "Athabasca_River"
-terrain = "river"
-
-[1399]
-name = "Orinoco_River"
-terrain = "river"
 
 [14]
 name = "Salton"
@@ -3797,45 +3719,6 @@ colonization_difficulty = 4
 type = "coastal"
 sea_adjacency = 966
 
-[1400]
-name = "Maroni_River"
-terrain = "river"
-
-[1401]
-name = "Rhine_River"
-terrain = "river"
-
-[1402]
-name = "Parana_River"
-terrain = "river"
-
-[1403]
-name = "Orange_River"
-terrain = "river"
-
-[1404]
-name = "Great_Fish_River"
-terrain = "river"
-
-[1405]
-name = "Limpopo_River"
-terrain = "river"
-
-[1406]
-name = "Zambeze_River"
-terrain = "river"
-
-[1407]
-name = "Congo_River"
-terrain = "river"
-
-[1408]
-name = "Rufiji_River"
-terrain = "river"
-
-[1409]
-name = "Ougawe_River"
-terrain = "river"
 
 [141]
 name = "Les_Cayes"
@@ -3855,45 +3738,6 @@ colonization_difficulty = 6
 type = "coastal"
 sea_adjacency = 1375
 
-[1410]
-name = "Niger_River"
-terrain = "river"
-
-[1411]
-name = "Nile_River"
-terrain = "river"
-
-[1412]
-name = "Senegal_River"
-terrain = "river"
-
-[1413]
-name = "Tajo_River"
-terrain = "river"
-
-[1414]
-name = "Ebro_River"
-terrain = "river"
-
-[1415]
-name = "Garonne_River"
-terrain = "river"
-
-[1416]
-name = "Rhne_River"
-terrain = "river"
-
-[1417]
-name = "Loire_River"
-terrain = "river"
-
-[1418]
-name = "Seine_River"
-terrain = "river"
-
-[1419]
-name = "Po_River"
-terrain = "river"
 
 [142]
 name = "Tortuga"
@@ -3913,45 +3757,6 @@ colonization_difficulty = 5
 type = "coastal"
 sea_adjacency = 969
 
-[1420]
-name = "Maas_River"
-terrain = "river"
-
-[1421]
-name = "Panaima_River"
-terrain = "river"
-
-[1422]
-name = "Thames_River"
-terrain = "river"
-
-[1423]
-name = "Weser_River"
-terrain = "river"
-
-[1424]
-name = "Elbe_River"
-terrain = "river"
-
-[1425]
-name = "Oder_River"
-terrain = "river"
-
-[1426]
-name = "Vistula_River"
-terrain = "river"
-
-[1427]
-name = "Amazon_River"
-terrain = "river"
-
-[1428]
-name = "Dniester_River"
-terrain = "river"
-
-[1429]
-name = "Dvina_River"
-terrain = "river"
 
 [143]
 name = "Barahona"
@@ -3971,45 +3776,6 @@ colonization_difficulty = 5
 type = "coastal"
 sea_adjacency = 1046
 
-[1430]
-name = "Dniepr_River"
-terrain = "river"
-
-[1431]
-name = "Sakarya_River"
-terrain = "river"
-
-[1432]
-name = "Kizil_River"
-terrain = "river"
-
-[1433]
-name = "Ran_River"
-terrain = "river"
-
-[1434]
-name = "Saguenay_River"
-terrain = "river"
-
-[1435]
-name = "Donets_River"
-terrain = "river"
-
-[1436]
-name = "Susquehanna_River"
-terrain = "river"
-
-[1437]
-name = "Jordan_River"
-terrain = "river"
-
-[1438]
-name = "Ob_River"
-terrain = "river"
-
-[1439]
-name = "Irtych_River"
-terrain = "river"
 
 [144]
 name = "Puerto_Rico"
@@ -4029,45 +3795,10 @@ colonization_difficulty = 4
 type = "coastal"
 sea_adjacency = 1378
 
-[1440]
-name = "Ob_River"
-terrain = "river"
-
-[1441]
-name = "Ienissei_River"
-terrain = "river"
-
 [1442]
-name = "Lake_Baikal_&_Selenga_River"
-terrain = "river"
+name = "Lake_Baikal"
+terrain = "sea"
 
-[1443]
-name = "Indus_River"
-terrain = "river"
-
-[1444]
-name = "Hudson_River"
-terrain = "river"
-
-[1445]
-name = "Amur_River"
-terrain = "river"
-
-[1446]
-name = "Yalu_River"
-terrain = "river"
-
-[1447]
-name = "Houang_Ho_River"
-terrain = "river"
-
-[1448]
-name = "Yang_Tse_River"
-terrain = "river"
-
-[1449]
-name = "Pearl_River"
-terrain = "river"
 
 [145]
 name = "St._Thomas"
@@ -4086,45 +3817,11 @@ colonization_difficulty = 2
 type = "coastal"
 sea_adjacency = 1378
 
-[1450]
-name = "Mississippi_&_Ohio_Rivers"
-terrain = "river"
-
-[1451]
-name = "Mahakan_River"
-terrain = "river"
-
-[1452]
-name = "Kahajan_River"
-terrain = "river"
-
-[1453]
-name = "Lake_Tiberiade"
-terrain = "river"
 
 [1454]
 name = "Dead_Sea"
-terrain = "river"
+terrain = "sea"
 
-[1455]
-name = "Lake_Peipus"
-terrain = "river"
-
-[1456]
-name = "Mekong_River"
-terrain = "river"
-
-[1457]
-name = "Fraser_River"
-terrain = "river"
-
-[1458]
-name = "Mlaren"
-terrain = "river"
-
-[1459]
-name = "Hjlmaren"
-terrain = "river"
 
 [146]
 name = "St._Martin"
@@ -4143,29 +3840,6 @@ colonization_difficulty = 3
 type = "coastal"
 sea_adjacency = 1378
 
-[1460]
-name = "Lake_Vnern"
-terrain = "river"
-
-[1461]
-name = "Lake_Vttern"
-terrain = "river"
-
-[1462]
-name = "Lake_Geneva"
-terrain = "river"
-
-[1463]
-name = "Niagara_Falls"
-terrain = "river"
-
-[1464]
-name = "Great_Rapid_River"
-terrain = "river"
-
-[1465]
-name = "Illinois_River"
-terrain = "river"
 
 [1466]
 name = "Iceland"
@@ -4271,13 +3945,6 @@ cot_modifier = -3
 type = "inland"
 sea_adjacency = 0
 
-[1471]
-name = "Alabama_River"
-terrain = "river"
-
-[1472]
-name = "St.Lawrence_River"
-terrain = "river"
 
 [1473]
 name = "Oregon"
@@ -6489,9 +6156,6 @@ colonization_difficulty = 5
 type = "inland"
 sea_adjacency = 0
 
-[1585]
-name = "Obskaja_Guba"
-terrain = "river"
 
 [1586]
 name = "Kamcatka"
@@ -6636,7 +6300,7 @@ sea_adjacency = 0
 
 [1593]
 name = "Aral_Sea"
-terrain = "river"
+terrain = "sea"
 
 [1594]
 name = "Uzbek"

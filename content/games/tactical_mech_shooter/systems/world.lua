@@ -8,6 +8,11 @@ local function is_ground(kind)
     return kind == "floor" or kind == "grass" or kind == "sand" or kind == "water" or kind == "door_open"
 end
 
+local function blocks_move(tile_defs, kind)
+    local def = tile_defs[kind] or {}
+    return def.blocks_move == true or kind == "wall" or kind == "door_closed"
+end
+
 function M.create(state)
     local content = state.content
     local map = content.active_map or content.map or {}
@@ -19,6 +24,15 @@ function M.create(state)
         tile_defs = content.content.tiles,
         tiles = {}, lights_dirty = true, smoke = {}, explosions = {}, projectiles = {}, actors = {},
         physics_walls = {},
+        active_map = map,
+        objectives = map.objectives or {},
+        objective = map.objective or {},
+        objective_state = {
+            kind = map.objective and map.objective.kind or "elimination",
+            target_team = map.objective and map.objective.target_team,
+            captures = 0,
+            base_health = map.objective and map.objective.base_health,
+        },
         rng = lurek.math.newRandomGenerator(tonumber(map.seed) or 424242),
     }
     local world_w, world_h = width * tile_size, height * tile_size
@@ -28,71 +42,35 @@ function M.create(state)
         {x = tile_size * 0.5, y = world_h * 0.5, w = tile_size, h = world_h},
         {x = world_w - tile_size * 0.5, y = world_h * 0.5, w = tile_size, h = world_h},
     }
+    assert(type(map.tiles) == "table" and #map.tiles == width * height, "PNG map tile data is incomplete")
     for y = 1, height do
         for x = 1, width do
-            local kind = (x == 1 or y == 1 or x == width or y == height) and "wall" or "floor"
+            local kind = map.tiles[(y - 1) * width + x]
             model.tiles[(y - 1) * width + x] = kind
-            if kind ~= "floor" then pcall(field.applyProfile, field, x, y, 1, kind == "door_closed" and "door_closed" or "wall") end
-        end
-    end
-    for _, terrain in ipairs(map.terrain or {}) do
-        local kind = tostring(terrain.kind or "floor")
-        for y = terrain.y, terrain.y + terrain.h - 1 do
-            for x = terrain.x, terrain.x + terrain.w - 1 do
-                if x > 1 and y > 1 and x < width and y < height and model.tile_defs[kind] then
-                    model.tiles[(y - 1) * width + x] = kind
-                end
+            if blocks_move(model.tile_defs, kind) then
+                local def = model.tile_defs[kind] or {}
+                pcall(field.applyProfile, field, x, y, 1, def.profile or kind)
             end
         end
     end
-    for _, wall in ipairs(map.wall or {}) do
-        for y = wall.y, wall.y + wall.h - 1 do
-            for x = wall.x, wall.x + wall.w - 1 do
-                if x >= 1 and y >= 1 and x <= width and y <= height then
-                    model.tiles[(y - 1) * width + x] = "wall"
-                    pcall(field.applyProfile, field, x, y, 1, "wall")
-                end
+
+    -- Collapse contiguous blocked pixels into physics rectangles. The PNG remains
+    -- the only map source while physics keeps a small number of stable colliders.
+    for y = 1, height do
+        local run_start
+        for x = 1, width + 1 do
+            local blocked = x <= width and blocks_move(model.tile_defs, model.tiles[(y - 1) * width + x])
+            if blocked and not run_start then
+                run_start = x
+            elseif not blocked and run_start then
+                model.physics_walls[#model.physics_walls + 1] = {
+                    x = (run_start - 1 + (x - run_start) * 0.5) * tile_size,
+                    y = (y - 1 + 0.5) * tile_size,
+                    w = (x - run_start) * tile_size,
+                    h = tile_size,
+                }
+                run_start = nil
             end
-        end
-        model.physics_walls[#model.physics_walls + 1] = {
-            x = (wall.x - 1 + wall.w * 0.5) * tile_size,
-            y = (wall.y - 1 + wall.h * 0.5) * tile_size,
-            w = wall.w * tile_size,
-            h = wall.h * tile_size,
-        }
-    end
-    for _, door in ipairs(map.door or {}) do
-        for y = door.y, door.y + door.h - 1 do
-            for x = door.x, door.x + door.w - 1 do
-                if x >= 1 and y >= 1 and x <= width and y <= height then
-                    model.tiles[(y - 1) * width + x] = "door_closed"
-                    pcall(field.applyProfile, field, x, y, 1, "door_closed")
-                end
-            end
-        end
-        model.physics_walls[#model.physics_walls + 1] = {
-            x = (door.x - 1 + door.w * 0.5) * tile_size,
-            y = (door.y - 1 + door.h * 0.5) * tile_size,
-            w = door.w * tile_size,
-            h = door.h * tile_size,
-        }
-    end
-    local obstacle_count = tonumber(map.obstacle_count) or 0
-    local spawn_margin = tonumber(content.map and content.map.spawn_margin) or 8
-    for _ = 1, obstacle_count do
-        local x, y = model.rng:randomInt(2, width - 1), model.rng:randomInt(2, height - 1)
-        local near_spawn = false
-        for _, spawn in ipairs(map.spawn or {}) do
-            local dx, dy = x - spawn.x, y - spawn.y
-            if dx * dx + dy * dy <= (spawn.radius + spawn_margin) ^ 2 then near_spawn = true end
-        end
-        local tile = model.tiles[(y - 1) * width + x]
-        if not near_spawn and is_ground(tile) and tile ~= "water" then
-            model.tiles[(y - 1) * width + x] = "wall"
-            pcall(field.applyProfile, field, x, y, 1, "wall")
-            model.physics_walls[#model.physics_walls + 1] = {
-                x = (x - 0.5) * tile_size, y = (y - 0.5) * tile_size, w = tile_size, h = tile_size,
-            }
         end
     end
     model.tilemap = nil

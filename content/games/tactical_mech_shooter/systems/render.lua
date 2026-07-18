@@ -102,51 +102,52 @@ local function draw_bases(state, model, viewer)
     end
 end
 
-local function draw_weapon(weapon, side)
-    local size = tonumber(weapon.size) or 2
-    local length, thickness = 14 + size * 4.2, 6 + size * 1.25
-    color(weapon.color or {0.65, 0.65, 0.65, 1})
-    lurek.render.rectangle("fill", -4, side * 22 - thickness * 0.5, length, thickness)
-    lurek.render.setColor(0.92, 0.92, 0.92, 0.35)
-    lurek.render.line(1, side * 22 - thickness * 0.28, length - 2, side * 22 - thickness * 0.28)
+local function draw_objectives(state, model, viewer)
+    for _, objective in ipairs(model.objectives or {}) do
+        local cx, cy = model.world.cell(model, objective.x, objective.y)
+        local visible, explored = state.modules.Awareness.tile_state(state, viewer.team, cx, cy)
+        if visible or explored then
+            local color_value = objective.kind == "flag" and {0.92, 0.96, 1.00, 1} or {1.00, 0.72, 0.18, 1}
+            color(color_value, visible and 0.95 or 0.38)
+            lurek.render.setLineWidth(3)
+            circle_segments(objective.x, objective.y, 26, 32, true)
+            lurek.render.setLineWidth(1)
+            lurek.render.rectangle("fill", objective.x - 3, objective.y - 18, 6, 36)
+            lurek.render.polygon("fill",
+                objective.x, objective.y - 18,
+                objective.x + 22, objective.y - 10,
+                objective.x, objective.y - 2
+            )
+        end
+    end
 end
 
-local function draw_mech(actor)
+local function draw_weapon(state, weapon, side)
+    local scale = 0.30 + (tonumber(weapon.size) or 2) * 0.055
+    local center_x = -4 + 48 * scale
+    state.modules.Assets.draw_centered(weapon.sprite_image, center_x, side * 22, 0, scale, scale)
+end
+
+local function draw_mech(state, model, actor)
     local radius = actor.radius
     local jump = actor.z_offset or 0
     local draw_y = actor.y - jump
-    local body_color = actor.team_color or actor.build.corpus.color or {0.30, 0.42, 0.28, 1}
-
-    lurek.render.setColor(0.01, 0.01, 0.01, jump > 0 and 0.5 or 0.3)
-    lurek.render.ellipse("fill", actor.x + 7, actor.y + radius * 0.72, radius * 1.15, radius * 0.60)
 
     lurek.render.push()
     lurek.render.translate(actor.x, draw_y)
     lurek.render.rotate(actor.angle)
 
     if actor.build.backpack_id ~= "none" then
-        color(actor.build.backpack.color or {0.25, 0.25, 0.28, 1})
-        local pack_size = 12 + (tonumber(actor.build.backpack.size) or 3)
-        lurek.render.rectangle("fill", -radius - 10, -pack_size, 17, pack_size * 2)
-        lurek.render.setColor(0.02, 0.02, 0.025, 0.75)
-        lurek.render.rectangle("line", -radius - 10, -pack_size, 17, pack_size * 2)
+        local pack_scale = 0.45 + (tonumber(actor.build.backpack.size) or 3) * 0.035
+        state.modules.Assets.draw_centered(actor.build.backpack.sprite_image, -radius - 10, 0, 0, pack_scale, pack_scale)
     end
 
-    draw_weapon(actor.build.left, -1)
-    draw_weapon(actor.build.right, 1)
-
-    color(body_color)
-    lurek.render.circle("fill", 0, 0, radius)
-    lurek.render.setLineWidth(actor.is_player and 3 or 2)
-    local is_hit = (actor.hit_flash or 0) > 0
-    lurek.render.setColor(is_hit and 1 or 0.92, is_hit and 0.85 or 0.92, is_hit and 0.40 or 0.92, 1)
-    lurek.render.circle("line", 0, 0, radius)
-    lurek.render.setLineWidth(1)
-    lurek.render.setColor(0.98, 0.98, 0.98, 1)
-    lurek.render.rectangle("fill", radius - 7, -4, 9, 8)
+    draw_weapon(state, actor.build.left, -1)
+    draw_weapon(state, actor.build.right, 1)
+    state.modules.Assets.draw_centered(actor.build.corpus.sprite_image, 0, 0, 0, radius / 48, radius / 48)
     lurek.render.pop()
 
-    if actor.team ~= "team1" then
+    if state.modules.Teams.is_enemy(model, "team1", actor.team) then
         lurek.render.setColor(0.08, 0.02, 0.02, 0.8)
         lurek.render.rectangle("fill", actor.x - radius, draw_y - radius - 9, radius * 2, 4)
         lurek.render.setColor(0.95, 0.14, 0.10, 1)
@@ -154,60 +155,48 @@ local function draw_mech(actor)
     end
 end
 
-local function draw_projectiles(model)
+local function draw_projectiles(state, model)
     for _, projectile in ipairs(model.projectiles) do
         local vx, vy = projectile.vx or 0, projectile.vy or 0
         local length = math.sqrt((vx or 0) ^ 2 + (vy or 0) ^ 2)
         local nx, ny = 0, 0
         if length > 0 then nx, ny = vx / length, vy / length end
-        color(projectile.color or {1, 0.75, 0.25, 1})
-        lurek.render.setLineWidth(math.max(1, (projectile.radius or 2) * 0.7))
-        lurek.render.line(projectile.x - nx * 18, projectile.y - ny * 18, projectile.x, projectile.y)
-        lurek.render.circle("fill", projectile.x, projectile.y, math.max(2, projectile.radius or 2))
-        lurek.render.setLineWidth(1)
+        local angle = math.atan2(ny, nx)
+        local scale = math.max(0.35, (projectile.radius or 4) / 5)
+        state.modules.Assets.draw_centered(projectile.sprite_image, projectile.x, projectile.y, angle, scale, scale, projectile.color)
     end
 end
 
-local function draw_effects(model)
+local function draw_effects(state, model)
     for _, smoke in ipairs(model.smoke) do
-        lurek.render.setColor(0.28, 0.29, 0.30, 0.30)
-        lurek.render.circle("fill", smoke.x, smoke.y, smoke.radius)
+        local scale = (smoke.radius or 48) / 48
+        state.modules.Assets.draw_centered(smoke.sprite_image, smoke.x, smoke.y, 0, scale, scale, nil, 0.72)
     end
     for _, hazard in ipairs(model.hazards or {}) do
-        color(hazard.color or {1, 0.25, 0.05, 1}, 0.24)
-        lurek.render.circle("fill", hazard.x, hazard.y, hazard.radius)
+        local scale = (hazard.radius or 48) / 48
+        state.modules.Assets.draw_centered(hazard.sprite_image, hazard.x, hazard.y, 0, scale, scale, hazard.color, 0.82)
     end
     for _, field in ipairs(model.fields or {}) do
-        color(field.color or {0.45, 0.15, 0.80, 1}, 0.20)
-        lurek.render.circle("fill", field.x, field.y, field.radius)
-        color(field.color, 0.8)
-        circle_segments(field.x, field.y, field.radius, 30, true)
+        local scale = (field.radius or 48) / 48
+        state.modules.Assets.draw_centered(field.sprite_image, field.x, field.y, 0, scale, scale, field.color, 0.78)
     end
     for _, effect in ipairs(model.effects) do
         local fade = math.min(1, math.max(0, effect.left * 4))
-        color(effect.color, fade)
         if effect.kind == "beam" then
-            lurek.render.setLineWidth(effect.width or 3)
-            lurek.render.line(effect.x, effect.y, effect.x2, effect.y2)
-            lurek.render.setLineWidth(1)
+            local dx, dy = effect.x2 - effect.x, effect.y2 - effect.y
+            local length = math.max(1, math.sqrt(dx * dx + dy * dy))
+            state.modules.Assets.draw_centered(effect.sprite_image, (effect.x + effect.x2) * 0.5, (effect.y + effect.y2) * 0.5,
+                math.atan2(dy, dx), length / 128, math.max(0.25, (effect.width or 3) / 6), effect.color, fade)
         else
-            local radius = effect.radius or 3
-            if effect.kind == "flame" then
-                local age = 1 - effect.left / math.max(0.001, effect.duration or effect.left)
-                radius = radius * (1 + age * 1.8)
-            end
-            lurek.render.circle("fill", effect.x, effect.y, radius)
+            local scale = math.max(0.18, (effect.radius or 6) / 12)
+            local angle = effect.angle or math.atan2(effect.vy or 0, effect.vx or 1)
+            state.modules.Assets.draw_centered(effect.sprite_image, effect.x, effect.y, angle, scale, scale, effect.color, fade)
         end
     end
     for _, explosion in ipairs(model.explosions) do
         local life = math.max(0, explosion.left / (explosion.duration or 0.36))
         local radius = explosion.radius * (1.05 - life * 0.75)
-        color(explosion.color or {1, 0.32, 0.05, 1}, 0.16 + life * 0.42)
-        lurek.render.circle("fill", explosion.x, explosion.y, radius * 0.64)
-        lurek.render.setLineWidth(3)
-        color({1, 0.72, 0.18, 1}, life)
-        lurek.render.circle("line", explosion.x, explosion.y, radius)
-        lurek.render.setLineWidth(1)
+        state.modules.Assets.draw_centered(explosion.sprite_image, explosion.x, explosion.y, 0, radius / 64, radius / 64, explosion.color, 0.20 + life * 0.65)
     end
 end
 
@@ -220,15 +209,16 @@ function M.world(state)
 
     draw_floor(state, model, player, min_x, max_x, min_y, max_y)
     draw_bases(state, model, player)
+    draw_objectives(state, model, player)
     draw_terrain(state, model, player, min_x, max_x, min_y, max_y)
-    draw_effects(model)
+    draw_effects(state, model)
 
     for _, actor in ipairs(model.actors) do
-        if not actor.dead and (actor.team == player.team or state.modules.Awareness.can_see(state, player, actor)) then
-            draw_mech(actor)
+        if not actor.dead and (state.modules.Teams.is_ally(model, player.team, actor.team) or state.modules.Awareness.can_see(state, player, actor)) then
+            draw_mech(state, model, actor)
         end
     end
-    draw_projectiles(model)
+    draw_projectiles(state, model)
 
     if player and not player.dead then
         local sx, sy = lurek.input.mouse.getX(), lurek.input.mouse.getY()
@@ -285,18 +275,28 @@ function M.hud(state)
         lurek.render.print(string.format("ROZRZUT L %03d  R %03d", spread_radius(player, 1), spread_radius(player, 2)), 31, 162)
     end
     lurek.render.setColor(0.88, 0.88, 0.90, 1)
-    lurek.render.print(string.format("WYNIK %03d   WROGOWIE %03d   CZAS %03d", battle.score or 0, battle.enemies_left or 0, battle.elapsed or 0), w - 355, 24)
-    local team_counts = {team1 = 0, team2 = 0, team3 = 0, team4 = 0}
+    local active_map = battle.model.active_map or {}
+    lurek.render.print(string.format("%s // %s", tostring(active_map.name or "MAP"), tostring(active_map.mode or "elimination"):upper()), w - 430, 24)
+    lurek.render.print(string.format("WYNIK %03d   WROGOWIE %03d   CZAS %03d", battle.score or 0, battle.enemies_left or 0, battle.elapsed or 0), w - 355, 42)
+    local objective = active_map.objective or {}
+    local objective_text = objective.kind == "destroy_base" and ("CEL: ZNISZCZ BAZE T" .. tostring(objective.target_team or 2))
+        or objective.kind == "capture_flag" and ("CEL: PRZEJMIJ FLAGE " .. tostring(objective.capture_limit or 3) .. "x")
+        or "CEL: ELIMINACJA"
+    lurek.render.setColor(0.98, 0.78, 0.25, 1)
+    lurek.render.print(objective_text, w - 355, 60)
+    local team_counts = {}
+    local team_count = state.modules.Teams.team_count(battle.model)
+    for i = 1, team_count do team_counts["team" .. tostring(i)] = 0 end
     for _, actor in ipairs(battle.model.actors) do
         if not actor.dead and team_counts[actor.team] then team_counts[actor.team] = team_counts[actor.team] + 1 end
     end
-    for i = 1, 4 do
+    for i = 1, team_count do
         local team = "team" .. tostring(i)
-        local x = 330 + (i - 1) * 105
+        local x = 330 + (i - 1) * math.min(105, (w - 350) / math.max(1, team_count))
         color(battle.model.team_colors[team])
-        lurek.render.rectangle("fill", x, 22, 10, 10)
+        lurek.render.rectangle("fill", x, 82, 10, 10)
         lurek.render.setColor(0.82, 0.84, 0.86, 1)
-        lurek.render.print(string.format("T%d %02d", i, team_counts[team]), x + 16, 22)
+        lurek.render.print(string.format("T%d %02d", i, team_counts[team]), x + 16, 82)
     end
     lurek.render.setColor(0.58, 0.58, 0.60, 1)
     lurek.render.print("WASD RUCH  SHIFT BIEG  CTRL SKRADANIE  ALT CELOWANIE  SPACE SKOK  F1-F12 MECH", 28, h - 18)

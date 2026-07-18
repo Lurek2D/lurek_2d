@@ -8,7 +8,7 @@ end
 local function nearest_visible(state, actor)
     local best, best_distance
     for _, other in ipairs(state.battle.model.actors) do
-        if other ~= actor and not other.dead and other.team ~= actor.team then
+        if other ~= actor and not other.dead and state.modules.Teams.is_enemy(state.battle.model, actor.team, other.team) then
             local d = distance(actor, other)
             if (not best_distance or d < best_distance) and state.modules.Awareness.can_see(state, actor, other) then
                 best, best_distance = other, d
@@ -70,7 +70,7 @@ function M.update(state, dt)
             actor.ai_clock = (actor.ai_clock or 0) - dt
             actor.sense_clock = (actor.sense_clock or ((actor.id % 10) * 0.025)) - step_dt
             local target = actor.ai_target
-            if target and (target.dead or target.team == actor.team) then target = nil end
+            if target and (target.dead or state.modules.Teams.is_ally(model, target.team, actor.team)) then target = nil end
             local target_distance = target and distance(actor, target) or nil
             if actor.sense_clock <= 0 then
                 target, target_distance = nearest_visible(state, actor)

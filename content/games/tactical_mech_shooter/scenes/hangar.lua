@@ -10,7 +10,17 @@ local function set_color(c, alpha)
 end
 
 function M.enter(state)
-    state.hangar = state.hangar or {selected = "f1", budget = state.content.game.battle_budget or 200}
+    state.hangar = state.hangar or {selected = "f1", budget = state.content.game.battle_budget or 200, map_index = 1}
+    state.hangar.map_index = state.hangar.map_index or 1
+end
+
+local function cycle_map(state)
+    local order = state.content.map_order or {}
+    if #order == 0 then return end
+    state.hangar.map_index = state.hangar.map_index % #order + 1
+    local map_id = order[state.hangar.map_index]
+    state.content.select_map(map_id)
+    state.selected_map_id = map_id
 end
 
 function M.process(state)
@@ -18,6 +28,7 @@ function M.process(state)
     for i = 1, 12 do
         if state.modules.Movement.pressed(state, "preset_" .. tostring(i)) then state.hangar.selected = "f" .. tostring(i) end
     end
+    if state.modules.Movement.pressed(state, "map_next") then cycle_map(state) end
     if state.modules.Movement.pressed(state, "confirm") then
         state.modules.Battle.start(state, selected_id(state))
     elseif state.modules.Movement.pressed(state, "pause") then
@@ -34,7 +45,7 @@ local function stat_bar(x, y, label, value, maximum, c)
     lurek.render.rectangle("fill", x + 92, y, 190 * math.min(1, value / maximum), 10)
 end
 
-local function draw_preview(build, cx, cy)
+local function draw_preview(state, build, cx, cy)
     local radius = math.max(34, build.corpus.radius * 2.1)
     lurek.render.setColor(0.07, 0.08, 0.10, 1)
     lurek.render.circle("fill", cx, cy, 130)
@@ -46,22 +57,14 @@ local function draw_preview(build, cx, cy)
     lurek.render.translate(cx, cy)
     lurek.render.rotate(-0.2)
     if build.backpack_id ~= "none" then
-        set_color(build.backpack.color)
-        lurek.render.rectangle("fill", -radius - 30, -34, 30, 68)
+        local pack_scale = 0.75 + (tonumber(build.backpack.size) or 3) * 0.04
+        state.modules.Assets.draw_centered(build.backpack.sprite_image, -radius - 30, 0, 0, pack_scale, pack_scale)
     end
-    local left_size = tonumber(build.left.size) or 2
-    local right_size = tonumber(build.right.size) or 2
-    set_color(build.left.color)
-    lurek.render.rectangle("fill", -8, -radius - 24, 52 + left_size * 7, 14 + left_size * 2)
-    set_color(build.right.color)
-    lurek.render.rectangle("fill", -8, radius + 8, 52 + right_size * 7, 14 + right_size * 2)
-    set_color(build.corpus.color)
-    lurek.render.circle("fill", 0, 0, radius)
-    lurek.render.setLineWidth(3)
-    lurek.render.setColor(0.92, 0.94, 0.95, 1)
-    lurek.render.circle("line", 0, 0, radius)
-    lurek.render.setLineWidth(1)
-    lurek.render.rectangle("fill", radius - 12, -8, 15, 16)
+    local left_scale = 0.36 + (tonumber(build.left.size) or 2) * 0.045
+    local right_scale = 0.36 + (tonumber(build.right.size) or 2) * 0.045
+    state.modules.Assets.draw_centered(build.left.sprite_image, 36, -radius - 22, -0.08, left_scale, left_scale)
+    state.modules.Assets.draw_centered(build.right.sprite_image, 36, radius + 22, 0.08, right_scale, right_scale)
+    state.modules.Assets.draw_centered(build.corpus.sprite_image, 0, 0, 0, radius / 48, radius / 48)
     lurek.render.pop()
 end
 
@@ -79,6 +82,11 @@ function M.draw(state)
     lurek.render.print("HANGAR // WYBOR KONFIGURACJI", 34, 28)
     lurek.render.setColor(0.62, 0.68, 0.74, 1)
     lurek.render.print(string.format("POZIOM %d   GWIAZDY %d   ZWYCIESTWA %d   BUDZET %d", state.campaign.level, state.campaign.stars, state.campaign.wins, state.content.game.battle_budget or 200), 34, 48)
+    local active_map = state.content.active_map or {}
+    lurek.render.setColor(0.98, 0.78, 0.25, 1)
+    lurek.render.print("MAPA: " .. tostring(active_map.name or "UNKNOWN"), 34, 68)
+    lurek.render.setColor(0.62, 0.68, 0.74, 1)
+    lurek.render.print(string.format("TRYB: %s  //  DRUZYNY: %d  //  %s", tostring(active_map.mode or "elimination"):upper(), tonumber(active_map.team_count) or 0, tostring(active_map.description or "")), 34, 82)
 
     for i = 1, 12 do
         local id = "f" .. tostring(i)
@@ -108,7 +116,10 @@ function M.draw(state)
     lurek.render.print(tostring(build.name):upper(), 622, 116)
     lurek.render.setColor(0.48, 0.58, 0.66, 1)
     lurek.render.print(build.corpus.name .. " // " .. build.backpack.name, 622, 136)
-    draw_preview(build, 930, 285)
+    local race = state.content.content.races[build.corpus.race_id] or {}
+    lurek.render.print("RACE: " .. tostring(race.name or build.corpus.race_id) .. " // FLAGS: " .. table.concat(build.corpus.race_flags or {}, ","), 622, 154)
+    state.modules.Assets.draw_centered(race.icon_image, 650, 214, 0, 0.72, 0.72)
+    draw_preview(state, build, 930, 285)
     stat_bar(622, 444, "PANCERZ", build.max_health, 600, {0.92, 0.20, 0.18, 1})
     stat_bar(622, 466, "ENERGIA", build.max_energy, 300, {0.18, 0.50, 0.95, 1})
     stat_bar(622, 488, "PREDKOSC", build.move_speed, 160, {0.25, 0.85, 0.48, 1})
@@ -120,7 +131,7 @@ function M.draw(state)
     lurek.render.rectangle("line", 590, 586, w - 624, 54)
     lurek.render.printf("ENTER / SPACE / LMB  //  ROZPOCZNIJ MISJE", 590, 607, w - 624, "center")
     lurek.render.setColor(0.55, 0.60, 0.66, 1)
-    lurek.render.print("F1-F12 WYBOR MECHA", 34, h - 30)
+    lurek.render.print("F1-F12 WYBOR MECHA   M NASTEPNA MAPA", 34, h - 30)
     lurek.render.setColor(1, 1, 1, 1)
 end
 

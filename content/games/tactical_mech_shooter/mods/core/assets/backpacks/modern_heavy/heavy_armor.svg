@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+<title>heavy_armor</title><desc>Top-down pixel-art backpack on a transparent background: massive dark slate armor slabs with orange hazard stripes, thick side hinges, a central blue reinforcement plate, and two heavy mounting brackets; wide geometry conveys vehicle-grade protection.</desc>
+<metadata data-authoring="individual" data-source="mods/core/races/modern_heavy/backpacks.toml"/><rect x="14" y="16" width="36" height="34" fill="#141b25"/><rect x="18" y="20" width="28" height="27" fill="#7d99b2"/><rect x="22" y="22" width="20" height="6" fill="#465d72"/><rect x="22" y="38" width="20" height="5" fill="#e3b451"/><circle cx="36" cy="40" r="1" fill="#e3b451" opacity="1"/></svg>

@@ -1,5 +1,7 @@
+# Core match, world, camera, and performance settings.
 kind = "game"
 
+# Match dimensions, timing, scoring, and runtime limits.
 [game]
 world_width = 8000
 world_height = 8000
@@ -7,6 +9,8 @@ tile_size = 32
 map_width = 250
 map_height = 250
 seed = 271828
+# Map id selected when the hangar opens.
+default_map = "arena_01"
 match_seconds = 480
 score_to_win = 100
 battle_budget = 200
@@ -26,12 +30,14 @@ max_allies = 20
 enemy_count = 100
 squad_presets = ["f1", "f2", "f3"]
 
+# Rewards and score values applied after battles and kills.
 [economy]
 win_level_gain = 1
 win_star_gain = 3
 loss_star_gain = 1
 kill_score = 5
 
+# Player movement modifiers and energy costs for run, sneak, aim, and jump.
 [movement]
 run_multiplier = 1.5
 sneak_multiplier = 0.5
@@ -43,6 +49,7 @@ jump_cooldown = 1.0
 jump_duration = 0.8
 energy_regen_delay = 1.0
 
+# Fallback procedural-map settings used alongside the authored map asset.
 [map]
 obstacle_count = 150
 obstacle_min_radius = 1

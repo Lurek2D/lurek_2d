@@ -1,5 +1,7 @@
+# Ready-to-deploy hangar loadouts. Each preset links a chassis, two weapons, and a backpack.
 kind = "content"
 
+# F1: fast scout loadout for reconnaissance and harassment.
 [[preset]]
 id="f1"
 name="Zwiadowca"
@@ -8,14 +10,16 @@ left="smg"
 right="pistol"
 backpack="jetpack"
 
+# F2: general-purpose assault loadout with balanced firepower and protection.
 [[preset]]
 id="f2"
 name="Szturmowiec"
 corpus="medium_soldier"
 left="shotgun"
 right="rifle"
-backpack="heavy_armor"
+backpack="composite_armor"
 
+# F3: long-range sniper loadout supported by beam accuracy.
 [[preset]]
 id="f3"
 name="Snajper"
@@ -24,6 +28,7 @@ left="sniper_rifle"
 right="laser_beam"
 backpack="targeting_computer"
 
+# F4: heavily armored tank loadout for direct assaults.
 [[preset]]
 id="f4"
 name="Czołg"
@@ -32,6 +37,7 @@ left="tank_cannon"
 right="rocket_launcher"
 backpack="heavy_armor"
 
+# F5: area-denial firebug loadout using flames and grenades.
 [[preset]]
 id="f5"
 name="Piroman"
@@ -40,6 +46,7 @@ left="flamethrower"
 right="grenade_launcher"
 backpack="capacitor_bank"
 
+# F6: slow artillery loadout for indirect, long-range bombardment.
 [[preset]]
 id="f6"
 name="Artyleria"
@@ -48,6 +55,7 @@ left="mortar"
 right="heavy_cannon"
 backpack="artillery_system"
 
+# F7: close-range brawler loadout built around twin shotguns.
 [[preset]]
 id="f7"
 name="Awanturnik"
@@ -56,6 +64,7 @@ left="shotgun"
 right="shotgun"
 backpack="mobility_actuators"
 
+# F8: high-durability terminator loadout with sustained and plasma fire.
 [[preset]]
 id="f8"
 name="Terminator"
@@ -64,6 +73,7 @@ left="gatling_gun"
 right="plasma_cannon"
 backpack="shield_generator"
 
+# F9: field medic/engineer loadout for repairs and drone support.
 [[preset]]
 id="f9"
 name="Medyk Mechanik"
@@ -72,6 +82,7 @@ left="repair_beam"
 right="repair_drone_bay"
 backpack="cargo_rack"
 
+# F10: engineer loadout for deploying automated gun turrets.
 [[preset]]
 id="f10"
 name="Inzynier Dzialek"
@@ -80,6 +91,7 @@ left="sentry_deployer"
 right="missile_turret_deployer"
 backpack="cargo_rack"
 
+# F11: sapper loadout for placing explosive and EMP mines.
 [[preset]]
 id="f11"
 name="Saper"
@@ -88,10 +100,11 @@ left="proximity_mine_layer"
 right="emp_mine_layer"
 backpack="cargo_rack"
 
+# F12: optical scout loadout for vision, smoke, and lightweight defense.
 [[preset]]
 id="f12"
 name="Scout Optyczny"
-corpus="recon_skimmer"
+corpus="scout"
 left="smoke_projector"
 right="pistol"
 backpack="night_vision"

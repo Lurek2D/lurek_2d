@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+<title>smoke_filter</title><desc>Top-down pixel-art backpack on a transparent background: a dark gray filter canister with three pale blue vents, a green status lamp, black hoses, and an orange replaceable cartridge; layered vents communicate air purification.</desc>
+<metadata data-authoring="individual" data-source="mods/core/races/modern_light/backpacks.toml"/><rect x="18" y="17" width="28" height="33" fill="#101a29"/><rect x="22" y="21" width="20" height="24" fill="#63a9d1"/><circle cx="32" cy="31" r="7" fill="#82edff" opacity="1"/><rect x="29" y="27" width="6" height="9" fill="#2d5e8a"/><rect x="24" y="47" width="16" height="4" fill="#e4a542"/><circle cx="26" cy="35" r="1" fill="#e4a542" opacity="1"/><circle cx="38" cy="38" r="2" fill="#e4a542" opacity="1"/></svg>

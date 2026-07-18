@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+<title>modern_heavy</title><desc>Top-down pixel-art faction icon on a transparent background: a broad dark-slate armored vehicle with a rectangular gold command window, thick side armor, a low turret block, and two heavy track shapes; chunky 1-pixel outlines and blue-gray highlights communicate mass at 64px.</desc>
+<metadata data-authoring="individual" data-source="mods/core/races/modern_heavy/race.toml"/><circle cx="32" cy="32" r="29" fill="#141b25" opacity="1"/><rect x="12" y="20" width="40" height="25" fill="#465d72"/><rect x="18" y="25" width="28" height="15" fill="#7d99b2"/><rect x="25" y="29" width="14" height="7" fill="#e3b451"/><rect x="8" y="26" width="7" height="14" fill="#141b25"/><rect x="49" y="26" width="7" height="14" fill="#141b25"/></svg>

@@ -1,0 +1,51 @@
+# Shared raster effects referenced by weapons and transient combat records.
+# The runtime loads every sprite through lurek.render.newImage.
+kind = "content"
+
+# Standard projectile billboard used by projectile weapons.
+[[effect]]
+id = "projectile"
+name = "Projectile"
+sprite = "mods/core/assets/effects/projectile.png"
+
+# Bright impact sprite used by explosions and destroyed mechs.
+[[effect]]
+id = "explosion"
+name = "Explosion"
+sprite = "mods/core/assets/effects/explosion.png"
+
+# Small spark sprite used by muzzle bursts and debris.
+[[effect]]
+id = "spark"
+name = "Spark"
+sprite = "mods/core/assets/effects/spark.png"
+
+# Directional flame sprite for cone weapons.
+[[effect]]
+id = "flame"
+name = "Flame"
+sprite = "mods/core/assets/effects/flame.png"
+
+# Stretched beam sprite for beam weapons.
+[[effect]]
+id = "beam"
+name = "Beam"
+sprite = "mods/core/assets/effects/beam.png"
+
+# Soft smoke sprite for smoke weapons and smoke clouds.
+[[effect]]
+id = "smoke"
+name = "Smoke"
+sprite = "mods/core/assets/effects/smoke.png"
+
+# Persistent damage-zone sprite.
+[[effect]]
+id = "hazard"
+name = "Hazard"
+sprite = "mods/core/assets/effects/hazard.png"
+
+# Persistent field/deployable area sprite.
+[[effect]]
+id = "field"
+name = "Field"
+sprite = "mods/core/assets/effects/field.png"

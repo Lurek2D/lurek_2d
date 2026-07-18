@@ -1,0 +1,324 @@
+# Weapon definitions. Each entry is an equippable attack, support tool, or deployable.
+kind = "content"
+
+# Pistol: compact, reliable short-range sidearm.
+
+[[weapon]]
+id="autocannon"
+name="Autocannon"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a thick dark-blue automatic cannon with a short heavy barrel, orange feed drum, cyan recoil rails, and a broad armored mount; repeated vent pixels imply sustained vehicle fire."
+kind="projectile"
+size=7
+damage=18
+range=620
+reload=0.55
+energy=6
+velocity=720
+accuracy=4
+pellets=1
+color=[0.38,0.33,0.28,1]
+
+# Heavy cannon: slow, powerful direct-fire cannon.
+
+sprite="mods/core/assets/weapons/modern_heavy/autocannon.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="beam_turret_deployer"
+name="Beam Turret Deployer"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a folded turret capsule with a violet emitter lens, two blue stabilizer legs, a dark deployment hinge, and a bright cyan beam aperture; compact geometry signals an automated emplacement."
+kind="deployable"
+deployable="beam_turret"
+size=10
+damage=22
+range=500
+reload=10
+energy=45
+velocity=0
+accuracy=0
+max_deployables=3
+duration=300
+color=[0.30,1,0.55,1]
+
+# Portal projector: creates a portal utility effect for battlefield repositioning.
+
+sprite="mods/core/assets/weapons/modern_heavy/beam_turret_deployer.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="cluster_bomb"
+name="Cluster Bomb"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a heavy launch pod carrying four orange submunitions under a dark blue shell, with yellow arming lights and a short exhaust nozzle; separated bomb pixels make the cluster payload explicit."
+kind="ballistic"
+size=11
+damage=22
+range=700
+reload=3.2
+energy=18
+velocity=320
+accuracy=8
+pellets=1
+explosive=true
+explode_radius=75
+submunitions=5
+color=[0.75,0.30,0.12,1]
+
+# EMP grenade: disables or disrupts enemies without relying on raw damage.
+
+sprite="mods/core/assets/weapons/modern_heavy/cluster_bomb.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="disruptor_beam"
+name="Disruptor Beam"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: an angular violet beam rifle with a cyan coil, black segmented barrel, magenta energy vents, and a small rear stabilizer; neon pixels contrast with deep shadow blocks."
+kind="beam"
+size=8
+damage=18
+range=680
+reload=1.4
+energy=18
+velocity=3000
+accuracy=0.3
+stun=1.4
+color=[0.80,0.25,1,1]
+
+# Flamethrower: short-range cone that applies sustained fire damage.
+
+sprite="mods/core/assets/weapons/modern_heavy/disruptor_beam.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="gravity_well"
+name="Gravity Well"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a dark violet field projector with a circular cyan gravity lens, three orbiting magenta pixels, a square capacitor, and a short black emitter; concentric rings suggest warped space."
+kind="field"
+field="pull"
+size=10
+damage=10
+range=650
+reload=5
+energy=30
+velocity=260
+accuracy=7
+explode_radius=150
+duration=6
+color=[0.45,0.15,0.80,1]
+
+# Repulsor wave: pushes nearby units away from the impact area.
+
+sprite="mods/core/assets/weapons/modern_heavy/gravity_well.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="heavy_cannon"
+name="Heavy Cannon"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a massive dark steel cannon with a long thick barrel, orange recoil collar, blue armored housing, and a broad mounting plate; strong block shadows convey vehicle-scale force."
+kind="projectile"
+size=10
+damage=50
+range=600
+reload=1.8
+energy=12
+velocity=500
+accuracy=4
+recoil=92
+pellets=1
+explosive=true
+explode_radius=120
+agility_mod=-0.25
+color=[0.12,0.12,0.12,1]
+
+# Tank cannon: very heavy armor-piercing cannon for vehicle platforms.
+
+sprite="mods/core/assets/weapons/modern_heavy/heavy_cannon.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="micro_missiles"
+name="Micro Missiles"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a shoulder-sized blue missile pod with six orange-tipped missiles, dark launch cells, cyan guidance lights, and a rear hinge; the repeated missile heads are the focal detail."
+kind="projectile"
+size=8
+damage=15
+range=550
+reload=1.0
+energy=5
+velocity=300
+accuracy=15
+pellets=4
+explosive=true
+explode_radius=40
+color=[0.65,0.65,0.65,1]
+
+# Rocket launcher: explosive projectile with strong area damage.
+
+sprite="mods/core/assets/weapons/modern_heavy/micro_missiles.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="mortar"
+name="Mortar"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a dark olive mortar with a short elevated tube, round orange shell rack, wide bipod, and thick base plate; upward barrel pixels and a visible shell make its indirect-fire role clear."
+kind="ballistic"
+size=10
+damage=50
+range=900
+reload=3.0
+energy=18
+velocity=300
+accuracy=7
+recoil=76
+pellets=1
+explosive=true
+explode_radius=160
+color=[0.35,0.35,0.25,1]
+
+# Cluster bomb: explosive payload that covers a wider area with submunitions.
+
+sprite="mods/core/assets/weapons/modern_heavy/mortar.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="portal_projector"
+name="Portal Projector"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a black-violet projector with a circular magenta portal lens, cyan outer ring, three small anchor fins, and a square rear battery; concentric neon pixels define the spatial aperture."
+kind="portal"
+size=10
+damage=0
+range=800
+reload=3
+energy=35
+velocity=300
+accuracy=6
+max_deployables=2
+duration=600
+color=[0.70,0.30,1,1]
+
+# Gravity well: creates a field that pulls or slows units in its area.
+
+sprite="mods/core/assets/weapons/modern_heavy/portal_projector.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="repulsor_wave"
+name="Repulsor Wave"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a broad violet emitter with a cyan semicircular wave plate, dark stabilizer housing, orange capacitor, and three outward-facing fins; curved bright pixels suggest a pushed-back shockwave."
+kind="field"
+field="push"
+size=8
+damage=20
+range=260
+reload=3
+energy=18
+velocity=1000
+accuracy=8
+explode_radius=180
+duration=1
+color=[0.25,0.75,1,1]
+
+# Tractor beam: pulls a target toward the firing mech.
+
+sprite="mods/core/assets/weapons/modern_heavy/repulsor_wave.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="rocket_launcher"
+name="Rocket Launcher"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a long dark green launcher tube with an orange rocket nose visible inside, blue support brackets, yellow safety stripe, and a rear exhaust cap; the open tube dominates the sprite."
+kind="projectile"
+size=9
+damage=60
+range=800
+reload=2.5
+energy=15
+velocity=400
+accuracy=5
+recoil=78
+pellets=1
+explosive=true
+explode_radius=150
+color=[0.90,0.15,0.10,1]
+
+# Plasma cannon: high-energy explosive shot with heavy damage.
+
+sprite="mods/core/assets/weapons/modern_heavy/rocket_launcher.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="stasis_field"
+name="Stasis Field"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a heavy violet field generator with a pale cyan circular core, three frozen-looking orbit pixels, dark armor wedges, and an orange capacitor; concentric geometry suggests a slowing zone."
+kind="field"
+field="stasis"
+size=12
+damage=0
+range=600
+reload=8
+energy=35
+velocity=250
+accuracy=6
+explode_radius=140
+duration=4
+color=[0.35,0.80,0.95,1]
+
+sprite="mods/core/assets/weapons/modern_heavy/stasis_field.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="tank_cannon"
+name="Tank Cannon"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: an extremely thick blue-gray tank cannon with a long dark barrel, orange recoil collar, cyan targeting strip, and broad turret mount; blocky highlights communicate vehicle-scale impact."
+kind="projectile"
+size=13
+damage=100
+range=1000
+reload=4.0
+energy=25
+velocity=700
+accuracy=2
+recoil=110
+pellets=1
+explosive=true
+explode_radius=200
+color=[0.15,0.15,0.13,1]
+
+# Micro missiles: compact guided salvo for reliable ranged damage.
+
+sprite="mods/core/assets/weapons/modern_heavy/tank_cannon.png"
+projectile_effect="projectile"
+impact_effect="explosion"
+
+[[weapon]]
+id="tractor_beam"
+name="Tractor Beam"
+description = "Top-down pixel-art weapon on a transparent background, barrel pointing right: a broad cyan tractor emitter with a circular lens, violet focusing rings, dark stabilizer arms, and a yellow power cell; nested rings and a wide aperture suggest pulling force."
+kind="field"
+field="pull_beam"
+size=9
+damage=8
+range=500
+reload=1.2
+energy=15
+velocity=1800
+accuracy=2
+duration=1
+color=[0.60,0.40,1,1]
+
+# Stasis field: creates a field that temporarily immobilizes units.
+
+sprite="mods/core/assets/weapons/modern_heavy/tractor_beam.png"
+projectile_effect="projectile"
+impact_effect="explosion"

@@ -1,0 +1,379 @@
+# Chassis definitions. Each corpus supplies the base stats and role of a deployable mech.
+kind = "content"
+
+# Spider Light: very small, fast light chassis with modest cargo capacity.
+
+[[corpus]]
+id="artillery_platform"
+name="Artillery Platform"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a wide tracked artillery platform with a huge rear mortar, olive armor slabs, orange loading hatch, and two visible track runs; blocky shadow pixels and a long barrel establish its siege role."
+cargo=72
+health=500
+health_regen=2
+energy=300
+energy_regen=40
+move_speed=30
+rotation_speed=0.628
+radius=40
+cost=76
+color=[0.21,0.27,0.31,1]
+jump_power=70
+jump_gravity=820
+sight=13
+vision_arc=135
+
+# Fortress: extremely durable defensive chassis with limited mobility.
+
+sprite="mods/core/assets/corpora/modern_heavy/artillery_platform.png"
+
+[[corpus]]
+id="command_leviathan"
+name="Command Leviathan"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a massive dark-blue command vehicle with a central gold bridge, four armored corner modules, antenna masts, and broad tracks; layered highlights and tiny signal lights communicate a fleet flagship."
+cargo=72
+health=680
+health_regen=6
+energy=340
+energy_regen=45
+move_speed=36
+rotation_speed=0.520
+radius=43
+cost=90
+color=[0.27,0.34,0.46,1]
+jump_power=70
+jump_gravity=820
+sight=14
+
+sprite="mods/core/assets/corpora/modern_heavy/command_leviathan.png"
+
+[[corpus]]
+id="drone_carrier"
+name="Drone Carrier"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a broad carrier hull with an open cyan drone bay, two side launch racks, a dark cockpit block, and paired tracks; bright bay pixels and yellow safety markings make the support function visible."
+cargo=42
+health=330
+health_regen=2.4
+energy=210
+energy_regen=32
+move_speed=72
+rotation_speed=1.350
+radius=30
+cost=48
+color=[0.30,0.38,0.48,1]
+jump_power=140
+jump_gravity=720
+sight=10
+
+# Missile Buggy: light vehicle optimized for ranged missile attacks.
+
+sprite="mods/core/assets/corpora/modern_heavy/drone_carrier.png"
+
+[[corpus]]
+id="flame_tank"
+name="Flame Tank"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a squat red-orange tank with a short twin-nozzle flame turret, black heat vents, side treads, and a glowing rear fuel cell; ember-yellow pixels and sooty outlines suggest heat from above."
+cargo=56
+health=480
+health_regen=3.2
+energy=240
+energy_regen=27
+move_speed=55
+rotation_speed=1.050
+radius=33
+cost=64
+color=[0.55,0.30,0.16,1]
+jump_power=105
+jump_gravity=760
+sight=9
+
+# Heavy Vehicle: large, durable platform for carrying high-cost weapon combinations.
+
+sprite="mods/core/assets/corpora/modern_heavy/flame_tank.png"
+
+[[corpus]]
+id="fortress"
+name="Fortress"
+description = "Top-down pixel-art vehicle chassis on a transparent background: an enormous square armored fortress with four corner turrets, a recessed cyan core, thick dark tracks, and layered gray-blue plates; high-contrast corners and small warning lights make the defensive silhouette unmistakable."
+cargo=72
+health=720
+health_regen=5
+energy=280
+energy_regen=26
+move_speed=32
+rotation_speed=0.550
+radius=42
+cost=82
+color=[0.25,0.26,0.30,1]
+jump_power=65
+jump_gravity=820
+sight=9
+
+# Juggernaut: massive assault chassis that trades speed for exceptional durability.
+
+sprite="mods/core/assets/corpora/modern_heavy/fortress.png"
+
+[[corpus]]
+id="heavy_vehicle"
+name="Heavy Vehicle"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a broad main battle vehicle with a centered long turret, heavy blue-gray hull, amber hatch, paired tracks, and dark exhaust vents; chunky outlines and bright metal edges convey maximum armor."
+cargo=72
+health=600
+health_regen=5
+energy=250
+energy_regen=30
+move_speed=45
+rotation_speed=0.942
+radius=38
+cost=75
+color=[0.18,0.31,0.31,1]
+jump_power=90
+jump_gravity=800
+sight=10
+vision_arc=155
+
+# Artillery Platform: slow long-range chassis with high cargo capacity for bombardment.
+
+sprite="mods/core/assets/corpora/modern_heavy/heavy_vehicle.png"
+
+[[corpus]]
+id="hover_raider"
+name="Hover Raider"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a sleek hover craft with a pointed nose, violet-blue side thrusters, a narrow cyan cockpit, and four glowing lift pads; thin dark outlines and trailing light pixels imply speed."
+cargo=42
+health=275
+health_regen=2
+energy=190
+energy_regen=30
+move_speed=105
+rotation_speed=1.800
+radius=27
+cost=43
+color=[0.30,0.50,0.56,1]
+jump_power=210
+jump_gravity=600
+sight=11
+
+# Strider: tall, mobile vehicle chassis with good sight over the battlefield.
+
+sprite="mods/core/assets/corpora/modern_heavy/hover_raider.png"
+
+[[corpus]]
+id="juggernaut"
+name="Juggernaut"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a very wide armored assault vehicle with a giant central turret, layered red hazard panels, thick tracks, and a glowing orange reactor seam; dense dark shadows emphasize unstoppable mass."
+cargo=72
+health=800
+health_regen=4
+energy=260
+energy_regen=22
+move_speed=28
+rotation_speed=0.480
+radius=44
+cost=88
+color=[0.32,0.22,0.24,1]
+jump_power=60
+jump_gravity=840
+sight=9
+
+# Command Leviathan: largest command chassis with high capacity for specialist loadouts.
+
+sprite="mods/core/assets/corpora/modern_heavy/juggernaut.png"
+
+[[corpus]]
+id="light_vehicle"
+name="Light Vehicle"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a small four-wheeled scout vehicle with a blue cabin, yellow roof sensor, exposed suspension pixels, and a short forward cannon; clean outlines and light highlights keep it quick and readable."
+cargo=42
+health=300
+health_regen=2
+energy=150
+energy_regen=25
+move_speed=90
+rotation_speed=1.571
+radius=28
+cost=40
+color=[0.44,0.50,0.56,1]
+jump_power=150
+jump_gravity=720
+sight=10
+
+# Hover Raider: mobile hover vehicle for aggressive raids and hit-and-run attacks.
+
+sprite="mods/core/assets/corpora/modern_heavy/light_vehicle.png"
+
+[[corpus]]
+id="medium_vehicle"
+name="Medium Vehicle"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a balanced armored vehicle with a compact turret, cobalt hull, orange side lights, two dark tracks, and a rear engine grille; symmetrical geometry gives it a dependable medium-weight silhouette."
+cargo=56
+health=450
+health_regen=3
+energy=180
+energy_regen=20
+move_speed=60
+rotation_speed=1.257
+radius=32
+cost=58
+color=[0.29,0.36,0.14,1]
+jump_power=120
+jump_gravity=740
+sight=10
+
+# Tank Hunter: anti-armor vehicle with strong ranged damage and moderate mobility.
+
+sprite="mods/core/assets/corpora/modern_heavy/medium_vehicle.png"
+
+[[corpus]]
+id="missile_buggy"
+name="Missile Buggy"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a fast open buggy with a red-brown frame, two side missile racks, a blue driver canopy, exposed wheels, and a tiny rear engine; bright missile tips and dark gaps define the vehicle from above."
+cargo=42
+health=290
+health_regen=2.1
+energy=200
+energy_regen=28
+move_speed=84
+rotation_speed=1.450
+radius=29
+cost=46
+color=[0.48,0.28,0.22,1]
+jump_power=145
+jump_gravity=720
+sight=10
+
+# Medium Vehicle: balanced armored vehicle for flexible combat roles.
+
+sprite="mods/core/assets/corpora/modern_heavy/missile_buggy.png"
+
+[[corpus]]
+id="recon_skimmer"
+name="Recon Skimmer"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a narrow hovering reconnaissance craft with a pale cyan nose, dark blue underside, side sensor fins, and four small lift lights; minimal armor and a long clean silhouette suggest scouting speed."
+cargo=10
+health=90
+health_regen=1.2
+energy=90
+energy_regen=22
+move_speed=140
+rotation_speed=4.500
+radius=13
+cost=14
+color=[0.25,0.52,0.48,1]
+jump_power=290
+jump_gravity=650
+sight=11
+vision_arc=325
+
+# Courier: fragile, very fast transport chassis for carrying small loads.
+
+sprite="mods/core/assets/corpora/modern_heavy/recon_skimmer.png"
+
+[[corpus]]
+id="shield_wagon"
+name="Shield Wagon"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a boxy blue shield carrier with a large circular emitter on top, two thick side wheels, a bright cyan shield rim, and yellow service panels; concentric pixels make the protective role obvious."
+cargo=56
+health=520
+health_regen=3.5
+energy=220
+energy_regen=23
+move_speed=48
+rotation_speed=0.950
+radius=34
+cost=66
+color=[0.25,0.42,0.58,1]
+jump_power=100
+jump_gravity=770
+sight=9
+
+# Flame Tank: heavy vehicle built for close-range area denial with fire weapons.
+
+sprite="mods/core/assets/corpora/modern_heavy/shield_wagon.png"
+
+[[corpus]]
+id="siege_walker"
+name="Siege Walker"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a tall four-legged siege walker with a central armored body, elevated cannon, red cable bundles, and four broad mechanical feet; strong dark outlines and orange joints separate the legs clearly."
+cargo=20
+health=270
+health_regen=3.2
+energy=130
+energy_regen=14
+move_speed=52
+rotation_speed=1.600
+radius=27
+cost=36
+color=[0.34,0.30,0.28,1]
+jump_power=165
+jump_gravity=700
+sight=8
+
+# Light Vehicle: fast vehicle chassis for flanking and rapid repositioning.
+
+sprite="mods/core/assets/corpora/modern_heavy/siege_walker.png"
+
+[[corpus]]
+id="strider"
+name="Strider"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a narrow two-legged walker with a tall teal cockpit, long jointed legs, small side guns, and a rear stabilizer fin; sparse highlights and deep negative space make the height readable in top-down view."
+cargo=42
+health=320
+health_regen=2.5
+energy=165
+energy_regen=24
+move_speed=100
+rotation_speed=1.500
+radius=29
+cost=44
+color=[0.40,0.47,0.26,1]
+jump_power=180
+jump_gravity=680
+sight=10
+
+# Drone Carrier: support vehicle that carries and deploys autonomous drones.
+
+sprite="mods/core/assets/corpora/modern_heavy/strider.png"
+
+[[corpus]]
+id="support_crawler"
+name="Support Crawler"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a low utility crawler with a central repair module, white-and-teal service arms, six dark wheels, and a bright green status panel; small tool pixels and clean outlines communicate support duty."
+cargo=56
+health=430
+health_regen=4
+energy=260
+energy_regen=36
+move_speed=50
+rotation_speed=1.100
+radius=33
+cost=62
+color=[0.26,0.43,0.38,1]
+jump_power=105
+jump_gravity=760
+sight=10
+
+# Shield Wagon: armored support vehicle focused on protection and team cover.
+
+sprite="mods/core/assets/corpora/modern_heavy/support_crawler.png"
+
+[[corpus]]
+id="tank_hunter"
+name="Tank Hunter"
+description = "Top-down pixel-art vehicle chassis on a transparent background: a long low hunter vehicle with a narrow forward cannon, dark green armor, orange targeting sensor, angled side skirts, and paired tracks; a strong barrel line and sparse highlights emphasize ambush range."
+cargo=56
+health=410
+health_regen=2.8
+energy=230
+energy_regen=25
+move_speed=65
+rotation_speed=1.150
+radius=31
+cost=60
+color=[0.40,0.42,0.28,1]
+jump_power=115
+jump_gravity=740
+sight=11
+
+# Support Crawler: durable utility vehicle for repair and battlefield support.
+
+sprite="mods/core/assets/corpora/modern_heavy/tank_hunter.png"

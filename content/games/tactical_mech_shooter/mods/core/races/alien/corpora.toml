@@ -1,0 +1,24 @@
+# Alien chassis examples. Alien mounts are intentionally incompatible with modern gear.
+kind = "content"
+
+# Void Striker: agile alien platform with high energy capacity and a narrow profile.
+[[corpus]]
+id = "void_striker"
+name = "Void Striker"
+description = "Top-down pixel-art alien chassis on a transparent background: a sharp violet striker with four swept fins, a cyan central eye, thin magenta energy seams, and a dark angular underside; neon edge pixels and geometric symmetry make it feel off-world."
+cargo = 14
+health = 95
+health_regen = 1.4
+energy = 120
+energy_regen = 24
+move_speed = 118
+rotation_speed = 4.8
+radius = 14
+cost = 20
+color = [0.36, 0.24, 0.68, 1]
+jump_power = 275
+jump_gravity = 650
+sight = 10
+vision_arc = 310
+
+sprite="mods/core/assets/corpora/alien/void_striker.png"

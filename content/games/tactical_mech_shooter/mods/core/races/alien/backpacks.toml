@@ -1,0 +1,17 @@
+# Alien modules use exotic interfaces that modern and organic chassis cannot mount.
+kind = "content"
+
+# Psi amplifier: expands alien energy reserves and sharpens targeting sensors.
+[[backpack]]
+id = "psi_amplifier"
+name = "Psi Amplifier"
+description = "Top-down pixel-art alien backpack on a transparent background: a violet crystalline amplifier with a cyan central gem, magenta orbiting nodes, dark angular braces, and thin energy filaments; neon facets suggest psychic technology."
+size = 3
+energy_bonus = 70
+energy_regen_mod = 3
+aim_mod = 1.15
+sight_bonus = 2
+color = [0.55, 0.25, 0.92, 1]
+cost = 26
+
+sprite="mods/core/assets/backpacks/alien/psi_amplifier.png"

@@ -14,6 +14,12 @@ local function add_effect(model, effect)
     return true
 end
 
+local function effect_image(state, id)
+    local effects = state.content.effects or state.content.content.effects or {}
+    local effect = effects[id]
+    return effect and effect.sprite_image
+end
+
 function M.after(state, delay, callback)
     local effects = state.battle and state.battle.model
     if not effects then return end
@@ -53,6 +59,7 @@ function M.burst(state, x, y, color, radius, duration)
         add_effect(model, {
             x = x, y = y, vx = math.cos(angle) * speed, vy = math.sin(angle) * speed,
             radius = radius or 4, color = color or {1, 0.55, 0.12, 1}, left = duration or 0.35,
+            sprite_image = effect_image(state, "spark"),
         })
     end
 end
@@ -73,16 +80,20 @@ function M.flame(state, x, y, angle, weapon)
             vx = math.cos(angle + offset) * speed,
             vy = math.sin(angle + offset) * speed,
             radius = math.max(3, tonumber(weapon.size) or 3),
-            color = weapon.color, left = lifetime, duration = lifetime,
+            color = weapon.color, left = lifetime, duration = lifetime, angle = angle + offset,
+            sprite_image = weapon.flame_image or effect_image(state, "flame"),
         })
     end
 end
 
-function M.explosion(state, x, y, radius, color)
+function M.explosion(state, x, y, radius, color, sprite_image)
     M.burst(state, x, y, color or {1, 0.25, 0.08, 1}, radius or 8, 0.5)
     local model = state.battle and state.battle.model
     if model then
-        model.explosions[#model.explosions + 1] = {x = x, y = y, radius = radius or 48, left = 0.36, duration = 0.36, color = color or {1, 0.25, 0.08, 1}}
+        model.explosions[#model.explosions + 1] = {
+            x = x, y = y, radius = radius or 48, left = 0.36, duration = 0.36,
+            color = color or {1, 0.25, 0.08, 1}, sprite_image = sprite_image or effect_image(state, "explosion"),
+        }
     end
 end
 
@@ -92,14 +103,17 @@ function M.beam(state, x1, y1, x2, y2, color, width)
     add_effect(model, {
         kind = "beam", x = x1, y = y1, x2 = x2, y2 = y2,
         vx = 0, vy = 0, color = color or {0.2, 1, 0.4, 1},
-        width = width or 3, left = 0.09,
+        width = width or 3, left = 0.09, sprite_image = effect_image(state, "beam"),
     })
 end
 
 function M.smoke(state, x, y, radius, duration)
     local model = state.battle and state.battle.model
     if not model then return end
-    model.smoke[#model.smoke + 1] = {x = x, y = y, radius = radius or 56, left = duration or 8}
+    model.smoke[#model.smoke + 1] = {
+        x = x, y = y, radius = radius or 56, left = duration or 8,
+        sprite_image = effect_image(state, "smoke"),
+    }
     M.burst(state, x, y, {0.35, 0.38, 0.42, 0.65}, radius or 18, 0.6)
 end
 

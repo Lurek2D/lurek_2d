@@ -1,0 +1,25 @@
+# Organic weapons are grown weapons and biological area-control tools.
+kind = "content"
+
+# Acid spitter: short-range corrosive cone for biological assault units.
+[[weapon]]
+id = "acid_spitter"
+name = "Acid Spitter"
+description = "Top-down pixel-art organic weapon on a transparent background, barrel pointing right: a living green acid sac with a pink nozzle, small tendrils, translucent lime droplets, and dark wet outlines; the biological muzzle is unmistakable from above."
+kind = "cone"
+size = 3
+damage = 14
+range = 280
+reload = 0.90
+energy = 6
+velocity = 0
+accuracy = 24
+arc = 24
+recoil = 12
+pellets = 1
+color = [0.62, 0.95, 0.18, 1]
+armor_reduction = 0.15
+
+sprite="mods/core/assets/weapons/organic/acid_spitter.png"
+projectile_effect="projectile"
+impact_effect="explosion"

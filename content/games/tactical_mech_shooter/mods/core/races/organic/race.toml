@@ -1,0 +1,7 @@
+# Organic battlefield family for biological chassis and equipment.
+[race]
+id = "organic"
+name = "Organic"
+description = "Top-down pixel-art faction icon on a transparent background: a moss-green bio-mechanical organism with a rounded shell, two luminous eyes, soft tendril spikes, and a warm orange inner core; irregular dark outlines and mottled green highlights make the living silhouette readable at 64px."
+flags = ["organic", "biological"]
+icon = "mods/core/assets/races/organic.png"

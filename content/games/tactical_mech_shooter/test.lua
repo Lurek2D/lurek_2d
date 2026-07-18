@@ -16,15 +16,58 @@ local loader = load_module("app/content_loader.lua")
 local validator = load_module("app/content_validator.lua")
 local content = loader.load(ROOT)
 validator.validate(content)
+assert(content.content.races.modern_light and content.content.races.modern_heavy)
+assert(content.content.races.organic and content.content.races.alien)
+assert(not content.content.races.standard, "legacy standard race bundle must be split")
+assert(content.active_map.source_image:match("arena_01%.png$"))
+assert(#content.active_map.tiles == content.active_map.width * content.active_map.height)
+assert(#content.active_map.spawn == 4 and #content.active_map.light >= 4)
+assert(#content.map_order == 6 and content.maps.twin_bastion and content.maps.tri_flag_rift)
+assert(content.maps.twin_bastion.mode == "balanced_2v2" and content.maps.twin_bastion.team_count == 4)
+assert(content.maps.crossfire_quads.mode == "free_for_all" and content.maps.crossfire_quads.team_count == 4)
+assert(content.maps.assault_northline.mode == "assault" and content.maps.assault_northline.team_count == 2)
+assert(content.maps.assault_reactor.mode == "assault" and content.maps.assault_reactor.team_count == 2)
+assert(content.maps.tri_flag_rift.mode == "capture_the_flag" and #content.maps.tri_flag_rift.objectives == 1)
+content.select_map("twin_bastion")
+assert(content.active_map.id == "twin_bastion" and #content.active_map.spawn == 4)
+content.select_map("arena_01")
 assert(content.content and content.content.corpora.scout)
 assert(content.content.weapons.pistol)
 assert(content.content.backpacks.none)
+assert(content.content.effects.projectile and content.content.effects.explosion)
+assert(content.content.races.modern_light.icon_image and content.content.races.modern_heavy.icon_image)
+assert(content.content.races.modern_light.description:lower():find("top-down", 1, true))
+assert(content.content.corpora.scout.sprite_image)
+assert(content.content.corpora.scout.description:lower():find("top-down", 1, true))
+assert(content.content.corpora.scout.race_id == "modern_light")
+assert(content.content.corpora.heavy_vehicle.race_id == "modern_heavy")
+assert(content.content.weapons.pistol.sprite_image)
+assert(content.content.weapons.pistol.description:lower():find("top-down", 1, true))
+assert(content.content.weapons.pistol.race_id == "modern_light")
+assert(content.content.weapons.tank_cannon.race_id == "modern_heavy")
+assert(content.content.backpacks.none.sprite_image)
+assert(content.content.backpacks.none.description:lower():find("top-down", 1, true))
+assert(content.content.backpacks.heavy_armor.race_id == "modern_heavy")
+assert(content.content.weapons.pistol.projectile_image)
+assert(content.content.weapons.pistol.impact_image)
 assert(content.content.presets.f8)
 assert(content.content.presets.f9 and content.content.presets.f10 and content.content.presets.f11 and content.content.presets.f12)
 local build = load_module("domain/build.lua")
 local composed = assert(build.from_preset(content, "f1"))
 assert(composed.cargo_used <= composed.cargo)
 assert(composed.cost >= 0)
+local organic = assert(build.compose(content, {
+    name = "Organic test build", corpus = "spore_hopper", left = "acid_spitter", right = "acid_spitter", backpack = "chitin_carapace",
+}))
+assert(organic.corpus.race_id == "organic" and organic.left.race_id == "organic")
+local alien = assert(build.compose(content, {
+    name = "Alien test build", corpus = "void_striker", left = "ion_lance", right = "ion_lance", backpack = "psi_amplifier",
+}))
+assert(alien.corpus.race_id == "alien" and alien.backpack.race_id == "alien")
+local incompatible, incompatibility = build.compose(content, {
+    corpus = "scout", left = "acid_spitter", right = "pistol", backpack = "none",
+})
+assert(not incompatible and incompatibility:find("compatible with corpus race"), "race flags did not reject incompatible equipment")
 local economy = load_module("domain/economy.lua")
 local campaign = {level = 1, stars = 0, wins = 0, losses = 0}
 economy.finish(campaign, true)
@@ -175,6 +218,27 @@ end
 local stress_elapsed = os.clock() - stress_started
 assert(stress_elapsed < 5.0, "120-frame battle stress ceiling exceeded: " .. tostring(stress_elapsed))
 assert(state.battle.elapsed > 0 and state.battle.model.projectiles ~= nil)
+state.content.select_map("twin_bastion")
+state.modules.Battle.start(state, "f1")
+local balanced_teams = {}
+for _, actor in ipairs(state.battle.model.actors) do balanced_teams[actor.team] = true end
+assert(balanced_teams.team1 and balanced_teams.team2 and balanced_teams.team3 and balanced_teams.team4, "2v2 map did not spawn four teams")
+assert(state.modules.Teams.is_ally(state.battle.model, "team1", "team2"), "2v2 alliance is not recognized")
+assert(state.modules.Teams.is_enemy(state.battle.model, "team1", "team3"), "2v2 enemy side is not recognized")
+local team3_count, team4_count = 0, 0
+for _, actor in ipairs(state.battle.model.actors) do
+    if actor.team == "team3" then team3_count = team3_count + 1 end
+    if actor.team == "team4" then team4_count = team4_count + 1 end
+end
+assert(team3_count == team4_count and state.battle.enemies_left == team3_count + team4_count, "2v2 enemy distribution is not balanced")
+state.content.select_map("tri_flag_rift")
+state.modules.Battle.start(state, "f1")
+assert(state.battle.model.objective.kind == "capture_flag" and #state.battle.model.objectives == 1, "CTF objective was not loaded")
+local flag = state.battle.model.objectives[1]
+local flag_x, flag_y = state.battle.model.world.cell(state.battle.model, flag.x, flag.y)
+state.battle.model.explored_cells.team1[(flag_y - 1) * state.battle.model.width + flag_x] = true
+assert(pcall(state.modules.Battle.draw, state), "CTF objective rendering failed")
+state.content.select_map("arena_01")
 state.modules.Title.draw(state)
 state.phase = "hangar"
 state.modules.Hangar.draw(state)

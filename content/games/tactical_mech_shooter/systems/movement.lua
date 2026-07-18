@@ -38,6 +38,7 @@ function M.bind()
     lurek.input.bind("pause", {"p"})
     lurek.input.bind("restart", {"r"})
     lurek.input.bind("switch", {"tab"})
+    lurek.input.bind("map_next", {"m"})
     for i = 1, 12 do lurek.input.bind("preset_" .. tostring(i), {"f" .. tostring(i)}) end
 end
 

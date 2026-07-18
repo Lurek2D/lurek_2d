@@ -40,7 +40,7 @@ end
 
 function M.spawn_actor(state, team, build, x, y, id, is_player)
     local model = state.battle.model
-    local actor = state.modules.Physics.spawn_actor(model, x, y, team == "team1" and 15 or 13)
+    local actor = state.modules.Physics.spawn_actor(model, x, y, state.modules.Teams.is_player_side(model, team) and 15 or 13)
     actor.id, actor.team, actor.build, actor.is_player = id, team, build, is_player
     actor.hp, actor.energy = build.max_health, build.max_energy
     actor.shield_current, actor.max_shield = build.shield, build.shield
@@ -70,7 +70,7 @@ local function damage(state, source, target, amount)
     if target.hp <= 0 then
         target.dead = true
         state.modules.Physics.destroy(state.battle.model, target)
-        if source and source.team == "team1" then state.battle.score = state.battle.score + (target.score_value or 5) end
+        if source and state.modules.Teams.is_player_side(state.battle.model, source.team) then state.battle.score = state.battle.score + (target.score_value or 5) end
         state.modules.Effects.explosion(state, target.x, target.y, 54, target.team_color)
     end
 end
@@ -82,7 +82,7 @@ function M.explode(state, source, x, y, radius, amount, weapon)
         return
     end
     for _, target in ipairs(model.actors) do
-        if not target.dead and target.team ~= source.team and distance(target, {x = x, y = y}) <= radius then
+        if not target.dead and state.modules.Teams.is_enemy(model, source.team, target.team) and distance(target, {x = x, y = y}) <= radius then
             damage(state, source, target, amount)
             if weapon and weapon.emp_duration then target.status_emp = math.max(target.status_emp or 0, weapon.emp_duration) end
             if weapon and weapon.armor_reduction then target.armor_reduction = math.max(target.armor_reduction or 0, weapon.armor_reduction) end
@@ -93,12 +93,16 @@ function M.explode(state, source, x, y, radius, amount, weapon)
             local angle = (i / weapon.submunitions) * math.pi * 2
             local sx, sy = x + math.cos(angle) * radius * 0.35, y + math.sin(angle) * radius * 0.35
             for _, target in ipairs(model.actors) do
-                if not target.dead and target.team ~= source.team and distance(target, {x = sx, y = sy}) <= radius * 0.35 then damage(state, source, target, amount * 0.35) end
+                if not target.dead and state.modules.Teams.is_enemy(model, source.team, target.team) and distance(target, {x = sx, y = sy}) <= radius * 0.35 then damage(state, source, target, amount * 0.35) end
             end
         end
     end
     if weapon and weapon.hazard_duration then
-        model.hazards[#model.hazards + 1] = {x = x, y = y, radius = radius * 0.7, left = weapon.hazard_duration, damage = amount * 0.18, team = source.team, owner = source, color = weapon.color}
+        model.hazards[#model.hazards + 1] = {
+            x = x, y = y, radius = radius * 0.7, left = weapon.hazard_duration,
+            damage = amount * 0.18, team = source.team, owner = source, color = weapon.color,
+            sprite_image = state.content.effects.hazard.sprite_image,
+        }
     end
     state.modules.Effects.explosion(state, x, y, radius)
 end
@@ -111,7 +115,7 @@ local function hit_beam(state, actor, weapon, x, y, target_x, target_y)
     local trace = state.modules.Physics.beam(state.battle.model, x, y, dx, dy, weapon.range)
     local best, best_d = nil, weapon.range
     for _, target in ipairs(state.battle.model.actors) do
-        if not target.dead and target.team ~= actor.team then
+        if not target.dead and state.modules.Teams.is_enemy(state.battle.model, actor.team, target.team) then
             local tx, ty = target.x - x, target.y - y
             local along = tx * dx + ty * dy
             local side = math.abs(tx * dy - ty * dx)
@@ -155,7 +159,7 @@ function M.fire(state, actor, target_x, target_y, slot)
         hit_beam(state, actor, weapon, muzzle_x, muzzle_y, target_x, target_y)
     elseif weapon.kind == "cone" then
         for _, target in ipairs(model.actors) do
-            if not target.dead and target.team ~= actor.team then
+            if not target.dead and state.modules.Teams.is_enemy(model, actor.team, target.team) then
                 local dx, dy = target.x - actor.x, target.y - actor.y
                 local d = math.sqrt(dx * dx + dy * dy)
                 local delta = angle_distance(math.atan2(dy, dx), aim_angle)
@@ -171,7 +175,7 @@ function M.fire(state, actor, target_x, target_y, slot)
         local target = actor
         local best_distance = weapon.range
         for _, candidate in ipairs(model.actors) do
-            if not candidate.dead and candidate.team == actor.team then
+            if not candidate.dead and state.modules.Teams.is_ally(model, candidate.team, actor.team) then
                 local d = distance(candidate, {x = target_x, y = target_y})
                 if d < best_distance then target, best_distance = candidate, d end
             end
@@ -191,8 +195,12 @@ function M.fire(state, actor, target_x, target_y, slot)
         end
         state.modules.Effects.burst(state, target.x, target.y, weapon.color, 8, 0.3)
     elseif weapon.kind == "field" then
-        model.fields[#model.fields + 1] = {field = weapon.field, x = target_x, y = target_y, team = actor.team, owner = actor, left = weapon.duration or 2, radius = weapon.explode_radius or weapon.range * 0.35, damage = weapon.damage, color = weapon.color}
-        state.modules.Effects.explosion(state, target_x, target_y, weapon.explode_radius or 50, weapon.color)
+        model.fields[#model.fields + 1] = {
+            field = weapon.field, x = target_x, y = target_y, team = actor.team, owner = actor,
+            left = weapon.duration or 2, radius = weapon.explode_radius or weapon.range * 0.35,
+            damage = weapon.damage, color = weapon.color, sprite_image = state.content.effects.field.sprite_image,
+        }
+        state.modules.Effects.explosion(state, target_x, target_y, weapon.explode_radius or 50, weapon.color, weapon.impact_image)
     elseif weapon.kind == "deployable" then
         local count = 0
         for i = #model.deployed, 1, -1 do
@@ -207,7 +215,7 @@ function M.fire(state, actor, target_x, target_y, slot)
             state.modules.Effects.smoke(state, target_x, target_y, weapon.explode_radius or 100, weapon.duration or 12)
         else
             model.deployed[#model.deployed + 1] = {deployable = weapon.deployable, x = target_x, y = target_y, team = actor.team, owner = actor, left = weapon.duration or 300, damage = weapon.damage, radius = weapon.explode_radius or 90, cooldown = 0, color = weapon.color}
-            state.modules.Effects.explosion(state, target_x, target_y, 20, weapon.color)
+            state.modules.Effects.explosion(state, target_x, target_y, 20, weapon.color, weapon.impact_image)
         end
     elseif weapon.kind == "portal" then
         model.portals = model.portals or {}
@@ -220,6 +228,7 @@ function M.fire(state, actor, target_x, target_y, slot)
             local shot_angle = explosive and aim_angle or aim_angle + random_spread(model, spread_angle)
             local projectile = state.modules.Physics.spawn_projectile(model, muzzle_x, muzzle_y, math.cos(shot_angle) * weapon.velocity, math.sin(shot_angle) * weapon.velocity, weapon.kind == "ballistic" and 7 or 4)
             projectile.owner, projectile.damage, projectile.velocity, projectile.weapon = actor, weapon.damage, weapon.velocity, weapon
+            projectile.sprite_image = weapon.projectile_image
             projectile.vx, projectile.vy = math.cos(shot_angle) * weapon.velocity, math.sin(shot_angle) * weapon.velocity
             projectile.left, projectile.max_range = weapon.range / math.max(1, weapon.velocity) + 0.25, weapon.range
             projectile.travel, projectile.explosive = 0, explosive
@@ -263,7 +272,7 @@ function M.update(state, dt)
             impact = true
         end
         for _, target in ipairs(model.actors) do
-            if not projectile.explosive and not impact and not target.dead and target ~= projectile.owner and target.team ~= projectile.owner.team and distance(target, projectile) < target.radius + projectile.radius then impact = target; break end
+            if not projectile.explosive and not impact and not target.dead and target ~= projectile.owner and state.modules.Teams.is_enemy(model, projectile.owner.team, target.team) and distance(target, projectile) < target.radius + projectile.radius then impact = target; break end
         end
         if impact and impact ~= true then
             if projectile.explosive then M.explode(state, projectile.owner, projectile.x, projectile.y, projectile.explode_radius, projectile.damage, projectile.weapon) else damage(state, projectile.owner, impact, projectile.damage) end
@@ -285,7 +294,7 @@ function M.update(state, dt)
         local hazard = model.hazards[i]
         hazard.left = hazard.left - dt
         for _, target in ipairs(model.actors) do
-            if not target.dead and target.team ~= hazard.team and distance(target, hazard) < hazard.radius then damage(state, hazard.owner or {team = hazard.team}, target, hazard.damage * dt) end
+            if not target.dead and state.modules.Teams.is_enemy(model, hazard.team, target.team) and distance(target, hazard) < hazard.radius then damage(state, hazard.owner or {team = hazard.team}, target, hazard.damage * dt) end
         end
         if hazard.left <= 0 then table.remove(model.hazards, i) end
     end
@@ -293,7 +302,7 @@ function M.update(state, dt)
         local field = model.fields[i]
         field.left = field.left - dt
         for _, target in ipairs(model.actors) do
-            if not target.dead and target.team ~= field.team and distance(target, field) < field.radius then
+            if not target.dead and state.modules.Teams.is_enemy(model, field.team, target.team) and distance(target, field) < field.radius then
                 local dx, dy = field.x - target.x, field.y - target.y
                 local length = math.max(1, math.sqrt(dx * dx + dy * dy))
                 local force = field.field == "push" and -1 or 1
@@ -314,20 +323,20 @@ function M.update(state, dt)
         device.cooldown = math.max(0, (device.cooldown or 0) - dt)
         for _, target in ipairs(model.actors) do
             if not target.dead and distance(target, device) < device.radius then
-                if device.kind == "repair_drone" and target.team == device.team and device.cooldown <= 0 then
+                if device.kind == "repair_drone" and state.modules.Teams.is_ally(model, target.team, device.team) and device.cooldown <= 0 then
                     target.hp = math.min(target.build.max_health, target.hp + (device.damage or 12))
                     device.cooldown = 0.8
-                elseif device.kind == "shield_drone" and target.team == device.team and device.cooldown <= 0 then
+                elseif device.kind == "shield_drone" and state.modules.Teams.is_ally(model, target.team, device.team) and device.cooldown <= 0 then
                     target.shield_current = math.min(target.max_shield + 40, (target.shield_current or 0) + 8)
                     device.cooldown = 0.8
-                elseif device.kind == "assault_drone" and target.team ~= device.team and device.cooldown <= 0 then
+                elseif device.kind == "assault_drone" and state.modules.Teams.is_enemy(model, device.team, target.team) and device.cooldown <= 0 then
                     damage(state, device.owner, target, device.damage or 10)
                     device.cooldown = 0.6
-                elseif target.team ~= device.team and (device.deployable == "mine" or device.deployable == "emp_mine" or device.deployable == "fire_mine") then
+                elseif state.modules.Teams.is_enemy(model, device.team, target.team) and (device.deployable == "mine" or device.deployable == "emp_mine" or device.deployable == "fire_mine") then
                     M.explode(state, device.owner, device.x, device.y, device.radius, device.damage)
                     if device.deployable == "emp_mine" then target.status_emp = 3 end
                     device.left = 0
-                elseif target.team ~= device.team and (device.deployable == "sentry" or device.deployable == "missile_turret" or device.deployable == "beam_turret") then
+                elseif state.modules.Teams.is_enemy(model, device.team, target.team) and (device.deployable == "sentry" or device.deployable == "missile_turret" or device.deployable == "beam_turret") then
                     if device.cooldown <= 0 then damage(state, device.owner, target, device.damage); device.cooldown = 0.6 end
                 end
             end
@@ -336,7 +345,7 @@ function M.update(state, dt)
     end
     for _, portal in ipairs(model.portals) do
         for _, actor in ipairs(model.actors) do
-            if not actor.dead and actor.portal_cooldown <= 0 and actor.team == portal.team and distance(actor, portal) < portal.radius and #model.portals >= 2 then
+            if not actor.dead and actor.portal_cooldown <= 0 and state.modules.Teams.is_ally(model, actor.team, portal.team) and distance(actor, portal) < portal.radius and #model.portals >= 2 then
                 local destination = model.portals[1] == portal and model.portals[2] or model.portals[1]
                 state.modules.Physics.set_position(actor, destination.x, destination.y)
                 actor.portal_cooldown = 0.6

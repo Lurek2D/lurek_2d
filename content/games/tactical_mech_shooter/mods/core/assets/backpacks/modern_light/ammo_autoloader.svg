@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+<title>ammo_autoloader</title><desc>Top-down pixel-art backpack on a transparent background: a compact blue feed module with a visible orange ammo belt, circular loading drum, dark side brackets, and a cyan timing light; the belt and drum are the main visual anchors.</desc>
+<metadata data-authoring="individual" data-source="mods/core/races/modern_light/backpacks.toml"/><rect x="12" y="20" width="40" height="29" fill="#101a29"/><rect x="16" y="24" width="16" height="16" fill="#e4a542"/><rect x="34" y="24" width="14" height="16" fill="#63a9d1"/><rect x="15" y="43" width="34" height="4" fill="#2d5e8a"/><circle cx="39" cy="39" r="1" fill="#e4a542" opacity="1"/><circle cx="27" cy="35" r="2" fill="#e4a542" opacity="1"/><circle cx="32" cy="44" r="1" fill="#e4a542" opacity="1"/></svg>

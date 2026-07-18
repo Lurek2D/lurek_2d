@@ -1,0 +1,298 @@
+# Chassis definitions. Each corpus supplies the base stats and role of a deployable mech.
+kind = "content"
+
+# Spider Light: very small, fast light chassis with modest cargo capacity.
+
+[[corpus]]
+id="assault"
+name="Assault"
+description = "Top-down pixel-art personnel mech on a transparent background: a medium bipedal assault chassis with squared cobalt shoulder plates, a central orange reactor, broad forearms, and two dark mechanical legs; hard black outlines and bright edge pixels give it a clear combat silhouette."
+cargo=12
+health=145
+health_regen=1.8
+energy=85
+energy_regen=16
+move_speed=90
+rotation_speed=3.000
+radius=19
+cost=18
+color=[0.52,0.30,0.20,1]
+jump_power=235
+jump_gravity=650
+sight=8
+
+# Field Medic: support chassis built to survive while repairing allies.
+
+sprite="mods/core/assets/corpora/modern_light/assault.png"
+
+[[corpus]]
+id="brawler"
+name="Brawler"
+description = "Top-down pixel-art personnel mech on a transparent background: a wide low biped built around oversized armored fists, red-orange knuckle plates, a compact torso, and braced legs; chunky dark outlines and small steel highlights emphasize close-range weight."
+cargo=20
+health=250
+health_regen=4
+energy=90
+energy_regen=10
+move_speed=75
+rotation_speed=2.199
+radius=25
+cost=31
+color=[0.36,0.25,0.20,1]
+jump_power=180
+jump_gravity=690
+sight=7
+vision_arc=215
+
+# Bulwark: defensive heavy chassis designed to hold a position under fire.
+
+sprite="mods/core/assets/corpora/modern_light/brawler.png"
+
+[[corpus]]
+id="bulwark"
+name="Bulwark"
+description = "Top-down pixel-art personnel mech on a transparent background: a squat shield-bearing chassis with a broad blue-gray front plate, yellow warning stripes, tiny exposed joints, and short reinforced legs; dense dark pixels and a bright front rim sell its defensive mass."
+cargo=20
+health=230
+health_regen=3.5
+energy=145
+energy_regen=18
+move_speed=58
+rotation_speed=1.700
+radius=26
+cost=34
+color=[0.28,0.35,0.42,1]
+jump_power=175
+jump_gravity=700
+sight=8
+
+# Siege Walker: slow, durable platform intended for heavy weapons and sustained fire.
+
+sprite="mods/core/assets/corpora/modern_light/bulwark.png"
+
+[[corpus]]
+id="courier"
+name="Courier"
+description = "Top-down pixel-art personnel mech on a transparent background: a narrow fast courier frame with a bright blue central spine, small shoulder pods, swept rear fins, and long lightweight legs; cyan edge pixels and minimal armor keep the silhouette agile."
+cargo=6
+health=75
+health_regen=1.0
+energy=75
+energy_regen=18
+move_speed=150
+rotation_speed=4.400
+radius=12
+cost=10
+color=[0.60,0.48,0.24,1]
+jump_power=300
+jump_gravity=680
+sight=9
+
+# Saboteur: stealth-oriented light chassis for infiltration and disruption.
+
+sprite="mods/core/assets/corpora/modern_light/courier.png"
+
+[[corpus]]
+id="engineer"
+name="Engineer"
+description = "Top-down pixel-art personnel mech on a transparent background: a compact utility chassis with a yellow tool arm, square service backpack, teal sensor panel, and two sturdy legs; orange cable pixels and dark outlines make the maintenance role obvious from above."
+cargo=20
+health=130
+health_regen=2.0
+energy=115
+energy_regen=25
+move_speed=86
+rotation_speed=2.850
+radius=18
+cost=20
+color=[0.46,0.42,0.22,1]
+jump_power=225
+jump_gravity=630
+sight=10
+vision_arc=230
+
+# Medium Soldier: balanced combat chassis with a reliable mix of health and mobility.
+
+sprite="mods/core/assets/corpora/modern_light/engineer.png"
+
+[[corpus]]
+id="field_medic"
+name="Field Medic"
+description = "Top-down pixel-art personnel mech on a transparent background: a slim white-and-teal medical chassis with a red cross panel, two small repair arms, a cyan top lamp, and a clean compact torso; red accent pixels and a dark outline keep the medic identity readable."
+cargo=12
+health=105
+health_regen=2.2
+energy=120
+energy_regen=26
+move_speed=88
+rotation_speed=2.900
+radius=18
+cost=21
+color=[0.30,0.50,0.38,1]
+jump_power=230
+jump_gravity=640
+sight=10
+vision_arc=250
+
+# Engineer: utility chassis with cargo capacity for deployables and support tools.
+
+sprite="mods/core/assets/corpora/modern_light/field_medic.png"
+
+[[corpus]]
+id="heavy_soldier"
+name="Heavy Soldier"
+description = "Top-down pixel-art personnel mech on a transparent background: a tall heavily plated biped with layered navy shoulder armor, a bright amber chest reactor, thick forearms, and reinforced feet; deep shadow pixels and steel highlights communicate elite armor."
+cargo=22
+health=200
+health_regen=3
+energy=120
+energy_regen=15
+move_speed=65
+rotation_speed=1.885
+radius=24
+cost=30
+color=[0.25,0.29,0.18,1]
+jump_power=190
+jump_gravity=680
+sight=9
+vision_arc=185
+
+# Brawler: close-range combat chassis with strong durability and handling.
+
+sprite="mods/core/assets/corpora/modern_light/heavy_soldier.png"
+
+[[corpus]]
+id="light_soldier"
+name="Light Soldier"
+description = "Top-down pixel-art personnel mech on a transparent background: a small agile biped with pale blue armor panels, a narrow orange visor, exposed dark joints, and slim legs; clean 1-pixel outlines and sparse highlights make it read as light infantry."
+cargo=14
+health=120
+health_regen=1.5
+energy=70
+energy_regen=15
+move_speed=95
+rotation_speed=3.140
+radius=18
+cost=16
+color=[0.33,0.42,0.18,1]
+jump_power=240
+jump_gravity=650
+sight=9
+vision_arc=205
+
+# Ranger: mobile ranged chassis with strong sight and balanced handling.
+
+sprite="mods/core/assets/corpora/modern_light/light_soldier.png"
+
+[[corpus]]
+id="medium_soldier"
+name="Medium Soldier"
+description = "Top-down pixel-art personnel mech on a transparent background: a balanced bipedal chassis with medium cobalt armor, a rectangular cyan visor, symmetrical shoulder plates, and a compact rear power cell; dark outlines and warm indicator pixels provide a readable all-round silhouette."
+cargo=20
+health=150
+health_regen=2
+energy=100
+energy_regen=20
+move_speed=80
+rotation_speed=2.513
+radius=20
+cost=24
+color=[0.42,0.56,0.14,1]
+jump_power=210
+jump_gravity=660
+sight=9
+vision_arc=235
+
+# Heavy Soldier: durable infantry chassis with high health and reduced mobility.
+
+sprite="mods/core/assets/corpora/modern_light/medium_soldier.png"
+
+[[corpus]]
+id="ranger"
+name="Ranger"
+description = "Top-down pixel-art personnel mech on a transparent background: a long-limbed reconnaissance biped with a green-blue cloak panel, narrow helmet, raised sensor mast, and lightweight feet; muted colors with one lime sight pixel suggest a patient marksman."
+cargo=12
+health=115
+health_regen=1.4
+energy=110
+energy_regen=24
+move_speed=100
+rotation_speed=3.300
+radius=17
+cost=19
+color=[0.25,0.42,0.50,1]
+jump_power=250
+jump_gravity=640
+sight=12
+
+# Assault: front-line infantry chassis with a durable, general-purpose profile.
+
+sprite="mods/core/assets/corpora/modern_light/ranger.png"
+
+[[corpus]]
+id="saboteur"
+name="Saboteur"
+description = "Top-down pixel-art personnel mech on a transparent background: a low angular infiltrator with charcoal armor, magenta sensor dots, folded side blades, a small rear charge pack, and narrow legs; sparse bright pixels against deep shadows create a stealthy silhouette."
+cargo=6
+health=85
+health_regen=1.1
+energy=95
+energy_regen=20
+move_speed=125
+rotation_speed=4.100
+radius=14
+cost=16
+color=[0.35,0.26,0.40,1]
+jump_power=275
+jump_gravity=630
+sight=9
+
+# Light Soldier: agile infantry chassis suited to mobile skirmishing.
+
+sprite="mods/core/assets/corpora/modern_light/saboteur.png"
+
+[[corpus]]
+id="scout"
+name="Scout"
+description = "Top-down pixel-art personnel mech on a transparent background: a tiny fast biped with sky-blue armor, a single bright visor, swept shoulder fins, and thin articulated legs; a few white edge pixels and a dark outline make the scout legible at small size."
+cargo=8
+health=100
+health_regen=1.5
+energy=80
+energy_regen=20
+move_speed=110
+rotation_speed=3.770
+radius=15
+cost=12
+color=[0.29,0.42,0.36,1]
+jump_power=270
+jump_gravity=640
+sight=10
+vision_arc=300
+
+# Recon Skimmer: fast hover scout with excellent sight and a wide vision arc.
+
+sprite="mods/core/assets/corpora/modern_light/scout.png"
+
+[[corpus]]
+id="spider_light"
+name="Spider Light"
+description = "Top-down pixel-art personnel mech on a transparent background: a compact four-legged spider-like light chassis with a blue central shell, four thin articulated legs, two amber sensors, and a small rear power node; sharp dark outlines define every leg from above."
+cargo=16
+health=80
+health_regen=1
+energy=60
+energy_regen=15
+move_speed=130
+rotation_speed=4.712
+radius=12
+cost=8
+color=[0.54,0.60,0.36,1]
+jump_power=260
+jump_gravity=620
+sight=8
+vision_arc=270
+
+# Scout: lightweight reconnaissance chassis with good sight and mobility.
+
+sprite="mods/core/assets/corpora/modern_light/spider_light.png"

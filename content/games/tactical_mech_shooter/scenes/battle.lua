@@ -62,25 +62,33 @@ function M.start(state, preset_id)
     battle.player = state.modules.Combat.spawn_actor(state, "team1", player_build, px, py, 1, true)
     battle.squad[#battle.squad + 1] = battle.player
     local spent = player_build.cost
+    local ally_team = state.content.active_map.mode == "balanced_2v2" and "team2" or "team1"
     for _, ally_preset in ipairs(state.content.game.squad_presets or {"f1", "f2", "f3"}) do
         local ally_build = make_build(state, ally_preset)
         if spent + ally_build.cost <= (state.content.game.battle_budget or 200) then
-            local ax, ay = spawn_point(model, "team1", #battle.squad)
-            local ally = state.modules.Combat.spawn_actor(state, "team1", ally_build, ax, ay, #model.actors + 1, false)
+            local ax, ay = spawn_point(model, ally_team, #battle.squad)
+            local ally = state.modules.Combat.spawn_actor(state, ally_team, ally_build, ax, ay, #model.actors + 1, false)
             battle.squad[#battle.squad + 1] = ally
             spent = spent + ally_build.cost
         end
     end
     local count = math.min(tonumber(state.content.game.enemy_count) or 12, tonumber(state.content.game.max_enemies) or 32)
     local spawned = 0
-    for team_number = 2, 4 do
+    local enemy_teams, enemy_team_count = 0, 0
+    for team_number = 2, state.modules.Teams.team_count(model) do
+        if state.modules.Teams.is_enemy(model, "team1", "team" .. tostring(team_number)) then enemy_team_count = enemy_team_count + 1 end
+    end
+    for team_number = 2, state.modules.Teams.team_count(model) do
         local team = "team" .. tostring(team_number)
-        local team_count = math.floor(count / 3) + (team_number - 1 <= count % 3 and 1 or 0)
-        local enemy_build = make_build(state, "f" .. tostring(team_number))
-        for i = 1, team_count do
-            local ex, ey = spawn_point(model, team, i)
-            state.modules.Combat.spawn_actor(state, team, enemy_build, ex, ey, #model.actors + 1, false)
-            spawned = spawned + 1
+        if state.modules.Teams.is_enemy(model, "team1", team) then
+            enemy_teams = enemy_teams + 1
+            local team_count = math.floor(count / math.max(1, enemy_team_count)) + (enemy_teams <= count % math.max(1, enemy_team_count) and 1 or 0)
+            local enemy_build = make_build(state, "f" .. tostring(team_number))
+            for i = 1, team_count do
+                local ex, ey = spawn_point(model, team, i)
+                state.modules.Combat.spawn_actor(state, team, enemy_build, ex, ey, #model.actors + 1, false)
+                spawned = spawned + 1
+            end
         end
     end
     battle.enemies_left = spawned
@@ -143,13 +151,16 @@ function M.process(state, dt)
     if battle.awareness_clock <= 0 then
         local team_index = battle.awareness_team_index or 1
         state.modules.Awareness.compute_team(state, "team" .. tostring(team_index))
-        battle.awareness_team_index = team_index % 4 + 1
+        local team_count = state.modules.Teams.team_count(model)
+        battle.awareness_team_index = team_index % team_count + 1
         local per_team_hz = math.max(1, tonumber(state.content.game.awareness_hz) or 3)
-        battle.awareness_clock = 1 / (per_team_hz * 4)
+        battle.awareness_clock = 1 / (per_team_hz * team_count)
     end
     state.modules.Minimap.update(state)
     local enemies = 0
-    for _, actor in ipairs(model.actors) do if actor.team ~= "team1" and not actor.dead then enemies = enemies + 1 end end
+    for _, actor in ipairs(model.actors) do
+        if state.modules.Teams.is_enemy(model, "team1", actor.team) and not actor.dead then enemies = enemies + 1 end
+    end
     battle.enemies_left = enemies
     local allies_alive = 0
     for _, ally in ipairs(battle.squad) do if not ally.dead then allies_alive = allies_alive + 1 end end

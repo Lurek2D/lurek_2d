@@ -19,7 +19,8 @@ function M.new(content)
         phase = "hangar",
         campaign = { level = 1, stars = 0, wins = 0, losses = 0 },
         battle = nil,
-        ui = { message = "Choose F1-F12 and deploy" },
+        selected_map_id = content.selected_map_id,
+        ui = { message = "Choose F1-F12, M for map, and deploy" },
     }
 end
 
