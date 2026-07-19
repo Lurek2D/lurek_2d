@@ -7,6 +7,7 @@ use super::error::TileMapError;
 
 /// Shared safety limits for tilemap storage, importers, rendering helpers, and bounded tile operations.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// # Fields
 pub struct TileMapLimits {
     /// Maximum number of layers allowed on one tilemap.
     pub max_layers: usize,
@@ -22,6 +23,45 @@ pub struct TileMapLimits {
     pub max_chunks: usize,
     /// Maximum number of cells touched by one bounded tile operation.
     pub max_tile_operation_cells: u64,
+}
+
+impl TileMapLimits {
+    /// Validate that every configured ceiling permits at least one bounded allocation.
+    pub fn validate(&self) -> Result<(), TileMapError> {
+        let checks = [
+            ("max_layers", self.max_layers as u128),
+            ("max_tiles_per_layer", self.max_tiles_per_layer as u128),
+            ("max_import_bytes", self.max_import_bytes as u128),
+            ("max_decoded_bytes", self.max_decoded_bytes as u128),
+            ("max_chunk_cells", self.max_chunk_cells as u128),
+            ("max_chunks", self.max_chunks as u128),
+            (
+                "max_tile_operation_cells",
+                self.max_tile_operation_cells as u128,
+            ),
+        ];
+        for (field, value) in checks {
+            if value == 0 {
+                return Err(TileMapError::InvalidLimitConfiguration { field });
+            }
+        }
+        if self.max_tiles_per_layer > usize::MAX as u64 {
+            return Err(TileMapError::InvalidLimitConfiguration {
+                field: "max_tiles_per_layer",
+            });
+        }
+        if self.max_chunk_cells > usize::MAX as u64 {
+            return Err(TileMapError::InvalidLimitConfiguration {
+                field: "max_chunk_cells",
+            });
+        }
+        if self.max_decoded_bytes < self.max_import_bytes {
+            return Err(TileMapError::InvalidLimitConfiguration {
+                field: "max_decoded_bytes",
+            });
+        }
+        Ok(())
+    }
 }
 
 impl Default for TileMapLimits {
@@ -44,6 +84,7 @@ pub(crate) fn checked_layer_cells(
     height: u32,
     limits: &TileMapLimits,
 ) -> Result<usize, TileMapError> {
+    limits.validate()?;
     let cells = u64::from(width)
         .checked_mul(u64::from(height))
         .ok_or(TileMapError::LayerCellOverflow { width, height })?;
@@ -68,6 +109,12 @@ pub(crate) fn checked_chunk_cells(
     chunk_size: u32,
     limits: &TileMapLimits,
 ) -> Result<usize, TileMapError> {
+    limits.validate()?;
+    // Chunk coordinates are represented as i32 in the sparse map.  Reject a
+    // size that cannot participate in div_euclid/rem_euclid without narrowing.
+    if chunk_size > i32::MAX as u32 {
+        return Err(TileMapError::InvalidChunkSize { chunk_size });
+    }
     let cells = u64::from(chunk_size)
         .checked_mul(u64::from(chunk_size))
         .ok_or(TileMapError::ChunkCellOverflow { chunk_size })?;
@@ -83,4 +130,69 @@ pub(crate) fn checked_chunk_cells(
         cells,
         max_cells: limits.max_chunk_cells,
     })
+}
+
+/// Return the number of chunks required by a dense map without overflowing.
+pub(crate) fn checked_chunk_count(
+    width: u32,
+    height: u32,
+    chunk_size: u32,
+    limits: &TileMapLimits,
+) -> Result<usize, TileMapError> {
+    limits.validate()?;
+    if chunk_size == 0 {
+        return Err(TileMapError::InvalidChunkSize { chunk_size });
+    }
+    let cols = u64::from(width)
+        .checked_add(u64::from(chunk_size) - 1)
+        .ok_or(TileMapError::ChunkCountLimitExceeded {
+            width,
+            height,
+            chunks: u64::MAX,
+            max_chunks: limits.max_chunks,
+        })?
+        / u64::from(chunk_size);
+    let rows = u64::from(height)
+        .checked_add(u64::from(chunk_size) - 1)
+        .ok_or(TileMapError::ChunkCountLimitExceeded {
+            width,
+            height,
+            chunks: u64::MAX,
+            max_chunks: limits.max_chunks,
+        })?
+        / u64::from(chunk_size);
+    let chunks = cols
+        .checked_mul(rows)
+        .ok_or(TileMapError::ChunkCountLimitExceeded {
+            width,
+            height,
+            chunks: u64::MAX,
+            max_chunks: limits.max_chunks,
+        })?;
+    if chunks > limits.max_chunks as u64 {
+        return Err(TileMapError::ChunkCountLimitExceeded {
+            width,
+            height,
+            chunks,
+            max_chunks: limits.max_chunks,
+        });
+    }
+    usize::try_from(chunks).map_err(|_| TileMapError::ChunkCountLimitExceeded {
+        width,
+        height,
+        chunks,
+        max_chunks: limits.max_chunks,
+    })
+}
+
+/// Compute a row-major index with checked arithmetic.
+pub(crate) fn checked_flat_index(width: u32, x: u32, y: u32, len: usize) -> Option<usize> {
+    if x >= width {
+        return None;
+    }
+    let index = u64::from(y)
+        .checked_mul(u64::from(width))?
+        .checked_add(u64::from(x))?;
+    let index = usize::try_from(index).ok()?;
+    (index < len).then_some(index)
 }

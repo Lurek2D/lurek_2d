@@ -17,6 +17,7 @@ use crate::tileset::{TileCatalog, TileSet, TileVisual};
 
 /// Options for rendering one tilefield slot through tileset object visuals.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TileFieldSlotRenderOptions {
     /// Field slot containing object or tile references.
     pub slot: String,

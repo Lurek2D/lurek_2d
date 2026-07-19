@@ -1318,10 +1318,10 @@ def check_example_spec_sync(module: str) -> Check:
     if not spec_path.exists() or not example_file.exists():
         return Check("W-04", "Exampleâ€“spec sync", PASS, "Missing spec or example â€” other checks cover this")
 
-    api_content = read_text(api_file)
-    bound_fns = set(
-        re.findall(r'(?<![A-Za-z0-9_])tbl\.set\(\s*"([^"]+)"', api_content)
-    )
+    # Use the generated top-level binding inventory.  A raw tbl.set() scan
+    # also sees diagnostics/import-result fields such as invalidLayer and
+    # invalidCoord, which are response keys rather than public functions.
+    bound_fns = set(get_module_binding_names(module))
     if not bound_fns:
         return Check("W-04", "Exampleâ€“spec sync", PASS, "No bound functions")
 

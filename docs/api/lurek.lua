@@ -34871,14 +34871,16 @@ lurek.tilemap.newChunkMap = function(chunkSize, opts) end
 ---@param tileH number Tile height in pixels.
 ---@param levelHeight number Vertical pixel offset between levels.
 ---@param partCount? number Number of tile parts per cell (default 4).
+---@param opts? table Optional tilemap limits table.
 ---@return LIsoMap New isometric map.
-lurek.tilemap.newIsoMap = function(width, height, tileW, tileH, levelHeight, partCount) end
+lurek.tilemap.newIsoMap = function(width, height, tileW, tileH, levelHeight, partCount, opts) end
 
 --- Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 ---@param tileW number Tile width in pixels.
 ---@param tileH number Tile height in pixels.
+---@param opts? table Optional tilemap limits table.
 ---@return LLargeMapRenderer New large-map renderer.
-lurek.tilemap.newLargeMapRenderer = function(tileW, tileH) end
+lurek.tilemap.newLargeMapRenderer = function(tileW, tileH, opts) end
 
 --- Creates a new empty tilemap with the given tile dimensions.
 ---@param tileWidth number Tile width in pixels.

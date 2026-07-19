@@ -40,6 +40,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileSet` owns atlas-local tile metadata: visual source rectangles, animation, autotile rules, optional profile names, optional physics-shape names, and arbitrary author properties. Sprite atlases own image regions; tileset metadata explains what a tile id means.
 - Tileset profile names are lightweight links into `tilefield` profiles. They do not make `tilemap` depend on `tilefield`, and they do not duplicate full movement, vision, action, or light costs inside the atlas object.
 - `lurek.tilefield.fromTileMap(tilemap, opts)` copies tilemap state into a field snapshot. It only applies movement blockers from explicit `solidGids`; it does not infer solidity from the tileset. Later tilemap edits are not automatically synchronized unless the adapter is called again.
+- `lurek.tilemap.newTileSet(...)` remains a compatibility alias for the tileset owner; new code should prefer `lurek.tileset.newTileSet(...)` while existing tilemap scripts remain supported.
 - `lurek.tilemap.newTileMap(...)` and `lurek.tilemap.newChunkMap(...)` accept an optional limits table with ceilings such as `maxLayers`, `maxTiles`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, and `maxTileOperationCells`.
 - `lurek.tilemap.loadTMX(xml, opts)` supports strict/bounded import policy through `strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`, and the same byte/size limits used by safe constructors.
 - `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking front-ends.
@@ -47,6 +48,22 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Diagnostics counters are part of the public debugging contract: invalid layer access, invalid coordinates, invalid coordinate queries, unknown gids, and lazy reverse-index rebuilds are observable through `LTileMap:getDiagnostics()`.
 - Tilemap shader bindings are visual-only render bindings. `LTileMap:setShader(shaderOrNil)` applies a `tilemap` target shader to generated tilemap render commands, while `LTileMap:setLayerShader(layer, shaderOrNil)` overrides one layer. Tilemap stores only `ShaderKey` handles and semantic layer choices; WGSL validation, GPU pipeline selection, and execution stay in `render`.
 - The current `tilemap` shader contract exposes draw color at `@location(0)` and uv at `@location(1)`. Textured tile visuals receive atlas uv; debug-color tile primitives receive zero uv until tilemap-specific vertex payloads are added.
+
+## Safety and Ownership Contract
+
+- `TileMap` and `ChunkMap` are the authoritative stores for their respective data. `LargeMapRenderer` owns only an explicitly supplied dense snapshot and its chunk/culling cache; changing a `TileMap` does not silently update a renderer snapshot, and renderer edits do not mutate a `TileMap`.
+- `TileMapLimits` defaults are `maxLayers=256`, `maxTiles=16,777,216`, `maxImportBytes=8 MiB`, `maxDecodedBytes=64 MiB`, `maxChunkCells=1,048,576`, `maxChunks=1,048,576`, and `maxTileOperationCells=1,048,576`. Option tables may lower or raise these ceilings only when the resulting configuration is non-zero and addressable.
+- Fallible constructors and mutators reject invalid limits, zero dimensions, overflowing cell/chunk counts, excessive operations, and mismatched dense payload lengths before allocating. Legacy infallible wrappers retain compatibility by clamping constructor inputs or ignoring typed mutation errors; security-sensitive Lua constructors use the fallible path and return a runtime error.
+- Public Lua indices for layers, tilesets, and autotile operations are one-based. Zero or underflowing indices are rejected rather than wrapping to the final Rust element.
+- Projection inputs must be finite; extents, tile sizes, viewport dimensions, camera zoom, and LOD thresholds must be positive. LOD thresholds are sorted and deduplicated. Animation `dt` must be finite and non-negative.
+- Dirty tracking is local: changing a tile marks only its changed chunk/layer, unchanged GIDs do not create duplicate reverse-index entries, and batch edits return deterministic touched-chunk coordinates. Eager reverse indexes update in place; lazy indexes are invalidated and rebuilt on the next query. Animation timers are pruned when the active animated set is rebuilt.
+
+## Import and Serialization Policy
+
+- `loadTMX` enforces raw and decoded byte budgets, bounded layer/tileset/object/property work, finite numeric attributes, and a strict-or-pad/truncate layer-size policy. External TSX files require `allowExternalTilesets=true`; safe-path mode rejects traversal/absolute paths outside `assetRoot`.
+- `fromLDtk` bounds recursive JSON depth/node work, level/layer counts, grid dimensions, tile entries, and tileset metadata before dense map construction. Malformed, oversized, or out-of-range values return structured import errors.
+- Chunk bytes use little-endian `LCM2`: magic, version `u16`, reserved flags `u16` (currently zero), chunk size `u32`, then exactly `chunkSize²` little-endian `u32` GIDs. Version, reserved flags, chunk size, truncation, excess bytes, and configured allocation limits are validated before replacement.
+- `newLargeMapRenderer(tileW, tileH, opts)` and `newIsoMap(width, height, tileW, tileH, levelHeight, partCount, opts)` accept the same limits table where their allocations or level storage are bounded.
 
 ## Architecture Links
 

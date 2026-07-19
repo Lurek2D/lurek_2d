@@ -47,31 +47,42 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 
 ### animation.rs
 
-- This file owns animation behavior inside the tileset subsystem, close to its data and invariants.
-- It keeps validation, defaults, and error-facing rules near the operations that mutate animation state.
-- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Owns local tile-id and frame-duration records for tileset animations.
+- These frames are metadata consumed by tilemap timing/render selection; they are
+- intentionally not general entity animation timelines.
 
 ### archetype.rs
 
-- Owns the tileset archetype implementation for the tileset subsystem and keeps related runtime rules local here.
-- Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates.
-- Defines how tileset archetype data is validated, transformed, or stored before neighboring systems consume it.
-- Separates tileset archetype behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing tileset archetype defaults, lifecycle handling, validation, or data ownership rules.
+- Owns reusable object archetypes and their author-default validation.
+- Archetypes describe defaults for neighboring owners to materialize. They do not
+- create physics bodies, lights, blockers, or render resources themselves.
 
 ### autotile.rs
 
-- This file owns autotile behavior inside the tileset subsystem, close to its data and invariants.
-- It keeps validation, defaults, and error-facing rules near the operations that mutate autotile state.
-- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Owns autotile matching modes and terrain-profile metadata.
+- The module describes authoring metadata only. Tilemap owns neighborhood scans,
+- map mutation, and dirty-region propagation when these rules are applied.
 
 ### catalog.rs
 
-- This file owns catalog behavior inside the tileset subsystem, close to its data and invariants.
-- It keeps validation, defaults, and error-facing rules near the operations that mutate catalog state.
-- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
-- Public functions in this file are the stable entry points other modules should use for catalog work.
+- Owns snapshot catalogs that resolve typed tilefield references to tileset metadata.
+- A catalog stores cloned `TileSet` values intentionally. A catalog lookup is a
+- stable snapshot; mutating the original Lua tileset after `newCatalog` does not
+- mutate the catalog entry. Shared live handles remain a separate future feature.
+
+### error.rs
+
+- Defines the error vocabulary shared by tileset construction and metadata mutation.
+- The tileset boundary reports these errors to Lua with the owning API name added by
+- the binding. Keeping the structured cases here prevents arithmetic, id, and limit
+- failures from becoming unrelated free-form strings across the subsystem.
+
+### limits.rs
+
+- Owns conservative allocation and numeric ceilings for atlas-local tileset metadata.
+- These limits are deliberately tileset-specific. They are not borrowed from `tilemap`,
+- because a tileset has different hostile-input risks: atlas arithmetic, nested author
+- records, rule tables, and copied catalog snapshots all need independent bounds.
 
 ### mod.rs
 
@@ -84,19 +95,17 @@ This module primarily collaborates with `math`, `runtime`, `tilefield`. Its resp
 
 ### tileset.rs
 
-- Owns the tileset tileset implementation for the tileset subsystem and keeps related runtime rules local here.
-- Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates.
-- Defines how tileset tileset data is validated, transformed, or stored before neighboring systems consume it.
-- Separates tileset tileset behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing tileset tileset defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near the tileset tileset state that explains them instead of spreading rules outward.
+- Owns validated atlas geometry and atlas-local metadata registries.
+- `TileSet` stores local tile ids, object mappings, properties, animations, and
+- autotile metadata. It never owns map cells, GPU resources, or runtime gameplay
+- state. All Lua-created instances enter through `try_new` so checked dimensions,
+- global-id ranges, and tileset-specific ceilings are enforced before registration.
 
 ### visual.rs
 
-- This file owns visual behavior inside the tileset subsystem, close to its data and invariants.
-- It keeps validation, defaults, and error-facing rules near the operations that mutate visual state.
-- Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+- Owns atlas-local visual references stored on tileset object archetypes.
+- Visual records contain identifiers and source rectangles only. Texture loading,
+- handles, GPU lifetime, and draw submission remain owned by asset/image/render.
 
 
 

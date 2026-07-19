@@ -35,6 +35,13 @@ local function new_pattern_tilemap(width, height)
     return map
 end
 
+local function filled_map_with_layer(width, height, gid)
+    local map = new_tilemap_with_tileset(16)
+    map:addLayer("ground", width, height)
+    map:fill(1, gid)
+    return map
+end
+
 local function new_multilayer_tilemap(layer_count, width, height)
     local map = new_tilemap_with_tileset(16)
     for i = 1, layer_count do
@@ -47,6 +54,24 @@ local function chunkmap_roundtrip(chunk_size, x, y, gid)
     local cm = lurek.tilemap.newChunkMap(chunk_size)
     cm:setTile(x, y, gid)
     return cm, cm:getTile(x, y)
+end
+
+local function sparse_negative_view()
+    local cm = lurek.tilemap.newChunkMap(32)
+    cm:setTile(-1000, -1000, 3)
+    cm:setTile(1000000, 1000000, 4)
+    return cm:getChunksInView(-17000, -17000, 4096, 4096, 16, 16)
+end
+
+local function assert_renderer_snapshot(renderer, expected)
+    local width, height = renderer:getMapSize()
+    expect_equal(128, width, "renderer snapshot width")
+    expect_equal(128, height, "renderer snapshot height")
+    expect_equal(expected, renderer:getTile(127, 127), "snapshot last tile")
+end
+
+local function new_snapshot_renderer()
+    return lurek.tilemap.newLargeMapRenderer(16, 16)
 end
 
 -- @describe tilemap stress: large map creation
@@ -120,6 +145,57 @@ describe("tilemap stress: fill operations", function()
         local cm, value = chunkmap_roundtrip(16, 5, 5, 42)
         expect_type("userdata", cm)
         expect_equal(42, value, "chunk tile preserved")
+    end)
+end)
+
+-- @describe tilemap stress: bounded indexes, culling, and renderer snapshots
+describe("tilemap stress: bounded indexes, culling, and renderer snapshots", function()
+    -- @stress LTileMap:tileTypeIndex
+    it("rebuilds a dense reverse index after a large fill", function()
+        local map = filled_map_with_layer(1024, 1024, 7)
+        local index = map:tileTypeIndex(1)
+        expect_type("table", index)
+        expect_equal(1024 * 1024, #index[7], "reverse index cell count")
+    end)
+
+    -- @stress LChunkMap:getChunksInView
+    it("culls a view spanning negative sparse chunk coordinates", function()
+        local visible = sparse_negative_view()
+        expect_type("table", visible)
+        expect_true(#visible > 0, "negative-coordinate view has chunks")
+    end)
+
+    -- @stress LLargeMapRenderer:setMapData
+    it("updates a bounded dense renderer snapshot without rebuilding a map owner", function()
+        local renderer = new_snapshot_renderer()
+        local data = {}
+        for i = 1, 128 * 128 do
+            data[i] = (i % 31) + 1
+        end
+        renderer:setMapData(data, 128, 128)
+        assert_renderer_snapshot(renderer, data[128 * 128])
+    end)
+
+    -- @stress LTileMap:getDiagnostics
+    it("keeps guarded query diagnostics observable after bulk work", function()
+        local map = filled_map_with_layer(128, 128, 5)
+        local diagnostics = map:getDiagnostics()
+        expect_type("table", diagnostics)
+        expect_true(diagnostics.invalidQueries >= 0, "diagnostics counter is observable")
+    end)
+
+    -- @stress lurek.tilemap.loadTMX
+    it("keeps bounded importer work finite for a decoded map", function()
+        local xml = [[
+            <map width="64" height="64" tilewidth="16" tileheight="16" orientation="orthogonal"></map>
+        ]]
+        local parsed, err = lurek.tilemap.loadTMX(xml, {
+            maxImportBytes = 4096,
+            maxDecodedBytes = 8192,
+            maxTiles = 4096,
+        })
+        expect_nil(err)
+        expect_type("table", parsed)
     end)
 end)
 test_summary()

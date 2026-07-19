@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-07-19T07:54:41.934883+00:00",
+  "generated_at": "2026-07-19T10:00:44.232082+00:00",
   "summary": {
     "rust": {
-      "total": 9929,
-      "covered": 9929,
+      "total": 9963,
+      "covered": 9963,
       "missing": 0,
       "pct": 100.0
     },
     "lua_api": {
-      "total": 248,
-      "covered": 248,
+      "total": 252,
+      "covered": 252,
       "missing": 0,
       "pct": 100.0
     },
     "total": {
-      "total": 10177,
-      "covered": 10177,
+      "total": 10215,
+      "covered": 10215,
       "missing": 0,
       "pct": 100.0
     }
@@ -39329,7 +39329,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 282,
+      "line": 418,
       "kind": "struct",
       "name": "LuaTileMap",
       "has_doc": true
@@ -39338,7 +39338,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1046,
+      "line": 1238,
       "kind": "struct",
       "name": "LuaAutoTileSheet",
       "has_doc": true
@@ -39347,7 +39347,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1152,
+      "line": 1337,
       "kind": "struct",
       "name": "LuaChunkMap",
       "has_doc": true
@@ -39356,7 +39356,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1348,
+      "line": 1554,
       "kind": "struct",
       "name": "LuaLargeMapRenderer",
       "has_doc": true
@@ -39365,7 +39365,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1502,
+      "line": 1738,
       "kind": "struct",
       "name": "LuaIsoMap",
       "has_doc": true
@@ -39374,7 +39374,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1673,
+      "line": 1916,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -39383,7 +39383,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 527,
+      "line": 652,
       "kind": "fn",
       "name": "tileset_from_provider",
       "has_doc": true
@@ -39392,7 +39392,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 533,
+      "line": 658,
       "kind": "struct",
       "name": "LuaTileSet",
       "has_doc": true
@@ -39401,7 +39401,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 539,
+      "line": 664,
       "kind": "struct",
       "name": "LuaTileCatalog",
       "has_doc": true
@@ -39410,7 +39410,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tileset_api.rs",
-      "line": 1383,
+      "line": 1434,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -81260,7 +81260,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 15,
+      "line": 16,
       "kind": "enum",
       "name": "AutoTileLayout",
       "has_doc": true
@@ -81269,7 +81269,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 28,
+      "line": 30,
       "kind": "struct",
       "name": "AutoTileSheet",
       "has_doc": true
@@ -81278,7 +81278,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 43,
+      "line": 45,
       "kind": "fn",
       "name": "layout_name",
       "has_doc": true
@@ -81287,7 +81287,25 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 53,
+      "line": 55,
+      "kind": "fn",
+      "name": "layout_from_name",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/autotile_sheet.rs",
+      "line": 66,
+      "kind": "fn",
+      "name": "supported_layouts",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/autotile_sheet.rs",
+      "line": 76,
       "kind": "fn",
       "name": "default_mode_for_layout",
       "has_doc": true
@@ -81296,7 +81314,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 149,
+      "line": 172,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -81305,7 +81323,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 178,
+      "line": 201,
       "kind": "fn",
       "name": "get_layout",
       "has_doc": true
@@ -81314,7 +81332,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 183,
+      "line": 206,
       "kind": "fn",
       "name": "get_layout_name",
       "has_doc": true
@@ -81323,7 +81341,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 188,
+      "line": 211,
       "kind": "fn",
       "name": "get_default_mode",
       "has_doc": true
@@ -81332,7 +81350,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 193,
+      "line": 216,
       "kind": "fn",
       "name": "get_tile_count",
       "has_doc": true
@@ -81341,7 +81359,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 198,
+      "line": 221,
       "kind": "fn",
       "name": "get_tile_width",
       "has_doc": true
@@ -81350,7 +81368,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 203,
+      "line": 226,
       "kind": "fn",
       "name": "get_tile_height",
       "has_doc": true
@@ -81359,7 +81377,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 207,
+      "line": 230,
       "kind": "fn",
       "name": "apply_to_tileset",
       "has_doc": true
@@ -81368,7 +81386,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 231,
+      "line": 272,
       "kind": "fn",
       "name": "get_bitmask_for_tile",
       "has_doc": true
@@ -81377,7 +81395,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 235,
+      "line": 276,
       "kind": "fn",
       "name": "get_tile_for_bitmask",
       "has_doc": true
@@ -81386,7 +81404,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 239,
+      "line": 280,
       "kind": "fn",
       "name": "get_quad",
       "has_doc": true
@@ -81395,7 +81413,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 252,
+      "line": 293,
       "kind": "fn",
       "name": "get_grid_quad",
       "has_doc": true
@@ -81404,7 +81422,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 266,
+      "line": 307,
       "kind": "fn",
       "name": "get_composite48_grid_quad",
       "has_doc": true
@@ -81413,7 +81431,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 270,
+      "line": 311,
       "kind": "fn",
       "name": "get_quarter_rects",
       "has_doc": true
@@ -81422,7 +81440,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/autotile_sheet.rs",
-      "line": 285,
+      "line": 326,
       "kind": "fn",
       "name": "get_quarter_dst_rects",
       "has_doc": true
@@ -81431,7 +81449,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 19,
+      "line": 23,
       "kind": "struct",
       "name": "ChunkMap",
       "has_doc": true
@@ -81440,7 +81458,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 30,
+      "line": 36,
       "kind": "const",
       "name": "DEFAULT_GID",
       "has_doc": true
@@ -81449,7 +81467,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 34,
+      "line": 40,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -81458,7 +81476,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 46,
+      "line": 55,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -81467,7 +81485,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 51,
+      "line": 60,
       "kind": "fn",
       "name": "try_new_with_limits",
       "has_doc": true
@@ -81476,7 +81494,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 63,
+      "line": 76,
       "kind": "fn",
       "name": "get_chunk_size",
       "has_doc": true
@@ -81485,27 +81503,18 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 68,
+      "line": 81,
+      "kind": "fn",
+      "name": "limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/chunk.rs",
+      "line": 86,
       "kind": "fn",
       "name": "get_tile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/chunk.rs",
-      "line": 77,
-      "kind": "fn",
-      "name": "set_tile",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tilemap",
-      "file": "src/tilemap/chunk.rs",
-      "line": 92,
-      "kind": "fn",
-      "name": "clear_tile",
       "has_doc": true
     },
     {
@@ -81514,6 +81523,33 @@
       "file": "src/tilemap/chunk.rs",
       "line": 97,
       "kind": "fn",
+      "name": "set_tile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/chunk.rs",
+      "line": 102,
+      "kind": "fn",
+      "name": "try_set_tile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/chunk.rs",
+      "line": 132,
+      "kind": "fn",
+      "name": "clear_tile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/chunk.rs",
+      "line": 137,
+      "kind": "fn",
       "name": "set_tiles",
       "has_doc": true
     },
@@ -81521,7 +81557,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 113,
+      "line": 142,
+      "kind": "fn",
+      "name": "try_set_tiles",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/chunk.rs",
+      "line": 165,
       "kind": "fn",
       "name": "fill_rect",
       "has_doc": true
@@ -81530,7 +81575,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 118,
+      "line": 171,
       "kind": "fn",
       "name": "try_fill_rect",
       "has_doc": true
@@ -81539,7 +81584,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 150,
+      "line": 203,
       "kind": "fn",
       "name": "load_chunk",
       "has_doc": true
@@ -81548,7 +81593,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 159,
+      "line": 208,
+      "kind": "fn",
+      "name": "try_load_chunk",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/chunk.rs",
+      "line": 228,
       "kind": "fn",
       "name": "unload_chunk",
       "has_doc": true
@@ -81557,7 +81611,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 166,
+      "line": 235,
       "kind": "fn",
       "name": "get_dirty_chunks",
       "has_doc": true
@@ -81566,7 +81620,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 173,
+      "line": 242,
       "kind": "fn",
       "name": "clear_dirty_chunks",
       "has_doc": true
@@ -81575,7 +81629,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 178,
+      "line": 247,
       "kind": "fn",
       "name": "drain_dirty_chunks",
       "has_doc": true
@@ -81584,7 +81638,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 185,
+      "line": 254,
       "kind": "fn",
       "name": "get_loaded_chunks",
       "has_doc": true
@@ -81593,7 +81647,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 190,
+      "line": 259,
       "kind": "fn",
       "name": "get_loaded_chunk_count",
       "has_doc": true
@@ -81602,7 +81656,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 195,
+      "line": 264,
       "kind": "fn",
       "name": "is_chunk_loaded",
       "has_doc": true
@@ -81611,7 +81665,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 200,
+      "line": 269,
       "kind": "fn",
       "name": "tile_to_chunk",
       "has_doc": true
@@ -81620,7 +81674,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 206,
+      "line": 275,
       "kind": "fn",
       "name": "chunk_tile_range",
       "has_doc": true
@@ -81629,7 +81683,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 212,
+      "line": 283,
       "kind": "fn",
       "name": "get_chunks_in_view",
       "has_doc": true
@@ -81638,7 +81692,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 238,
+      "line": 297,
+      "kind": "fn",
+      "name": "try_get_chunks_in_view",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/chunk.rs",
+      "line": 380,
       "kind": "fn",
       "name": "chunk_world_rect",
       "has_doc": true
@@ -81647,7 +81710,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 244,
+      "line": 389,
       "kind": "fn",
       "name": "iter_chunk",
       "has_doc": true
@@ -81656,7 +81719,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 249,
+      "line": 394,
       "kind": "fn",
       "name": "chunk_to_bytes",
       "has_doc": true
@@ -81665,7 +81728,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/chunk.rs",
-      "line": 261,
+      "line": 408,
       "kind": "fn",
       "name": "load_chunk_from_bytes",
       "has_doc": true
@@ -81674,7 +81737,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 8,
+      "line": 9,
+      "kind": "fn",
+      "name": "validate_projection_inputs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/coords.rs",
+      "line": 32,
       "kind": "fn",
       "name": "to_screen_iso",
       "has_doc": true
@@ -81683,7 +81755,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 13,
+      "line": 37,
       "kind": "fn",
       "name": "from_screen_iso",
       "has_doc": true
@@ -81692,7 +81764,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 20,
+      "line": 44,
       "kind": "fn",
       "name": "to_screen_hex",
       "has_doc": true
@@ -81701,7 +81773,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/coords.rs",
-      "line": 27,
+      "line": 51,
       "kind": "fn",
       "name": "from_screen_hex",
       "has_doc": true
@@ -81710,7 +81782,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/error.rs",
-      "line": 11,
+      "line": 12,
       "kind": "enum",
       "name": "TileMapError",
       "has_doc": true
@@ -81719,7 +81791,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 12,
+      "line": 16,
       "kind": "enum",
       "name": "IsoTilePart",
       "has_doc": true
@@ -81728,7 +81800,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 24,
+      "line": 28,
       "kind": "fn",
       "name": "from_index",
       "has_doc": true
@@ -81737,7 +81809,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 34,
+      "line": 38,
       "kind": "fn",
       "name": "index",
       "has_doc": true
@@ -81746,7 +81818,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 41,
+      "line": 46,
       "kind": "struct",
       "name": "IsoTile",
       "has_doc": true
@@ -81755,7 +81827,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 48,
+      "line": 54,
       "kind": "struct",
       "name": "IsoLevel",
       "has_doc": true
@@ -81764,7 +81836,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 60,
+      "line": 66,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -81773,7 +81845,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 82,
+      "line": 79,
+      "kind": "fn",
+      "name": "try_new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/isomap.rs",
+      "line": 123,
       "kind": "fn",
       "name": "get_tile",
       "has_doc": true
@@ -81782,7 +81863,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 87,
+      "line": 128,
       "kind": "fn",
       "name": "get_tile_mut",
       "has_doc": true
@@ -81791,7 +81872,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 93,
+      "line": 135,
       "kind": "struct",
       "name": "IsoDrawItem",
       "has_doc": true
@@ -81800,7 +81881,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 112,
+      "line": 155,
       "kind": "struct",
       "name": "IsoMap",
       "has_doc": true
@@ -81809,7 +81890,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 136,
+      "line": 181,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -81818,7 +81899,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 159,
+      "line": 216,
+      "kind": "fn",
+      "name": "try_new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/isomap.rs",
+      "line": 259,
       "kind": "fn",
       "name": "add_level",
       "has_doc": true
@@ -81827,7 +81917,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 166,
+      "line": 264,
+      "kind": "fn",
+      "name": "try_add_level",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/isomap.rs",
+      "line": 281,
       "kind": "fn",
       "name": "get_level_count",
       "has_doc": true
@@ -81836,7 +81935,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 171,
+      "line": 286,
       "kind": "fn",
       "name": "set_level_visible",
       "has_doc": true
@@ -81845,7 +81944,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 177,
+      "line": 292,
       "kind": "fn",
       "name": "get_level_visible",
       "has_doc": true
@@ -81854,7 +81953,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 181,
+      "line": 296,
       "kind": "fn",
       "name": "set_tile_part",
       "has_doc": true
@@ -81863,7 +81962,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 194,
+      "line": 309,
       "kind": "fn",
       "name": "get_tile_part",
       "has_doc": true
@@ -81872,7 +81971,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 204,
+      "line": 319,
       "kind": "fn",
       "name": "fill_level",
       "has_doc": true
@@ -81881,7 +81980,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 217,
+      "line": 332,
       "kind": "fn",
       "name": "set_origin",
       "has_doc": true
@@ -81890,7 +81989,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 223,
+      "line": 338,
       "kind": "fn",
       "name": "tile_to_screen",
       "has_doc": true
@@ -81899,7 +81998,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 231,
+      "line": 346,
       "kind": "fn",
       "name": "screen_to_tile",
       "has_doc": true
@@ -81908,7 +82007,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 241,
+      "line": 356,
       "kind": "fn",
       "name": "draw_iter",
       "has_doc": true
@@ -81917,7 +82016,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 284,
+      "line": 403,
       "kind": "fn",
       "name": "get_part_count",
       "has_doc": true
@@ -81926,7 +82025,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 289,
+      "line": 408,
       "kind": "fn",
       "name": "get_part_order",
       "has_doc": true
@@ -81935,7 +82034,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/isomap.rs",
-      "line": 294,
+      "line": 413,
       "kind": "fn",
       "name": "set_part_order",
       "has_doc": true
@@ -81944,7 +82043,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 14,
+      "line": 19,
       "kind": "struct",
       "name": "MapChunk",
       "has_doc": true
@@ -81953,7 +82052,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 26,
+      "line": 32,
       "kind": "struct",
       "name": "LargeMapRenderer",
       "has_doc": true
@@ -81962,7 +82061,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 60,
+      "line": 70,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -81971,7 +82070,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 80,
+      "line": 95,
+      "kind": "fn",
+      "name": "try_new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/large_map_renderer.rs",
+      "line": 125,
       "kind": "fn",
       "name": "set_map_data",
       "has_doc": true
@@ -81980,7 +82088,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 89,
+      "line": 130,
+      "kind": "fn",
+      "name": "try_set_map_data",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/large_map_renderer.rs",
+      "line": 153,
       "kind": "fn",
       "name": "set_tile",
       "has_doc": true
@@ -81989,7 +82106,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 102,
+      "line": 158,
+      "kind": "fn",
+      "name": "try_set_tile",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/large_map_renderer.rs",
+      "line": 188,
       "kind": "fn",
       "name": "get_tile",
       "has_doc": true
@@ -81998,7 +82124,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 110,
+      "line": 197,
       "kind": "fn",
       "name": "get_map_size",
       "has_doc": true
@@ -82007,7 +82133,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 115,
+      "line": 202,
       "kind": "fn",
       "name": "set_chunk_size",
       "has_doc": true
@@ -82016,7 +82142,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 121,
+      "line": 207,
+      "kind": "fn",
+      "name": "try_set_chunk_size",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/large_map_renderer.rs",
+      "line": 219,
       "kind": "fn",
       "name": "get_chunk_size",
       "has_doc": true
@@ -82025,7 +82160,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 126,
+      "line": 224,
       "kind": "fn",
       "name": "invalidate_chunk",
       "has_doc": true
@@ -82034,7 +82169,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 132,
+      "line": 231,
       "kind": "fn",
       "name": "invalidate_all",
       "has_doc": true
@@ -82043,7 +82178,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 138,
+      "line": 238,
       "kind": "fn",
       "name": "get_visible_chunks",
       "has_doc": true
@@ -82052,7 +82187,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 157,
+      "line": 252,
       "kind": "fn",
       "name": "get_total_chunks",
       "has_doc": true
@@ -82061,7 +82196,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 162,
+      "line": 257,
       "kind": "fn",
       "name": "chunks",
       "has_doc": true
@@ -82070,7 +82205,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 167,
+      "line": 262,
       "kind": "fn",
       "name": "set_camera",
       "has_doc": true
@@ -82079,7 +82214,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 174,
+      "line": 267,
+      "kind": "fn",
+      "name": "try_set_camera",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/large_map_renderer.rs",
+      "line": 278,
       "kind": "fn",
       "name": "set_viewport",
       "has_doc": true
@@ -82088,7 +82232,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 179,
+      "line": 283,
+      "kind": "fn",
+      "name": "try_set_viewport",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/large_map_renderer.rs",
+      "line": 292,
       "kind": "fn",
       "name": "set_lod_enabled",
       "has_doc": true
@@ -82097,7 +82250,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 184,
+      "line": 297,
       "kind": "fn",
       "name": "is_lod_enabled",
       "has_doc": true
@@ -82106,7 +82259,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 189,
+      "line": 302,
       "kind": "fn",
       "name": "set_lod_thresholds",
       "has_doc": true
@@ -82115,7 +82268,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 194,
+      "line": 307,
+      "kind": "fn",
+      "name": "try_set_lod_thresholds",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/large_map_renderer.rs",
+      "line": 318,
       "kind": "fn",
       "name": "set_tileset_columns",
       "has_doc": true
@@ -82124,7 +82286,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/large_map_renderer.rs",
-      "line": 199,
+      "line": 323,
       "kind": "fn",
       "name": "get_tileset_columns",
       "has_doc": true
@@ -82133,7 +82295,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/ldtk.rs",
-      "line": 14,
+      "line": 15,
       "kind": "struct",
       "name": "LdtkImportError",
       "has_doc": true
@@ -82142,7 +82304,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/ldtk.rs",
-      "line": 37,
+      "line": 38,
       "kind": "fn",
       "name": "load_ldtk",
       "has_doc": true
@@ -82151,7 +82313,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/ldtk.rs",
-      "line": 42,
+      "line": 43,
       "kind": "fn",
       "name": "load_ldtk_with_limits",
       "has_doc": true
@@ -82160,7 +82322,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/limits.rs",
-      "line": 10,
+      "line": 11,
       "kind": "struct",
       "name": "TileMapLimits",
       "has_doc": true
@@ -82169,7 +82331,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/limits.rs",
-      "line": 42,
+      "line": 30,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/limits.rs",
+      "line": 82,
       "kind": "fn",
       "name": "checked_layer_cells",
       "has_doc": true
@@ -82178,7 +82349,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/limits.rs",
-      "line": 67,
+      "line": 108,
       "kind": "fn",
       "name": "checked_chunk_cells",
       "has_doc": true
@@ -82186,8 +82357,26 @@
     {
       "source": "rust",
       "module": "tilemap",
+      "file": "src/tilemap/limits.rs",
+      "line": 136,
+      "kind": "fn",
+      "name": "checked_chunk_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/limits.rs",
+      "line": 189,
+      "kind": "fn",
+      "name": "checked_flat_index",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
       "file": "src/tilemap/orientation.rs",
-      "line": 7,
+      "line": 8,
       "kind": "enum",
       "name": "MapOrientation",
       "has_doc": true
@@ -82196,7 +82385,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/render.rs",
-      "line": 20,
+      "line": 21,
       "kind": "struct",
       "name": "TileFieldSlotRenderOptions",
       "has_doc": true
@@ -82205,7 +82394,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/render.rs",
-      "line": 151,
+      "line": 152,
       "kind": "fn",
       "name": "build_field_slot_render_commands",
       "has_doc": true
@@ -82214,7 +82403,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/render.rs",
-      "line": 253,
+      "line": 254,
       "kind": "fn",
       "name": "build_field_catalog_slot_render_commands",
       "has_doc": true
@@ -82223,7 +82412,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/render.rs",
-      "line": 371,
+      "line": 372,
       "kind": "fn",
       "name": "build_render_commands",
       "has_doc": true
@@ -82232,7 +82421,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/render.rs",
-      "line": 417,
+      "line": 418,
       "kind": "fn",
       "name": "generate_render_commands",
       "has_doc": true
@@ -82241,7 +82430,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 27,
+      "line": 28,
       "kind": "struct",
       "name": "TileLayer",
       "has_doc": true
@@ -82250,7 +82439,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 82,
+      "line": 81,
       "kind": "enum",
       "name": "TileIndexPolicy",
       "has_doc": true
@@ -82268,7 +82457,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 131,
+      "line": 132,
       "kind": "struct",
       "name": "TileMap",
       "has_doc": true
@@ -82277,7 +82466,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 169,
+      "line": 170,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -82286,7 +82475,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 207,
+      "line": 210,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -82295,7 +82484,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 221,
+      "line": 224,
       "kind": "fn",
       "name": "try_new_with_limits",
       "has_doc": true
@@ -82304,7 +82493,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 305,
+      "line": 314,
       "kind": "fn",
       "name": "diagnostics_snapshot",
       "has_doc": true
@@ -82313,7 +82502,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 310,
+      "line": 319,
       "kind": "fn",
       "name": "set_limits",
       "has_doc": true
@@ -82322,7 +82511,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 315,
+      "line": 324,
       "kind": "fn",
       "name": "limits",
       "has_doc": true
@@ -82331,7 +82520,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 320,
+      "line": 329,
       "kind": "fn",
       "name": "set_index_policy",
       "has_doc": true
@@ -82340,7 +82529,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 330,
+      "line": 339,
       "kind": "fn",
       "name": "index_policy",
       "has_doc": true
@@ -82349,7 +82538,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 335,
+      "line": 344,
       "kind": "fn",
       "name": "add_tileset",
       "has_doc": true
@@ -82358,7 +82547,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 341,
+      "line": 350,
       "kind": "fn",
       "name": "get_tileset",
       "has_doc": true
@@ -82367,7 +82556,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 345,
+      "line": 354,
       "kind": "fn",
       "name": "get_tileset_count",
       "has_doc": true
@@ -82376,7 +82565,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 349,
+      "line": 358,
       "kind": "fn",
       "name": "add_layer",
       "has_doc": true
@@ -82385,7 +82574,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 355,
+      "line": 364,
       "kind": "fn",
       "name": "try_add_layer",
       "has_doc": true
@@ -82394,7 +82583,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 377,
+      "line": 386,
       "kind": "fn",
       "name": "get_layer_count",
       "has_doc": true
@@ -82403,7 +82592,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 381,
+      "line": 390,
       "kind": "fn",
       "name": "set_shader",
       "has_doc": true
@@ -82412,7 +82601,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 385,
+      "line": 394,
       "kind": "fn",
       "name": "get_shader",
       "has_doc": true
@@ -82421,7 +82610,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 389,
+      "line": 398,
       "kind": "fn",
       "name": "set_layer_shader",
       "has_doc": true
@@ -82430,7 +82619,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 403,
+      "line": 412,
       "kind": "fn",
       "name": "get_layer_shader",
       "has_doc": true
@@ -82439,7 +82628,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 407,
+      "line": 416,
       "kind": "fn",
       "name": "effective_layer_shader",
       "has_doc": true
@@ -82448,7 +82637,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 411,
+      "line": 420,
       "kind": "fn",
       "name": "get_layer_name",
       "has_doc": true
@@ -82457,7 +82646,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 415,
+      "line": 424,
       "kind": "fn",
       "name": "set_layer_visible",
       "has_doc": true
@@ -82466,7 +82655,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 419,
+      "line": 428,
       "kind": "fn",
       "name": "get_layer_visible",
       "has_doc": true
@@ -82475,7 +82664,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 423,
+      "line": 432,
       "kind": "fn",
       "name": "set_layer_color",
       "has_doc": true
@@ -82484,7 +82673,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 427,
+      "line": 436,
       "kind": "fn",
       "name": "get_layer_color",
       "has_doc": true
@@ -82493,7 +82682,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 433,
+      "line": 442,
       "kind": "fn",
       "name": "effective_tile_tint",
       "has_doc": true
@@ -82502,7 +82691,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 441,
+      "line": 450,
       "kind": "fn",
       "name": "set_layer_offset",
       "has_doc": true
@@ -82511,7 +82700,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 445,
+      "line": 454,
       "kind": "fn",
       "name": "get_layer_offset",
       "has_doc": true
@@ -82520,7 +82709,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 449,
+      "line": 458,
       "kind": "fn",
       "name": "set_layer_parallax",
       "has_doc": true
@@ -82529,7 +82718,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 453,
+      "line": 462,
       "kind": "fn",
       "name": "get_layer_parallax",
       "has_doc": true
@@ -82538,7 +82727,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 459,
+      "line": 468,
       "kind": "fn",
       "name": "get_layer_dimensions",
       "has_doc": true
@@ -82547,7 +82736,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 463,
+      "line": 472,
       "kind": "fn",
       "name": "set_tile",
       "has_doc": true
@@ -82556,7 +82745,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 467,
+      "line": 476,
       "kind": "fn",
       "name": "get_tile",
       "has_doc": true
@@ -82565,7 +82754,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 472,
+      "line": 481,
       "kind": "fn",
       "name": "set_tile_tint",
       "has_doc": true
@@ -82574,7 +82763,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 476,
+      "line": 485,
       "kind": "fn",
       "name": "clear_tile",
       "has_doc": true
@@ -82583,7 +82772,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 480,
+      "line": 489,
       "kind": "fn",
       "name": "fill",
       "has_doc": true
@@ -82592,7 +82781,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 495,
+      "line": 504,
       "kind": "fn",
       "name": "tile_type_index",
       "has_doc": true
@@ -82601,7 +82790,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 505,
+      "line": 514,
       "kind": "fn",
       "name": "find_tiles_by_gid",
       "has_doc": true
@@ -82610,7 +82799,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 516,
+      "line": 525,
       "kind": "fn",
       "name": "try_set_layer_visible",
       "has_doc": true
@@ -82619,7 +82808,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 527,
+      "line": 536,
       "kind": "fn",
       "name": "try_set_layer_color",
       "has_doc": true
@@ -82628,7 +82817,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 544,
+      "line": 554,
       "kind": "fn",
       "name": "try_set_layer_offset",
       "has_doc": true
@@ -82637,7 +82826,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 559,
+      "line": 570,
       "kind": "fn",
       "name": "try_set_layer_parallax",
       "has_doc": true
@@ -82646,7 +82835,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 574,
+      "line": 586,
       "kind": "fn",
       "name": "try_set_tile",
       "has_doc": true
@@ -82655,7 +82844,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 608,
+      "line": 623,
       "kind": "fn",
       "name": "try_get_tile",
       "has_doc": true
@@ -82664,7 +82853,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 621,
+      "line": 636,
       "kind": "fn",
       "name": "try_set_tile_tint",
       "has_doc": true
@@ -82673,7 +82862,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 643,
+      "line": 659,
       "kind": "fn",
       "name": "set_viewport",
       "has_doc": true
@@ -82682,7 +82871,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 648,
+      "line": 664,
+      "kind": "fn",
+      "name": "try_set_viewport",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/tilemap.rs",
+      "line": 673,
       "kind": "fn",
       "name": "get_viewport",
       "has_doc": true
@@ -82691,7 +82889,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 652,
+      "line": 677,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -82700,7 +82898,16 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 689,
+      "line": 682,
+      "kind": "fn",
+      "name": "try_update",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilemap",
+      "file": "src/tilemap/tilemap.rs",
+      "line": 735,
       "kind": "fn",
       "name": "world_to_tile",
       "has_doc": true
@@ -82709,7 +82916,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 694,
+      "line": 740,
       "kind": "fn",
       "name": "try_world_to_tile",
       "has_doc": true
@@ -82718,7 +82925,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 705,
+      "line": 751,
       "kind": "fn",
       "name": "tile_to_world",
       "has_doc": true
@@ -82727,7 +82934,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 712,
+      "line": 758,
       "kind": "fn",
       "name": "get_tile_width",
       "has_doc": true
@@ -82736,7 +82943,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 716,
+      "line": 762,
       "kind": "fn",
       "name": "get_tile_height",
       "has_doc": true
@@ -82745,7 +82952,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 721,
+      "line": 767,
       "kind": "fn",
       "name": "get_tile_dimensions",
       "has_doc": true
@@ -82754,7 +82961,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 725,
+      "line": 771,
       "kind": "fn",
       "name": "get_chunk_size",
       "has_doc": true
@@ -82763,7 +82970,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 729,
+      "line": 775,
       "kind": "fn",
       "name": "get_orientation",
       "has_doc": true
@@ -82772,7 +82979,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 733,
+      "line": 779,
       "kind": "fn",
       "name": "set_orientation",
       "has_doc": true
@@ -82781,7 +82988,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 762,
+      "line": 808,
       "kind": "fn",
       "name": "tile_render_origin",
       "has_doc": true
@@ -82790,7 +82997,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 815,
+      "line": 863,
       "kind": "fn",
       "name": "render_gid",
       "has_doc": true
@@ -82799,7 +83006,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 843,
+      "line": 891,
       "kind": "fn",
       "name": "apply_autotile",
       "has_doc": true
@@ -82808,7 +83015,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 865,
+      "line": 913,
       "kind": "fn",
       "name": "apply_autotile_at",
       "has_doc": true
@@ -82817,7 +83024,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 894,
+      "line": 942,
       "kind": "fn",
       "name": "apply_autotile_8",
       "has_doc": true
@@ -82826,7 +83033,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 916,
+      "line": 964,
       "kind": "fn",
       "name": "apply_autotile_8_at",
       "has_doc": true
@@ -82835,7 +83042,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 945,
+      "line": 993,
       "kind": "fn",
       "name": "apply_autotile_mode",
       "has_doc": true
@@ -82844,7 +83051,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tilemap.rs",
-      "line": 954,
+      "line": 1002,
       "kind": "fn",
       "name": "apply_autotile_mode_at",
       "has_doc": true
@@ -82862,7 +83069,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 23,
+      "line": 24,
       "kind": "struct",
       "name": "TmxImportError",
       "has_doc": true
@@ -82871,7 +83078,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 70,
+      "line": 72,
       "kind": "struct",
       "name": "TmxLoadOptions",
       "has_doc": true
@@ -82880,7 +83087,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 97,
+      "line": 100,
       "kind": "enum",
       "name": "TmxOrientation",
       "has_doc": true
@@ -82889,7 +83096,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 121,
+      "line": 125,
       "kind": "enum",
       "name": "TmxStaggerAxis",
       "has_doc": true
@@ -82898,7 +83105,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 129,
+      "line": 134,
       "kind": "struct",
       "name": "TmxTileset",
       "has_doc": true
@@ -82907,7 +83114,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 157,
+      "line": 163,
       "kind": "struct",
       "name": "TmxTileLayer",
       "has_doc": true
@@ -82916,7 +83123,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 177,
+      "line": 184,
       "kind": "struct",
       "name": "TmxObjectLayer",
       "has_doc": true
@@ -82925,7 +83132,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 187,
+      "line": 195,
       "kind": "struct",
       "name": "TmxObject",
       "has_doc": true
@@ -82934,7 +83141,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 207,
+      "line": 216,
       "kind": "enum",
       "name": "TmxLayer",
       "has_doc": true
@@ -82943,7 +83150,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 215,
+      "line": 225,
       "kind": "struct",
       "name": "TmxMap",
       "has_doc": true
@@ -82952,7 +83159,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 239,
+      "line": 249,
       "kind": "fn",
       "name": "tile_layers",
       "has_doc": true
@@ -82961,7 +83168,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 246,
+      "line": 256,
       "kind": "fn",
       "name": "object_layers",
       "has_doc": true
@@ -82970,7 +83177,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 254,
+      "line": 264,
       "kind": "fn",
       "name": "load_tmx",
       "has_doc": true
@@ -82979,7 +83186,7 @@
       "source": "rust",
       "module": "tilemap",
       "file": "src/tilemap/tmx.rs",
-      "line": 259,
+      "line": 269,
       "kind": "fn",
       "name": "load_tmx_with_options",
       "has_doc": true
@@ -82988,7 +83195,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/animation.rs",
-      "line": 7,
+      "line": 13,
       "kind": "struct",
       "name": "TileAnimFrame",
       "has_doc": true
@@ -82997,7 +83204,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 14,
+      "line": 19,
       "kind": "enum",
       "name": "TileObjectShapeKind",
       "has_doc": true
@@ -83006,7 +83213,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 29,
+      "line": 34,
       "kind": "fn",
       "name": "parse",
       "has_doc": true
@@ -83015,7 +83222,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 43,
+      "line": 48,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -83024,7 +83231,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 56,
+      "line": 66,
       "kind": "struct",
       "name": "TileObjectLight",
       "has_doc": true
@@ -83033,7 +83240,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 77,
+      "line": 92,
       "kind": "struct",
       "name": "TileObjectPhysics",
       "has_doc": true
@@ -83042,7 +83249,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 116,
+      "line": 136,
       "kind": "struct",
       "name": "TileObjectRenderLight",
       "has_doc": true
@@ -83051,7 +83258,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 161,
+      "line": 186,
       "kind": "struct",
       "name": "TileObjectOccluder",
       "has_doc": true
@@ -83060,7 +83267,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 185,
+      "line": 215,
       "kind": "struct",
       "name": "TileObjectArchetype",
       "has_doc": true
@@ -83069,7 +83276,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/archetype.rs",
-      "line": 222,
+      "line": 252,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -83077,8 +83284,17 @@
     {
       "source": "rust",
       "module": "tileset",
+      "file": "src/tileset/archetype.rs",
+      "line": 278,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
       "file": "src/tileset/autotile.rs",
-      "line": 7,
+      "line": 15,
       "kind": "enum",
       "name": "AutoTileMode",
       "has_doc": true
@@ -83087,7 +83303,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/autotile.rs",
-      "line": 18,
+      "line": 31,
       "kind": "struct",
       "name": "TerrainProfile",
       "has_doc": true
@@ -83096,7 +83312,16 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/autotile.rs",
-      "line": 29,
+      "line": 42,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/autotile.rs",
+      "line": 62,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -83105,7 +83330,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/catalog.rs",
-      "line": 12,
+      "line": 20,
       "kind": "struct",
       "name": "TileCatalog",
       "has_doc": true
@@ -83114,7 +83339,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/catalog.rs",
-      "line": 18,
+      "line": 27,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -83123,7 +83348,16 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/catalog.rs",
-      "line": 23,
+      "line": 35,
+      "kind": "fn",
+      "name": "from_entries",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/catalog.rs",
+      "line": 47,
       "kind": "fn",
       "name": "set_tileset",
       "has_doc": true
@@ -83132,7 +83366,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/catalog.rs",
-      "line": 33,
+      "line": 75,
       "kind": "fn",
       "name": "tileset",
       "has_doc": true
@@ -83141,7 +83375,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/catalog.rs",
-      "line": 38,
+      "line": 80,
       "kind": "fn",
       "name": "ids",
       "has_doc": true
@@ -83150,7 +83384,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/catalog.rs",
-      "line": 45,
+      "line": 87,
       "kind": "fn",
       "name": "visual_for_ref",
       "has_doc": true
@@ -83158,8 +83392,35 @@
     {
       "source": "rust",
       "module": "tileset",
+      "file": "src/tileset/error.rs",
+      "line": 16,
+      "kind": "enum",
+      "name": "TilesetError",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/error.rs",
+      "line": 61,
+      "kind": "fn",
+      "name": "invalid",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/limits.rs",
+      "line": 14,
+      "kind": "struct",
+      "name": "TilesetLimits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 19,
+      "line": 25,
       "kind": "struct",
       "name": "TileSet",
       "has_doc": true
@@ -83168,27 +83429,9 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 39,
+      "line": 51,
       "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tileset",
-      "file": "src/tileset/tileset.rs",
-      "line": 69,
-      "kind": "fn",
-      "name": "get_first_gid",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "tileset",
-      "file": "src/tileset/tileset.rs",
-      "line": 73,
-      "kind": "fn",
-      "name": "get_tile_count",
+      "name": "try_new",
       "has_doc": true
     },
     {
@@ -83197,6 +83440,42 @@
       "file": "src/tileset/tileset.rs",
       "line": 77,
       "kind": "fn",
+      "name": "try_new_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 218,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 243,
+      "kind": "fn",
+      "name": "get_first_gid",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 247,
+      "kind": "fn",
+      "name": "get_tile_count",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 251,
+      "kind": "fn",
       "name": "get_columns",
       "has_doc": true
     },
@@ -83204,7 +83483,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 81,
+      "line": 255,
       "kind": "fn",
       "name": "get_tile_width",
       "has_doc": true
@@ -83213,7 +83492,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 85,
+      "line": 259,
       "kind": "fn",
       "name": "get_tile_height",
       "has_doc": true
@@ -83222,7 +83501,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 89,
+      "line": 263,
       "kind": "fn",
       "name": "get_tile_dimensions",
       "has_doc": true
@@ -83231,7 +83510,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 93,
+      "line": 267,
       "kind": "fn",
       "name": "get_spacing",
       "has_doc": true
@@ -83240,7 +83519,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 97,
+      "line": 271,
       "kind": "fn",
       "name": "get_margin",
       "has_doc": true
@@ -83249,7 +83528,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 101,
+      "line": 275,
       "kind": "fn",
       "name": "get_texture_width",
       "has_doc": true
@@ -83258,7 +83537,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 112,
+      "line": 279,
       "kind": "fn",
       "name": "get_texture_height",
       "has_doc": true
@@ -83267,7 +83546,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 122,
+      "line": 284,
       "kind": "fn",
       "name": "set_terrain_profile",
       "has_doc": true
@@ -83276,7 +83555,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 127,
+      "line": 308,
       "kind": "fn",
       "name": "get_terrain_profile",
       "has_doc": true
@@ -83285,7 +83564,16 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 132,
+      "line": 313,
+      "kind": "fn",
+      "name": "try_get_quad",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 340,
       "kind": "fn",
       "name": "get_quad",
       "has_doc": true
@@ -83294,7 +83582,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 147,
+      "line": 346,
       "kind": "fn",
       "name": "set_archetype",
       "has_doc": true
@@ -83303,7 +83591,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 152,
+      "line": 362,
       "kind": "fn",
       "name": "archetype",
       "has_doc": true
@@ -83312,7 +83600,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 157,
+      "line": 367,
       "kind": "fn",
       "name": "remove_archetype",
       "has_doc": true
@@ -83321,7 +83609,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 167,
+      "line": 377,
       "kind": "fn",
       "name": "archetype_names",
       "has_doc": true
@@ -83330,7 +83618,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 174,
+      "line": 384,
       "kind": "fn",
       "name": "set_tile_archetype",
       "has_doc": true
@@ -83339,7 +83627,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 197,
+      "line": 410,
       "kind": "fn",
       "name": "get_tile_archetype",
       "has_doc": true
@@ -83348,7 +83636,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 202,
+      "line": 415,
       "kind": "fn",
       "name": "archetype_for_tile",
       "has_doc": true
@@ -83357,7 +83645,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 208,
+      "line": 421,
       "kind": "fn",
       "name": "set_animation",
       "has_doc": true
@@ -83366,7 +83654,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 220,
+      "line": 464,
       "kind": "fn",
       "name": "get_animation",
       "has_doc": true
@@ -83375,7 +83663,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 225,
+      "line": 469,
       "kind": "fn",
       "name": "iter_animated_local_ids",
       "has_doc": true
@@ -83384,7 +83672,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 230,
+      "line": 474,
       "kind": "fn",
       "name": "set_property",
       "has_doc": true
@@ -83393,7 +83681,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 259,
+      "line": 547,
       "kind": "fn",
       "name": "get_property",
       "has_doc": true
@@ -83402,7 +83690,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 267,
+      "line": 555,
       "kind": "fn",
       "name": "properties",
       "has_doc": true
@@ -83411,7 +83699,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 272,
+      "line": 560,
       "kind": "fn",
       "name": "set_auto_tile_rule",
       "has_doc": true
@@ -83420,7 +83708,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 277,
+      "line": 584,
       "kind": "fn",
       "name": "get_auto_tile_id",
       "has_doc": true
@@ -83429,7 +83717,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 283,
+      "line": 591,
       "kind": "fn",
       "name": "set_auto_tile_rule_8",
       "has_doc": true
@@ -83438,7 +83726,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 288,
+      "line": 615,
       "kind": "fn",
       "name": "get_auto_tile_id_8",
       "has_doc": true
@@ -83447,7 +83735,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 294,
+      "line": 622,
       "kind": "fn",
       "name": "set_auto_tile_mode",
       "has_doc": true
@@ -83456,7 +83744,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 298,
+      "line": 632,
       "kind": "fn",
       "name": "get_auto_tile_mode",
       "has_doc": true
@@ -83465,7 +83753,7 @@
       "source": "rust",
       "module": "tileset",
       "file": "src/tileset/tileset.rs",
-      "line": 305,
+      "line": 639,
       "kind": "fn",
       "name": "has_auto_tile_mode",
       "has_doc": true
@@ -83473,10 +83761,28 @@
     {
       "source": "rust",
       "module": "tileset",
+      "file": "src/tileset/tileset.rs",
+      "line": 644,
+      "kind": "fn",
+      "name": "limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
       "file": "src/tileset/visual.rs",
-      "line": 7,
+      "line": 16,
       "kind": "struct",
       "name": "TileVisual",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tileset",
+      "file": "src/tileset/visual.rs",
+      "line": 37,
+      "kind": "fn",
+      "name": "validate",
       "has_doc": true
     },
     {
@@ -91547,9 +91853,45 @@
       "source": "lua_api",
       "module": "tilemap_api",
       "file": "src/lua_api/tilemap_api.rs",
-      "line": 1768,
+      "line": 406,
       "kind": "fn",
-      "name": "newAutoTileSheet",
+      "name": "invalidLayer",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 408,
+      "kind": "fn",
+      "name": "invalidCoord",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 410,
+      "kind": "fn",
+      "name": "unknownGid",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 412,
+      "kind": "fn",
+      "name": "invalidQueries",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 414,
+      "kind": "fn",
+      "name": "lazyIndexRebuilds",
       "has_doc": true
     },
     {

@@ -1,15 +1,20 @@
-//! Owns the tileset archetype implementation for the tileset subsystem and keeps related runtime rules local here.
-//! Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates.
-//! Defines how tileset archetype data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates tileset archetype behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing tileset archetype defaults, lifecycle handling, validation, or data ownership rules.
+//! Owns reusable object archetypes and their author-default validation.
+//!
+//! Archetypes describe defaults for neighboring owners to materialize. They do not
+//! create physics bodies, lights, blockers, or render resources themselves.
 
 use crate::tilefield::TileChannel;
+use crate::tileset::error::TilesetError;
+use crate::tileset::limits::TilesetLimits;
 use crate::tileset::visual::TileVisual;
 use std::collections::HashMap;
 
 /// Tile-filling shape authored on a tileset object.
+///
+/// # Variants
+///
+/// The variants are the accepted shape vocabulary passed to physics and render
+/// integration owners.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TileObjectShapeKind {
     /// Axis-aligned rectangle using the tile width and height.
@@ -52,6 +57,11 @@ impl TileObjectShapeKind {
 }
 
 /// Tile-based light source defaults authored on a tileset object archetype.
+///
+/// # Fields
+///
+/// Radius and intensity are finite non-negative defaults and color components are
+/// finite values in the unit range.
 #[derive(Debug, Clone)]
 pub struct TileObjectLight {
     /// Radius in tiles.
@@ -73,6 +83,11 @@ impl Default for TileObjectLight {
 }
 
 /// Physics body defaults authored on a tileset object archetype.
+///
+/// # Fields
+///
+/// Body type and material values are validated before the archetype is stored;
+/// layer and mask remain opaque bitmasks for the physics owner.
 #[derive(Debug, Clone)]
 pub struct TileObjectPhysics {
     /// Tile-filling collision shape.
@@ -112,6 +127,11 @@ impl Default for TileObjectPhysics {
 }
 
 /// Render-light defaults authored on a tileset object archetype.
+///
+/// # Fields
+///
+/// Numeric colors, radius, and intensity are validated here while blend, falloff,
+/// and light-type strings use the lighting module vocabulary.
 #[derive(Debug, Clone)]
 pub struct TileObjectRenderLight {
     /// Tile-space placement shape; currently used to choose the tile center.
@@ -157,6 +177,11 @@ impl Default for TileObjectRenderLight {
 }
 
 /// Render-light occluder defaults authored on a tileset object archetype.
+///
+/// # Fields
+///
+/// Opacity is a finite unit-range default; masks and enabled state are passed to
+/// the light integration owner.
 #[derive(Debug, Clone)]
 pub struct TileObjectOccluder {
     /// Tile-filling occluder polygon shape.
@@ -181,6 +206,11 @@ impl Default for TileObjectOccluder {
 }
 
 /// Reusable object archetype that can be referenced by `tilefield` slots.
+///
+/// # Fields
+///
+/// An archetype combines optional visual, semantic, footprint, light, physics,
+/// occluder, and custom-property defaults without materializing runtime objects.
 #[derive(Debug, Clone)]
 pub struct TileObjectArchetype {
     /// Stable object name chosen by the game.
@@ -243,4 +273,221 @@ impl TileObjectArchetype {
             properties: HashMap::new(),
         })
     }
+
+    /// Validate all nested author defaults before the archetype enters a tileset.
+    pub fn validate(&self, limits: &TilesetLimits) -> Result<(), TilesetError> {
+        for (resource, count) in [
+            ("archetype blockers", self.blockers.len()),
+            ("archetype costs", self.costs.len()),
+            ("category blockers", self.category_blockers.len()),
+            ("category costs", self.category_costs.len()),
+            ("category transmission", self.category_transmission.len()),
+            ("category filters", self.category_filters.len()),
+        ] {
+            if count > limits.max_properties_per_owner {
+                return Err(TilesetError::LimitExceeded {
+                    resource,
+                    requested: count as u64,
+                    maximum: limits.max_properties_per_owner as u64,
+                });
+            }
+        }
+        validate_text(&self.name, "archetype name", limits.max_name_bytes)?;
+        if let Some(slot) = &self.slot {
+            validate_text(slot, "archetype slot", limits.max_string_bytes)?;
+        }
+        if let Some(visual) = &self.visual {
+            visual.validate(limits)?;
+        }
+        for (category, value) in &self.category_costs {
+            validate_text(category, "category cost name", limits.max_name_bytes)?;
+            validate_non_negative(*value, "category cost", limits)?;
+        }
+        for (category, value) in &self.category_blockers {
+            validate_text(category, "category blocker name", limits.max_name_bytes)?;
+            let _ = value;
+        }
+        for (category, value) in &self.category_transmission {
+            validate_text(
+                category,
+                "category transmission name",
+                limits.max_name_bytes,
+            )?;
+            validate_unit(*value, "category transmission", limits)?;
+        }
+        for (category, values) in &self.category_filters {
+            validate_text(category, "category filter name", limits.max_name_bytes)?;
+            for value in values {
+                validate_unit(*value, "category filter", limits)?;
+            }
+        }
+        for value in self.costs.values() {
+            validate_non_negative(*value, "channel cost", limits)?;
+        }
+        if let Some((width, height)) = self.footprint {
+            if width == 0 || height == 0 {
+                return Err(TilesetError::invalid(
+                    "archetype footprint",
+                    "width and height must be greater than zero",
+                ));
+            }
+            if width > limits.max_footprint_dimension || height > limits.max_footprint_dimension {
+                return Err(TilesetError::LimitExceeded {
+                    resource: "footprint dimension",
+                    requested: u64::from(width.max(height)),
+                    maximum: u64::from(limits.max_footprint_dimension),
+                });
+            }
+        }
+        if let Some(value) = self.sun_occlusion {
+            validate_unit(value, "sun_occlusion", limits)?;
+        }
+        if let Some(light) = &self.light {
+            validate_positive(light.radius, "light radius", limits)?;
+            validate_non_negative(light.intensity, "light intensity", limits)?;
+            validate_color(&light.color, "light color", limits)?;
+        }
+        if let Some(physics) = &self.physics {
+            if !matches!(
+                physics.body_type.as_str(),
+                "static" | "dynamic" | "kinematic" | "sensor"
+            ) {
+                return Err(TilesetError::invalid(
+                    "physics body_type",
+                    "must be static, dynamic, kinematic, or sensor",
+                ));
+            }
+            validate_text(
+                &physics.body_type,
+                "physics body_type",
+                limits.max_string_bytes,
+            )?;
+            if let Some(mass) = physics.mass {
+                validate_positive(mass, "physics mass", limits)?;
+            }
+            validate_positive(physics.density, "physics density", limits)?;
+            validate_unit(physics.friction, "physics friction", limits)?;
+            validate_unit(physics.restitution, "physics restitution", limits)?;
+        }
+        if let Some(light) = &self.render_light {
+            validate_positive(light.radius, "render_light radius", limits)?;
+            validate_non_negative(light.intensity, "render_light intensity", limits)?;
+            validate_color(&light.color, "render_light color", limits)?;
+            validate_optional_enum(
+                light.blend_mode.as_deref(),
+                "render_light blend_mode",
+                &["add", "sub", "mix"],
+                limits,
+            )?;
+            validate_optional_enum(
+                light.falloff.as_deref(),
+                "render_light falloff",
+                &["linear", "smooth", "constant"],
+                limits,
+            )?;
+            validate_optional_enum(
+                light.light_type.as_deref(),
+                "render_light light_type",
+                &["point", "directional", "spot"],
+                limits,
+            )?;
+        }
+        if let Some(occluder) = &self.occluder {
+            validate_unit(occluder.opacity, "occluder opacity", limits)?;
+        }
+        if self.properties.len() > limits.max_properties_per_owner {
+            return Err(TilesetError::LimitExceeded {
+                resource: "archetype properties",
+                requested: self.properties.len() as u64,
+                maximum: limits.max_properties_per_owner as u64,
+            });
+        }
+        for (name, value) in &self.properties {
+            validate_text(name, "archetype property name", limits.max_name_bytes)?;
+            validate_text(value, "archetype property value", limits.max_string_bytes)?;
+        }
+        Ok(())
+    }
+}
+
+fn validate_text(value: &str, field: &str, max_bytes: usize) -> Result<(), TilesetError> {
+    if value.trim().is_empty() {
+        return Err(TilesetError::invalid(field, "must not be empty"));
+    }
+    if value.len() > max_bytes {
+        return Err(TilesetError::LimitExceeded {
+            resource: "string bytes",
+            requested: value.len() as u64,
+            maximum: max_bytes as u64,
+        });
+    }
+    Ok(())
+}
+
+fn validate_finite(value: f32, field: &str, limits: &TilesetLimits) -> Result<(), TilesetError> {
+    if !value.is_finite() {
+        return Err(TilesetError::invalid(field, "must be finite"));
+    }
+    if value.abs() > limits.max_numeric_value {
+        return Err(TilesetError::LimitExceeded {
+            resource: "numeric magnitude",
+            requested: value.abs() as u64,
+            maximum: limits.max_numeric_value as u64,
+        });
+    }
+    Ok(())
+}
+
+fn validate_non_negative(
+    value: f32,
+    field: &str,
+    limits: &TilesetLimits,
+) -> Result<(), TilesetError> {
+    validate_finite(value, field, limits)?;
+    if value < 0.0 {
+        return Err(TilesetError::invalid(field, "must be non-negative"));
+    }
+    Ok(())
+}
+
+fn validate_positive(value: f32, field: &str, limits: &TilesetLimits) -> Result<(), TilesetError> {
+    validate_finite(value, field, limits)?;
+    if value <= 0.0 {
+        return Err(TilesetError::invalid(field, "must be greater than zero"));
+    }
+    Ok(())
+}
+
+fn validate_unit(value: f32, field: &str, limits: &TilesetLimits) -> Result<(), TilesetError> {
+    validate_finite(value, field, limits)?;
+    if !(0.0..=1.0).contains(&value) {
+        return Err(TilesetError::invalid(field, "must be between 0 and 1"));
+    }
+    Ok(())
+}
+
+fn validate_color(values: &[f32], field: &str, limits: &TilesetLimits) -> Result<(), TilesetError> {
+    for value in values {
+        validate_unit(*value, field, limits)?;
+    }
+    Ok(())
+}
+
+fn validate_optional_enum(
+    value: Option<&str>,
+    field: &str,
+    accepted: &[&str],
+    limits: &TilesetLimits,
+) -> Result<(), TilesetError> {
+    let Some(value) = value else {
+        return Ok(());
+    };
+    validate_text(value, field, limits.max_string_bytes)?;
+    if !accepted.contains(&value) {
+        return Err(TilesetError::invalid(
+            field,
+            "contains an unsupported value",
+        ));
+    }
+    Ok(())
 }

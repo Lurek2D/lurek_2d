@@ -32768,7 +32768,7 @@
         {
           "name": "newIsoMap",
           "fullPath": "lurek.tilemap.newIsoMap",
-          "signature": "lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, [partCount])",
+          "signature": "lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, [partCount], [opts])",
           "description": "Creates a new isometric map with the given dimensions and tile geometry.",
           "parameters": [
             {
@@ -32805,6 +32805,12 @@
               "name": "partCount",
               "type": "integer",
               "description": "Number of tile parts per cell (default 4).",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional tilemap limits table.",
               "optional": true
             }
           ],
@@ -33002,7 +33008,7 @@
         {
           "name": "newLargeMapRenderer",
           "fullPath": "lurek.tilemap.newLargeMapRenderer",
-          "signature": "(tile_w, tile_h)",
+          "signature": "(tile_w, tile_h, [opts])",
           "description": "Creates a chunk-based large-map renderer for efficient rendering of very large maps.",
           "parameters": [
             {
@@ -33016,6 +33022,12 @@
               "type": "integer",
               "description": "Tile height in pixels.",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional tilemap limits table.",
+              "optional": true
             }
           ],
           "returns": "LLargeMapRenderer",

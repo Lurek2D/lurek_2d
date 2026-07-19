@@ -7,11 +7,12 @@
 //! Open this file when terrain transitions, mask lookup, or autotile atlas mapping behaves incorrectly.
 
 use crate::math::Rect;
-use crate::tileset::{AutoTileMode, TileSet};
+use crate::tileset::{AutoTileMode, TileSet, TilesetError};
 use std::collections::{HashMap, HashSet};
 
 /// Sprite-sheet packing variant that determines tile count and bitmask encoding.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// # Variants
 pub enum AutoTileLayout {
     /// 47-tile blob layout based on the reduced 8-bit neighbor bitmask.
     Blob47,
@@ -25,6 +26,7 @@ pub enum AutoTileLayout {
 
 /// Autotile sprite sheet: holds bitmask tables for fast neighbor-to-tile lookup.
 #[derive(Clone)]
+/// # Fields
 pub struct AutoTileSheet {
     /// Width of a single tile in pixels.
     tile_width: u32,
@@ -47,6 +49,27 @@ pub fn layout_name(layout: AutoTileLayout) -> &'static str {
         AutoTileLayout::RpgMaker48 => "rpgmaker48",
         AutoTileLayout::Minimal16 => "minimal16",
     }
+}
+
+/// Parse the stable Lua/API name for an autotile sheet layout.
+pub fn layout_from_name(name: &str) -> Option<AutoTileLayout> {
+    match name {
+        "blob47" => Some(AutoTileLayout::Blob47),
+        "composite48" => Some(AutoTileLayout::Composite48),
+        "rpgmaker48" | "rpgmaker" => Some(AutoTileLayout::RpgMaker48),
+        "minimal16" => Some(AutoTileLayout::Minimal16),
+        _ => None,
+    }
+}
+
+/// Return the supported layouts and their tile counts in stable presentation order.
+pub fn supported_layouts() -> [(AutoTileLayout, u32); 4] {
+    [
+        (AutoTileLayout::Minimal16, 16),
+        (AutoTileLayout::Blob47, 47),
+        (AutoTileLayout::Composite48, 48),
+        (AutoTileLayout::RpgMaker48, 48),
+    ]
 }
 
 /// Return the default terrain-neighbour matching mode for an autotile sheet layout.
@@ -204,9 +227,14 @@ impl AutoTileSheet {
         self.tile_height
     }
     /// Register each sheet bitmask as an autotile rule in `tileset` for `type_name`, offset by `start_gid`.
-    pub fn apply_to_tileset(&self, tileset: &mut TileSet, type_name: &str, start_gid: Option<u32>) {
+    pub fn apply_to_tileset(
+        &self,
+        tileset: &mut TileSet,
+        type_name: &str,
+        start_gid: Option<u32>,
+    ) -> Result<(), TilesetError> {
         let offset = start_gid.unwrap_or(0);
-        tileset.set_auto_tile_mode(type_name, self.get_default_mode());
+        tileset.set_auto_tile_mode(type_name, self.get_default_mode())?;
         let mut registered = HashSet::new();
         match self.layout {
             AutoTileLayout::Minimal16 => {
@@ -214,7 +242,13 @@ impl AutoTileSheet {
                     if !registered.insert(bm) {
                         continue;
                     }
-                    tileset.set_auto_tile_rule(type_name, bm as u8, i as u32 + offset);
+                    let local_id =
+                        (i as u32)
+                            .checked_add(offset)
+                            .ok_or(TilesetError::ArithmeticOverflow {
+                                field: "autotile local tile id",
+                            })?;
+                    tileset.set_auto_tile_rule(type_name, bm as u8, local_id)?;
                 }
             }
             AutoTileLayout::Blob47 | AutoTileLayout::Composite48 | AutoTileLayout::RpgMaker48 => {
@@ -222,10 +256,17 @@ impl AutoTileSheet {
                     if !registered.insert(bm) {
                         continue;
                     }
-                    tileset.set_auto_tile_rule_8(type_name, bm, i as u32 + offset);
+                    let local_id =
+                        (i as u32)
+                            .checked_add(offset)
+                            .ok_or(TilesetError::ArithmeticOverflow {
+                                field: "autotile local tile id",
+                            })?;
+                    tileset.set_auto_tile_rule_8(type_name, bm, local_id)?;
                 }
             }
         }
+        Ok(())
     }
     /// Return the bitmask stored at `index` in the sheet; returns 0 for out-of-range indices.
     pub fn get_bitmask_for_tile(&self, index: u32) -> u16 {

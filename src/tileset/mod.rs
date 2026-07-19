@@ -15,6 +15,10 @@ pub mod archetype;
 pub mod autotile;
 /// Many-tileset catalog lookup for typed tilefield refs.
 pub mod catalog;
+/// Structured construction and mutation errors.
+pub mod error;
+/// Tileset-owned numeric and collection ceilings.
+pub mod limits;
 /// Core tileset atlas, archetype registry, per-tile mappings, and autotile rule storage.
 pub mod tileset;
 /// Sprite/atlas/image visual references used by tilemap render ordering.
@@ -27,5 +31,7 @@ pub use archetype::{
 };
 pub use autotile::{AutoTileMode, TerrainProfile};
 pub use catalog::TileCatalog;
+pub use error::TilesetError;
+pub use limits::TilesetLimits;
 pub use tileset::TileSet;
 pub use visual::TileVisual;

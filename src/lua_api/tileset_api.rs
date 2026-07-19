@@ -5,7 +5,7 @@ use crate::tilefield::{TileObjectCatalog, TileRef};
 use crate::tileset::{
     AutoTileMode, TerrainProfile, TileAnimFrame, TileCatalog, TileObjectArchetype, TileObjectLight,
     TileObjectOccluder, TileObjectPhysics, TileObjectRenderLight, TileObjectShapeKind, TileSet,
-    TileVisual,
+    TileVisual, TilesetLimits,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -81,8 +81,38 @@ fn positive_f32(value: f32, api: &str, field: &str) -> LuaResult<f32> {
     }
 }
 
+fn tileset_runtime_error(method: &str, message: impl std::fmt::Display) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.tileset.{method}: {message}"))
+}
+
+fn bounded_table_entries(table: &LuaTable, limit: usize, api: &str, field: &str) -> LuaResult<()> {
+    let mut requested = 0usize;
+    for pair in table.clone().pairs::<LuaValue, LuaValue>() {
+        let _ = pair?;
+        requested += 1;
+        if requested > limit {
+            return Err(tileset_runtime_error(
+                api,
+                format!("{field} contains more than {limit} entries"),
+            ));
+        }
+    }
+    Ok(())
+}
+
 fn unit_f32(value: f32, api: &str, field: &str) -> LuaResult<f32> {
     Ok(finite_f32(value, api, field)?.clamp(0.0, 1.0))
+}
+
+fn unit_range_f32(value: f32, api: &str, field: &str) -> LuaResult<f32> {
+    let value = finite_f32(value, api, field)?;
+    if (0.0..=1.0).contains(&value) {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must be between 0 and 1"
+        )))
+    }
 }
 
 fn shape_kind_from_table(
@@ -155,14 +185,14 @@ impl TilesetLuaParser {
             api,
             "physics.density",
         )?;
-        physics.friction = unit_f32(
+        physics.friction = unit_range_f32(
             table
                 .get::<_, Option<f32>>("friction")?
                 .unwrap_or(physics.friction),
             api,
             "physics.friction",
         )?;
-        physics.restitution = unit_f32(
+        physics.restitution = unit_range_f32(
             table
                 .get::<_, Option<f32>>("restitution")?
                 .unwrap_or(physics.restitution),
@@ -220,7 +250,7 @@ impl TilesetLuaParser {
     fn parse_occluder_defaults(table: LuaTable, api: &str) -> LuaResult<TileObjectOccluder> {
         let mut occluder = TileObjectOccluder::default();
         occluder.shape = shape_kind_from_table(&table, api, occluder.shape)?;
-        occluder.opacity = unit_f32(
+        occluder.opacity = unit_range_f32(
             table
                 .get::<_, Option<f32>>("opacity")?
                 .unwrap_or(occluder.opacity),
@@ -255,13 +285,26 @@ impl TilesetLuaParser {
         object: &LuaTable,
         api: &str,
     ) -> LuaResult<()> {
+        let limits = TilesetLimits::default();
         if let Ok(blocks) = object.get::<_, LuaTable>("categoryBlocks") {
+            bounded_table_entries(
+                &blocks,
+                limits.max_properties_per_owner,
+                api,
+                "categoryBlocks",
+            )?;
             for pair in blocks.pairs::<String, bool>() {
                 let (name, value) = pair?;
                 archetype.category_blockers.insert(name, value);
             }
         }
         if let Ok(costs) = object.get::<_, LuaTable>("categoryCosts") {
+            bounded_table_entries(
+                &costs,
+                limits.max_properties_per_owner,
+                api,
+                "categoryCosts",
+            )?;
             for pair in costs.pairs::<String, f32>() {
                 let (name, value) = pair?;
                 if !value.is_finite() || value < 0.0 {
@@ -273,6 +316,12 @@ impl TilesetLuaParser {
             }
         }
         if let Ok(transmission) = object.get::<_, LuaTable>("transmission") {
+            bounded_table_entries(
+                &transmission,
+                limits.max_properties_per_owner,
+                api,
+                "transmission",
+            )?;
             for pair in transmission.pairs::<String, f32>() {
                 let (name, value) = pair?;
                 if !value.is_finite() {
@@ -282,10 +331,11 @@ impl TilesetLuaParser {
                 }
                 archetype
                     .category_transmission
-                    .insert(name, value.clamp(0.0, 1.0));
+                    .insert(name, unit_range_f32(value, api, "transmission")?);
             }
         }
         if let Ok(filters) = object.get::<_, LuaTable>("filters") {
+            bounded_table_entries(&filters, limits.max_properties_per_owner, api, "filters")?;
             for pair in filters.pairs::<String, LuaTable>() {
                 let (name, value) = pair?;
                 archetype.category_filters.insert(
@@ -347,6 +397,7 @@ impl TilesetLuaParser {
         object: LuaTable,
         api: &str,
     ) -> LuaResult<TileObjectArchetype> {
+        let limits = TilesetLimits::default();
         let mut archetype = TileObjectArchetype::new(name)
             .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
         archetype.slot = object.get::<_, Option<String>>("slot")?;
@@ -377,6 +428,7 @@ impl TilesetLuaParser {
         }
         archetype.visual = visual;
         if let Ok(blocks) = object.get::<_, LuaTable>("blocks") {
+            bounded_table_entries(&blocks, limits.max_properties_per_owner, api, "blocks")?;
             for pair in blocks.pairs::<String, bool>() {
                 let (name, value) = pair?;
                 let channel = crate::tilefield::TileChannel::parse(&name)
@@ -385,6 +437,7 @@ impl TilesetLuaParser {
             }
         }
         if let Ok(costs) = object.get::<_, LuaTable>("costs") {
+            bounded_table_entries(&costs, limits.max_properties_per_owner, api, "costs")?;
             for pair in costs.pairs::<String, f32>() {
                 let (name, value) = pair?;
                 if !value.is_finite() || value < 0.0 {
@@ -397,10 +450,19 @@ impl TilesetLuaParser {
                 archetype.costs.insert(channel, value);
             }
         }
+        if let Ok(properties) = object.get::<_, LuaTable>("properties") {
+            bounded_table_entries(
+                &properties,
+                limits.max_properties_per_owner,
+                api,
+                "properties",
+            )?;
+        }
         Self::parse_archetype_semantics(&mut archetype, &object, api)?;
         archetype.sun_occlusion = object
             .get::<_, Option<f32>>("sunOcclusion")?
-            .map(|value| value.clamp(0.0, 1.0));
+            .map(|value| unit_range_f32(value, api, "sunOcclusion"))
+            .transpose()?;
         if let Ok(light_tbl) = object.get::<_, LuaTable>("light") {
             let color = light_tbl
                 .get::<_, Option<LuaTable>>("color")?
@@ -439,7 +501,26 @@ impl TilesetLuaParser {
         Ok(archetype)
     }
 
+    fn catalog_from_table(entries: LuaTable, api: &str) -> LuaResult<TileCatalog> {
+        let limits = TilesetLimits::default();
+        bounded_table_entries(&entries, limits.max_catalog_entries, api, "entries")?;
+        let mut snapshot = Vec::new();
+        for pair in entries.pairs::<String, LuaAnyUserData>() {
+            if snapshot.len() >= limits.max_catalog_entries {
+                return Err(tileset_runtime_error(
+                    api,
+                    format!("entries exceed the limit of {}", limits.max_catalog_entries),
+                ));
+            }
+            let (id, tileset_ud) = pair?;
+            let tileset = tileset_ud.borrow::<LuaTileSet>()?;
+            snapshot.push((id, tileset.inner.borrow().clone()));
+        }
+        TileCatalog::from_entries(snapshot).map_err(|err| tileset_runtime_error(api, err))
+    }
+
     fn tileset_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileSet> {
+        let limits = TilesetLimits::default();
         let first_gid: u32 = provider.get::<_, Option<u32>>("firstGid")?.unwrap_or(1);
         let tile_count: u32 = provider
             .get::<_, Option<u32>>("tileCount")?
@@ -461,7 +542,7 @@ impl TilesetLuaParser {
             })?;
         let spacing: u32 = provider.get::<_, Option<u32>>("spacing")?.unwrap_or(0);
         let margin: u32 = provider.get::<_, Option<u32>>("margin")?.unwrap_or(0);
-        let mut tileset = TileSet::new(
+        let mut tileset = TileSet::try_new(
             first_gid,
             tile_count,
             columns,
@@ -469,30 +550,60 @@ impl TilesetLuaParser {
             tile_height,
             spacing,
             margin,
-        );
+        )
+        .map_err(|err| tileset_runtime_error(api, err))?;
         if let Ok(objects) = provider.get::<_, LuaTable>("objects") {
+            bounded_table_entries(&objects, limits.max_archetypes, api, "objects")?;
+            let mut object_count = 0usize;
             for pair in objects.pairs::<LuaValue, LuaTable>() {
+                object_count += 1;
+                if object_count > limits.max_archetypes {
+                    return Err(tileset_runtime_error(
+                        api,
+                        format!("objects exceed the limit of {}", limits.max_archetypes),
+                    ));
+                }
                 let (key, object) = pair?;
                 let name = match key {
                     LuaValue::String(value) => value.to_str()?.to_string(),
                     _ => object.get::<_, String>("name")?,
                 };
-                tileset.set_archetype(Self::archetype_from_table(name, object, api)?);
+                tileset
+                    .set_archetype(Self::archetype_from_table(name, object, api)?)
+                    .map_err(|err| tileset_runtime_error(api, err))?;
             }
         }
         if let Ok(tile_objects) = provider.get::<_, LuaTable>("tileObjects") {
+            bounded_table_entries(
+                &tile_objects,
+                limits.max_tile_count as usize,
+                api,
+                "tileObjects",
+            )?;
             for pair in tile_objects.pairs::<LuaValue, String>() {
                 let (key, object_name) = pair?;
                 let tile_id = Self::u32_from_lua_key(key, api)?;
                 tileset
                     .set_tile_archetype(tile_id - 1, Some(object_name))
-                    .map_err(|err| LuaError::RuntimeError(format!("{api}: {err}")))?;
+                    .map_err(|err| tileset_runtime_error(api, err))?;
             }
         }
         if let Ok(properties) = provider.get::<_, LuaTable>("properties") {
+            bounded_table_entries(
+                &properties,
+                limits.max_tile_count as usize,
+                api,
+                "properties",
+            )?;
             for pair in properties.pairs::<LuaValue, LuaTable>() {
                 let (key, props) = pair?;
                 let tile_id = Self::u32_from_lua_key(key, api)?;
+                bounded_table_entries(
+                    &props,
+                    limits.max_properties_per_owner,
+                    api,
+                    "tile properties",
+                )?;
                 for prop in props.pairs::<String, LuaValue>() {
                     let (name, value) = prop?;
                     if let Some(value) = property_value_to_string(value)? {
@@ -504,9 +615,21 @@ impl TilesetLuaParser {
             }
         }
         if let Ok(animations) = provider.get::<_, LuaTable>("animations") {
+            bounded_table_entries(
+                &animations,
+                limits.max_animation_sequences,
+                api,
+                "animations",
+            )?;
             for pair in animations.pairs::<LuaValue, LuaTable>() {
                 let (key, frames) = pair?;
                 let tile_id = Self::u32_from_lua_key(key, api)?;
+                bounded_table_entries(
+                    &frames,
+                    limits.max_animation_frames,
+                    api,
+                    "animation frames",
+                )?;
                 let mut anim_frames = Vec::new();
                 for frame in frames.sequence_values::<LuaTable>() {
                     let frame = frame?;
@@ -516,7 +639,9 @@ impl TilesetLuaParser {
                         duration_ms: frame.get("duration")?,
                     });
                 }
-                tileset.set_animation(tile_id - 1, anim_frames);
+                tileset
+                    .set_animation(tile_id - 1, anim_frames)
+                    .map_err(|err| tileset_runtime_error(api, err))?;
             }
         }
         Ok(tileset)
@@ -699,17 +824,19 @@ impl LuaUserData for LuaTileSet {
         /// @return | table | Rectangle table with x, y, width, and height.
         methods.add_method("getQuad", |lua, this, tile_id: u32| {
             if tile_id == 0 {
-                return Err(LuaError::RuntimeError(
-                    "getQuad: tile_id must be >= 1".to_string(),
-                ));
+                return Err(tileset_runtime_error("getQuad", "tile_id must be >= 1"));
             }
-            let r = this.inner.borrow().get_quad(tile_id - 1);
-            let tbl = lua.create_table()?;
-            tbl.set("x", r.x)?;
-            tbl.set("y", r.y)?;
-            tbl.set("width", r.width)?;
-            tbl.set("height", r.height)?;
-            Ok(tbl)
+            let r = this
+                .inner
+                .borrow()
+                .try_get_quad(tile_id - 1)
+                .map_err(|err| tileset_runtime_error("getQuad", err))?;
+            let quad_table = lua.create_table()?;
+            quad_table.set("x", r.x)?;
+            quad_table.set("y", r.y)?;
+            quad_table.set("width", r.width)?;
+            quad_table.set("height", r.height)?;
+            Ok(quad_table)
         });
 
         /// Sets or clears the named gameplay profile for one tile.
@@ -719,15 +846,13 @@ impl LuaUserData for LuaTileSet {
             "setProfile",
             |_, this, (tile_id, profile): (u32, Option<String>)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "setProfile: tile_id must be >= 1".to_string(),
-                    ));
+                    return Err(tileset_runtime_error("setProfile", "tile_id must be >= 1"));
                 }
                 let value = profile.filter(|value| !value.trim().is_empty());
                 this.inner
                     .borrow_mut()
                     .set_property(tile_id - 1, "profile".to_string(), value)
-                    .map_err(|err| LuaError::RuntimeError(format!("setProfile: {err}")))
+                    .map_err(|err| tileset_runtime_error("setProfile", err))
             },
         );
         /// Returns the named gameplay profile for one tile.
@@ -735,9 +860,7 @@ impl LuaUserData for LuaTileSet {
         /// @return | string|nil | Profile name, or nil when unset.
         methods.add_method("getProfile", |_, this, tile_id: u32| {
             if tile_id == 0 {
-                return Err(LuaError::RuntimeError(
-                    "getProfile: tile_id must be >= 1".to_string(),
-                ));
+                return Err(tileset_runtime_error("getProfile", "tile_id must be >= 1"));
             }
             Ok(this
                 .inner
@@ -752,15 +875,16 @@ impl LuaUserData for LuaTileSet {
             "setPhysicsShape",
             |_, this, (tile_id, shape): (u32, Option<String>)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "setPhysicsShape: tile_id must be >= 1".to_string(),
+                    return Err(tileset_runtime_error(
+                        "setPhysicsShape",
+                        "tile_id must be >= 1",
                     ));
                 }
                 let value = shape.filter(|value| !value.trim().is_empty());
                 this.inner
                     .borrow_mut()
                     .set_property(tile_id - 1, "physicsShape".to_string(), value)
-                    .map_err(|err| LuaError::RuntimeError(format!("setPhysicsShape: {err}")))
+                    .map_err(|err| tileset_runtime_error("setPhysicsShape", err))
             },
         );
         /// Returns the physics shape label for one tile.
@@ -768,8 +892,9 @@ impl LuaUserData for LuaTileSet {
         /// @return | string|nil | Physics shape label, or nil when unset.
         methods.add_method("getPhysicsShape", |_, this, tile_id: u32| {
             if tile_id == 0 {
-                return Err(LuaError::RuntimeError(
-                    "getPhysicsShape: tile_id must be >= 1".to_string(),
+                return Err(tileset_runtime_error(
+                    "getPhysicsShape",
+                    "tile_id must be >= 1",
                 ));
             }
             Ok(this
@@ -786,28 +911,33 @@ impl LuaUserData for LuaTileSet {
             "setAnimation",
             |_, this, (tile_id, frames): (u32, LuaTable)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "setAnimation: tile_id must be >= 1".to_string(),
+                    return Err(tileset_runtime_error(
+                        "setAnimation",
+                        "tile_id must be >= 1",
                     ));
                 }
+                let limits = this.inner.borrow().limits();
+                bounded_table_entries(
+                    &frames,
+                    limits.max_animation_frames,
+                    "setAnimation",
+                    "frames",
+                )?;
                 let mut anim_frames = Vec::new();
                 for pair in frames.sequence_values::<LuaTable>() {
                     let frame_tbl = pair?;
                     let fid: u32 = frame_tbl.get("tileid")?;
                     let dur: f32 = frame_tbl.get("duration")?;
-                    if fid == 0 {
-                        return Err(LuaError::RuntimeError(
-                            "setAnimation: frame tileid must be >= 1".to_string(),
-                        ));
-                    }
+                    let fid = one_based_u32("lurek.tileset.setAnimation.frame.tileid", fid)?;
                     anim_frames.push(TileAnimFrame {
-                        tile_id: fid - 1,
+                        tile_id: fid,
                         duration_ms: dur,
                     });
                 }
                 this.inner
                     .borrow_mut()
-                    .set_animation(tile_id - 1, anim_frames);
+                    .set_animation(tile_id - 1, anim_frames)
+                    .map_err(|err| tileset_runtime_error("setAnimation", err))?;
                 Ok(())
             },
         );
@@ -816,8 +946,9 @@ impl LuaUserData for LuaTileSet {
         /// @return | table|nil | Array of frame tables, or nil when no animation exists.
         methods.add_method("getAnimation", |lua, this, tile_id: u32| {
             if tile_id == 0 {
-                return Err(LuaError::RuntimeError(
-                    "getAnimation: tile_id must be >= 1".to_string(),
+                return Err(tileset_runtime_error(
+                    "getAnimation",
+                    "tile_id must be >= 1",
                 ));
             }
             let inner = this.inner.borrow();
@@ -842,108 +973,15 @@ impl LuaUserData for LuaTileSet {
         methods.add_method(
             "setObject",
             |_, this, (name, object): (String, LuaTable)| {
-                let mut archetype = TileObjectArchetype::new(name)
-                    .map_err(|err| LuaError::RuntimeError(format!("setObject: {err}")))?;
-                archetype.slot = object.get::<_, Option<String>>("slot")?;
-                let tile_id = object
-                    .get::<_, Option<u32>>("tileId")?
-                    .map(|tile_id| one_based_u32("setObject.tileId", tile_id))
-                    .transpose()?;
-                let mut visual = object
-                    .get::<_, Option<LuaTable>>("visual")?
-                    .map(|visual_tbl| {
-                        Ok::<TileVisual, LuaError>(TileVisual {
-                            texture_id: visual_tbl.get::<_, Option<u64>>("textureId")?,
-                            atlas: visual_tbl.get::<_, Option<String>>("atlas")?,
-                            sprite: visual_tbl.get::<_, Option<String>>("sprite")?,
-                            image: visual_tbl.get::<_, Option<String>>("image")?,
-                            tile_id: visual_tbl
-                                .get::<_, Option<u32>>("tileId")?
-                                .map(|id| one_based_u32("setObject.visual.tileId", id))
-                                .transpose()?,
-                            quad: visual_quad_from_table(&visual_tbl, "quad")?,
-                            texture_size: TilesetLuaParser::visual_texture_size_from_table(
-                                &visual_tbl,
-                            )?,
-                            order: visual_tbl.get::<_, Option<i32>>("order")?.unwrap_or(0),
-                        })
-                    })
-                    .transpose()?;
-                if tile_id.is_some() {
-                    visual.get_or_insert_with(TileVisual::default).tile_id = tile_id;
-                }
-                archetype.visual = visual;
-
-                if let Ok(blocks) = object.get::<_, LuaTable>("blocks") {
-                    for pair in blocks.pairs::<String, bool>() {
-                        let (name, value) = pair?;
-                        let channel = crate::tilefield::TileChannel::parse(&name)
-                            .map_err(|err| LuaError::RuntimeError(format!("setObject: {err}")))?;
-                        archetype.blockers.insert(channel, value);
-                    }
-                }
-                if let Ok(costs) = object.get::<_, LuaTable>("costs") {
-                    for pair in costs.pairs::<String, f32>() {
-                        let (name, value) = pair?;
-                        if !value.is_finite() || value < 0.0 {
-                            return Err(LuaError::RuntimeError(
-                                "setObject: cost values must be finite and >= 0".to_string(),
-                            ));
-                        }
-                        let channel = crate::tilefield::TileChannel::parse(&name)
-                            .map_err(|err| LuaError::RuntimeError(format!("setObject: {err}")))?;
-                        archetype.costs.insert(channel, value);
-                    }
-                }
-                TilesetLuaParser::parse_archetype_semantics(&mut archetype, &object, "setObject")?;
-                archetype.sun_occlusion = object
-                    .get::<_, Option<f32>>("sunOcclusion")?
-                    .map(|value| value.clamp(0.0, 1.0));
-                if let Ok(light_tbl) = object.get::<_, LuaTable>("light") {
-                    let color = light_tbl
-                        .get::<_, Option<LuaTable>>("color")?
-                        .map(|color_tbl| {
-                            Ok::<[f32; 3], LuaError>([
-                                color_tbl.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
-                                color_tbl.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
-                                color_tbl.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
-                            ])
-                        })
-                        .transpose()?
-                        .unwrap_or([1.0, 1.0, 1.0]);
-                    archetype.light = Some(TileObjectLight {
-                        radius: light_tbl.get::<_, Option<f32>>("radius")?.unwrap_or(1.0),
-                        intensity: light_tbl.get::<_, Option<f32>>("intensity")?.unwrap_or(1.0),
-                        color,
-                    });
-                }
-                if let Ok(physics_tbl) = object.get::<_, LuaTable>("physics") {
-                    archetype.physics = Some(TilesetLuaParser::parse_physics_defaults(
-                        physics_tbl,
-                        "setObject",
-                    )?);
-                }
-                if let Ok(light_tbl) = object.get::<_, LuaTable>("renderLight") {
-                    archetype.render_light = Some(TilesetLuaParser::parse_render_light_defaults(
-                        light_tbl,
-                        "setObject",
-                    )?);
-                }
-                if let Ok(occluder_tbl) = object.get::<_, LuaTable>("occluder") {
-                    archetype.occluder = Some(TilesetLuaParser::parse_occluder_defaults(
-                        occluder_tbl,
-                        "setObject",
-                    )?);
-                }
-                if let Ok(properties) = object.get::<_, LuaTable>("properties") {
-                    for pair in properties.pairs::<String, LuaValue>() {
-                        let (name, value) = pair?;
-                        if let Some(value) = property_value_to_string(value)? {
-                            archetype.properties.insert(name, value);
-                        }
-                    }
-                }
-                this.inner.borrow_mut().set_archetype(archetype);
+                let archetype = TilesetLuaParser::archetype_from_table(
+                    name,
+                    object,
+                    "lurek.tileset.setObject",
+                )?;
+                this.inner
+                    .borrow_mut()
+                    .set_archetype(archetype)
+                    .map_err(|err| tileset_runtime_error("setObject", err))?;
                 Ok(())
             },
         );
@@ -1107,14 +1145,15 @@ impl LuaUserData for LuaTileSet {
             "setTileObject",
             |_, this, (tile_id, object_name): (u32, Option<String>)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "setTileObject: tile_id must be >= 1".to_string(),
+                    return Err(tileset_runtime_error(
+                        "setTileObject",
+                        "tile_id must be >= 1",
                     ));
                 }
                 this.inner
                     .borrow_mut()
                     .set_tile_archetype(tile_id - 1, object_name)
-                    .map_err(|err| LuaError::RuntimeError(format!("setTileObject: {err}")))?;
+                    .map_err(|err| tileset_runtime_error("setTileObject", err))?;
                 Ok(())
             },
         );
@@ -1123,8 +1162,9 @@ impl LuaUserData for LuaTileSet {
         /// @return | string|nil | Object archetype name, or nil when unmapped.
         methods.add_method("getTileObject", |_, this, tile_id: u32| {
             if tile_id == 0 {
-                return Err(LuaError::RuntimeError(
-                    "getTileObject: tile_id must be >= 1".to_string(),
+                return Err(tileset_runtime_error(
+                    "getTileObject",
+                    "tile_id must be >= 1",
                 ));
             }
             Ok(this
@@ -1142,15 +1182,14 @@ impl LuaUserData for LuaTileSet {
             "setProperty",
             |_, this, (tile_id, name, value): (u32, String, LuaValue)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "setProperty: tile_id must be >= 1".to_string(),
-                    ));
+                    return Err(tileset_runtime_error("setProperty", "tile_id must be >= 1"));
                 }
-                let value = property_value_to_string(value)?;
+                let value = property_value_to_string(value)
+                    .map_err(|err| tileset_runtime_error("setProperty", err))?;
                 this.inner
                     .borrow_mut()
                     .set_property(tile_id - 1, name, value)
-                    .map_err(|err| LuaError::RuntimeError(format!("setProperty: {err}")))?;
+                    .map_err(|err| tileset_runtime_error("setProperty", err))?;
                 Ok(())
             },
         );
@@ -1160,9 +1199,7 @@ impl LuaUserData for LuaTileSet {
         /// @return | string|nil | Property value, or nil when unset.
         methods.add_method("getProperty", |_, this, (tile_id, name): (u32, String)| {
             if tile_id == 0 {
-                return Err(LuaError::RuntimeError(
-                    "getProperty: tile_id must be >= 1".to_string(),
-                ));
+                return Err(tileset_runtime_error("getProperty", "tile_id must be >= 1"));
             }
             Ok(this
                 .inner
@@ -1178,8 +1215,9 @@ impl LuaUserData for LuaTileSet {
             "getPropertyNumber",
             |_, this, (tile_id, name): (u32, String)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "getPropertyNumber: tile_id must be >= 1".to_string(),
+                    return Err(tileset_runtime_error(
+                        "getPropertyNumber",
+                        "tile_id must be >= 1",
                     ));
                 }
                 Ok(this
@@ -1197,8 +1235,9 @@ impl LuaUserData for LuaTileSet {
             "getPropertyBool",
             |_, this, (tile_id, name): (u32, String)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "getPropertyBool: tile_id must be >= 1".to_string(),
+                    return Err(tileset_runtime_error(
+                        "getPropertyBool",
+                        "tile_id must be >= 1",
                     ));
                 }
                 Ok(this
@@ -1213,8 +1252,9 @@ impl LuaUserData for LuaTileSet {
         /// @return | table | Property name/value table.
         methods.add_method("getProperties", |lua, this, tile_id: u32| {
             if tile_id == 0 {
-                return Err(LuaError::RuntimeError(
-                    "getProperties: tile_id must be >= 1".to_string(),
+                return Err(tileset_runtime_error(
+                    "getProperties",
+                    "tile_id must be >= 1",
                 ));
             }
             let table = lua.create_table()?;
@@ -1234,13 +1274,15 @@ impl LuaUserData for LuaTileSet {
             "setAutoTileRule",
             |_, this, (type_name, bitmask, tile_id): (String, u8, u32)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "setAutoTileRule: tileId must be >= 1".to_string(),
+                    return Err(tileset_runtime_error(
+                        "setAutoTileRule",
+                        "tile_id must be >= 1",
                     ));
                 }
                 this.inner
                     .borrow_mut()
-                    .set_auto_tile_rule(&type_name, bitmask, tile_id - 1);
+                    .set_auto_tile_rule(&type_name, bitmask, tile_id - 1)
+                    .map_err(|err| tileset_runtime_error("setAutoTileRule", err))?;
                 Ok(())
             },
         );
@@ -1266,13 +1308,15 @@ impl LuaUserData for LuaTileSet {
             "setAutoTileRule8",
             |_, this, (type_name, bitmask, tile_id): (String, u16, u32)| {
                 if tile_id == 0 {
-                    return Err(LuaError::RuntimeError(
-                        "setAutoTileRule8: tileId must be >= 1".to_string(),
+                    return Err(tileset_runtime_error(
+                        "setAutoTileRule8",
+                        "tile_id must be >= 1",
                     ));
                 }
                 this.inner
                     .borrow_mut()
-                    .set_auto_tile_rule_8(&type_name, bitmask, tile_id - 1);
+                    .set_auto_tile_rule_8(&type_name, bitmask, tile_id - 1)
+                    .map_err(|err| tileset_runtime_error("setAutoTileRule8", err))?;
                 Ok(())
             },
         );
@@ -1297,7 +1341,10 @@ impl LuaUserData for LuaTileSet {
             "setAutoTileMode",
             |_, this, (type_name, mode): (String, String)| {
                 let mode = parse_auto_tile_mode("setAutoTileMode", &mode)?;
-                this.inner.borrow_mut().set_auto_tile_mode(&type_name, mode);
+                this.inner
+                    .borrow_mut()
+                    .set_auto_tile_mode(&type_name, mode)
+                    .map_err(|err| tileset_runtime_error("setAutoTileMode", err))?;
                 Ok(())
             },
         );
@@ -1337,15 +1384,19 @@ impl LuaUserData for LuaTileSet {
                             .ok()
                             .flatten()
                     })
-                    .map(|id| id.saturating_sub(1));
-                this.inner.borrow_mut().set_terrain_profile(
-                    &name,
-                    TerrainProfile {
-                        terrain_set,
-                        mode,
-                        default_tile_id,
-                    },
-                );
+                    .map(|id| one_based_u32("lurek.tileset.setTerrainProfile.defaultTileId", id))
+                    .transpose()?;
+                this.inner
+                    .borrow_mut()
+                    .set_terrain_profile(
+                        &name,
+                        TerrainProfile {
+                            terrain_set,
+                            mode,
+                            default_tile_id,
+                        },
+                    )
+                    .map_err(|err| tileset_runtime_error("setTerrainProfile", err))?;
                 Ok(())
             },
         );
@@ -1382,6 +1433,7 @@ impl LuaUserData for LuaTileSet {
 /// Registers the `lurek.tileset` API table and userdata handles.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // --- newTileSet ---
     /// Creates a native tileset from atlas dimensions.
     /// @param | first_gid | integer | First global tile id assigned to the tileset.
     /// @param | tile_count | integer | Number of tiles in the atlas.
@@ -1404,42 +1456,37 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 Option<u32>,
                 Option<u32>,
             )| {
+                let tileset = TileSet::try_new(
+                    first_gid,
+                    tile_count,
+                    columns,
+                    tile_width,
+                    tile_height,
+                    spacing.unwrap_or(0),
+                    margin.unwrap_or(0),
+                )
+                .map_err(|err| tileset_runtime_error("newTileSet", err))?;
                 lua.create_userdata(LuaTileSet {
-                    inner: Rc::new(RefCell::new(TileSet::new(
-                        first_gid,
-                        tile_count,
-                        columns,
-                        tile_width,
-                        tile_height,
-                        spacing.unwrap_or(0),
-                        margin.unwrap_or(0),
-                    ))),
+                    inner: Rc::new(RefCell::new(tileset)),
                 })
             },
         )?,
     )?;
+    // --- newCatalog ---
     /// Creates a catalog that resolves typed references across named tilesets.
     /// @param | entries | table | Map of catalog id to `LTileSet`.
     /// @return | LTileCatalog | New tile catalog handle.
     tbl.set(
         "newCatalog",
         lua.create_function(|lua, entries: LuaTable| {
-            let mut catalog = TileCatalog::new();
-            for pair in entries.pairs::<String, LuaAnyUserData>() {
-                let (id, tileset_ud) = pair?;
-                let tileset = tileset_ud.borrow::<LuaTileSet>()?;
-                catalog
-                    .set_tileset(id, tileset.inner.borrow().clone())
-                    .map_err(|err| {
-                        LuaError::RuntimeError(format!("lurek.tileset.newCatalog: {err}"))
-                    })?;
-            }
+            let catalog =
+                TilesetLuaParser::catalog_from_table(entries, "lurek.tileset.newCatalog")?;
             lua.create_userdata(LuaTileCatalog {
                 inner: Rc::new(RefCell::new(catalog)),
             })
         })?,
     )?;
-    // -- fromProvider --
+    // --- fromProvider ---
     /// Builds a native tileset from a Lua provider table with atlas fields, objects, tileObjects, properties, and animations.
     /// @param | provider | table | Lua-authored tileset provider.
     /// @return | LTileSet | New tileset copied from provider data.

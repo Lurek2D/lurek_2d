@@ -3082,8 +3082,8 @@ lurek.tilemap.getAutoTileFormats() -> table  -- Returns the supported auto-tile 
 lurek.tilemap.loadTMX( xml : string, opts : any? ) -> table  -- Parses a TMX (Tiled XML) string and returns a table describing the map structure
 lurek.tilemap.newAutoTileSheet( tileW : integer, tileH : integer, layout : string ) -> LAutoTileSheet  -- Creates an auto-tile sheet with a given tile size and layout
 lurek.tilemap.newChunkMap( chunkSize : integer?, opts : any? ) -> LChunkMap  -- Creates a new infinite chunk-based tile map
-lurek.tilemap.newIsoMap( width : integer, height : integer, tileW : integer, tileH : integer, levelHeight : integer, partCount : integer? ) -> LIsoMap  -- Creates a new isometric map with the given dimensions and tile geometry
-lurek.tilemap.newLargeMapRenderer( tileW : integer, tileH : integer ) -> LLargeMapRenderer  -- Creates a chunk-based large-map renderer for efficient rendering of very large maps
+lurek.tilemap.newIsoMap( width : integer, height : integer, tileW : integer, tileH : integer, levelHeight : integer, partCount : integer?, opts : table? ) -> LIsoMap  -- Creates a new isometric map with the given dimensions and tile geometry
+lurek.tilemap.newLargeMapRenderer( tileW : integer, tileH : integer, opts : table? ) -> LLargeMapRenderer  -- Creates a chunk-based large-map renderer for efficient rendering of very large maps
 lurek.tilemap.newTileMap( tileWidth : integer, tileHeight : integer, chunkSize : integer?, opts : any? ) -> LTileMap  -- Creates a new empty tilemap with the given tile dimensions
 lurek.tilemap.newTileSet()  -- Compatibility alias for `lurek.tileset.newTileSet`
 lurek.tilemap.toScreenHex( q : integer, r : integer, size : number ) -> number  -- Converts axial hex coordinates to screen-space pixel position

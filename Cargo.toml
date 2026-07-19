@@ -274,6 +274,10 @@ name = "tilemap_tests"
 path = "tests/rust/unit/tilemap_tests.rs"
 
 [[test]]
+name = "tileset_tests"
+path = "tests/rust/unit/tileset_tests.rs"
+
+[[test]]
 name = "mapblock_tests"
 path = "tests/rust/unit/mapblock_tests.rs"
 

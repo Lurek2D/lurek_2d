@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-19T07:54:11.957909+00:00",
+    "generated": "2026-07-19T10:00:08.038893+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -152343,7 +152343,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1677,
+            "line": 1920,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152384,7 +152384,7 @@
             ],
             "inferred_return": "LTileMap",
             "return_description": "New tilemap.",
-            "line": 1713,
+            "line": 1960,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152413,7 +152413,7 @@
             ],
             "inferred_return": "LTileMap",
             "return_description": "New tilemap copied from provider data.",
-            "line": 1749,
+            "line": 1996,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152448,7 +152448,7 @@
             ],
             "inferred_return": "LAutoTileSheet",
             "return_description": "New auto-tile sheet.",
-            "line": 1768,
+            "line": 2016,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152464,7 +152464,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array of `{ name, tileCount, mode }` entries.",
-            "line": 1791,
+            "line": 2025,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152493,7 +152493,7 @@
             ],
             "inferred_return": "LChunkMap",
             "return_description": "New chunk map.",
-            "line": 1819,
+            "line": 2035,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152502,8 +152502,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a new isometric map with the given dimensions and tile geometry.",
-            "full_doc": "Creates a new isometric map with the given dimensions and tile geometry.\n@param | width | integer | Map width in tiles.\n@param | height | integer | Map height in tiles.\n@param | tileW | integer | Tile width in pixels.\n@param | tileH | integer | Tile height in pixels.\n@param | levelHeight | integer | Vertical pixel offset between levels.\n@param | partCount | integer? | Number of tile parts per cell (default 4).\n@return | LIsoMap | New isometric map.",
-            "params_doc": "- `width` â€” `integer`: Map width in tiles.\n- `height` â€” `integer`: Map height in tiles.\n- `tileW` â€” `integer`: Tile width in pixels.\n- `tileH` â€” `integer`: Tile height in pixels.\n- `levelHeight` â€” `integer`: Vertical pixel offset between levels.\n- `partCount` â€” `integer?`: Number of tile parts per cell (default 4).",
+            "full_doc": "Creates a new isometric map with the given dimensions and tile geometry.\n@param | width | integer | Map width in tiles.\n@param | height | integer | Map height in tiles.\n@param | tileW | integer | Tile width in pixels.\n@param | tileH | integer | Tile height in pixels.\n@param | levelHeight | integer | Vertical pixel offset between levels.\n@param | partCount | integer? | Number of tile parts per cell (default 4).\n@param | opts | table? | Optional tilemap limits table.\n@return | LIsoMap | New isometric map.",
+            "params_doc": "- `width` â€” `integer`: Map width in tiles.\n- `height` â€” `integer`: Map height in tiles.\n- `tileW` â€” `integer`: Tile width in pixels.\n- `tileH` â€” `integer`: Tile height in pixels.\n- `levelHeight` â€” `integer`: Vertical pixel offset between levels.\n- `partCount` â€” `integer?`: Number of tile parts per cell (default 4).\n- `opts` â€” `table?`: Optional tilemap limits table.",
             "returns_doc": "LIsoMap",
             "inferred_sig": "",
             "typed_params": [
@@ -152542,11 +152542,17 @@
                 "integer?",
                 true,
                 "Number of tile parts per cell (default 4)."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Optional tilemap limits table."
               ]
             ],
             "inferred_return": "LIsoMap",
             "return_description": "New isometric map.",
-            "line": 1841,
+            "line": 2058,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152587,7 +152593,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Screen X.",
-            "line": 1874,
+            "line": 2096,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152628,7 +152634,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Tile X.",
-            "line": 1889,
+            "line": 2114,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152663,7 +152669,7 @@
             ],
             "inferred_return": "number",
             "return_description": "Screen X.",
-            "line": 1903,
+            "line": 2131,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152698,7 +152704,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Axial Q.",
-            "line": 1917,
+            "line": 2148,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152727,7 +152733,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`, or nil on parse failure.",
-            "line": 1941,
+            "line": 2175,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152762,7 +152768,7 @@
             ],
             "inferred_return": "LTileMap",
             "return_description": "Loaded tilemap, or nil when import fails.",
-            "line": 2018,
+            "line": 2208,
             "file": "src/lua_api/tilemap_api.rs"
           },
           {
@@ -152771,10 +152777,10 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a chunk-based large-map renderer for efficient rendering of very large maps.",
-            "full_doc": "Creates a chunk-based large-map renderer for efficient rendering of very large maps.\n@param | tileW | integer | Tile width in pixels.\n@param | tileH | integer | Tile height in pixels.\n@return | LLargeMapRenderer | New large-map renderer.",
-            "params_doc": "- `tileW` â€” `integer`: Tile width in pixels.\n- `tileH` â€” `integer`: Tile height in pixels.",
+            "full_doc": "Creates a chunk-based large-map renderer for efficient rendering of very large maps.\n@param | tileW | integer | Tile width in pixels.\n@param | tileH | integer | Tile height in pixels.\n@param | opts | table? | Optional tilemap limits table.\n@return | LLargeMapRenderer | New large-map renderer.",
+            "params_doc": "- `tileW` â€” `integer`: Tile width in pixels.\n- `tileH` â€” `integer`: Tile height in pixels.\n- `opts` â€” `table?`: Optional tilemap limits table.",
             "returns_doc": "LLargeMapRenderer",
-            "inferred_sig": "(tile_w, tile_h)",
+            "inferred_sig": "(tile_w, tile_h, [opts])",
             "typed_params": [
               [
                 "tileW",
@@ -152787,11 +152793,17 @@
                 "integer",
                 false,
                 "Tile height in pixels."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "Optional tilemap limits table."
               ]
             ],
             "inferred_return": "LLargeMapRenderer",
             "return_description": "New large-map renderer.",
-            "line": 2052,
+            "line": 2223,
             "file": "src/lua_api/tilemap_api.rs"
           }
         ],
@@ -152820,7 +152832,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 291,
+                "line": 427,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -152836,7 +152848,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tileset count.",
-                "line": 301,
+                "line": 437,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -152859,7 +152871,7 @@
                 ],
                 "inferred_return": "LTileSet",
                 "return_description": "The tileset, or nil if index is out of range.",
-                "line": 308,
+                "line": 444,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -152894,7 +152906,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Index of the new layer (1-based).",
-                "line": 328,
+                "line": 460,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -152929,7 +152941,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Index of the new layer (1-based).",
-                "line": 343,
+                "line": 475,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -152945,7 +152957,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer count.",
-                "line": 357,
+                "line": 489,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -152968,7 +152980,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Layer name, or nil if index is out of range.",
-                "line": 364,
+                "line": 496,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -152997,7 +153009,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 375,
+                "line": 508,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153020,7 +153032,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the layer is visible.",
-                "line": 391,
+                "line": 525,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153067,7 +153079,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 401,
+                "line": 536,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153090,7 +153102,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Red (0..1).",
-                "line": 420,
+                "line": 557,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153125,7 +153137,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 429,
+                "line": 567,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153148,7 +153160,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Horizontal offset.",
-                "line": 446,
+                "line": 586,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153183,7 +153195,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 455,
+                "line": 596,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153206,7 +153218,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Horizontal parallax factor.",
-                "line": 472,
+                "line": 615,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153247,7 +153259,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 482,
+                "line": 626,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153288,7 +153300,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True on success.",
-                "line": 500,
+                "line": 647,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153323,7 +153335,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Global tile ID at that position.",
-                "line": 517,
+                "line": 668,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153358,7 +153370,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Global tile ID at that position.",
-                "line": 527,
+                "line": 681,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153393,7 +153405,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 543,
+                "line": 697,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153422,7 +153434,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 551,
+                "line": 708,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153445,7 +153457,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table keyed by GID, each value an array of `{x=number, y=number}`.",
-                "line": 561,
+                "line": 719,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153474,7 +153486,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x=number, y=number}` positions.",
-                "line": 588,
+                "line": 744,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153515,7 +153527,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 610,
+                "line": 764,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153531,7 +153543,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Left edge.",
-                "line": 623,
+                "line": 785,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153554,7 +153566,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 632,
+                "line": 794,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153583,7 +153595,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Tile column (1-based).",
-                "line": 642,
+                "line": 808,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153612,7 +153624,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Tile column (1-based).",
-                "line": 652,
+                "line": 819,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153641,7 +153653,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "World X position in pixels.",
-                "line": 666,
+                "line": 834,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153657,7 +153669,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width in pixels.",
-                "line": 673,
+                "line": 843,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153673,7 +153685,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile height in pixels.",
-                "line": 679,
+                "line": 849,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153689,7 +153701,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width.",
-                "line": 686,
+                "line": 856,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153705,7 +153717,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Chunk size in tiles per side.",
-                "line": 693,
+                "line": 863,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153734,7 +153746,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 700,
+                "line": 870,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153775,7 +153787,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 715,
+                "line": 884,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153804,7 +153816,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 728,
+                "line": 900,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153845,7 +153857,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 743,
+                "line": 914,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153874,7 +153886,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 756,
+                "line": 930,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153915,7 +153927,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 771,
+                "line": 946,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153931,7 +153943,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of `\"topdown\"`, `\"sideview\"`, `\"isometric\"`, `\"hexagonal\"`.",
-                "line": 783,
+                "line": 961,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -153954,7 +153966,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 795,
+                "line": 973,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154013,7 +154025,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 820,
+                "line": 998,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154072,7 +154084,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True on success.",
-                "line": 843,
+                "line": 1025,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154095,7 +154107,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 857,
+                "line": 1046,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154111,7 +154123,7 @@
                 "typed_params": [],
                 "inferred_return": "LShader",
                 "return_description": "Bound shader handle.",
-                "line": 873,
+                "line": 1062,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154140,7 +154152,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 883,
+                "line": 1072,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154163,7 +154175,7 @@
                 ],
                 "inferred_return": "LShader",
                 "return_description": "Bound layer shader handle.",
-                "line": 914,
+                "line": 1103,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154192,7 +154204,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 929,
+                "line": 1118,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154227,7 +154239,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 942,
+                "line": 1132,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154262,7 +154274,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 985,
+                "line": 1176,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154278,7 +154290,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1028,
+                "line": 1220,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154294,7 +154306,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LTileMap\"`.",
-                "line": 1034,
+                "line": 1226,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154317,7 +154329,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if `name` is `\"LTileMap\"` or `\"Object\"`.",
-                "line": 1039,
+                "line": 1231,
                 "file": "src/lua_api/tilemap_api.rs"
               }
             ]
@@ -154339,7 +154351,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of `\"blob47\"`, `\"composite48\"`, `\"rpgmaker48\"`, `\"minimal16\"`.",
-                "line": 1054,
+                "line": 1246,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154355,7 +154367,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "One of `\"matchSides\"` or `\"matchCornersAndSides\"`.",
-                "line": 1060,
+                "line": 1252,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154371,7 +154383,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile count.",
-                "line": 1066,
+                "line": 1258,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154387,7 +154399,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width.",
-                "line": 1072,
+                "line": 1264,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154403,7 +154415,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile height.",
-                "line": 1078,
+                "line": 1270,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154438,7 +154450,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1086,
+                "line": 1278,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154461,7 +154473,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Bitmask value, or nil if not found.",
-                "line": 1102,
+                "line": 1295,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154484,7 +154496,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Tile ID (1-based), or nil if no tile matches.",
-                "line": 1114,
+                "line": 1303,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154507,7 +154519,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "X offset in pixels.",
-                "line": 1128,
+                "line": 1317,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154523,7 +154535,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LAutoTileSheet\"`.",
-                "line": 1140,
+                "line": 1325,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154546,7 +154558,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if `name` is `\"LAutoTileSheet\"` or `\"Object\"`.",
-                "line": 1145,
+                "line": 1330,
                 "file": "src/lua_api/tilemap_api.rs"
               }
             ]
@@ -154581,7 +154593,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Global tile ID.",
-                "line": 1162,
+                "line": 1347,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154616,7 +154628,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1170,
+                "line": 1355,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154639,7 +154651,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{cx, cy}` chunks changed by the batch.",
-                "line": 1178,
+                "line": 1366,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154668,7 +154680,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1201,
+                "line": 1393,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154715,7 +154727,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1212,
+                "line": 1407,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154744,7 +154756,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1227,
+                "line": 1422,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154773,7 +154785,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1235,
+                "line": 1433,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154789,7 +154801,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of `{cx, cy}` pairs.",
-                "line": 1242,
+                "line": 1440,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154805,7 +154817,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of `{cx, cy}` pairs.",
-                "line": 1248,
+                "line": 1446,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154821,7 +154833,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1253,
+                "line": 1451,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154850,7 +154862,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Binary chunk data, or nil when the chunk is not loaded.",
-                "line": 1262,
+                "line": 1460,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154885,7 +154897,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1275,
+                "line": 1473,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154901,7 +154913,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Chunk size.",
-                "line": 1289,
+                "line": 1487,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154917,7 +154929,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of `{cx, cy}` pairs.",
-                "line": 1297,
+                "line": 1495,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154970,7 +154982,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{cx, cy}` pairs.",
-                "line": 1311,
+                "line": 1509,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -154999,7 +155011,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Minimum tile X.",
-                "line": 1329,
+                "line": 1535,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155015,7 +155027,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LChunkMap\"`.",
-                "line": 1336,
+                "line": 1542,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155038,7 +155050,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if `name` is `\"LChunkMap\"` or `\"Object\"`.",
-                "line": 1341,
+                "line": 1547,
                 "file": "src/lua_api/tilemap_api.rs"
               }
             ]
@@ -155079,7 +155091,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1358,
+                "line": 1564,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155114,7 +155126,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1374,
+                "line": 1585,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155143,7 +155155,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Tile GID.",
-                "line": 1383,
+                "line": 1599,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155159,7 +155171,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in tiles.",
-                "line": 1390,
+                "line": 1606,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155182,7 +155194,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1397,
+                "line": 1613,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155198,7 +155210,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Chunk size in tiles per side.",
-                "line": 1404,
+                "line": 1625,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155227,7 +155239,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1411,
+                "line": 1632,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155243,7 +155255,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1417,
+                "line": 1638,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155259,7 +155271,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Visible chunk count.",
-                "line": 1424,
+                "line": 1645,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155275,7 +155287,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Total chunk count.",
-                "line": 1430,
+                "line": 1651,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155310,7 +155322,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1438,
+                "line": 1659,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155339,7 +155351,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1446,
+                "line": 1672,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155362,7 +155374,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1453,
+                "line": 1684,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155378,7 +155390,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True if LOD is enabled.",
-                "line": 1460,
+                "line": 1691,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155401,7 +155413,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1466,
+                "line": 1697,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155424,7 +155436,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1477,
+                "line": 1713,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155440,7 +155452,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Column count.",
-                "line": 1484,
+                "line": 1720,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155456,7 +155468,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LLargeMapRenderer\"`.",
-                "line": 1490,
+                "line": 1726,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155479,7 +155491,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if `name` is `\"LLargeMapRenderer\"` or `\"Object\"`.",
-                "line": 1495,
+                "line": 1731,
                 "file": "src/lua_api/tilemap_api.rs"
               }
             ]
@@ -155501,7 +155513,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Index of the new level (1-based).",
-                "line": 1510,
+                "line": 1746,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155517,7 +155529,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Level count.",
-                "line": 1517,
+                "line": 1757,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155546,7 +155558,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1524,
+                "line": 1764,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155569,7 +155581,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the level is visible.",
-                "line": 1533,
+                "line": 1773,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155616,7 +155628,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1544,
+                "line": 1784,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155657,7 +155669,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Global tile ID.",
-                "line": 1561,
+                "line": 1801,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155692,7 +155704,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1575,
+                "line": 1815,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155721,7 +155733,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1584,
+                "line": 1824,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155737,7 +155749,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width.",
-                "line": 1591,
+                "line": 1832,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155753,7 +155765,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height.",
-                "line": 1595,
+                "line": 1836,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155769,7 +155781,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width.",
-                "line": 1599,
+                "line": 1840,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155785,7 +155797,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile height.",
-                "line": 1603,
+                "line": 1844,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155801,7 +155813,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Level height in pixels.",
-                "line": 1609,
+                "line": 1850,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155836,7 +155848,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Screen X.",
-                "line": 1619,
+                "line": 1860,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155865,7 +155877,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Tile X.",
-                "line": 1629,
+                "line": 1871,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155881,7 +155893,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Part count.",
-                "line": 1636,
+                "line": 1879,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155897,7 +155909,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Part index values.",
-                "line": 1642,
+                "line": 1885,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155920,7 +155932,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1653,
+                "line": 1896,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155936,7 +155948,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `\"LIsoMap\"`.",
-                "line": 1662,
+                "line": 1905,
                 "file": "src/lua_api/tilemap_api.rs"
               },
               {
@@ -155959,7 +155971,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if `name` is `\"LIsoMap\"` or `\"Object\"`.",
-                "line": 1667,
+                "line": 1910,
                 "file": "src/lua_api/tilemap_api.rs"
               }
             ]
@@ -156026,7 +156038,7 @@
             ],
             "inferred_return": "LTileSet",
             "return_description": "New tileset handle.",
-            "line": 1394,
+            "line": 1446,
             "file": "src/lua_api/tileset_api.rs"
           },
           {
@@ -156049,7 +156061,7 @@
             ],
             "inferred_return": "LTileCatalog",
             "return_description": "New tile catalog handle.",
-            "line": 1424,
+            "line": 1479,
             "file": "src/lua_api/tileset_api.rs"
           },
           {
@@ -156072,7 +156084,7 @@
             ],
             "inferred_return": "LTileSet",
             "return_description": "New tileset copied from provider data.",
-            "line": 1446,
+            "line": 1493,
             "file": "src/lua_api/tileset_api.rs"
           }
         ],
@@ -156094,7 +156106,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of catalog id strings.",
-                "line": 589,
+                "line": 714,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156117,7 +156129,7 @@
                 ],
                 "inferred_return": "LTileSet|nil",
                 "return_description": "Tileset for the id, or nil when missing.",
-                "line": 600,
+                "line": 725,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156140,7 +156152,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Object archetype table, or nil when the reference cannot resolve.",
-                "line": 614,
+                "line": 739,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156163,7 +156175,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Visual metadata table, or nil when the reference has no visual.",
-                "line": 628,
+                "line": 753,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156179,7 +156191,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `LTileCatalog`.",
-                "line": 637,
+                "line": 762,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156202,7 +156214,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileCatalog` or `LObject`.",
-                "line": 641,
+                "line": 766,
                 "file": "src/lua_api/tileset_api.rs"
               }
             ]
@@ -156224,7 +156236,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "First global tile id.",
-                "line": 651,
+                "line": 776,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156240,7 +156252,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile count.",
-                "line": 656,
+                "line": 781,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156256,7 +156268,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Column count.",
-                "line": 661,
+                "line": 786,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156272,7 +156284,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width.",
-                "line": 666,
+                "line": 791,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156288,7 +156300,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile height.",
-                "line": 671,
+                "line": 796,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156304,7 +156316,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile width.",
-                "line": 677,
+                "line": 802,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156320,7 +156332,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Texture width.",
-                "line": 683,
+                "line": 808,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156336,7 +156348,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Tile spacing.",
-                "line": 689,
+                "line": 814,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156352,7 +156364,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Atlas margin.",
-                "line": 694,
+                "line": 819,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156375,7 +156387,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Rectangle table with x, y, width, and height.",
-                "line": 700,
+                "line": 825,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156404,7 +156416,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 718,
+                "line": 845,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156427,7 +156439,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Profile name, or nil when unset.",
-                "line": 736,
+                "line": 861,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156456,7 +156468,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 751,
+                "line": 874,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156479,7 +156491,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Physics shape label, or nil when unset.",
-                "line": 769,
+                "line": 893,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156508,7 +156520,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 785,
+                "line": 910,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156531,7 +156543,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Array of frame tables, or nil when no animation exists.",
-                "line": 817,
+                "line": 947,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156560,7 +156572,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 842,
+                "line": 973,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156583,7 +156595,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Object metadata table, or nil when missing.",
-                "line": 954,
+                "line": 992,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156606,7 +156618,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an archetype was removed.",
-                "line": 1090,
+                "line": 1128,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156622,7 +156634,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of object archetype names.",
-                "line": 1095,
+                "line": 1133,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156651,7 +156663,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1106,
+                "line": 1144,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156674,7 +156686,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Object archetype name, or nil when unmapped.",
-                "line": 1124,
+                "line": 1163,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156709,7 +156721,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1141,
+                "line": 1181,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156738,7 +156750,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Property value, or nil when unset.",
-                "line": 1161,
+                "line": 1200,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156767,7 +156779,7 @@
                 ],
                 "inferred_return": "number|nil",
                 "return_description": "Numeric property value, or nil when unset or not numeric.",
-                "line": 1177,
+                "line": 1214,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156796,7 +156808,7 @@
                 ],
                 "inferred_return": "boolean|nil",
                 "return_description": "Boolean property value, or nil when unset or not boolean.",
-                "line": 1196,
+                "line": 1234,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156819,7 +156831,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Property name/value table.",
-                "line": 1214,
+                "line": 1253,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156854,7 +156866,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1233,
+                "line": 1273,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156883,7 +156895,7 @@
                 ],
                 "inferred_return": "integer|nil",
                 "return_description": "Tile id (1-based), or nil when no rule exists.",
-                "line": 1251,
+                "line": 1293,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156918,7 +156930,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1265,
+                "line": 1307,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156947,7 +156959,7 @@
                 ],
                 "inferred_return": "integer|nil",
                 "return_description": "Tile id (1-based), or nil when no rule exists.",
-                "line": 1283,
+                "line": 1327,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156976,7 +156988,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1296,
+                "line": 1340,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -156999,7 +157011,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Autotile matching mode.",
-                "line": 1307,
+                "line": 1354,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -157028,7 +157040,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1313,
+                "line": 1360,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -157051,7 +157063,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Profile table or nil.",
-                "line": 1355,
+                "line": 1406,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -157067,7 +157079,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always `LTileSet`.",
-                "line": 1372,
+                "line": 1423,
                 "file": "src/lua_api/tileset_api.rs"
               },
               {
@@ -157090,7 +157102,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileSet` or `LObject`.",
-                "line": 1376,
+                "line": 1427,
                 "file": "src/lua_api/tileset_api.rs"
               }
             ]

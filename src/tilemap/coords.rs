@@ -2,7 +2,31 @@
 //! It keeps validation, defaults, and error-facing rules near the operations that mutate coords state.
 //! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
+use super::error::TileMapError;
 use crate::math::Vec2;
+
+/// Validate finite projection inputs and strictly positive tile dimensions.
+pub fn validate_projection_inputs(values: &[f32], dimensions: &[f32]) -> Result<(), TileMapError> {
+    if values.iter().any(|value| !value.is_finite()) {
+        return Err(TileMapError::NonFiniteFloat {
+            context: "coordinate input",
+        });
+    }
+    for dimension in dimensions {
+        if !dimension.is_finite() {
+            return Err(TileMapError::NonFiniteFloat {
+                context: "tile or hex size",
+            });
+        }
+        if *dimension <= 0.0 {
+            return Err(TileMapError::NonPositiveFloat {
+                context: "tile or hex size",
+                value: *dimension,
+            });
+        }
+    }
+    Ok(())
+}
 
 /// Convert tile coordinates `(tx, ty)` to isometric screen position for a tile of `tile_w` by `tile_h` pixels.
 pub fn to_screen_iso(tx: f32, ty: f32, tile_w: f32, tile_h: f32) -> Vec2 {

@@ -109,12 +109,10 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### large_map_renderer.rs
 
-- Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy.
-- Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work.
-- Delegates camera viewport range math to `camera`, then uses that range for chunk-level tile output.
-- Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes.
-- Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing.
-- Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.
+- Owns the bounded renderer snapshot for maps that are too large for one monolithic redraw.
+- `LargeMapRenderer` is intentionally an independent dense snapshot: `TileMap` and `ChunkMap`
+- remain authoritative storage owners, while this type owns only its snapshot and visible-chunk
+- cache. All snapshot allocations and camera inputs pass through `TileMapLimits` validation.
 
 ### ldtk.rs
 
@@ -205,8 +203,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `lurek.tilemap.loadTMX(xml, opts?) -> table`: Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 - `lurek.tilemap.newAutoTileSheet(tileW, tileH, layout) -> LAutoTileSheet`: Creates an auto-tile sheet with a given tile size and layout.
 - `lurek.tilemap.newChunkMap(chunkSize?, opts?) -> LChunkMap`: Creates a new infinite chunk-based tile map.
-- `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
-- `lurek.tilemap.newLargeMapRenderer(tileW, tileH) -> LLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
+- `lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount?, opts?) -> LIsoMap`: Creates a new isometric map with the given dimensions and tile geometry.
+- `lurek.tilemap.newLargeMapRenderer(tileW, tileH, opts?) -> LLargeMapRenderer`: Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 - `lurek.tilemap.newTileMap(tileWidth, tileHeight, chunkSize?, opts?) -> LTileMap`: Creates a new empty tilemap with the given tile dimensions.
 - `lurek.tilemap.newTileSet() -> nil`: Compatibility alias for `lurek.tileset.newTileSet`.
 - `lurek.tilemap.toScreenHex(q, r, size) -> number`: Converts axial hex coordinates to screen-space pixel position.
@@ -503,6 +501,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LTileSet` owns atlas-local tile metadata: visual source rectangles, animation, autotile rules, optional profile names, optional physics-shape names, and arbitrary author properties. Sprite atlases own image regions; tileset metadata explains what a tile id means.
 - Tileset profile names are lightweight links into `tilefield` profiles. They do not make `tilemap` depend on `tilefield`, and they do not duplicate full movement, vision, action, or light costs inside the atlas object.
 - `lurek.tilefield.fromTileMap(tilemap, opts)` copies tilemap state into a field snapshot. It only applies movement blockers from explicit `solidGids`; it does not infer solidity from the tileset. Later tilemap edits are not automatically synchronized unless the adapter is called again.
+- `lurek.tilemap.newTileSet(...)` remains a compatibility alias for the tileset owner; new code should prefer `lurek.tileset.newTileSet(...)` while existing tilemap scripts remain supported.
 - `lurek.tilemap.newTileMap(...)` and `lurek.tilemap.newChunkMap(...)` accept an optional limits table with ceilings such as `maxLayers`, `maxTiles`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, and `maxTileOperationCells`.
 - `lurek.tilemap.loadTMX(xml, opts)` supports strict/bounded import policy through `strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`, and the same byte/size limits used by safe constructors.
 - `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking front-ends.

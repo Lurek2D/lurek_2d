@@ -283,6 +283,114 @@ mod safety_tests {
     }
 
     #[test]
+    fn limits_reject_zero_ceilings() {
+        let limits = TileMapLimits {
+            max_chunks: 0,
+            ..TileMapLimits::default()
+        };
+        let err = TileMap::try_new_with_limits(16, 16, 8, limits)
+            .expect_err("zero safety ceilings must be rejected");
+        assert!(matches!(
+            err,
+            TileMapError::InvalidLimitConfiguration { .. }
+        ));
+
+        let inconsistent = TileMapLimits {
+            max_import_bytes: 4096,
+            max_decoded_bytes: 1024,
+            ..TileMapLimits::default()
+        };
+        let err = TileMap::try_new_with_limits(16, 16, 8, inconsistent)
+            .expect_err("decoded budget below raw budget must be rejected");
+        assert!(matches!(
+            err,
+            TileMapError::InvalidLimitConfiguration {
+                field: "max_decoded_bytes"
+            }
+        ));
+    }
+
+    #[test]
+    fn legacy_chunk_constructor_clamps_unsafe_divisor() {
+        let map = ChunkMap::new(u32::MAX);
+        assert_eq!(map.get_chunk_size(), 1024);
+    }
+
+    #[test]
+    fn chunk_view_rejects_unbounded_result_ranges() {
+        let limits = TileMapLimits {
+            max_tile_operation_cells: 16,
+            ..TileMapLimits::default()
+        };
+        let map = ChunkMap::try_new_with_limits(16, &limits).unwrap();
+        let err = map
+            .try_get_chunks_in_view(-10000.0, -10000.0, 20000.0, 20000.0, 1.0, 1.0)
+            .expect_err("view results must be bounded");
+        assert!(matches!(
+            err,
+            TileMapError::TileOperationLimitExceeded { .. }
+        ));
+    }
+
+    #[test]
+    fn chunk_map_enforces_chunk_and_operation_limits() {
+        let limits = TileMapLimits {
+            max_chunks: 1,
+            max_tile_operation_cells: 2,
+            ..TileMapLimits::default()
+        };
+        let mut map = ChunkMap::try_new_with_limits(2, &limits).unwrap();
+        assert!(map
+            .try_set_tiles(&[(0, 0, 1), (1, 0, 2), (2, 0, 3)])
+            .is_err());
+        map.try_set_tile(0, 0, 1).unwrap();
+        assert!(matches!(
+            map.try_set_tile(2, 0, 1),
+            Err(TileMapError::MaxChunksExceeded { .. })
+        ));
+    }
+
+    #[test]
+    fn large_renderer_rejects_mismatched_payload_and_invalid_camera() {
+        let mut renderer = LargeMapRenderer::try_new(16, 16, &TileMapLimits::default()).unwrap();
+        assert!(matches!(
+            renderer.try_set_map_data(vec![1, 2, 3], 2, 2),
+            Err(TileMapError::InvalidLength { .. })
+        ));
+        assert!(matches!(
+            renderer.try_set_camera(0.0, 0.0, f32::NAN),
+            Err(TileMapError::NonFiniteFloat { .. })
+        ));
+        assert!(matches!(
+            renderer.try_set_lod_thresholds(vec![2.0, 1.0, 1.0]),
+            Ok(())
+        ));
+        assert_eq!(renderer.lod_thresholds.len(), 2);
+        assert!((renderer.lod_thresholds[0] - 1.0).abs() < f32::EPSILON);
+        assert!((renderer.lod_thresholds[1] - 2.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn chunk_bytes_reject_version_and_reserved_flags_without_panicking() {
+        let mut source = ChunkMap::try_new(2).unwrap();
+        source.load_chunk(0, 0);
+        let bytes = source.chunk_to_bytes(0, 0).unwrap();
+        let mut bad_version = bytes.clone();
+        bad_version[4] = 2;
+        assert!(source.load_chunk_from_bytes(0, 0, &bad_version).is_err());
+        let mut bad_flags = bytes;
+        bad_flags[6] = 1;
+        assert!(source.load_chunk_from_bytes(0, 0, &bad_flags).is_err());
+    }
+
+    #[test]
+    fn finite_and_positive_projection_inputs_are_required() {
+        assert!(coords::validate_projection_inputs(&[0.0], &[16.0]).is_ok());
+        assert!(coords::validate_projection_inputs(&[f32::INFINITY], &[16.0]).is_err());
+        assert!(coords::validate_projection_inputs(&[0.0], &[0.0]).is_err());
+    }
+
+    #[test]
     fn try_world_to_tile_negative_returns_none() {
         let map = TileMap::try_new(16, 16, 8).unwrap();
         assert_eq!(map.try_world_to_tile(-1.0, 0.0), None);
@@ -309,7 +417,8 @@ mod safety_tests {
                     duration_ms: 100.0,
                 },
             ],
-        );
+        )
+        .unwrap();
         map.add_tileset(ts);
         map.try_add_layer("base", 2, 2).unwrap();
         map.try_set_tile(0, 0, 0, 1).unwrap();
@@ -732,7 +841,7 @@ mod autotile_sheet_tests {
     fn apply_to_tileset_minimal16() {
         let sheet = AutoTileSheet::new(16, 16, AutoTileLayout::Minimal16);
         let mut ts = TileSet::new(1, 16, 4, 16, 16, 0, 0);
-        sheet.apply_to_tileset(&mut ts, "grass", None);
+        sheet.apply_to_tileset(&mut ts, "grass", None).unwrap();
         assert_eq!(ts.get_auto_tile_id("grass", 0), Some(0));
         assert_eq!(ts.get_auto_tile_id("grass", 15), Some(15));
     }
@@ -741,7 +850,7 @@ mod autotile_sheet_tests {
     fn apply_to_tileset_with_offset() {
         let sheet = AutoTileSheet::new(16, 16, AutoTileLayout::Minimal16);
         let mut ts = TileSet::new(1, 32, 4, 16, 16, 0, 0);
-        sheet.apply_to_tileset(&mut ts, "wall", Some(10));
+        sheet.apply_to_tileset(&mut ts, "wall", Some(10)).unwrap();
         assert_eq!(ts.get_auto_tile_id("wall", 0), Some(10));
     }
 
@@ -749,7 +858,7 @@ mod autotile_sheet_tests {
     fn apply_to_tileset_blob47() {
         let sheet = AutoTileSheet::new(16, 16, AutoTileLayout::Blob47);
         let mut ts = TileSet::new(1, 64, 8, 16, 16, 0, 0);
-        sheet.apply_to_tileset(&mut ts, "stone", None);
+        sheet.apply_to_tileset(&mut ts, "stone", None).unwrap();
         let bm0 = sheet.get_bitmask_for_tile(0);
         assert_eq!(ts.get_auto_tile_id_8("stone", bm0), Some(0));
         assert_eq!(
@@ -762,7 +871,7 @@ mod autotile_sheet_tests {
     fn apply_to_tileset_rpgmaker48_sets_8bit_rules_and_mode() {
         let sheet = AutoTileSheet::new(16, 16, AutoTileLayout::RpgMaker48);
         let mut ts = TileSet::new(1, 64, 8, 16, 16, 0, 0);
-        sheet.apply_to_tileset(&mut ts, "water", Some(3));
+        sheet.apply_to_tileset(&mut ts, "water", Some(3)).unwrap();
         let bm0 = sheet.get_bitmask_for_tile(0);
         assert_eq!(ts.get_auto_tile_id_8("water", bm0), Some(3));
         assert_eq!(

@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-19T07:54:09.070865+00:00",
+    "generated": "2026-07-19T10:00:05.216506+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3355,
-      "rust_modules": 791,
-      "rust_tests": 503,
-      "lua_tests": 287
+      "rust_items": 3362,
+      "rust_modules": 793,
+      "rust_tests": 506,
+      "lua_tests": 290
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3355,
-      "documented": 3353,
-      "modules": 791
+      "total_items": 3362,
+      "documented": 3360,
+      "modules": 793
     },
     "modules": {
       "agent::chat": {
@@ -25782,30 +25782,44 @@
           {
             "name": "AutoTileLayout",
             "kind": "enum",
-            "description": "Sprite-sheet packing variant that determines tile count and bitmask encoding.",
+            "description": "Sprite-sheet packing variant that determines tile count and bitmask encoding. # Variants",
             "file": "src/tilemap/autotile_sheet.rs",
-            "line": 15
+            "line": 16
           },
           {
             "name": "AutoTileSheet",
             "kind": "struct",
-            "description": "Autotile sprite sheet: holds bitmask tables for fast neighbor-to-tile lookup.",
+            "description": "Autotile sprite sheet: holds bitmask tables for fast neighbor-to-tile lookup. # Fields",
             "file": "src/tilemap/autotile_sheet.rs",
-            "line": 28
+            "line": 30
           },
           {
             "name": "layout_name",
             "kind": "fn",
             "description": "Return the stable Lua/API name for an autotile sheet layout.",
             "file": "src/tilemap/autotile_sheet.rs",
-            "line": 43
+            "line": 45
+          },
+          {
+            "name": "layout_from_name",
+            "kind": "fn",
+            "description": "Parse the stable Lua/API name for an autotile sheet layout.",
+            "file": "src/tilemap/autotile_sheet.rs",
+            "line": 55
+          },
+          {
+            "name": "supported_layouts",
+            "kind": "fn",
+            "description": "Return the supported layouts and their tile counts in stable presentation order.",
+            "file": "src/tilemap/autotile_sheet.rs",
+            "line": 66
           },
           {
             "name": "default_mode_for_layout",
             "kind": "fn",
             "description": "Return the default terrain-neighbour matching mode for an autotile sheet layout.",
             "file": "src/tilemap/autotile_sheet.rs",
-            "line": 53
+            "line": 76
           }
         ]
       },
@@ -25816,9 +25830,9 @@
           {
             "name": "ChunkMap",
             "kind": "struct",
-            "description": "Infinite tile grid partitioned into fixed-size square chunks loaded on demand.",
+            "description": "Infinite tile grid partitioned into fixed-size square chunks loaded on demand. # Fields",
             "file": "src/tilemap/chunk.rs",
-            "line": 19
+            "line": 23
           }
         ]
       },
@@ -25827,32 +25841,39 @@
         "source_file": "src/tilemap/coords.rs",
         "items": [
           {
+            "name": "validate_projection_inputs",
+            "kind": "fn",
+            "description": "Validate finite projection inputs and strictly positive tile dimensions.",
+            "file": "src/tilemap/coords.rs",
+            "line": 9
+          },
+          {
             "name": "to_screen_iso",
             "kind": "fn",
             "description": "Convert tile coordinates `(tx, ty)` to isometric screen position for a tile of `tile_w` by `tile_h` pixels.",
             "file": "src/tilemap/coords.rs",
-            "line": 8
+            "line": 32
           },
           {
             "name": "from_screen_iso",
             "kind": "fn",
             "description": "Convert isometric screen position `(sx, sy)` back to tile coordinates for a tile of `tile_w` by `tile_h` pixels.",
             "file": "src/tilemap/coords.rs",
-            "line": 13
+            "line": 37
           },
           {
             "name": "to_screen_hex",
             "kind": "fn",
             "description": "Convert hex axial coordinates `(q, r)` to flat-top screen position for a hex of the given `size`.",
             "file": "src/tilemap/coords.rs",
-            "line": 20
+            "line": 44
           },
           {
             "name": "from_screen_hex",
             "kind": "fn",
             "description": "Convert screen position `(sx, sy)` to flat-top hex axial coordinates for a hex of the given `size`.",
             "file": "src/tilemap/coords.rs",
-            "line": 27
+            "line": 51
           }
         ]
       },
@@ -25863,9 +25884,9 @@
           {
             "name": "TileMapError",
             "kind": "enum",
-            "description": "Error returned by safe tilemap constructors, queries, and bounded helpers.",
+            "description": "Error returned by safe tilemap constructors, queries, and bounded helpers. # Variants",
             "file": "src/tilemap/error.rs",
-            "line": 11
+            "line": 12
           }
         ]
       },
@@ -25876,57 +25897,57 @@
           {
             "name": "IsoTilePart",
             "kind": "enum",
-            "description": "Draw-layer part of an isometric tile (floor, walls, objects).",
+            "description": "Draw-layer part of an isometric tile (floor, walls, objects). # Variants",
             "file": "src/tilemap/isomap.rs",
-            "line": 12
+            "line": 16
           },
           {
             "name": "IsoTile",
             "kind": "struct",
-            "description": "A single isometric cell holding one GID per draw-layer part.",
+            "description": "A single isometric cell holding one GID per draw-layer part. # Fields",
             "file": "src/tilemap/isomap.rs",
-            "line": 41
+            "line": 46
           },
           {
             "name": "IsoLevel",
             "kind": "struct",
-            "description": "One elevation layer of an `IsoMap` grid of `IsoTile`s.",
+            "description": "One elevation layer of an `IsoMap` grid of `IsoTile`s. # Fields",
             "file": "src/tilemap/isomap.rs",
-            "line": 48
+            "line": 54
           },
           {
             "name": "IsoDrawItem",
             "kind": "struct",
-            "description": "A single draw-order entry produced by `IsoMap::draw_iter`.",
+            "description": "A single draw-order entry produced by `IsoMap::draw_iter`. # Fields",
             "file": "src/tilemap/isomap.rs",
-            "line": 93
+            "line": 135
           },
           {
             "name": "IsoMap",
             "kind": "struct",
-            "description": "Multi-level isometric tile map with painter-sorted draw iteration.",
+            "description": "Multi-level isometric tile map with painter-sorted draw iteration. # Fields",
             "file": "src/tilemap/isomap.rs",
-            "line": 112
+            "line": 155
           }
         ]
       },
       "tilemap::large_map_renderer": {
-        "module_doc": "Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy. Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work. Delegates camera viewport range math to `camera`, then uses that range for chunk-level tile output. Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes. Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing. Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.",
+        "module_doc": "Owns the bounded renderer snapshot for maps that are too large for one monolithic redraw.  `LargeMapRenderer` is intentionally an independent dense snapshot: `TileMap` and `ChunkMap` remain authoritative storage owners, while this type owns only its snapshot and visible-chunk cache. All snapshot allocations and camera inputs pass through `TileMapLimits` validation.",
         "source_file": "src/tilemap/large_map_renderer.rs",
         "items": [
           {
             "name": "MapChunk",
             "kind": "struct",
-            "description": "A single rendered chunk: a region of tile IDs with a dirty flag for incremental updates.",
+            "description": "A single rendered chunk: a region of tile IDs with a dirty flag for incremental updates. # Fields",
             "file": "src/tilemap/large_map_renderer.rs",
-            "line": 14
+            "line": 19
           },
           {
             "name": "LargeMapRenderer",
             "kind": "struct",
-            "description": "Stateful renderer context for maps too large to render in a single draw pass.",
+            "description": "Stateful renderer context for an independently mutable, bounded dense map snapshot. # Fields",
             "file": "src/tilemap/large_map_renderer.rs",
-            "line": 26
+            "line": 32
           }
         ]
       },
@@ -25937,23 +25958,23 @@
           {
             "name": "LdtkImportError",
             "kind": "struct",
-            "description": "Structured LDtk import error used by Rust callers and Lua bindings.",
+            "description": "Structured LDtk import error used by Rust callers and Lua bindings. # Fields",
             "file": "src/tilemap/ldtk.rs",
-            "line": 14
+            "line": 15
           },
           {
             "name": "load_ldtk",
             "kind": "fn",
             "description": "Parse `json_str` as an LDtk project, import the level named `level_name` (or the first level when `None`), and return a `TileMap`.",
             "file": "src/tilemap/ldtk.rs",
-            "line": 37
+            "line": 38
           },
           {
             "name": "load_ldtk_with_limits",
             "kind": "fn",
             "description": "Parse `json_str` as an LDtk project using explicit tilemap limits.",
             "file": "src/tilemap/ldtk.rs",
-            "line": 42
+            "line": 43
           }
         ]
       },
@@ -25964,9 +25985,9 @@
           {
             "name": "TileMapLimits",
             "kind": "struct",
-            "description": "Shared safety limits for tilemap storage, importers, rendering helpers, and bounded tile operations.",
+            "description": "Shared safety limits for tilemap storage, importers, rendering helpers, and bounded tile operations. # Fields",
             "file": "src/tilemap/limits.rs",
-            "line": 10
+            "line": 11
           }
         ]
       },
@@ -26074,9 +26095,9 @@
           {
             "name": "MapOrientation",
             "kind": "enum",
-            "description": "Projection / rendering orientation for a tilemap.",
+            "description": "Projection / rendering orientation for a tilemap. # Variants",
             "file": "src/tilemap/orientation.rs",
-            "line": 7
+            "line": 8
           }
         ]
       },
@@ -26087,9 +26108,9 @@
           {
             "name": "TileFieldSlotRenderOptions",
             "kind": "struct",
-            "description": "Options for rendering one tilefield slot through tileset object visuals.",
+            "description": "Options for rendering one tilefield slot through tileset object visuals. # Fields",
             "file": "src/tilemap/render.rs",
-            "line": 20
+            "line": 21
           }
         ]
       },
@@ -26100,30 +26121,30 @@
           {
             "name": "TileLayer",
             "kind": "struct",
-            "description": "A single tile layer with per-tile GID and optional per-tile tint data.",
+            "description": "A single tile layer with per-tile GID and optional per-tile tint data. # Fields",
             "file": "src/tilemap/tilemap.rs",
-            "line": 27
+            "line": 28
           },
           {
             "name": "TileIndexPolicy",
             "kind": "enum",
-            "description": "Policy controlling when the reverse GID index is materialized.",
+            "description": "Policy controlling when the reverse GID index is materialized. # Variants",
             "file": "src/tilemap/tilemap.rs",
-            "line": 82
+            "line": 81
           },
           {
             "name": "TileMapDiagnosticsSnapshot",
             "kind": "struct",
-            "description": "Snapshot of tilemap diagnostics counters used to surface silent fallbacks and guarded queries.",
+            "description": "Snapshot of tilemap diagnostics counters used to surface silent fallbacks and guarded queries. # Fields",
             "file": "src/tilemap/tilemap.rs",
             "line": 91
           },
           {
             "name": "TileMap",
             "kind": "struct",
-            "description": "Multi-layer tile map with tileset attachment, tile storage, autotile, animation, and render-command output.",
+            "description": "Multi-layer tile map with tileset attachment, tile storage, autotile, animation, and render-command output. # Fields",
             "file": "src/tilemap/tilemap.rs",
-            "line": 131
+            "line": 132
           }
         ]
       },
@@ -26139,180 +26160,206 @@
           {
             "name": "TmxImportError",
             "kind": "struct",
-            "description": "Structured TMX import error used by Rust callers and Lua bindings.",
+            "description": "Structured TMX import error used by Rust callers and Lua bindings. # Fields",
             "file": "src/tilemap/tmx.rs",
-            "line": 23
+            "line": 24
           },
           {
             "name": "TmxLoadOptions",
             "kind": "struct",
-            "description": "Safe/strict TMX loading options used by import callers that need bounded parsing behavior.",
+            "description": "Safe/strict TMX loading options used by import callers that need bounded parsing behavior. # Fields",
             "file": "src/tilemap/tmx.rs",
-            "line": 70
+            "line": 72
           },
           {
             "name": "TmxOrientation",
             "kind": "enum",
-            "description": "Map projection type as declared in the TMX `<map orientation=\"...\">` attribute.",
+            "description": "Map projection type as declared in the TMX `<map orientation=\"...\">` attribute. # Variants",
             "file": "src/tilemap/tmx.rs",
-            "line": 97
+            "line": 100
           },
           {
             "name": "TmxStaggerAxis",
             "kind": "enum",
-            "description": "Which grid axis is staggered in `Staggered` and `Hexagonal` maps.",
+            "description": "Which grid axis is staggered in `Staggered` and `Hexagonal` maps. # Variants",
             "file": "src/tilemap/tmx.rs",
-            "line": 121
+            "line": 125
           },
           {
             "name": "TmxTileset",
             "kind": "struct",
-            "description": "Parsed `<tileset>` element, which may be external (`source` present) or inline.",
+            "description": "Parsed `<tileset>` element, which may be external (`source` present) or inline. # Fields",
             "file": "src/tilemap/tmx.rs",
-            "line": 129
+            "line": 134
           },
           {
             "name": "TmxTileLayer",
             "kind": "struct",
-            "description": "Parsed `<layer>` (tile layer) element.",
+            "description": "Parsed `<layer>` (tile layer) element. # Fields",
             "file": "src/tilemap/tmx.rs",
-            "line": 157
+            "line": 163
           },
           {
             "name": "TmxObjectLayer",
             "kind": "struct",
-            "description": "Parsed `<objectgroup>` element.",
+            "description": "Parsed `<objectgroup>` element. # Fields",
             "file": "src/tilemap/tmx.rs",
-            "line": 177
+            "line": 184
           },
           {
             "name": "TmxObject",
             "kind": "struct",
-            "description": "Parsed `<object>` element inside an objectgroup.",
+            "description": "Parsed `<object>` element inside an objectgroup. # Fields",
             "file": "src/tilemap/tmx.rs",
-            "line": 187
+            "line": 195
           },
           {
             "name": "TmxLayer",
             "kind": "enum",
-            "description": "A single map layer, either tile data or objects.",
+            "description": "A single map layer, either tile data or objects. # Variants",
             "file": "src/tilemap/tmx.rs",
-            "line": 207
+            "line": 216
           },
           {
             "name": "TmxMap",
             "kind": "struct",
-            "description": "Top-level parsed TMX map. This item is part of the public API.",
+            "description": "Top-level parsed TMX map. This item is part of the public API. # Fields",
             "file": "src/tilemap/tmx.rs",
-            "line": 215
+            "line": 225
           },
           {
             "name": "load_tmx",
             "kind": "fn",
             "description": "Parse an XML-encoded TMX map string; returns a `TmxMap` or a structured parse error.",
             "file": "src/tilemap/tmx.rs",
-            "line": 254
+            "line": 264
           },
           {
             "name": "load_tmx_with_options",
             "kind": "fn",
             "description": "Parse an XML-encoded TMX map string using explicit strictness, path policy, and byte limits.",
             "file": "src/tilemap/tmx.rs",
-            "line": 259
+            "line": 269
           }
         ]
       },
       "tileset::animation": {
-        "module_doc": "This file owns animation behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate animation state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "module_doc": "Owns local tile-id and frame-duration records for tileset animations.  These frames are metadata consumed by tilemap timing/render selection; they are intentionally not general entity animation timelines.",
         "source_file": "src/tileset/animation.rs",
         "items": [
           {
             "name": "TileAnimFrame",
             "kind": "struct",
-            "description": "A single frame in a tile sprite-sheet animation.",
+            "description": "A single frame in a tile sprite-sheet animation.  # Fields  The local frame tile id and its positive display duration are validated by `TileSet::set_animation` before storage.",
             "file": "src/tileset/animation.rs",
-            "line": 7
+            "line": 13
           }
         ]
       },
       "tileset::archetype": {
-        "module_doc": "Owns the tileset archetype implementation for the tileset subsystem and keeps related runtime rules local here. Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates. Defines how tileset archetype data is validated, transformed, or stored before neighboring systems consume it. Separates tileset archetype behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing tileset archetype defaults, lifecycle handling, validation, or data ownership rules.",
+        "module_doc": "Owns reusable object archetypes and their author-default validation.  Archetypes describe defaults for neighboring owners to materialize. They do not create physics bodies, lights, blockers, or render resources themselves.",
         "source_file": "src/tileset/archetype.rs",
         "items": [
           {
             "name": "TileObjectShapeKind",
             "kind": "enum",
-            "description": "Tile-filling shape authored on a tileset object.",
+            "description": "Tile-filling shape authored on a tileset object.  # Variants  The variants are the accepted shape vocabulary passed to physics and render integration owners.",
             "file": "src/tileset/archetype.rs",
-            "line": 14
+            "line": 19
           },
           {
             "name": "TileObjectLight",
             "kind": "struct",
-            "description": "Tile-based light source defaults authored on a tileset object archetype.",
+            "description": "Tile-based light source defaults authored on a tileset object archetype.  # Fields  Radius and intensity are finite non-negative defaults and color components are finite values in the unit range.",
             "file": "src/tileset/archetype.rs",
-            "line": 56
+            "line": 66
           },
           {
             "name": "TileObjectPhysics",
             "kind": "struct",
-            "description": "Physics body defaults authored on a tileset object archetype.",
+            "description": "Physics body defaults authored on a tileset object archetype.  # Fields  Body type and material values are validated before the archetype is stored; layer and mask remain opaque bitmasks for the physics owner.",
             "file": "src/tileset/archetype.rs",
-            "line": 77
+            "line": 92
           },
           {
             "name": "TileObjectRenderLight",
             "kind": "struct",
-            "description": "Render-light defaults authored on a tileset object archetype.",
+            "description": "Render-light defaults authored on a tileset object archetype.  # Fields  Numeric colors, radius, and intensity are validated here while blend, falloff, and light-type strings use the lighting module vocabulary.",
             "file": "src/tileset/archetype.rs",
-            "line": 116
+            "line": 136
           },
           {
             "name": "TileObjectOccluder",
             "kind": "struct",
-            "description": "Render-light occluder defaults authored on a tileset object archetype.",
+            "description": "Render-light occluder defaults authored on a tileset object archetype.  # Fields  Opacity is a finite unit-range default; masks and enabled state are passed to the light integration owner.",
             "file": "src/tileset/archetype.rs",
-            "line": 161
+            "line": 186
           },
           {
             "name": "TileObjectArchetype",
             "kind": "struct",
-            "description": "Reusable object archetype that can be referenced by `tilefield` slots.",
+            "description": "Reusable object archetype that can be referenced by `tilefield` slots.  # Fields  An archetype combines optional visual, semantic, footprint, light, physics, occluder, and custom-property defaults without materializing runtime objects.",
             "file": "src/tileset/archetype.rs",
-            "line": 185
+            "line": 215
           }
         ]
       },
       "tileset::autotile": {
-        "module_doc": "This file owns autotile behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate autotile state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "module_doc": "Owns autotile matching modes and terrain-profile metadata.  The module describes authoring metadata only. Tilemap owns neighborhood scans, map mutation, and dirty-region propagation when these rules are applied.",
         "source_file": "src/tileset/autotile.rs",
         "items": [
           {
             "name": "AutoTileMode",
             "kind": "enum",
-            "description": "Terrain-neighbour matching strategy used when applying autotile rules.",
+            "description": "Terrain-neighbour matching strategy used when applying autotile rules.  # Variants  Each variant selects which neighboring occupancy bits tilemap may interpret.",
             "file": "src/tileset/autotile.rs",
-            "line": 7
+            "line": 15
           },
           {
             "name": "TerrainProfile",
             "kind": "struct",
-            "description": "Godot-style terrain-set profile metadata for autotile authoring.",
+            "description": "Godot-style terrain-set profile metadata for autotile authoring.  # Fields  The profile names a terrain set, matching mode, and optional zero-based fallback tile id.",
             "file": "src/tileset/autotile.rs",
-            "line": 18
+            "line": 31
           }
         ]
       },
       "tileset::catalog": {
-        "module_doc": "This file owns catalog behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate catalog state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings. Public functions in this file are the stable entry points other modules should use for catalog work.",
+        "module_doc": "Owns snapshot catalogs that resolve typed tilefield references to tileset metadata.  A catalog stores cloned `TileSet` values intentionally. A catalog lookup is a stable snapshot; mutating the original Lua tileset after `newCatalog` does not mutate the catalog entry. Shared live handles remain a separate future feature.",
         "source_file": "src/tileset/catalog.rs",
         "items": [
           {
             "name": "TileCatalog",
             "kind": "struct",
-            "description": "Many-tileset resolver keyed by stable Lua-authored tileset id.",
+            "description": "Many-tileset resolver keyed by stable Lua-authored tileset id.  # Fields  The catalog contains a bounded map of cloned tileset snapshots and the limits used for catalog insertion.",
             "file": "src/tileset/catalog.rs",
-            "line": 12
+            "line": 20
+          }
+        ]
+      },
+      "tileset::error": {
+        "module_doc": "Defines the error vocabulary shared by tileset construction and metadata mutation.  The tileset boundary reports these errors to Lua with the owning API name added by the binding. Keeping the structured cases here prevents arithmetic, id, and limit failures from becoming unrelated free-form strings across the subsystem.",
+        "source_file": "src/tileset/error.rs",
+        "items": [
+          {
+            "name": "TilesetError",
+            "kind": "enum",
+            "description": "Failure returned by validated tileset construction or metadata mutation.  # Variants  Variants distinguish field validation, local-id ownership, checked arithmetic, and configured collection ceilings.",
+            "file": "src/tileset/error.rs",
+            "line": 16
+          }
+        ]
+      },
+      "tileset::limits": {
+        "module_doc": "Owns conservative allocation and numeric ceilings for atlas-local tileset metadata.  These limits are deliberately tileset-specific. They are not borrowed from `tilemap`, because a tileset has different hostile-input risks: atlas arithmetic, nested author records, rule tables, and copied catalog snapshots all need independent bounds.",
+        "source_file": "src/tileset/limits.rs",
+        "items": [
+          {
+            "name": "TilesetLimits",
+            "kind": "struct",
+            "description": "Conservative limits applied to one tileset and its nested author metadata.  # Fields  The fields cover atlas geometry, nested metadata counts, string sizes, and finite author numeric defaults.",
+            "file": "src/tileset/limits.rs",
+            "line": 14
           }
         ]
       },
@@ -26349,44 +26396,58 @@
             "line": 17
           },
           {
+            "name": "error",
+            "kind": "mod",
+            "description": "Structured construction and mutation errors.",
+            "file": "src/tileset/mod.rs",
+            "line": 19
+          },
+          {
+            "name": "limits",
+            "kind": "mod",
+            "description": "Tileset-owned numeric and collection ceilings.",
+            "file": "src/tileset/mod.rs",
+            "line": 21
+          },
+          {
             "name": "tileset",
             "kind": "mod",
             "description": "Core tileset atlas, archetype registry, per-tile mappings, and autotile rule storage.",
             "file": "src/tileset/mod.rs",
-            "line": 19
+            "line": 23
           },
           {
             "name": "visual",
             "kind": "mod",
             "description": "Sprite/atlas/image visual references used by tilemap render ordering.",
             "file": "src/tileset/mod.rs",
-            "line": 21
+            "line": 25
           }
         ]
       },
       "tileset::tileset": {
-        "module_doc": "Owns the tileset tileset implementation for the tileset subsystem and keeps related runtime rules local here. Keeps tileset metadata, archetypes, and render-facing lookup helpers so helpers stay close to invariants this updates. Defines how tileset tileset data is validated, transformed, or stored before neighboring systems consume it. Separates tileset tileset behavior from Lua bindings, tests, and sibling owners so integration stays readable. Documents the boundary where tileset code accepts inputs, reports errors, allocates state, or emits outputs. Use this file when changing tileset tileset defaults, lifecycle handling, validation, or data ownership rules. Keeps failure paths and edge cases near the tileset tileset state that explains them instead of spreading rules outward.",
+        "module_doc": "Owns validated atlas geometry and atlas-local metadata registries.  `TileSet` stores local tile ids, object mappings, properties, animations, and autotile metadata. It never owns map cells, GPU resources, or runtime gameplay state. All Lua-created instances enter through `try_new` so checked dimensions, global-id ranges, and tileset-specific ceilings are enforced before registration.",
         "source_file": "src/tileset/tileset.rs",
         "items": [
           {
             "name": "TileSet",
             "kind": "struct",
-            "description": "A tileset slice of a sprite-sheet texture plus reusable object archetypes.",
+            "description": "A tileset slice of a sprite-sheet texture plus reusable object archetypes.  # Fields  Atlas geometry is immutable after construction. The remaining registries hold local properties, animations, object mappings, autotile rules, and terrain metadata.",
             "file": "src/tileset/tileset.rs",
-            "line": 19
+            "line": 25
           }
         ]
       },
       "tileset::visual": {
-        "module_doc": "This file owns visual behavior inside the tileset subsystem, close to its data and invariants. It keeps validation, defaults, and error-facing rules near the operations that mutate visual state. Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.",
+        "module_doc": "Owns atlas-local visual references stored on tileset object archetypes.  Visual records contain identifiers and source rectangles only. Texture loading, handles, GPU lifetime, and draw submission remain owned by asset/image/render.",
         "source_file": "src/tileset/visual.rs",
         "items": [
           {
             "name": "TileVisual",
             "kind": "struct",
-            "description": "Visual representation for one tileset object archetype.",
+            "description": "Visual representation for one tileset object archetype.  # Fields  Visual data stores identifiers, optional source rectangles, texture dimensions, and ordering only; it does not own a loaded texture.",
             "file": "src/tileset/visual.rs",
-            "line": 7
+            "line": 16
           }
         ]
       },
@@ -30885,779 +30946,800 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ai_stress",
+        "name": "lua_security_tilemap_security",
         "description": "",
         "line": 1226
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_animation_stress",
+        "name": "lua_security_tileset_security",
         "description": "",
         "line": 1231
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_binary_stress",
+        "name": "lua_stress_ai_stress",
         "description": "",
         "line": 1236
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_camera_stress",
+        "name": "lua_stress_animation_stress",
         "description": "",
         "line": 1241
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_compute_stress",
+        "name": "lua_stress_binary_stress",
         "description": "",
         "line": 1246
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_dataframe_stress",
+        "name": "lua_stress_camera_stress",
         "description": "",
         "line": 1251
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ecs_stress",
+        "name": "lua_stress_compute_stress",
         "description": "",
         "line": 1256
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_event_stress",
+        "name": "lua_stress_dataframe_stress",
         "description": "",
         "line": 1261
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_filesystem_stress",
+        "name": "lua_stress_ecs_stress",
         "description": "",
         "line": 1266
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_image_stress",
+        "name": "lua_stress_event_stress",
         "description": "",
         "line": 1271
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_learning_stress",
+        "name": "lua_stress_filesystem_stress",
         "description": "",
         "line": 1276
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_light_stress",
+        "name": "lua_stress_image_stress",
         "description": "",
         "line": 1281
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_math_stress",
+        "name": "lua_stress_learning_stress",
         "description": "",
         "line": 1286
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_particle_stress",
+        "name": "lua_stress_light_stress",
         "description": "",
         "line": 1291
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_pathfind_stress",
+        "name": "lua_stress_math_stress",
         "description": "",
         "line": 1296
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_patterns_stress",
+        "name": "lua_stress_particle_stress",
         "description": "",
         "line": 1301
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_physics_stress",
+        "name": "lua_stress_pathfind_stress",
         "description": "",
         "line": 1306
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_procgen_stress",
+        "name": "lua_stress_patterns_stress",
         "description": "",
         "line": 1311
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_progression_stress",
+        "name": "lua_stress_physics_stress",
         "description": "",
         "line": 1316
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_render_stress",
+        "name": "lua_stress_procgen_stress",
         "description": "",
         "line": 1321
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_svg_stress",
+        "name": "lua_stress_progression_stress",
         "description": "",
         "line": 1326
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_save_stress",
+        "name": "lua_stress_render_stress",
         "description": "",
         "line": 1331
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_scene_stress",
+        "name": "lua_stress_svg_stress",
         "description": "",
         "line": 1336
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_serialize_stress",
+        "name": "lua_stress_save_stress",
         "description": "",
         "line": 1341
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_thread_stress",
+        "name": "lua_stress_scene_stress",
         "description": "",
         "line": 1346
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilemap_stress",
+        "name": "lua_stress_serialize_stress",
         "description": "",
         "line": 1351
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilefield_stress",
+        "name": "lua_stress_thread_stress",
         "description": "",
         "line": 1356
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilelight_stress",
+        "name": "lua_stress_tilemap_stress",
         "description": "",
         "line": 1361
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_timer_stress",
+        "name": "lua_stress_tileset_stress",
         "description": "",
         "line": 1366
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tween_stress",
+        "name": "lua_stress_tilefield_stress",
         "description": "",
         "line": 1371
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_agent_unit",
+        "name": "lua_stress_tilelight_stress",
         "description": "",
         "line": 1376
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ai_unit",
+        "name": "lua_stress_timer_stress",
         "description": "",
         "line": 1381
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_animation_unit",
+        "name": "lua_stress_tween_stress",
         "description": "",
         "line": 1386
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_asset_unit",
+        "name": "lua_unit_agent_unit",
         "description": "",
         "line": 1391
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_audio_unit",
+        "name": "lua_unit_ai_unit",
         "description": "",
         "line": 1396
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_automation_unit",
+        "name": "lua_unit_animation_unit",
         "description": "",
         "line": 1401
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_beat_clock_unit",
+        "name": "lua_unit_asset_unit",
         "description": "",
         "line": 1406
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_binary_unit",
+        "name": "lua_unit_audio_unit",
         "description": "",
         "line": 1411
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_camera_unit",
+        "name": "lua_unit_automation_unit",
         "description": "",
         "line": 1416
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_charts_unit",
+        "name": "lua_unit_beat_clock_unit",
         "description": "",
         "line": 1421
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cinematic_unit",
+        "name": "lua_unit_binary_unit",
         "description": "",
         "line": 1426
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_collision_unit",
+        "name": "lua_unit_camera_unit",
         "description": "",
         "line": 1431
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_color_unit",
+        "name": "lua_unit_charts_unit",
         "description": "",
         "line": 1436
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_compute_unit",
+        "name": "lua_unit_cinematic_unit",
         "description": "",
         "line": 1441
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cursor_unit",
+        "name": "lua_unit_collision_unit",
         "description": "",
         "line": 1446
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dataframe_unit",
+        "name": "lua_unit_color_unit",
         "description": "",
         "line": 1451
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_debugbridge_unit",
+        "name": "lua_unit_compute_unit",
         "description": "",
         "line": 1456
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_devtools_unit",
+        "name": "lua_unit_cursor_unit",
         "description": "",
         "line": 1461
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dialog_unit",
+        "name": "lua_unit_dataframe_unit",
         "description": "",
         "line": 1466
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_docs_unit",
+        "name": "lua_unit_debugbridge_unit",
         "description": "",
         "line": 1471
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dsp_unit",
+        "name": "lua_unit_devtools_unit",
         "description": "",
         "line": 1476
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ecs_unit",
+        "name": "lua_unit_dialog_unit",
         "description": "",
         "line": 1481
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_effect_unit",
+        "name": "lua_unit_docs_unit",
         "description": "",
         "line": 1486
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_engine_unit",
+        "name": "lua_unit_dsp_unit",
         "description": "",
         "line": 1491
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_event_unit",
+        "name": "lua_unit_ecs_unit",
         "description": "",
         "line": 1496
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_filesystem_unit",
+        "name": "lua_unit_effect_unit",
         "description": "",
         "line": 1501
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_flownet_unit",
+        "name": "lua_unit_engine_unit",
         "description": "",
         "line": 1506
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_font_unit",
+        "name": "lua_unit_event_unit",
         "description": "",
         "line": 1511
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_globe_unit",
+        "name": "lua_unit_filesystem_unit",
         "description": "",
         "line": 1516
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_grep_unit",
+        "name": "lua_unit_flownet_unit",
         "description": "",
         "line": 1521
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_i18n_unit",
+        "name": "lua_unit_font_unit",
         "description": "",
         "line": 1526
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_image_unit",
+        "name": "lua_unit_globe_unit",
         "description": "",
         "line": 1531
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_input_unit",
+        "name": "lua_unit_grep_unit",
         "description": "",
         "line": 1536
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_learning_unit",
+        "name": "lua_unit_i18n_unit",
         "description": "",
         "line": 1541
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_layout_unit",
+        "name": "lua_unit_image_unit",
         "description": "",
         "line": 1546
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_light_unit",
+        "name": "lua_unit_input_unit",
         "description": "",
         "line": 1551
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_log_unit",
+        "name": "lua_unit_learning_unit",
         "description": "",
         "line": 1556
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_loot_unit",
+        "name": "lua_unit_layout_unit",
         "description": "",
         "line": 1561
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_math_unit",
+        "name": "lua_unit_light_unit",
         "description": "",
         "line": 1566
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mapblock_unit",
+        "name": "lua_unit_log_unit",
         "description": "",
         "line": 1571
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_minimap_unit",
+        "name": "lua_unit_loot_unit",
         "description": "",
         "line": 1576
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mods_unit",
+        "name": "lua_unit_math_unit",
         "description": "",
         "line": 1581
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_modular_topdown_api_unit",
+        "name": "lua_unit_mapblock_unit",
         "description": "",
         "line": 1586
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_net_unit",
+        "name": "lua_unit_minimap_unit",
         "description": "",
         "line": 1591
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_network_unit",
+        "name": "lua_unit_mods_unit",
         "description": "",
         "line": 1596
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_overlay_unit",
+        "name": "lua_unit_modular_topdown_api_unit",
         "description": "",
         "line": 1601
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_parallax_unit",
+        "name": "lua_unit_net_unit",
         "description": "",
         "line": 1606
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_particle_unit",
+        "name": "lua_unit_network_unit",
         "description": "",
         "line": 1611
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pathfind_unit",
+        "name": "lua_unit_overlay_unit",
         "description": "",
         "line": 1616
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_patterns_unit",
+        "name": "lua_unit_parallax_unit",
         "description": "",
         "line": 1621
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_physics_unit",
+        "name": "lua_unit_particle_unit",
         "description": "",
         "line": 1626
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pipeline_unit",
+        "name": "lua_unit_pathfind_unit",
         "description": "",
         "line": 1631
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_progression_unit",
+        "name": "lua_unit_patterns_unit",
         "description": "",
         "line": 1636
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_unit",
+        "name": "lua_unit_physics_unit",
         "description": "",
         "line": 1641
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_gap_unit",
+        "name": "lua_unit_pipeline_unit",
         "description": "",
         "line": 1646
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_province_unit",
+        "name": "lua_unit_progression_unit",
         "description": "",
         "line": 1651
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_raycaster_unit",
+        "name": "lua_unit_procgen_unit",
         "description": "",
         "line": 1656
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_render_unit",
+        "name": "lua_unit_procgen_gap_unit",
         "description": "",
         "line": 1661
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_repl_unit",
+        "name": "lua_unit_province_unit",
         "description": "",
         "line": 1666
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_runtime_unit",
+        "name": "lua_unit_raycaster_unit",
         "description": "",
         "line": 1671
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_save_unit",
+        "name": "lua_unit_render_unit",
         "description": "",
         "line": 1676
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_scene_unit",
+        "name": "lua_unit_repl_unit",
         "description": "",
         "line": 1681
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_serialize_unit",
+        "name": "lua_unit_runtime_unit",
         "description": "",
         "line": 1686
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shape_unit",
+        "name": "lua_unit_save_unit",
         "description": "",
         "line": 1691
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_spine_unit",
+        "name": "lua_unit_scene_unit",
         "description": "",
         "line": 1696
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_sprite_unit",
+        "name": "lua_unit_serialize_unit",
         "description": "",
         "line": 1701
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_svg_unit",
+        "name": "lua_unit_shape_unit",
         "description": "",
         "line": 1706
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_terminal_unit",
+        "name": "lua_unit_spine_unit",
         "description": "",
         "line": 1711
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_thread_unit",
+        "name": "lua_unit_sprite_unit",
         "description": "",
         "line": 1716
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilemap_unit",
+        "name": "lua_unit_svg_unit",
         "description": "",
         "line": 1721
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_unit",
+        "name": "lua_unit_terminal_unit",
         "description": "",
         "line": 1726
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_gap_unit",
+        "name": "lua_unit_thread_unit",
         "description": "",
         "line": 1731
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilelight_unit",
+        "name": "lua_unit_tilemap_unit",
         "description": "",
         "line": 1736
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tileset_unit",
+        "name": "lua_unit_tilefield_unit",
         "description": "",
         "line": 1741
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tilefield_gap_unit",
         "description": "",
         "line": 1746
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_tilelight_unit",
         "description": "",
         "line": 1751
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_tileset_unit",
         "description": "",
         "line": 1756
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1761
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_awareness_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1766
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1771
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_demo_colocated_games",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1776
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_awareness_unit",
+        "description": "",
+        "line": 1781
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_window_unit",
+        "description": "",
+        "line": 1786
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_demo_colocated_games",
+        "description": "",
+        "line": 1791
       },
       {
         "file": "tests/workbench_smoke_tests.rs",
@@ -32922,6 +33004,20 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/security/test_tilemap_security.lua",
+        "module": "test_tilemap_security",
+        "name": "test_tilemap_security",
+        "description": "Adversarial coverage for bounded tilemap storage, imports, numeric inputs, and chunk bytes.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/security/test_tileset_security.lua",
+        "module": "test_tileset_security",
+        "name": "test_tileset_security",
+        "description": "Adversarial coverage for bounded tileset construction and nested metadata validation.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/stress/test_ai_stress.lua",
         "module": "test_ai_stress",
         "name": "test_ai_stress",
@@ -33115,6 +33211,13 @@
         "module": "test_tilemap_stress",
         "name": "test_tilemap_stress",
         "description": "Lurek2D Stress Test: Large Tilemap Operations",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/stress/test_tileset_stress.lua",
+        "module": "test_tileset_stress",
+        "name": "test_tileset_stress",
+        "description": "Deterministic bounded stress coverage for tileset catalogs, rules, and provider parsing.",
         "kind": "lua"
       },
       {

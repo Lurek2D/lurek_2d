@@ -358,7 +358,7 @@ end
 Creates a new isometric map with the given dimensions and tile geometry.
 
 ```lua
-lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount)
+lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount, opts)
 ```
 
 **Parameters**
@@ -371,6 +371,7 @@ lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount)
 | `tileH` | number | Tile height in pixels. |
 | `levelHeight` | number | Vertical pixel offset between levels. |
 | `partCount?` | number | Number of tile parts per cell (default 4). |
+| `opts?` | table | Optional tilemap limits table. |
 
 **Returns**
 
@@ -398,7 +399,7 @@ end
 Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 
 ```lua
-lurek.tilemap.newLargeMapRenderer(tileW, tileH)
+lurek.tilemap.newLargeMapRenderer(tileW, tileH, opts)
 ```
 
 **Parameters**
@@ -407,6 +408,7 @@ lurek.tilemap.newLargeMapRenderer(tileW, tileH)
 |------|------|-------------|
 | `tileW` | number | Tile width in pixels. |
 | `tileH` | number | Tile height in pixels. |
+| `opts?` | table | Optional tilemap limits table. |
 
 **Returns**
 

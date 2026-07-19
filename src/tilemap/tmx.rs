@@ -20,6 +20,7 @@ use std::path::{Component, Path, PathBuf};
 
 /// Structured TMX import error used by Rust callers and Lua bindings.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TmxImportError {
     pub code: &'static str,
     pub message: String,
@@ -67,6 +68,7 @@ impl std::error::Error for TmxImportError {}
 
 /// Safe/strict TMX loading options used by import callers that need bounded parsing behavior.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TmxLoadOptions {
     /// Require tile layers to contain exactly `width * height` entries instead of padding or truncating.
     pub strict_layer_size: bool,
@@ -94,6 +96,7 @@ impl Default for TmxLoadOptions {
 
 /// Map projection type as declared in the TMX `<map orientation="...">` attribute.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// # Variants
 pub enum TmxOrientation {
     /// Standard square-tile top-down grid.
     Orthogonal,
@@ -118,6 +121,7 @@ impl TmxOrientation {
 }
 /// Which grid axis is staggered in `Staggered` and `Hexagonal` maps.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// # Variants
 pub enum TmxStaggerAxis {
     /// Columns are staggered.
     X,
@@ -126,6 +130,7 @@ pub enum TmxStaggerAxis {
 }
 /// Parsed `<tileset>` element, which may be external (`source` present) or inline.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TmxTileset {
     /// First global GID assigned to this tileset.
     pub first_gid: u32,
@@ -154,6 +159,7 @@ pub struct TmxTileset {
 }
 /// Parsed `<layer>` (tile layer) element.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TmxTileLayer {
     /// Layer name.
     pub name: String,
@@ -174,6 +180,7 @@ pub struct TmxTileLayer {
 }
 /// Parsed `<objectgroup>` element.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TmxObjectLayer {
     /// Layer name.
     pub name: String,
@@ -184,6 +191,7 @@ pub struct TmxObjectLayer {
 }
 /// Parsed `<object>` element inside an objectgroup.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TmxObject {
     /// Unique object ID within the map.
     pub id: u32,
@@ -204,6 +212,7 @@ pub struct TmxObject {
 }
 /// A single map layer, either tile data or objects.
 #[derive(Debug, Clone)]
+/// # Variants
 pub enum TmxLayer {
     /// A tile data layer.
     Tile(TmxTileLayer),
@@ -212,6 +221,7 @@ pub enum TmxLayer {
 }
 /// Top-level parsed TMX map. This item is part of the public API.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TmxMap {
     /// Map width in tiles.
     pub width: u32,
@@ -260,6 +270,10 @@ pub fn load_tmx_with_options(
     xml: &str,
     options: &TmxLoadOptions,
 ) -> Result<TmxMap, TmxImportError> {
+    options
+        .limits
+        .validate()
+        .map_err(|err| TmxImportError::invalid_content(err.to_string()))?;
     log_msg!(debug, TL01, "{} bytes", xml.len());
     if xml.len() > options.limits.max_import_bytes {
         return Err(TmxImportError::invalid_content(
@@ -302,17 +316,45 @@ pub fn load_tmx_with_options(
     let mut tilesets = Vec::new();
     for child in map_node.children() {
         if child.has_tag_name("tileset") {
+            if tilesets.len() >= options.limits.max_layers {
+                return Err(TmxImportError::invalid_content(
+                    TileMapError::MaxLayersExceeded {
+                        requested: tilesets.len() + 1,
+                        max_layers: options.limits.max_layers,
+                    }
+                    .to_string(),
+                ));
+            }
             tilesets.push(parse_tileset(&child, options).map_err(TmxImportError::invalid_content)?);
         }
     }
     let mut layers = Vec::new();
     for child in map_node.children() {
         if child.has_tag_name("layer") {
+            if layers.len() >= options.limits.max_layers {
+                return Err(TmxImportError::invalid_content(
+                    TileMapError::MaxLayersExceeded {
+                        requested: layers.len() + 1,
+                        max_layers: options.limits.max_layers,
+                    }
+                    .to_string(),
+                ));
+            }
             let layer = parse_tile_layer(&child, width, height, options)
                 .map_err(TmxImportError::invalid_content)?;
             layers.push(TmxLayer::Tile(layer));
         } else if child.has_tag_name("objectgroup") {
-            let ol = parse_object_layer(&child).map_err(TmxImportError::invalid_content)?;
+            if layers.len() >= options.limits.max_layers {
+                return Err(TmxImportError::invalid_content(
+                    TileMapError::MaxLayersExceeded {
+                        requested: layers.len() + 1,
+                        max_layers: options.limits.max_layers,
+                    }
+                    .to_string(),
+                ));
+            }
+            let ol =
+                parse_object_layer(&child, options).map_err(TmxImportError::invalid_content)?;
             layers.push(TmxLayer::Object(ol));
         }
     }
@@ -418,27 +460,21 @@ fn parse_tile_layer(
     options: &TmxLoadOptions,
 ) -> Result<TmxTileLayer, String> {
     let name = node.attribute("name").unwrap_or("").to_string();
-    let width = node
-        .attribute("width")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(map_w);
-    let height = node
-        .attribute("height")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(map_h);
+    let width = optional_attr_u32(node, "width")?.unwrap_or(map_w);
+    let height = optional_attr_u32(node, "height")?.unwrap_or(map_h);
     let visible = node.attribute("visible") != Some("0");
-    let opacity: f32 = node
-        .attribute("opacity")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(1.0);
-    let offset_x: f32 = node
-        .attribute("offsetx")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(0.0);
-    let offset_y: f32 = node
-        .attribute("offsety")
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(0.0);
+    let opacity = optional_attr_f32(node, "opacity")?.unwrap_or(1.0);
+    if !opacity.is_finite() || !(0.0..=1.0).contains(&opacity) {
+        return Err(format!(
+            "layer '{}': opacity must be finite and within 0..1",
+            name
+        ));
+    }
+    let offset_x = optional_attr_f32(node, "offsetx")?.unwrap_or(0.0);
+    let offset_y = optional_attr_f32(node, "offsety")?.unwrap_or(0.0);
+    if !offset_x.is_finite() || !offset_y.is_finite() {
+        return Err(format!("layer '{}': offsets must be finite", name));
+    }
     let data_node = node
         .children()
         .find(|n| n.has_tag_name("data"))
@@ -541,7 +577,12 @@ fn parse_base64_tiles(
     }
     let bytes: Vec<u8> = match compression {
         "zlib" | "deflate" => {
-            let mut decoder = ZlibDecoder::new(raw.as_slice());
+            let decoder = ZlibDecoder::new(raw.as_slice());
+            let mut decoder = decoder.take(
+                u64::try_from(options.limits.max_decoded_bytes)
+                    .unwrap_or(u64::MAX)
+                    .saturating_add(1),
+            );
             let mut out = Vec::new();
             decoder
                 .read_to_end(&mut out)
@@ -557,7 +598,12 @@ fn parse_base64_tiles(
             out
         }
         "gzip" => {
-            let mut decoder = GzDecoder::new(raw.as_slice());
+            let decoder = GzDecoder::new(raw.as_slice());
+            let mut decoder = decoder.take(
+                u64::try_from(options.limits.max_decoded_bytes)
+                    .unwrap_or(u64::MAX)
+                    .saturating_add(1),
+            );
             let mut out = Vec::new();
             decoder
                 .read_to_end(&mut out)
@@ -610,12 +656,31 @@ fn parse_base64_tiles(
     finalize_tile_entries(tiles, cap, "TMX base64 tile data", options)
 }
 /// Parse an `<objectgroup>` XML node into a `TmxObjectLayer`.
-fn parse_object_layer(node: &roxmltree::Node) -> Result<TmxObjectLayer, String> {
+fn parse_object_layer(
+    node: &roxmltree::Node,
+    options: &TmxLoadOptions,
+) -> Result<TmxObjectLayer, String> {
     let name = node.attribute("name").unwrap_or("").to_string();
     let visible = node.attribute("visible") != Some("0");
     let mut objects = Vec::new();
     for child in node.children() {
         if child.has_tag_name("object") {
+            if objects.len() as u64 >= options.limits.max_tile_operation_cells {
+                return Err(format!(
+                    "object layer '{}': object count exceeds limit {}",
+                    name, options.limits.max_tile_operation_cells
+                ));
+            }
+            let property_count = child
+                .descendants()
+                .filter(|node| node.has_tag_name("property"))
+                .count() as u64;
+            if property_count > options.limits.max_tile_operation_cells {
+                return Err(format!(
+                    "object layer '{}': property count exceeds limit {}",
+                    name, options.limits.max_tile_operation_cells
+                ));
+            }
             objects.push(parse_object(&child));
         }
     }
@@ -672,6 +737,26 @@ fn attr_u32(node: &roxmltree::Node, name: &str) -> Result<u32, String> {
         })?
         .parse::<u32>()
         .map_err(|e| format!("TMX: attribute '{name}' is not a valid u32: {e}"))
+}
+
+fn optional_attr_u32(node: &roxmltree::Node, name: &str) -> Result<Option<u32>, String> {
+    node.attribute(name)
+        .map(|value| {
+            value
+                .parse::<u32>()
+                .map_err(|err| format!("TMX: attribute '{name}' is not a valid u32: {err}"))
+        })
+        .transpose()
+}
+
+fn optional_attr_f32(node: &roxmltree::Node, name: &str) -> Result<Option<f32>, String> {
+    node.attribute(name)
+        .map(|value| {
+            value
+                .parse::<f32>()
+                .map_err(|err| format!("TMX: attribute '{name}' is not a valid number: {err}"))
+        })
+        .transpose()
 }
 /// Parse a Tiled hex color string (`#RRGGBB` or `#AARRGGBB`) into `[a, r, g, b]`; returns `None` on parse failure.
 fn parse_tiled_color(s: &str) -> Option<[u8; 4]> {

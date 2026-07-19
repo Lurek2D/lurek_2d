@@ -20,6 +20,9 @@ description: "Load this skill when running a coordinated audit and fix sweep acr
 - Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
 - Produce findings first with severity, affected files, and evidence.
 - Treat allocation/work ceilings and dirty-region propagation as first-class findings for stateful grid modules.
+- For tilemap reviews, explicitly audit authoritative storage versus render snapshots, checked arithmetic, importer budgets/path policy, chunk serialization compatibility, reverse-index invalidation, animation timer cleanup, and finite float boundaries.
+- For tileset reviews, explicitly audit checked atlas arithmetic, local/GID boundaries, nested provider ceilings, numeric archetype defaults, catalog snapshot semantics, and the tilemap compatibility alias.
+- Keep explicit checkpoints for security/hostile input, correctness bugs, useful feature gaps, file-doc quality, and overlap with neighboring module owners.
 - If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
 - Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
 
@@ -27,6 +30,7 @@ description: "Load this skill when running a coordinated audit and fix sweep acr
 - Run RAG and read root plus relevant contracts before starting the sweep.
 - Run reviews in this order: API, tests, examples, specs, docstrings, architecture, performance, quality.
 - Aggregate findings by owner profile and severity before fixing.
+- For tilemap, include hostile Lua cases and bounded dense/sparse stress cases before declaring the sweep complete.
 - Use owner profiles that already exist under `.codex/agents/`.
 - If a needed owner profile is missing, report the gap instead of inventing one.
 - If edit-capable and fixes are requested, dispatch fixes through the matching create/review skill and rerun audits.

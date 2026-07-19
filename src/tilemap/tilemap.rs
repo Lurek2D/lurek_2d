@@ -11,7 +11,7 @@
 //! This module documents where tilemap data becomes behavior and where surrounding systems take over.
 
 use super::error::TileMapError;
-use super::limits::{checked_layer_cells, TileMapLimits};
+use super::limits::{checked_chunk_cells, checked_flat_index, checked_layer_cells, TileMapLimits};
 use super::orientation::MapOrientation;
 use super::tilemap_index::remove_pos_from_gid;
 use crate::log_msg;
@@ -24,6 +24,7 @@ use std::collections::{BTreeSet, HashMap};
 
 /// A single tile layer with per-tile GID and optional per-tile tint data.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TileLayer {
     /// Layer identifier shown in editors and log messages.
     pub name: String,
@@ -48,11 +49,7 @@ impl TileLayer {
     /// Create a fully-empty `TileLayer` of `width` by `height` tiles with all GIDs set to `0`.
     /// Convert `(x, y)` into a flat index; returns `None` when out of bounds.
     fn index(&self, x: u32, y: u32) -> Option<usize> {
-        if x < self.width && y < self.height {
-            Some((y * self.width + x) as usize)
-        } else {
-            None
-        }
+        checked_flat_index(self.width, x, y, self.tiles.len())
     }
 
     /// Create a fully-empty `TileLayer` with checked dimensions and configured limits.
@@ -62,6 +59,7 @@ impl TileLayer {
         height: u32,
         limits: &TileMapLimits,
     ) -> Result<Self, TileMapError> {
+        limits.validate()?;
         let cap = checked_layer_cells(width, height, limits)?;
         Ok(Self {
             name: name.to_string(),
@@ -79,6 +77,7 @@ impl TileLayer {
 
 /// Policy controlling when the reverse GID index is materialized.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// # Variants
 pub enum TileIndexPolicy {
     /// Keep the reverse index incrementally updated.
     Eager,
@@ -88,6 +87,7 @@ pub enum TileIndexPolicy {
 
 /// Snapshot of tilemap diagnostics counters used to surface silent fallbacks and guarded queries.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+/// # Fields
 pub struct TileMapDiagnosticsSnapshot {
     /// Count of operations targeting a missing layer.
     pub invalid_layer: u64,
@@ -128,6 +128,7 @@ impl TileMapDiagnostics {
 }
 /// Multi-layer tile map with tileset attachment, tile storage, autotile, animation, and render-command output.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct TileMap {
     /// Width of each tile in pixels.
     tile_width: u32,
@@ -173,7 +174,9 @@ impl TileMap {
         );
         let tile_width = tile_width.max(1);
         let tile_height = tile_height.max(1);
-        let chunk_size = chunk_size.max(1);
+        // The fallible constructor is preferred for custom limits; this
+        // legacy path keeps its stored chunk arithmetic within safe defaults.
+        let chunk_size = chunk_size.clamp(1, 1024);
         log_msg!(
             debug,
             TM01_TILEMAP_INIT,
@@ -224,6 +227,7 @@ impl TileMap {
         chunk_size: u32,
         limits: TileMapLimits,
     ) -> Result<Self, TileMapError> {
+        limits.validate()?;
         if tile_width == 0 || tile_height == 0 {
             return Err(TileMapError::InvalidTileSize {
                 tile_width,
@@ -233,7 +237,9 @@ impl TileMap {
         if chunk_size == 0 {
             return Err(TileMapError::InvalidChunkSize { chunk_size });
         }
+        checked_chunk_cells(chunk_size, &limits)?;
         let mut map = Self::new(tile_width, tile_height, chunk_size);
+        map.chunk_size = chunk_size;
         map.limits = limits;
         Ok(map)
     }
@@ -264,7 +270,10 @@ impl TileMap {
         let mut rebuilt = HashMap::<u32, Vec<(u32, u32)>>::new();
         for y in 0..layer_ref.height {
             for x in 0..layer_ref.width {
-                let idx = (y * layer_ref.width + x) as usize;
+                let Some(idx) = checked_flat_index(layer_ref.width, x, y, layer_ref.tiles.len())
+                else {
+                    continue;
+                };
                 let gid = layer_ref.tiles[idx];
                 if gid != 0 {
                     rebuilt.entry(gid).or_default().push((x, y));
@@ -532,6 +541,7 @@ impl TileMap {
         b: f32,
         a: f32,
     ) -> Result<(), TileMapError> {
+        validate_finite_rgba([r, g, b, a])?;
         if idx >= self.layers.len() {
             return Err(self.invalid_layer_error(idx));
         }
@@ -547,6 +557,7 @@ impl TileMap {
         ox: f32,
         oy: f32,
     ) -> Result<(), TileMapError> {
+        validate_finite_pair(ox, oy, "layer offset")?;
         if idx >= self.layers.len() {
             return Err(self.invalid_layer_error(idx));
         }
@@ -562,6 +573,7 @@ impl TileMap {
         px: f32,
         py: f32,
     ) -> Result<(), TileMapError> {
+        validate_finite_pair(px, py, "layer parallax")?;
         if idx >= self.layers.len() {
             return Err(self.invalid_layer_error(idx));
         }
@@ -587,6 +599,9 @@ impl TileMap {
             None => return Err(self.invalid_coord_error(layer, x, y)),
         };
         let old_gid = l.tiles[idx];
+        if old_gid == gid {
+            return Ok(());
+        }
         l.tiles[idx] = gid;
         if self.index_policy == TileIndexPolicy::Eager && !self.tile_type_index_dirty[layer] {
             if let Some(layer_index) = self.tile_type_index_cache.get_mut(layer) {
@@ -628,6 +643,7 @@ impl TileMap {
         b: f32,
         a: f32,
     ) -> Result<(), TileMapError> {
+        validate_finite_rgba([r, g, b, a])?;
         if layer >= self.layers.len() {
             return Err(self.invalid_layer_error(layer));
         }
@@ -641,8 +657,17 @@ impl TileMap {
     }
     /// Set the active camera viewport rect; enables culled render-command generation.
     pub fn set_viewport(&mut self, x: f32, y: f32, w: f32, h: f32) {
+        let _ = self.try_set_viewport(x, y, w, h);
+    }
+
+    /// Set the active camera viewport with finite origin and positive dimensions.
+    pub fn try_set_viewport(&mut self, x: f32, y: f32, w: f32, h: f32) -> Result<(), TileMapError> {
+        validate_finite_pair(x, y, "viewport origin")?;
+        validate_positive(w, "viewport width")?;
+        validate_positive(h, "viewport height")?;
         self.viewport = Some(Rect::new(x, y, w, h));
         self.mark_anim_culling_dirty();
+        Ok(())
     }
     /// Return the viewport as `(x, y, w, h)`, or `None` when not set.
     pub fn get_viewport(&self) -> Option<(f32, f32, f32, f32)> {
@@ -650,13 +675,25 @@ impl TileMap {
     }
     /// Advance all GID animation timers by `dt` seconds; updates frame indices for each animated tileset.
     pub fn update(&mut self, dt: f32) {
+        let _ = self.try_update(dt);
+    }
+
+    /// Advance animation timers, rejecting non-finite or negative frame deltas.
+    pub fn try_update(&mut self, dt: f32) -> Result<(), TileMapError> {
+        validate_finite(dt, "animation dt")?;
+        if dt < 0.0 {
+            return Err(TileMapError::NonPositiveFloat {
+                context: "animation dt",
+                value: dt,
+            });
+        }
         if self.anim_culling_dirty {
             self.rebuild_render_active_animated_gids();
         }
-        if !dt.is_finite() || dt <= 0.0 {
-            return;
+        if dt == 0.0 {
+            return Ok(());
         }
-        let dt_ms = dt * 1000.0;
+        let dt_ms = ((dt as f64) * 1000.0).min(f32::MAX as f64) as f32;
         for &gid in &self.render_active_animated_gids {
             if let Some((ts_idx, local_id)) = self.resolve_gid(gid) {
                 let Some(frames) = self.tilesets[ts_idx].get_animation(local_id) else {
@@ -667,7 +704,15 @@ impl TileMap {
                 }
                 let (frame_idx, elapsed) = self.anim_timers.entry(gid).or_insert((0, 0.0));
                 *elapsed += dt_ms;
-                let mut guard = frames.len().saturating_mul(32).max(1);
+                let cycle_ms: f32 = frames
+                    .iter()
+                    .map(|frame| frame.duration_ms)
+                    .filter(|duration| duration.is_finite() && *duration > 0.0)
+                    .sum();
+                if cycle_ms.is_finite() && cycle_ms > 0.0 && *elapsed > cycle_ms {
+                    *elapsed %= cycle_ms;
+                }
+                let mut guard = frames.len().saturating_mul(2).max(1);
                 while guard > 0 {
                     let duration_ms = frames[*frame_idx].duration_ms;
                     if !duration_ms.is_finite() || duration_ms <= 0.0 {
@@ -684,6 +729,7 @@ impl TileMap {
                 }
             }
         }
+        Ok(())
     }
     /// Convert world position `(wx, wy)` to tile grid coordinates; clamps negative values to `0`.
     pub fn world_to_tile(&self, wx: f32, wy: f32) -> (u32, u32) {
@@ -807,6 +853,8 @@ impl TileMap {
             }
         }
         self.render_active_animated_gids = visible.into_iter().collect();
+        let animated_set: BTreeSet<u32> = animated_gids.into_iter().collect();
+        self.anim_timers.retain(|gid, _| animated_set.contains(gid));
         self.anim_culling_dirty = false;
     }
 
@@ -1105,4 +1153,31 @@ impl TileMap {
         }
         None
     }
+}
+
+fn validate_finite(value: f32, context: &'static str) -> Result<(), TileMapError> {
+    if !value.is_finite() {
+        return Err(TileMapError::NonFiniteFloat { context });
+    }
+    Ok(())
+}
+
+fn validate_finite_pair(x: f32, y: f32, context: &'static str) -> Result<(), TileMapError> {
+    validate_finite(x, context)?;
+    validate_finite(y, context)
+}
+
+fn validate_finite_rgba(values: [f32; 4]) -> Result<(), TileMapError> {
+    for value in values {
+        validate_finite(value, "tint")?;
+    }
+    Ok(())
+}
+
+fn validate_positive(value: f32, context: &'static str) -> Result<(), TileMapError> {
+    validate_finite(value, context)?;
+    if value <= 0.0 {
+        return Err(TileMapError::NonPositiveFloat { context, value });
+    }
+    Ok(())
 }

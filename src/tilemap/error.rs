@@ -8,7 +8,10 @@ use std::fmt;
 
 /// Error returned by safe tilemap constructors, queries, and bounded helpers.
 #[derive(Debug, Clone, PartialEq)]
+/// # Variants
 pub enum TileMapError {
+    /// A configured safety limit is zero or cannot be represented by addressable storage.
+    InvalidLimitConfiguration { field: &'static str },
     /// Tile size must be strictly positive on both axes.
     InvalidTileSize { tile_width: u32, tile_height: u32 },
     /// Chunk size must be strictly positive.
@@ -31,6 +34,15 @@ pub enum TileMapError {
         chunk_size: u32,
         cells: u64,
         max_cells: u64,
+    },
+    /// A chunk allocation would exceed the configured loaded-chunk ceiling.
+    MaxChunksExceeded { requested: usize, max_chunks: usize },
+    /// A dense map would require more chunks than the configured renderer ceiling.
+    ChunkCountLimitExceeded {
+        width: u32,
+        height: u32,
+        chunks: u64,
+        max_chunks: usize,
     },
     /// The requested layer index is outside the current layer list.
     InvalidLayerIndex { layer: usize, layer_count: usize },
@@ -66,11 +78,21 @@ pub enum TileMapError {
     ExternalTilesetRequiresPolicy { source: String },
     /// A resource path violated the safe asset-path policy.
     UnsafeResourcePath { path: String, reason: String },
+    /// A numeric input crossing a public boundary was not finite.
+    NonFiniteFloat { context: &'static str },
+    /// A numeric input that is used as a divisor or extent was not positive.
+    NonPositiveFloat { context: &'static str, value: f32 },
+    /// A list of LOD thresholds was empty, non-finite, or not strictly increasing.
+    InvalidLodThresholds,
 }
 
 impl fmt::Display for TileMapError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::InvalidLimitConfiguration { field } => write!(
+                f,
+                "tilemap limit '{field}' must be non-zero and addressable",
+            ),
             Self::InvalidTileSize {
                 tile_width,
                 tile_height,
@@ -118,6 +140,24 @@ impl fmt::Display for TileMapError {
                 f,
                 "tilemap chunk size {} requires {} cells, exceeding limit {}",
                 chunk_size, cells, max_cells
+            ),
+            Self::MaxChunksExceeded {
+                requested,
+                max_chunks,
+            } => write!(
+                f,
+                "tilemap requested {} loaded chunks, exceeding limit {}",
+                requested, max_chunks
+            ),
+            Self::ChunkCountLimitExceeded {
+                width,
+                height,
+                chunks,
+                max_chunks,
+            } => write!(
+                f,
+                "tilemap {}x{} requires {} chunks, exceeding limit {}",
+                width, height, chunks, max_chunks
             ),
             Self::InvalidLayerIndex { layer, layer_count } => write!(
                 f,
@@ -175,6 +215,16 @@ impl fmt::Display for TileMapError {
             Self::UnsafeResourcePath { path, reason } => {
                 write!(f, "unsafe tilemap resource path '{}': {}", path, reason)
             }
+            Self::NonFiniteFloat { context } => {
+                write!(f, "tilemap {context} must be finite")
+            }
+            Self::NonPositiveFloat { context, value } => {
+                write!(f, "tilemap {context} must be > 0, got {value}")
+            }
+            Self::InvalidLodThresholds => write!(
+                f,
+                "tilemap LOD thresholds must be finite, positive, and strictly increasing"
+            ),
         }
     }
 }

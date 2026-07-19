@@ -6,9 +6,13 @@
 //! Acts as the isometric-map boundary instead of forcing the general orthogonal TileMap owner to absorb it.
 //! Open this file when iso level stacking, tile part ordering, or projected draw ordering looks incorrect.
 
+use super::error::TileMapError;
+use super::limits::{checked_flat_index, checked_layer_cells, TileMapLimits};
+
 /// Draw-layer part of an isometric tile (floor, walls, objects).
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// # Variants
 pub enum IsoTilePart {
     /// Floor/ground plane of the tile.
     Floor = 0,
@@ -38,6 +42,7 @@ impl IsoTilePart {
 
 /// A single isometric cell holding one GID per draw-layer part.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct IsoTile {
     /// GID values indexed by part order; length equals `IsoMap::part_count`.
     pub parts: Vec<u32>,
@@ -45,6 +50,7 @@ pub struct IsoTile {
 
 /// One elevation layer of an `IsoMap` grid of `IsoTile`s.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct IsoLevel {
     /// Number of tile columns in this level.
     pub width: u32,
@@ -58,25 +64,60 @@ pub struct IsoLevel {
 impl IsoLevel {
     /// Allocate a `width`×`height` level with each tile pre-filled with `part_count` zero GIDs.
     pub fn new(width: u32, height: u32, part_count: u32) -> Self {
-        let pc = part_count as usize;
-        Self {
+        match Self::try_new(width, height, part_count, &TileMapLimits::default()) {
+            Ok(level) => level,
+            Err(_) => Self {
+                width: 0,
+                height: 0,
+                visible: true,
+                tiles: Vec::new(),
+            },
+        }
+    }
+
+    /// Allocate a checked level whose cell and part storage stays within `limits`.
+    pub fn try_new(
+        width: u32,
+        height: u32,
+        part_count: u32,
+        limits: &TileMapLimits,
+    ) -> Result<Self, TileMapError> {
+        let cells = checked_layer_cells(width, height, limits)?;
+        if part_count == 0 {
+            return Err(TileMapError::InvalidLimitConfiguration {
+                field: "part_count",
+            });
+        }
+        let total = (cells as u64).checked_mul(u64::from(part_count)).ok_or(
+            TileMapError::TileOperationLimitExceeded {
+                cells: u64::MAX,
+                max_cells: limits.max_tile_operation_cells,
+            },
+        )?;
+        if total > limits.max_tile_operation_cells {
+            return Err(TileMapError::TileOperationLimitExceeded {
+                cells: total,
+                max_cells: limits.max_tile_operation_cells,
+            });
+        }
+        let pc =
+            usize::try_from(part_count).map_err(|_| TileMapError::InvalidLimitConfiguration {
+                field: "part_count",
+            })?;
+        Ok(Self {
             width,
             height,
             visible: true,
-            tiles: (0..(width * height) as usize)
+            tiles: (0..cells)
                 .map(|_| IsoTile {
                     parts: vec![0u32; pc],
                 })
                 .collect(),
-        }
+        })
     }
     /// Return the flat index for tile `(x, y)`, or `None` for out-of-bounds.
     fn index(&self, x: u32, y: u32) -> Option<usize> {
-        if x < self.width && y < self.height {
-            Some((y * self.width + x) as usize)
-        } else {
-            None
-        }
+        checked_flat_index(self.width, x, y, self.tiles.len())
     }
     /// Return a shared reference to the tile at `(x, y)`, or `None` for out-of-bounds.
     pub fn get_tile(&self, x: u32, y: u32) -> Option<&IsoTile> {
@@ -90,6 +131,7 @@ impl IsoLevel {
 }
 /// A single draw-order entry produced by `IsoMap::draw_iter`.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct IsoDrawItem {
     /// Elevation index of the level this item belongs to.
     pub level: u32,
@@ -109,6 +151,7 @@ pub struct IsoDrawItem {
 
 /// Multi-level isometric tile map with painter-sorted draw iteration.
 #[derive(Debug, Clone)]
+/// # Fields
 pub struct IsoMap {
     /// Number of tile columns.
     pub width: u32,
@@ -130,6 +173,8 @@ pub struct IsoMap {
     pub part_order: Vec<u32>,
     /// Elevation levels; each holds a full `width`×`height` grid of tiles.
     levels: Vec<IsoLevel>,
+    /// Shared allocation ceiling for elevation-level storage.
+    limits: TileMapLimits,
 }
 impl IsoMap {
     /// Create an empty map with the given tile dimensions and `part_count` (clamped to at least 1).
@@ -141,8 +186,62 @@ impl IsoMap {
         level_height: u32,
         part_count: u32,
     ) -> Self {
-        let part_count = part_count.max(1);
-        Self {
+        match Self::try_new(
+            width,
+            height,
+            tile_w,
+            tile_h,
+            level_height,
+            part_count,
+            &TileMapLimits::default(),
+        ) {
+            Ok(map) => map,
+            Err(_) => Self {
+                width: 0,
+                height: 0,
+                tile_w: tile_w.max(1),
+                tile_h: tile_h.max(1),
+                level_height,
+                origin_x: 0.0,
+                origin_y: 0.0,
+                part_count: 1,
+                part_order: vec![0],
+                levels: Vec::new(),
+                limits: TileMapLimits::default(),
+            },
+        }
+    }
+
+    /// Create an isometric map with checked grid, tile, part, and level limits.
+    pub fn try_new(
+        width: u32,
+        height: u32,
+        tile_w: u32,
+        tile_h: u32,
+        level_height: u32,
+        part_count: u32,
+        limits: &TileMapLimits,
+    ) -> Result<Self, TileMapError> {
+        limits.validate()?;
+        if tile_w == 0 || tile_h == 0 {
+            return Err(TileMapError::InvalidTileSize {
+                tile_width: tile_w,
+                tile_height: tile_h,
+            });
+        }
+        checked_layer_cells(width, height, limits)?;
+        if part_count == 0 {
+            return Err(TileMapError::InvalidLimitConfiguration {
+                field: "part_count",
+            });
+        }
+        if u64::from(part_count) > limits.max_tile_operation_cells {
+            return Err(TileMapError::TileOperationLimitExceeded {
+                cells: u64::from(part_count),
+                max_cells: limits.max_tile_operation_cells,
+            });
+        }
+        Ok(Self {
             width,
             height,
             tile_w,
@@ -153,14 +252,30 @@ impl IsoMap {
             part_count,
             part_order: (0..part_count).collect(),
             levels: Vec::new(),
-        }
+            limits: *limits,
+        })
     }
     /// Append a new elevation level and return its index.
     pub fn add_level(&mut self) -> usize {
+        self.try_add_level().unwrap_or(self.levels.len())
+    }
+
+    /// Append a new elevation level within the configured layer and storage ceilings.
+    pub fn try_add_level(&mut self) -> Result<usize, TileMapError> {
+        if self.levels.len() >= self.limits.max_layers {
+            return Err(TileMapError::MaxLayersExceeded {
+                requested: self.levels.len() + 1,
+                max_layers: self.limits.max_layers,
+            });
+        }
         let idx = self.levels.len();
-        self.levels
-            .push(IsoLevel::new(self.width, self.height, self.part_count));
-        idx
+        self.levels.push(IsoLevel::try_new(
+            self.width,
+            self.height,
+            self.part_count,
+            &self.limits,
+        )?);
+        Ok(idx)
     }
     /// Return the number of elevation levels currently in this map.
     pub fn get_level_count(&self) -> usize {
@@ -246,7 +361,11 @@ impl IsoMap {
         let w = self.width as usize;
         let h = self.height as usize;
         let pc = self.part_count as usize;
-        let mut items = Vec::with_capacity(w * h * (max_z + 1) * pc);
+        let capacity = w
+            .checked_mul(h)
+            .and_then(|cells| cells.checked_mul(max_z + 1))
+            .and_then(|cells| cells.checked_mul(pc));
+        let mut items = capacity.map_or_else(Vec::new, Vec::with_capacity);
         let max_d = (w + h).saturating_sub(2);
         for d in 0..=max_d {
             let tx_min = d.saturating_sub(h - 1);

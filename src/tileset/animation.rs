@@ -1,8 +1,14 @@
-//! This file owns animation behavior inside the tileset subsystem, close to its data and invariants.
-//! It keeps validation, defaults, and error-facing rules near the operations that mutate animation state.
-//! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
+//! Owns local tile-id and frame-duration records for tileset animations.
+//!
+//! These frames are metadata consumed by tilemap timing/render selection; they are
+//! intentionally not general entity animation timelines.
 
 /// A single frame in a tile sprite-sheet animation.
+///
+/// # Fields
+///
+/// The local frame tile id and its positive display duration are validated by
+/// `TileSet::set_animation` before storage.
 #[derive(Debug, Clone)]
 pub struct TileAnimFrame {
     /// Local tile ID this frame displays.

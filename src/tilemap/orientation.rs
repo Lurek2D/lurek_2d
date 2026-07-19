@@ -4,6 +4,7 @@
 
 /// Projection / rendering orientation for a tilemap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// # Variants
 pub enum MapOrientation {
     /// Standard top-down tile map.
     TopDown,

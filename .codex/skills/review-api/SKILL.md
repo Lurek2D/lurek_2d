@@ -26,6 +26,9 @@ description: "Load this skill when auditing and fixing Rust-to-Lua API coverage,
 - Run API coverage and thin-wrapper audits for the selected module.
 - Compare Rust public methods, Lua wrappers, generated docs, and specs.
 - Check that cross-module conversion workflows have one canonical consumer owner and explicit compatibility aliases.
+- For tilemap, verify one-based Lua indices, typed option-table limits, finite/positive numeric validation, importer error tables, diagnostics fields, and the distinction between authoritative maps and renderer snapshots.
+- For tileset, verify nested provider table limits, finite/positive animation and archetype fields, fallible quad queries, canonical namespace ownership, and compatibility-alias error parity.
+- Compare compatibility aliases, nested table-field annotations, fallible/legacy method pairs, and documented numeric ceilings when reviewing the public surface.
 - Record findings first with file paths and missing signatures.
 - If edit-capable, fix wrappers/specs/docs and rerun the same audits.
 - If read-only, hand off fixes to `lua_designer` or `developer`.
