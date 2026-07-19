@@ -755,7 +755,13 @@ impl LuaUserData for LuaMinimap {
                     .as_ref()
                     .and_then(|t| t.get::<_, Option<f32>>("scale").ok().flatten())
                     .unwrap_or(255.0);
-                let values = light.inner.borrow().export_layer(z);
+                let field = light.field.borrow();
+                let values = light
+                    .inner
+                    .borrow()
+                    .ensure_current(&field)
+                    .and_then(|_| light.inner.borrow().export_layer(z))
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.minimap: {e}")))?;
                 let cells: Vec<u8> = values
                     .into_iter()
                     .map(|v| (v.luma() * scale).round().clamp(0.0, 255.0) as u8)

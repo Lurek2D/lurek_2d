@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-19T07:00:06.031314+00:00",
+    "generated": "2026-07-19T07:54:11.957909+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -79011,7 +79011,7 @@
             ],
             "inferred_return": "LMinimap",
             "return_description": "New minimap handle.",
-            "line": 1815,
+            "line": 1821,
             "file": "src/lua_api/minimap_api.rs"
           }
         ],
@@ -79860,7 +79860,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 780,
+                "line": 786,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -79876,7 +79876,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 862,
+                "line": 868,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -79923,7 +79923,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "One-based object type index.",
-                "line": 932,
+                "line": 938,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -79952,7 +79952,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 944,
+                "line": 950,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -79975,7 +79975,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the object type is visible.",
-                "line": 965,
+                "line": 971,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -79991,7 +79991,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Object type count.",
-                "line": 976,
+                "line": 982,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80032,7 +80032,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 985,
+                "line": 991,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80055,7 +80055,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1021,
+                "line": 1027,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80102,7 +80102,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1037,
+                "line": 1043,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80125,7 +80125,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an object was removed.",
-                "line": 1067,
+                "line": 1073,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80141,7 +80141,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1072,
+                "line": 1078,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80157,7 +80157,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Object count.",
-                "line": 1079,
+                "line": 1085,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80204,7 +80204,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1089,
+                "line": 1095,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80227,7 +80227,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Red channel.",
-                "line": 1104,
+                "line": 1110,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80250,7 +80250,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1111,
+                "line": 1117,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80266,7 +80266,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Color mode name.",
-                "line": 1124,
+                "line": 1130,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80289,7 +80289,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1130,
+                "line": 1136,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80305,7 +80305,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Zoom value.",
-                "line": 1136,
+                "line": 1142,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80334,7 +80334,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1141,
+                "line": 1147,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80357,7 +80357,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1147,
+                "line": 1153,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80392,7 +80392,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1168,
+                "line": 1174,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80408,7 +80408,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Center x coordinate.",
-                "line": 1180,
+                "line": 1186,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80424,7 +80424,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Center x coordinate.",
-                "line": 1186,
+                "line": 1192,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80440,7 +80440,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Center y coordinate.",
-                "line": 1190,
+                "line": 1196,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80481,7 +80481,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1197,
+                "line": 1203,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80497,7 +80497,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1207,
+                "line": 1213,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80513,7 +80513,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate, or nil when unset.",
-                "line": 1217,
+                "line": 1223,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80536,7 +80536,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1226,
+                "line": 1232,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80552,7 +80552,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when visible.",
-                "line": 1233,
+                "line": 1239,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80593,7 +80593,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1242,
+                "line": 1248,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80609,7 +80609,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Red channel.",
-                "line": 1256,
+                "line": 1262,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80668,7 +80668,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1270,
+                "line": 1276,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80684,7 +80684,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Ping count.",
-                "line": 1312,
+                "line": 1318,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80743,7 +80743,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Marker id.",
-                "line": 1324,
+                "line": 1330,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80766,7 +80766,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a marker was removed.",
-                "line": 1357,
+                "line": 1363,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80789,7 +80789,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the marker exists.",
-                "line": 1364,
+                "line": 1370,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80812,7 +80812,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Marker description, or nil when missing.",
-                "line": 1371,
+                "line": 1377,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80828,7 +80828,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Marker count.",
-                "line": 1377,
+                "line": 1383,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80869,7 +80869,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1386,
+                "line": 1392,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80892,7 +80892,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1404,
+                "line": 1410,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80927,7 +80927,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1413,
+                "line": 1419,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80950,7 +80950,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1436,
+                "line": 1442,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -80997,7 +80997,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1447,
+                "line": 1453,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81044,7 +81044,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1467,
+                "line": 1473,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81060,7 +81060,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1482,
+                "line": 1488,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81076,7 +81076,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Overlay shape count.",
-                "line": 1489,
+                "line": 1495,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81105,7 +81105,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Path id.",
-                "line": 1497,
+                "line": 1503,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81128,7 +81128,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1521,
+                "line": 1527,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81144,7 +81144,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Path count.",
-                "line": 1528,
+                "line": 1534,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81167,7 +81167,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1532,
+                "line": 1538,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81183,7 +81183,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer index.",
-                "line": 1544,
+                "line": 1550,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81199,7 +81199,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer count.",
-                "line": 1548,
+                "line": 1554,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81228,7 +81228,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1553,
+                "line": 1559,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81251,7 +81251,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array table of cell bytes, or nil when missing.",
-                "line": 1580,
+                "line": 1586,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81280,7 +81280,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1594,
+                "line": 1600,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81303,7 +81303,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer is visible, or nil when missing.",
-                "line": 1606,
+                "line": 1612,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81332,7 +81332,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1613,
+                "line": 1619,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81355,7 +81355,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Opacity multiplier, or nil when missing.",
-                "line": 1622,
+                "line": 1628,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81408,7 +81408,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1633,
+                "line": 1639,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81437,7 +81437,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Red channel, or nil when missing.",
-                "line": 1650,
+                "line": 1656,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81466,7 +81466,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1661,
+                "line": 1667,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81489,7 +81489,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Blend mode, or nil when missing.",
-                "line": 1679,
+                "line": 1685,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81512,7 +81512,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1688,
+                "line": 1694,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81528,7 +81528,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when enabled.",
-                "line": 1695,
+                "line": 1701,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81551,7 +81551,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1699,
+                "line": 1705,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81567,7 +81567,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when clickable.",
-                "line": 1706,
+                "line": 1712,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81608,7 +81608,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Hover info text, or nil when unavailable.",
-                "line": 1714,
+                "line": 1720,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81649,7 +81649,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Grid x coordinate, or nil when the transform state is invalid.",
-                "line": 1731,
+                "line": 1737,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81690,7 +81690,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Screen x coordinate, or nil when the transform state is invalid.",
-                "line": 1750,
+                "line": 1756,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81713,7 +81713,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1764,
+                "line": 1770,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81729,7 +81729,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LMinimap`.",
-                "line": 1772,
+                "line": 1778,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81752,7 +81752,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1777,
+                "line": 1783,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81781,7 +81781,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1784,
+                "line": 1790,
                 "file": "src/lua_api/minimap_api.rs"
               },
               {
@@ -81804,7 +81804,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Image data containing the rendered minimap.",
-                "line": 1795,
+                "line": 1801,
                 "file": "src/lua_api/minimap_api.rs"
               }
             ]
@@ -151699,7 +151699,7 @@
             ],
             "inferred_return": "LTileLightMap",
             "return_description": "New tile light map handle.",
-            "line": 795,
+            "line": 843,
             "file": "src/lua_api/tilelight_api.rs"
           },
           {
@@ -151708,8 +151708,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.",
-            "full_doc": "Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.\n@param | field | LTileField|table | Source tilefield handle or provider table.\n@param | opts | table? | Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.\n@return | LTileLightMap | Computed tile light map handle.",
-            "params_doc": "- `field` â€” `LTileField|table`: Source tilefield handle or provider table.\n- `opts` â€” `table?`: Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.",
+            "full_doc": "Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.\n@param | field | LTileField|table | Source tilefield handle or provider table.\n@param | opts | table? | Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.\n@return | LTileLightMap | Computed tile light map handle.",
+            "params_doc": "- `field` â€” `LTileField|table`: Source tilefield handle or provider table.\n- `opts` â€” `table?`: Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.",
             "returns_doc": "LTileLightMap",
             "inferred_sig": "(field_value, [opts])",
             "typed_params": [
@@ -151723,12 +151723,12 @@
                 "opts",
                 "table?",
                 true,
-                "Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings."
+                "Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings."
               ]
             ],
             "inferred_return": "LTileLightMap",
             "return_description": "Computed tile light map handle.",
-            "line": 814,
+            "line": 862,
             "file": "src/lua_api/tilelight_api.rs"
           }
         ],
@@ -151757,7 +151757,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 402,
+                "line": 400,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151786,7 +151786,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 432,
+                "line": 430,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151809,7 +151809,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a point light was removed.",
-                "line": 493,
+                "line": 491,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151825,7 +151825,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 499,
+                "line": 497,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151848,7 +151848,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 507,
+                "line": 505,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151877,7 +151877,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 552,
+                "line": 550,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151900,7 +151900,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a line light was removed.",
-                "line": 604,
+                "line": 602,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151916,7 +151916,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 610,
+                "line": 608,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151939,7 +151939,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 618,
+                "line": 616,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151962,7 +151962,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Stable rectangular light id.",
-                "line": 626,
+                "line": 624,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -151991,7 +151991,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 634,
+                "line": 632,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152020,7 +152020,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 642,
+                "line": 640,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152043,7 +152043,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an area light was removed.",
-                "line": 650,
+                "line": 648,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152066,7 +152066,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a rectangular light was removed.",
-                "line": 658,
+                "line": 656,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152082,7 +152082,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 664,
+                "line": 662,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152098,7 +152098,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 671,
+                "line": 669,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152121,7 +152121,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 679,
+                "line": 677,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152167,7 +152167,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 698,
+                "line": 700,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152190,7 +152190,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 707,
+                "line": 711,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152225,7 +152225,7 @@
                 ],
                 "inferred_return": "number, number, number, number",
                 "return_description": "Red, green, blue, and luma values for the cell.",
-                "line": 731,
+                "line": 735,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152248,7 +152248,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Row-major array of light color tables for the requested level.",
-                "line": 741,
+                "line": 750,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152264,7 +152264,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of exported light layers, one table per level.",
-                "line": 754,
+                "line": 769,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152280,7 +152280,7 @@
                 "typed_params": [],
                 "inferred_return": "integer, integer, integer",
                 "return_description": "Width, height, and level count.",
-                "line": 770,
+                "line": 791,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152296,7 +152296,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LTileLightMap`.",
-                "line": 775,
+                "line": 796,
                 "file": "src/lua_api/tilelight_api.rs"
               },
               {
@@ -152319,7 +152319,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileLightMap` or `LObject`.",
-                "line": 781,
+                "line": 802,
                 "file": "src/lua_api/tilelight_api.rs"
               }
             ]

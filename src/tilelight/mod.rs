@@ -7,13 +7,16 @@
 
 /// Color value and conversion helpers for tile-light calculations.
 pub mod color;
+/// Allocation and hostile-input ceilings for tile-light maps and sources.
+pub mod limits;
 /// Grid storage and traversal types for tile-light maps.
 pub mod map;
 /// Light source models, modulation, and propagation policies.
 pub mod source;
 
 pub use color::LightColor;
-pub use map::TileLightMap;
+pub use limits::TileLightLimits;
+pub use map::{ComputeOptions, TileLightMap};
 pub use source::{
     AreaLight, AreaLightUpdate, LightModulation, LineLight, LineLightUpdate, PointLight,
     PointLightUpdate, SunLight, SunLightMode,

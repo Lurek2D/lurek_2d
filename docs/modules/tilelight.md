@@ -10,6 +10,7 @@ Tile-based environment lighting computed from a shared LTileField.
 - It is environment-level data, not player-specific knowledge. Fog-of-war, action masks, and remembered exploration belong to `awareness`.
 - It is tile-level gameplay/light data, not the screen/world render-light system. Render-facing lights and occluders remain in `lurek.light`.
 - Point lights, ambient light, and global top light live on `LTileLightMap` so `LTileField` can remain a reusable source of gameplay data for many independent systems.
+- Runtime source ids, source updates/removal, modulation, computed values, and propagation remain tilelight-owned. Tilefield stores only authored emitter metadata and environmental inputs.
 
 This module primarily collaborates with `tilefield`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
@@ -32,7 +33,7 @@ lurek.tilelight.compute(field, opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `field` | [LTileField](tilefield.md#ltilefield)|table | Source tilefield handle or provider table. |
-| `opts?` | table | Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings. |
+| `opts?` | table | Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings. |
 
 **Returns**
 
@@ -367,7 +368,8 @@ do
     local light = lurek.tilelight.new(field)
     local ok, value = pcall(function()
         light:addPointLight({ x = 2, y = 2, z = 1, radius = 3, intensity = 1 })
-        light:compute({ includePointLights = true, includeSunLight = false })
+        -- Line and area sources are independently selectable when a map has them.
+        light:compute({ includePointLights = true, includeLineLights = false, includeAreaLights = false, includeSunLight = false })
         return light:getLight(2, 2, 1)
     end)
     local status = ok and "ok" or "error"

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-19T07:00:42.594138+00:00",
+  "generated_at": "2026-07-19T07:54:41.934883+00:00",
   "summary": {
     "rust": {
-      "total": 9907,
-      "covered": 9907,
+      "total": 9929,
+      "covered": 9929,
       "missing": 0,
       "pct": 100.0
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 10155,
-      "covered": 10155,
+      "total": 10177,
+      "covered": 10177,
       "missing": 0,
       "pct": 100.0
     }
@@ -37898,7 +37898,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/minimap_api.rs",
-      "line": 1805,
+      "line": 1811,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -39320,7 +39320,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilelight_api.rs",
-      "line": 788,
+      "line": 836,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -80684,7 +80684,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 8,
+      "line": 13,
       "kind": "struct",
       "name": "LightColor",
       "has_doc": true
@@ -80693,7 +80693,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 19,
+      "line": 24,
       "kind": "const",
       "name": "BLACK",
       "has_doc": true
@@ -80702,7 +80702,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 26,
+      "line": 31,
       "kind": "const",
       "name": "WHITE",
       "has_doc": true
@@ -80711,7 +80711,16 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 33,
+      "line": 38,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/color.rs",
+      "line": 55,
       "kind": "fn",
       "name": "clamped",
       "has_doc": true
@@ -80720,7 +80729,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 42,
+      "line": 64,
       "kind": "fn",
       "name": "add_scaled",
       "has_doc": true
@@ -80729,7 +80738,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/color.rs",
-      "line": 49,
+      "line": 78,
       "kind": "fn",
       "name": "luma",
       "has_doc": true
@@ -80737,8 +80746,71 @@
     {
       "source": "rust",
       "module": "tilelight",
+      "file": "src/tilelight/limits.rs",
+      "line": 16,
+      "kind": "struct",
+      "name": "TileLightLimits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/limits.rs",
+      "line": 61,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/limits.rs",
+      "line": 80,
+      "kind": "fn",
+      "name": "checked_volume_cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/limits.rs",
+      "line": 103,
+      "kind": "fn",
+      "name": "radius_cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/limits.rs",
+      "line": 118,
+      "kind": "fn",
+      "name": "check_affected_cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/limits.rs",
+      "line": 129,
+      "kind": "fn",
+      "name": "check_compute_work",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 21,
+      "line": 26,
+      "kind": "struct",
+      "name": "ComputeOptions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 63,
       "kind": "struct",
       "name": "TileLightMap",
       "has_doc": true
@@ -80747,7 +80819,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 37,
+      "line": 86,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -80756,7 +80828,16 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 67,
+      "line": 96,
+      "kind": "fn",
+      "name": "new_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 130,
       "kind": "fn",
       "name": "from_field",
       "has_doc": true
@@ -80765,7 +80846,16 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 73,
+      "line": 136,
+      "kind": "fn",
+      "name": "limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 141,
       "kind": "fn",
       "name": "size",
       "has_doc": true
@@ -80774,7 +80864,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 78,
+      "line": 146,
       "kind": "fn",
       "name": "matches_field",
       "has_doc": true
@@ -80783,7 +80873,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 99,
+      "line": 167,
       "kind": "fn",
       "name": "add_point_light",
       "has_doc": true
@@ -80792,7 +80882,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 137,
+      "line": 206,
       "kind": "fn",
       "name": "update_point_light",
       "has_doc": true
@@ -80801,7 +80891,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 185,
+      "line": 260,
       "kind": "fn",
       "name": "remove_point_light",
       "has_doc": true
@@ -80810,7 +80900,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 196,
+      "line": 270,
       "kind": "fn",
       "name": "clear_point_lights",
       "has_doc": true
@@ -80819,7 +80909,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 202,
+      "line": 279,
       "kind": "fn",
       "name": "add_line_light",
       "has_doc": true
@@ -80828,7 +80918,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 244,
+      "line": 331,
       "kind": "fn",
       "name": "update_line_light",
       "has_doc": true
@@ -80837,7 +80927,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 301,
+      "line": 392,
       "kind": "fn",
       "name": "remove_line_light",
       "has_doc": true
@@ -80846,7 +80936,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 312,
+      "line": 402,
       "kind": "fn",
       "name": "clear_line_lights",
       "has_doc": true
@@ -80855,7 +80945,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 318,
+      "line": 411,
       "kind": "fn",
       "name": "add_area_light",
       "has_doc": true
@@ -80864,7 +80954,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 357,
+      "line": 457,
       "kind": "fn",
       "name": "update_area_light",
       "has_doc": true
@@ -80873,7 +80963,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 405,
+      "line": 508,
       "kind": "fn",
       "name": "remove_area_light",
       "has_doc": true
@@ -80882,7 +80972,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 416,
+      "line": 518,
       "kind": "fn",
       "name": "clear_area_lights",
       "has_doc": true
@@ -80891,7 +80981,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 421,
+      "line": 526,
       "kind": "fn",
       "name": "set_ambient_light",
       "has_doc": true
@@ -80900,7 +80990,16 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 426,
+      "line": 531,
+      "kind": "fn",
+      "name": "try_set_ambient_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 539,
       "kind": "fn",
       "name": "set_sun_light",
       "has_doc": true
@@ -80909,7 +81008,70 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 435,
+      "line": 544,
+      "kind": "fn",
+      "name": "try_set_sun_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 555,
+      "kind": "fn",
+      "name": "is_dirty",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 561,
+      "kind": "fn",
+      "name": "computed_field_version",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 566,
+      "kind": "fn",
+      "name": "computed_source_version",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 571,
+      "kind": "fn",
+      "name": "last_affected_cells",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 576,
+      "kind": "fn",
+      "name": "last_compute_work",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 581,
+      "kind": "fn",
+      "name": "ensure_current",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 611,
       "kind": "fn",
       "name": "set_global_light",
       "has_doc": true
@@ -80918,7 +81080,16 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 441,
+      "line": 616,
+      "kind": "fn",
+      "name": "try_set_global_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 622,
       "kind": "fn",
       "name": "compute",
       "has_doc": true
@@ -80927,7 +81098,25 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 920,
+      "line": 646,
+      "kind": "fn",
+      "name": "compute_with_options",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 681,
+      "kind": "fn",
+      "name": "compute_dirty",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/map.rs",
+      "line": 1358,
       "kind": "fn",
       "name": "light_at",
       "has_doc": true
@@ -80936,7 +81125,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 927,
+      "line": 1365,
       "kind": "fn",
       "name": "export_layer",
       "has_doc": true
@@ -80945,7 +81134,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/map.rs",
-      "line": 938,
+      "line": 1384,
       "kind": "fn",
       "name": "export_volume",
       "has_doc": true
@@ -80954,7 +81143,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/mod.rs",
-      "line": 23,
+      "line": 26,
       "kind": "type",
       "name": "GlobalLight",
       "has_doc": true
@@ -80963,7 +81152,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 12,
+      "line": 17,
       "kind": "struct",
       "name": "LightModulation",
       "has_doc": true
@@ -80972,7 +81161,16 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 31,
+      "line": 36,
+      "kind": "fn",
+      "name": "validate",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "tilelight",
+      "file": "src/tilelight/source.rs",
+      "line": 60,
       "kind": "fn",
       "name": "intensity_at",
       "has_doc": true
@@ -80981,7 +81179,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 42,
+      "line": 74,
       "kind": "fn",
       "name": "color_at",
       "has_doc": true
@@ -80990,7 +81188,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 64,
+      "line": 104,
       "kind": "struct",
       "name": "PointLight",
       "has_doc": true
@@ -80999,7 +81197,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 85,
+      "line": 130,
       "kind": "struct",
       "name": "PointLightUpdate",
       "has_doc": true
@@ -81008,7 +81206,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 104,
+      "line": 154,
       "kind": "struct",
       "name": "LineLight",
       "has_doc": true
@@ -81017,7 +81215,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 131,
+      "line": 186,
       "kind": "struct",
       "name": "LineLightUpdate",
       "has_doc": true
@@ -81026,7 +81224,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 156,
+      "line": 216,
       "kind": "struct",
       "name": "AreaLight",
       "has_doc": true
@@ -81035,7 +81233,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 181,
+      "line": 246,
       "kind": "struct",
       "name": "AreaLightUpdate",
       "has_doc": true
@@ -81044,7 +81242,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 204,
+      "line": 274,
       "kind": "enum",
       "name": "SunLightMode",
       "has_doc": true
@@ -81053,7 +81251,7 @@
       "source": "rust",
       "module": "tilelight",
       "file": "src/tilelight/source.rs",
-      "line": 218,
+      "line": 293,
       "kind": "struct",
       "name": "SunLight",
       "has_doc": true
@@ -89999,7 +90197,7 @@
       "source": "lua_api",
       "module": "minimap_api",
       "file": "src/lua_api/minimap_api.rs",
-      "line": 1815,
+      "line": 1821,
       "kind": "fn",
       "name": "newMinimap",
       "has_doc": true

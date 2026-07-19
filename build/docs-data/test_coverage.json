@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 7698,
-    "covered": 4434,
-    "uncovered": 3264,
-    "coverage_pct": 57.6,
+    "total": 7718,
+    "covered": 4457,
+    "uncovered": 3261,
+    "coverage_pct": 57.7,
     "covered_items": [
       {
         "module": "agent",
@@ -11649,7 +11649,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1805
+        "line": 1811
       },
       {
         "module": "lua_api",
@@ -12003,7 +12003,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 788
+        "line": 836
       },
       {
         "module": "lua_api",
@@ -13144,6 +13144,12 @@
         "name": "CatmullRomSpline::add_point",
         "file": "src/math/spline.rs",
         "line": 64
+      },
+      {
+        "module": "math",
+        "name": "CatmullRomSpline::remove_point",
+        "file": "src/math/spline.rs",
+        "line": 68
       },
       {
         "module": "math",
@@ -24211,63 +24217,195 @@
       },
       {
         "module": "tilelight",
+        "name": "LightColor::validate",
+        "file": "src/tilelight/color.rs",
+        "line": 38
+      },
+      {
+        "module": "tilelight",
         "name": "LightColor::clamped",
         "file": "src/tilelight/color.rs",
-        "line": 33
+        "line": 55
       },
       {
         "module": "tilelight",
         "name": "LightColor::luma",
         "file": "src/tilelight/color.rs",
-        "line": 49
+        "line": 78
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightLimits::validate",
+        "file": "src/tilelight/limits.rs",
+        "line": 61
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::new",
         "file": "src/tilelight/map.rs",
-        "line": 37
+        "line": 86
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::new_with_limits",
+        "file": "src/tilelight/map.rs",
+        "line": 96
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::from_field",
         "file": "src/tilelight/map.rs",
-        "line": 67
+        "line": 130
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::limits",
+        "file": "src/tilelight/map.rs",
+        "line": 136
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::size",
         "file": "src/tilelight/map.rs",
-        "line": 73
+        "line": 141
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::add_point_light",
         "file": "src/tilelight/map.rs",
-        "line": 99
+        "line": 167
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::update_point_light",
+        "file": "src/tilelight/map.rs",
+        "line": 206
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::remove_point_light",
+        "file": "src/tilelight/map.rs",
+        "line": 260
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::add_line_light",
+        "file": "src/tilelight/map.rs",
+        "line": 279
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::add_area_light",
+        "file": "src/tilelight/map.rs",
+        "line": 411
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::set_ambient_light",
+        "file": "src/tilelight/map.rs",
+        "line": 526
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::try_set_ambient_light",
+        "file": "src/tilelight/map.rs",
+        "line": 531
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::set_sun_light",
+        "file": "src/tilelight/map.rs",
+        "line": 539
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::try_set_sun_light",
+        "file": "src/tilelight/map.rs",
+        "line": 544
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::is_dirty",
+        "file": "src/tilelight/map.rs",
+        "line": 555
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::computed_field_version",
+        "file": "src/tilelight/map.rs",
+        "line": 561
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::last_affected_cells",
+        "file": "src/tilelight/map.rs",
+        "line": 571
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::last_compute_work",
+        "file": "src/tilelight/map.rs",
+        "line": 576
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::ensure_current",
+        "file": "src/tilelight/map.rs",
+        "line": 581
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::set_global_light",
         "file": "src/tilelight/map.rs",
-        "line": 435
+        "line": 611
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::compute",
         "file": "src/tilelight/map.rs",
-        "line": 441
+        "line": 622
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::compute_with_options",
+        "file": "src/tilelight/map.rs",
+        "line": 646
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::compute_dirty",
+        "file": "src/tilelight/map.rs",
+        "line": 681
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::light_at",
         "file": "src/tilelight/map.rs",
-        "line": 920
+        "line": 1358
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::export_layer",
+        "file": "src/tilelight/map.rs",
+        "line": 1365
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightMap::export_volume",
+        "file": "src/tilelight/map.rs",
+        "line": 1384
+      },
+      {
+        "module": "tilelight",
+        "name": "LightModulation::validate",
+        "file": "src/tilelight/source.rs",
+        "line": 36
       },
       {
         "module": "tilelight",
         "name": "LightModulation::intensity_at",
         "file": "src/tilelight/source.rs",
-        "line": 31
+        "line": 60
       },
       {
         "module": "tilemap",
@@ -36429,12 +36567,6 @@
       },
       {
         "module": "math",
-        "name": "CatmullRomSpline::remove_point",
-        "file": "src/math/spline.rs",
-        "line": 68
-      },
-      {
-        "module": "math",
         "name": "Transform::from_components",
         "file": "src/math/transform.rs",
         "line": 27
@@ -43985,109 +44117,97 @@
         "module": "tilelight",
         "name": "LightColor::add_scaled",
         "file": "src/tilelight/color.rs",
-        "line": 42
+        "line": 64
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightLimits::checked_volume_cells",
+        "file": "src/tilelight/limits.rs",
+        "line": 80
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightLimits::radius_cells",
+        "file": "src/tilelight/limits.rs",
+        "line": 103
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightLimits::check_affected_cells",
+        "file": "src/tilelight/limits.rs",
+        "line": 118
+      },
+      {
+        "module": "tilelight",
+        "name": "TileLightLimits::check_compute_work",
+        "file": "src/tilelight/limits.rs",
+        "line": 129
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::matches_field",
         "file": "src/tilelight/map.rs",
-        "line": 78
-      },
-      {
-        "module": "tilelight",
-        "name": "TileLightMap::update_point_light",
-        "file": "src/tilelight/map.rs",
-        "line": 137
-      },
-      {
-        "module": "tilelight",
-        "name": "TileLightMap::remove_point_light",
-        "file": "src/tilelight/map.rs",
-        "line": 185
+        "line": 146
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::clear_point_lights",
         "file": "src/tilelight/map.rs",
-        "line": 196
-      },
-      {
-        "module": "tilelight",
-        "name": "TileLightMap::add_line_light",
-        "file": "src/tilelight/map.rs",
-        "line": 202
+        "line": 270
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::update_line_light",
         "file": "src/tilelight/map.rs",
-        "line": 244
+        "line": 331
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::remove_line_light",
         "file": "src/tilelight/map.rs",
-        "line": 301
+        "line": 392
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::clear_line_lights",
         "file": "src/tilelight/map.rs",
-        "line": 312
-      },
-      {
-        "module": "tilelight",
-        "name": "TileLightMap::add_area_light",
-        "file": "src/tilelight/map.rs",
-        "line": 318
+        "line": 402
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::update_area_light",
         "file": "src/tilelight/map.rs",
-        "line": 357
+        "line": 457
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::remove_area_light",
         "file": "src/tilelight/map.rs",
-        "line": 405
+        "line": 508
       },
       {
         "module": "tilelight",
         "name": "TileLightMap::clear_area_lights",
         "file": "src/tilelight/map.rs",
-        "line": 416
+        "line": 518
       },
       {
         "module": "tilelight",
-        "name": "TileLightMap::set_ambient_light",
+        "name": "TileLightMap::computed_source_version",
         "file": "src/tilelight/map.rs",
-        "line": 421
+        "line": 566
       },
       {
         "module": "tilelight",
-        "name": "TileLightMap::set_sun_light",
+        "name": "TileLightMap::try_set_global_light",
         "file": "src/tilelight/map.rs",
-        "line": 426
-      },
-      {
-        "module": "tilelight",
-        "name": "TileLightMap::export_layer",
-        "file": "src/tilelight/map.rs",
-        "line": 927
-      },
-      {
-        "module": "tilelight",
-        "name": "TileLightMap::export_volume",
-        "file": "src/tilelight/map.rs",
-        "line": 938
+        "line": 616
       },
       {
         "module": "tilelight",
         "name": "LightModulation::color_at",
         "file": "src/tilelight/source.rs",
-        "line": 42
+        "line": 74
       },
       {
         "module": "tilemap",
@@ -69896,525 +70016,525 @@
         "lua_name": "LMinimap:syncTileAwarenessFog",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 780
+        "line": 786
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:syncTileAwarenessLayer",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 862
+        "line": 868
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:addObjectType",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 932
+        "line": 938
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setObjectTypeVisible",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 944
+        "line": 950
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:isObjectTypeVisible",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 965
+        "line": 971
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getObjectTypeCount",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 976
+        "line": 982
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setObjectTypeTexture",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 985
+        "line": 991
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:clearObjectTypeTexture",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1021
+        "line": 1027
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setObject",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1037
+        "line": 1043
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:removeObject",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1067
+        "line": 1073
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:clearObjects",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1072
+        "line": 1078
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getObjectCount",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1079
+        "line": 1085
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setOwnerColor",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1089
+        "line": 1095
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getOwnerColor",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1104
+        "line": 1110
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setColorMode",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1111
+        "line": 1117
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getColorMode",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1124
+        "line": 1130
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setZoom",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1130
+        "line": 1136
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getZoom",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1136
+        "line": 1142
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setCenter",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1141
+        "line": 1147
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:trackCamera",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1147
+        "line": 1153
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:revealRadius",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1168
+        "line": 1174
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getCenter",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1180
+        "line": 1186
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getCenterX",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1186
+        "line": 1192
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getCenterY",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1190
+        "line": 1196
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setViewportRect",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1197
+        "line": 1203
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:clearViewportRect",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1207
+        "line": 1213
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getViewportRect",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1217
+        "line": 1223
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setViewportVisible",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1226
+        "line": 1232
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:isViewportVisible",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1233
+        "line": 1239
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setViewportColor",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1242
+        "line": 1248
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getViewportColor",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1256
+        "line": 1262
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:addPing",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1270
+        "line": 1276
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getPingCount",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1312
+        "line": 1318
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:addMarker",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1324
+        "line": 1330
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:removeMarker",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1357
+        "line": 1363
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:hasMarker",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1364
+        "line": 1370
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getMarkerDescription",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1371
+        "line": 1377
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getMarkerCount",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1377
+        "line": 1383
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setMarkerTexture",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1386
+        "line": 1392
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:clearMarkerTexture",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1404
+        "line": 1410
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setMarkerAnimation",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1413
+        "line": 1419
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:clearMarkerAnimation",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1436
+        "line": 1442
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:drawLine",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1447
+        "line": 1453
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:drawRect",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1467
+        "line": 1473
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:clearOverlay",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1482
+        "line": 1488
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getOverlayShapeCount",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1489
+        "line": 1495
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:showPath",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1497
+        "line": 1503
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:clearPath",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1521
+        "line": 1527
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getPathCount",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1528
+        "line": 1534
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setLayer",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1532
+        "line": 1538
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getLayer",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1544
+        "line": 1550
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getLayerCount",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1548
+        "line": 1554
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setLayerData",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1553
+        "line": 1559
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getLayerData",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1580
+        "line": 1586
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setLayerVisible",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1594
+        "line": 1600
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:isLayerVisible",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1606
+        "line": 1612
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setLayerAlpha",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1613
+        "line": 1619
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getLayerAlpha",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1622
+        "line": 1628
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setLayerColor",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1633
+        "line": 1639
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getLayerColor",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1650
+        "line": 1656
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setLayerBlendMode",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1661
+        "line": 1667
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getLayerBlendMode",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1679
+        "line": 1685
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setAntiAlias",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1688
+        "line": 1694
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:isAntiAlias",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1695
+        "line": 1701
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:setClickable",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1699
+        "line": 1705
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:isClickable",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1706
+        "line": 1712
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:getHoverInfo",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1714
+        "line": 1720
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:screenToGrid",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1731
+        "line": 1737
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:gridToScreen",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1750
+        "line": 1756
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:update",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1764
+        "line": 1770
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:type",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1772
+        "line": 1778
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:typeOf",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1777
+        "line": 1783
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:render",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1784
+        "line": 1790
       },
       {
         "module": "minimap",
         "lua_name": "LMinimap:drawToImage",
         "kind": "method",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1795
+        "line": 1801
       },
       {
         "module": "minimap",
         "lua_name": "lurek.minimap.newMinimap",
         "kind": "function",
         "file": "src/lua_api/minimap_api.rs",
-        "line": 1815
+        "line": 1821
       },
       {
         "module": "mods",
@@ -89405,119 +89525,119 @@
         "lua_name": "LTileLightMap:addPointLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 402
+        "line": 400
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:updatePointLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 432
+        "line": 430
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:removePointLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 493
+        "line": 491
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:clearPointLights",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 499
+        "line": 497
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:addLineLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 507
+        "line": 505
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:updateLineLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 552
+        "line": 550
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:removeLineLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 604
+        "line": 602
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:clearLineLights",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 610
+        "line": 608
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:addAreaLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 618
+        "line": 616
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:addRectLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 626
+        "line": 624
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:updateAreaLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 634
+        "line": 632
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:updateRectLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 642
+        "line": 640
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:removeAreaLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 650
+        "line": 648
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:removeRectLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 658
+        "line": 656
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:clearAreaLights",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 664
+        "line": 662
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:clearRectLights",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 671
+        "line": 669
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:setAmbient",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 679
+        "line": 677
       },
       {
         "module": "tilelight",
@@ -89531,70 +89651,70 @@
         "lua_name": "LTileLightMap:setGlobalLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 698
+        "line": 700
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:compute",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 707
+        "line": 711
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:getLight",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 731
+        "line": 735
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:exportLayer",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 741
+        "line": 750
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:exportVolume",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 754
+        "line": 769
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:getSize",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 770
+        "line": 791
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:type",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 775
+        "line": 796
       },
       {
         "module": "tilelight",
         "lua_name": "LTileLightMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 781
+        "line": 802
       },
       {
         "module": "tilelight",
         "lua_name": "lurek.tilelight.new",
         "kind": "function",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 795
+        "line": 843
       },
       {
         "module": "tilelight",
         "lua_name": "lurek.tilelight.compute",
         "kind": "function",
         "file": "src/lua_api/tilelight_api.rs",
-        "line": 814
+        "line": 862
       },
       {
         "module": "tilemap",

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-19T07:01:14.423632+00:00",
+    "generated": "2026-07-19T07:54:57.307159+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,

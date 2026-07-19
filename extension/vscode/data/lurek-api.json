@@ -32613,7 +32613,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.",
+              "description": "Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.",
               "optional": true
             }
           ],

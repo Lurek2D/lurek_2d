@@ -18,6 +18,7 @@
 - Every successful mutation increments version and dirty state. Dirty cells coalesce and fall back to a bounded coarse level rectangle; `beginEdit` is nested and does not discard pending changes.
 - `clear` resets cells, regions, occupants, resources, and buildability while retaining category/modifier/slot definitions. Occupant id `0` means empty; missing buildability is `true`; empty resource labels are absent.
 - Tilefield stores authored environmental light metadata only. Runtime physics body creation belongs to `physics`; render light/occluder creation belongs to `light`. The legacy tilefield aliases are compatibility shims during migration.
+- Tilelight consumes authored emitter metadata and tilefield blocker/transmission/topology/version data; tilefield does not own runtime light ids, computed output, or propagation.
 - Hostile-input coverage belongs in `tests/lua/security/test_tilefield_security.lua` and large bounded mutations belong in the tilefield stress suite.
 
 ## Workflow

@@ -267,7 +267,8 @@ do
     local light = lurek.tilelight.new(field)
     local ok, value = pcall(function()
         light:addPointLight({ x = 2, y = 2, z = 1, radius = 3, intensity = 1 })
-        light:compute({ includePointLights = true, includeSunLight = false })
+        -- Line and area sources are independently selectable when a map has them.
+        light:compute({ includePointLights = true, includeLineLights = false, includeAreaLights = false, includeSunLight = false })
         return light:getLight(2, 2, 1)
     end)
     local status = ok and "ok" or "error"

@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-19T07:00:03.065994+00:00",
+    "generated": "2026-07-19T07:54:09.070865+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3352,
-      "rust_modules": 790,
-      "rust_tests": 501,
-      "lua_tests": 285
+      "rust_items": 3355,
+      "rust_modules": 791,
+      "rust_tests": 503,
+      "lua_tests": 287
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3352,
-      "documented": 3350,
-      "modules": 790
+      "total_items": 3355,
+      "documented": 3353,
+      "modules": 791
     },
     "modules": {
       "agent::chat": {
@@ -25626,9 +25626,22 @@
           {
             "name": "LightColor",
             "kind": "struct",
-            "description": "RGB light color in linear 0..1 components.",
+            "description": "RGB light color in linear 0..1 components.  # Fields  `r`, `g`, and `b` are finite linear-light channels in `0..=1` once accepted by a tilelight mutation. `validate` rejects hostile input before clamping.",
             "file": "src/tilelight/color.rs",
-            "line": 8
+            "line": 13
+          }
+        ]
+      },
+      "tilelight::limits": {
+        "module_doc": "Allocation and work ceilings for tilelight maps and runtime sources.  These limits are checked before dense storage, source collections, influence regions, and compute loops are created. They are deliberately owned by tilelight because tilefield limits cannot predict the number or shape of runtime lights attached to one field.",
+        "source_file": "src/tilelight/limits.rs",
+        "items": [
+          {
+            "name": "TileLightLimits",
+            "kind": "struct",
+            "description": "Practical ceilings for tilelight storage, source shapes, and computation.  # Fields  The `max_*` fields are inclusive ceilings. Dimensions and radii use tile units; collection and work fields use Rust counts. A limit failure is reported by the caller before allocation or nested propagation begins.",
+            "file": "src/tilelight/limits.rs",
+            "line": 16
           }
         ]
       },
@@ -25637,11 +25650,18 @@
         "source_file": "src/tilelight/map.rs",
         "items": [
           {
+            "name": "ComputeOptions",
+            "kind": "struct",
+            "description": "Validated options shared by full and dirty tilelight computation.  # Fields  Include flags select source families, `ambient` optionally overrides the map setting, and `time_seconds` is the finite modulation clock in seconds.",
+            "file": "src/tilelight/map.rs",
+            "line": 26
+          },
+          {
             "name": "TileLightMap",
             "kind": "struct",
-            "description": "Computed tile light values and source-light state for one tilefield-sized volume.",
+            "description": "Computed tile light values and runtime source state for one tilefield volume.  # Fields  Dense output is bounded by [`TileLightLimits`]. Runtime sources are compact vectors with monotonically allocated ids. `computed_field_version` and `computed_source_version` identify the exact inputs represented by output; a changed field or source set makes the output stale until the next compute.",
             "file": "src/tilelight/map.rs",
-            "line": 21
+            "line": 63
           }
         ]
       },
@@ -25657,25 +25677,32 @@
             "line": 9
           },
           {
+            "name": "limits",
+            "kind": "mod",
+            "description": "Allocation and hostile-input ceilings for tile-light maps and sources.",
+            "file": "src/tilelight/mod.rs",
+            "line": 11
+          },
+          {
             "name": "map",
             "kind": "mod",
             "description": "Grid storage and traversal types for tile-light maps.",
             "file": "src/tilelight/mod.rs",
-            "line": 11
+            "line": 13
           },
           {
             "name": "source",
             "kind": "mod",
             "description": "Light source models, modulation, and propagation policies.",
             "file": "src/tilelight/mod.rs",
-            "line": 13
+            "line": 15
           },
           {
             "name": "GlobalLight",
             "kind": "type",
             "description": "Compatibility alias for the global top-light source.",
             "file": "src/tilelight/mod.rs",
-            "line": 23
+            "line": 26
           }
         ]
       },
@@ -25686,65 +25713,65 @@
           {
             "name": "LightModulation",
             "kind": "struct",
-            "description": "Time-varying modulation applied to a tile light source.",
+            "description": "Time-varying modulation applied to a tile light source.  # Fields  Intensity amplitude is `0..=1`; frequencies are cycles per second and are non-negative; phases are radians. Optional colors are validated RGB values.",
             "file": "src/tilelight/source.rs",
-            "line": 12
+            "line": 17
           },
           {
             "name": "PointLight",
             "kind": "struct",
-            "description": "Tile point light definition.",
-            "file": "src/tilelight/source.rs",
-            "line": 64
-          },
-          {
-            "name": "PointLightUpdate",
-            "kind": "struct",
-            "description": "Optional patch for updating an existing point light.",
-            "file": "src/tilelight/source.rs",
-            "line": 85
-          },
-          {
-            "name": "LineLight",
-            "kind": "struct",
-            "description": "Tile line light definition.",
+            "description": "Tile point light definition.  # Fields  The id is monotonically allocated by `TileLightMap`; coordinates are zero-based cells; radius is in tiles; intensity is a non-negative scalar.",
             "file": "src/tilelight/source.rs",
             "line": 104
           },
           {
+            "name": "PointLightUpdate",
+            "kind": "struct",
+            "description": "Optional patch for updating an existing point light.  # Fields  `None` retains the current field. The complete candidate record is validated before any field is changed.",
+            "file": "src/tilelight/source.rs",
+            "line": 130
+          },
+          {
+            "name": "LineLight",
+            "kind": "struct",
+            "description": "Tile line light definition.  # Fields  Endpoints are zero-based cells on one level. The radius and intensity use the same units as point lights and the id remains stable after compaction.",
+            "file": "src/tilelight/source.rs",
+            "line": 154
+          },
+          {
             "name": "LineLightUpdate",
             "kind": "struct",
-            "description": "Optional patch for updating an existing line light.",
+            "description": "Optional patch for updating an existing line light.  # Fields  `None` retains the current field. Endpoint, shape, color, and modulation validation is transactional.",
             "file": "src/tilelight/source.rs",
-            "line": 131
+            "line": 186
           },
           {
             "name": "AreaLight",
             "kind": "struct",
-            "description": "Tile rectangular area light definition.",
+            "description": "Tile rectangular area light definition.  # Fields  The origin is zero-based; width, height, and radius are tile counts; the id is stable and runtime-owned by `TileLightMap`.",
             "file": "src/tilelight/source.rs",
-            "line": 156
+            "line": 216
           },
           {
             "name": "AreaLightUpdate",
             "kind": "struct",
-            "description": "Optional patch for updating an existing area light.",
+            "description": "Optional patch for updating an existing area light.  # Fields  `None` retains the current field. Rectangle bounds, halo work, and all numeric values are validated before mutation.",
             "file": "src/tilelight/source.rs",
-            "line": 181
+            "line": 246
           },
           {
             "name": "SunLightMode",
             "kind": "enum",
-            "description": "Controls how one global sun light source propagates through the tile-light map.",
+            "description": "Controls how one global sun light source propagates through the tile-light map.  # Variants  `Top` sweeps levels from high to low. `Directional` traces a bounded horizontal direction on each level and uses upper-level sun data.",
             "file": "src/tilelight/source.rs",
-            "line": 204
+            "line": 274
           },
           {
             "name": "SunLight",
             "kind": "struct",
-            "description": "Global sun light settings.",
+            "description": "Global sun light settings.  # Fields  Intensity is finite and non-negative, color is finite RGB in `0..=1`, and mode selects top or directional tile propagation.",
             "file": "src/tilelight/source.rs",
-            "line": 218
+            "line": 293
           }
         ]
       },
@@ -30851,772 +30878,786 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ai_stress",
+        "name": "lua_security_tilelight_security",
         "description": "",
         "line": 1221
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_animation_stress",
+        "name": "lua_stress_ai_stress",
         "description": "",
         "line": 1226
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_binary_stress",
+        "name": "lua_stress_animation_stress",
         "description": "",
         "line": 1231
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_camera_stress",
+        "name": "lua_stress_binary_stress",
         "description": "",
         "line": 1236
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_compute_stress",
+        "name": "lua_stress_camera_stress",
         "description": "",
         "line": 1241
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_dataframe_stress",
+        "name": "lua_stress_compute_stress",
         "description": "",
         "line": 1246
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ecs_stress",
+        "name": "lua_stress_dataframe_stress",
         "description": "",
         "line": 1251
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_event_stress",
+        "name": "lua_stress_ecs_stress",
         "description": "",
         "line": 1256
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_filesystem_stress",
+        "name": "lua_stress_event_stress",
         "description": "",
         "line": 1261
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_image_stress",
+        "name": "lua_stress_filesystem_stress",
         "description": "",
         "line": 1266
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_learning_stress",
+        "name": "lua_stress_image_stress",
         "description": "",
         "line": 1271
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_light_stress",
+        "name": "lua_stress_learning_stress",
         "description": "",
         "line": 1276
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_math_stress",
+        "name": "lua_stress_light_stress",
         "description": "",
         "line": 1281
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_particle_stress",
+        "name": "lua_stress_math_stress",
         "description": "",
         "line": 1286
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_pathfind_stress",
+        "name": "lua_stress_particle_stress",
         "description": "",
         "line": 1291
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_patterns_stress",
+        "name": "lua_stress_pathfind_stress",
         "description": "",
         "line": 1296
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_physics_stress",
+        "name": "lua_stress_patterns_stress",
         "description": "",
         "line": 1301
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_procgen_stress",
+        "name": "lua_stress_physics_stress",
         "description": "",
         "line": 1306
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_progression_stress",
+        "name": "lua_stress_procgen_stress",
         "description": "",
         "line": 1311
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_render_stress",
+        "name": "lua_stress_progression_stress",
         "description": "",
         "line": 1316
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_svg_stress",
+        "name": "lua_stress_render_stress",
         "description": "",
         "line": 1321
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_save_stress",
+        "name": "lua_stress_svg_stress",
         "description": "",
         "line": 1326
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_scene_stress",
+        "name": "lua_stress_save_stress",
         "description": "",
         "line": 1331
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_serialize_stress",
+        "name": "lua_stress_scene_stress",
         "description": "",
         "line": 1336
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_thread_stress",
+        "name": "lua_stress_serialize_stress",
         "description": "",
         "line": 1341
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilemap_stress",
+        "name": "lua_stress_thread_stress",
         "description": "",
         "line": 1346
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilefield_stress",
+        "name": "lua_stress_tilemap_stress",
         "description": "",
         "line": 1351
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_timer_stress",
+        "name": "lua_stress_tilefield_stress",
         "description": "",
         "line": 1356
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tween_stress",
+        "name": "lua_stress_tilelight_stress",
         "description": "",
         "line": 1361
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_agent_unit",
+        "name": "lua_stress_timer_stress",
         "description": "",
         "line": 1366
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ai_unit",
+        "name": "lua_stress_tween_stress",
         "description": "",
         "line": 1371
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_animation_unit",
+        "name": "lua_unit_agent_unit",
         "description": "",
         "line": 1376
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_asset_unit",
+        "name": "lua_unit_ai_unit",
         "description": "",
         "line": 1381
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_audio_unit",
+        "name": "lua_unit_animation_unit",
         "description": "",
         "line": 1386
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_automation_unit",
+        "name": "lua_unit_asset_unit",
         "description": "",
         "line": 1391
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_beat_clock_unit",
+        "name": "lua_unit_audio_unit",
         "description": "",
         "line": 1396
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_binary_unit",
+        "name": "lua_unit_automation_unit",
         "description": "",
         "line": 1401
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_camera_unit",
+        "name": "lua_unit_beat_clock_unit",
         "description": "",
         "line": 1406
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_charts_unit",
+        "name": "lua_unit_binary_unit",
         "description": "",
         "line": 1411
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cinematic_unit",
+        "name": "lua_unit_camera_unit",
         "description": "",
         "line": 1416
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_collision_unit",
+        "name": "lua_unit_charts_unit",
         "description": "",
         "line": 1421
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_color_unit",
+        "name": "lua_unit_cinematic_unit",
         "description": "",
         "line": 1426
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_compute_unit",
+        "name": "lua_unit_collision_unit",
         "description": "",
         "line": 1431
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cursor_unit",
+        "name": "lua_unit_color_unit",
         "description": "",
         "line": 1436
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dataframe_unit",
+        "name": "lua_unit_compute_unit",
         "description": "",
         "line": 1441
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_debugbridge_unit",
+        "name": "lua_unit_cursor_unit",
         "description": "",
         "line": 1446
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_devtools_unit",
+        "name": "lua_unit_dataframe_unit",
         "description": "",
         "line": 1451
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dialog_unit",
+        "name": "lua_unit_debugbridge_unit",
         "description": "",
         "line": 1456
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_docs_unit",
+        "name": "lua_unit_devtools_unit",
         "description": "",
         "line": 1461
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dsp_unit",
+        "name": "lua_unit_dialog_unit",
         "description": "",
         "line": 1466
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ecs_unit",
+        "name": "lua_unit_docs_unit",
         "description": "",
         "line": 1471
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_effect_unit",
+        "name": "lua_unit_dsp_unit",
         "description": "",
         "line": 1476
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_engine_unit",
+        "name": "lua_unit_ecs_unit",
         "description": "",
         "line": 1481
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_event_unit",
+        "name": "lua_unit_effect_unit",
         "description": "",
         "line": 1486
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_filesystem_unit",
+        "name": "lua_unit_engine_unit",
         "description": "",
         "line": 1491
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_flownet_unit",
+        "name": "lua_unit_event_unit",
         "description": "",
         "line": 1496
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_font_unit",
+        "name": "lua_unit_filesystem_unit",
         "description": "",
         "line": 1501
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_globe_unit",
+        "name": "lua_unit_flownet_unit",
         "description": "",
         "line": 1506
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_grep_unit",
+        "name": "lua_unit_font_unit",
         "description": "",
         "line": 1511
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_i18n_unit",
+        "name": "lua_unit_globe_unit",
         "description": "",
         "line": 1516
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_image_unit",
+        "name": "lua_unit_grep_unit",
         "description": "",
         "line": 1521
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_input_unit",
+        "name": "lua_unit_i18n_unit",
         "description": "",
         "line": 1526
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_learning_unit",
+        "name": "lua_unit_image_unit",
         "description": "",
         "line": 1531
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_layout_unit",
+        "name": "lua_unit_input_unit",
         "description": "",
         "line": 1536
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_light_unit",
+        "name": "lua_unit_learning_unit",
         "description": "",
         "line": 1541
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_log_unit",
+        "name": "lua_unit_layout_unit",
         "description": "",
         "line": 1546
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_loot_unit",
+        "name": "lua_unit_light_unit",
         "description": "",
         "line": 1551
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_math_unit",
+        "name": "lua_unit_log_unit",
         "description": "",
         "line": 1556
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mapblock_unit",
+        "name": "lua_unit_loot_unit",
         "description": "",
         "line": 1561
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_minimap_unit",
+        "name": "lua_unit_math_unit",
         "description": "",
         "line": 1566
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mods_unit",
+        "name": "lua_unit_mapblock_unit",
         "description": "",
         "line": 1571
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_modular_topdown_api_unit",
+        "name": "lua_unit_minimap_unit",
         "description": "",
         "line": 1576
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_net_unit",
+        "name": "lua_unit_mods_unit",
         "description": "",
         "line": 1581
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_network_unit",
+        "name": "lua_unit_modular_topdown_api_unit",
         "description": "",
         "line": 1586
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_overlay_unit",
+        "name": "lua_unit_net_unit",
         "description": "",
         "line": 1591
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_parallax_unit",
+        "name": "lua_unit_network_unit",
         "description": "",
         "line": 1596
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_particle_unit",
+        "name": "lua_unit_overlay_unit",
         "description": "",
         "line": 1601
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pathfind_unit",
+        "name": "lua_unit_parallax_unit",
         "description": "",
         "line": 1606
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_patterns_unit",
+        "name": "lua_unit_particle_unit",
         "description": "",
         "line": 1611
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_physics_unit",
+        "name": "lua_unit_pathfind_unit",
         "description": "",
         "line": 1616
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pipeline_unit",
+        "name": "lua_unit_patterns_unit",
         "description": "",
         "line": 1621
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_progression_unit",
+        "name": "lua_unit_physics_unit",
         "description": "",
         "line": 1626
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_unit",
+        "name": "lua_unit_pipeline_unit",
         "description": "",
         "line": 1631
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_gap_unit",
+        "name": "lua_unit_progression_unit",
         "description": "",
         "line": 1636
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_province_unit",
+        "name": "lua_unit_procgen_unit",
         "description": "",
         "line": 1641
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_raycaster_unit",
+        "name": "lua_unit_procgen_gap_unit",
         "description": "",
         "line": 1646
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_render_unit",
+        "name": "lua_unit_province_unit",
         "description": "",
         "line": 1651
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_repl_unit",
+        "name": "lua_unit_raycaster_unit",
         "description": "",
         "line": 1656
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_runtime_unit",
+        "name": "lua_unit_render_unit",
         "description": "",
         "line": 1661
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_save_unit",
+        "name": "lua_unit_repl_unit",
         "description": "",
         "line": 1666
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_scene_unit",
+        "name": "lua_unit_runtime_unit",
         "description": "",
         "line": 1671
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_serialize_unit",
+        "name": "lua_unit_save_unit",
         "description": "",
         "line": 1676
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shape_unit",
+        "name": "lua_unit_scene_unit",
         "description": "",
         "line": 1681
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_spine_unit",
+        "name": "lua_unit_serialize_unit",
         "description": "",
         "line": 1686
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_sprite_unit",
+        "name": "lua_unit_shape_unit",
         "description": "",
         "line": 1691
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_svg_unit",
+        "name": "lua_unit_spine_unit",
         "description": "",
         "line": 1696
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_terminal_unit",
+        "name": "lua_unit_sprite_unit",
         "description": "",
         "line": 1701
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_thread_unit",
+        "name": "lua_unit_svg_unit",
         "description": "",
         "line": 1706
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilemap_unit",
+        "name": "lua_unit_terminal_unit",
         "description": "",
         "line": 1711
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_unit",
+        "name": "lua_unit_thread_unit",
         "description": "",
         "line": 1716
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_gap_unit",
+        "name": "lua_unit_tilemap_unit",
         "description": "",
         "line": 1721
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilelight_unit",
+        "name": "lua_unit_tilefield_unit",
         "description": "",
         "line": 1726
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tileset_unit",
+        "name": "lua_unit_tilefield_gap_unit",
         "description": "",
         "line": 1731
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tilelight_unit",
         "description": "",
         "line": 1736
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_tileset_unit",
         "description": "",
         "line": 1741
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1746
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1751
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_awareness_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1756
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1761
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_demo_colocated_games",
+        "name": "lua_unit_awareness_unit",
         "description": "",
         "line": 1766
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_window_unit",
+        "description": "",
+        "line": 1771
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_demo_colocated_games",
+        "description": "",
+        "line": 1776
       },
       {
         "file": "tests/workbench_smoke_tests.rs",
@@ -32874,6 +32915,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/security/test_tilelight_security.lua",
+        "module": "test_tilelight_security",
+        "name": "test_tilelight_security",
+        "description": "Adversarial coverage for bounded tilelight storage, source input, and stale output.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/stress/test_ai_stress.lua",
         "module": "test_ai_stress",
         "name": "test_ai_stress",
@@ -33053,6 +33101,13 @@
         "module": "test_tilefield_stress",
         "name": "test_tilefield_stress",
         "description": "Stress coverage for tilefield data plus tilelight over large multi-level fields.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/stress/test_tilelight_stress.lua",
+        "module": "test_tilelight_stress",
+        "name": "test_tilelight_stress",
+        "description": "Bounded tilelight stress coverage for source shapes, sun propagation, edits, and exports.",
         "kind": "lua"
       },
       {

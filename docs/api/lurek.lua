@@ -34151,7 +34151,7 @@ function LTileLightMap:updateRectLight(id, opts) end
 
 --- Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.
 ---@param field LTileField|table Source tilefield handle or provider table.
----@param opts? table Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.
+---@param opts? table Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.
 ---@return LTileLightMap Computed tile light map handle.
 lurek.tilelight.compute = function(field, opts) end
 

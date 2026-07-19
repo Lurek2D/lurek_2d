@@ -73,7 +73,7 @@ fn color_from_table(
     let Some(table) = table else {
         return Ok(default);
     };
-    Ok(LightColor {
+    let color = LightColor {
         r: table
             .get::<_, Option<f32>>("r")
             .map_err(|e| lua_err(api, e))?
@@ -86,8 +86,9 @@ fn color_from_table(
             .get::<_, Option<f32>>("b")
             .map_err(|e| lua_err(api, e))?
             .unwrap_or(default.b),
-    }
-    .clamped())
+    };
+    color.validate(api).map_err(|e| lua_err(api, e))?;
+    Ok(color)
 }
 
 fn light_to_lua<'lua>(lua: &'lua Lua, color: LightColor) -> LuaResult<LuaTable<'lua>> {
@@ -114,14 +115,12 @@ impl TileLightLuaParser {
             modulation.intensity_amplitude = flicker
                 .get::<_, Option<f32>>("amplitude")
                 .map_err(|e| lua_err(api, e))?
-                .unwrap_or(0.0)
-                .clamp(0.0, 1.0);
+                .unwrap_or(0.0);
             modulation.intensity_frequency_hz = flicker
                 .get::<_, Option<f32>>("frequency")
                 .map_err(|e| lua_err(api, e))?
                 .or_else(|| flicker.get::<_, Option<f32>>("frequencyHz").ok().flatten())
-                .unwrap_or(0.0)
-                .max(0.0);
+                .unwrap_or(0.0);
             modulation.intensity_phase = flicker
                 .get::<_, Option<f32>>("phase")
                 .map_err(|e| lua_err(api, e))?
@@ -149,8 +148,7 @@ impl TileLightLuaParser {
                 .get::<_, Option<f32>>("frequency")
                 .map_err(|e| lua_err(api, e))?
                 .or_else(|| cycle.get::<_, Option<f32>>("frequencyHz").ok().flatten())
-                .unwrap_or(0.0)
-                .max(0.0);
+                .unwrap_or(0.0);
             modulation.color_phase = cycle
                 .get::<_, Option<f32>>("phase")
                 .map_err(|e| lua_err(api, e))?
@@ -679,8 +677,10 @@ impl LuaUserData for LuaTileLightMap {
         methods.add_method("setAmbient", |_, this, color: LuaTable| {
             let color =
                 color_from_table(Some(color), LightColor::BLACK, "LTileLightMap.setAmbient")?;
-            this.inner.borrow_mut().set_ambient_light(color);
-            Ok(())
+            this.inner
+                .borrow_mut()
+                .try_set_ambient_light(color)
+                .map_err(|e| lua_err("LTileLightMap.setAmbient", e))
         });
 
         // -- setSunLight --
@@ -688,8 +688,10 @@ impl LuaUserData for LuaTileLightMap {
         /// @param | opts | table | `{kind='top'|'directional', intensity?, color?, direction?}`.
         methods.add_method("setSunLight", |_, this, opts: LuaTable| {
             let sun = sun_from_table(opts, "LTileLightMap.setSunLight")?;
-            this.inner.borrow_mut().set_sun_light(sun);
-            Ok(())
+            this.inner
+                .borrow_mut()
+                .try_set_sun_light(sun)
+                .map_err(|e| lua_err("LTileLightMap.setSunLight", e))
         });
 
         // -- setGlobalLight --
@@ -697,8 +699,10 @@ impl LuaUserData for LuaTileLightMap {
         /// @param | opts | table | `{intensity?, color?}` top-light settings.
         methods.add_method("setGlobalLight", |_, this, opts: LuaTable| {
             let sun = sun_from_table(opts, "LTileLightMap.setGlobalLight")?;
-            this.inner.borrow_mut().set_sun_light(sun);
-            Ok(())
+            this.inner
+                .borrow_mut()
+                .try_set_global_light(sun)
+                .map_err(|e| lua_err("LTileLightMap.setGlobalLight", e))
         });
 
         // -- compute --
@@ -730,6 +734,11 @@ impl LuaUserData for LuaTileLightMap {
         /// @return | number, number, number, number | Red, green, blue, and luma values for the cell.
         methods.add_method("getLight", |_, this, (x, y, z): (u32, u32, Option<u32>)| {
             let coord = coord_from_values(x, y, z)?;
+            let field = this.field.borrow();
+            this.inner
+                .borrow()
+                .ensure_current(&field)
+                .map_err(|e| lua_err("LTileLightMap.getLight", e))?;
             let color = this.inner.borrow().light_at(coord);
             Ok((color.r, color.g, color.b, color.luma()))
         });
@@ -740,7 +749,13 @@ impl LuaUserData for LuaTileLightMap {
         /// @return | table | Row-major array of light color tables for the requested level.
         methods.add_method("exportLayer", |lua, this, z: Option<u32>| {
             let z = one_based(z.unwrap_or(1), "z")?;
-            let values = this.inner.borrow().export_layer(z);
+            let field = this.field.borrow();
+            let values = this
+                .inner
+                .borrow()
+                .ensure_current(&field)
+                .and_then(|_| this.inner.borrow().export_layer(z))
+                .map_err(|e| lua_err("LTileLightMap.exportLayer", e))?;
             let out = lua.create_table()?;
             for (i, color) in values.into_iter().enumerate() {
                 out.set(i + 1, light_to_lua(lua, color)?)?;
@@ -752,7 +767,13 @@ impl LuaUserData for LuaTileLightMap {
         /// Exports all computed light levels as nested row-major tables.
         /// @return | table | Array of exported light layers, one table per level.
         methods.add_method("exportVolume", |lua, this, ()| {
-            let volume = this.inner.borrow().export_volume();
+            let field = this.field.borrow();
+            let volume = this
+                .inner
+                .borrow()
+                .ensure_current(&field)
+                .and_then(|_| this.inner.borrow().export_volume())
+                .map_err(|e| lua_err("LTileLightMap.exportVolume", e))?;
             let out = lua.create_table()?;
             for (z, layer_values) in volume.into_iter().enumerate() {
                 let layer = lua.create_table()?;
@@ -784,6 +805,33 @@ impl LuaUserData for LuaTileLightMap {
     }
 }
 
+fn compute_map_from_lua(
+    field_value: LuaValue,
+    opts: Option<LuaTable>,
+) -> LuaResult<LuaTileLightMap> {
+    let shared_field = shared_field_from_value(field_value, "compute")?;
+    let field = shared_field.borrow();
+    let (include_point, include_line, include_area, include_sun, ambient, time_seconds) =
+        compute_opts(opts)?;
+    let mut light_map = TileLightMap::from_field(&field).map_err(|e| lua_err("compute", e))?;
+    light_map
+        .compute(
+            &field,
+            include_point,
+            include_line,
+            include_area,
+            include_sun,
+            ambient,
+            time_seconds,
+        )
+        .map_err(|e| lua_err("compute", e))?;
+    drop(field);
+    Ok(LuaTileLightMap {
+        field: shared_field,
+        inner: RefCell::new(light_map),
+    })
+}
+
 /// Registers `lurek.tilelight`.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -809,33 +857,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- compute --
     /// Creates and computes a tile light map for a shared tilefield or Lua tilefield provider table.
     /// @param | field | LTileField|table | Source tilefield handle or provider table.
-    /// @param | opts | table? | Optional includePointLights, includeLineLights, includeSunLight, ambient, and time settings.
+    /// @param | opts | table? | Optional includePointLights, includeLineLights, includeAreaLights, includeSunLight, ambient, and time settings.
     /// @return | LTileLightMap | Computed tile light map handle.
     tbl.set(
         "compute",
         lua.create_function(|_, (field_value, opts): (LuaValue, Option<LuaTable>)| {
-            let shared_field = shared_field_from_value(field_value, "compute")?;
-            let field = shared_field.borrow();
-            let (include_point, include_line, include_area, include_sun, ambient, time_seconds) =
-                compute_opts(opts)?;
-            let mut light_map =
-                TileLightMap::from_field(&field).map_err(|e| lua_err("compute", e))?;
-            light_map
-                .compute(
-                    &field,
-                    include_point,
-                    include_line,
-                    include_area,
-                    include_sun,
-                    ambient,
-                    time_seconds,
-                )
-                .map_err(|e| lua_err("compute", e))?;
-            drop(field);
-            Ok(LuaTileLightMap {
-                field: shared_field,
-                inner: RefCell::new(light_map),
-            })
+            compute_map_from_lua(field_value, opts)
         })?,
     )?;
 

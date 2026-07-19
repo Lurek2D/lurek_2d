@@ -1218,6 +1218,11 @@ fn lua_security_tilefield_security() {
 }
 
 #[test]
+fn lua_security_tilelight_security() {
+    run_lua_test("security/test_tilelight_security.lua");
+}
+
+#[test]
 fn lua_stress_ai_stress() {
     run_lua_test("stress/test_ai_stress.lua");
 }
@@ -1350,6 +1355,11 @@ fn lua_stress_tilemap_stress() {
 #[test]
 fn lua_stress_tilefield_stress() {
     run_lua_test("stress/test_tilefield_stress.lua");
+}
+
+#[test]
+fn lua_stress_tilelight_stress() {
+    run_lua_test("stress/test_tilelight_stress.lua");
 }
 
 #[test]

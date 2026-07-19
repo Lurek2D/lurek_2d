@@ -8,6 +8,11 @@
 use crate::tilelight::LightColor;
 
 /// Time-varying modulation applied to a tile light source.
+///
+/// # Fields
+///
+/// Intensity amplitude is `0..=1`; frequencies are cycles per second and are
+/// non-negative; phases are radians. Optional colors are validated RGB values.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct LightModulation {
     /// Intensity sine-wave amplitude, where 0 disables intensity animation.
@@ -27,8 +32,35 @@ pub struct LightModulation {
 }
 
 impl LightModulation {
+    /// Validate modulation parameters before they enter a runtime source.
+    pub fn validate(&self, api: &str) -> Result<(), String> {
+        if !self.intensity_amplitude.is_finite()
+            || !(0.0..=1.0).contains(&self.intensity_amplitude)
+            || !self.intensity_frequency_hz.is_finite()
+            || self.intensity_frequency_hz < 0.0
+            || !self.intensity_phase.is_finite()
+            || !self.color_frequency_hz.is_finite()
+            || self.color_frequency_hz < 0.0
+            || !self.color_phase.is_finite()
+        {
+            return Err(format!(
+                "tilelight {api} modulation values must be finite; amplitudes are 0..1 and frequencies are >= 0"
+            ));
+        }
+        if let Some(color) = self.color_a {
+            color.validate(api)?;
+        }
+        if let Some(color) = self.color_b {
+            color.validate(api)?;
+        }
+        Ok(())
+    }
+
     /// Return modulated intensity for a base intensity and elapsed time in seconds.
     pub fn intensity_at(self, base: f32, time_seconds: f32) -> f32 {
+        if !base.is_finite() || !time_seconds.is_finite() {
+            return 0.0;
+        }
         if self.intensity_amplitude <= 0.0 || self.intensity_frequency_hz <= 0.0 {
             return base.max(0.0);
         }
@@ -40,8 +72,11 @@ impl LightModulation {
 
     /// Return modulated color for a base color and elapsed time in seconds.
     pub fn color_at(self, base: LightColor, time_seconds: f32) -> LightColor {
+        if !time_seconds.is_finite() {
+            return base.clamped();
+        }
         let (Some(a), Some(b)) = (self.color_a, self.color_b) else {
-            return base;
+            return base.clamped();
         };
         if self.color_frequency_hz <= 0.0 {
             return a;
@@ -60,6 +95,11 @@ impl LightModulation {
 }
 
 /// Tile point light definition.
+///
+/// # Fields
+///
+/// The id is monotonically allocated by `TileLightMap`; coordinates are
+/// zero-based cells; radius is in tiles; intensity is a non-negative scalar.
 #[derive(Debug, Clone)]
 pub struct PointLight {
     /// Stable point-light id.
@@ -81,6 +121,11 @@ pub struct PointLight {
 }
 
 /// Optional patch for updating an existing point light.
+///
+/// # Fields
+///
+/// `None` retains the current field. The complete candidate record is validated
+/// before any field is changed.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct PointLightUpdate {
     /// New zero-based x coordinate.
@@ -100,6 +145,11 @@ pub struct PointLightUpdate {
 }
 
 /// Tile line light definition.
+///
+/// # Fields
+///
+/// Endpoints are zero-based cells on one level. The radius and intensity use
+/// the same units as point lights and the id remains stable after compaction.
 #[derive(Debug, Clone)]
 pub struct LineLight {
     /// Stable line-light id.
@@ -127,6 +177,11 @@ pub struct LineLight {
 }
 
 /// Optional patch for updating an existing line light.
+///
+/// # Fields
+///
+/// `None` retains the current field. Endpoint, shape, color, and modulation
+/// validation is transactional.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct LineLightUpdate {
     /// New start x coordinate.
@@ -152,6 +207,11 @@ pub struct LineLightUpdate {
 }
 
 /// Tile rectangular area light definition.
+///
+/// # Fields
+///
+/// The origin is zero-based; width, height, and radius are tile counts; the id
+/// is stable and runtime-owned by `TileLightMap`.
 #[derive(Debug, Clone)]
 pub struct AreaLight {
     /// Stable area-light id.
@@ -177,6 +237,11 @@ pub struct AreaLight {
 }
 
 /// Optional patch for updating an existing area light.
+///
+/// # Fields
+///
+/// `None` retains the current field. Rectangle bounds, halo work, and all
+/// numeric values are validated before mutation.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct AreaLightUpdate {
     /// New zero-based rectangle origin x coordinate.
@@ -200,6 +265,11 @@ pub struct AreaLightUpdate {
 }
 
 /// Controls how one global sun light source propagates through the tile-light map.
+///
+/// # Variants
+///
+/// `Top` sweeps levels from high to low. `Directional` traces a bounded
+/// horizontal direction on each level and uses upper-level sun data.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SunLightMode {
     /// Vertical top light attenuated by per-cell sun occlusion from higher levels down.
@@ -214,6 +284,11 @@ pub enum SunLightMode {
 }
 
 /// Global sun light settings.
+///
+/// # Fields
+///
+/// Intensity is finite and non-negative, color is finite RGB in `0..=1`, and
+/// mode selects top or directional tile propagation.
 #[derive(Debug, Clone, Copy)]
 pub struct SunLight {
     /// Scalar intensity.
