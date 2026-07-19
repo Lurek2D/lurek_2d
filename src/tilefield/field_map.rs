@@ -5,14 +5,21 @@
 //! Serialization, indexing, and boundary checks stay here when they depend on field map internals.
 
 use crate::tilefield::field::TileField;
+use crate::tilefield::limits::TileFieldLimits;
 use crate::tilefield::topology::TileTopology;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 /// Shared handle type for a `TileField` stored inside a `TileFieldMap`.
+///
+/// The reference-counted cell map permits replacement while existing Lua/Rust handles continue to observe the same field object.
 pub type SharedTileField = Rc<RefCell<TileField>>;
 
 /// A 2D or layered map of tilefields.
+///
+/// # Fields
+///
+/// Map dimensions and child-field dimensions define the address space; `fields` stores one shared child per map slot and `limits` bounds aggregate storage.
 #[derive(Debug, Clone)]
 pub struct TileFieldMap {
     width: u32,
@@ -23,6 +30,7 @@ pub struct TileFieldMap {
     field_levels: u32,
     topology: TileTopology,
     fields: Vec<SharedTileField>,
+    limits: TileFieldLimits,
 }
 
 impl TileFieldMap {
@@ -36,6 +44,30 @@ impl TileFieldMap {
         field_levels: u32,
         topology: TileTopology,
     ) -> Result<Self, String> {
+        Self::new_with_limits(
+            width,
+            height,
+            layers,
+            field_width,
+            field_height,
+            field_levels,
+            topology,
+            TileFieldLimits::default(),
+        )
+    }
+
+    /// Create a field map after checking child count and aggregate dense storage.
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_with_limits(
+        width: u32,
+        height: u32,
+        layers: u32,
+        field_width: u32,
+        field_height: u32,
+        field_levels: u32,
+        topology: TileTopology,
+        limits: TileFieldLimits,
+    ) -> Result<Self, String> {
         if width == 0
             || height == 0
             || layers == 0
@@ -47,18 +79,22 @@ impl TileFieldMap {
                 "tilefield map dimensions, layers, and field sizes must be > 0".to_string(),
             );
         }
-        let len = width
-            .checked_mul(height)
-            .and_then(|v| v.checked_mul(layers))
-            .and_then(|v| usize::try_from(v).ok())
-            .ok_or_else(|| "tilefield map dimensions overflow addressable storage".to_string())?;
+        let (len, _) = limits.checked_field_map_storage(
+            width,
+            height,
+            layers,
+            field_width,
+            field_height,
+            field_levels,
+        )?;
         let mut fields = Vec::with_capacity(len);
         for _ in 0..len {
-            fields.push(Rc::new(RefCell::new(TileField::new(
+            fields.push(Rc::new(RefCell::new(TileField::new_with_limits(
                 field_width,
                 field_height,
                 field_levels,
                 topology,
+                limits,
             )?)));
         }
         Ok(Self {
@@ -70,6 +106,7 @@ impl TileFieldMap {
             field_levels,
             topology,
             fields,
+            limits,
         })
     }
 
@@ -88,6 +125,11 @@ impl TileFieldMap {
         self.topology
     }
 
+    /// Return the active allocation and collection ceilings.
+    pub fn limits(&self) -> TileFieldLimits {
+        self.limits
+    }
+
     /// Return true when a zero-based field-map coordinate is in bounds.
     pub fn in_bounds(&self, x: u32, y: u32, layer: u32) -> bool {
         x < self.width && y < self.height && layer < self.layers
@@ -97,9 +139,13 @@ impl TileFieldMap {
         if !self.in_bounds(x, y, layer) {
             return None;
         }
-        layer
-            .checked_mul(self.width * self.height)
-            .and_then(|base| base.checked_add(y * self.width + x))
+        let row_width = u64::from(self.width).checked_mul(u64::from(self.height))?;
+        let offset = u64::from(y)
+            .checked_mul(u64::from(self.width))?
+            .checked_add(u64::from(x))?;
+        u64::from(layer)
+            .checked_mul(row_width)
+            .and_then(|base| base.checked_add(offset))
             .and_then(|idx| usize::try_from(idx).ok())
     }
 

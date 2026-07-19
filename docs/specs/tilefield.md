@@ -12,7 +12,7 @@
 - Source path: `src/tilefield`
 - Binding: `src/lua_api/tilefield_api.rs`
 - Namespace: `lurek.tilefield`
-- Lua API surface: `6` functions, `2` types, `93` methods
+- Lua API surface: `6` functions, `2` types, `94` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -26,6 +26,11 @@
 - Built-in profiles include `empty`, `wall`, `window`, `door_closed`, `door_open`, and `half_wall`.
 - The `light` channel and `sunOcclusion` are environment inputs consumed by `lurek.tilelight`; `tilefield` does not store point lights or computed light values.
 - Cell refs such as `floor`, `wall_left`, `roof`, or `object` are author-defined slots. They are useful for mapping tile ids, object ids, or block slots onto the same gameplay field without forcing every system to own separate data.
+- Construction, provider import, field-map allocation, region expansion, snapshot export, and restore use `TileFieldLimits`. Products are checked as `u64` before conversion/allocation; Lua accepts a nested `limits` table with names such as `maxCells`, `maxFields`, `maxMapCells`, `maxLevels`, `maxRegions`, `maxRegionCells`, `maxDirtyRects`, `maxProviderRows`, `maxSnapshotEntries`, and `maxStringLength`.
+- Provider import and snapshot restore are transactional. A malformed shape, duplicate sparse record, non-finite number, invalid coordinate, or exceeded ceiling is rejected before a live field is replaced.
+- `version` starts at `1` and increments for successful data-definition and cell mutations. Dirty cells are coalesced into deterministic rectangles and bounded by `maxDirtyRects`; overflow emits a coarse full-level rectangle. `beginEdit` is nested and preserves pending dirty state; `commitEdit` drains only the outermost edit.
+- `clear` resets cells, regions, occupants, resources, and buildability but retains category, modifier, and slot definitions. Occupant `0` removes an occupant, missing buildability is `true`, and empty resource labels are absent. Removing a custom category, modifier, or slot clears dependent cell data.
+- Emitter records on cells/modifiers are authored environmental metadata for `tilelight`; computed light maps and runtime source lifecycle remain in `tilelight`.
 
 This module is mostly self-contained inside the Feature Systems group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
@@ -93,6 +98,12 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - Public functions in this file are the stable entry points other modules should use for field map work.
 - Serialization, indexing, and boundary checks stay here when they depend on field map internals.
 
+### limits.rs
+
+- Bounds tilefield allocation, imported data, and mutable support collections.
+- The limits are intentionally owned by tilefield instead of tilemap so the
+- gameplay-semantic store can be used without importing renderer policy.
+
 ### line.rs
 
 - Owns deterministic tile-line traversal for square, isometric-square, hex, and vertical level checks.
@@ -143,8 +154,8 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ### Functions
 
-- `lurek.tilefield.createLightsFromTileset(field, slot, tileset, opts?) -> table`: Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
-- `lurek.tilefield.createPhysicsFromTileset(field, slot, tileset, world, opts?) -> LBody[]`: Creates physics bodies from tilefield refs whose tileset objects define `physics`.
+- `lurek.tilefield.createLightsFromTileset(field, slot, tileset, opts?) -> table`: Compatibility alias: creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+- `lurek.tilefield.createPhysicsFromTileset(field, slot, tileset, world, opts?) -> LBody[]`: Compatibility alias: creates physics bodies from tilefield refs whose tileset objects define `physics`.
 - `lurek.tilefield.fromProvider(provider) -> LTileField`: Builds a native tilefield from a Lua provider table with width, height, optional levels/topology, slots, modifiers, regions, and optional getCell(x,y,z).
 - `lurek.tilefield.fromTileMap(tilemap, opts?) -> LTileField`: Copies a tilemap layer into a tilefield, optionally applying tileset object defaults and a ref slot.
 - `lurek.tilefield.new(opts) -> LTileField`: Creates a multi-level tilefield with explicit dimensions and topology.
@@ -174,16 +185,16 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:applyProfile(x, y, z?, profile) -> nil`: Applies a legacy profile to one cell.
 - `LTileField:applyTilesetObject(x, y, z?, slot, tileset, opts?) -> boolean`: Applies the object archetype defaults for a tileset tile referenced from one cell.
 - `LTileField:applyTilesetObjectLayer(slot, tileset, opts?) -> integer`: Applies tileset object defaults for every referenced cell on one tilefield level.
-- `LTileField:beginEdit() -> nil`: Clears pending dirty rectangles before a grouped tilefield edit.
+- `LTileField:beginEdit() -> nil`: Starts a nested grouped edit without discarding pending dirty rectangles.
 - `LTileField:blocks(x, y, z?, channel) -> boolean`: Returns whether a cell blocks a channel.
 - `LTileField:blocksCategory(x, y, z?, category) -> boolean`: Returns whether one cell blocks a category.
-- `LTileField:clear() -> nil`: Clears all gameplay state, modifiers, and references in the field.
+- `LTileField:clear() -> nil`: Clears cells, regions, occupants, resources, buildability, and active cell data while retaining category, modifier, and slot definitions.
 - `LTileField:clearCell(x, y, z?) -> nil`: Clears gameplay state for one addressed cell.
 - `LTileField:clearLine(from_tbl, to_tbl, channel, opts?) -> boolean`: Returns true when the line between two cell tables has no blocker for a channel.
 - `LTileField:clearModifier(x, y, z?, modifier) -> boolean`: Removes one modifier from one cell.
 - `LTileField:clearOccupant(x, y, z?) -> boolean`: Clears any occupant id stored on one tile cell.
 - `LTileField:clearRef(x, y, z?, slot) -> nil`: Clears a named object/tile reference from one cell.
-- `LTileField:commitEdit(chunkSize?) -> table`: Clears and returns dirty rectangles accumulated since `beginEdit`.
+- `LTileField:commitEdit(chunkSize?) -> table`: Closes the outermost grouped edit and clears/returns its coalesced dirty rectangles.
 - `LTileField:defineBlockWorldSlots() -> table`: Defines conventional ref slots for mutable block worlds without adding a new module.
 - `LTileField:defineCategory(name, opts?) -> nil`: Defines or replaces a user category used by movement, awareness, light, sun, or custom systems.
 - `LTileField:defineSlot(slot) -> nil`: Defines a named object slot that cells may reference.
@@ -227,11 +238,12 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:line(opts) -> nil`: Returns topology-aware one-based cells between `from` and `to` tables.
 - `LTileField:regionContains(name, x, y, z?) -> boolean`: Returns whether a named region contains a one-based tile cell.
 - `LTileField:regionsAt(x, y, z?) -> table`: Returns all region names that contain the addressed one-based tile cell.
+- `LTileField:removeCategory(name) -> boolean`: Removes a custom category and clears dependent cell/modifier data.
 - `LTileField:removeModifier(name) -> boolean`: Removes a named modifier and clears it from all cells.
 - `LTileField:removeProfile(name) -> boolean`: Removes a legacy profile and clears it from all cells.
 - `LTileField:removeRegion(name) -> boolean`: Removes a named region definition and its stored cell membership from this field.
 - `LTileField:removeSlot(slot) -> boolean`: Removes a named object slot and clears its references from the field.
-- `LTileField:restore(snapshot) -> nil`: Replaces this tilefield state from a snapshot returned by `snapshot`.
+- `LTileField:restore(snapshot) -> nil`: Transactionally replaces this tilefield state from a snapshot returned by `snapshot`; failures preserve the original state.
 - `LTileField:setBlock(x, y, z?, channel, blocked) -> nil`: Sets whether a cell blocks a channel.
 - `LTileField:setBuildable(x, y, z?, buildable) -> nil`: Sets whether one tile cell accepts build placement.
 - `LTileField:setCategoryBlock(x, y, z?, category, blocked) -> nil`: Sets one category blocker on one cell.

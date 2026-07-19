@@ -10,6 +10,10 @@ use crate::tilefield::{TileLightEmitter, TileRef};
 use std::collections::HashMap;
 
 /// Gameplay channels tracked independently per cell.
+///
+/// # Variants
+///
+/// Each variant owns one independent blocker/cost channel; changing one does not infer changes in another.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TileChannel {
     /// Movement and pathfinding blockers/costs.
@@ -63,6 +67,10 @@ impl TileChannel {
 }
 
 /// Per-cell gameplay state with independent channel blockers, costs, and sun occlusion.
+///
+/// # Fields
+///
+/// The private arrays hold built-in channels; maps hold custom category overrides, refs, emitters, and modifier names.
 #[derive(Debug, Clone)]
 pub struct TileCell {
     blockers: [bool; 5],
@@ -239,6 +247,9 @@ impl TileCell {
         }
         match value {
             Some(value) => {
+                if value.iter().any(|component| !component.is_finite()) {
+                    return Err("tilefield category filter must contain finite numbers".to_string());
+                }
                 self.category_filters.insert(
                     category.to_string(),
                     [
@@ -317,6 +328,19 @@ impl TileCell {
         &self.typed_refs
     }
 
+    /// Return the number of occupied legacy or typed reference slots.
+    pub fn ref_count(&self) -> usize {
+        self.refs.len() + self.typed_refs.len()
+    }
+
+    /// Remove all data that depends on a custom category.
+    pub fn remove_category_data(&mut self, category: &str) {
+        self.category_blockers.remove(category);
+        self.category_costs.remove(category);
+        self.category_transmission.remove(category);
+        self.category_filters.remove(category);
+    }
+
     /// Set, replace, or clear a named tile light emitter on this cell.
     pub fn set_light(
         &mut self,
@@ -329,6 +353,7 @@ impl TileCell {
         }
         match light {
             Some(light) => {
+                light.validate()?;
                 self.lights.insert(source.to_string(), light);
             }
             None => {

@@ -7,6 +7,10 @@
 use crate::tilefield::topology::TileTopology;
 
 /// Zero-based tile coordinate including level.
+///
+/// # Fields
+///
+/// `x` and `y` identify a column/row (or axial q/r); `z` identifies the level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct CellCoord {
     /// Zero-based column or axial q.

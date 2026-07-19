@@ -6,6 +6,7 @@ description: "Load this skill when auditing and fixing Rust-to-Lua API coverage,
 
 ## Mission
 - Audit and fix Lua API parity between Rust modules, `src/lua_api/`, specs, and generated docs.
+- Flag public namespace closures that perform runtime work owned by another module, even when a generic thin-wrapper heuristic passes.
 
 ## When To Load
 - Auditing and fixing Rust-to-Lua API coverage, thin wrappers, signatures, docs, and specs.
@@ -24,6 +25,7 @@ description: "Load this skill when auditing and fixing Rust-to-Lua API coverage,
 ## Workflow
 - Run API coverage and thin-wrapper audits for the selected module.
 - Compare Rust public methods, Lua wrappers, generated docs, and specs.
+- Check that cross-module conversion workflows have one canonical consumer owner and explicit compatibility aliases.
 - Record findings first with file paths and missing signatures.
 - If edit-capable, fix wrappers/specs/docs and rerun the same audits.
 - If read-only, hand off fixes to `lua_designer` or `developer`.

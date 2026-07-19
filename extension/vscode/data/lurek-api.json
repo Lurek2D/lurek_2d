@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-16",
+  "generated": "2026-07-19",
   "modules": [
     {
       "name": "agent",
@@ -15177,6 +15177,42 @@
           "returnType": "LImageData",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "createLightsFromTilefield",
+          "fullPath": "lurek.light.createLightsFromTilefield",
+          "signature": "lurek.light.createLightsFromTilefield(field, slot, tileset, [opts])",
+          "description": "Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Source field containing refs.",
+              "optional": false
+            },
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Reference slot name.",
+              "optional": false
+            },
+            {
+              "name": "tileset",
+              "type": "LTileSet",
+              "description": "Tileset with tile object metadata.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -21421,6 +21457,48 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "createBodiesFromTilefield",
+          "fullPath": "lurek.physics.createBodiesFromTilefield",
+          "signature": "lurek.physics.createBodiesFromTilefield(field, slot, tileset, world, [opts])",
+          "description": "Creates physics bodies from `lurek.tilefield` refs and tileset object metadata.",
+          "parameters": [
+            {
+              "name": "field",
+              "type": "LTileField",
+              "description": "Source field containing refs.",
+              "optional": false
+            },
+            {
+              "name": "slot",
+              "type": "string",
+              "description": "Reference slot name.",
+              "optional": false
+            },
+            {
+              "name": "tileset",
+              "type": "LTileSet",
+              "description": "Tileset with tile object metadata.",
+              "optional": false
+            },
+            {
+              "name": "world",
+              "type": "LWorld",
+              "description": "Physics world that receives the bodies.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
+              "optional": true
+            }
+          ],
+          "returns": "LBody[]",
+          "returnType": "LBody[]",
           "isMethod": false,
           "objectType": null
         }
@@ -32348,7 +32426,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "`{width, height, levels?, topology?}`.",
+              "description": "`{width, height, levels?, topology?, limits?}`; limits use `maxCells`, `maxLevels`, collection ceilings, and checked provider/snapshot bounds.",
               "optional": false
             }
           ],
@@ -32384,7 +32462,7 @@
             {
               "name": "opts",
               "type": "table",
-              "description": "`{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`.",
+              "description": "`{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?, limits?}`.",
               "optional": false
             }
           ],
@@ -32421,7 +32499,7 @@
           "name": "createPhysicsFromTileset",
           "fullPath": "lurek.tilefield.createPhysicsFromTileset",
           "signature": "lurek.tilefield.createPhysicsFromTileset(field, slot, tileset, world, [opts])",
-          "description": "Creates physics bodies from tilefield refs whose tileset objects define `physics`.",
+          "description": "Compatibility alias: creates physics bodies from tilefield refs whose tileset objects define `physics`.",
           "parameters": [
             {
               "name": "field",
@@ -32463,7 +32541,7 @@
           "name": "createLightsFromTileset",
           "fullPath": "lurek.tilefield.createLightsFromTileset",
           "signature": "lurek.tilefield.createLightsFromTileset(field, slot, tileset, [opts])",
-          "description": "Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.",
+          "description": "Compatibility alias: creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.",
           "parameters": [
             {
               "name": "field",
@@ -183280,7 +183358,7 @@
           "name": "clear",
           "fullPath": "LTileField:clear",
           "signature": "()",
-          "description": "Clears all gameplay state, modifiers, and references in the field.",
+          "description": "Clears cells, regions, occupants, resources, buildability, and active cell data while retaining category, modifier, and slot definitions.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -183589,6 +183667,24 @@
           "parameters": [],
           "returns": "string[]",
           "returnType": "string[]",
+          "isMethod": true,
+          "objectType": "LTileField"
+        },
+        {
+          "name": "removeCategory",
+          "fullPath": "LTileField:removeCategory",
+          "signature": "(name)",
+          "description": "Removes a custom category and clears dependent cell/modifier data.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Custom category name.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTileField"
         },
@@ -183967,7 +184063,7 @@
           "name": "beginEdit",
           "fullPath": "LTileField:beginEdit",
           "signature": "()",
-          "description": "Clears pending dirty rectangles before a grouped tilefield edit.",
+          "description": "Starts a nested grouped edit without discarding pending dirty rectangles.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -184014,7 +184110,7 @@
           "name": "commitEdit",
           "fullPath": "LTileField:commitEdit",
           "signature": "([chunk_size])",
-          "description": "Clears and returns dirty rectangles accumulated since `beginEdit`.",
+          "description": "Closes the outermost grouped edit and clears/returns its coalesced dirty rectangles.",
           "parameters": [
             {
               "name": "chunkSize",
@@ -184054,7 +184150,7 @@
           "name": "restore",
           "fullPath": "LTileField:restore",
           "signature": "(snapshot)",
-          "description": "Replaces this tilefield state from a snapshot returned by `snapshot`.",
+          "description": "Transactionally replaces this tilefield state from a snapshot returned by `snapshot`; failures preserve the original state.",
           "parameters": [
             {
               "name": "snapshot",

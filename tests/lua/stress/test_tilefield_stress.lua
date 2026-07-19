@@ -23,6 +23,27 @@ local function build_large_tilefield()
     return field
 end
 
+local function build_large_light_map()
+    local field = build_large_tilefield()
+    local light_map = lurek.tilelight.new(field)
+    for i = 1, 40 do
+        light_map:addPointLight({
+            x = (i * 11) % 100 + 1,
+            y = (i * 19) % 100 + 1,
+            z = i % 4 + 1,
+            radius = 10 + (i % 4),
+            intensity = 0.35 + (i % 5) * 0.08,
+            color = {
+                r = ((i * 3) % 10) / 10,
+                g = ((i * 7) % 10) / 10,
+                b = ((i * 5 + 4) % 10) / 10,
+            },
+        })
+    end
+    light_map:setGlobalLight({ intensity = 0.25, color = { r = 1, g = 0.72, b = 0.38 } })
+    return light_map
+end
+
 -- @describe tilefield stress
 describe("tilefield stress", function()
     -- @stress lurek.tilefield.new
@@ -37,32 +58,26 @@ describe("tilefield stress", function()
     end)
 
     -- @stress lurek.tilelight.new
-    it("computes colored lighting and exports on 100x100x4 field under budget", function()
-        local field = build_large_tilefield()
-        local light_map = lurek.tilelight.new(field)
-        for i = 1, 40 do
-            light_map:addPointLight({
-                x = (i * 11) % 100 + 1,
-                y = (i * 19) % 100 + 1,
-                z = i % 4 + 1,
-                radius = 10 + (i % 4),
-                intensity = 0.35 + (i % 5) * 0.08,
-                color = {
-                    r = ((i * 3) % 10) / 10,
-                    g = ((i * 7) % 10) / 10,
-                    b = ((i * 5 + 4) % 10) / 10,
-                },
-            })
-        end
+    it("constructs a colored light map from a 100x100x4 field", function()
+        local light_map = build_large_light_map()
+        expect_type("userdata", light_map)
+    end)
 
-        light_map:setGlobalLight({ intensity = 0.25, color = { r = 1, g = 0.72, b = 0.38 } })
+    -- @stress LTileLightMap:compute
+    it("computes colored lighting on a 100x100x4 field under budget", function()
+        local light_map = build_large_light_map()
         local started = os.clock()
         light_map:compute({ includePointLights = true, includeGlobalLight = true })
         local elapsed = os.clock() - started
+        expect_true(elapsed < 0.75, "tilelight compute stress budget exceeded: " .. tostring(elapsed))
+    end)
 
+    -- @stress LTileLightMap:exportLayer
+    it("exports computed lighting on a 100x100x4 field", function()
+        local light_map = build_large_light_map()
+        light_map:compute({ includePointLights = true, includeGlobalLight = true })
         local light = light_map:exportLayer(1)
         expect_equal(10000, #light)
-        expect_true(elapsed < 0.75, "tilelight compute stress budget exceeded: " .. tostring(elapsed))
     end)
 end)
 

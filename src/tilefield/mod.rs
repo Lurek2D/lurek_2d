@@ -17,6 +17,8 @@ pub mod emitter;
 pub mod field;
 /// Field-map storage for 2D and layered grids of tilefields.
 pub mod field_map;
+/// Allocation and hostile-input ceilings for fields and field maps.
+pub mod limits;
 /// Tile line traversal helpers.
 pub mod line;
 /// Runtime tile modifiers applied on top of cell/object defaults.
@@ -34,6 +36,7 @@ pub use cell::{TileCell, TileChannel};
 pub use emitter::{TileLightEmitter, TileLightSource};
 pub use field::{TileField, TileRegion};
 pub use field_map::{SharedTileField, TileFieldMap};
+pub use limits::TileFieldLimits;
 pub use line::CellCoord;
 pub use modifier::TileModifier;
 pub use reference::TileRef;

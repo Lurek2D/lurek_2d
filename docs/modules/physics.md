@@ -68,6 +68,46 @@ end
 
 ---
 
+### `lurek.physics.createBodiesFromTilefield`
+
+Creates physics bodies from `lurek.tilefield` refs and tileset object metadata.
+
+```lua
+lurek.physics.createBodiesFromTilefield(field, slot, tileset, world, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield) | Source field containing refs. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset with tile object metadata. |
+| `world` | [LWorld](#lworld) | Physics world that receives the bodies. |
+| `opts?` | table | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LBody](#lbody)[] | Created physics body handles in row-major order. |
+
+**Example**
+
+```lua
+do
+
+    local tileset = lurek.tileset.fromProvider({ firstGid = 1, tileCount = 1, columns = 1, tileWidth = 16, tileHeight = 16, objects = { wall = { physics = { shape = "rect", bodyType = "static" } } }, tileObjects = { [1] = "wall" } })
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "tiles", 1)
+    local world = lurek.physics.newWorld(0, 0)
+    local bodies = lurek.physics.createBodiesFromTilefield(field, "tiles", tileset, world, { refIsGid = true })
+    lurek.log.info("consumer-owned tilefield bodies=" .. #bodies .. " world=" .. world:getBodyCount())
+end
+```
+
+---
+
 ### `lurek.physics.debugDraw`
 
 Enables or disables automatic physics debug overlay rendering for the next frame.

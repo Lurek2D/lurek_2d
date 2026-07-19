@@ -42,6 +42,30 @@ describe("lurek.light module", function()
         expect_type("userdata", make_occluder())
     end)
 
+    -- @covers lurek.light.createLightsFromTilefield
+    it("owns the tilefield-to-light conversion facade", function()
+        reset_light()
+        local tileset = lurek.tileset.fromProvider({
+            firstGid = 20,
+            tileCount = 2,
+            columns = 2,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                torch = {
+                    renderLight = { shape = "square", radius = 20, intensity = 1.0 },
+                    occluder = { shape = "hex", opacity = 0.5 },
+                },
+            },
+            tileObjects = { [1] = "torch" },
+        })
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        field:setRef(1, 1, 1, "tiles", 20)
+        local spawned = lurek.light.createLightsFromTilefield(field, "tiles", tileset, { refIsGid = true })
+        expect_equal(1, #spawned.lights)
+        expect_equal(1, #spawned.occluders)
+    end)
+
     -- @covers lurek.light.getAmbient
     it("getAmbient returns rgba values", function()
         reset_light()

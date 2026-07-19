@@ -12,6 +12,7 @@
 use crate::tilefield::category::{TileCategory, TileCategoryKind};
 use crate::tilefield::cell::{TileCell, TileChannel};
 use crate::tilefield::emitter::{TileLightEmitter, TileLightSource};
+use crate::tilefield::limits::TileFieldLimits;
 use crate::tilefield::line::{line_between, CellCoord};
 use crate::tilefield::modifier::TileModifier;
 use crate::tilefield::reference::TileRef;
@@ -20,6 +21,10 @@ use std::collections::BTreeSet;
 use std::collections::{HashMap, HashSet};
 
 /// Named tile-level region stored as an explicit set of whole cells.
+///
+/// # Fields
+///
+/// `name` identifies the region, `cells` is its sorted deduplicated membership, and `properties` stores bounded string metadata.
 #[derive(Debug, Clone)]
 pub struct TileRegion {
     /// Region name.
@@ -31,6 +36,10 @@ pub struct TileRegion {
 }
 
 /// Multi-level tile gameplay field.
+///
+/// # Fields
+///
+/// Dimensions, topology, dense cells, sparse author facts, definitions, version, dirty state, edit depth, and limits are kept together so mutations share one invariant boundary.
 #[derive(Debug, Clone)]
 pub struct TileField {
     width: u32,
@@ -47,6 +56,37 @@ pub struct TileField {
     buildable: HashMap<CellCoord, bool>,
     version: u64,
     dirty_rects: Vec<(u32, u32, u32, u32, u32)>,
+    dirty_overflowed: bool,
+    edit_depth: u32,
+    limits: TileFieldLimits,
+}
+
+fn rects_touch_or_overlap(a: (u32, u32, u32, u32, u32), b: (u32, u32, u32, u32, u32)) -> bool {
+    let a_right = u64::from(a.0) + u64::from(a.3);
+    let a_bottom = u64::from(a.1) + u64::from(a.4);
+    let b_right = u64::from(b.0) + u64::from(b.3);
+    let b_bottom = u64::from(b.1) + u64::from(b.4);
+    u64::from(a.0) <= b_right
+        && u64::from(b.0) <= a_right
+        && u64::from(a.1) <= b_bottom
+        && u64::from(b.1) <= a_bottom
+}
+
+fn union_rect(
+    a: (u32, u32, u32, u32, u32),
+    b: (u32, u32, u32, u32, u32),
+) -> (u32, u32, u32, u32, u32) {
+    let x = a.0.min(b.0);
+    let y = a.1.min(b.1);
+    let right = (u64::from(a.0) + u64::from(a.3)).max(u64::from(b.0) + u64::from(b.3));
+    let bottom = (u64::from(a.1) + u64::from(a.4)).max(u64::from(b.1) + u64::from(b.4));
+    (
+        x,
+        y,
+        a.2,
+        (right - u64::from(x)) as u32,
+        (bottom - u64::from(y)) as u32,
+    )
 }
 
 impl TileField {
@@ -57,14 +97,21 @@ impl TileField {
         levels: u32,
         topology: TileTopology,
     ) -> Result<Self, String> {
+        Self::new_with_limits(width, height, levels, topology, TileFieldLimits::default())
+    }
+
+    /// Create a field with explicit allocation and input ceilings.
+    pub fn new_with_limits(
+        width: u32,
+        height: u32,
+        levels: u32,
+        topology: TileTopology,
+        limits: TileFieldLimits,
+    ) -> Result<Self, String> {
         if width == 0 || height == 0 || levels == 0 {
             return Err("tilefield dimensions and levels must be > 0".to_string());
         }
-        let len = width
-            .checked_mul(height)
-            .and_then(|v| v.checked_mul(levels))
-            .and_then(|v| usize::try_from(v).ok())
-            .ok_or_else(|| "tilefield dimensions overflow addressable storage".to_string())?;
+        let len = limits.checked_field_cells(width, height, levels)?;
         let mut categories = HashMap::new();
         for (name, kind) in [
             ("move", TileCategoryKind::Movement),
@@ -95,7 +142,15 @@ impl TileField {
             buildable: HashMap::new(),
             version: 1,
             dirty_rects: Vec::new(),
+            dirty_overflowed: false,
+            edit_depth: 0,
+            limits,
         })
+    }
+
+    /// Return the active allocation and collection ceilings.
+    pub fn limits(&self) -> TileFieldLimits {
+        self.limits
     }
 
     /// Set or replace the occupant id for one cell.
@@ -103,8 +158,12 @@ impl TileField {
         if !self.in_bounds(coord) {
             return Err("tilefield occupant coordinate is out of bounds".to_string());
         }
-        self.occupants.insert(coord, occupant);
-        self.mark_dirty_cell(coord);
+        if occupant == 0 {
+            self.occupants.remove(&coord);
+        } else {
+            self.occupants.insert(coord, occupant);
+        }
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -115,7 +174,7 @@ impl TileField {
         }
         let removed = self.occupants.remove(&coord).is_some();
         if removed {
-            self.mark_dirty_cell(coord);
+            self.mark_dirty_cell(coord)?;
         }
         Ok(removed)
     }
@@ -136,13 +195,14 @@ impl TileField {
         }
         match resource {
             Some(resource) if !resource.trim().is_empty() => {
+                self.limits.validate_string(&resource, "resource")?;
                 self.resources.insert(coord, resource);
             }
             _ => {
                 self.resources.remove(&coord);
             }
         }
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -157,7 +217,7 @@ impl TileField {
             return Err("tilefield buildable coordinate is out of bounds".to_string());
         }
         self.buildable.insert(coord, value);
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -181,13 +241,18 @@ impl TileField {
         self.version
     }
 
-    /// Clear pending dirty rectangles before a grouped edit.
+    /// Start a nested edit without discarding already pending changes.
     pub fn begin_edit(&mut self) {
-        self.dirty_rects.clear();
+        self.edit_depth = self.edit_depth.saturating_add(1);
     }
 
     /// Clear and return dirty rectangles accumulated by a grouped edit.
     pub fn commit_edit(&mut self) -> Vec<(u32, u32, u32, u32, u32)> {
+        if self.edit_depth > 1 {
+            self.edit_depth -= 1;
+            return Vec::new();
+        }
+        self.edit_depth = 0;
         self.drain_dirty_rects()
     }
 
@@ -196,9 +261,45 @@ impl TileField {
         if category.name.trim().is_empty() {
             return Err("tilefield category name must not be empty".to_string());
         }
+        self.limits
+            .validate_string(&category.name, "category name")?;
+        if !self.categories.contains_key(&category.name)
+            && self.categories.len() >= self.limits.max_categories
+        {
+            return Err(format!(
+                "tilefield category limit {} exceeded",
+                self.limits.max_categories
+            ));
+        }
         self.categories.insert(category.name.clone(), category);
-        self.bump_version();
+        self.bump_version()?;
         Ok(())
+    }
+
+    /// Remove a custom category and dependent per-cell/per-modifier data.
+    pub fn remove_category(&mut self, name: &str) -> Result<bool, String> {
+        if matches!(name, "move" | "vision" | "action" | "light" | "sun") {
+            return Err(format!(
+                "tilefield built-in category '{name}' cannot be removed"
+            ));
+        }
+        let removed = self.categories.remove(name).is_some();
+        if !removed {
+            return Ok(false);
+        }
+        for cell in &mut self.cells {
+            cell.remove_category_data(name);
+        }
+        for modifier in self.modifiers.values_mut() {
+            modifier.category_blockers.remove(name);
+            modifier.category_cost_add.remove(name);
+            modifier.category_cost_mul.remove(name);
+            modifier.category_transmission.remove(name);
+            modifier.category_filters.remove(name);
+        }
+        self.bump_version()?;
+        self.mark_full_dirty()?;
+        Ok(true)
     }
 
     /// Return a category record by name.
@@ -215,6 +316,7 @@ impl TileField {
 
     /// Clear and return pending dirty cell rectangles.
     pub fn drain_dirty_rects(&mut self) -> Vec<(u32, u32, u32, u32, u32)> {
+        self.dirty_overflowed = false;
         std::mem::take(&mut self.dirty_rects)
     }
 
@@ -223,13 +325,56 @@ impl TileField {
         &self.dirty_rects
     }
 
-    fn bump_version(&mut self) {
-        self.version = self.version.saturating_add(1).max(1);
+    /// Return whether dirty tracking had to fall back to a coarse full-level rectangle.
+    pub fn dirty_overflowed(&self) -> bool {
+        self.dirty_overflowed
     }
 
-    fn mark_dirty_cell(&mut self, coord: CellCoord) {
-        self.bump_version();
-        self.dirty_rects.push((coord.x, coord.y, coord.z, 1, 1));
+    fn bump_version(&mut self) -> Result<(), String> {
+        self.version = self
+            .version
+            .checked_add(1)
+            .ok_or_else(|| "tilefield version overflow; mutation rejected".to_string())?;
+        Ok(())
+    }
+
+    fn mark_dirty_cell(&mut self, coord: CellCoord) -> Result<(), String> {
+        self.bump_version()?;
+        let mut rect = (coord.x, coord.y, coord.z, 1, 1);
+        let mut index = 0;
+        while index < self.dirty_rects.len() {
+            let existing = self.dirty_rects[index];
+            if existing.2 != rect.2 || !rects_touch_or_overlap(existing, rect) {
+                index += 1;
+                continue;
+            }
+            rect = union_rect(existing, rect);
+            self.dirty_rects.remove(index);
+            index = 0;
+        }
+        self.dirty_rects.push(rect);
+        if self.dirty_rects.len() > self.limits.max_dirty_rects {
+            self.dirty_rects.clear();
+            self.dirty_rects
+                .push((0, 0, coord.z, self.width, self.height));
+            self.dirty_overflowed = true;
+        }
+        Ok(())
+    }
+
+    fn mark_full_dirty(&mut self) -> Result<(), String> {
+        self.bump_version()?;
+        self.dirty_rects.clear();
+        if usize::try_from(self.levels).unwrap_or(usize::MAX) <= self.limits.max_dirty_rects {
+            for z in 0..self.levels {
+                self.dirty_rects.push((0, 0, z, self.width, self.height));
+            }
+            self.dirty_overflowed = false;
+        } else {
+            self.dirty_rects.push((0, 0, 0, self.width, self.height));
+            self.dirty_overflowed = true;
+        }
+        Ok(())
     }
 
     fn channel_for_category(category: &str) -> Option<TileChannel> {
@@ -279,10 +424,13 @@ impl TileField {
         if !self.in_bounds(coord) {
             return None;
         }
-        coord
-            .z
-            .checked_mul(self.width * self.height)
-            .and_then(|base| base.checked_add(coord.y * self.width + coord.x))
+        let row_width = u64::from(self.width).checked_mul(u64::from(self.height))?;
+        let offset = u64::from(coord.y)
+            .checked_mul(u64::from(self.width))?
+            .checked_add(u64::from(coord.x))?;
+        u64::from(coord.z)
+            .checked_mul(row_width)
+            .and_then(|base| base.checked_add(offset))
             .and_then(|idx| usize::try_from(idx).ok())
     }
 
@@ -299,12 +447,28 @@ impl TileField {
         if name.trim().is_empty() {
             return Err("tilefield region name must not be empty".to_string());
         }
+        self.limits.validate_string(&name, "region name")?;
+        if self.regions.len() >= self.limits.max_regions && !self.regions.contains_key(&name) {
+            return Err(format!(
+                "tilefield region limit {} exceeded",
+                self.limits.max_regions
+            ));
+        }
         let min_x = x1.min(x2);
         let max_x = x1.max(x2);
         let min_y = y1.min(y2);
         let max_y = y1.max(y2);
         if max_x >= self.width || max_y >= self.height || z >= self.levels {
             return Err("tilefield region rectangle is out of bounds".to_string());
+        }
+        let cell_count = u64::from(max_x - min_x + 1)
+            .checked_mul(u64::from(max_y - min_y + 1))
+            .ok_or_else(|| "tilefield region cell count overflow".to_string())?;
+        if cell_count > self.limits.max_cells_per_region as u64 {
+            return Err(format!(
+                "tilefield region cell count {cell_count} exceeds limit {}",
+                self.limits.max_cells_per_region
+            ));
         }
         let mut cells = Vec::new();
         for y in min_y..=max_y {
@@ -324,6 +488,7 @@ impl TileField {
                 cells,
             },
         );
+        self.mark_full_dirty()?;
         Ok(())
     }
 
@@ -331,6 +496,19 @@ impl TileField {
     pub fn set_region_cells(&mut self, name: String, cells: Vec<CellCoord>) -> Result<(), String> {
         if name.trim().is_empty() {
             return Err("tilefield region name must not be empty".to_string());
+        }
+        self.limits.validate_string(&name, "region name")?;
+        if self.regions.len() >= self.limits.max_regions && !self.regions.contains_key(&name) {
+            return Err(format!(
+                "tilefield region limit {} exceeded",
+                self.limits.max_regions
+            ));
+        }
+        if cells.len() > self.limits.max_cells_per_region {
+            return Err(format!(
+                "tilefield region input exceeds cell limit {}",
+                self.limits.max_cells_per_region
+            ));
         }
         let mut seen = HashSet::new();
         let mut unique = Vec::new();
@@ -342,6 +520,7 @@ impl TileField {
                 unique.push(coord);
             }
         }
+        unique.sort_by_key(|coord| (coord.z, coord.y, coord.x));
         self.regions.insert(
             name.clone(),
             TileRegion {
@@ -354,12 +533,17 @@ impl TileField {
                 cells: unique,
             },
         );
+        self.mark_full_dirty()?;
         Ok(())
     }
 
     /// Remove a named region. Returns true when it existed.
     pub fn remove_region(&mut self, name: &str) -> bool {
-        self.regions.remove(name).is_some()
+        let removed = self.regions.remove(name).is_some();
+        if removed {
+            let _ = self.mark_full_dirty();
+        }
+        removed
     }
 
     /// Return true when a region contains a zero-based coordinate.
@@ -396,6 +580,10 @@ impl TileField {
         if key.is_empty() {
             return Err("tilefield region property name must not be empty".to_string());
         }
+        self.limits.validate_string(key, "region property name")?;
+        if let Some(value) = value.as_ref() {
+            self.limits.validate_string(value, "region property")?;
+        }
         match value {
             Some(value) => {
                 region.properties.insert(key.to_string(), value);
@@ -404,7 +592,7 @@ impl TileField {
                 region.properties.remove(key);
             }
         }
-        self.bump_version();
+        self.bump_version()?;
         Ok(())
     }
 
@@ -445,11 +633,22 @@ impl TileField {
         self.index(coord).and_then(|idx| self.cells.get_mut(idx))
     }
 
-    /// Clear every cell.
+    /// Clear cells and sparse author facts while retaining category/modifier/slot definitions.
     pub fn clear(&mut self) {
+        let _ = self.try_clear();
+    }
+
+    /// Fallibly clear all cell, region, occupant, resource, and buildability state.
+    pub fn try_clear(&mut self) -> Result<(), String> {
         for cell in &mut self.cells {
             *cell = TileCell::default();
         }
+        self.occupants.clear();
+        self.resources.clear();
+        self.buildable.clear();
+        self.regions.clear();
+        self.mark_full_dirty()?;
+        Ok(())
     }
 
     /// Clear one cell.
@@ -458,7 +657,10 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield clearCell coordinate is out of bounds".to_string())?;
         *cell = TileCell::default();
-        self.mark_dirty_cell(coord);
+        self.occupants.remove(&coord);
+        self.resources.remove(&coord);
+        self.buildable.remove(&coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -473,7 +675,7 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setBlock coordinate is out of bounds".to_string())?;
         cell.set_block(channel, blocked);
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -502,11 +704,12 @@ impl TileField {
         category: String,
         blocked: bool,
     ) -> Result<(), String> {
+        self.limits.validate_string(&category, "category name")?;
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setCategoryBlock coordinate is out of bounds".to_string())?;
         cell.set_category_block(category, Some(blocked))?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -545,7 +748,7 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setCost coordinate is out of bounds".to_string())?;
         cell.set_cost(channel, cost)?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -576,11 +779,12 @@ impl TileField {
         category: String,
         cost: f32,
     ) -> Result<(), String> {
+        self.limits.validate_string(&category, "category name")?;
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setCategoryCost coordinate is out of bounds".to_string())?;
         cell.set_category_cost(category, Some(cost))?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -622,11 +826,12 @@ impl TileField {
         category: String,
         value: f32,
     ) -> Result<(), String> {
+        self.limits.validate_string(&category, "category name")?;
         let cell = self.cell_mut(coord).ok_or_else(|| {
             "tilefield setCategoryTransmission coordinate is out of bounds".to_string()
         })?;
         cell.set_category_transmission(category, Some(value))?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -661,11 +866,12 @@ impl TileField {
         category: String,
         value: [f32; 3],
     ) -> Result<(), String> {
+        self.limits.validate_string(&category, "category name")?;
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setCategoryFilter coordinate is out of bounds".to_string())?;
         cell.set_category_filter(category, Some(value))?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -695,7 +901,7 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setSunOcclusion coordinate is out of bounds".to_string())?;
         cell.set_sun_occlusion(value)?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -719,9 +925,17 @@ impl TileField {
         if name.is_empty() {
             return Err("tilefield modifier name must not be empty".to_string());
         }
+        self.limits.validate_string(name, "modifier name")?;
         modifier.name = name.to_string();
+        modifier.validate(&self.limits)?;
+        if !self.modifiers.contains_key(name) && self.modifiers.len() >= self.limits.max_modifiers {
+            return Err(format!(
+                "tilefield modifier limit {} exceeded",
+                self.limits.max_modifiers
+            ));
+        }
         self.modifiers.insert(name.to_string(), modifier);
-        self.bump_version();
+        self.bump_version()?;
         Ok(())
     }
 
@@ -732,14 +946,19 @@ impl TileField {
 
     /// Remove a named modifier and clear it from all cells.
     pub fn remove_modifier(&mut self, name: &str) -> bool {
+        self.try_remove_modifier(name).unwrap_or(false)
+    }
+
+    /// Remove a named modifier with checked version and dirty-state updates.
+    pub fn try_remove_modifier(&mut self, name: &str) -> Result<bool, String> {
         let removed = self.modifiers.remove(name).is_some();
         if removed {
             for cell in &mut self.cells {
                 cell.remove_modifier(name);
             }
-            self.bump_version();
+            self.mark_full_dirty()?;
         }
-        removed
+        Ok(removed)
     }
 
     /// Apply a named modifier to one cell.
@@ -751,7 +970,7 @@ impl TileField {
             .cell_mut(coord)
             .ok_or_else(|| "tilefield applyModifier coordinate is out of bounds".to_string())?;
         cell.add_modifier(name.to_string());
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -767,7 +986,7 @@ impl TileField {
             .ok_or_else(|| "tilefield clearModifier coordinate is out of bounds".to_string())?;
         let removed = cell.remove_modifier(name);
         if removed {
-            self.mark_dirty_cell(coord);
+            self.mark_dirty_cell(coord)?;
         }
         Ok(removed)
     }
@@ -786,11 +1005,15 @@ impl TileField {
         source: String,
         light: Option<TileLightEmitter>,
     ) -> Result<(), String> {
+        self.limits.validate_string(&source, "light source name")?;
+        if let Some(light) = light.as_ref() {
+            light.validate()?;
+        }
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setLight coordinate is out of bounds".to_string())?;
         cell.set_light(source, light)?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -839,12 +1062,28 @@ impl TileField {
 
     /// Set a named object/tile reference on one cell.
     pub fn set_ref(&mut self, coord: CellCoord, slot: String, value: u32) -> Result<(), String> {
-        self.define_slot(slot.clone())?;
+        self.limits.validate_string(&slot, "ref slot")?;
+        if !self.in_bounds(coord) {
+            return Err("tilefield setRef coordinate is out of bounds".to_string());
+        }
+        if !self.has_slot(&slot) {
+            self.define_slot(slot.clone())?;
+        }
+        let max_refs_per_cell = self.limits.max_refs_per_cell;
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setRef coordinate is out of bounds".to_string())?;
+        if cell.get_ref(&slot).is_none()
+            && cell.get_typed_ref(&slot).is_none()
+            && cell.ref_count() >= max_refs_per_cell
+        {
+            return Err(format!(
+                "tilefield cell reference limit {} exceeded",
+                max_refs_per_cell
+            ));
+        }
         cell.set_ref(slot, value)?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -860,12 +1099,33 @@ impl TileField {
         slot: String,
         value: TileRef,
     ) -> Result<(), String> {
-        self.define_slot(slot.clone())?;
+        self.limits
+            .validate_string(&value.tileset_id, "ref tileset id")?;
+        if let Some(object_id) = value.object_id.as_ref() {
+            self.limits.validate_string(object_id, "ref object id")?;
+        }
+        self.limits.validate_string(&slot, "ref slot")?;
+        if !self.in_bounds(coord) {
+            return Err("tilefield setRef coordinate is out of bounds".to_string());
+        }
+        if !self.has_slot(&slot) {
+            self.define_slot(slot.clone())?;
+        }
+        let max_refs_per_cell = self.limits.max_refs_per_cell;
         let cell = self
             .cell_mut(coord)
             .ok_or_else(|| "tilefield setRef coordinate is out of bounds".to_string())?;
+        if cell.get_ref(&slot).is_none()
+            && cell.get_typed_ref(&slot).is_none()
+            && cell.ref_count() >= max_refs_per_cell
+        {
+            return Err(format!(
+                "tilefield cell reference limit {} exceeded",
+                max_refs_per_cell
+            ));
+        }
         cell.set_typed_ref(slot, value)?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -880,21 +1140,35 @@ impl TileField {
         if slot.is_empty() {
             return Err("tilefield slot name must not be empty".to_string());
         }
-        self.slots.insert(slot.to_string());
+        self.limits.validate_string(slot, "slot name")?;
+        if !self.slots.contains(slot) && self.slots.len() >= self.limits.max_slots {
+            return Err(format!(
+                "tilefield slot limit {} exceeded",
+                self.limits.max_slots
+            ));
+        }
+        if self.slots.insert(slot.to_string()) {
+            self.bump_version()?;
+        }
         Ok(())
     }
 
     /// Remove a declared slot and clear its references from every cell.
     pub fn remove_slot(&mut self, slot: &str) -> bool {
+        self.try_remove_slot(slot).unwrap_or(false)
+    }
+
+    /// Remove a declared slot with checked version and dirty-state updates.
+    pub fn try_remove_slot(&mut self, slot: &str) -> Result<bool, String> {
         let removed = self.slots.remove(slot);
         if removed {
             for cell in &mut self.cells {
                 cell.clear_ref(slot);
                 let _ = cell.set_light(slot.to_string(), None);
             }
-            self.bump_version();
+            self.mark_full_dirty()?;
         }
-        removed
+        Ok(removed)
     }
 
     /// Return true when a slot has been declared on this field.
@@ -950,7 +1224,7 @@ impl TileField {
             .ok_or_else(|| "tilefield clearRef coordinate is out of bounds".to_string())?;
         cell.clear_ref(slot);
         cell.set_light(slot.to_string(), None)?;
-        self.mark_dirty_cell(coord);
+        self.mark_dirty_cell(coord)?;
         Ok(())
     }
 
@@ -1061,7 +1335,9 @@ impl TileField {
 
     /// Export a blocker layer for one level in row-major order.
     pub fn export_block_layer(&self, channel: TileChannel, z: u32) -> Vec<bool> {
-        let mut out = Vec::with_capacity((self.width * self.height) as usize);
+        let cell_count =
+            usize::try_from(u64::from(self.width) * u64::from(self.height)).unwrap_or(0);
+        let mut out = Vec::with_capacity(cell_count);
         for y in 0..self.height {
             for x in 0..self.width {
                 out.push(self.blocks(CellCoord { x, y, z }, channel));
@@ -1072,7 +1348,9 @@ impl TileField {
 
     /// Export a cost layer for one level in row-major order.
     pub fn export_cost_layer(&self, channel: TileChannel, z: u32) -> Vec<f32> {
-        let mut out = Vec::with_capacity((self.width * self.height) as usize);
+        let cell_count =
+            usize::try_from(u64::from(self.width) * u64::from(self.height)).unwrap_or(0);
+        let mut out = Vec::with_capacity(cell_count);
         for y in 0..self.height {
             for x in 0..self.width {
                 out.push(self.cost(CellCoord { x, y, z }, channel));
@@ -1083,7 +1361,9 @@ impl TileField {
 
     /// Export one named object/tile reference slot for one level in row-major order.
     pub fn export_ref_layer(&self, slot: &str, z: u32) -> Vec<Option<u32>> {
-        let mut out = Vec::with_capacity((self.width * self.height) as usize);
+        let cell_count =
+            usize::try_from(u64::from(self.width) * u64::from(self.height)).unwrap_or(0);
+        let mut out = Vec::with_capacity(cell_count);
         for y in 0..self.height {
             for x in 0..self.width {
                 out.push(self.get_ref(CellCoord { x, y, z }, slot));

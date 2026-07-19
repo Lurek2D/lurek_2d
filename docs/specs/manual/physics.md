@@ -41,6 +41,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ## Notes
 
+- `lurek.physics.createBodiesFromTilefield(field, slot, tileset, world, opts?)` is the canonical consumer-owned adapter for turning tilefield refs plus tileset `physics` metadata into bodies. `lurek.tilefield.createPhysicsFromTileset(...)` remains a compatibility alias during the migration window.
+
 - Material model:
   `lurek.physics.newMaterial({...})` is the reusable, validated material constructor. Body-default material assignment lives on `LBody:setMaterial(...)` / `LBody:getMaterial()`, while collider-specific overrides live on `LWorld:setFixtureMaterial(bodyId, fixtureIndex, ...)` / `LWorld:getFixtureMaterial(...)`. Existing direct setters such as `setFriction`, `setRestitution`, `setMass`, `setGravityScale`, `setLinearDamping`, `setAngularDamping`, `setBeamReflectivity`, and `setProjectileReflectivity` remain valid and keep the stored body-material snapshot in sync.
 

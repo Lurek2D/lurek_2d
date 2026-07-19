@@ -3324,6 +3324,7 @@ do
     local diagnostics = map:getDiagnostics()
     lurek.log.info("invalid layer = " .. tostring(diagnostics.invalidLayer))
     lurek.log.info("invalid coord = " .. tostring(diagnostics.invalidCoord))
+    lurek.log.info("lazy index rebuilds = " .. tostring(diagnostics.lazyIndexRebuilds))
 end
 ```
 

@@ -6,6 +6,7 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 
 ## Mission
 - Audit and fix Lua test coverage and structure for public `lurek.*` APIs.
+- Audit test ownership by module so propagation, rendering, physics, and other consumer tests are not counted as core data-module coverage.
 - Enforce canonical ownership in `tests/lua/unit/`: `1 API = 1 unit it() = 1 directly-adjacent @covers`.
 - For canonical non-unit suites, enforce:
   - `stress/security`: `1 API = 1 family marker = 1 it()`
@@ -32,6 +33,7 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 - Start unit-suite status with `tools/python.cmd tools/audit/unit_test_api_coverage.py` and read these counts first: total Lua APIs, APIs with exactly one unit owner test, APIs with no Lua unit owner test, APIs duplicated across multiple unit `it()` blocks.
 - For non-unit suites, run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` and read these counts first: category totals, duplicate primary markers in `stress/security`, evidence file ownership and rationale compliance, and integration marker mismatches.
 - Compare audit output with `tests/lua/` canonical files and harness registration.
+- Compare Rust test file ownership with the module under test, and flag consumer propagation tests stored under a producer module.
 - Report missing `@covers`, structure issues, uncovered public APIs, duplicated API owners, stale evidence markers, and weak rationale blocks first.
 - Verify tool-enforced Lua structure before edits land: plain file header, `-- @describe` before `describe()`, folder-specific primary marker indented like `it()`, no legacy markers, and one final bare `test_summary()`.
 - Keep canonical unit ownership module-local: one `test_<module>_unit.lua` file per module, with `lurek.<module>.*` tests before userdata/object method coverage.

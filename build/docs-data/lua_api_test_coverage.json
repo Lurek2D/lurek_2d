@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-16T21:32:18.493891+00:00",
+    "generated": "2026-07-19T07:01:14.423632+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 7097,
-    "marker_covered": 7070,
+    "total_api_functions": 7100,
+    "marker_covered": 7073,
     "describe_covered": 150,
     "describe_coverage_pct": 2.1,
     "heuristic_covered": 0,
-    "total_covered": 7097,
+    "total_covered": 7100,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -26612,11 +26612,11 @@
       ]
     },
     "light": {
-      "total": 103,
-      "marker_covered": 103,
+      "total": 104,
+      "marker_covered": 104,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 103,
+      "covered": 104,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -26817,6 +26817,15 @@
         },
         {
           "lua_name": "lurek.light.drawToImage",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.light.createLightsFromTilefield",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -40119,11 +40128,11 @@
       ]
     },
     "physics": {
-      "total": 325,
-      "marker_covered": 325,
+      "total": 326,
+      "marker_covered": 326,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 325,
+      "covered": 326,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -40371,6 +40380,15 @@
         },
         {
           "lua_name": "lurek.physics.testCircleAABB",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "lurek.physics.createBodiesFromTilefield",
           "kind": "function",
           "marker_covered": true,
           "describe_covered": false,
@@ -55780,11 +55798,11 @@
       ]
     },
     "tilefield": {
-      "total": 99,
-      "marker_covered": 99,
+      "total": 100,
+      "marker_covered": 100,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 99,
+      "covered": 100,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -56131,6 +56149,15 @@
         },
         {
           "lua_name": "LTileField:getCategories",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LTileField:removeCategory",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

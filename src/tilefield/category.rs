@@ -4,6 +4,10 @@
 //! Public functions in this file are the stable entry points other modules should use for category work.
 
 /// Broad semantic kind for a tilefield category.
+///
+/// # Variants
+///
+/// The variants select the built-in consumer semantics; `Custom` is reserved for game-defined data.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TileCategoryKind {
     /// Movement and pathfinding costs or blockers.
@@ -46,6 +50,10 @@ impl TileCategoryKind {
 }
 
 /// User-defined category record stored by a tilefield.
+///
+/// # Fields
+///
+/// `name` identifies the category, `kind` selects its semantic family, and `active` controls default participation.
 #[derive(Debug, Clone, PartialEq)]
 pub struct TileCategory {
     /// Stable category name chosen by Lua.

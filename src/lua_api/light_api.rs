@@ -1880,6 +1880,34 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             lua.create_userdata(img)
         })?,
     )?;
+
+    // -- createLightsFromTilefield --
+    /// Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.
+    /// This consumer-owned facade is the canonical integration surface; the tilefield method remains a compatibility alias.
+    /// @param | field | LTileField | Source field containing refs.
+    /// @param | slot | string | Reference slot name.
+    /// @param | tileset | LTileSet | Tileset with tile object metadata.
+    /// @param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+    /// @return | table | `{lights=Llight[], occluders=LOccluder[]}`.
+    let lurek_key = lua.create_registry_value(lurek.clone())?;
+    tbl.set(
+        "createLightsFromTilefield",
+        lua.create_function(
+            move |lua,
+                  (field, slot, tileset, opts): (
+                LuaAnyUserData,
+                String,
+                LuaAnyUserData,
+                Option<LuaTable>,
+            )| {
+                let root: LuaTable = lua.registry_value(&lurek_key)?;
+                let tilefield: LuaTable = root.get("tilefield")?;
+                let compatibility: LuaFunction = tilefield.get("createLightsFromTileset")?;
+                compatibility.call::<_, LuaTable>((field, slot, tileset, opts))
+            },
+        )?,
+    )?;
+
     /// Performs the 'light' operation.
     lurek.set("light", tbl)?;
     Ok(())

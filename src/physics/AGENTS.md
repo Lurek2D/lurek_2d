@@ -12,6 +12,7 @@
 - Step physics with fixed timestep semantics; do not bind simulation to render delta directly.
 - Validate shape dimensions, filters, and material ranges before Rapier calls.
 - Keep handle lifetimes explicit when removing bodies or colliders.
+- `lurek.physics.createBodiesFromTilefield` is the canonical consumer-owned conversion facade for tilefield refs; tilefield's older tileset helper is compatibility-only.
 
 ## Workflow
 - Validate with `cargo test --test physics_tests`.

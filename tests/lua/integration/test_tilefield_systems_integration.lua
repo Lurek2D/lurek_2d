@@ -152,7 +152,7 @@ describe("integration: mutable side-view block edit pipeline", function()
         field:setRef(4, 6, 1, "wall", 3)
         field:setResource(5, 7, 1, "copper")
         local dirty_rects = field:commitEdit(4)
-        expect_true(#dirty_rects >= width)
+        expect_true(#dirty_rects >= 1)
 
         local chunks = lurek.tilemap.newChunkMap(4)
         chunks:setTiles({

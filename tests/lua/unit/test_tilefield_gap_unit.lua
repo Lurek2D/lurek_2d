@@ -92,6 +92,15 @@ describe("LTileField category APIs", function()
         expect_equal("movement", f:getCategory("tank").kind)
     end)
 
+    -- @covers LTileField:removeCategory
+    it("removes custom categories and their cell data", function()
+        local f = field()
+        f:defineCategory("heat", { kind = "custom" })
+        f:setCategoryFilter(1, 1, 1, "heat", { 1, 0.5, 0.25 })
+        expect_true(f:removeCategory("heat"))
+        expect_nil(f:getCategory("heat"))
+    end)
+
     -- @covers LTileField:blocksCategory
     it("reads category blockers", function()
         local f = field()

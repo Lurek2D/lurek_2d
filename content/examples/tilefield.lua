@@ -2,6 +2,19 @@
 -- Run: cargo run -- content/examples/tilefield.lua
 
 
+--@api: LTileField:removeCategory
+do
+
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:defineCategory("hazard", { kind = "custom" })
+    field:setCategoryFilter(2, 2, 1, "hazard", { 1.0, 0.5, 0.25 })
+    local removed = field:removeCategory("hazard")
+    local category = field:getCategory("hazard")
+    local filter = field:getCategoryFilter(2, 2, 1, "hazard")
+    lurek.log.info("custom category removed=" .. tostring(removed) .. " category=" .. tostring(category) .. " filter=" .. filter[1])
+end
+
+
 --@api: lurek.tilefield.new
 do
 

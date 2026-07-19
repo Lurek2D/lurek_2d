@@ -705,9 +705,9 @@ def check_lua_api_docs(module: str) -> List[Check]:
     # D-07: @param/@return before each tbl.set
     missing_annots: List[str] = []
     for i, line in enumerate(lines):
-        if 'tbl.set(' not in line:
+        if not re.search(r'(?<![A-Za-z0-9_])tbl\.set\(', line):
             continue
-        fn_m = re.search(r'tbl\.set\(\s*"([^"]+)"', line)
+        fn_m = re.search(r'(?<![A-Za-z0-9_])tbl\.set\(\s*"([^"]+)"', line)
         if not fn_m:
             continue
         fn_name = fn_m.group(1)
@@ -735,7 +735,9 @@ def check_lua_api_docs(module: str) -> List[Check]:
 
     # D-09: Section separator comments if \u22653 bindings
     # Accept both Unicode box-drawing (// \u2500\u2500\u2500) and ASCII dash (// ---) separators
-    bound_fns = re.findall(r'tbl\.set\(\s*"[^"]+?"', content)
+    # Match the public module table only; nested serializers such as
+    # `light_tbl.set("radius", ...)` are data fields, not bindings.
+    bound_fns = re.findall(r'(?<![A-Za-z0-9_])tbl\.set\(\s*"[^"]+?"', content)
     has_sep = bool(re.search(r"// [-\u2500]{3,}", content))
     if len(bound_fns) >= 3 and not has_sep:
         results.append(Check("D-09", "Section separators", WARN,
@@ -1317,7 +1319,9 @@ def check_example_spec_sync(module: str) -> Check:
         return Check("W-04", "Exampleâ€“spec sync", PASS, "Missing spec or example â€” other checks cover this")
 
     api_content = read_text(api_file)
-    bound_fns = set(re.findall(r'tbl\.set\(\s*"([^"]+)"', api_content))
+    bound_fns = set(
+        re.findall(r'(?<![A-Za-z0-9_])tbl\.set\(\s*"([^"]+)"', api_content)
+    )
     if not bound_fns:
         return Check("W-04", "Exampleâ€“spec sync", PASS, "No bound functions")
 

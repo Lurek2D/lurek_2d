@@ -6,6 +6,10 @@
 use crate::tilefield::{CellCoord, TileField, TileLightSource};
 
 /// Read-only semantic facade for one tilefield.
+///
+/// # Fields
+///
+/// The view borrows a field without owning or mutating it, exposing effective category queries and authored light sources.
 pub struct TileSemanticsView<'a> {
     field: &'a TileField,
 }

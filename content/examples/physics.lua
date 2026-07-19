@@ -3,6 +3,18 @@
 -- Run: cargo run -- content/examples/physics.lua
 
 
+--@api: lurek.physics.createBodiesFromTilefield
+do
+
+    local tileset = lurek.tileset.fromProvider({ firstGid = 1, tileCount = 1, columns = 1, tileWidth = 16, tileHeight = 16, objects = { wall = { physics = { shape = "rect", bodyType = "static" } } }, tileObjects = { [1] = "wall" } })
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "tiles", 1)
+    local world = lurek.physics.newWorld(0, 0)
+    local bodies = lurek.physics.createBodiesFromTilefield(field, "tiles", tileset, world, { refIsGid = true })
+    lurek.log.info("consumer-owned tilefield bodies=" .. #bodies .. " world=" .. world:getBodyCount())
+end
+
+
 --- Physics Module Part 1: world creation, gravity, stepping, body creation, body properties
 
 

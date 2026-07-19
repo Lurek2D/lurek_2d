@@ -7,6 +7,10 @@
 use crate::tilefield::line::CellCoord;
 
 /// Logical tile topology for line and distance queries.
+///
+/// # Variants
+///
+/// `Square4`, `Square`, and `IsoSquare` use square coordinates with different distance semantics; `Hex` uses axial coordinates.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TileTopology {
     /// Orthogonal square grid using four-way movement distance.

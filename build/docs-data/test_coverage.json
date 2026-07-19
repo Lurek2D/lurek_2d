@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 7681,
-    "covered": 4414,
-    "uncovered": 3267,
-    "coverage_pct": 57.5,
+    "total": 7698,
+    "covered": 4434,
+    "uncovered": 3264,
+    "coverage_pct": 57.6,
     "covered_items": [
       {
         "module": "agent",
@@ -2431,6 +2431,12 @@
       },
       {
         "module": "awareness",
+        "name": "TileFov::is_explored",
+        "file": "src/awareness/shadowcast.rs",
+        "line": 99
+      },
+      {
+        "module": "awareness",
         "name": "TileFov::visible_cells",
         "file": "src/awareness/shadowcast.rs",
         "line": 126
@@ -2473,6 +2479,12 @@
       },
       {
         "module": "awareness",
+        "name": "TileAwareness::define_category",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 181
+      },
+      {
+        "module": "awareness",
         "name": "TileAwareness::category",
         "file": "src/awareness/tile_awareness.rs",
         "line": 198
@@ -2482,6 +2494,12 @@
         "name": "TileAwareness::is_visible",
         "file": "src/awareness/tile_awareness.rs",
         "line": 433
+      },
+      {
+        "module": "awareness",
+        "name": "TileAwareness::is_explored",
+        "file": "src/awareness/tile_awareness.rs",
+        "line": 449
       },
       {
         "module": "awareness",
@@ -11979,7 +11997,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3384
+        "line": 3695
       },
       {
         "module": "lua_api",
@@ -22255,6 +22273,12 @@
       },
       {
         "module": "scene",
+        "name": "SceneStack::next_scene_id",
+        "file": "src/scene/stack.rs",
+        "line": 84
+      },
+      {
+        "module": "scene",
         "name": "SceneStack::push",
         "file": "src/scene/stack.rs",
         "line": 159
@@ -23625,469 +23649,565 @@
         "module": "tilefield",
         "name": "TileCategoryKind::parse",
         "file": "src/tilefield/category.rs",
-        "line": 23
+        "line": 27
       },
       {
         "module": "tilefield",
         "name": "TileCategoryKind::as_str",
         "file": "src/tilefield/category.rs",
-        "line": 37
+        "line": 41
       },
       {
         "module": "tilefield",
         "name": "TileCategory::new",
         "file": "src/tilefield/category.rs",
-        "line": 61
+        "line": 69
       },
       {
         "module": "tilefield",
         "name": "TileChannel::parse",
         "file": "src/tilefield/cell.rs",
-        "line": 29
+        "line": 33
       },
       {
         "module": "tilefield",
         "name": "TileChannel::as_str",
         "file": "src/tilefield/cell.rs",
-        "line": 43
+        "line": 47
       },
       {
         "module": "tilefield",
         "name": "TileChannel::index",
         "file": "src/tilefield/cell.rs",
-        "line": 54
+        "line": 58
       },
       {
         "module": "tilefield",
         "name": "TileCell::blocks",
         "file": "src/tilefield/cell.rs",
-        "line": 101
+        "line": 109
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_block",
         "file": "src/tilefield/cell.rs",
-        "line": 106
+        "line": 114
       },
       {
         "module": "tilefield",
         "name": "TileCell::cost",
         "file": "src/tilefield/cell.rs",
-        "line": 111
+        "line": 119
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_cost",
         "file": "src/tilefield/cell.rs",
-        "line": 116
+        "line": 124
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_filter",
+        "file": "src/tilefield/cell.rs",
+        "line": 229
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::category_filters",
+        "file": "src/tilefield/cell.rs",
+        "line": 234
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::set_category_filter",
+        "file": "src/tilefield/cell.rs",
+        "line": 239
       },
       {
         "module": "tilefield",
         "name": "TileCell::sun_occlusion",
         "file": "src/tilefield/cell.rs",
-        "line": 259
+        "line": 270
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_sun_occlusion",
         "file": "src/tilefield/cell.rs",
-        "line": 264
+        "line": 275
       },
       {
         "module": "tilefield",
         "name": "TileCell::get_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 273
+        "line": 284
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 278
+        "line": 289
       },
       {
         "module": "tilefield",
         "name": "TileCell::clear_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 305
+        "line": 316
       },
       {
         "module": "tilefield",
         "name": "TileCell::refs",
         "file": "src/tilefield/cell.rs",
-        "line": 311
+        "line": 322
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::ref_count",
+        "file": "src/tilefield/cell.rs",
+        "line": 332
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_light",
         "file": "src/tilefield/cell.rs",
-        "line": 321
+        "line": 345
       },
       {
         "module": "tilefield",
         "name": "TileCell::lights",
         "file": "src/tilefield/cell.rs",
-        "line": 342
+        "line": 367
       },
       {
         "module": "tilefield",
         "name": "TileCell::add_modifier",
         "file": "src/tilefield/cell.rs",
-        "line": 347
+        "line": 372
       },
       {
         "module": "tilefield",
         "name": "TileCell::modifiers",
         "file": "src/tilefield/cell.rs",
-        "line": 364
+        "line": 389
+      },
+      {
+        "module": "tilefield",
+        "name": "TileLightEmitter::validate",
+        "file": "src/tilefield/emitter.rs",
+        "line": 22
       },
       {
         "module": "tilefield",
         "name": "TileField::new",
         "file": "src/tilefield/field.rs",
-        "line": 54
+        "line": 94
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::new_with_limits",
+        "file": "src/tilefield/field.rs",
+        "line": 104
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::limits",
+        "file": "src/tilefield/field.rs",
+        "line": 152
       },
       {
         "module": "tilefield",
         "name": "TileField::set_occupant",
         "file": "src/tilefield/field.rs",
-        "line": 102
+        "line": 157
       },
       {
         "module": "tilefield",
         "name": "TileField::occupant",
         "file": "src/tilefield/field.rs",
-        "line": 124
+        "line": 183
       },
       {
         "module": "tilefield",
         "name": "TileField::set_resource",
         "file": "src/tilefield/field.rs",
-        "line": 129
+        "line": 188
       },
       {
         "module": "tilefield",
         "name": "TileField::resource",
         "file": "src/tilefield/field.rs",
-        "line": 150
+        "line": 210
       },
       {
         "module": "tilefield",
         "name": "TileField::set_buildable",
         "file": "src/tilefield/field.rs",
-        "line": 155
+        "line": 215
       },
       {
         "module": "tilefield",
         "name": "TileField::size",
         "file": "src/tilefield/field.rs",
-        "line": 170
+        "line": 230
       },
       {
         "module": "tilefield",
         "name": "TileField::topology",
         "file": "src/tilefield/field.rs",
-        "line": 175
+        "line": 235
       },
       {
         "module": "tilefield",
         "name": "TileField::version",
         "file": "src/tilefield/field.rs",
-        "line": 180
+        "line": 240
       },
       {
         "module": "tilefield",
         "name": "TileField::begin_edit",
         "file": "src/tilefield/field.rs",
-        "line": 185
+        "line": 245
       },
       {
         "module": "tilefield",
         "name": "TileField::commit_edit",
         "file": "src/tilefield/field.rs",
-        "line": 190
+        "line": 250
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::define_category",
+        "file": "src/tilefield/field.rs",
+        "line": 260
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::remove_category",
+        "file": "src/tilefield/field.rs",
+        "line": 280
       },
       {
         "module": "tilefield",
         "name": "TileField::category",
         "file": "src/tilefield/field.rs",
-        "line": 205
+        "line": 306
       },
       {
         "module": "tilefield",
         "name": "TileField::dirty_rects",
         "file": "src/tilefield/field.rs",
-        "line": 222
+        "line": 324
       },
       {
         "module": "tilefield",
         "name": "TileField::neighbors",
         "file": "src/tilefield/field.rs",
-        "line": 266
+        "line": 411
       },
       {
         "module": "tilefield",
         "name": "TileField::in_bounds",
         "file": "src/tilefield/field.rs",
-        "line": 274
+        "line": 419
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_region_rect",
+        "file": "src/tilefield/field.rs",
+        "line": 438
       },
       {
         "module": "tilefield",
         "name": "TileField::regions_at",
         "file": "src/tilefield/field.rs",
-        "line": 427
+        "line": 615
       },
       {
         "module": "tilefield",
         "name": "TileField::cell",
         "file": "src/tilefield/field.rs",
-        "line": 439
+        "line": 627
       },
       {
         "module": "tilefield",
         "name": "TileField::clear",
         "file": "src/tilefield/field.rs",
-        "line": 449
+        "line": 637
       },
       {
         "module": "tilefield",
         "name": "TileField::set_block",
         "file": "src/tilefield/field.rs",
-        "line": 466
+        "line": 668
       },
       {
         "module": "tilefield",
         "name": "TileField::blocks",
         "file": "src/tilefield/field.rs",
-        "line": 481
+        "line": 683
       },
       {
         "module": "tilefield",
         "name": "TileField::set_cost",
         "file": "src/tilefield/field.rs",
-        "line": 538
+        "line": 741
       },
       {
         "module": "tilefield",
         "name": "TileField::cost",
         "file": "src/tilefield/field.rs",
-        "line": 553
+        "line": 756
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::set_category_filter",
+        "file": "src/tilefield/field.rs",
+        "line": 863
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::category_filter",
+        "file": "src/tilefield/field.rs",
+        "line": 879
       },
       {
         "module": "tilefield",
         "name": "TileField::set_sun_occlusion",
         "file": "src/tilefield/field.rs",
-        "line": 693
+        "line": 899
       },
       {
         "module": "tilefield",
         "name": "TileField::sun_occlusion",
         "file": "src/tilefield/field.rs",
-        "line": 703
+        "line": 909
       },
       {
         "module": "tilefield",
         "name": "TileField::set_modifier",
         "file": "src/tilefield/field.rs",
-        "line": 717
+        "line": 923
       },
       {
         "module": "tilefield",
         "name": "TileField::modifier",
         "file": "src/tilefield/field.rs",
-        "line": 729
+        "line": 943
       },
       {
         "module": "tilefield",
         "name": "TileField::apply_profile",
         "file": "src/tilefield/field.rs",
-        "line": 759
+        "line": 978
       },
       {
         "module": "tilefield",
         "name": "TileField::set_light",
         "file": "src/tilefield/field.rs",
-        "line": 783
+        "line": 1002
       },
       {
         "module": "tilefield",
         "name": "TileField::set_ref",
         "file": "src/tilefield/field.rs",
-        "line": 841
+        "line": 1064
       },
       {
         "module": "tilefield",
         "name": "TileField::get_ref",
         "file": "src/tilefield/field.rs",
-        "line": 852
+        "line": 1091
       },
       {
         "module": "tilefield",
         "name": "TileField::resource_cells",
         "file": "src/tilefield/field.rs",
-        "line": 911
+        "line": 1185
       },
       {
         "module": "tilefield",
         "name": "TileField::buildable_cells",
         "file": "src/tilefield/field.rs",
-        "line": 922
+        "line": 1196
       },
       {
         "module": "tilefield",
         "name": "TileField::occupant_cells",
         "file": "src/tilefield/field.rs",
-        "line": 933
+        "line": 1207
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_ref",
         "file": "src/tilefield/field.rs",
-        "line": 944
+        "line": 1218
       },
       {
         "module": "tilefield",
         "name": "TileField::line",
         "file": "src/tilefield/field.rs",
-        "line": 1003
+        "line": 1277
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_line",
         "file": "src/tilefield/field.rs",
-        "line": 1029
+        "line": 1303
       },
       {
         "module": "tilefield",
         "name": "TileField::distance",
         "file": "src/tilefield/field.rs",
-        "line": 1039
+        "line": 1313
       },
       {
         "module": "tilefield",
         "name": "TileField::export_ref_layer",
         "file": "src/tilefield/field.rs",
-        "line": 1085
+        "line": 1363
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::new",
         "file": "src/tilefield/field_map.rs",
-        "line": 30
+        "line": 38
+      },
+      {
+        "module": "tilefield",
+        "name": "TileFieldMap::new_with_limits",
+        "file": "src/tilefield/field_map.rs",
+        "line": 61
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::map_size",
         "file": "src/tilefield/field_map.rs",
-        "line": 77
+        "line": 114
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::field_size",
         "file": "src/tilefield/field_map.rs",
-        "line": 82
+        "line": 119
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::topology",
         "file": "src/tilefield/field_map.rs",
-        "line": 87
+        "line": 124
+      },
+      {
+        "module": "tilefield",
+        "name": "TileFieldMap::limits",
+        "file": "src/tilefield/field_map.rs",
+        "line": 129
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::in_bounds",
         "file": "src/tilefield/field_map.rs",
-        "line": 92
+        "line": 134
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::field",
         "file": "src/tilefield/field_map.rs",
-        "line": 107
+        "line": 153
       },
       {
         "module": "tilefield",
         "name": "TileFieldMap::set_field",
         "file": "src/tilefield/field_map.rs",
-        "line": 114
+        "line": 160
+      },
+      {
+        "module": "tilefield",
+        "name": "TileFieldLimits::validate",
+        "file": "src/tilefield/limits.rs",
+        "line": 66
       },
       {
         "module": "tilefield",
         "name": "TileModifier::new",
         "file": "src/tilefield/modifier.rs",
-        "line": 39
+        "line": 44
+      },
+      {
+        "module": "tilefield",
+        "name": "TileModifier::validate",
+        "file": "src/tilefield/modifier.rs",
+        "line": 56
       },
       {
         "module": "tilefield",
         "name": "TileRef::tile",
         "file": "src/tilefield/reference.rs",
-        "line": 18
+        "line": 22
       },
       {
         "module": "tilefield",
         "name": "TileRef::object",
         "file": "src/tilefield/reference.rs",
-        "line": 23
+        "line": 27
       },
       {
         "module": "tilefield",
         "name": "TileRef::new",
         "file": "src/tilefield/reference.rs",
-        "line": 28
+        "line": 32
       },
       {
         "module": "tilefield",
         "name": "TileSemanticsView::new",
         "file": "src/tilefield/semantics.rs",
-        "line": 15
+        "line": 19
       },
       {
         "module": "tilefield",
         "name": "TileSemanticsView::blocks",
         "file": "src/tilefield/semantics.rs",
-        "line": 20
+        "line": 24
       },
       {
         "module": "tilefield",
         "name": "TileSemanticsView::cost",
         "file": "src/tilefield/semantics.rs",
-        "line": 25
+        "line": 29
       },
       {
         "module": "tilefield",
         "name": "TileSemanticsView::transmission",
         "file": "src/tilefield/semantics.rs",
-        "line": 30
+        "line": 34
       },
       {
         "module": "tilefield",
         "name": "TileSemanticsView::filter",
         "file": "src/tilefield/semantics.rs",
-        "line": 35
+        "line": 39
       },
       {
         "module": "tilefield",
         "name": "TileTopology::parse",
         "file": "src/tilefield/topology.rs",
-        "line": 24
+        "line": 28
       },
       {
         "module": "tilefield",
         "name": "TileTopology::as_str",
         "file": "src/tilefield/topology.rs",
-        "line": 38
+        "line": 42
       },
       {
         "module": "tilefield",
         "name": "TileTopology::distance",
         "file": "src/tilefield/topology.rs",
-        "line": 48
+        "line": 52
       },
       {
         "module": "tilefield",
         "name": "TileTopology::neighbors",
         "file": "src/tilefield/topology.rs",
-        "line": 73
+        "line": 77
       },
       {
         "module": "tilelight",
@@ -29121,12 +29241,6 @@
       },
       {
         "module": "awareness",
-        "name": "TileFov::is_explored",
-        "file": "src/awareness/shadowcast.rs",
-        "line": 99
-      },
-      {
-        "module": "awareness",
         "name": "TileFov::reset_explored",
         "file": "src/awareness/shadowcast.rs",
         "line": 107
@@ -29148,12 +29262,6 @@
         "name": "AwarenessState::is_known",
         "file": "src/awareness/state.rs",
         "line": 41
-      },
-      {
-        "module": "awareness",
-        "name": "TileAwareness::define_category",
-        "file": "src/awareness/tile_awareness.rs",
-        "line": 181
       },
       {
         "module": "awareness",
@@ -29190,12 +29298,6 @@
         "name": "TileAwareness::is_aware",
         "file": "src/awareness/tile_awareness.rs",
         "line": 441
-      },
-      {
-        "module": "awareness",
-        "name": "TileAwareness::is_explored",
-        "file": "src/awareness/tile_awareness.rs",
-        "line": 449
       },
       {
         "module": "awareness",
@@ -35405,7 +35507,7 @@
         "module": "lua_api",
         "name": "field_from_provider",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 662
+        "line": 852
       },
       {
         "module": "lua_api",
@@ -42363,12 +42465,6 @@
       },
       {
         "module": "scene",
-        "name": "SceneStack::next_scene_id",
-        "file": "src/scene/stack.rs",
-        "line": 84
-      },
-      {
-        "module": "scene",
         "name": "SceneStack::switch_to",
         "file": "src/scene/stack.rs",
         "line": 198
@@ -43493,391 +43589,397 @@
         "module": "tilefield",
         "name": "TileCell::blocks_category",
         "file": "src/tilefield/cell.rs",
-        "line": 125
+        "line": 133
       },
       {
         "module": "tilefield",
         "name": "TileCell::category_blockers",
         "file": "src/tilefield/cell.rs",
-        "line": 130
+        "line": 138
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_category_block",
         "file": "src/tilefield/cell.rs",
-        "line": 135
+        "line": 143
       },
       {
         "module": "tilefield",
         "name": "TileCell::category_cost",
         "file": "src/tilefield/cell.rs",
-        "line": 156
+        "line": 164
       },
       {
         "module": "tilefield",
         "name": "TileCell::category_costs",
         "file": "src/tilefield/cell.rs",
-        "line": 161
+        "line": 169
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_category_cost",
         "file": "src/tilefield/cell.rs",
-        "line": 166
+        "line": 174
       },
       {
         "module": "tilefield",
         "name": "TileCell::category_transmission",
         "file": "src/tilefield/cell.rs",
-        "line": 186
+        "line": 194
       },
       {
         "module": "tilefield",
         "name": "TileCell::category_transmissions",
         "file": "src/tilefield/cell.rs",
-        "line": 191
+        "line": 199
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_category_transmission",
         "file": "src/tilefield/cell.rs",
-        "line": 196
-      },
-      {
-        "module": "tilefield",
-        "name": "TileCell::category_filter",
-        "file": "src/tilefield/cell.rs",
-        "line": 221
-      },
-      {
-        "module": "tilefield",
-        "name": "TileCell::category_filters",
-        "file": "src/tilefield/cell.rs",
-        "line": 226
-      },
-      {
-        "module": "tilefield",
-        "name": "TileCell::set_category_filter",
-        "file": "src/tilefield/cell.rs",
-        "line": 231
+        "line": 204
       },
       {
         "module": "tilefield",
         "name": "TileCell::get_typed_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 289
+        "line": 300
       },
       {
         "module": "tilefield",
         "name": "TileCell::set_typed_ref",
         "file": "src/tilefield/cell.rs",
-        "line": 294
+        "line": 305
       },
       {
         "module": "tilefield",
         "name": "TileCell::typed_refs",
         "file": "src/tilefield/cell.rs",
-        "line": 316
+        "line": 327
+      },
+      {
+        "module": "tilefield",
+        "name": "TileCell::remove_category_data",
+        "file": "src/tilefield/cell.rs",
+        "line": 337
       },
       {
         "module": "tilefield",
         "name": "TileCell::remove_modifier",
         "file": "src/tilefield/cell.rs",
-        "line": 354
+        "line": 379
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_occupant",
         "file": "src/tilefield/field.rs",
-        "line": 112
+        "line": 171
       },
       {
         "module": "tilefield",
         "name": "TileField::is_buildable",
         "file": "src/tilefield/field.rs",
-        "line": 165
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::define_category",
-        "file": "src/tilefield/field.rs",
-        "line": 195
+        "line": 225
       },
       {
         "module": "tilefield",
         "name": "TileField::category_names",
         "file": "src/tilefield/field.rs",
-        "line": 210
+        "line": 311
       },
       {
         "module": "tilefield",
         "name": "TileField::drain_dirty_rects",
         "file": "src/tilefield/field.rs",
-        "line": 217
+        "line": 318
       },
       {
         "module": "tilefield",
-        "name": "TileField::set_region_rect",
+        "name": "TileField::dirty_overflowed",
         "file": "src/tilefield/field.rs",
-        "line": 290
+        "line": 329
       },
       {
         "module": "tilefield",
         "name": "TileField::set_region_cells",
         "file": "src/tilefield/field.rs",
-        "line": 331
+        "line": 496
       },
       {
         "module": "tilefield",
         "name": "TileField::remove_region",
         "file": "src/tilefield/field.rs",
-        "line": 361
+        "line": 541
       },
       {
         "module": "tilefield",
         "name": "TileField::region_contains",
         "file": "src/tilefield/field.rs",
-        "line": 366
+        "line": 550
       },
       {
         "module": "tilefield",
         "name": "TileField::region_cells",
         "file": "src/tilefield/field.rs",
-        "line": 373
+        "line": 557
       },
       {
         "module": "tilefield",
         "name": "TileField::region_names",
         "file": "src/tilefield/field.rs",
-        "line": 378
+        "line": 562
       },
       {
         "module": "tilefield",
         "name": "TileField::set_region_property",
         "file": "src/tilefield/field.rs",
-        "line": 385
+        "line": 569
       },
       {
         "module": "tilefield",
         "name": "TileField::region_property",
         "file": "src/tilefield/field.rs",
-        "line": 412
+        "line": 600
       },
       {
         "module": "tilefield",
         "name": "TileField::region_properties",
         "file": "src/tilefield/field.rs",
-        "line": 420
+        "line": 608
       },
       {
         "module": "tilefield",
         "name": "TileField::cell_mut",
         "file": "src/tilefield/field.rs",
-        "line": 444
+        "line": 632
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::try_clear",
+        "file": "src/tilefield/field.rs",
+        "line": 642
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_cell",
         "file": "src/tilefield/field.rs",
-        "line": 456
+        "line": 655
       },
       {
         "module": "tilefield",
         "name": "TileField::set_category_block",
         "file": "src/tilefield/field.rs",
-        "line": 499
+        "line": 701
       },
       {
         "module": "tilefield",
         "name": "TileField::blocks_category",
         "file": "src/tilefield/field.rs",
-        "line": 514
+        "line": 717
       },
       {
         "module": "tilefield",
         "name": "TileField::set_category_cost",
         "file": "src/tilefield/field.rs",
-        "line": 573
+        "line": 776
       },
       {
         "module": "tilefield",
         "name": "TileField::category_cost",
         "file": "src/tilefield/field.rs",
-        "line": 588
+        "line": 792
       },
       {
         "module": "tilefield",
         "name": "TileField::set_category_transmission",
         "file": "src/tilefield/field.rs",
-        "line": 619
+        "line": 823
       },
       {
         "module": "tilefield",
         "name": "TileField::category_transmission",
         "file": "src/tilefield/field.rs",
-        "line": 634
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::set_category_filter",
-        "file": "src/tilefield/field.rs",
-        "line": 658
-      },
-      {
-        "module": "tilefield",
-        "name": "TileField::category_filter",
-        "file": "src/tilefield/field.rs",
-        "line": 673
+        "line": 839
       },
       {
         "module": "tilefield",
         "name": "TileField::remove_modifier",
         "file": "src/tilefield/field.rs",
-        "line": 734
+        "line": 948
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::try_remove_modifier",
+        "file": "src/tilefield/field.rs",
+        "line": 953
       },
       {
         "module": "tilefield",
         "name": "TileField::apply_modifier",
         "file": "src/tilefield/field.rs",
-        "line": 746
+        "line": 965
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_modifier",
         "file": "src/tilefield/field.rs",
-        "line": 764
+        "line": 983
       },
       {
         "module": "tilefield",
         "name": "TileField::active_modifiers",
         "file": "src/tilefield/field.rs",
-        "line": 776
+        "line": 995
       },
       {
         "module": "tilefield",
         "name": "TileField::tile_light_sources",
         "file": "src/tilefield/field.rs",
-        "line": 798
+        "line": 1021
       },
       {
         "module": "tilefield",
         "name": "TileField::set_typed_ref",
         "file": "src/tilefield/field.rs",
-        "line": 857
+        "line": 1096
       },
       {
         "module": "tilefield",
         "name": "TileField::get_typed_ref",
         "file": "src/tilefield/field.rs",
-        "line": 873
+        "line": 1133
       },
       {
         "module": "tilefield",
         "name": "TileField::define_slot",
         "file": "src/tilefield/field.rs",
-        "line": 878
+        "line": 1138
       },
       {
         "module": "tilefield",
         "name": "TileField::remove_slot",
         "file": "src/tilefield/field.rs",
-        "line": 888
+        "line": 1157
+      },
+      {
+        "module": "tilefield",
+        "name": "TileField::try_remove_slot",
+        "file": "src/tilefield/field.rs",
+        "line": 1162
       },
       {
         "module": "tilefield",
         "name": "TileField::has_slot",
         "file": "src/tilefield/field.rs",
-        "line": 901
+        "line": 1175
       },
       {
         "module": "tilefield",
         "name": "TileField::ref_slots",
         "file": "src/tilefield/field.rs",
-        "line": 906
+        "line": 1180
       },
       {
         "module": "tilefield",
         "name": "TileField::footprint_passable",
         "file": "src/tilefield/field.rs",
-        "line": 958
+        "line": 1232
       },
       {
         "module": "tilefield",
         "name": "TileField::clear_line_category",
         "file": "src/tilefield/field.rs",
-        "line": 987
+        "line": 1261
       },
       {
         "module": "tilefield",
         "name": "TileField::first_blocker",
         "file": "src/tilefield/field.rs",
-        "line": 1013
+        "line": 1287
       },
       {
         "module": "tilefield",
         "name": "TileField::range_distance",
         "file": "src/tilefield/field.rs",
-        "line": 1051
+        "line": 1325
       },
       {
         "module": "tilefield",
         "name": "TileField::export_block_layer",
         "file": "src/tilefield/field.rs",
-        "line": 1063
+        "line": 1337
       },
       {
         "module": "tilefield",
         "name": "TileField::export_cost_layer",
         "file": "src/tilefield/field.rs",
-        "line": 1074
+        "line": 1350
       },
       {
         "module": "tilefield",
         "name": "TileField::write_block_layer",
         "file": "src/tilefield/field.rs",
-        "line": 1113
+        "line": 1393
       },
       {
         "module": "tilefield",
         "name": "TileField::write_cost_layer",
         "file": "src/tilefield/field.rs",
-        "line": 1130
+        "line": 1410
       },
       {
         "module": "tilefield",
         "name": "TileField::write_ref_layer",
         "file": "src/tilefield/field.rs",
-        "line": 1147
+        "line": 1427
+      },
+      {
+        "module": "tilefield",
+        "name": "TileFieldLimits::checked_field_cells",
+        "file": "src/tilefield/limits.rs",
+        "line": 88
+      },
+      {
+        "module": "tilefield",
+        "name": "TileFieldLimits::checked_field_map_storage",
+        "file": "src/tilefield/limits.rs",
+        "line": 116
+      },
+      {
+        "module": "tilefield",
+        "name": "TileFieldLimits::validate_string",
+        "file": "src/tilefield/limits.rs",
+        "line": 165
       },
       {
         "module": "tilefield",
         "name": "line_between",
         "file": "src/tilefield/line.rs",
-        "line": 21
+        "line": 25
       },
       {
         "module": "tilefield",
         "name": "visit_line_cells",
         "file": "src/tilefield/line.rs",
-        "line": 44
+        "line": 48
       },
       {
         "module": "tilefield",
         "name": "TileSemanticsView::light_sources",
         "file": "src/tilefield/semantics.rs",
-        "line": 40
+        "line": 44
       },
       {
         "module": "tilefield",
         "name": "TileSemanticsView::footprint_passable",
         "file": "src/tilefield/semantics.rs",
-        "line": 45
+        "line": 49
       },
       {
         "module": "tilefield",
         "name": "TileTopology::range_distance",
         "file": "src/tilefield/topology.rs",
-        "line": 62
+        "line": 66
       },
       {
         "module": "tilelight",
@@ -46096,8 +46198,8 @@
     ]
   },
   "lua": {
-    "total": 7097,
-    "covered": 7097,
+    "total": 7100,
+    "covered": 7100,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -67039,6 +67141,13 @@
         "line": 1874
       },
       {
+        "module": "light",
+        "lua_name": "lurek.light.createLightsFromTilefield",
+        "kind": "function",
+        "file": "src/lua_api/light_api.rs",
+        "line": 1893
+      },
+      {
         "module": "log",
         "lua_name": "lurek.log.debug",
         "kind": "function",
@@ -78925,6 +79034,13 @@
         "line": 6229
       },
       {
+        "module": "physics",
+        "lua_name": "lurek.physics.createBodiesFromTilefield",
+        "kind": "function",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 6250
+      },
+      {
         "module": "pipeline",
         "lua_name": "LPipelineStep:getName",
         "kind": "method",
@@ -88589,693 +88705,700 @@
         "lua_name": "LTileField:getSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1422
+        "line": 1612
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1427
+        "line": 1617
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1437
+        "line": 1627
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setOccupant",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1449
+        "line": 1639
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearOccupant",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1463
+        "line": 1653
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getOccupant",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1480
+        "line": 1670
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setResource",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1494
+        "line": 1684
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getResource",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1511
+        "line": 1701
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setBuildable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1525
+        "line": 1715
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:isBuildable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1542
+        "line": 1732
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1556
+        "line": 1746
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionRect",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1584
+        "line": 1774
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1606
+        "line": 1796
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeRegion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1627
+        "line": 1817
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:regionContains",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1638
+        "line": 1828
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1650
+        "line": 1840
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionNames",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1661
+        "line": 1851
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1674
+        "line": 1864
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1694
+        "line": 1884
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionProperties",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1709
+        "line": 1899
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:regionsAt",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1730
+        "line": 1920
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clear",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1750
+        "line": 1940
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1760
+        "line": 1952
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1777
+        "line": 1969
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1795
+        "line": 1987
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1913
+        "line": 2105
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocks",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1932
+        "line": 2124
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1948
+        "line": 2140
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1967
+        "line": 2159
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1980
+        "line": 2172
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2005
+        "line": 2197
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategories",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2020
+        "line": 2212
+      },
+      {
+        "module": "tilefield",
+        "lua_name": "LTileField:removeCategory",
+        "kind": "method",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 2225
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2036
+        "line": 2239
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocksCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2054
+        "line": 2257
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2069
+        "line": 2272
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2087
+        "line": 2290
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2102
+        "line": 2305
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2120
+        "line": 2323
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2135
+        "line": 2338
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2158
+        "line": 2361
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:footprintPassable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2180
+        "line": 2383
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getVersion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2194
+        "line": 2397
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:beginEdit",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2200
+        "line": 2403
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getDirtyRects",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2209
+        "line": 2412
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:drainDirtyRects",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2218
+        "line": 2421
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:commitEdit",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2227
+        "line": 2430
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineBlockWorldSlots",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2235
+        "line": 2438
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:snapshot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2254
+        "line": 2457
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:restore",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2333
+        "line": 2581
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2490
+        "line": 2792
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2507
+        "line": 2809
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2519
+        "line": 2821
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2534
+        "line": 2836
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2546
+        "line": 2848
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2561
+        "line": 2863
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2573
+        "line": 2875
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2581
+        "line": 2886
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2588
+        "line": 2896
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2599
+        "line": 2907
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:hasSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2607
+        "line": 2918
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2618
+        "line": 2929
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2658
+        "line": 2969
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2679
+        "line": 2990
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2696
+        "line": 3007
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2714
+        "line": 3025
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifiers",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2731
+        "line": 3042
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObject",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2753
+        "line": 3064
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObjectLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2801
+        "line": 3112
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2862
+        "line": 3173
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyNumber",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2913
+        "line": 3224
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyBool",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2963
+        "line": 3274
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperties",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3012
+        "line": 3323
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3065
+        "line": 3376
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefSlots",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3082
+        "line": 3393
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:line",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3094
+        "line": 3405
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearLine",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3115
+        "line": 3426
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:firstBlocker",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3135
+        "line": 3446
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3164
+        "line": 3475
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3179
+        "line": 3490
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3194
+        "line": 3505
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3216
+        "line": 3527
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3237
+        "line": 3548
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3251
+        "line": 3562
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3270
+        "line": 3581
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3276
+        "line": 3587
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getMapSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3289
+        "line": 3600
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getFieldSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3298
+        "line": 3609
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3305
+        "line": 3616
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3315
+        "line": 3626
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3334
+        "line": 3645
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:setField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3354
+        "line": 3665
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3371
+        "line": 3682
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3377
+        "line": 3688
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.new",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3391
+        "line": 3704
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromProvider",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3417
+        "line": 3731
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.newFieldMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3431
+        "line": 3745
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromTileMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3477
+        "line": 3793
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.createPhysicsFromTileset",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3604
+        "line": 3928
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.createLightsFromTileset",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3669
+        "line": 3994
       },
       {
         "module": "tilelight",

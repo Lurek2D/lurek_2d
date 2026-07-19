@@ -21,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `27` functions, `26` types, `298` methods
+- Lua API surface: `28` functions, `26` types, `298` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -295,6 +295,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 ### Functions
 
 - `lurek.physics.attachShape(body, shape) -> nil`: Attaches a previously created shape to a body, using the shape's stored material properties.
+- `lurek.physics.createBodiesFromTilefield(field, slot, tileset, world, opts?) -> LBody[]`: Creates physics bodies from `lurek.tilefield` refs and tileset object metadata.
 - `lurek.physics.debugDraw(enable) -> nil`: Enables or disables automatic physics debug overlay rendering for the next frame.
 - `lurek.physics.destroyWorld(world) -> nil`: No-op placeholder for API parity. Worlds are freed when no longer referenced.
 - `lurek.physics.drawDebugGpu(world, config?) -> nil`: Queues a GPU-rendered physics debug visualization using the world's current body state.
@@ -1008,6 +1009,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Intentionally empty.
 
 ## Notes
+
+- `lurek.physics.createBodiesFromTilefield(field, slot, tileset, world, opts?)` is the canonical consumer-owned adapter for turning tilefield refs plus tileset `physics` metadata into bodies. `lurek.tilefield.createPhysicsFromTileset(...)` remains a compatibility alias during the migration window.
 
 - Material model:
   `lurek.physics.newMaterial({...})` is the reusable, validated material constructor. Body-default material assignment lives on `LBody:setMaterial(...)` / `LBody:getMaterial()`, while collider-specific overrides live on `LWorld:setFixtureMaterial(bodyId, fixtureIndex, ...)` / `LWorld:getFixtureMaterial(...)`. Existing direct setters such as `setFriction`, `setRestitution`, `setMass`, `setGravityScale`, `setLinearDamping`, `setAngularDamping`, `setBeamReflectivity`, and `setProjectileReflectivity` remain valid and keep the stored body-material snapshot in sync.

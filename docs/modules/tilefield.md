@@ -14,6 +14,11 @@ lurek.tilefield is the shared tile-based gameplay data owner for multi-level map
 - Built-in profiles include `empty`, `wall`, `window`, `door_closed`, `door_open`, and `half_wall`.
 - The `light` channel and `sunOcclusion` are environment inputs consumed by `lurek.tilelight`; `tilefield` does not store point lights or computed light values.
 - Cell refs such as `floor`, `wall_left`, `roof`, or `object` are author-defined slots. They are useful for mapping tile ids, object ids, or block slots onto the same gameplay field without forcing every system to own separate data.
+- Construction, provider import, field-map allocation, region expansion, snapshot export, and restore use `TileFieldLimits`. Products are checked as `u64` before conversion/allocation; Lua accepts a nested `limits` table with names such as `maxCells`, `maxFields`, `maxMapCells`, `maxLevels`, `maxRegions`, `maxRegionCells`, `maxDirtyRects`, `maxProviderRows`, `maxSnapshotEntries`, and `maxStringLength`.
+- Provider import and snapshot restore are transactional. A malformed shape, duplicate sparse record, non-finite number, invalid coordinate, or exceeded ceiling is rejected before a live field is replaced.
+- `version` starts at `1` and increments for successful data-definition and cell mutations. Dirty cells are coalesced into deterministic rectangles and bounded by `maxDirtyRects`; overflow emits a coarse full-level rectangle. `beginEdit` is nested and preserves pending dirty state; `commitEdit` drains only the outermost edit.
+- `clear` resets cells, regions, occupants, resources, and buildability but retains category, modifier, and slot definitions. Occupant `0` removes an occupant, missing buildability is `true`, and empty resource labels are absent. Removing a custom category, modifier, or slot clears dependent cell data.
+- Emitter records on cells/modifiers are authored environmental metadata for `tilelight`; computed light maps and runtime source lifecycle remain in `tilelight`.
 
 This module is mostly self-contained inside the Feature Systems group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
@@ -25,7 +30,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 
 ### `lurek.tilefield.createLightsFromTileset`
 
-Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+Compatibility alias: creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
 
 ```lua
 lurek.tilefield.createLightsFromTileset(field, slot, tileset, opts)
@@ -72,7 +77,7 @@ end
 
 ### `lurek.tilefield.createPhysicsFromTileset`
 
-Creates physics bodies from tilefield refs whose tileset objects define `physics`.
+Compatibility alias: creates physics bodies from tilefield refs whose tileset objects define `physics`.
 
 ```lua
 lurek.tilefield.createPhysicsFromTileset(field, slot, tileset, world, opts)
@@ -206,7 +211,7 @@ lurek.tilefield.new(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | table | `{width, height, levels?, topology?}`. |
+| `opts` | table | `{width, height, levels?, topology?, limits?}`; limits use `maxCells`, `maxLevels`, collection ceilings, and checked provider/snapshot bounds. |
 
 **Returns**
 
@@ -241,7 +246,7 @@ lurek.tilefield.newFieldMap(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | table | `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`. |
+| `opts` | table | `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?, limits?}`. |
 
 **Returns**
 
@@ -445,7 +450,7 @@ end
 
 #### `LTileField:beginEdit`
 
-Clears pending dirty rectangles before a grouped tilefield edit.
+Starts a nested grouped edit without discarding pending dirty rectangles.
 
 ```lua
 LTileField:beginEdit()
@@ -550,7 +555,7 @@ end
 
 #### `LTileField:clear`
 
-Clears all gameplay state, modifiers, and references in the field.
+Clears cells, regions, occupants, resources, buildability, and active cell data while retaining category, modifier, and slot definitions.
 
 ```lua
 LTileField:clear()
@@ -761,7 +766,7 @@ end
 
 #### `LTileField:commitEdit`
 
-Clears and returns dirty rectangles accumulated since `beginEdit`.
+Closes the outermost grouped edit and clears/returns its coalesced dirty rectangles.
 
 ```lua
 LTileField:commitEdit(chunkSize)
@@ -2415,6 +2420,43 @@ end
 
 ---
 
+#### `LTileField:removeCategory`
+
+Removes a custom category and clears dependent cell/modifier data.
+
+```lua
+LTileField:removeCategory(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Custom category name. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the category existed. |
+
+**Example**
+
+```lua
+do
+
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:defineCategory("hazard", { kind = "custom" })
+    field:setCategoryFilter(2, 2, 1, "hazard", { 1.0, 0.5, 0.25 })
+    local removed = field:removeCategory("hazard")
+    local category = field:getCategory("hazard")
+    local filter = field:getCategoryFilter(2, 2, 1, "hazard")
+    lurek.log.info("custom category removed=" .. tostring(removed) .. " category=" .. tostring(category) .. " filter=" .. filter[1])
+end
+```
+
+---
+
 #### `LTileField:removeModifier`
 
 Removes a named modifier and clears it from all cells.
@@ -2572,7 +2614,7 @@ end
 
 #### `LTileField:restore`
 
-Replaces this tilefield state from a snapshot returned by `snapshot`.
+Transactionally replaces this tilefield state from a snapshot returned by `snapshot`; failures preserve the original state.
 
 ```lua
 LTileField:restore(snapshot)

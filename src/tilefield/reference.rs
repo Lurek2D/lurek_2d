@@ -3,6 +3,10 @@
 //! Local helpers here translate compact engine data into explicit behavior for callers and Lua bindings.
 
 /// Typed reference stored in one tilefield slot.
+///
+/// # Fields
+///
+/// `tileset_id` is required; exactly one of `local_id` or `object_id` identifies the referenced tile or object.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TileRef {
     /// Stable tileset id from a tileset catalog.

@@ -79,6 +79,27 @@ describe("lurek.physics module", function()
         expect_type("userdata", lurek.physics.newBody(new_world(0, 0), 10, 20, "dynamic"))
     end)
 
+    -- @covers lurek.physics.createBodiesFromTilefield
+    it("owns the tilefield-to-physics conversion facade", function()
+        local tileset = lurek.tileset.fromProvider({
+            firstGid = 10,
+            tileCount = 2,
+            columns = 2,
+            tileWidth = 16,
+            tileHeight = 16,
+            objects = {
+                wall = { physics = { shape = "diamond", bodyType = "static" } },
+            },
+            tileObjects = { [2] = "wall" },
+        })
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        field:setRef(1, 1, 1, "tiles", 11)
+        local world = new_world(0, 0)
+        local bodies = lurek.physics.createBodiesFromTilefield(field, "tiles", tileset, world, { refIsGid = true })
+        expect_equal(1, #bodies)
+        expect_equal(1, world:getBodyCount())
+    end)
+
     -- @covers lurek.physics.newMaterial
     it("newMaterial validates and canonicalizes reusable material tables", function()
         local material = lurek.physics.newMaterial({

@@ -4,6 +4,18 @@
 -- lurek.light is the 2D render-light and occluder module. Tile-based gameplay
 -- lighting, sun occlusion, and light blockers live in lurek.tilefield.
 
+
+--@api: lurek.light.createLightsFromTilefield
+do
+
+    lurek.light.clear()
+    local tileset = lurek.tileset.fromProvider({ firstGid = 1, tileCount = 1, columns = 1, tileWidth = 16, tileHeight = 16, objects = { torch = { renderLight = { radius = 48, intensity = 1.0, color = { 1, 0.7, 0.3, 1 } }, occluder = { shape = "diamond" } } }, tileObjects = { [1] = "torch" } })
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "tiles", 1)
+    local spawned = lurek.light.createLightsFromTilefield(field, "tiles", tileset, { refIsGid = true })
+    lurek.log.info("consumer-owned tilefield lights=" .. #spawned.lights .. " occluders=" .. #spawned.occluders)
+end
+
 --- Light Module Part 1: module functions and LLight class
 
 

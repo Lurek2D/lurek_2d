@@ -10,8 +10,8 @@ use crate::lua_api::physics_api::{lua_body_from_body, LuaWorld};
 use crate::math::Vec2;
 use crate::physics::{Body, BodyType};
 use crate::tilefield::{
-    CellCoord, TileCategory, TileCategoryKind, TileChannel, TileField, TileFieldMap,
-    TileLightEmitter, TileModifier, TileRef, TileTopology,
+    CellCoord, TileCategory, TileCategoryKind, TileChannel, TileField, TileFieldLimits,
+    TileFieldMap, TileLightEmitter, TileModifier, TileRef, TileTopology,
 };
 use crate::tilemap::tilemap::TileMap;
 use crate::tileset::{
@@ -54,6 +54,154 @@ pub struct LuaTileFieldMap {
 
 fn lua_err(api: &str, err: impl std::fmt::Display) -> LuaError {
     LuaError::RuntimeError(format!("lurek.tilefield.{api}: {err}"))
+}
+
+fn optional_limit(
+    table: Option<&LuaTable>,
+    primary: &str,
+    alias: Option<&str>,
+    current: u64,
+    api: &str,
+) -> LuaResult<u64> {
+    let Some(table) = table else {
+        return Ok(current);
+    };
+    if let Some(value) = table
+        .get::<_, Option<u64>>(primary)
+        .map_err(|e| lua_err(api, e))?
+    {
+        return Ok(value);
+    }
+    if let Some(alias) = alias {
+        if let Some(value) = table
+            .get::<_, Option<u64>>(alias)
+            .map_err(|e| lua_err(api, e))?
+        {
+            return Ok(value);
+        }
+    }
+    Ok(current)
+}
+
+fn tilefield_limits_from_opts(opts: Option<&LuaTable>, api: &str) -> LuaResult<TileFieldLimits> {
+    let mut limits = TileFieldLimits::default();
+    let nested = match opts {
+        Some(table) => table
+            .get::<_, Option<LuaTable>>("limits")
+            .map_err(|e| lua_err(api, e))?,
+        None => None,
+    };
+    let table = nested.as_ref().or(opts);
+    limits.max_cells_per_field = optional_limit(
+        table,
+        "maxCellsPerField",
+        Some("maxCells"),
+        limits.max_cells_per_field,
+        api,
+    )?;
+    limits.max_fields_per_map = optional_limit(
+        table,
+        "maxFieldsPerMap",
+        Some("maxFields"),
+        limits.max_fields_per_map,
+        api,
+    )?;
+    limits.max_cells_per_field_map = optional_limit(
+        table,
+        "maxCellsPerFieldMap",
+        Some("maxMapCells"),
+        limits.max_cells_per_field_map,
+        api,
+    )?;
+    limits.max_levels = u32::try_from(optional_limit(
+        table,
+        "maxLevels",
+        None,
+        u64::from(limits.max_levels),
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxLevels exceeds u32"))?;
+    limits.max_categories = usize::try_from(optional_limit(
+        table,
+        "maxCategories",
+        None,
+        limits.max_categories as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxCategories does not fit usize"))?;
+    limits.max_modifiers = usize::try_from(optional_limit(
+        table,
+        "maxModifiers",
+        None,
+        limits.max_modifiers as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxModifiers does not fit usize"))?;
+    limits.max_slots = usize::try_from(optional_limit(
+        table,
+        "maxSlots",
+        None,
+        limits.max_slots as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxSlots does not fit usize"))?;
+    limits.max_regions = usize::try_from(optional_limit(
+        table,
+        "maxRegions",
+        None,
+        limits.max_regions as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxRegions does not fit usize"))?;
+    limits.max_cells_per_region = usize::try_from(optional_limit(
+        table,
+        "maxCellsPerRegion",
+        Some("maxRegionCells"),
+        limits.max_cells_per_region as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxCellsPerRegion does not fit usize"))?;
+    limits.max_refs_per_cell = usize::try_from(optional_limit(
+        table,
+        "maxRefsPerCell",
+        None,
+        limits.max_refs_per_cell as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxRefsPerCell does not fit usize"))?;
+    limits.max_dirty_rects = usize::try_from(optional_limit(
+        table,
+        "maxDirtyRects",
+        None,
+        limits.max_dirty_rects as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxDirtyRects does not fit usize"))?;
+    limits.max_snapshot_entries = usize::try_from(optional_limit(
+        table,
+        "maxSnapshotEntries",
+        None,
+        limits.max_snapshot_entries as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxSnapshotEntries does not fit usize"))?;
+    limits.max_provider_rows = optional_limit(
+        table,
+        "maxProviderRows",
+        None,
+        limits.max_provider_rows,
+        api,
+    )?;
+    limits.max_string_length = usize::try_from(optional_limit(
+        table,
+        "maxStringLength",
+        None,
+        limits.max_string_length as u64,
+        api,
+    )?)
+    .map_err(|_| lua_err(api, "maxStringLength does not fit usize"))?;
+    limits.validate().map_err(|e| lua_err(api, e))?;
+    Ok(limits)
 }
 
 fn one_based(value: u32, label: &str) -> LuaResult<u32> {
@@ -269,9 +417,7 @@ impl TileFieldLuaParser {
         if let Ok(transmission) = table.get::<_, LuaTable>("transmission") {
             for pair in transmission.pairs::<String, f32>() {
                 let (name, value) = pair.map_err(|e| lua_err(api, e))?;
-                modifier
-                    .category_transmission
-                    .insert(name, value.clamp(0.0, 1.0));
+                modifier.category_transmission.insert(name, value);
             }
         }
         if let Ok(filters) = table.get::<_, LuaTable>("filters") {
@@ -280,18 +426,9 @@ impl TileFieldLuaParser {
                 modifier.category_filters.insert(
                     name,
                     [
-                        value
-                            .get::<_, Option<f32>>(1)?
-                            .unwrap_or(1.0)
-                            .clamp(0.0, 1.0),
-                        value
-                            .get::<_, Option<f32>>(2)?
-                            .unwrap_or(1.0)
-                            .clamp(0.0, 1.0),
-                        value
-                            .get::<_, Option<f32>>(3)?
-                            .unwrap_or(1.0)
-                            .clamp(0.0, 1.0),
+                        value.get::<_, Option<f32>>(1)?.unwrap_or(1.0),
+                        value.get::<_, Option<f32>>(2)?.unwrap_or(1.0),
+                        value.get::<_, Option<f32>>(3)?.unwrap_or(1.0),
                     ],
                 );
             }
@@ -317,13 +454,11 @@ impl TileFieldLuaParser {
                 radius: light_tbl
                     .get::<_, Option<f32>>("radius")
                     .map_err(|e| lua_err(api, e))?
-                    .unwrap_or(1.0)
-                    .max(0.0),
+                    .unwrap_or(1.0),
                 intensity: light_tbl
                     .get::<_, Option<f32>>("intensity")
                     .map_err(|e| lua_err(api, e))?
-                    .unwrap_or(1.0)
-                    .max(0.0),
+                    .unwrap_or(1.0),
                 color,
             });
         }
@@ -378,13 +513,11 @@ impl TileFieldLuaParser {
             radius: table
                 .get::<_, Option<f32>>("radius")
                 .map_err(|e| lua_err(api, e))?
-                .unwrap_or(1.0)
-                .max(0.0),
+                .unwrap_or(1.0),
             intensity: table
                 .get::<_, Option<f32>>("intensity")
                 .map_err(|e| lua_err(api, e))?
-                .unwrap_or(1.0)
-                .max(0.0),
+                .unwrap_or(1.0),
             color,
         })
     }
@@ -529,6 +662,15 @@ impl TileFieldLuaParser {
     }
 
     fn field_from_provider(provider: LuaTable, api: &str) -> LuaResult<TileField> {
+        let limits = tilefield_limits_from_opts(Some(&provider), api)?;
+        Self::field_from_provider_with_limits(provider, limits, api)
+    }
+
+    fn field_from_provider_with_limits(
+        provider: LuaTable,
+        limits: TileFieldLimits,
+        api: &str,
+    ) -> LuaResult<TileField> {
         let width = Self::provider_u32(&provider, "width", api)?;
         let height = Self::provider_u32(&provider, "height", api)?;
         let levels = provider
@@ -537,10 +679,28 @@ impl TileFieldLuaParser {
             .unwrap_or(1);
         let topology_name = Self::provider_string(&provider, "topology", "square", api)?;
         let topology = TileTopology::parse(&topology_name).map_err(|e| lua_err(api, e))?;
-        let mut field =
-            TileField::new(width, height, levels, topology).map_err(|e| lua_err(api, e))?;
+        let provider_rows = u64::from(width)
+            .checked_mul(u64::from(height))
+            .and_then(|value| value.checked_mul(u64::from(levels)))
+            .ok_or_else(|| lua_err(api, "provider cell count overflow"))?;
+        if provider_rows > limits.max_provider_rows {
+            return Err(lua_err(
+                api,
+                format!(
+                    "provider cell count {provider_rows} exceeds limit {}",
+                    limits.max_provider_rows
+                ),
+            ));
+        }
+        let mut field = TileField::new_with_limits(width, height, levels, topology, limits)
+            .map_err(|e| lua_err(api, e))?;
         if let Ok(categories) = provider.get::<_, LuaTable>("categories") {
+            let mut count = 0usize;
             for pair in categories.pairs::<String, LuaTable>() {
+                count += 1;
+                if count > limits.max_categories {
+                    return Err(lua_err(api, "provider category limit exceeded"));
+                }
                 let (name, opts) = pair.map_err(|e| lua_err(api, e))?;
                 let kind = category_kind_from_opts(&opts, api)?;
                 let active = opts
@@ -555,14 +715,24 @@ impl TileFieldLuaParser {
             }
         }
         if let Ok(slots) = provider.get::<_, LuaTable>("slots") {
+            let mut count = 0usize;
             for slot in slots.sequence_values::<String>() {
+                count += 1;
+                if count > limits.max_slots {
+                    return Err(lua_err(api, "provider slot limit exceeded"));
+                }
                 field
                     .define_slot(slot.map_err(|e| lua_err(api, e))?)
                     .map_err(|e| lua_err(api, e))?;
             }
         }
         if let Ok(modifiers) = provider.get::<_, LuaTable>("modifiers") {
+            let mut count = 0usize;
             for pair in modifiers.pairs::<String, LuaTable>() {
+                count += 1;
+                if count > limits.max_modifiers {
+                    return Err(lua_err(api, "provider modifier limit exceeded"));
+                }
                 let (name, value) = pair.map_err(|e| lua_err(api, e))?;
                 let modifier = Self::modifier_from_table(name.clone(), value, api)?;
                 field
@@ -571,11 +741,19 @@ impl TileFieldLuaParser {
             }
         }
         if let Ok(regions) = provider.get::<_, LuaTable>("regions") {
+            let mut count = 0usize;
             for pair in regions.pairs::<String, LuaTable>() {
+                count += 1;
+                if count > limits.max_regions {
+                    return Err(lua_err(api, "provider region limit exceeded"));
+                }
                 let (name, region) = pair.map_err(|e| lua_err(api, e))?;
                 if let Ok(cells) = region.get::<_, LuaTable>("cells") {
                     let mut out = Vec::new();
                     for cell in cells.sequence_values::<LuaTable>() {
+                        if out.len() >= limits.max_cells_per_region {
+                            return Err(lua_err(api, "provider region cell limit exceeded"));
+                        }
                         out.push(coord_from_table(cell.map_err(|e| lua_err(api, e))?, api)?);
                     }
                     field
@@ -630,13 +808,25 @@ impl TileFieldLuaParser {
                         let value: LuaValue = get_cell
                             .call((provider.clone(), x + 1, y + 1, z + 1))
                             .map_err(|e| lua_err(api, e))?;
-                        if let LuaValue::Table(cell) = value {
-                            Self::apply_provider_cell(
-                                &mut field,
-                                CellCoord { x, y, z },
-                                cell,
-                                api,
-                            )?;
+                        match value {
+                            LuaValue::Nil => {}
+                            LuaValue::Table(cell) => {
+                                Self::apply_provider_cell(
+                                    &mut field,
+                                    CellCoord { x, y, z },
+                                    cell,
+                                    api,
+                                )?;
+                            }
+                            other => {
+                                return Err(lua_err(
+                                    api,
+                                    format!(
+                                        "provider.getCell must return table or nil, got {}",
+                                        other.type_name()
+                                    ),
+                                ));
+                            }
                         }
                     }
                 }
@@ -1746,10 +1936,12 @@ impl LuaUserData for LuaTileField {
         );
 
         // -- clear --
-        /// Clears all gameplay state, modifiers, and references in the field.
+        /// Clears cells, regions, occupants, resources, buildability, and active cell data while retaining category, modifier, and slot definitions.
         methods.add_method("clear", |_, this, ()| {
-            this.inner.borrow_mut().clear();
-            Ok(())
+            this.inner
+                .borrow_mut()
+                .try_clear()
+                .map_err(|e| lua_err("clear", e))
         });
 
         // -- clearCell --
@@ -2026,6 +2218,17 @@ impl LuaUserData for LuaTileField {
             Ok(table)
         });
 
+        // -- removeCategory --
+        /// Removes a custom category and clears dependent cell/modifier data.
+        /// @param | name | string | Custom category name.
+        /// @return | boolean | True when the category existed.
+        methods.add_method("removeCategory", |_, this, name: String| {
+            this.inner
+                .borrow_mut()
+                .remove_category(&name)
+                .map_err(|e| lua_err("removeCategory", e))
+        });
+
         // -- setCategoryBlock --
         /// Sets one category blocker on one cell.
         /// @param | x | integer | One-based cell column.
@@ -2196,7 +2399,7 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- beginEdit --
-        /// Clears pending dirty rectangles before a grouped tilefield edit.
+        /// Starts a nested grouped edit without discarding pending dirty rectangles.
         methods.add_method("beginEdit", |_, this, ()| {
             this.inner.borrow_mut().begin_edit();
             Ok(())
@@ -2221,7 +2424,7 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- commitEdit --
-        /// Clears and returns dirty rectangles accumulated since `beginEdit`.
+        /// Closes the outermost grouped edit and clears/returns its coalesced dirty rectangles.
         /// @param | chunkSize | integer? | Optional chunk size used to add cx/cy fields to each dirty rect.
         /// @return | table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
         methods.add_method("commitEdit", |lua, this, chunk_size: Option<u32>| {
@@ -2254,6 +2457,21 @@ impl LuaUserData for LuaTileField {
         methods.add_method("snapshot", |lua, this, ()| {
             let field = this.inner.borrow();
             let (width, height, levels) = field.size();
+            let limits = field.limits();
+            let dense_cells = u64::from(width)
+                .checked_mul(u64::from(height))
+                .and_then(|value| value.checked_mul(u64::from(levels)))
+                .ok_or_else(|| lua_err("snapshot", "field cell count overflow"))?;
+            let layer_entries = dense_cells
+                .checked_mul(TILEFIELD_CHANNELS.len() as u64)
+                .and_then(|value| value.checked_mul(2))
+                .ok_or_else(|| lua_err("snapshot", "snapshot entry count overflow"))?;
+            if layer_entries > limits.max_snapshot_entries as u64 {
+                return Err(lua_err(
+                    "snapshot",
+                    "snapshot entries exceed configured limit",
+                ));
+            }
             let snapshot = lua.create_table()?;
             snapshot.set("width", width)?;
             snapshot.set("height", height)?;
@@ -2302,7 +2520,17 @@ impl LuaUserData for LuaTileField {
             snapshot.set("refs", refs)?;
 
             let resources = lua.create_table()?;
+            let mut resource_entries = 0usize;
             for (index, (coord, resource)) in field.resource_cells().into_iter().enumerate() {
+                resource_entries = resource_entries
+                    .checked_add(1)
+                    .ok_or_else(|| lua_err("snapshot", "resource entry count overflow"))?;
+                if resource_entries > limits.max_snapshot_entries {
+                    return Err(lua_err(
+                        "snapshot",
+                        "resource entries exceed configured limit",
+                    ));
+                }
                 resources.set(
                     index + 1,
                     coord_value_table(lua, coord, "resource", resource)?,
@@ -2311,7 +2539,17 @@ impl LuaUserData for LuaTileField {
             snapshot.set("resources", resources)?;
 
             let buildable = lua.create_table()?;
+            let mut buildable_entries = 0usize;
             for (index, (coord, value)) in field.buildable_cells().into_iter().enumerate() {
+                buildable_entries = buildable_entries
+                    .checked_add(1)
+                    .ok_or_else(|| lua_err("snapshot", "buildable entry count overflow"))?;
+                if buildable_entries > limits.max_snapshot_entries {
+                    return Err(lua_err(
+                        "snapshot",
+                        "buildable entries exceed configured limit",
+                    ));
+                }
                 buildable.set(
                     index + 1,
                     coord_value_table(lua, coord, "buildable", value)?,
@@ -2320,7 +2558,17 @@ impl LuaUserData for LuaTileField {
             snapshot.set("buildable", buildable)?;
 
             let occupants = lua.create_table()?;
+            let mut occupant_entries = 0usize;
             for (index, (coord, value)) in field.occupant_cells().into_iter().enumerate() {
+                occupant_entries = occupant_entries
+                    .checked_add(1)
+                    .ok_or_else(|| lua_err("snapshot", "occupant entry count overflow"))?;
+                if occupant_entries > limits.max_snapshot_entries {
+                    return Err(lua_err(
+                        "snapshot",
+                        "occupant entries exceed configured limit",
+                    ));
+                }
                 occupants.set(index + 1, coord_value_table(lua, coord, "occupant", value)?)?;
             }
             snapshot.set("occupants", occupants)?;
@@ -2328,9 +2576,10 @@ impl LuaUserData for LuaTileField {
         });
 
         // -- restore --
-        /// Replaces this tilefield state from a snapshot returned by `snapshot`.
+        /// Transactionally replaces this tilefield state from a snapshot returned by `snapshot`; failures preserve the original state.
         /// @param | snapshot | table | Snapshot table.
         methods.add_method("restore", |_, this, snapshot: LuaTable| {
+            let limits = this.inner.borrow().limits();
             let width: u32 = snapshot.get("width").map_err(|e| lua_err("restore", e))?;
             let height: u32 = snapshot.get("height").map_err(|e| lua_err("restore", e))?;
             let levels: u32 = snapshot.get("levels").map_err(|e| lua_err("restore", e))?;
@@ -2339,14 +2588,33 @@ impl LuaUserData for LuaTileField {
                 .map_err(|e| lua_err("restore", e))?;
             let topology =
                 TileTopology::parse(&topology_name).map_err(|e| lua_err("restore", e))?;
-            let mut field = TileField::new(width, height, levels, topology)
+            let dense_cells = u64::from(width)
+                .checked_mul(u64::from(height))
+                .and_then(|value| value.checked_mul(u64::from(levels)))
+                .ok_or_else(|| lua_err("restore", "snapshot cell count overflow"))?;
+            if dense_cells > limits.max_snapshot_entries as u64 {
+                return Err(lua_err("restore", "snapshot dense entries exceed limit"));
+            }
+            let layer_cells = usize::try_from(u64::from(width) * u64::from(height))
+                .map_err(|_| lua_err("restore", "snapshot layer cell count is not addressable"))?;
+            if layer_cells > limits.max_snapshot_entries {
+                return Err(lua_err("restore", "snapshot layer entries exceed limit"));
+            }
+            let mut field = TileField::new_with_limits(width, height, levels, topology, limits)
                 .map_err(|e| lua_err("restore", e))?;
 
             if let Some(slots) = snapshot
                 .get::<_, Option<LuaTable>>("slots")
                 .map_err(|e| lua_err("restore", e))?
             {
+                let mut slot_entries = 0usize;
                 for slot in slots.sequence_values::<String>() {
+                    slot_entries = slot_entries
+                        .checked_add(1)
+                        .ok_or_else(|| lua_err("restore", "slot entry count overflow"))?;
+                    if slot_entries > limits.max_snapshot_entries {
+                        return Err(lua_err("restore", "slot entries exceed configured limit"));
+                    }
                     field
                         .define_slot(slot.map_err(|e| lua_err("restore", e))?)
                         .map_err(|e| lua_err("restore", e))?;
@@ -2367,8 +2635,7 @@ impl LuaUserData for LuaTileField {
                                 .get::<_, Option<LuaTable>>(z + 1)
                                 .map_err(|e| lua_err("restore", e))?
                             {
-                                let values =
-                                    read_bool_layer(values, (width * height) as usize, "restore")?;
+                                let values = read_bool_layer(values, layer_cells, "restore")?;
                                 field
                                     .write_block_layer(*channel, z, &values)
                                     .map_err(|e| lua_err("restore", e))?;
@@ -2392,11 +2659,7 @@ impl LuaUserData for LuaTileField {
                                 .get::<_, Option<LuaTable>>(z + 1)
                                 .map_err(|e| lua_err("restore", e))?
                             {
-                                let values = read_number_layer(
-                                    values,
-                                    (width * height) as usize,
-                                    "restore",
-                                )?;
+                                let values = read_number_layer(values, layer_cells, "restore")?;
                                 field
                                     .write_cost_layer(*channel, z, &values)
                                     .map_err(|e| lua_err("restore", e))?;
@@ -2420,11 +2683,8 @@ impl LuaUserData for LuaTileField {
                                 .get::<_, Option<LuaTable>>(z + 1)
                                 .map_err(|e| lua_err("restore", e))?
                             {
-                                let values = read_optional_u32_layer(
-                                    values,
-                                    (width * height) as usize,
-                                    "restore",
-                                )?;
+                                let values =
+                                    read_optional_u32_layer(values, layer_cells, "restore")?;
                                 field
                                     .write_ref_layer(&slot, z, &values)
                                     .map_err(|e| lua_err("restore", e))?;
@@ -2438,9 +2698,23 @@ impl LuaUserData for LuaTileField {
                 .get::<_, Option<LuaTable>>("resources")
                 .map_err(|e| lua_err("restore", e))?
             {
+                let mut seen = HashSet::new();
+                let mut resource_entries = 0usize;
                 for row in resources.sequence_values::<LuaTable>() {
+                    resource_entries = resource_entries
+                        .checked_add(1)
+                        .ok_or_else(|| lua_err("restore", "resource entry count overflow"))?;
+                    if resource_entries > limits.max_snapshot_entries {
+                        return Err(lua_err(
+                            "restore",
+                            "resource entries exceed configured limit",
+                        ));
+                    }
                     let row = row.map_err(|e| lua_err("restore", e))?;
                     let coord = coord_from_table(row.clone(), "restore")?;
+                    if !seen.insert(coord) {
+                        return Err(lua_err("restore", "duplicate resource record"));
+                    }
                     let resource: Option<String> =
                         row.get("resource").map_err(|e| lua_err("restore", e))?;
                     field
@@ -2453,9 +2727,23 @@ impl LuaUserData for LuaTileField {
                 .get::<_, Option<LuaTable>>("buildable")
                 .map_err(|e| lua_err("restore", e))?
             {
+                let mut seen = HashSet::new();
+                let mut buildable_entries = 0usize;
                 for row in buildable.sequence_values::<LuaTable>() {
+                    buildable_entries = buildable_entries
+                        .checked_add(1)
+                        .ok_or_else(|| lua_err("restore", "buildable entry count overflow"))?;
+                    if buildable_entries > limits.max_snapshot_entries {
+                        return Err(lua_err(
+                            "restore",
+                            "buildable entries exceed configured limit",
+                        ));
+                    }
                     let row = row.map_err(|e| lua_err("restore", e))?;
                     let coord = coord_from_table(row.clone(), "restore")?;
+                    if !seen.insert(coord) {
+                        return Err(lua_err("restore", "duplicate buildable record"));
+                    }
                     let value: bool = row.get("buildable").map_err(|e| lua_err("restore", e))?;
                     field
                         .set_buildable(coord, value)
@@ -2467,9 +2755,23 @@ impl LuaUserData for LuaTileField {
                 .get::<_, Option<LuaTable>>("occupants")
                 .map_err(|e| lua_err("restore", e))?
             {
+                let mut seen = HashSet::new();
+                let mut occupant_entries = 0usize;
                 for row in occupants.sequence_values::<LuaTable>() {
+                    occupant_entries = occupant_entries
+                        .checked_add(1)
+                        .ok_or_else(|| lua_err("restore", "occupant entry count overflow"))?;
+                    if occupant_entries > limits.max_snapshot_entries {
+                        return Err(lua_err(
+                            "restore",
+                            "occupant entries exceed configured limit",
+                        ));
+                    }
                     let row = row.map_err(|e| lua_err("restore", e))?;
                     let coord = coord_from_table(row.clone(), "restore")?;
+                    if !seen.insert(coord) {
+                        return Err(lua_err("restore", "duplicate occupant record"));
+                    }
                     let occupant: u64 = row.get("occupant").map_err(|e| lua_err("restore", e))?;
                     field
                         .set_occupant(coord, occupant)
@@ -2571,7 +2873,10 @@ impl LuaUserData for LuaTileField {
         /// @param | name | string | Profile name.
         /// @return | boolean | True when removed.
         methods.add_method("removeProfile", |_, this, name: String| {
-            Ok(this.inner.borrow_mut().remove_modifier(&name))
+            this.inner
+                .borrow_mut()
+                .try_remove_modifier(&name)
+                .map_err(|e| lua_err("removeProfile", e))
         });
 
         // -- removeModifier --
@@ -2579,7 +2884,10 @@ impl LuaUserData for LuaTileField {
         /// @param | name | string | Modifier name.
         /// @return | boolean | True when removed.
         methods.add_method("removeModifier", |_, this, name: String| {
-            Ok(this.inner.borrow_mut().remove_modifier(&name))
+            this.inner
+                .borrow_mut()
+                .try_remove_modifier(&name)
+                .map_err(|e| lua_err("removeModifier", e))
         });
 
         // -- defineSlot --
@@ -2597,7 +2905,10 @@ impl LuaUserData for LuaTileField {
         /// @param | slot | string | Slot name.
         /// @return | boolean | True when the slot existed.
         methods.add_method("removeSlot", |_, this, slot: String| {
-            Ok(this.inner.borrow_mut().remove_slot(&slot))
+            this.inner
+                .borrow_mut()
+                .try_remove_slot(&slot)
+                .map_err(|e| lua_err("removeSlot", e))
         });
 
         // -- hasSlot --
@@ -3384,9 +3695,11 @@ impl LuaUserData for LuaTileFieldMap {
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
+    // --- Public module functions ---
+
     // -- new --
     /// Creates a multi-level tilefield with explicit dimensions and topology.
-    /// @param | opts | table | `{width, height, levels?, topology?}`.
+    /// @param | opts | table | `{width, height, levels?, topology?, limits?}`; limits use `maxCells`, `maxLevels`, collection ceilings, and checked provider/snapshot bounds.
     /// @return | LTileField | New tilefield handle.
     tbl.set(
         "new",
@@ -3402,8 +3715,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 .map_err(|e| lua_err("new", e))?
                 .unwrap_or_else(|| "square".to_string());
             let topology = TileTopology::parse(&topology_name).map_err(|e| lua_err("new", e))?;
-            let field =
-                TileField::new(width, height, levels, topology).map_err(|e| lua_err("new", e))?;
+            let limits = tilefield_limits_from_opts(Some(&opts), "new")?;
+            let field = TileField::new_with_limits(width, height, levels, topology, limits)
+                .map_err(|e| lua_err("new", e))?;
             Ok(LuaTileField {
                 inner: Rc::new(RefCell::new(field)),
             })
@@ -3426,7 +3740,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     // -- newFieldMap --
     /// Creates a 2D or layered map of shared tilefields.
-    /// @param | opts | table | `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`.
+    /// @param | opts | table | `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?, limits?}`.
     /// @return | LTileFieldMap | New tilefield map handle.
     tbl.set(
         "newFieldMap",
@@ -3453,7 +3767,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 .unwrap_or_else(|| "square".to_string());
             let topology =
                 TileTopology::parse(&topology_name).map_err(|e| lua_err("newFieldMap", e))?;
-            let field_map = TileFieldMap::new(
+            let limits = tilefield_limits_from_opts(Some(&opts), "newFieldMap")?;
+            let field_map = TileFieldMap::new_with_limits(
                 width,
                 height,
                 layers,
@@ -3461,6 +3776,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 field_height,
                 field_levels,
                 topology,
+                limits,
             )
             .map_err(|e| lua_err("newFieldMap", e))?;
             Ok(LuaTileFieldMap {
@@ -3533,10 +3849,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             .unwrap_or_else(|| "square".to_string());
             let topology =
                 TileTopology::parse(&topology_name).map_err(|e| lua_err("fromTileMap", e))?;
+            let limits = tilefield_limits_from_opts(opts.as_ref(), "fromTileMap")?;
             let mut solid_gids = HashSet::new();
             if let Some(opts) = &opts {
                 if let Ok(tbl) = opts.get::<_, LuaTable>("solidGids") {
                     for gid in tbl.sequence_values::<u32>() {
+                        if solid_gids.len() >= limits.max_snapshot_entries {
+                            return Err(lua_err(
+                                "fromTileMap",
+                                "solidGids exceeds configured snapshot entry limit",
+                            ));
+                        }
                         solid_gids.insert(gid.map_err(|e| lua_err("fromTileMap", e))?);
                     }
                 }
@@ -3545,7 +3868,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let (width, height) = tm
                 .get_layer_dimensions(layer)
                 .ok_or_else(|| lua_err("fromTileMap", "tilemap layer does not exist"))?;
-            let mut field = TileField::new(width, height, levels, topology)
+            let mut field = TileField::new_with_limits(width, height, levels, topology, limits)
                 .map_err(|e| lua_err("fromTileMap", e))?;
             if let Some(slot) = ref_slot.as_ref() {
                 field
@@ -3594,7 +3917,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- createPhysicsFromTileset --
-    /// Creates physics bodies from tilefield refs whose tileset objects define `physics`.
+    /// Compatibility alias: creates physics bodies from tilefield refs whose tileset objects define `physics`.
+    /// Canonical ownership is moving to the `physics` integration surface; keep this alias for one migration window.
     /// @param | field | LTileField | Source field containing refs.
     /// @param | slot | string | Reference slot name.
     /// @param | tileset | LTileSet | Tileset with tile object metadata.
@@ -3660,7 +3984,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
 
     let light_state = state.clone();
     // -- createLightsFromTileset --
-    /// Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+    /// Compatibility alias: creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+    /// Canonical ownership is moving to the `light` integration surface; keep this alias for one migration window.
     /// @param | field | LTileField | Source field containing refs.
     /// @param | slot | string | Reference slot name.
     /// @param | tileset | LTileSet | Tileset with tile object metadata.

@@ -6236,6 +6236,36 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             },
         )?,
     )?;
+
+    // -- createBodiesFromTilefield --
+    /// Creates physics bodies from `lurek.tilefield` refs and tileset object metadata.
+    /// This consumer-owned facade is the canonical integration surface; the tilefield method remains a compatibility alias.
+    /// @param | field | LTileField | Source field containing refs.
+    /// @param | slot | string | Reference slot name.
+    /// @param | tileset | LTileSet | Tileset with tile object metadata.
+    /// @param | world | LWorld | Physics world that receives the bodies.
+    /// @param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+    /// @return | LBody[] | Created physics body handles in row-major order.
+    let lurek_key = lua.create_registry_value(luna.clone())?;
+    tbl.set(
+        "createBodiesFromTilefield",
+        lua.create_function(
+            move |lua,
+                  (field, slot, tileset, world, opts): (
+                LuaAnyUserData,
+                String,
+                LuaAnyUserData,
+                LuaAnyUserData,
+                Option<LuaTable>,
+            )| {
+                let root: LuaTable = lua.registry_value(&lurek_key)?;
+                let tilefield: LuaTable = root.get("tilefield")?;
+                let compatibility: LuaFunction = tilefield.get("createPhysicsFromTileset")?;
+                compatibility.call::<_, LuaTable>((field, slot, tileset, world, opts))
+            },
+        )?,
+    )?;
+
     luna.set("physics", tbl)?;
     Ok(())
 }

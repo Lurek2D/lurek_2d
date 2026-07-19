@@ -6,6 +6,7 @@ description: "Load this skill when running a coordinated audit and fix sweep acr
 
 ## Mission
 - Coordinate review skills, aggregate findings, and route fixes to the correct existing owner profile.
+- Include hostile-input bounds, cross-module ownership, file-level docs, and security evidence in the aggregate findings.
 
 ## When To Load
 - Running a coordinated audit and fix sweep across API, docs, examples, performance, quality, specs, and tests.
@@ -18,6 +19,7 @@ description: "Load this skill when running a coordinated audit and fix sweep acr
 - Run the listed RAG query and audit/report tools before broad manual inspection.
 - Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
 - Produce findings first with severity, affected files, and evidence.
+- Treat allocation/work ceilings and dirty-region propagation as first-class findings for stateful grid modules.
 - If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
 - Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
 

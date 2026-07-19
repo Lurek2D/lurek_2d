@@ -17616,6 +17616,14 @@ lurek.light.advanceFlickers = function(dt) end
 --- Removes all lights and occluders from the light world.
 lurek.light.clear = function() end
 
+--- Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.
+---@param field LTileField Source field containing refs.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset with tile object metadata.
+---@param opts? table `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+---@return table `{lights=Llight[], occluders=LOccluder[]}`.
+lurek.light.createLightsFromTilefield = function(field, slot, tileset, opts) end
+
 --- Renders an approximate light-map preview of this world into an ImageData.
 ---@param width number Image width.
 ---@param height number Image height.
@@ -26145,6 +26153,15 @@ function LZone:typeOf(name) end
 ---@param shape LPhysicsShape The shape to attach.
 lurek.physics.attachShape = function(body, shape) end
 
+--- Creates physics bodies from `lurek.tilefield` refs and tileset object metadata.
+---@param field LTileField Source field containing refs.
+---@param slot string Reference slot name.
+---@param tileset LTileSet Tileset with tile object metadata.
+---@param world LWorld Physics world that receives the bodies.
+---@param opts? table `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
+---@return LBody[] Created physics body handles in row-major order.
+lurek.physics.createBodiesFromTilefield = function(field, slot, tileset, world, opts) end
+
 --- Enables or disables automatic physics debug overlay rendering for the next frame.
 ---@param enable boolean True to show debug shapes.
 lurek.physics.debugDraw = function(enable) end
@@ -33407,7 +33424,7 @@ function LTileField:applyTilesetObject(x, y, z, slot, tileset, opts) end
 ---@return number Number of cells that received object defaults.
 function LTileField:applyTilesetObjectLayer(slot, tileset, opts) end
 
---- Clears pending dirty rectangles before a grouped tilefield edit.
+--- Starts a nested grouped edit without discarding pending dirty rectangles.
 function LTileField:beginEdit() end
 
 --- Returns whether a cell blocks a channel.
@@ -33426,7 +33443,7 @@ function LTileField:blocks(x, y, z, channel) end
 ---@return boolean True when the addressed cell blocks the selected category.
 function LTileField:blocksCategory(x, y, z, category) end
 
---- Clears all gameplay state, modifiers, and references in the field.
+--- Clears cells, regions, occupants, resources, buildability, and active cell data while retaining category, modifier, and slot definitions.
 function LTileField:clear() end
 
 --- Clears gameplay state for one addressed cell.
@@ -33465,7 +33482,7 @@ function LTileField:clearOccupant(x, y, z) end
 ---@param slot string Reference slot name.
 function LTileField:clearRef(x, y, z, slot) end
 
---- Clears and returns dirty rectangles accumulated since `beginEdit`.
+--- Closes the outermost grouped edit and clears/returns its coalesced dirty rectangles.
 ---@param chunkSize? number Optional chunk size used to add cx/cy fields to each dirty rect.
 ---@return table Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.
 function LTileField:commitEdit(chunkSize) end
@@ -33748,6 +33765,11 @@ function LTileField:regionContains(name, x, y, z) end
 ---@return table Array of region names in stable order.
 function LTileField:regionsAt(x, y, z) end
 
+--- Removes a custom category and clears dependent cell/modifier data.
+---@param name string Custom category name.
+---@return boolean True when the category existed.
+function LTileField:removeCategory(name) end
+
 --- Removes a named modifier and clears it from all cells.
 ---@param name string Modifier name.
 ---@return boolean True when removed.
@@ -33768,7 +33790,7 @@ function LTileField:removeRegion(name) end
 ---@return boolean True when the slot existed.
 function LTileField:removeSlot(slot) end
 
---- Replaces this tilefield state from a snapshot returned by `snapshot`.
+--- Transactionally replaces this tilefield state from a snapshot returned by `snapshot`; failures preserve the original state.
 ---@param snapshot table Snapshot table.
 function LTileField:restore(snapshot) end
 
@@ -33970,7 +33992,7 @@ function LTileFieldMap:type() end
 ---@return boolean True for `LTileFieldMap` or `LObject`.
 function LTileFieldMap:typeOf(name) end
 
---- Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
+--- Compatibility alias: creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.
 ---@param field LTileField Source field containing refs.
 ---@param slot string Reference slot name.
 ---@param tileset LTileSet Tileset with tile object metadata.
@@ -33978,7 +34000,7 @@ function LTileFieldMap:typeOf(name) end
 ---@return table `{lights=Llight[], occluders=LOccluder[]}`.
 lurek.tilefield.createLightsFromTileset = function(field, slot, tileset, opts) end
 
---- Creates physics bodies from tilefield refs whose tileset objects define `physics`.
+--- Compatibility alias: creates physics bodies from tilefield refs whose tileset objects define `physics`.
 ---@param field LTileField Source field containing refs.
 ---@param slot string Reference slot name.
 ---@param tileset LTileSet Tileset with tile object metadata.
@@ -33999,12 +34021,12 @@ lurek.tilefield.fromProvider = function(provider) end
 lurek.tilefield.fromTileMap = function(tilemap, opts) end
 
 --- Creates a multi-level tilefield with explicit dimensions and topology.
----@param opts table `{width, height, levels?, topology?}`.
+---@param opts table `{width, height, levels?, topology?, limits?}`; limits use `maxCells`, `maxLevels`, collection ceilings, and checked provider/snapshot bounds.
 ---@return LTileField New tilefield handle.
 lurek.tilefield.new = function(opts) end
 
 --- Creates a 2D or layered map of shared tilefields.
----@param opts table `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`.
+---@param opts table `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?, limits?}`.
 ---@return LTileFieldMap New tilefield map handle.
 lurek.tilefield.newFieldMap = function(opts) end
 

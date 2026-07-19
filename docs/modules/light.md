@@ -82,6 +82,45 @@ end
 
 ---
 
+### `lurek.light.createLightsFromTilefield`
+
+Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.
+
+```lua
+lurek.light.createLightsFromTilefield(field, slot, tileset, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `field` | [LTileField](tilefield.md#ltilefield) | Source field containing refs. |
+| `slot` | string | Reference slot name. |
+| `tileset` | [LTileSet](tileset.md#ltileset) | Tileset with tile object metadata. |
+| `opts?` | table | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | `{lights=Llight[], occluders=[LOccluder](#loccluder)[]}`. |
+
+**Example**
+
+```lua
+do
+
+    lurek.light.clear()
+    local tileset = lurek.tileset.fromProvider({ firstGid = 1, tileCount = 1, columns = 1, tileWidth = 16, tileHeight = 16, objects = { torch = { renderLight = { radius = 48, intensity = 1.0, color = { 1, 0.7, 0.3, 1 } }, occluder = { shape = "diamond" } } }, tileObjects = { [1] = "torch" } })
+    local field = lurek.tilefield.new({ width = 2, height = 2 })
+    field:setRef(1, 1, 1, "tiles", 1)
+    local spawned = lurek.light.createLightsFromTilefield(field, "tiles", tileset, { refIsGid = true })
+    lurek.log.info("consumer-owned tilefield lights=" .. #spawned.lights .. " occluders=" .. #spawned.occluders)
+end
+```
+
+---
+
 ### `lurek.light.drawToImage`
 
 Renders an approximate light-map preview of this world into an ImageData.

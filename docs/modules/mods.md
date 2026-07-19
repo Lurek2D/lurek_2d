@@ -351,7 +351,11 @@ do
     local reg = lurek.mods.newRegistry()
     reg:defineType("npc", { fields = { hp = { type = "integer", required = true } } })
     local schema = reg:getSchema("npc")
+    local missing = reg:getSchema("unknown")
+    local hp = schema and schema.fields and schema.fields.hp
+    local valid_shape = hp and hp.type == "integer" and hp.required == true
     lurek.log.info("schema fields=" .. tostring(schema.fields.hp.type) .. " required=" .. tostring(schema.fields.hp.required))
+    lurek.log.info("schema valid=" .. tostring(valid_shape) .. " missing=" .. tostring(missing == nil))
 end
 ```
 

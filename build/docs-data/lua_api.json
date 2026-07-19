@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-07-16T21:31:32.584400+00:00",
+    "generated": "2026-07-19T07:00:06.031314+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 7097,
+      "lua_functions": 7100,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 7097,
-      "documented": 6987,
+      "total_functions": 7100,
+      "documented": 6990,
       "coverage_pct": 98.5,
       "modules": 72
     },
@@ -68001,6 +68001,47 @@
             "return_description": "Rendered light map.",
             "line": 1874,
             "file": "src/lua_api/light_api.rs"
+          },
+          {
+            "name": "createLightsFromTilefield",
+            "lua_name": "lurek.light.createLightsFromTilefield",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.",
+            "full_doc": "Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.\nThis consumer-owned facade is the canonical integration surface; the tilefield method remains a compatibility alias.\n@param | field | LTileField | Source field containing refs.\n@param | slot | string | Reference slot name.\n@param | tileset | LTileSet | Tileset with tile object metadata.\n@param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.\n@return | table | `{lights=Llight[], occluders=LOccluder[]}`.",
+            "params_doc": "- `field` â€” `LTileField`: Source field containing refs.\n- `slot` â€” `string`: Reference slot name.\n- `tileset` â€” `LTileSet`: Tileset with tile object metadata.\n- `opts` â€” `table?`: `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
+            "returns_doc": "table",
+            "inferred_sig": "",
+            "typed_params": [
+              [
+                "field",
+                "LTileField",
+                false,
+                "Source field containing refs."
+              ],
+              [
+                "slot",
+                "string",
+                false,
+                "Reference slot name."
+              ],
+              [
+                "tileset",
+                "LTileSet",
+                false,
+                "Tileset with tile object metadata."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "`{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`."
+              ]
+            ],
+            "inferred_return": "table",
+            "return_description": "`{lights=Llight[], occluders=LOccluder[]}`.",
+            "line": 1893,
+            "file": "src/lua_api/light_api.rs"
           }
         ],
         "classes": {
@@ -104215,6 +104256,53 @@
             "inferred_return": "boolean",
             "return_description": "True if circle and AABB overlap.",
             "line": 6229,
+            "file": "src/lua_api/physics_api.rs"
+          },
+          {
+            "name": "createBodiesFromTilefield",
+            "lua_name": "lurek.physics.createBodiesFromTilefield",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Creates physics bodies from `lurek.tilefield` refs and tileset object metadata.",
+            "full_doc": "Creates physics bodies from `lurek.tilefield` refs and tileset object metadata.\nThis consumer-owned facade is the canonical integration surface; the tilefield method remains a compatibility alias.\n@param | field | LTileField | Source field containing refs.\n@param | slot | string | Reference slot name.\n@param | tileset | LTileSet | Tileset with tile object metadata.\n@param | world | LWorld | Physics world that receives the bodies.\n@param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.\n@return | LBody[] | Created physics body handles in row-major order.",
+            "params_doc": "- `field` â€” `LTileField`: Source field containing refs.\n- `slot` â€” `string`: Reference slot name.\n- `tileset` â€” `LTileSet`: Tileset with tile object metadata.\n- `world` â€” `LWorld`: Physics world that receives the bodies.\n- `opts` â€” `table?`: `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
+            "returns_doc": "LBody[]",
+            "inferred_sig": "",
+            "typed_params": [
+              [
+                "field",
+                "LTileField",
+                false,
+                "Source field containing refs."
+              ],
+              [
+                "slot",
+                "string",
+                false,
+                "Reference slot name."
+              ],
+              [
+                "tileset",
+                "LTileSet",
+                false,
+                "Tileset with tile object metadata."
+              ],
+              [
+                "world",
+                "LWorld",
+                false,
+                "Physics world that receives the bodies."
+              ],
+              [
+                "opts",
+                "table?",
+                true,
+                "`{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`."
+              ]
+            ],
+            "inferred_return": "LBody[]",
+            "return_description": "Created physics body handles in row-major order.",
+            "line": 6250,
             "file": "src/lua_api/physics_api.rs"
           }
         ],
@@ -148314,8 +148402,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a multi-level tilefield with explicit dimensions and topology.",
-            "full_doc": "Creates a multi-level tilefield with explicit dimensions and topology.\n@param | opts | table | `{width, height, levels?, topology?}`.\n@return | LTileField | New tilefield handle.",
-            "params_doc": "- `opts` â€” `table`: `{width, height, levels?, topology?}`.",
+            "full_doc": "Creates a multi-level tilefield with explicit dimensions and topology.\n@param | opts | table | `{width, height, levels?, topology?, limits?}`; limits use `maxCells`, `maxLevels`, collection ceilings, and checked provider/snapshot bounds.\n@return | LTileField | New tilefield handle.",
+            "params_doc": "- `opts` â€” `table`: `{width, height, levels?, topology?, limits?}`; limits use `maxCells`, `maxLevels`, collection ceilings, and checked provider/snapshot bounds.",
             "returns_doc": "LTileField",
             "inferred_sig": "(opts)",
             "typed_params": [
@@ -148323,12 +148411,12 @@
                 "opts",
                 "table",
                 false,
-                "`{width, height, levels?, topology?}`."
+                "`{width, height, levels?, topology?, limits?}`; limits use `maxCells`, `maxLevels`, collection ceilings, and checked provider/snapshot bounds."
               ]
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield handle.",
-            "line": 3391,
+            "line": 3704,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148351,7 +148439,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield copied from the provider.",
-            "line": 3417,
+            "line": 3731,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148360,8 +148448,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Creates a 2D or layered map of shared tilefields.",
-            "full_doc": "Creates a 2D or layered map of shared tilefields.\n@param | opts | table | `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`.\n@return | LTileFieldMap | New tilefield map handle.",
-            "params_doc": "- `opts` â€” `table`: `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`.",
+            "full_doc": "Creates a 2D or layered map of shared tilefields.\n@param | opts | table | `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?, limits?}`.\n@return | LTileFieldMap | New tilefield map handle.",
+            "params_doc": "- `opts` â€” `table`: `{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?, limits?}`.",
             "returns_doc": "LTileFieldMap",
             "inferred_sig": "(opts)",
             "typed_params": [
@@ -148369,12 +148457,12 @@
                 "opts",
                 "table",
                 false,
-                "`{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?}`."
+                "`{width, height, layers?, fieldWidth, fieldHeight, fieldLevels?, topology?, limits?}`."
               ]
             ],
             "inferred_return": "LTileFieldMap",
             "return_description": "New tilefield map handle.",
-            "line": 3431,
+            "line": 3745,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148403,7 +148491,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield copied from the tilemap layer.",
-            "line": 3477,
+            "line": 3793,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148411,8 +148499,8 @@
             "lua_name": "lurek.tilefield.createPhysicsFromTileset",
             "kind": "function",
             "owner_type": "",
-            "description": "Creates physics bodies from tilefield refs whose tileset objects define `physics`.",
-            "full_doc": "Creates physics bodies from tilefield refs whose tileset objects define `physics`.\n@param | field | LTileField | Source field containing refs.\n@param | slot | string | Reference slot name.\n@param | tileset | LTileSet | Tileset with tile object metadata.\n@param | world | LWorld | Physics world that receives the bodies.\n@param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.\n@return | LBody[] | Created physics body handles in row-major order.",
+            "description": "Compatibility alias: creates physics bodies from tilefield refs whose tileset objects define `physics`.",
+            "full_doc": "Compatibility alias: creates physics bodies from tilefield refs whose tileset objects define `physics`.\nCanonical ownership is moving to the `physics` integration surface; keep this alias for one migration window.\n@param | field | LTileField | Source field containing refs.\n@param | slot | string | Reference slot name.\n@param | tileset | LTileSet | Tileset with tile object metadata.\n@param | world | LWorld | Physics world that receives the bodies.\n@param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.\n@return | LBody[] | Created physics body handles in row-major order.",
             "params_doc": "- `field` â€” `LTileField`: Source field containing refs.\n- `slot` â€” `string`: Reference slot name.\n- `tileset` â€” `LTileSet`: Tileset with tile object metadata.\n- `world` â€” `LWorld`: Physics world that receives the bodies.\n- `opts` â€” `table?`: `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
             "returns_doc": "LBody[]",
             "inferred_sig": "",
@@ -148450,7 +148538,7 @@
             ],
             "inferred_return": "LBody[]",
             "return_description": "Created physics body handles in row-major order.",
-            "line": 3604,
+            "line": 3928,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148458,8 +148546,8 @@
             "lua_name": "lurek.tilefield.createLightsFromTileset",
             "kind": "function",
             "owner_type": "",
-            "description": "Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.",
-            "full_doc": "Creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.\n@param | field | LTileField | Source field containing refs.\n@param | slot | string | Reference slot name.\n@param | tileset | LTileSet | Tileset with tile object metadata.\n@param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.\n@return | table | `{lights=Llight[], occluders=LOccluder[]}`.",
+            "description": "Compatibility alias: creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.",
+            "full_doc": "Compatibility alias: creates normal render lights and occluders from tilefield refs whose tileset objects define `renderLight` or `occluder`.\nCanonical ownership is moving to the `light` integration surface; keep this alias for one migration window.\n@param | field | LTileField | Source field containing refs.\n@param | slot | string | Reference slot name.\n@param | tileset | LTileSet | Tileset with tile object metadata.\n@param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.\n@return | table | `{lights=Llight[], occluders=LOccluder[]}`.",
             "params_doc": "- `field` â€” `LTileField`: Source field containing refs.\n- `slot` â€” `string`: Reference slot name.\n- `tileset` â€” `LTileSet`: Tileset with tile object metadata.\n- `opts` â€” `table?`: `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.",
             "returns_doc": "table",
             "inferred_sig": "",
@@ -148491,7 +148579,7 @@
             ],
             "inferred_return": "table",
             "return_description": "`{lights=Llight[], occluders=LOccluder[]}`.",
-            "line": 3669,
+            "line": 3994,
             "file": "src/lua_api/tilefield_api.rs"
           }
         ],
@@ -148513,7 +148601,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Field width in cells.",
-                "line": 1422,
+                "line": 1612,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148529,7 +148617,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`square`, `square4`, `square8`, `iso_square`, or `hex`.",
-                "line": 1427,
+                "line": 1617,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148564,7 +148652,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when coordinates are in bounds.",
-                "line": 1437,
+                "line": 1627,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148605,7 +148693,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1449,
+                "line": 1639,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148640,7 +148728,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an occupant was removed.",
-                "line": 1463,
+                "line": 1653,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148675,7 +148763,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Occupant id, or nil.",
-                "line": 1480,
+                "line": 1670,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148716,7 +148804,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1494,
+                "line": 1684,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148751,7 +148839,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Resource label, or nil.",
-                "line": 1511,
+                "line": 1701,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148792,7 +148880,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1525,
+                "line": 1715,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148827,7 +148915,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when build placement is allowed.",
-                "line": 1542,
+                "line": 1732,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148862,7 +148950,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of one-based coordinate tables.",
-                "line": 1556,
+                "line": 1746,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148915,7 +149003,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1584,
+                "line": 1774,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148944,7 +149032,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1606,
+                "line": 1796,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148967,7 +149055,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region existed.",
-                "line": 1627,
+                "line": 1817,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149008,7 +149096,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region contains the cell.",
-                "line": 1638,
+                "line": 1828,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149031,7 +149119,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{ x, y, z }` cells.",
-                "line": 1650,
+                "line": 1840,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149047,7 +149135,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of region names.",
-                "line": 1661,
+                "line": 1851,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149082,7 +149170,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1674,
+                "line": 1864,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149111,7 +149199,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Stored property value, or nil.",
-                "line": 1694,
+                "line": 1884,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149134,7 +149222,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Key-value table of string properties, or nil.",
-                "line": 1709,
+                "line": 1899,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149169,7 +149257,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of region names in stable order.",
-                "line": 1730,
+                "line": 1920,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149177,15 +149265,15 @@
                 "lua_name": "LTileField:clear",
                 "kind": "method",
                 "owner_type": "LTileField",
-                "description": "Clears all gameplay state, modifiers, and references in the field.",
-                "full_doc": "Clears all gameplay state, modifiers, and references in the field.",
+                "description": "Clears cells, regions, occupants, resources, buildability, and active cell data while retaining category, modifier, and slot definitions.",
+                "full_doc": "Clears cells, regions, occupants, resources, buildability, and active cell data while retaining category, modifier, and slot definitions.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1750,
+                "line": 1940,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149220,7 +149308,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1760,
+                "line": 1952,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149255,7 +149343,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Cell state table.",
-                "line": 1777,
+                "line": 1969,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149296,7 +149384,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1795,
+                "line": 1987,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149343,7 +149431,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1913,
+                "line": 2105,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149384,7 +149472,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the addressed cell blocks the channel.",
-                "line": 1932,
+                "line": 2124,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149431,7 +149519,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1948,
+                "line": 2140,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149472,7 +149560,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Movement or traversal cost value.",
-                "line": 1967,
+                "line": 2159,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149501,7 +149589,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1980,
+                "line": 2172,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149524,7 +149612,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Category table with name, kind, and active.",
-                "line": 2005,
+                "line": 2197,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149540,7 +149628,30 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Sorted category names.",
-                "line": 2020,
+                "line": 2212,
+                "file": "src/lua_api/tilefield_api.rs"
+              },
+              {
+                "name": "removeCategory",
+                "lua_name": "LTileField:removeCategory",
+                "kind": "method",
+                "owner_type": "LTileField",
+                "description": "Removes a custom category and clears dependent cell/modifier data.",
+                "full_doc": "Removes a custom category and clears dependent cell/modifier data.\n@param | name | string | Custom category name.\n@return | boolean | True when the category existed.",
+                "params_doc": "- `name` â€” `string`: Custom category name.",
+                "returns_doc": "boolean",
+                "inferred_sig": "(name)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false,
+                    "Custom category name."
+                  ]
+                ],
+                "inferred_return": "boolean",
+                "return_description": "True when the category existed.",
+                "line": 2225,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149587,7 +149698,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2036,
+                "line": 2239,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149628,7 +149739,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the addressed cell blocks the selected category.",
-                "line": 2054,
+                "line": 2257,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149675,7 +149786,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2069,
+                "line": 2272,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149716,7 +149827,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Effective movement cost for that category on the addressed cell.",
-                "line": 2087,
+                "line": 2290,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149763,7 +149874,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2102,
+                "line": 2305,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149804,7 +149915,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Effective transmission multiplier for that category on the addressed cell.",
-                "line": 2120,
+                "line": 2323,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149851,7 +149962,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2135,
+                "line": 2338,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149892,7 +150003,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "RGB multiplier table for that category on the addressed cell.",
-                "line": 2158,
+                "line": 2361,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149945,7 +150056,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the footprint can be placed at the addressed anchor cell.",
-                "line": 2180,
+                "line": 2383,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149961,7 +150072,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Monotonic field version incremented by data mutations.",
-                "line": 2194,
+                "line": 2397,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149969,15 +150080,15 @@
                 "lua_name": "LTileField:beginEdit",
                 "kind": "method",
                 "owner_type": "LTileField",
-                "description": "Clears pending dirty rectangles before a grouped tilefield edit.",
-                "full_doc": "Clears pending dirty rectangles before a grouped tilefield edit.",
+                "description": "Starts a nested grouped edit without discarding pending dirty rectangles.",
+                "full_doc": "Starts a nested grouped edit without discarding pending dirty rectangles.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2200,
+                "line": 2403,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150000,7 +150111,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
-                "line": 2209,
+                "line": 2412,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150023,7 +150134,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
-                "line": 2218,
+                "line": 2421,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150031,8 +150142,8 @@
                 "lua_name": "LTileField:commitEdit",
                 "kind": "method",
                 "owner_type": "LTileField",
-                "description": "Clears and returns dirty rectangles accumulated since `beginEdit`.",
-                "full_doc": "Clears and returns dirty rectangles accumulated since `beginEdit`.\n@param | chunkSize | integer? | Optional chunk size used to add cx/cy fields to each dirty rect.\n@return | table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
+                "description": "Closes the outermost grouped edit and clears/returns its coalesced dirty rectangles.",
+                "full_doc": "Closes the outermost grouped edit and clears/returns its coalesced dirty rectangles.\n@param | chunkSize | integer? | Optional chunk size used to add cx/cy fields to each dirty rect.\n@return | table | Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
                 "params_doc": "- `chunkSize` â€” `integer?`: Optional chunk size used to add cx/cy fields to each dirty rect.",
                 "returns_doc": "table",
                 "inferred_sig": "([chunk_size])",
@@ -150046,7 +150157,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
-                "line": 2227,
+                "line": 2430,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150062,7 +150173,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Slot names: foreground, wall, platform, ore, furniture, liquid, spawn, biome.",
-                "line": 2235,
+                "line": 2438,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150078,7 +150189,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table suitable for `restore`.",
-                "line": 2254,
+                "line": 2457,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150086,8 +150197,8 @@
                 "lua_name": "LTileField:restore",
                 "kind": "method",
                 "owner_type": "LTileField",
-                "description": "Replaces this tilefield state from a snapshot returned by `snapshot`.",
-                "full_doc": "Replaces this tilefield state from a snapshot returned by `snapshot`.\n@param | snapshot | table | Snapshot table.",
+                "description": "Transactionally replaces this tilefield state from a snapshot returned by `snapshot`; failures preserve the original state.",
+                "full_doc": "Transactionally replaces this tilefield state from a snapshot returned by `snapshot`; failures preserve the original state.\n@param | snapshot | table | Snapshot table.",
                 "params_doc": "- `snapshot` â€” `table`: Snapshot table.",
                 "returns_doc": "",
                 "inferred_sig": "(snapshot)",
@@ -150101,7 +150212,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2333,
+                "line": 2581,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150142,7 +150253,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2490,
+                "line": 2792,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150177,7 +150288,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Top-light occlusion value in the inclusive range 0..1.",
-                "line": 2507,
+                "line": 2809,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150206,7 +150317,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2519,
+                "line": 2821,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150229,7 +150340,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Modifier table.",
-                "line": 2534,
+                "line": 2836,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150258,7 +150369,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2546,
+                "line": 2848,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150281,7 +150392,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Profile table.",
-                "line": 2561,
+                "line": 2863,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150304,7 +150415,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when removed.",
-                "line": 2573,
+                "line": 2875,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150327,7 +150438,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when removed.",
-                "line": 2581,
+                "line": 2886,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150350,7 +150461,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2588,
+                "line": 2896,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150373,7 +150484,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the slot existed.",
-                "line": 2599,
+                "line": 2907,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150396,7 +150507,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when declared.",
-                "line": 2607,
+                "line": 2918,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150443,7 +150554,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2618,
+                "line": 2929,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150484,7 +150595,7 @@
                 ],
                 "inferred_return": "integer|table|nil",
                 "return_description": "Stored legacy id, typed ref table, or nil when unset.",
-                "line": 2658,
+                "line": 2969,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150525,7 +150636,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2679,
+                "line": 2990,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150566,7 +150677,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2696,
+                "line": 3007,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150607,7 +150718,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the cell had the modifier.",
-                "line": 2714,
+                "line": 3025,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150642,7 +150753,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Active modifier names.",
-                "line": 2731,
+                "line": 3042,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150695,7 +150806,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the tileset object was found and applied.",
-                "line": 2753,
+                "line": 3064,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150730,7 +150841,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of cells that received object defaults.",
-                "line": 2801,
+                "line": 3112,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150789,7 +150900,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Property value, or nil when missing.",
-                "line": 2862,
+                "line": 3173,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150848,7 +150959,7 @@
                 ],
                 "inferred_return": "number|nil",
                 "return_description": "Numeric property value, or nil when missing/not numeric.",
-                "line": 2913,
+                "line": 3224,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150907,7 +151018,7 @@
                 ],
                 "inferred_return": "boolean|nil",
                 "return_description": "Boolean property value, or nil when missing/not boolean.",
-                "line": 2963,
+                "line": 3274,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150960,7 +151071,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Property name/value table, or nil when the ref is missing/outside the tileset.",
-                "line": 3012,
+                "line": 3323,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151001,7 +151112,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3065,
+                "line": 3376,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151017,7 +151128,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Ref slot names.",
-                "line": 3082,
+                "line": 3393,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151040,7 +151151,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3094,
+                "line": 3405,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151081,7 +151192,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when no blocker exists between the two cells.",
-                "line": 3115,
+                "line": 3426,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151122,7 +151233,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "First blocking cell table, or nil when the line is clear.",
-                "line": 3135,
+                "line": 3446,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151151,7 +151262,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Row-major boolean array for the requested channel and level.",
-                "line": 3164,
+                "line": 3475,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151180,7 +151291,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Row-major number array for the requested channel and level.",
-                "line": 3179,
+                "line": 3490,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151215,7 +151326,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3194,
+                "line": 3505,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151250,7 +151361,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3216,
+                "line": 3527,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151279,7 +151390,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3237,
+                "line": 3548,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151314,7 +151425,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3251,
+                "line": 3562,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151330,7 +151441,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LTileField`.",
-                "line": 3270,
+                "line": 3581,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151353,7 +151464,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileField` or `LObject`.",
-                "line": 3276,
+                "line": 3587,
                 "file": "src/lua_api/tilefield_api.rs"
               }
             ]
@@ -151375,7 +151486,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Field-map width in field slots.",
-                "line": 3289,
+                "line": 3600,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151391,7 +151502,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Contained field width in cells.",
-                "line": 3298,
+                "line": 3609,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151407,7 +151518,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`square`, `square4`, `square8`, `iso_square`, or `hex`.",
-                "line": 3305,
+                "line": 3616,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151442,7 +151553,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when coordinates are in bounds.",
-                "line": 3315,
+                "line": 3626,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151477,7 +151588,7 @@
                 ],
                 "inferred_return": "LTileField",
                 "return_description": "Shared tilefield handle.",
-                "line": 3334,
+                "line": 3645,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151518,7 +151629,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3354,
+                "line": 3665,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151534,7 +151645,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LTileFieldMap`.",
-                "line": 3371,
+                "line": 3682,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151557,7 +151668,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileFieldMap` or `LObject`.",
-                "line": 3377,
+                "line": 3688,
                 "file": "src/lua_api/tilefield_api.rs"
               }
             ]

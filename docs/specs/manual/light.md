@@ -25,6 +25,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 ## Notes
 
 - `lurek.light` is the 2D render-light and occluder module: point/spot/directional scene lights, render occluders, shadow masks, and visual light-world state.
+- `lurek.light.createLightsFromTilefield(field, slot, tileset, opts?)` is the canonical consumer-owned adapter for turning tilefield refs plus tileset `renderLight`/`occluder` metadata into render objects. `lurek.tilefield.createLightsFromTileset(...)` remains a compatibility alias during the migration window.
 - Custom light shaders are render-time contribution shaders. `LLight:setShader(shader)` and `lurek.light.setShader(shader)` accept only `target = "light"` WGSL and can modify falloff, rim/highlight, color grading, normal-map influence, ambient blending, and shadow response. Shadow casting geometry, occluder masks, and tile lighting remain engine-owned.
 - Normal-map data reaches custom light shaders as a compact contribution hint derived from `setNormalMap`, `setNormalStrength`, and light direction. The hint is zero when no normal map is configured.
 - `lurek.tilefield` owns the tile data consumed by tile lighting: per-tile `"light"` blockers, transmission costs, and multilevel sun occlusion.

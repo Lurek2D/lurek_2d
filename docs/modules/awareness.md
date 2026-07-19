@@ -355,10 +355,11 @@ LAwarenessGrid:getState(player_id, region_id)
 ```lua
 do
     local vg = lurek.awareness.new({ regions = 300, players = 4 })
-    vg:reveal(1, 42, 2)
-    local player_state = vg:getState(1, 42)
-    local other_state = vg:getState(0, 42)
-    local fog = vg:getFogIntensity(1, 42)
+    local player_id, region_id = 1, 42
+    vg:reveal(player_id, region_id, 2)
+    local player_state = vg:getState(player_id, region_id)
+    local other_state = vg:getState(0, region_id)
+    local fog = vg:getFogIntensity(player_id, region_id)
     lurek.log.info("scout player state at region 42 = " .. player_state)
     lurek.log.info("other player sees " .. other_state .. " with fog=" .. fog)
 end

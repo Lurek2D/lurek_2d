@@ -1213,6 +1213,11 @@ fn lua_security_save_security() {
 }
 
 #[test]
+fn lua_security_tilefield_security() {
+    run_lua_test("security/test_tilefield_security.lua");
+}
+
+#[test]
 fn lua_stress_ai_stress() {
     run_lua_test("stress/test_ai_stress.lua");
 }

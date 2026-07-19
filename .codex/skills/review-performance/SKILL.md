@@ -6,6 +6,7 @@ description: "Load this skill when auditing performance regressions, baselines, 
 
 ## Mission
 - Audit performance data, identify regressions, and route or apply fixes with validation evidence.
+- Require module-specific allocation/work ceilings and evidence that downstream consumers can process dirty updates proportionally.
 
 ## When To Load
 - Auditing performance regressions, baselines, and stress/perf reports before deciding fixes.
@@ -24,6 +25,7 @@ description: "Load this skill when auditing performance regressions, baselines, 
 ## Workflow
 - Collect baseline data with the perf gate or stress report before inspecting code broadly.
 - Record scenario, threshold, environment, and suspect module.
+- Record dense/sparse storage bounds, export/restore ceilings, dirty-region behavior, and downstream recomputation scope for grid modules.
 - If running as read-only reviewer, provide findings and owner handoff.
 - If edit-capable and fix scope is clear, fix the bottleneck or stress setup and rerun the same report.
 - Store temporary reports under `work/<short-chat-name>/`.

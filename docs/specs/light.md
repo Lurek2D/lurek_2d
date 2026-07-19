@@ -13,7 +13,7 @@
 - Source path: `src/light`
 - Binding: `src/lua_api/light_api.rs`
 - Namespace: `lurek.light`
-- Lua API surface: `22` functions, `4` types, `81` methods
+- Lua API surface: `23` functions, `4` types, `81` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -143,6 +143,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 
 - `lurek.light.advanceFlickers(dt) -> nil`: Advances flicker animation for all indexed flickering lights.
 - `lurek.light.clear() -> nil`: Removes all lights and occluders from the light world.
+- `lurek.light.createLightsFromTilefield(field, slot, tileset, opts?) -> table`: Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.
 - `lurek.light.drawToImage(width, height) -> LImageData`: Renders an approximate light-map preview of this world into an ImageData.
 - `lurek.light.getAmbient() -> number`: Returns global ambient light color.
 - `lurek.light.getGodRayHints() -> table`: Returns directional light hints for god-ray style effects.
@@ -320,6 +321,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 ## Notes
 
 - `lurek.light` is the 2D render-light and occluder module: point/spot/directional scene lights, render occluders, shadow masks, and visual light-world state.
+- `lurek.light.createLightsFromTilefield(field, slot, tileset, opts?)` is the canonical consumer-owned adapter for turning tilefield refs plus tileset `renderLight`/`occluder` metadata into render objects. `lurek.tilefield.createLightsFromTileset(...)` remains a compatibility alias during the migration window.
 - Custom light shaders are render-time contribution shaders. `LLight:setShader(shader)` and `lurek.light.setShader(shader)` accept only `target = "light"` WGSL and can modify falloff, rim/highlight, color grading, normal-map influence, ambient blending, and shadow response. Shadow casting geometry, occluder masks, and tile lighting remain engine-owned.
 - Normal-map data reaches custom light shaders as a compact contribution hint derived from `setNormalMap`, `setNormalStrength`, and light direction. The hint is zero when no normal map is configured.
 - `lurek.tilefield` owns the tile data consumed by tile lighting: per-tile `"light"` blockers, transmission costs, and multilevel sun occlusion.
