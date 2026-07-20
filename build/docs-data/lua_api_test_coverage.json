@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-19T10:01:01.732805+00:00",
+    "generated": "2026-07-20T18:16:45.026074+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 7100,
-    "marker_covered": 7073,
+    "total_api_functions": 7103,
+    "marker_covered": 7076,
     "describe_covered": 150,
     "describe_coverage_pct": 2.1,
     "heuristic_covered": 0,
-    "total_covered": 7100,
+    "total_covered": 7103,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -60001,11 +60001,11 @@
       ]
     },
     "ui": {
-      "total": 507,
-      "marker_covered": 507,
+      "total": 510,
+      "marker_covered": 510,
       "describe_covered": 0,
       "heuristic_covered": 0,
-      "covered": 507,
+      "covered": 510,
       "coverage_pct": 100.0,
       "describe_coverage_pct": 0.0,
       "describe_score": 0.0,
@@ -60737,6 +60737,15 @@
           "describe_score": 0.0
         },
         {
+          "lua_name": "lurek.ui.destroy",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
           "lua_name": "lurek.ui.clearFocus",
           "kind": "function",
           "marker_covered": true,
@@ -61035,6 +61044,24 @@
         },
         {
           "lua_name": "LUiWidget:typeOf",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:isValid",
+          "kind": "method",
+          "marker_covered": true,
+          "describe_covered": false,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 0.0
+        },
+        {
+          "lua_name": "LUiWidget:destroy",
           "kind": "method",
           "marker_covered": true,
           "describe_covered": false,

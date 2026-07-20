@@ -7,14 +7,6 @@ description: "Load this skill when implementing an in-game debug console, comman
 
 Toggle overlay with command input, built-in commands, and extensible command registration.
 
-## Key Concepts
-
-- **Toggle key**: F1 or backtick to show/hide the console overlay.
-- **Command input**: Text field at the bottom. Prefix with `/` for commands.
-- **Built-in commands**: `/fps`, `/reload`, `/setflag`, `/give`, `/teleport`, `/god`.
-- **Extensible**: `register_command(name, fn)` to add game-specific commands.
-- **Output log**: Scrollable history of command outputs and game messages.
-
 ## Console State
 
 ```lua
@@ -50,49 +42,21 @@ end
 
 ## Built-In Commands
 
+Register only known commands; add `give`, `teleport`, and `god` using the same pattern.
+
 ```lua
 register_command("fps", function()
     console_print("FPS: " .. tostring(lurek.timer.getFPS()))
 end, "Show current FPS")
 
-register_command("reload", function()
-    console_print("Reloading...")
-    -- Trigger game reload
-end, "Reload the current scene")
-
 register_command("setflag", function(args)
-    if #args < 2 then console_print("Usage: /setflag <name> <value>"); return end
-    local name = args[1]
-    local value = args[2] == "true"
-    game.flags[name] = value
-    console_print("Flag " .. name .. " = " .. tostring(value))
-end, "Set a game flag: /setflag <name> <true|false>")
-
-register_command("give", function(args)
-    if #args < 1 then console_print("Usage: /give <item> [count]"); return end
-    local item = args[1]
-    local count = tonumber(args[2]) or 1
-    add_item(player.inv, item, count)
-    console_print("Gave " .. count .. "x " .. item)
-end, "Give item: /give <item> [count]")
-
-register_command("teleport", function(args)
-    if #args < 2 then console_print("Usage: /teleport <x> <y>"); return end
-    player.x = tonumber(args[1]) or player.x
-    player.y = tonumber(args[2]) or player.y
-    console_print("Teleported to " .. player.x .. ", " .. player.y)
-end, "Teleport player: /teleport <x> <y>")
-
-register_command("god", function()
-    player.invincible = not player.invincible
-    console_print("God mode: " .. (player.invincible and "ON" or "OFF"))
-end, "Toggle invincibility")
+    if #args < 2 then return console_print("Usage: /setflag <name> <value>") end
+    game.flags[args[1]] = args[2] == "true"
+end, "Set a game flag")
 
 register_command("help", function()
-    for name, cmd in pairs(console.commands) do
-        console_print("/" .. name .. " — " .. cmd.help)
-    end
-end, "List all commands")
+    for name, cmd in pairs(console.commands) do console_print("/" .. name .. " - " .. cmd.help) end
+end, "List commands")
 ```
 
 ## Command Execution
@@ -184,5 +148,3 @@ end
 - **Console eats game input** — when visible, block game `keypressed`/`textinput`. Check `console.visible` first.
 - **Toggle key appears in input** — filter the toggle character in `textinput` handler.
 - **Command injection** — don't call `load()` or `loadstring()` on raw input. Use the registered command table only.
-- **Log overflow** — cap the log array. Remove oldest entries when the limit is exceeded.
-- **Ship with console enabled** — gate behind a debug flag. Strip or disable in release builds.

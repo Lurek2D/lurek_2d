@@ -7,14 +7,6 @@ description: "Load this skill when implementing tweens, easing curves, or motion
 
 Animate values over time with easing functions, chaining, callbacks, and cancellation.
 
-## Key Concepts
-
-- **Tween**: Interpolate a value from A to B over a duration using an easing function.
-- **Easing**: Shape the interpolation curve — linear, ease-in, ease-out, bounce, elastic, etc.
-- **Chaining**: Queue tweens to play in sequence.
-- **Table field tweens**: Animate `obj.x`, `obj.alpha` by reference.
-- **Callbacks**: Fire `on_complete` when a tween finishes.
-
 ## Easing Functions
 
 ```lua
@@ -133,5 +125,3 @@ end
 - **Tween on removed object** — cancel tweens when the object is destroyed. Nil field access crashes.
 - **Overlapping tweens on same field** — two tweens fighting over `obj.x` causes jitter. Cancel the old one first.
 - **Duration zero** — causes division by zero or instant snap. Guard with `math.max(0.001, duration)`.
-- **Easing overshoot** — `outBack` and `outElastic` exceed the target value temporarily. Make sure visuals handle values > target.
-- **Not updating tweens** — call `update_tweens(dt)` every frame in `lurek.update`.

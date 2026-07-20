@@ -854,8 +854,8 @@ do
     sidebar:setSize(200, 0)
     dock:addChild(header)
     dock:addChild(sidebar)
-    dock:dock(header._idx, "top")
-    dock:dock(sidebar._idx, "left")
+    dock:dock(header, "top")
+    dock:dock(sidebar, "left")
     dock:setSplitSize("left", 200)
     dock:setSplitSize("top", 60)
     lurek.log.info(tostring("docked count = " .. dock:getDockedCount()))
@@ -868,9 +868,9 @@ do
     local dock = lurek.ui.newDockPanel()
     local footer = lurek.ui.newPanel()
     dock:addChild(footer)
-    dock:dock(footer._idx, "bottom")
+    dock:dock(footer, "bottom")
     lurek.log.info(tostring("docked = " .. dock:getDockedCount()))
-    dock:undock(footer._idx)
+    dock:undock(footer)
     lurek.log.info(tostring("after undock = " .. dock:getDockedCount()))
 end
 
@@ -882,8 +882,8 @@ do
     local right = lurek.ui.newPanel()
     lurek.log.info(tostring("type = " .. split:type()))
     lurek.log.info(tostring("orientation = " .. split:getOrientation()))
-    split:setFirstChild(left._idx)
-    split:setSecondChild(right._idx)
+    split:setFirstChild(left)
+    split:setSecondChild(right)
     split:setSplitPosition(0.3)
     split:setMinPanelSize(100)
     lurek.log.info(tostring("split at " .. split:getSplitPosition()))
@@ -896,8 +896,8 @@ do
     local split = lurek.ui.newSplitContainer("vertical")
     local top = lurek.ui.newPanel()
     local bottom = lurek.ui.newPanel()
-    split:setFirstChild(top._idx)
-    split:setSecondChild(bottom._idx)
+    split:setFirstChild(top)
+    split:setSecondChild(bottom)
     lurek.log.info(tostring("split container = " .. split:getOrientation()))
 end
 
@@ -1799,9 +1799,9 @@ do
     local saveItem = lurek.ui.newMenuItem("Save")
     saveItem:setShortcut("Ctrl+S")
     local exitItem = lurek.ui.newMenuItem("Exit")
-    fileMenu:addSubItem(openItem._idx)
-    fileMenu:addSubItem(saveItem._idx)
-    fileMenu:addSubItem(exitItem._idx)
+    fileMenu:addSubItem(openItem)
+    fileMenu:addSubItem(saveItem)
+    fileMenu:addSubItem(exitItem)
     local subs = fileMenu:getSubItems()
     lurek.log.info(tostring("File has " .. #subs .. " sub-items"))
 end
@@ -1815,9 +1815,9 @@ do
     local saveItem = lurek.ui.newMenuItem("Save")
     saveItem:setShortcut("Ctrl+S")
     local exitItem = lurek.ui.newMenuItem("Exit")
-    fileMenu:addSubItem(openItem._idx)
-    fileMenu:addSubItem(saveItem._idx)
-    fileMenu:addSubItem(exitItem._idx)
+    fileMenu:addSubItem(openItem)
+    fileMenu:addSubItem(saveItem)
+    fileMenu:addSubItem(exitItem)
     local subs = fileMenu:getSubItems()
     lurek.log.info(tostring("File has " .. #subs .. " sub-items"))
 end
@@ -1829,9 +1829,9 @@ do
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
     local viewMenu = lurek.ui.newMenuItem("View")
-    bar:addMenu(fileMenu._idx)
-    bar:addMenu(editMenu._idx)
-    bar:addMenu(viewMenu._idx)
+    bar:addMenu(fileMenu)
+    bar:addMenu(editMenu)
+    bar:addMenu(viewMenu)
     lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
     lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
@@ -1844,9 +1844,9 @@ do
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
     local viewMenu = lurek.ui.newMenuItem("View")
-    bar:addMenu(fileMenu._idx)
-    bar:addMenu(editMenu._idx)
-    bar:addMenu(viewMenu._idx)
+    bar:addMenu(fileMenu)
+    bar:addMenu(editMenu)
+    bar:addMenu(viewMenu)
     lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
     lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
@@ -1859,9 +1859,9 @@ do
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
     local viewMenu = lurek.ui.newMenuItem("View")
-    bar:addMenu(fileMenu._idx)
-    bar:addMenu(editMenu._idx)
-    bar:addMenu(viewMenu._idx)
+    bar:addMenu(fileMenu)
+    bar:addMenu(editMenu)
+    bar:addMenu(viewMenu)
     lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
     lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
@@ -1872,9 +1872,9 @@ do
 
     local bar = lurek.ui.newMenuBar()
     local m = lurek.ui.newMenuItem("Tools")
-    bar:addMenu(m._idx)
+    bar:addMenu(m)
     lurek.log.info(tostring("before remove = " .. bar:getMenuCount()))
-    local ok = bar:removeMenu(m._idx)
+    local ok = bar:removeMenu(m)
     lurek.log.info(tostring("removed = " .. tostring(ok)))
     lurek.log.info(tostring("after remove = " .. bar:getMenuCount()))
 end
@@ -2089,8 +2089,8 @@ do
 
     local footer = lurek.ui.newLayout("horizontal")
     footer:setSize(300, 26)
-    modal:setContent(body._idx)
-    modal:setFooter(footer._idx)
+    modal:setContent(body)
+    modal:setFooter(footer)
     modal:addAction("Equip", function(_, action_idx)
         lurek.log.info(tostring("default action fired:") .. " " .. tostring(action_idx))
     end, "default", true)
@@ -2273,7 +2273,7 @@ do
     local btn = lurek.ui.newButton("Hover me")
     local tip = lurek.ui.newTooltipPanel("Click to submit form")
     tip:setDelay(0.5)
-    tip:setTarget(btn._idx)
+    tip:setTarget(btn)
     lurek.log.info(tostring("tooltip text:") .. " " .. tostring(tip:getText()))
     lurek.log.info(tostring("delay:") .. " " .. tostring(tip:getDelay()))
     lurek.log.info(tostring("target:") .. " " .. tostring(tip:getTarget()))
@@ -2860,11 +2860,11 @@ do
     local child = lurek.ui.newPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     dp:addChild(child)
-    dp:dock(child._idx, "left")
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     lurek.log.info(tostring("split_size=" .. tostring(dp:getSplitSize("left"))))
     dp:setSplitSize("left", 150)
-    dp:undock(child._idx)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 
@@ -3130,8 +3130,8 @@ do
     local second = lurek.ui.newPanel()
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(first._idx)
-    sp:setSecondChild(second._idx)
+    sp:setFirstChild(first)
+    sp:setSecondChild(second)
     local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
@@ -3150,8 +3150,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3170,8 +3170,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3190,8 +3190,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3210,8 +3210,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3230,8 +3230,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3250,8 +3250,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3270,8 +3270,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3290,8 +3290,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -3310,8 +3310,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -4434,7 +4434,7 @@ do
 
     local dlg = lurek.ui.newDialog("Footer")
     local footer = lurek.ui.newPanel()
-    dlg:setFooter(footer._idx)
+    dlg:setFooter(footer)
     lurek.log.info(tostring("footer idx:") .. " " .. tostring(dlg:getFooter()))
     lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
@@ -4524,7 +4524,7 @@ do
 
     local dlg = lurek.ui.newDialog("Footer Setter")
     local footer = lurek.ui.newLayout("horizontal")
-    dlg:setFooter(footer._idx)
+    dlg:setFooter(footer)
     lurek.log.info(tostring("setFooter:") .. " " .. tostring(dlg:getFooter()))
     lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
@@ -5113,7 +5113,7 @@ do
     lb:setSelectedIndex(1)
     local mb = lurek.ui.newMenuBar()
     local mi = lurek.ui.newMenuItem("File")
-    local idx = mb:addMenu(mi._idx)
+    local idx = mb:addMenu(mi)
     lurek.log.info(tostring("setItemHeight ok; addMenu idx:") .. " " .. tostring(idx))
 end
 
@@ -5126,7 +5126,7 @@ do
     lb:setSelectedIndex(1)
     local mb = lurek.ui.newMenuBar()
     local mi = lurek.ui.newMenuItem("File")
-    local idx = mb:addMenu(mi._idx)
+    local idx = mb:addMenu(mi)
     lurek.log.info(tostring("setItemHeight ok; addMenu idx:") .. " " .. tostring(idx))
 end
 
@@ -5139,7 +5139,7 @@ do
     lb:setSelectedIndex(1)
     local mb = lurek.ui.newMenuBar()
     local mi = lurek.ui.newMenuItem("File")
-    local idx = mb:addMenu(mi._idx)
+    local idx = mb:addMenu(mi)
     lurek.log.info(tostring("setItemHeight ok; addMenu idx:") .. " " .. tostring(idx))
 end
 
@@ -5149,8 +5149,8 @@ do
     local mb = lurek.ui.newMenuBar()
     local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View")
-    mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx)
+    mb:addMenu(mi1)
+    mb:addMenu(mi2)
     local cnt = mb:getMenuCount()
     local menus = mb:getMenus()
     mb:removeMenu(1)
@@ -5163,8 +5163,8 @@ do
     local mb = lurek.ui.newMenuBar()
     local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View")
-    mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx)
+    mb:addMenu(mi1)
+    mb:addMenu(mi2)
     local cnt = mb:getMenuCount()
     local menus = mb:getMenus()
     mb:removeMenu(1)
@@ -5177,8 +5177,8 @@ do
     local mb = lurek.ui.newMenuBar()
     local mi1 = lurek.ui.newMenuItem("Edit")
     local mi2 = lurek.ui.newMenuItem("View")
-    mb:addMenu(mi1._idx)
-    mb:addMenu(mi2._idx)
+    mb:addMenu(mi1)
+    mb:addMenu(mi2)
     local cnt = mb:getMenuCount()
     local menus = mb:getMenus()
     mb:removeMenu(1)
@@ -5190,7 +5190,7 @@ do
 
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx)
+    mi:addSubItem(sub1)
     local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
@@ -5202,7 +5202,7 @@ do
 
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx)
+    mi:addSubItem(sub1)
     local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
@@ -5214,7 +5214,7 @@ do
 
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx)
+    mi:addSubItem(sub1)
     local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
@@ -5921,9 +5921,9 @@ do
     local sp = lurek.ui.newSplitPanel("vertical")
     local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right")
-    sp:setFirstChild(lbl:getId() and 1 or 1)
+    sp:setFirstChild(lbl)
     local fc = sp:getFirstChild()
-    sp:setSecondChild(btn:getId() and 2 or 2)
+    sp:setSecondChild(btn)
     local pos = sp:getSplitPosition()
     lurek.log.info(tostring("firstChild after set:") .. " " .. tostring(fc) .. " " .. tostring("splitPos:") .. " " .. tostring(pos))
 end
@@ -5934,9 +5934,9 @@ do
     local sp = lurek.ui.newSplitPanel("vertical")
     local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right")
-    sp:setFirstChild(lbl:getId() and 1 or 1)
+    sp:setFirstChild(lbl)
     local fc = sp:getFirstChild()
-    sp:setSecondChild(btn:getId() and 2 or 2)
+    sp:setSecondChild(btn)
     local pos = sp:getSplitPosition()
     lurek.log.info(tostring("firstChild after set:") .. " " .. tostring(fc) .. " " .. tostring("splitPos:") .. " " .. tostring(pos))
 end
@@ -5947,9 +5947,9 @@ do
     local sp = lurek.ui.newSplitPanel("vertical")
     local lbl = lurek.ui.newLabel("left")
     local btn = lurek.ui.newButton("right")
-    sp:setFirstChild(lbl:getId() and 1 or 1)
+    sp:setFirstChild(lbl)
     local fc = sp:getFirstChild()
-    sp:setSecondChild(btn:getId() and 2 or 2)
+    sp:setSecondChild(btn)
     local pos = sp:getSplitPosition()
     lurek.log.info(tostring("firstChild after set:") .. " " .. tostring(fc) .. " " .. tostring("splitPos:") .. " " .. tostring(pos))
 end
@@ -5963,7 +5963,7 @@ do
     sp:setMinPanelSize(80)
     local mps = sp:getMinPanelSize()
     local lbl = lurek.ui.newLabel("panel")
-    sp:setSecondChild(lbl:getId() and 1 or 1)
+    sp:setSecondChild(lbl)
     lurek.log.info(tostring("orientation:") .. " " .. tostring(ori) .. " " .. tostring("minPanel:") .. " " .. tostring(mps))
 end
 
@@ -5976,7 +5976,7 @@ do
     sp:setMinPanelSize(80)
     local mps = sp:getMinPanelSize()
     local lbl = lurek.ui.newLabel("panel")
-    sp:setSecondChild(lbl:getId() and 1 or 1)
+    sp:setSecondChild(lbl)
     lurek.log.info(tostring("orientation:") .. " " .. tostring(ori) .. " " .. tostring("minPanel:") .. " " .. tostring(mps))
 end
 
@@ -5989,7 +5989,7 @@ do
     sp:setMinPanelSize(80)
     local mps = sp:getMinPanelSize()
     local lbl = lurek.ui.newLabel("panel")
-    sp:setSecondChild(lbl:getId() and 1 or 1)
+    sp:setSecondChild(lbl)
     lurek.log.info(tostring("orientation:") .. " " .. tostring(ori) .. " " .. tostring("minPanel:") .. " " .. tostring(mps))
 end
 
@@ -8149,7 +8149,7 @@ do
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
-    a:setFocusNeighbor("right", b._idx)
+    a:setFocusNeighbor("right", b)
     lurek.log.info(tostring("button text = " .. a:getText()))
     lurek.log.info(tostring("button width = " .. select(3, a:getRect())))
 end
@@ -8199,7 +8199,7 @@ do
 
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
-    label:setLabelFor(input._idx)
+    label:setLabelFor(input)
     lurek.log.info(tostring("label target = " .. tostring(label:getLabelFor())))
     lurek.log.info(tostring("input idx = " .. tostring(input._idx)))
 end
@@ -8209,7 +8209,7 @@ do
 
     local label = lurek.ui.newLabel("Email")
     local input = lurek.ui.newTextInput()
-    label:setLabelFor(input._idx)
+    label:setLabelFor(input)
     lurek.log.info(tostring("label for = " .. tostring(label:getLabelFor())))
     lurek.log.info(tostring("label text = " .. label:getText()))
 end
@@ -8230,7 +8230,7 @@ do
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
-    a:setFocusNeighbor("right", b._idx)
+    a:setFocusNeighbor("right", b)
     lurek.ui.setFocus(a)
     local moved = lurek.ui.focusNeighbor("right")
     lurek.log.info(tostring("focus moved=" .. tostring(moved)))
@@ -8252,7 +8252,7 @@ do
     lurek.ui.clear()
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
-    label:setLabelFor(input._idx)
+    label:setLabelFor(input)
     local nodes = lurek.ui.getAccessibilityTree()
     lurek.log.info(tostring("a11y nodes = " .. tostring(#nodes)))
     lurek.log.info(tostring("first node role = " .. tostring(nodes[1] and nodes[1].role)))
@@ -8280,7 +8280,7 @@ do
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
-    a:setFocusNeighbor("right", b._idx)
+    a:setFocusNeighbor("right", b)
     lurek.ui.setFocus(a)
     local moved = lurek.ui.focusDirection(1.0, 0.0)
     lurek.log.info(tostring("lurek.ui.focusDirection moved=" .. tostring(moved)))
@@ -8333,7 +8333,7 @@ end
 do
 
     local btn = lurek.ui.newButton("Scale")
-    lurek.ui.animateScale(btn._idx, 1.0, 1.0, 1.2, 1.2, 0.3)
+    lurek.ui.animateScale(btn, 1.0, 1.0, 1.2, 1.2, 0.3)
     lurek.log.info(tostring("lurek.ui.animateScale ok"))
     lurek.log.info(tostring("button text = " .. btn:getText()))
     lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
@@ -8343,7 +8343,7 @@ end
 do
 
     local img = lurek.ui.newPanel()
-    lurek.ui.animateRotation(img._idx, 0, 360, 1.0)
+    lurek.ui.animateRotation(img, 0, 360, 1.0)
     lurek.log.info(tostring("lurek.ui.animateRotation ok"))
     lurek.log.info(tostring("panel children = " .. img:getChildCount()))
     lurek.log.info(tostring("panel width = " .. select(3, img:getRect())))
@@ -8353,7 +8353,7 @@ end
 do
 
     local lbl = lurek.ui.newLabel("Hello")
-    lurek.ui.animateColor(lbl._idx, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
+    lurek.ui.animateColor(lbl, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
     lurek.log.info(tostring("lurek.ui.animateColor ok"))
     lurek.log.info(tostring("label text = " .. lbl:getText()))
     lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
@@ -8716,6 +8716,24 @@ do
     end)
     lurek.ui.beginDrag(source)
     lurek.ui.update(0)
+end
+
+--@api: LUiWidget:isValid
+do
+    local widget = lurek.ui.newButton("Lifecycle")
+    lurek.log.info(tostring("live=" .. tostring(widget:isValid())))
+end
+
+--@api: LUiWidget:destroy
+do
+    local widget = lurek.ui.newButton("Destroy me")
+    widget:destroy()
+end
+
+--@api: lurek.ui.destroy
+do
+    local widget = lurek.ui.newButton("Destroy me")
+    lurek.ui.destroy(widget)
 end
 
 --@api: LUiWidget:setOnDragEnd

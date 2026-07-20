@@ -16,6 +16,7 @@ impl GuiContext {
     }
     /// Advance toast timers, expire old toasts, and step all active widget transitions by `dt` seconds.
     pub fn update(&mut self, dt: f32) {
+        let dt = self.limits.normalized_dt(dt);
         if self.combo_typeahead_ttl > 0.0 {
             self.combo_typeahead_ttl = (self.combo_typeahead_ttl - dt).max(0.0);
             if self.combo_typeahead_ttl <= 0.0 {

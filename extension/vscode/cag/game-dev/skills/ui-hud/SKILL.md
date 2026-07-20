@@ -7,13 +7,6 @@ description: "Load this skill when implementing HUD, status bars, counters, prom
 
 Health bars, minimap, inventory slots, tooltips, damage numbers, cooldown indicators, and speech bubbles.
 
-## Key Concepts
-
-- **Screen-space rendering**: HUD elements are drawn after the camera transform is popped (no world scrolling).
-- **Anchoring**: Position elements relative to screen edges so they work at different resolutions.
-- **Gradients**: Interpolate bar color from green → yellow → red based on percentage.
-- **Floating text**: Spawn at world position, animate upward and fade out.
-
 ## Health Bar with Color Gradient
 
 ```lua

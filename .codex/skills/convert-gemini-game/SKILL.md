@@ -8,73 +8,33 @@ description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScr
 ## Mission
 - Convert Gemini, React, TSX, JavaScript, and HTML-canvas game prototypes into runnable Lurek2D Lua demos while maximizing real `lurek.*` API usage.
 
-## When To Load
-- Converting a Gemini Canvas or other web game prototype into a runnable Lurek2D Lua game under `content/games/`.
-- Mapping React/canvas mechanics to Lurek APIs before implementing a port or redesign.
-
-## When To Skip
-- Normal Lua demo work that does not start from a web prototype.
-- Engine internals, docs-only updates, or product code unrelated to a prototype conversion.
-
 ## Domain Knowledge
-- Read root `AGENTS.md`, then target contracts such as `content/AGENTS.md` and `content/games/AGENTS.md`.
-- Run RAG before broad reads: `tools/python.cmd tools/rag/query.py "content games demo conventions render input" --profile game --limit 10`.
-- Prefer existing Lurek APIs and nearby demos over direct structural ports of React code.
-- Save pasted or bulky source only under `work/{short-chat-name}/` if a scratch copy is needed.
-- Keep gameplay state local to Lua tables/modules. Do not port React components, DOM state, CSS classes, Tailwind styling, or canvas boilerplate directly.
-- Use this mandatory concept map before coding:
-  - `React state/effects/game loop -> lurek.init, lurek.process(dt), lurek.draw, lurek.draw_ui`
-  - `Canvas primitives -> lurek.render.setColor, rectangle, circle, line, polygon, print, LShape, mesh`
-  - `Keyboard/mouse events -> lurek.input.bind, isActionDown, wasActionPressed, lurek.input.mouse.getPosition`
-  - `Screen/window size -> lurek.window.getWidth, getHeight, getDimensions, lurek.resize`
-  - `Camera/scrolling -> explicit camera offsets or lurek.camera`
-  - `Particles/tweens/timers/audio/physics -> lurek.particle, lurek.tween, lurek.timer, lurek.audio, lurek.physics`
-  - `Procedural math -> lurek.math helpers when they fit, otherwise small local math functions`
+- A web prototype is a behavioral specification, not a source-language template: component trees collapse into Lua state modules, hooks become explicit transitions, and browser repaint becomes Lurek's `init`/`process(dt)`/`draw`/`draw_ui` lifecycle.
+- Coordinate translation is explicit: canvas world drawing belongs in `lurek.draw`, HUD in `lurek.draw_ui`, resize assumptions behind `lurek.window`, and camera transforms must not be applied twice to input hit tests.
+- Browser key/pointer handlers become named `lurek.input` actions plus mouse queries, with edge-triggered actions separated from held movement to avoid frame-dependent toggles.
+- React effects, `requestAnimationFrame`, intervals, and CSS transitions encode timing semantics that map to `dt`, `lurek.timer`, or `lurek.tween`; browser scheduling and fixed 60 Hz assumptions do not survive the port.
+- Physics, particles, audio, camera, and UI should use engine owners when their behavior matters; local math is for prototype-specific rules, not a shadow implementation of an existing subsystem.
+- Individual calls are best verified in `content/examples/` and generated API docs, while neighboring `content/games/` projects teach composition, asset loading, boot flow, and completeness.
+- Preserve the feedback loop—player action, visible response, state consequence, and win/loss progression—even when DOM layout, CSS ornament, and React abstractions disappear.
+- Treat browser layout as evidence of visual intent rather than a geometry contract. Flex/grid panels usually map to TOML UI or explicit HUD groups, while absolutely positioned canvas labels often belong in world-space rendering; choose according to how the element should react to camera movement and resize.
+- Separate simulation state from presentation caches during translation. React often derives display data during render, but Lurek draw callbacks should not advance timers, mutate economy/combat state, or create persistent engine resources because multiple draws or screenshot paths would then change gameplay.
+- Reconcile JavaScript numeric assumptions with LuaJIT behavior: array indices, truthiness, missing table keys, integer-like coordinates, modulo on negatives, and floating-point comparisons can change edge behavior even when the formulas look identical.
+- Preserve deterministic setup when the prototype uses `Math.random`, randomized spawning, or procedural maps. Make seed ownership explicit so smoke captures and bug reproduction do not depend on an unrepeatable first frame.
+- Translate asset semantics, not import syntax: browser URLs and bundler imports become forward-slash game-relative paths, image dimensions must match the engine draw call, and audio/image creation should occur at initialization rather than inside per-frame callbacks.
 
 ## Workflow
-- Identify the prototype's game loop, state model, input, rendering primitives, UI/HUD, assets, timing, randomness, economy/combat/physics rules, and win/loss conditions.
-- Write a short conversion brief before editing: source mechanics, target folder, chosen Lurek APIs, deliberate simplifications, and validation plan.
-- Build a mandatory API map before writing code.
-- Implement under the narrowest game folder, normally `content/games/<category>/<name>/main.lua`; create a new folder only when no existing demo owns the concept.
-- Preserve the playable fantasy and core mechanics over exact visual parity.
-- Maximize Lurek API usage, but avoid forced APIs that add no behavior or clarity.
-- Scale all motion, production, cooldowns, fades, and simulation timers by `dt`.
-- Bind named actions instead of scattering raw key strings through logic.
-- Draw world content in `lurek.draw` and HUD/menu overlays in `lurek.draw_ui`.
-- Keep UI text concise and in-game; do not add explanatory landing screens.
-- For TOML UI in converted games, use `w`/`h` keys and validator-supported bitmap font sizes 8, 10, 12, 16, 20, 24, or 30.
-- Use procedural shapes for Gemini canvas prototypes unless real assets are supplied or clearly needed.
-- Add a small `README.md` only when nearby demos use one or the game needs catalog context.
-- If a prototype feature has no current Lurek API, state the gap and build the simplest Lua-side equivalent without pretending an API exists.
-
-## Success Criteria
-- The converted demo preserves the prototype's core playable loop while feeling native to Lurek.
-- A mandatory API map was produced before implementation and uses real `lurek.*` APIs wherever they match.
-- The target artifact was created or modified in the narrowest owning `content/games/` location.
-- Validation completes successfully, or remaining gaps are reported with exact commands and blockers.
-
-## Stop Conditions
-- The prototype source is missing or too incomplete to infer its mechanics safely.
-- A requested feature depends on a nonexistent Lurek API and no reasonable Lua-side substitute fits the scope.
-- Completing the port would require widening into engine work or overwriting unrelated user changes.
-
-## Companion File Index
-- Contracts: `AGENTS.md`, `content/AGENTS.md`, `content/games/AGENTS.md`, `tests/lua/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "content games demo conventions render input" --profile game --limit 10`, `tools/python.cmd tools/validate/validate_game.py <demo-dir>`, `python tools/dev/parallel_cargo.py run debug -- content/games/<category>/<name>/main.lua`, `tools/python.cmd tools/demos/smoke_sweep.py --kind game --only <name>`
-- Owner profile: `content`
-
-## Common RAG Queries
-- Use when locating demo owners and matching APIs before porting:
-  - `content games demo conventions render input`
-  - `hex strategy camera render input`
-  - `simulation logistics drones resource transport`
-- Common areas to inspect after top hits:
-  - `content/games/`
-  - `content/examples/`
-  - `docs/api/lurek.md`
-  - `docs/specs/`
+- Decompose the source into a brief naming authoritative state, update cadence, action bindings, world/UI passes, assets, random seeds, collision/economy rules, and completion states; map every browser-only mechanism to a verified Lurek replacement or explicit Lua fallback.
+- Locate the closest `content/games/` owner and per-API examples before coding. Choose a new directory only when no project owns the playable concept, and keep bulky source/comparison notes under `work/<short-chat-name>/`.
+- Port one vertical slice first: initialize local/module state, bind semantic actions, update continuous quantities from `dt`, render correct passes, and preserve action-to-feedback timing; add physics, audio, particles, assets, and menus after the loop boots cleanly.
+- Compare rules and transitions rather than pixels, document simplifications and API gaps, then run `validate_game.py`, launch the exact entry point, and use the targeted smoke sweep to catch unknown callbacks, asset paths, and lifecycle failures.
+- Build a source-to-target state table before implementation: list every React state variable or JavaScript singleton, its writer, update phase, persistence lifetime, and Lua owner. Identify values that are merely derived for rendering so they are not ported as competing authoritative state.
+- Audit all input paths after the vertical slice: verify simultaneous directions, key repeat, pointer coordinates under camera/resize, focus loss, pause/menu transitions, and one-shot actions. Replace source event ordering assumptions with explicit action precedence where simultaneous events affect rules.
+- Compare the source and port at several fixed checkpoints—initial state, first meaningful action, mid-progression, loss, victory, and restart—recording semantic differences in counters, positions, cooldowns, and available actions rather than relying only on a final screenshot.
+- Exercise at least two frame-step patterns when timing matters: normal interactive `dt` and a larger catch-up step. Clamp or subdivide only where the target engine/API requires it, and confirm timers, spawning, collisions, tweens, and economy production do not skip terminal states.
+- Finish by checking the complete folder as a distributable game: no web framework remnants, remote asset dependencies, browser terminology in controls, orphan source files, or hidden development-only startup steps; ensure README and screenshot describe the Lurek result rather than the original prototype.
 
 ## References
 - `contracts: AGENTS.md, content/AGENTS.md, content/games/AGENTS.md, tests/lua/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "content games demo conventions render input" --profile game --limit 10, tools/python.cmd tools/validate/validate_game.py <demo-dir>, python tools/dev/parallel_cargo.py run debug -- content/games/<category>/<name>/main.lua, tools/python.cmd tools/demos/smoke_sweep.py --kind game --only <name>, tools/python.cmd tools/validate/cag_validate.py`
 - `agent: content`
+- RAG: Use when locating demo owners and matching APIs before porting; `content games demo conventions render input`; `hex strategy camera render input`; `simulation logistics drones resource transport`; `content/games/`; `content/examples/`; `docs/api/lurek.md`; `docs/specs/`

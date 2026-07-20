@@ -14,10 +14,13 @@ use crate::log_msg;
 use crate::runtime::error::{EngineError, EngineResult};
 use crate::runtime::log_messages::{FS01_GAMEFS_INIT, FS04_PATH_TRAVERSAL, FS05_VFS_MOUNT};
 use serde_json::Value as JsonValue;
+use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
 
 const SAVE_ROOT: &str = "save";
 const SAVE_TEMP_DIR: &str = "save/tmp";
+static NEXT_ATOMIC_WRITE_TEMP: AtomicU64 = AtomicU64::new(1);
 /// Metadata snapshot for a file or directory in the virtual filesystem.
 #[derive(Debug, Clone)]
 pub struct FileInfo {
@@ -250,6 +253,140 @@ impl GameFS {
         }
         std::fs::write(&resolved, bytes)
             .map_err(|e| EngineError::FileSystemError(format!("Failed to write '{}': {}", path, e)))
+    }
+    /// Atomically replace a save file after checking that its parent and destination remain inside save/.
+    pub fn write_bytes_atomic(&self, path: &str, bytes: &[u8]) -> EngineResult<()> {
+        let resolved = self.resolve_save_path(path)?;
+        let save_root = self.base_dir.join(SAVE_ROOT).canonicalize().map_err(|e| {
+            EngineError::FileSystemError(format!("Cannot access save directory: {e}"))
+        })?;
+        let parent = resolved.parent().ok_or_else(|| {
+            EngineError::FileSystemError("Atomic output path has no parent directory".into())
+        })?;
+        std::fs::create_dir_all(parent).map_err(|e| {
+            EngineError::FileSystemError(format!("Failed to create output directories: {e}"))
+        })?;
+        let parent_canonical = parent.canonicalize().map_err(|e| {
+            EngineError::FileSystemError(format!("Cannot resolve output directory: {e}"))
+        })?;
+        if !parent_canonical.starts_with(&save_root) {
+            return Err(EngineError::FileSystemError(
+                "Atomic output path escaped save/".into(),
+            ));
+        }
+        if resolved.exists() {
+            let destination = resolved.canonicalize().map_err(|e| {
+                EngineError::FileSystemError(format!("Cannot resolve output file: {e}"))
+            })?;
+            if !destination.starts_with(&save_root) {
+                return Err(EngineError::FileSystemError(
+                    "Atomic output destination escaped save/".into(),
+                ));
+            }
+        }
+        let file_name = resolved
+            .file_name()
+            .and_then(|name| name.to_str())
+            .ok_or_else(|| {
+                EngineError::FileSystemError("Atomic output path has an invalid file name".into())
+            })?;
+        let temp_name = format!(
+            ".{file_name}.tmp-{}",
+            NEXT_ATOMIC_WRITE_TEMP.fetch_add(1, Ordering::Relaxed)
+        );
+        let temp_path = parent.join(temp_name);
+        let result = (|| {
+            let mut file = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&temp_path)
+                .map_err(|e| {
+                    EngineError::FileSystemError(format!("Failed to create atomic output: {e}"))
+                })?;
+            file.write_all(bytes).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to write atomic output: {e}"))
+            })?;
+            file.sync_all().map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to flush atomic output: {e}"))
+            })?;
+            std::fs::rename(&temp_path, &resolved).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to commit atomic output: {e}"))
+            })
+        })();
+        if result.is_err() {
+            let _ = std::fs::remove_file(&temp_path);
+        }
+        result
+    }
+    /// Atomically write a renderer/evidence artifact under an approved workspace output root.
+    pub fn write_output_bytes_atomic(&self, path: &str, bytes: &[u8]) -> EngineResult<()> {
+        let normalized = path.replace('\\', "/");
+        let allowed = normalized.starts_with("tests/artifacts/current/");
+        if !allowed {
+            return self.write_bytes_atomic(path, bytes);
+        }
+        Self::reject_traversal(&normalized)?;
+        let resolved = self.base_dir.join(&normalized);
+        let workspace_root = self.base_dir.canonicalize().map_err(|e| {
+            EngineError::FileSystemError(format!("Cannot access workspace directory: {e}"))
+        })?;
+        let parent = resolved.parent().ok_or_else(|| {
+            EngineError::FileSystemError("Output path has no parent directory".into())
+        })?;
+        std::fs::create_dir_all(parent).map_err(|e| {
+            EngineError::FileSystemError(format!("Failed to create output directories: {e}"))
+        })?;
+        let parent_canonical = parent.canonicalize().map_err(|e| {
+            EngineError::FileSystemError(format!("Cannot resolve output directory: {e}"))
+        })?;
+        if !parent_canonical.starts_with(&workspace_root) {
+            return Err(EngineError::FileSystemError(
+                "Output path escaped the workspace".into(),
+            ));
+        }
+        if resolved.exists() {
+            let destination = resolved.canonicalize().map_err(|e| {
+                EngineError::FileSystemError(format!("Cannot resolve output file: {e}"))
+            })?;
+            if !destination.starts_with(&workspace_root) {
+                return Err(EngineError::FileSystemError(
+                    "Output destination escaped the workspace".into(),
+                ));
+            }
+        }
+        let file_name = resolved
+            .file_name()
+            .and_then(|name| name.to_str())
+            .ok_or_else(|| {
+                EngineError::FileSystemError("Output path has an invalid file name".into())
+            })?;
+        let temp_name = format!(
+            ".{file_name}.tmp-{}",
+            NEXT_ATOMIC_WRITE_TEMP.fetch_add(1, Ordering::Relaxed)
+        );
+        let temp_path = parent.join(temp_name);
+        let result = (|| {
+            let mut file = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&temp_path)
+                .map_err(|e| {
+                    EngineError::FileSystemError(format!("Failed to create atomic output: {e}"))
+                })?;
+            file.write_all(bytes).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to write atomic output: {e}"))
+            })?;
+            file.sync_all().map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to flush atomic output: {e}"))
+            })?;
+            std::fs::rename(&temp_path, &resolved).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to commit atomic output: {e}"))
+            })
+        })();
+        if result.is_err() {
+            let _ = std::fs::remove_file(&temp_path);
+        }
+        result
     }
     /// Validate JSON content and return the original string on success.
     pub fn read_json(&self, path: &str) -> EngineResult<String> {

@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-19",
+  "generated": "2026-07-20",
   "modules": [
     {
       "name": "agent",
@@ -34966,13 +34966,13 @@
         {
           "name": "animateScale",
           "fullPath": "lurek.ui.animateScale",
-          "signature": "lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, [easing])",
+          "signature": "lurek.ui.animateScale(widget, from_sx, from_sy, to_sx, to_sy, duration, [easing])",
           "description": "Animate widget scale from one value to another.",
           "parameters": [
             {
-              "name": "idx",
-              "type": "integer",
-              "description": "Widget index.",
+              "name": "widget",
+              "type": "LUiWidget",
+              "description": "Widget handle.",
               "optional": false
             },
             {
@@ -35020,13 +35020,13 @@
         {
           "name": "animateRotation",
           "fullPath": "lurek.ui.animateRotation",
-          "signature": "(idx, from, to, duration, [easing])",
+          "signature": "(widget, from, to, duration, [easing])",
           "description": "Animate widget rotation from one angle to another (in radians).",
           "parameters": [
             {
-              "name": "idx",
-              "type": "integer",
-              "description": "Widget index.",
+              "name": "widget",
+              "type": "LUiWidget",
+              "description": "Widget handle.",
               "optional": false
             },
             {
@@ -35062,13 +35062,13 @@
         {
           "name": "animateColor",
           "fullPath": "lurek.ui.animateColor",
-          "signature": "lurek.ui.animateColor(idx, from, to, duration, [easing])",
+          "signature": "lurek.ui.animateColor(widget, from, to, duration, [easing])",
           "description": "Animate widget color tint from one RGBA value to another.",
           "parameters": [
             {
-              "name": "idx",
-              "type": "integer",
-              "description": "Widget index.",
+              "name": "widget",
+              "type": "LUiWidget",
+              "description": "Widget handle.",
               "optional": false
             },
             {
@@ -35107,6 +35107,30 @@
           "signature": "()",
           "description": "Clears all retained UI widgets and transient UI state while keeping the active theme.",
           "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "destroy",
+          "fullPath": "lurek.ui.destroy",
+          "signature": "(widget, [recursive])",
+          "description": "Destroys a widget handle and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "widget",
+              "type": "LUiWidget",
+              "description": "The live widget table to destroy.",
+              "optional": false
+            },
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
           "returns": "integer",
           "returnType": "integer",
           "isMethod": false,
@@ -38137,7 +38161,7 @@
         {
           "name": "addSection",
           "fullPath": "LAccordion:addSection",
-          "signature": "(title, [content_idx])",
+          "signature": "(title, content)",
           "description": "Adds a collapsible section to this accordion.",
           "parameters": [
             {
@@ -38147,9 +38171,9 @@
               "optional": false
             },
             {
-              "name": "content_idx",
-              "type": "integer",
-              "description": "Optional widget index for the section content.",
+              "name": "content",
+              "type": "LUiWidget",
+              "description": "Optional widget handle for the section content.",
               "optional": true
             }
           ],
@@ -38278,6 +38302,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LAccordion.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LAccordion.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LAccordion"
         },
@@ -38734,7 +38787,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LAccordion.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -38745,8 +38798,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -38816,13 +38869,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LAccordion.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -39031,7 +39084,7 @@
           "name": "getChildren",
           "fullPath": "LAccordion.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -44316,6 +44369,35 @@
           "objectType": "LAspectRatioContainer"
         },
         {
+          "name": "isValid",
+          "fullPath": "LAspectRatioContainer.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LAspectRatioContainer.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LAspectRatioContainer"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LAspectRatioContainer.setPosition",
           "signature": "(x, y)",
@@ -44768,7 +44850,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LAspectRatioContainer.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -44779,8 +44861,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -44850,13 +44932,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LAspectRatioContainer.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -45065,7 +45147,7 @@
           "name": "getChildren",
           "fullPath": "LAspectRatioContainer.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -46818,6 +46900,35 @@
           "objectType": "LBadge"
         },
         {
+          "name": "isValid",
+          "fullPath": "LBadge.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LBadge.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LBadge.setPosition",
           "signature": "(x, y)",
@@ -47270,7 +47381,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LBadge.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -47281,8 +47392,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -47352,13 +47463,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LBadge.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -47567,7 +47678,7 @@
           "name": "getChildren",
           "fullPath": "LBadge.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -53085,6 +53196,35 @@
           "objectType": "LButton"
         },
         {
+          "name": "isValid",
+          "fullPath": "LButton.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LButton.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LButton.setPosition",
           "signature": "(x, y)",
@@ -53537,7 +53677,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LButton.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -53548,8 +53688,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -53619,13 +53759,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LButton.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -53834,7 +53974,7 @@
           "name": "getChildren",
           "fullPath": "LButton.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -57908,6 +58048,35 @@
           "objectType": "LCheckbox"
         },
         {
+          "name": "isValid",
+          "fullPath": "LCheckbox.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LCheckbox.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LCheckbox.setPosition",
           "signature": "(x, y)",
@@ -58360,7 +58529,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LCheckbox.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -58371,8 +58540,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -58442,13 +58611,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LCheckbox.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -58657,7 +58826,7 @@
           "name": "getChildren",
           "fullPath": "LCheckbox.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -60573,6 +60742,35 @@
           "objectType": "LColorPicker"
         },
         {
+          "name": "isValid",
+          "fullPath": "LColorPicker.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LColorPicker.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LColorPicker.setPosition",
           "signature": "(x, y)",
@@ -61025,7 +61223,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LColorPicker.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -61036,8 +61234,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -61107,13 +61305,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LColorPicker.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -61322,7 +61520,7 @@
           "name": "getChildren",
           "fullPath": "LColorPicker.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -62444,6 +62642,35 @@
           "objectType": "LComboBox"
         },
         {
+          "name": "isValid",
+          "fullPath": "LComboBox.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LComboBox.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LComboBox.setPosition",
           "signature": "(x, y)",
@@ -62896,7 +63123,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LComboBox.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -62907,8 +63134,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -62978,13 +63205,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LComboBox.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -63193,7 +63420,7 @@
           "name": "getChildren",
           "fullPath": "LComboBox.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -69164,13 +69391,13 @@
         {
           "name": "setContent",
           "fullPath": "LDialog:setContent",
-          "signature": "([content_idx])",
+          "signature": "(content)",
           "description": "Sets the widget index rendered as this dialog's content.",
           "parameters": [
             {
-              "name": "content_idx",
-              "type": "integer",
-              "description": "Optional widget index for the content slot.",
+              "name": "content",
+              "type": "LUiWidget",
+              "description": "Optional widget handle for the content slot.",
               "optional": true
             }
           ],
@@ -69193,13 +69420,13 @@
         {
           "name": "setFooter",
           "fullPath": "LDialog:setFooter",
-          "signature": "([footer_idx])",
+          "signature": "(footer)",
           "description": "Assigns an optional footer content root for this dialog.",
           "parameters": [
             {
-              "name": "footer_idx",
-              "type": "integer",
-              "description": "Optional widget index rendered in the footer slot.",
+              "name": "footer",
+              "type": "LUiWidget",
+              "description": "Optional widget handle rendered in the footer slot.",
               "optional": true
             }
           ],
@@ -69589,6 +69816,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LDialog.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LDialog.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -70045,7 +70301,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LDialog.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -70056,8 +70312,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -70127,13 +70383,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LDialog.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -70342,7 +70598,7 @@
           "name": "getChildren",
           "fullPath": "LDialog.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -72325,13 +72581,13 @@
         {
           "name": "dock",
           "fullPath": "LDockPanel:dock",
-          "signature": "(child_idx, side)",
+          "signature": "(child, side)",
           "description": "Docks a child widget to the specified side of this dock panel.",
           "parameters": [
             {
-              "name": "child_idx",
-              "type": "integer",
-              "description": "The widget index to dock.",
+              "name": "child",
+              "type": "LUiWidget",
+              "description": "The child widget handle to dock.",
               "optional": false
             },
             {
@@ -72349,13 +72605,13 @@
         {
           "name": "undock",
           "fullPath": "LDockPanel:undock",
-          "signature": "(child_idx)",
+          "signature": "(child)",
           "description": "Removes a child widget from this dock panel.",
           "parameters": [
             {
-              "name": "child_idx",
-              "type": "integer",
-              "description": "The widget index to undock.",
+              "name": "child",
+              "type": "LUiWidget",
+              "description": "The child widget handle to undock.",
               "optional": false
             }
           ],
@@ -72443,6 +72699,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LDockPanel.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LDockPanel.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDockPanel"
         },
@@ -72899,7 +73184,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LDockPanel.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -72910,8 +73195,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -72981,13 +73266,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LDockPanel.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -73196,7 +73481,7 @@
           "name": "getChildren",
           "fullPath": "LDockPanel.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -76287,6 +76572,35 @@
           "objectType": "LFont"
         },
         {
+          "name": "isValid",
+          "fullPath": "LFont.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LFont.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LFont.setPosition",
           "signature": "(x, y)",
@@ -76728,7 +77042,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LFont.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -76739,8 +77053,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -76810,13 +77124,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LFont.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -77025,7 +77339,7 @@
           "name": "getChildren",
           "fullPath": "LFont.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -84560,6 +84874,35 @@
           "objectType": "LGuiTable"
         },
         {
+          "name": "isValid",
+          "fullPath": "LGuiTable.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LGuiTable.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LGuiTable.setPosition",
           "signature": "(x, y)",
@@ -85012,7 +85355,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LGuiTable.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -85023,8 +85366,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -85094,13 +85437,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LGuiTable.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -85309,7 +85652,7 @@
           "name": "getChildren",
           "fullPath": "LGuiTable.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -86305,6 +86648,35 @@
           "objectType": "LGuiWindow"
         },
         {
+          "name": "isValid",
+          "fullPath": "LGuiWindow.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LGuiWindow.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LGuiWindow.setPosition",
           "signature": "(x, y)",
@@ -86757,7 +87129,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LGuiWindow.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -86768,8 +87140,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -86839,13 +87211,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LGuiWindow.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -87054,7 +87426,7 @@
           "name": "getChildren",
           "fullPath": "LGuiWindow.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -90731,6 +91103,35 @@
           "objectType": "LImageData"
         },
         {
+          "name": "isValid",
+          "fullPath": "LImageData.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LImageData.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LImageData.setPosition",
           "signature": "(x, y)",
@@ -91183,7 +91584,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LImageData.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -91194,8 +91595,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -91265,13 +91666,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LImageData.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -91480,7 +91881,7 @@
           "name": "getChildren",
           "fullPath": "LImageData.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -92655,6 +93056,35 @@
           "objectType": "LImageWidget"
         },
         {
+          "name": "isValid",
+          "fullPath": "LImageWidget.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LImageWidget.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LImageWidget.setPosition",
           "signature": "(x, y)",
@@ -93107,7 +93537,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LImageWidget.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -93118,8 +93548,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -93189,13 +93619,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LImageWidget.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -93404,7 +93834,7 @@
           "name": "getChildren",
           "fullPath": "LImageWidget.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -95566,6 +95996,35 @@
           "objectType": "LLabel"
         },
         {
+          "name": "isValid",
+          "fullPath": "LLabel.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LLabel.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LLabel.setPosition",
           "signature": "(x, y)",
@@ -96018,7 +96477,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LLabel.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -96029,8 +96488,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -96100,13 +96559,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LLabel.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -96315,7 +96774,7 @@
           "name": "getChildren",
           "fullPath": "LLabel.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -97177,6 +97636,35 @@
           "objectType": "LLabel|nil"
         },
         {
+          "name": "isValid",
+          "fullPath": "LLabel|nil.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLabel|nil"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LLabel|nil.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LLabel|nil"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LLabel|nil.setPosition",
           "signature": "(x, y)",
@@ -97629,7 +98117,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LLabel|nil.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -97640,8 +98128,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -97711,13 +98199,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LLabel|nil.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -97926,7 +98414,7 @@
           "name": "getChildren",
           "fullPath": "LLabel|nil.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -99646,6 +100134,35 @@
           "objectType": "LLayout"
         },
         {
+          "name": "isValid",
+          "fullPath": "LLayout.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LLayout.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LLayout.setPosition",
           "signature": "(x, y)",
@@ -100098,7 +100615,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LLayout.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -100109,8 +100626,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -100180,13 +100697,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LLayout.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -100395,7 +100912,7 @@
           "name": "getChildren",
           "fullPath": "LLayout.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -103805,6 +104322,35 @@
           "objectType": "LListBox"
         },
         {
+          "name": "isValid",
+          "fullPath": "LListBox.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LListBox.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LListBox.setPosition",
           "signature": "(x, y)",
@@ -104257,7 +104803,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LListBox.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -104268,8 +104814,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -104339,13 +104885,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LListBox.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -104554,7 +105100,7 @@
           "name": "getChildren",
           "fullPath": "LListBox.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -107289,13 +107835,13 @@
         {
           "name": "addMenu",
           "fullPath": "LMenuBar:addMenu",
-          "signature": "(menu_idx)",
+          "signature": "(menu)",
           "description": "Adds a menu (by its widget index) to this menu bar.",
           "parameters": [
             {
-              "name": "menu_idx",
-              "type": "integer",
-              "description": "The widget index of the menu to add.",
+              "name": "menu",
+              "type": "LMenuItem",
+              "description": "The menu widget handle to add.",
               "optional": false
             }
           ],
@@ -107307,13 +107853,13 @@
         {
           "name": "removeMenu",
           "fullPath": "LMenuBar:removeMenu",
-          "signature": "(menu_idx)",
+          "signature": "(menu)",
           "description": "Removes a menu from this menu bar by its widget index.",
           "parameters": [
             {
-              "name": "menu_idx",
-              "type": "integer",
-              "description": "The widget index of the menu to remove.",
+              "name": "menu",
+              "type": "LMenuItem",
+              "description": "The menu widget handle to remove.",
               "optional": false
             }
           ],
@@ -107370,6 +107916,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LMenuBar.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LMenuBar.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LMenuBar"
         },
@@ -107826,7 +108401,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LMenuBar.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -107837,8 +108412,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -107908,13 +108483,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LMenuBar.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -108123,7 +108698,7 @@
           "name": "getChildren",
           "fullPath": "LMenuBar.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -109045,13 +109620,13 @@
         {
           "name": "addSubItem",
           "fullPath": "LMenuItem:addSubItem",
-          "signature": "(child_idx)",
+          "signature": "(child)",
           "description": "Adds a sub-item to this menu item for building nested menus.",
           "parameters": [
             {
-              "name": "child_idx",
-              "type": "integer",
-              "description": "The widget index of the sub-item to add.",
+              "name": "child",
+              "type": "LMenuItem",
+              "description": "The sub-item widget handle to add.",
               "optional": false
             }
           ],
@@ -109115,6 +109690,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LMenuItem.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LMenuItem.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LMenuItem"
         },
@@ -109571,7 +110175,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LMenuItem.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -109582,8 +110186,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -109653,13 +110257,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LMenuItem.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -109868,7 +110472,7 @@
           "name": "getChildren",
           "fullPath": "LMenuItem.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -117049,6 +117653,35 @@
           "objectType": "LNinePatch"
         },
         {
+          "name": "isValid",
+          "fullPath": "LNinePatch.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LNinePatch.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LNinePatch.setPosition",
           "signature": "(x, y)",
@@ -117501,7 +118134,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LNinePatch.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -117512,8 +118145,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -117583,13 +118216,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LNinePatch.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -117798,7 +118431,7 @@
           "name": "getChildren",
           "fullPath": "LNinePatch.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -122156,6 +122789,35 @@
           "objectType": "LPanel"
         },
         {
+          "name": "isValid",
+          "fullPath": "LPanel.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LPanel.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LPanel.setPosition",
           "signature": "(x, y)",
@@ -122608,7 +123270,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LPanel.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -122619,8 +123281,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -122690,13 +123352,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LPanel.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -122905,7 +123567,7 @@
           "name": "getChildren",
           "fullPath": "LPanel.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -130061,6 +130723,35 @@
           "objectType": "LProgressBar"
         },
         {
+          "name": "isValid",
+          "fullPath": "LProgressBar.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LProgressBar.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LProgressBar.setPosition",
           "signature": "(x, y)",
@@ -130513,7 +131204,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LProgressBar.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -130524,8 +131215,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -130595,13 +131286,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LProgressBar.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -130810,7 +131501,7 @@
           "name": "getChildren",
           "fullPath": "LProgressBar.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -135707,6 +136398,35 @@
           "objectType": "LPropertyWidget"
         },
         {
+          "name": "isValid",
+          "fullPath": "LPropertyWidget.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPropertyWidget"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LPropertyWidget.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LPropertyWidget"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LPropertyWidget.setPosition",
           "signature": "(x, y)",
@@ -136159,7 +136879,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LPropertyWidget.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -136170,8 +136890,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -136241,13 +136961,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LPropertyWidget.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -136456,7 +137176,7 @@
           "name": "getChildren",
           "fullPath": "LPropertyWidget.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -140085,6 +140805,35 @@
           "objectType": "LRadioButton"
         },
         {
+          "name": "isValid",
+          "fullPath": "LRadioButton.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LRadioButton.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LRadioButton.setPosition",
           "signature": "(x, y)",
@@ -140537,7 +141286,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LRadioButton.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -140548,8 +141297,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -140619,13 +141368,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LRadioButton.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -140834,7 +141583,7 @@
           "name": "getChildren",
           "fullPath": "LRadioButton.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -144421,6 +145170,35 @@
           "objectType": "LRichLabel"
         },
         {
+          "name": "isValid",
+          "fullPath": "LRichLabel.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LRichLabel.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRichLabel"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LRichLabel.setPosition",
           "signature": "(x, y)",
@@ -144873,7 +145651,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LRichLabel.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -144884,8 +145662,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -144955,13 +145733,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LRichLabel.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -145170,7 +145948,7 @@
           "name": "getChildren",
           "fullPath": "LRichLabel.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -148932,6 +149710,35 @@
           "objectType": "LScrollBar"
         },
         {
+          "name": "isValid",
+          "fullPath": "LScrollBar.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LScrollBar.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LScrollBar.setPosition",
           "signature": "(x, y)",
@@ -149384,7 +150191,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LScrollBar.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -149395,8 +150202,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -149466,13 +150273,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LScrollBar.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -149681,7 +150488,7 @@
           "name": "getChildren",
           "fullPath": "LScrollBar.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -150635,6 +151442,35 @@
           "objectType": "LScrollPanel"
         },
         {
+          "name": "isValid",
+          "fullPath": "LScrollPanel.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LScrollPanel.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LScrollPanel.setPosition",
           "signature": "(x, y)",
@@ -151087,7 +151923,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LScrollPanel.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -151098,8 +151934,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -151169,13 +152005,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LScrollPanel.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -151384,7 +152220,7 @@
           "name": "getChildren",
           "fullPath": "LScrollPanel.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -152455,6 +153291,35 @@
           "objectType": "LSeparator"
         },
         {
+          "name": "isValid",
+          "fullPath": "LSeparator.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LSeparator.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LSeparator.setPosition",
           "signature": "(x, y)",
@@ -152907,7 +153772,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LSeparator.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -152918,8 +153783,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -152989,13 +153854,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LSeparator.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -153204,7 +154069,7 @@
           "name": "getChildren",
           "fullPath": "LSeparator.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -156252,6 +157117,35 @@
           "objectType": "LSlider"
         },
         {
+          "name": "isValid",
+          "fullPath": "LSlider.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LSlider.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LSlider.setPosition",
           "signature": "(x, y)",
@@ -156704,7 +157598,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LSlider.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -156715,8 +157609,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -156786,13 +157680,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LSlider.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -157001,7 +157895,7 @@
           "name": "getChildren",
           "fullPath": "LSlider.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -158643,6 +159537,35 @@
           "objectType": "LSpacer"
         },
         {
+          "name": "isValid",
+          "fullPath": "LSpacer.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LSpacer.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LSpacer.setPosition",
           "signature": "(x, y)",
@@ -159095,7 +160018,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LSpacer.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -159106,8 +160029,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -159177,13 +160100,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LSpacer.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -159392,7 +160315,7 @@
           "name": "getChildren",
           "fullPath": "LSpacer.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -160797,6 +161720,35 @@
           "objectType": "LSpinBox"
         },
         {
+          "name": "isValid",
+          "fullPath": "LSpinBox.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LSpinBox.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LSpinBox.setPosition",
           "signature": "(x, y)",
@@ -161249,7 +162201,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LSpinBox.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -161260,8 +162212,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -161331,13 +162283,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LSpinBox.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -161546,7 +162498,7 @@
           "name": "getChildren",
           "fullPath": "LSpinBox.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -162468,13 +163420,13 @@
         {
           "name": "setFirstChild",
           "fullPath": "LSplitPanel:setFirstChild",
-          "signature": "(child_idx)",
+          "signature": "(child)",
           "description": "Sets the widget index for the first (left/top) panel.",
           "parameters": [
             {
-              "name": "child_idx",
-              "type": "integer",
-              "description": "The widget index.",
+              "name": "child",
+              "type": "LUiWidget",
+              "description": "The child widget handle.",
               "optional": false
             }
           ],
@@ -162486,13 +163438,13 @@
         {
           "name": "setSecondChild",
           "fullPath": "LSplitPanel:setSecondChild",
-          "signature": "(child_idx)",
+          "signature": "(child)",
           "description": "Sets the widget index for the second (right/bottom) panel.",
           "parameters": [
             {
-              "name": "child_idx",
-              "type": "integer",
-              "description": "The widget index.",
+              "name": "child",
+              "type": "LUiWidget",
+              "description": "The child widget handle.",
               "optional": false
             }
           ],
@@ -162549,6 +163501,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LSplitPanel.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LSplitPanel.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LSplitPanel"
         },
@@ -163005,7 +163986,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LSplitPanel.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -163016,8 +163997,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -163087,13 +164068,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LSplitPanel.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -163302,7 +164283,7 @@
           "name": "getChildren",
           "fullPath": "LSplitPanel.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -166617,6 +167598,35 @@
           "objectType": "LStackContainer"
         },
         {
+          "name": "isValid",
+          "fullPath": "LStackContainer.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LStackContainer"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LStackContainer.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LStackContainer"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LStackContainer.setPosition",
           "signature": "(x, y)",
@@ -167069,7 +168079,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LStackContainer.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -167080,8 +168090,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -167151,13 +168161,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LStackContainer.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -167366,7 +168376,7 @@
           "name": "getChildren",
           "fullPath": "LStackContainer.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -168612,6 +169622,35 @@
           "objectType": "LStatusBar"
         },
         {
+          "name": "isValid",
+          "fullPath": "LStatusBar.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LStatusBar.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LStatusBar.setPosition",
           "signature": "(x, y)",
@@ -169064,7 +170103,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LStatusBar.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -169075,8 +170114,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -169146,13 +170185,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LStatusBar.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -169361,7 +170400,7 @@
           "name": "getChildren",
           "fullPath": "LStatusBar.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -172112,6 +173151,35 @@
           "objectType": "LSwitch"
         },
         {
+          "name": "isValid",
+          "fullPath": "LSwitch.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LSwitch.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LSwitch.setPosition",
           "signature": "(x, y)",
@@ -172564,7 +173632,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LSwitch.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -172575,8 +173643,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -172646,13 +173714,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LSwitch.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -172861,7 +173929,7 @@
           "name": "getChildren",
           "fullPath": "LSwitch.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -173931,6 +174999,35 @@
           "objectType": "LTabBar"
         },
         {
+          "name": "isValid",
+          "fullPath": "LTabBar.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LTabBar.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LTabBar.setPosition",
           "signature": "(x, y)",
@@ -174383,7 +175480,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LTabBar.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -174394,8 +175491,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -174465,13 +175562,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LTabBar.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -174680,7 +175777,7 @@
           "name": "getChildren",
           "fullPath": "LTabBar.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -175629,6 +176726,35 @@
           "objectType": "LTabContainer"
         },
         {
+          "name": "isValid",
+          "fullPath": "LTabContainer.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTabContainer"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LTabContainer.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTabContainer"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LTabContainer.setPosition",
           "signature": "(x, y)",
@@ -176081,7 +177207,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LTabContainer.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -176092,8 +177218,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -176163,13 +177289,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LTabContainer.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -176378,7 +177504,7 @@
           "name": "getChildren",
           "fullPath": "LTabContainer.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -178580,6 +179706,35 @@
           "objectType": "LTextArea"
         },
         {
+          "name": "isValid",
+          "fullPath": "LTextArea.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LTextArea.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTextArea"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LTextArea.setPosition",
           "signature": "(x, y)",
@@ -179032,7 +180187,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LTextArea.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -179043,8 +180198,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -179114,13 +180269,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LTextArea.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -179329,7 +180484,7 @@
           "name": "getChildren",
           "fullPath": "LTextArea.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -180318,6 +181473,35 @@
           "objectType": "LTextInput"
         },
         {
+          "name": "isValid",
+          "fullPath": "LTextInput.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LTextInput.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LTextInput.setPosition",
           "signature": "(x, y)",
@@ -180770,7 +181954,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LTextInput.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -180781,8 +181965,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -180852,13 +182036,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LTextInput.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -181067,7 +182251,7 @@
           "name": "getChildren",
           "fullPath": "LTextInput.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -187999,6 +189183,35 @@
           "objectType": "LToast"
         },
         {
+          "name": "isValid",
+          "fullPath": "LToast.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LToast.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LToast.setPosition",
           "signature": "(x, y)",
@@ -188451,7 +189664,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LToast.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -188462,8 +189675,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -188533,13 +189746,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LToast.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -188748,7 +189961,7 @@
           "name": "getChildren",
           "fullPath": "LToast.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -189776,6 +190989,35 @@
           "objectType": "LToolbar"
         },
         {
+          "name": "isValid",
+          "fullPath": "LToolbar.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LToolbar.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LToolbar.setPosition",
           "signature": "(x, y)",
@@ -190228,7 +191470,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LToolbar.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -190239,8 +191481,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -190310,13 +191552,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LToolbar.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -190525,7 +191767,7 @@
           "name": "getChildren",
           "fullPath": "LToolbar.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -191429,13 +192671,13 @@
         {
           "name": "setTarget",
           "fullPath": "LTooltipPanel:setTarget",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Sets the widget index that this tooltip is attached to.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "The target widget index, or nil to detach.",
+              "type": "LUiWidget",
+              "description": "The target widget handle, or nil to detach.",
               "optional": true
             }
           ],
@@ -191470,6 +192712,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LTooltipPanel.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LTooltipPanel.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LTooltipPanel"
         },
@@ -191926,7 +193197,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LTooltipPanel.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -191937,8 +193208,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -192008,13 +193279,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LTooltipPanel.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -192223,7 +193494,7 @@
           "name": "getChildren",
           "fullPath": "LTooltipPanel.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -194526,6 +195797,35 @@
           "objectType": "LTreeView"
         },
         {
+          "name": "isValid",
+          "fullPath": "LTreeView.isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LTreeView.destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LTreeView.setPosition",
           "signature": "(x, y)",
@@ -194978,7 +196278,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LTreeView.setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -194989,8 +196289,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -195060,13 +196360,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LTreeView.setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -195275,7 +196575,7 @@
           "name": "getChildren",
           "fullPath": "LTreeView.getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -197683,6 +198983,35 @@
           "objectType": "LUiWidget"
         },
         {
+          "name": "isValid",
+          "fullPath": "LUiWidget:isValid",
+          "signature": "()",
+          "description": "Returns whether this widget handle still identifies a live widget in its originating UI context.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "destroy",
+          "fullPath": "LUiWidget:destroy",
+          "signature": "([recursive])",
+          "description": "Destroys this widget and, by default, its retained descendant subtree.",
+          "parameters": [
+            {
+              "name": "recursive",
+              "type": "boolean",
+              "description": "Whether descendants are destroyed; defaults to true.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
           "name": "setPosition",
           "fullPath": "LUiWidget:setPosition",
           "signature": "(x, y)",
@@ -198135,7 +199464,7 @@
         {
           "name": "setFocusNeighbor",
           "fullPath": "LUiWidget:setFocusNeighbor",
-          "signature": "(direction, [target])",
+          "signature": "(direction, target)",
           "description": "Sets an explicit directional focus neighbor for this widget.",
           "parameters": [
             {
@@ -198146,8 +199475,8 @@
             },
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the neighbor.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the neighbor.",
               "optional": true
             }
           ],
@@ -198217,13 +199546,13 @@
         {
           "name": "setLabelFor",
           "fullPath": "LUiWidget:setLabelFor",
-          "signature": "([target])",
+          "signature": "(target)",
           "description": "Associates this label widget with another widget for accessibility naming.",
           "parameters": [
             {
               "name": "target",
-              "type": "integer",
-              "description": "Target widget index, or nil to clear the link.",
+              "type": "LUiWidget",
+              "description": "Target widget handle, or nil to clear the link.",
               "optional": true
             }
           ],
@@ -198432,7 +199761,7 @@
           "name": "getChildren",
           "fullPath": "LUiWidget:getChildren",
           "signature": "()",
-          "description": "Returns a table of lightweight child widget references, each containing an _idx field.",
+          "description": "Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",

@@ -1649,3 +1649,65 @@ fn benchmark_long_text_ellipsis_render() {
     }
     eprintln!("benchmark_long_text_ellipsis_render: {:?}", start.elapsed());
 }
+
+#[test]
+fn widget_handles_reject_cleared_generations_without_slot_reuse() {
+    let mut ctx = GuiContext::new();
+    let old_idx = ctx.add_button("old");
+    let old_handle = ctx.widget_id(old_idx).expect("new widget handle");
+    assert_eq!(ctx.resolve_widget_id(old_handle), Ok(old_idx));
+
+    ctx.clear();
+    let new_idx = ctx.add_button("new");
+    let new_handle = ctx.widget_id(new_idx).expect("replacement handle");
+    assert_ne!(
+        old_idx, new_idx,
+        "cleared slots must not alias replacements"
+    );
+    assert!(ctx.resolve_widget_id(old_handle).is_err());
+    assert_eq!(ctx.resolve_widget_id(new_handle), Ok(new_idx));
+}
+
+#[test]
+fn destroying_subtree_cleans_focus_and_events() {
+    let mut ctx = GuiContext::new();
+    let parent = ctx.add_panel();
+    let child = ctx.add_button("child");
+    assert!(ctx.add_child(0, parent));
+    assert!(ctx.add_child(parent, child));
+    ctx.set_focus(Some(child));
+    assert!(ctx.begin_drag(child));
+    assert!(ctx.destroy_widget(parent, true).is_ok());
+    assert_eq!(ctx.focused_widget, None);
+    assert!(ctx.active_drag().is_none());
+    assert!(ctx.drain_events().is_empty());
+    assert!(!ctx.widget_is_live(parent));
+    assert!(!ctx.widget_is_live(child));
+}
+
+#[test]
+fn layout_load_is_transactional_on_reference_failure() {
+    let mut ctx = GuiContext::new();
+    let existing = ctx.add_label("existing");
+    assert!(ctx.add_child(0, existing));
+    let before = ctx.widget_count();
+    let bad = WidgetDef {
+        widget_type: "panel".into(),
+        focus_neighbors: Some(lurek2d::ui::layout_loader::FocusNeighborDef {
+            right: Some("missing".into()),
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+    assert!(load_layout_def(&mut ctx, &bad).is_err());
+    assert_eq!(ctx.widget_count(), before);
+    assert!(ctx.widget_is_live(existing));
+}
+
+#[test]
+fn ui_limits_reject_oversized_image_dimensions() {
+    let limits = lurek2d::ui::UiLimits::default();
+    assert!(limits.validate_image_dimensions(0, 10).is_err());
+    assert!(limits.validate_image_dimensions(4097, 1).is_err());
+    assert!(limits.validate_image_dimensions(4096, 4096).is_ok());
+}

@@ -28,12 +28,14 @@ use crate::ui::extras::{
     Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem,
     PropertyWidget, Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
 };
+use crate::ui::limits::UiLimits;
 use crate::ui::theme::Theme;
 use crate::ui::widget::{
     EasingFunction, MouseFilter, WidgetBase, WidgetState, WidgetTransition, WidgetTransitionKind,
     WidgetType,
 };
 use std::collections::{HashMap, HashSet};
+use std::sync::atomic::{AtomicU64, Ordering};
 
 mod builders;
 mod color;
@@ -71,6 +73,35 @@ pub enum UiBindingValue {
     /// Boolean binding applied to checkboxes, switches, and visibility.
     Bool(bool),
 }
+
+/// Opaque identity for one widget generation in one UI context.
+///
+/// The slot is retained for diagnostics and compatibility with the existing
+/// retained widget storage, but callers must validate the complete value. A
+/// slot alone is never an authoritative widget reference.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct WidgetId {
+    context_id: u64,
+    slot: usize,
+    generation: u64,
+}
+
+impl WidgetId {
+    /// Return the retained-storage slot for diagnostics only.
+    pub fn slot(self) -> usize {
+        self.slot
+    }
+    /// Return the context identity used to reject cross-context handles.
+    pub fn context_id(self) -> u64 {
+        self.context_id
+    }
+    /// Return the generation used to reject handles retained across `clear`.
+    pub fn generation(self) -> u64 {
+        self.generation
+    }
+}
+
+static NEXT_CONTEXT_ID: AtomicU64 = AtomicU64::new(1);
 /// An event emitted by a widget interaction and drained each frame by the Lua binding.
 #[derive(Debug, Clone)]
 pub enum GuiEvent {
@@ -92,6 +123,99 @@ pub enum GuiEvent {
     Drop(usize, usize),
     /// A drag ended; the optional target is present only after a successful drop.
     DragEnd(usize, Option<usize>),
+}
+impl GuiEvent {
+    fn targets_any(&self, doomed: &HashSet<usize>) -> bool {
+        match self {
+            Self::Click(idx) | Self::Change(idx) | Self::Close(idx) | Self::DragStart(idx) => {
+                doomed.contains(idx)
+            }
+            Self::Select(idx, _) => doomed.contains(idx),
+            Self::DragEnter(source, target)
+            | Self::DragLeave(source, target)
+            | Self::Drop(source, target) => doomed.contains(source) || doomed.contains(target),
+            Self::DragEnd(source, target) => {
+                doomed.contains(source) || target.is_some_and(|idx| doomed.contains(&idx))
+            }
+        }
+    }
+}
+
+/// Bounded event queue used at the Lua/UI boundary.
+#[derive(Debug, Clone)]
+pub struct UiEventQueue {
+    events: Vec<GuiEvent>,
+    limit: usize,
+    /// Number of critical events rejected after the queue reached its ceiling.
+    pub overflowed_critical: usize,
+}
+
+impl UiEventQueue {
+    fn new(limit: usize) -> Self {
+        Self {
+            events: Vec::new(),
+            limit: limit.max(1),
+            overflowed_critical: 0,
+        }
+    }
+    fn is_safe_to_coalesce(event: &GuiEvent) -> bool {
+        matches!(
+            event,
+            GuiEvent::Change(_) | GuiEvent::DragEnter(_, _) | GuiEvent::DragLeave(_, _)
+        )
+    }
+    fn push(&mut self, event: GuiEvent) {
+        if self.events.len() < self.limit {
+            self.events.push(event);
+            return;
+        }
+        if Self::is_safe_to_coalesce(&event) {
+            let duplicate = match event {
+                GuiEvent::Change(idx) => self
+                    .events
+                    .iter()
+                    .any(|queued| matches!(queued, GuiEvent::Change(existing) if *existing == idx)),
+                GuiEvent::DragEnter(source, target) => self.events.iter().any(|queued| {
+                    matches!(queued, GuiEvent::DragEnter(existing_source, existing_target) if *existing_source == source && *existing_target == target)
+                }),
+                GuiEvent::DragLeave(source, target) => self.events.iter().any(|queued| {
+                    matches!(queued, GuiEvent::DragLeave(existing_source, existing_target) if *existing_source == source && *existing_target == target)
+                }),
+                _ => false,
+            };
+            if duplicate {
+                return;
+            }
+        }
+        // Critical events are accounted for explicitly instead of silently
+        // evicting an already queued click/change/close event.
+        self.overflowed_critical = self.overflowed_critical.saturating_add(1);
+    }
+    fn retain<F>(&mut self, f: F)
+    where
+        F: FnMut(&GuiEvent) -> bool,
+    {
+        self.events.retain(f);
+    }
+    fn drain<R>(&mut self, range: R) -> std::vec::Drain<'_, GuiEvent>
+    where
+        R: std::ops::RangeBounds<usize>,
+    {
+        self.events.drain(range)
+    }
+    pub(crate) fn is_empty(&self) -> bool {
+        self.events.is_empty()
+    }
+    pub(crate) fn remove(&mut self, index: usize) -> GuiEvent {
+        self.events.remove(index)
+    }
+    pub(crate) fn insert(&mut self, index: usize, event: GuiEvent) {
+        if self.events.len() < self.limit {
+            self.events.insert(index.min(self.events.len()), event);
+        } else {
+            self.overflowed_critical = self.overflowed_critical.saturating_add(1);
+        }
+    }
 }
 /// Discriminated union of all concrete widget types stored in the flat `GuiContext::widgets` list.
 #[derive(Debug, Clone)]
@@ -322,6 +446,17 @@ enum PointerCapture {
     },
     PopupResize(PopupResizeCapture),
 }
+impl PointerCapture {
+    fn targets_any(self, doomed: &HashSet<usize>) -> bool {
+        match self {
+            Self::Slider(idx)
+            | Self::ScrollBar(idx)
+            | Self::DragDrop(idx)
+            | Self::PopupMove { idx, .. }
+            | Self::PopupResize(PopupResizeCapture { idx, .. }) => doomed.contains(&idx),
+        }
+    }
+}
 /// Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.
 #[derive(Debug, Clone)]
 pub struct GuiContext {
@@ -334,7 +469,7 @@ pub struct GuiContext {
     /// Current visual theme applied to all widgets during rendering.
     pub theme: Option<Theme>,
     /// Events accumulated this frame, drained by Lua or caller each tick.
-    pub pending_events: Vec<GuiEvent>,
+    pub pending_events: UiEventQueue,
     /// Set to `true` whenever any widget state changes; cleared by `flush_cache`.
     pub dirty: bool,
     /// True when layout geometry requires recomputation.
@@ -361,6 +496,16 @@ pub struct GuiContext {
     pub base_resolution: (f32, f32),
     /// Computed scale factor = current_height / base_height.
     pub scale_factor: f32,
+    /// Trusted engine-owned resource ceilings for this context.
+    limits: UiLimits,
+    /// Stable identity of this context; never expose it as a Lua-authoritative value.
+    context_id: u64,
+    /// Generation incremented whenever the retained tree is cleared.
+    identity_generation: u64,
+    /// Explicit root identity; root is not defined by a magic slot in the handle API.
+    root_id: WidgetId,
+    /// Live-state bitmap for retained slots. Dead slots are never reused, so stale closures cannot alias a replacement.
+    live_slots: Vec<bool>,
     /// Rolling typeahead query buffer used by focused combo boxes.
     combo_typeahead_buffer: String,
     /// Seconds remaining before the combo-box typeahead buffer expires.
@@ -371,12 +516,18 @@ impl GuiContext {
     pub fn new() -> Self {
         log_msg!(debug, GU01_CTX_INIT);
         let root = Panel::new();
+        let context_id = NEXT_CONTEXT_ID.fetch_add(1, Ordering::Relaxed);
+        let root_id = WidgetId {
+            context_id,
+            slot: 0,
+            generation: 1,
+        };
         Self {
             widgets: vec![WidgetKind::Panel(root)],
             focused_widget: None,
             toasts: Vec::new(),
             theme: Some(crate::ui::theme::Theme::default_dark()),
-            pending_events: Vec::new(),
+            pending_events: UiEventQueue::new(UiLimits::default().max_pending_events),
             dirty: true,
             layout_dirty: true,
             style_dirty: true,
@@ -390,17 +541,230 @@ impl GuiContext {
             last_render_signature: 0,
             base_resolution: (1920.0, 1080.0),
             scale_factor: 1.0,
+            limits: UiLimits::default(),
+            context_id,
+            identity_generation: 1,
+            root_id,
+            live_slots: vec![true],
             combo_typeahead_buffer: String::new(),
             combo_typeahead_ttl: 0.0,
         }
     }
     /// Reset the retained widget tree and transient UI state while preserving the active theme.
     pub fn clear(&mut self) -> usize {
-        let removed = self.widgets.len().saturating_sub(1);
+        let removed = self.widget_count().saturating_sub(1);
         let theme = self.theme.clone();
-        *self = Self::new();
-        self.theme = theme;
+        let limits = self.limits;
+        let slot_count = self.widgets.len().max(1);
+        let context_id = self.context_id;
+        let next_generation = self.identity_generation.saturating_add(1).max(1);
+        let mut fresh = Self::new();
+        fresh.context_id = context_id;
+        fresh.identity_generation = next_generation;
+        fresh.root_id = WidgetId {
+            context_id,
+            slot: 0,
+            generation: next_generation,
+        };
+        fresh.widgets.reserve(slot_count.saturating_sub(1));
+        fresh.live_slots = vec![true];
+        for _ in 1..slot_count {
+            fresh.widgets.push(Self::dead_widget());
+            fresh.live_slots.push(false);
+        }
+        fresh.theme = theme;
+        fresh.limits = limits;
+        fresh.pending_events = UiEventQueue::new(limits.max_pending_events);
+        *self = fresh;
         removed
+    }
+    fn dead_widget() -> WidgetKind {
+        let mut panel = Panel::new();
+        panel.base.visible = false;
+        panel.base.is_visible = false;
+        panel.base.enabled = false;
+        WidgetKind::Panel(panel)
+    }
+    /// Return whether a retained slot is live. Missing bitmap entries represent
+    /// newly appended legacy slots and are treated as live until registered.
+    pub fn widget_is_live(&self, idx: usize) -> bool {
+        idx < self.widgets.len() && self.live_slots.get(idx).copied().unwrap_or(true)
+    }
+    /// Return the opaque identity for a live widget slot.
+    pub fn widget_id(&self, idx: usize) -> Option<WidgetId> {
+        self.widget_is_live(idx).then_some(WidgetId {
+            context_id: self.context_id,
+            slot: idx,
+            generation: self.identity_generation,
+        })
+    }
+    /// Resolve a complete widget identity or return a stable lifecycle error.
+    pub fn resolve_widget_id(&self, id: WidgetId) -> Result<usize, String> {
+        if id.context_id != self.context_id {
+            return Err("lurek.ui: widget handle belongs to another UI context".to_string());
+        }
+        if id.generation != self.identity_generation {
+            return Err("lurek.ui: widget handle is stale after UI reset".to_string());
+        }
+        if !self.widget_is_live(id.slot) {
+            return Err("lurek.ui: widget handle is destroyed or invalid".to_string());
+        }
+        Ok(id.slot)
+    }
+    /// Return the explicit root identity.
+    pub fn root_id(&self) -> WidgetId {
+        self.root_id
+    }
+    /// Return the active trusted UI resource policy.
+    pub fn limits(&self) -> UiLimits {
+        self.limits
+    }
+    /// Replace the UI resource policy from trusted engine setup code.
+    pub fn set_limits(&mut self, limits: UiLimits) {
+        self.limits = limits;
+    }
+    /// Mark a retained widget dead and clean all state that can point at it.
+    pub fn destroy_widget(&mut self, idx: usize, recursive: bool) -> Result<usize, String> {
+        if idx == 0 {
+            return Err("lurek.ui.destroy: the root widget cannot be destroyed".to_string());
+        }
+        if !self.widget_is_live(idx) {
+            return Err("lurek.ui.destroy: widget handle is destroyed or invalid".to_string());
+        }
+        let children = self.traversal_children(idx);
+        if !recursive && !children.is_empty() {
+            return Err(
+                "lurek.ui.destroy: non-recursive destruction requires a leaf widget".to_string(),
+            );
+        }
+
+        let mut doomed = HashSet::new();
+        let mut stack = vec![idx];
+        while let Some(current) = stack.pop() {
+            if !self.widget_is_live(current) || !doomed.insert(current) {
+                continue;
+            }
+            if recursive {
+                stack.extend(self.traversal_children(current));
+            }
+        }
+
+        for widget in &mut self.widgets {
+            let base = widget.base_mut();
+            if base
+                .focus_neighbor_up
+                .is_some_and(|target| doomed.contains(&target))
+            {
+                base.focus_neighbor_up = None;
+            }
+            if base
+                .focus_neighbor_down
+                .is_some_and(|target| doomed.contains(&target))
+            {
+                base.focus_neighbor_down = None;
+            }
+            if base
+                .focus_neighbor_left
+                .is_some_and(|target| doomed.contains(&target))
+            {
+                base.focus_neighbor_left = None;
+            }
+            if base
+                .focus_neighbor_right
+                .is_some_and(|target| doomed.contains(&target))
+            {
+                base.focus_neighbor_right = None;
+            }
+            if base
+                .label_for
+                .is_some_and(|target| doomed.contains(&target))
+            {
+                base.label_for = None;
+            }
+            if let Some(children) = widget.children_mut() {
+                children.retain(|child| !doomed.contains(child));
+            }
+            match widget {
+                WidgetKind::Dialog(dialog) => {
+                    if dialog
+                        .content_idx
+                        .is_some_and(|target| doomed.contains(&target))
+                    {
+                        dialog.content_idx = None;
+                    }
+                    if dialog
+                        .footer_idx
+                        .is_some_and(|target| doomed.contains(&target))
+                    {
+                        dialog.footer_idx = None;
+                    }
+                }
+                WidgetKind::SplitPanel(split) => {
+                    if split
+                        .first_child
+                        .is_some_and(|target| doomed.contains(&target))
+                    {
+                        split.first_child = None;
+                    }
+                    if split
+                        .second_child
+                        .is_some_and(|target| doomed.contains(&target))
+                    {
+                        split.second_child = None;
+                    }
+                }
+                WidgetKind::DockPanel(dock) => {
+                    dock.docked.retain(|(child, _)| !doomed.contains(child))
+                }
+                WidgetKind::MenuBar(menu) => menu.menus.retain(|child| !doomed.contains(child)),
+                WidgetKind::MenuItem(item) => item.items.retain(|child| !doomed.contains(child)),
+                WidgetKind::Accordion(accordion) => accordion.sections.retain(|section| {
+                    !section
+                        .content_idx
+                        .is_some_and(|target| doomed.contains(&target))
+                }),
+                WidgetKind::TooltipPanel(tooltip) => {
+                    if tooltip
+                        .target_idx
+                        .is_some_and(|target| doomed.contains(&target))
+                    {
+                        tooltip.target_idx = None;
+                    }
+                }
+                _ => {}
+            }
+        }
+        self.pending_events
+            .retain(|event| !event.targets_any(&doomed));
+        if self
+            .focused_widget
+            .is_some_and(|target| doomed.contains(&target))
+        {
+            self.focused_widget = None;
+        }
+        if self
+            .drag_session
+            .is_some_and(|session| doomed.contains(&session.source_idx))
+        {
+            self.drag_session = None;
+        }
+        if self
+            .captured_pointer
+            .is_some_and(|capture| capture.targets_any(&doomed))
+        {
+            self.captured_pointer = None;
+        }
+        for dead in doomed.iter().copied() {
+            if dead < self.widgets.len() {
+                self.widgets[dead] = Self::dead_widget();
+            }
+            if dead >= self.live_slots.len() {
+                self.live_slots.resize(dead + 1, true);
+            }
+            self.live_slots[dead] = false;
+        }
+        self.mark_dirty_flags(true, true, true, true);
+        Ok(doomed.len())
     }
     /// Mark dirty state at both legacy and fine-grained levels.
     fn mark_dirty_flags(&mut self, layout: bool, style: bool, text: bool, render: bool) {
@@ -416,7 +780,11 @@ impl GuiContext {
     }
     /// Return the total number of widgets including the root panel.
     pub fn widget_count(&self) -> usize {
-        self.widgets.len()
+        self.widgets
+            .iter()
+            .enumerate()
+            .filter(|(idx, _)| self.widget_is_live(*idx))
+            .count()
     }
     /// Drain and return all pending events accumulated since the last call.
     pub fn drain_events(&mut self) -> Vec<GuiEvent> {
@@ -455,6 +823,9 @@ impl GuiContext {
         )
     }
     fn traversal_children(&self, idx: usize) -> Vec<usize> {
+        if !self.widget_is_live(idx) {
+            return Vec::new();
+        }
         let mut out = self
             .widgets
             .get(idx)
@@ -489,25 +860,13 @@ impl GuiContext {
     }
     fn is_descendant_of(&self, root_idx: usize, needle_idx: usize) -> bool {
         let mut visited = HashSet::new();
-        self.is_descendant_of_inner(root_idx, needle_idx, &mut visited)
-    }
-    fn is_descendant_of_inner(
-        &self,
-        root_idx: usize,
-        needle_idx: usize,
-        visited: &mut HashSet<usize>,
-    ) -> bool {
-        if root_idx >= self.widgets.len() {
-            return false;
-        }
-        if !visited.insert(root_idx) {
-            return false;
-        }
-        for child_idx in self.traversal_children(root_idx) {
-            if child_idx == needle_idx
-                || self.is_descendant_of_inner(child_idx, needle_idx, visited)
-            {
+        let mut stack = self.traversal_children(root_idx);
+        while let Some(current) = stack.pop() {
+            if current == needle_idx {
                 return true;
+            }
+            if self.widget_is_live(current) && visited.insert(current) {
+                stack.extend(self.traversal_children(current));
             }
         }
         false
@@ -515,6 +874,9 @@ impl GuiContext {
     fn active_modal_dialog(&self) -> Option<usize> {
         let mut best: Option<(usize, i32, usize)> = None;
         for (idx, widget) in self.widgets.iter().enumerate().skip(1) {
+            if !self.widget_is_live(idx) {
+                continue;
+            }
             let WidgetKind::Dialog(dialog) = widget else {
                 continue;
             };
@@ -549,6 +911,9 @@ impl GuiContext {
     pub fn run_layout_pass(&mut self) {
         // Phase 1: Enforce minimum sizes on widgets with zero or undersize dimensions.
         for idx in 1..self.widgets.len() {
+            if !self.widget_is_live(idx) {
+                continue;
+            }
             let (min_w, min_h) = self.calculate_minimum_size(idx, None);
             let base = self.widgets[idx].base_mut();
             if base.width < min_w && base.width <= 0.0 {
@@ -851,7 +1216,21 @@ impl GuiContext {
         parent_visible: bool,
         override_rect: Option<Rect>,
     ) {
-        if idx >= self.widgets.len() {
+        self.layout_widget_inner(idx, parent_rect, parent_visible, override_rect, 0);
+    }
+
+    fn layout_widget_inner(
+        &mut self,
+        idx: usize,
+        parent_rect: &Rect,
+        parent_visible: bool,
+        override_rect: Option<Rect>,
+        depth: usize,
+    ) {
+        if idx >= self.widgets.len()
+            || !self.widget_is_live(idx)
+            || depth > self.limits.max_tree_depth
+        {
             return;
         }
 
@@ -910,7 +1289,13 @@ impl GuiContext {
                 .map(|(_, r)| *r);
             let child_visible =
                 active_stack_child.map_or(visible, |active| visible && active == child_idx);
-            self.layout_widget(child_idx, &computed, child_visible, child_override);
+            self.layout_widget_inner(
+                child_idx,
+                &computed,
+                child_visible,
+                child_override,
+                depth.saturating_add(1),
+            );
         }
         if let Some((content_idx, footer_idx, body_rect, footer_rect)) =
             self.widgets.get(idx).and_then(|widget| {
@@ -926,16 +1311,28 @@ impl GuiContext {
             })
         {
             if let Some(content_idx) = content_idx {
-                self.layout_widget(content_idx, &body_rect, visible, Some(body_rect));
+                self.layout_widget_inner(
+                    content_idx,
+                    &body_rect,
+                    visible,
+                    Some(body_rect),
+                    depth.saturating_add(1),
+                );
             }
             if let Some(footer_idx) = footer_idx {
-                self.layout_widget(footer_idx, &footer_rect, visible, Some(footer_rect));
+                self.layout_widget_inner(
+                    footer_idx,
+                    &footer_rect,
+                    visible,
+                    Some(footer_rect),
+                    depth.saturating_add(1),
+                );
             }
         }
     }
     /// Add a `Button` widget and return its index.
     pub fn begin_drag(&mut self, widget_idx: usize) -> bool {
-        if widget_idx == 0 || widget_idx >= self.widgets.len() {
+        if widget_idx == 0 || !self.widget_is_live(widget_idx) {
             return false;
         }
         let base = self.widgets[widget_idx].base();
@@ -978,7 +1375,10 @@ impl GuiContext {
             return false;
         };
         let drag_idx = session.source_idx;
-        if target_idx >= self.widgets.len() || drag_idx == target_idx {
+        if !self.widget_is_live(target_idx)
+            || !self.widget_is_live(drag_idx)
+            || drag_idx == target_idx
+        {
             return false;
         }
         let target_base = self.widgets[target_idx].base();
@@ -1016,27 +1416,13 @@ impl GuiContext {
     /// Return `true` if `needle_idx` is a descendant of `root_idx` in the widget tree.
     fn contains_descendant(&self, root_idx: usize, needle_idx: usize) -> bool {
         let mut visited = HashSet::new();
-        self.contains_descendant_inner(root_idx, needle_idx, &mut visited)
-    }
-    fn contains_descendant_inner(
-        &self,
-        root_idx: usize,
-        needle_idx: usize,
-        visited: &mut HashSet<usize>,
-    ) -> bool {
-        if root_idx >= self.widgets.len() {
-            return false;
-        }
-        if !visited.insert(root_idx) {
-            return false;
-        }
-        if let Some(children) = self.widgets[root_idx].children() {
-            for child in children {
-                if *child == needle_idx
-                    || self.contains_descendant_inner(*child, needle_idx, visited)
-                {
-                    return true;
-                }
+        let mut stack = self.traversal_children(root_idx);
+        while let Some(current) = stack.pop() {
+            if current == needle_idx {
+                return true;
+            }
+            if self.widget_is_live(current) && visited.insert(current) {
+                stack.extend(self.traversal_children(current));
             }
         }
         false
@@ -1049,7 +1435,7 @@ impl GuiContext {
         duration: f32,
         hide_on_complete: bool,
     ) -> bool {
-        if widget_idx >= self.widgets.len() {
+        if !self.widget_is_live(widget_idx) {
             return false;
         }
         let base = self.widgets[widget_idx].base_mut();
@@ -1071,7 +1457,7 @@ impl GuiContext {
         to_y: f32,
         duration: f32,
     ) -> bool {
-        if widget_idx >= self.widgets.len() {
+        if !self.widget_is_live(widget_idx) {
             return false;
         }
         let base = self.widgets[widget_idx].base_mut();
@@ -1093,21 +1479,25 @@ impl GuiContext {
         duration: f32,
         easing: EasingFunction,
     ) -> bool {
-        if let Some(w) = self.widgets.get_mut(idx) {
-            let base = w.base_mut();
-            base.transitions.push(WidgetTransition {
-                kind: WidgetTransitionKind::Scale {
-                    from_sx,
-                    from_sy,
-                    to_sx,
-                    to_sy,
-                },
-                duration,
-                elapsed: 0.0,
-                hide_on_complete: false,
-                easing,
-            });
-            true
+        if self.widget_is_live(idx) {
+            if let Some(w) = self.widgets.get_mut(idx) {
+                let base = w.base_mut();
+                base.transitions.push(WidgetTransition {
+                    kind: WidgetTransitionKind::Scale {
+                        from_sx,
+                        from_sy,
+                        to_sx,
+                        to_sy,
+                    },
+                    duration,
+                    elapsed: 0.0,
+                    hide_on_complete: false,
+                    easing,
+                });
+                true
+            } else {
+                false
+            }
         } else {
             false
         }
@@ -1122,16 +1512,20 @@ impl GuiContext {
         duration: f32,
         easing: EasingFunction,
     ) -> bool {
-        if let Some(w) = self.widgets.get_mut(idx) {
-            let base = w.base_mut();
-            base.transitions.push(WidgetTransition {
-                kind: WidgetTransitionKind::Rotation { from, to },
-                duration,
-                elapsed: 0.0,
-                hide_on_complete: false,
-                easing,
-            });
-            true
+        if self.widget_is_live(idx) {
+            if let Some(w) = self.widgets.get_mut(idx) {
+                let base = w.base_mut();
+                base.transitions.push(WidgetTransition {
+                    kind: WidgetTransitionKind::Rotation { from, to },
+                    duration,
+                    elapsed: 0.0,
+                    hide_on_complete: false,
+                    easing,
+                });
+                true
+            } else {
+                false
+            }
         } else {
             false
         }
@@ -1146,23 +1540,27 @@ impl GuiContext {
         duration: f32,
         easing: EasingFunction,
     ) -> bool {
-        if let Some(w) = self.widgets.get_mut(idx) {
-            let base = w.base_mut();
-            base.transitions.push(WidgetTransition {
-                kind: WidgetTransitionKind::Color { from, to },
-                duration,
-                elapsed: 0.0,
-                hide_on_complete: false,
-                easing,
-            });
-            true
+        if self.widget_is_live(idx) {
+            if let Some(w) = self.widgets.get_mut(idx) {
+                let base = w.base_mut();
+                base.transitions.push(WidgetTransition {
+                    kind: WidgetTransitionKind::Color { from, to },
+                    duration,
+                    elapsed: 0.0,
+                    hide_on_complete: false,
+                    easing,
+                });
+                true
+            } else {
+                false
+            }
         } else {
             false
         }
     }
     /// Clear all pending transitions on `widget_idx`; returns `false` on invalid index.
     pub fn cancel_animations(&mut self, widget_idx: usize) -> bool {
-        if widget_idx >= self.widgets.len() {
+        if !self.widget_is_live(widget_idx) {
             return false;
         }
         self.widgets[widget_idx].base_mut().transitions.clear();
@@ -1171,9 +1569,11 @@ impl GuiContext {
     }
     /// Return `true` if `widget_idx` has at least one active transition.
     pub fn is_animating(&self, widget_idx: usize) -> bool {
-        self.widgets
-            .get(widget_idx)
-            .is_some_and(|w| !w.base().transitions.is_empty())
+        self.widget_is_live(widget_idx)
+            && self
+                .widgets
+                .get(widget_idx)
+                .is_some_and(|w| !w.base().transitions.is_empty())
     }
     /// Apply `values` to bound widgets; return the number of widgets whose state changed.
     pub fn update_bindings(&mut self, values: &HashMap<String, UiBindingValue>) -> usize {
@@ -1330,7 +1730,7 @@ impl GuiContext {
     /// Append `child_idx` to `parent_idx`'s child list if it is a container; return `false` on invalid indices or non-container.
     pub fn add_child(&mut self, parent_idx: usize, child_idx: usize) -> bool {
         log_msg!(debug, GU02_WIDGET_ADD);
-        if parent_idx >= self.widgets.len() || child_idx >= self.widgets.len() {
+        if !self.widget_is_live(parent_idx) || !self.widget_is_live(child_idx) {
             return false;
         }
         if child_idx == 0 || parent_idx == child_idx {
@@ -1345,6 +1745,11 @@ impl GuiContext {
             }
         }
         if let Some(children) = self.widgets[parent_idx].children_mut() {
+            if !children.contains(&child_idx)
+                && children.len() >= self.limits.max_children_per_widget
+            {
+                return false;
+            }
             if !children.contains(&child_idx) {
                 children.push(child_idx);
             }
@@ -1359,6 +1764,9 @@ impl GuiContext {
         let mut errors = Vec::new();
         let mut parent_counts = vec![0usize; self.widgets.len()];
         for idx in 0..self.widgets.len() {
+            if !self.widget_is_live(idx) {
+                continue;
+            }
             let mut seen_children = HashSet::new();
             for child_idx in self.traversal_children(idx) {
                 if child_idx >= self.widgets.len() {
@@ -1393,7 +1801,7 @@ impl GuiContext {
         errors
     }
     fn validate_tree_cycles(&self, idx: usize, visit_state: &mut [u8], errors: &mut Vec<String>) {
-        if idx >= self.widgets.len() {
+        if !self.widget_is_live(idx) {
             return;
         }
         match visit_state[idx] {
@@ -1404,13 +1812,29 @@ impl GuiContext {
             2 => return,
             _ => {}
         }
-        visit_state[idx] = 1;
-        for child_idx in self.traversal_children(idx) {
-            if child_idx < self.widgets.len() {
-                self.validate_tree_cycles(child_idx, visit_state, errors);
+        let mut stack = vec![(idx, false)];
+        while let Some((current, exiting)) = stack.pop() {
+            if current >= self.widgets.len() || !self.widget_is_live(current) {
+                continue;
+            }
+            if exiting {
+                visit_state[current] = 2;
+                continue;
+            }
+            match visit_state[current] {
+                1 => errors.push(format!("cycle detected at widget {current}")),
+                2 => continue,
+                _ => {
+                    visit_state[current] = 1;
+                    stack.push((current, true));
+                    for child_idx in self.traversal_children(current).into_iter().rev() {
+                        if child_idx < self.widgets.len() {
+                            stack.push((child_idx, false));
+                        }
+                    }
+                }
             }
         }
-        visit_state[idx] = 2;
     }
     fn widget_text_content(&self, idx: usize) -> Option<&str> {
         match self.widgets.get(idx)? {
@@ -1685,7 +2109,7 @@ impl GuiContext {
     }
     /// Remove `child_idx` from `parent_idx`'s child list; return `false` if not found.
     pub fn remove_child(&mut self, parent_idx: usize, child_idx: usize) -> bool {
-        if parent_idx >= self.widgets.len() {
+        if !self.widget_is_live(parent_idx) || !self.widget_is_live(child_idx) {
             return false;
         }
         if let Some(children) = self.widgets[parent_idx].children_mut() {
@@ -1699,6 +2123,9 @@ impl GuiContext {
     }
     /// Return the number of direct children of `widget_idx`; 0 for leaf widgets or invalid index.
     pub fn child_count(&self, widget_idx: usize) -> usize {
+        if !self.widget_is_live(widget_idx) {
+            return 0;
+        }
         self.widgets
             .get(widget_idx)
             .and_then(|w| w.children())
@@ -1707,27 +2134,15 @@ impl GuiContext {
     /// Push a toast message into the overlay queue.
     pub fn find_by_id(&self, start_idx: usize, id: &str) -> Option<usize> {
         let mut visited = HashSet::new();
-        self.find_by_id_inner(start_idx, id, &mut visited)
-    }
-    fn find_by_id_inner(
-        &self,
-        start_idx: usize,
-        id: &str,
-        visited: &mut HashSet<usize>,
-    ) -> Option<usize> {
-        if start_idx >= self.widgets.len() {
-            return None;
-        }
-        if !visited.insert(start_idx) {
-            return None;
-        }
-        if self.widgets[start_idx].base().id == id {
-            return Some(start_idx);
-        }
-        for child_idx in self.traversal_children(start_idx) {
-            if let Some(found) = self.find_by_id_inner(child_idx, id, visited) {
-                return Some(found);
+        let mut stack = vec![start_idx];
+        while let Some(current) = stack.pop() {
+            if !self.widget_is_live(current) || !visited.insert(current) {
+                continue;
             }
+            if self.widgets[current].base().id == id {
+                return Some(current);
+            }
+            stack.extend(self.traversal_children(current).into_iter().rev());
         }
         None
     }

@@ -7,15 +7,6 @@ description: "Load this skill when implementing hit detection, damage, knockback
 
 Hitbox/hurtbox, i-frames, knockback, damage numbers, drop tables, hitstop, and combo counters.
 
-## Key Concepts
-
-- **Hitbox/hurtbox**: Active attack region vs vulnerable region. Separate from physics bodies.
-- **I-frames**: Invincibility window after taking damage. Prevents multi-hit from single attack.
-- **Knockback**: Apply velocity impulse away from damage source on hit.
-- **Hitstop**: Freeze both attacker and target for 2–4 frames on hit for impact feel.
-- **Combo counter**: Increment on successive hits within a time window. Reset on miss or timeout.
-- **Drop tables**: Weighted random loot from defeated enemies.
-
 ## Hitbox/Hurtbox
 
 ```lua

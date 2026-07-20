@@ -2,54 +2,32 @@
 name: create-tool
 description: "Load this skill when creating or modifying tools under tools, audit scripts, validators, generators, or CLI registry entries. Skip it for product runtime changes or one-off local scripts that should stay in work/."
 ---
+
 # create-tool
 
 ## Mission
 - Create or modify repo tools so they are discoverable, documented, locally runnable, and registered.
 
-## When To Load
-- Creating or modifying tools under tools, audit scripts, validators, generators, or CLI registry entries.
-
-## When To Skip
-- Product runtime changes or one-off local scripts that should stay in work/.
-
 ## Domain Knowledge
-- Read root `AGENTS.md`, then every listed contract nearest to the target path.
-- Run the listed RAG query before broad file reads and start from top hits.
-- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
-- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
-- Read the nearest source, spec, test, doc, or config before editing.
-- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
+- Repository tools are grouped by function under `tools/audit`, `validate`, `docs`, `demos`, `rag`, `snippets`, `ui`, and `dist`; a new command belongs with the data contract it parses or emits, not in a generic utility bucket.
+- `tools/python.cmd` is the supported Windows Python launcher and preserves the repository runtime; scripts should not assume a globally configured interpreter or Unix shell behavior.
+- Audit tools report evidence without mutation, validators enforce a contract, generators derive owned output, and fixers mutate source. Mixing these modes makes automation unsafe and obscures what a command promises.
+- Parser-enforced filenames, markers, registries, and schemas become repository contracts; their owning `AGENTS.md`, skill, fixtures, and validator self-tests must evolve together.
+- Machine-consumable output needs deterministic ordering, stable exit codes, relative workspace paths, and a quiet success path; human diagnostics need exact targets and actionable reasons.
+- Mutation tools should compute and validate the complete target set before the first write, expose dry-run or preview when changes are broad, and avoid following paths outside the workspace through unresolved inputs.
+- Generator freshness is a two-run property: the first run may update outputs, while an unchanged second run must produce no diff. Non-idempotence usually indicates ordering, timestamps, or source/output feedback loops.
+- Tool self-tests belong under `tests/python` and should exercise parser contracts through realistic fixtures rather than importing private constants alone, so CLI behavior and diagnostics remain covered.
 
 ## Workflow
-- Inspect existing tool family, `tools/agent_cli_reference.md`, and nearest `AGENTS.md` before editing.
-- Modify an existing tool when it owns the behavior; create a new script only for a new reusable command.
-- Implement `--help`, deterministic output, and Windows-local execution.
-- Register changed tools in `tools/agent_cli_reference.md`.
-- Run the tool directly, then `tool_registry_audit.py` and CAG validation if shared contracts changed.
-- Finish by reporting changed files and validation evidence.
-
-## Success Criteria
-- The target artifact was created or modified in the narrowest owning location.
-- Existing content was preserved and updated when it already owned the behavior.
-- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
-
-## Stop Conditions
-- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
-- A referenced owner path or tool is absent after checking the repository.
-- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
-
-## Companion File Index
-- Contracts: `tools/AGENTS.md`, `tools/audit/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "tools audit validator CLI registry" --profile engine --limit 10`, `tools/python.cmd tools/audit/tool_registry_audit.py`, `tools/python.cmd tools/validate/cag_validate.py`
-- Owner profile: `builder`
-
-## Common RAG Queries
-- Start with: `tools audit validator CLI registry`, `tool registry audit agent cli reference`, `cag validate baseline prompts skills agents`
-- Focus areas first: `tools/`, `tools/audit/`, `tools/validate/`, `tools/tests/`, root `AGENTS.md`
-- Append the tool family or script name such as `rag`, `audit`, `validate`, `mcp`, `snippets`
+- Classify the command as audit, validate, generate, fix, package, or developer helper; inspect the nearest parser, fixtures, self-tests, and CLI registry to extend an owner instead of introducing a competing entry point.
+- Specify inputs, workspace-relative outputs, mutation policy, stdout/stderr format, exit codes, dry-run or confirmation behavior where relevant, and Windows path/encoding cases before implementation; keep shared parsing in an existing family module when one exists.
+- Implement `--help` and deterministic behavior, add Python `unittest` coverage for success, malformed input, empty input, path separators, and idempotence or dry-run semantics, then exercise the command through `tools/python.cmd` from the workspace root.
+- Update `tools/agent_cli_reference.md` and any parser-owned contract/template, run focused self-tests and `tool_registry_audit.py`, then use the tool on a real repository slice and run CAG validation when its shape changes agent guidance.
+- For mutating commands, review a dry-run and real-run diff, rerun to prove idempotence, and verify malformed or out-of-workspace paths fail before any partial write.
+- For audits and validators, test stable diagnostic ordering and exit status with zero, one, and multiple violations so CI/agent consumers distinguish clean output from parser failure.
 
 ## References
 - `contracts: tools/AGENTS.md, tools/audit/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "tools audit validator CLI registry" --profile engine --limit 10, tools/python.cmd tools/audit/tool_registry_audit.py, tools/python.cmd tools/validate/cag_validate.py`
 - `agent: builder`
+- RAG: Start with: `tools audit validator CLI registry`, `tool registry audit agent cli reference`, `cag validate baseline prompts skills agents`; Focus areas first: `tools/`, `tools/audit/`, `tools/validate/`, `tools/tests/`, root `AGENTS.md`; Append the tool family or script name such as `rag`, `audit`, `validate`, `mcp`, `snippets`

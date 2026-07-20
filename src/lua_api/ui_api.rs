@@ -6,7 +6,7 @@ use super::SharedState;
 use crate::render::renderer::RenderCommand;
 use crate::render::ShaderTarget;
 use crate::ui::containers::LayoutDirection;
-use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetKind};
+use crate::ui::context::{GuiContext, GuiEvent, UiBindingValue, WidgetId, WidgetKind};
 use crate::ui::extras::{
     AccordionSection, DialogAction, DialogActionRole, PropertyRow, PropertyValueKind, TableColumn,
     TableDataFrameOptions, Toast,
@@ -36,6 +36,114 @@ struct GuiCallbacks {
     on_drop: HashMap<usize, LuaRegistryKey>,
     dialog_action: HashMap<(usize, usize), LuaRegistryKey>,
     on_draw: HashMap<usize, LuaRegistryKey>,
+}
+
+impl GuiCallbacks {
+    fn remove_widget(&mut self, idx: usize) {
+        self.on_click.remove(&idx);
+        self.on_change.remove(&idx);
+        self.on_close.remove(&idx);
+        self.on_select.remove(&idx);
+        self.on_drag_start.remove(&idx);
+        self.on_drag_end.remove(&idx);
+        self.on_drag_enter.remove(&idx);
+        self.on_drag_leave.remove(&idx);
+        self.on_drop.remove(&idx);
+        self.on_draw.remove(&idx);
+        self.dialog_action
+            .retain(|(widget_idx, _), _| *widget_idx != idx);
+    }
+    fn clear(&mut self) {
+        self.on_click.clear();
+        self.on_change.clear();
+        self.on_close.clear();
+        self.on_select.clear();
+        self.on_drag_start.clear();
+        self.on_drag_end.clear();
+        self.on_drag_enter.clear();
+        self.on_drag_leave.clear();
+        self.on_drop.clear();
+        self.dialog_action.clear();
+        self.on_draw.clear();
+    }
+}
+
+#[derive(Clone, Copy)]
+enum UiCallbackKind {
+    Click,
+    Change,
+    Close,
+    Select,
+    DragStart,
+    DragEnd,
+    DragEnter,
+    DragLeave,
+    Drop,
+}
+
+fn callback_function<'lua>(
+    lua: &'lua Lua,
+    callbacks: &Rc<RefCell<GuiCallbacks>>,
+    kind: UiCallbackKind,
+    idx: usize,
+) -> LuaResult<Option<LuaFunction<'lua>>> {
+    let registry = callbacks.borrow();
+    let key = match kind {
+        UiCallbackKind::Click => registry.on_click.get(&idx),
+        UiCallbackKind::Change => registry.on_change.get(&idx),
+        UiCallbackKind::Close => registry.on_close.get(&idx),
+        UiCallbackKind::Select => registry.on_select.get(&idx),
+        UiCallbackKind::DragStart => registry.on_drag_start.get(&idx),
+        UiCallbackKind::DragEnd => registry.on_drag_end.get(&idx),
+        UiCallbackKind::DragEnter => registry.on_drag_enter.get(&idx),
+        UiCallbackKind::DragLeave => registry.on_drag_leave.get(&idx),
+        UiCallbackKind::Drop => registry.on_drop.get(&idx),
+    };
+    key.map(|key| lua.registry_value(key)).transpose()
+}
+
+/// Opaque Lua userdata carried by compatibility widget tables. Lua can move
+/// this token between tables but cannot construct a different slot or
+/// generation, and `_idx` remains diagnostic metadata only.
+#[derive(Clone, Copy)]
+struct LuaUiWidgetHandle(WidgetId);
+
+impl LuaUserData for LuaUiWidgetHandle {}
+
+fn widget_index_from_value(ctx: &GuiContext, value: LuaValue, operation: &str) -> LuaResult<usize> {
+    let LuaValue::Table(table) = value else {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.ui.{operation}: expected a live widget table"
+        )));
+    };
+    let token: LuaAnyUserData = table.get("__lurek_ui_handle").map_err(|_| {
+        LuaError::RuntimeError(format!(
+            "lurek.ui.{operation}: widget table has no authoritative handle"
+        ))
+    })?;
+    let handle = token.borrow::<LuaUiWidgetHandle>().map_err(|_| {
+        LuaError::RuntimeError(format!(
+            "lurek.ui.{operation}: widget handle has an invalid type"
+        ))
+    })?;
+    ctx.resolve_widget_id(handle.0)
+        .map_err(|message| LuaError::RuntimeError(format!("lurek.ui.{operation}: {message}")))
+}
+
+fn widget_index_from_table(ctx: &GuiContext, table: LuaTable, operation: &str) -> LuaResult<usize> {
+    widget_index_from_value(ctx, LuaValue::Table(table), operation)
+}
+
+fn optional_widget_index(
+    ctx: &GuiContext,
+    value: LuaValue,
+    operation: &str,
+) -> LuaResult<Option<usize>> {
+    if matches!(value, LuaValue::Nil) {
+        Ok(None)
+    } else {
+        widget_index_from_value(ctx, value, operation).map(Some)
+    }
 }
 
 fn render_to_image_u32_arg(name: &str, value: &LuaValue) -> LuaResult<u32> {
@@ -121,7 +229,15 @@ fn ui_binding_values_from_lua_table(
     data: LuaTable<'_>,
 ) -> LuaResult<HashMap<String, UiBindingValue>> {
     let mut values = HashMap::new();
+    let limit = crate::ui::UiLimits::default().max_collection_items;
+    let mut pair_count = 0usize;
     for pair in data.pairs::<LuaValue, LuaValue>() {
+        pair_count += 1;
+        if pair_count > limit {
+            return Err(LuaError::RuntimeError(
+                "lurek.ui.updateBindings: data exceeds the item limit".into(),
+            ));
+        }
         let (key_value, value) = pair?;
         let key = match key_value {
             LuaValue::String(s) => s.to_str()?.to_string(),
@@ -143,7 +259,13 @@ fn ui_binding_values_from_lua_table(
 
 fn stat_pairs_from_lua_table(data: LuaTable<'_>) -> LuaResult<Vec<(String, f64)>> {
     let mut pairs = Vec::new();
+    let limit = crate::ui::UiLimits::default().max_collection_items;
     for pair in data.pairs::<LuaValue, LuaValue>() {
+        if pairs.len() >= limit {
+            return Err(LuaError::RuntimeError(
+                "stat table exceeds the item limit".into(),
+            ));
+        }
         let (key_value, value) = pair?;
         let key = match key_value {
             LuaValue::String(s) => s.to_str()?.to_string(),
@@ -215,9 +337,16 @@ fn create_widget_table<'a>(
     cbs: &Rc<RefCell<GuiCallbacks>>,
     type_name: &'static str,
 ) -> LuaResult<LuaTable<'a>> {
+    let handle = ctx.borrow().widget_id(idx).ok_or_else(|| {
+        LuaError::RuntimeError("lurek.ui: cannot create a handle for an invalid widget".into())
+    })?;
     let t = lua.create_table()?;
     /// Performs the '_idx' operation.
     t.set("_idx", idx)?;
+    t.set(
+        "__lurek_ui_handle",
+        lua.create_userdata(LuaUiWidgetHandle(handle))?,
+    )?;
     // -- type --
     /// Returns the type name string of this widget (e.g. "LButton", "LSlider").
     /// @param | self | LUiWidget | The widget instance.
@@ -235,6 +364,42 @@ fn create_widget_table<'a>(
         "typeOf",
         lua.create_function(move |_, (_self, name): (LuaValue, String)| {
             Ok(name == type_name || name == "LWidget" || name == "LObject")
+        })?,
+    )?;
+    let c = ctx.clone();
+    let handle_for_validity = handle;
+    // -- isValid --
+    /// Returns whether this widget handle still identifies a live widget in its originating UI context.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | boolean | False after destroy or clear, or when used with a different context.
+    t.set(
+        "isValid",
+        lua.create_function(move |_, _self: LuaValue| {
+            Ok(c.borrow().resolve_widget_id(handle_for_validity).is_ok())
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs_destroy = cbs.clone();
+    // -- destroy --
+    /// Destroys this widget and, by default, its retained descendant subtree.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | recursive | boolean? | Whether descendants are destroyed; defaults to true.
+    /// @return | integer | Number of widgets invalidated by the destruction.
+    t.set(
+        "destroy",
+        lua.create_function(move |_, (_self, recursive): (LuaValue, Option<bool>)| {
+            let mut g = c.borrow_mut();
+            let index = g
+                .resolve_widget_id(handle_for_validity)
+                .map_err(|message| {
+                    LuaError::RuntimeError(format!("LUiWidget:destroy: {message}"))
+                })?;
+            let removed = g
+                .destroy_widget(index, recursive.unwrap_or(true))
+                .map_err(LuaError::RuntimeError)?;
+            drop(g);
+            cbs_destroy.borrow_mut().remove_widget(index);
+            Ok(removed as u32)
         })?,
     )?;
     let c = ctx.clone();
@@ -829,12 +994,16 @@ fn create_widget_table<'a>(
     /// @summary Use this to override automatic tab traversal for directional navigation.
     /// @param | self | LUiWidget | The widget instance.
     /// @param | direction | string | Neighbor direction: "up", "down", "left", or "right".
-    /// @param | target | integer? | Target widget index, or nil to clear the neighbor.
+    /// @param | target | LUiWidget? | Target widget handle, or nil to clear the neighbor.
     /// @return | boolean | True when direction is valid; false otherwise.
     t.set(
         "setFocusNeighbor",
         lua.create_function(
-            move |_, (_self, direction, target): (LuaValue, String, Option<u32>)| {
+            move |_, (_self, direction, target): (LuaValue, String, LuaValue)| {
+                let target = {
+                    let g = c.borrow();
+                    optional_widget_index(&g, target, "setFocusNeighbor")?
+                };
                 let mut g = c.borrow_mut();
                 let Some(w) = g.widgets.get_mut(idx) else {
                     return Ok(false);
@@ -847,7 +1016,7 @@ fn create_widget_table<'a>(
                     "right" => &mut base.focus_neighbor_right,
                     _ => return Ok(false),
                 };
-                *slot = target.map(|v| v as usize);
+                *slot = target;
                 Ok(true)
             },
         )?,
@@ -921,13 +1090,17 @@ fn create_widget_table<'a>(
     // -- setLabelFor --
     /// Associates this label widget with another widget for accessibility naming.
     /// @param | self | LUiWidget | The widget instance.
-    /// @param | target | integer? | Target widget index, or nil to clear the link.
+    /// @param | target | LUiWidget? | Target widget handle, or nil to clear the link.
     t.set(
         "setLabelFor",
-        lua.create_function(move |_, (_self, target): (LuaValue, Option<u32>)| {
+        lua.create_function(move |_, (_self, target): (LuaValue, LuaValue)| {
+            let target = {
+                let g = c.borrow();
+                optional_widget_index(&g, target, "setLabelFor")?
+            };
             let mut g = c.borrow_mut();
             if let Some(w) = g.widgets.get_mut(idx) {
-                w.base_mut().label_for = target.map(|value| value as usize);
+                w.base_mut().label_for = target;
             }
             Ok(())
         })?,
@@ -1115,16 +1288,8 @@ fn create_widget_table<'a>(
     t.set(
         "addChild",
         lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
-            let child_idx = match child {
-                LuaValue::Table(t) => t.get::<_, usize>("_idx")?,
-                LuaValue::Integer(i) if i >= 0 => i as usize,
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "addChild expects a widget table or widget index".into(),
-                    ));
-                }
-            };
             let mut g = c.borrow_mut();
+            let child_idx = widget_index_from_value(&g, child, "addChild")?;
             g.add_child(idx, child_idx);
             Ok(())
         })?,
@@ -1137,16 +1302,8 @@ fn create_widget_table<'a>(
     t.set(
         "removeChild",
         lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
-            let child_idx = match child {
-                LuaValue::Table(t) => t.get::<_, usize>("_idx")?,
-                LuaValue::Integer(i) if i >= 0 => i as usize,
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "removeChild expects a widget table or widget index".into(),
-                    ));
-                }
-            };
             let mut g = c.borrow_mut();
+            let child_idx = widget_index_from_value(&g, child, "removeChild")?;
             g.remove_child(idx, child_idx);
             Ok(())
         })?,
@@ -1165,10 +1322,10 @@ fn create_widget_table<'a>(
     )?;
     let c = ctx.clone();
     // -- getChildren --
-    /// Returns a table of lightweight child widget references, each containing an _idx field.
+    /// Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
     /// @param | self | LUiWidget | The widget instance.
     /// @return | table | Array of child widget tables.
-    /// @field | _idx | integer | Widget index.
+    /// @field | _idx | integer | Diagnostic storage slot; never authoritative.
     t.set(
         "getChildren",
         lua.create_function(move |lua, _self: LuaValue| {
@@ -1185,6 +1342,12 @@ fn create_widget_table<'a>(
                 let child = lua.create_table()?;
                 /// Performs the '_idx' operation.
                 child.set("_idx", child_idx)?;
+                if let Some(child_handle) = c.borrow().widget_id(child_idx) {
+                    child.set(
+                        "__lurek_ui_handle",
+                        lua.create_userdata(LuaUiWidgetHandle(child_handle))?,
+                    )?;
+                }
                 out.set(list_index + 1, child)?;
             }
             Ok(out)
@@ -5196,10 +5359,14 @@ fn add_split_panel_methods(
     // -- setFirstChild --
     /// Sets the widget index for the first (left/top) panel.
     /// @param | self | LSplitPanel | The widget instance.
-    /// @param | child_idx | integer | The widget index.
+    /// @param | child | LUiWidget | The child widget handle.
     t.set(
         "setFirstChild",
-        lua.create_function(move |_, (_self, child_idx): (LuaValue, usize)| {
+        lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
+            let child_idx = {
+                let g = c.borrow();
+                widget_index_from_value(&g, child, "setFirstChild")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::SplitPanel(sp)) = g.widgets.get_mut(idx) {
                 sp.first_child = Some(child_idx);
@@ -5211,10 +5378,14 @@ fn add_split_panel_methods(
     // -- setSecondChild --
     /// Sets the widget index for the second (right/bottom) panel.
     /// @param | self | LSplitPanel | The widget instance.
-    /// @param | child_idx | integer | The widget index.
+    /// @param | child | LUiWidget | The child widget handle.
     t.set(
         "setSecondChild",
-        lua.create_function(move |_, (_self, child_idx): (LuaValue, usize)| {
+        lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
+            let child_idx = {
+                let g = c.borrow();
+                widget_index_from_value(&g, child, "setSecondChild")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::SplitPanel(sp)) = g.widgets.get_mut(idx) {
                 sp.second_child = Some(child_idx);
@@ -5265,12 +5436,16 @@ fn add_dock_panel_methods(
     // -- dock --
     /// Docks a child widget to the specified side of this dock panel.
     /// @param | self | LDockPanel | The widget instance.
-    /// @param | child_idx | integer | The widget index to dock.
+    /// @param | child | LUiWidget | The child widget handle to dock.
     /// @param | side | string | The dock side ("left", "right", "top", "bottom", "center").
     t.set(
         "dock",
         lua.create_function(
-            move |_, (_self, child_idx, side): (LuaValue, usize, String)| {
+            move |_, (_self, child, side): (LuaValue, LuaValue, String)| {
+                let child_idx = {
+                    let g = c.borrow();
+                    widget_index_from_value(&g, child, "dock")?
+                };
                 let mut g = c.borrow_mut();
                 if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
                     dp.docked.push((child_idx, side));
@@ -5283,10 +5458,14 @@ fn add_dock_panel_methods(
     // -- undock --
     /// Removes a child widget from this dock panel.
     /// @param | self | LDockPanel | The widget instance.
-    /// @param | child_idx | integer | The widget index to undock.
+    /// @param | child | LUiWidget | The child widget handle to undock.
     t.set(
         "undock",
-        lua.create_function(move |_, (_self, child_idx): (LuaValue, usize)| {
+        lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
+            let child_idx = {
+                let g = c.borrow();
+                widget_index_from_value(&g, child, "undock")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
                 dp.docked.retain(|(ci, _)| *ci != child_idx);
@@ -5525,10 +5704,14 @@ fn add_menu_bar_methods(
     // -- addMenu --
     /// Adds a menu (by its widget index) to this menu bar.
     /// @param | self | LMenuBar | The widget instance.
-    /// @param | menu_idx | integer | The widget index of the menu to add.
+    /// @param | menu | LMenuItem | The menu widget handle to add.
     t.set(
         "addMenu",
-        lua.create_function(move |_, (_self, menu_idx): (LuaValue, usize)| {
+        lua.create_function(move |_, (_self, menu): (LuaValue, LuaValue)| {
+            let menu_idx = {
+                let g = c.borrow();
+                widget_index_from_value(&g, menu, "addMenu")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::MenuBar(mb)) = g.widgets.get_mut(idx) {
                 if !mb.menus.contains(&menu_idx) {
@@ -5542,11 +5725,15 @@ fn add_menu_bar_methods(
     // -- removeMenu --
     /// Removes a menu from this menu bar by its widget index.
     /// @param | self | LMenuBar | The widget instance.
-    /// @param | menu_idx | integer | The widget index of the menu to remove.
+    /// @param | menu | LMenuItem | The menu widget handle to remove.
     /// @return | boolean | True if the menu was found and removed.
     t.set(
         "removeMenu",
-        lua.create_function(move |_, (_self, menu_idx): (LuaValue, usize)| {
+        lua.create_function(move |_, (_self, menu): (LuaValue, LuaValue)| {
+            let menu_idx = {
+                let g = c.borrow();
+                widget_index_from_value(&g, menu, "removeMenu")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::MenuBar(mb)) = g.widgets.get_mut(idx) {
                 mb.menus.retain(|m| *m != menu_idx);
@@ -5690,10 +5877,14 @@ fn add_menu_item_methods(
     // -- addSubItem --
     /// Adds a sub-item to this menu item for building nested menus.
     /// @param | self | LMenuItem | The widget instance.
-    /// @param | child_idx | integer | The widget index of the sub-item to add.
+    /// @param | child | LMenuItem | The sub-item widget handle to add.
     t.set(
         "addSubItem",
-        lua.create_function(move |_, (_self, child_idx): (LuaValue, usize)| {
+        lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
+            let child_idx = {
+                let g = c.borrow();
+                widget_index_from_value(&g, child, "addSubItem")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::MenuItem(mi)) = g.widgets.get_mut(idx) {
                 if !mi.items.contains(&child_idx) {
@@ -5854,11 +6045,15 @@ fn add_dialog_methods(
     // -- setContent --
     /// Sets the widget index rendered as this dialog's content.
     /// @param | self | LDialog | The dialog widget instance.
-    /// @param | content_idx | integer? | Optional widget index for the content slot.
+    /// @param | content | LUiWidget? | Optional widget handle for the content slot.
     /// @return | nil | No value is returned.
     t.set(
         "setContent",
-        lua.create_function(move |_, (_self, content_idx): (LuaValue, Option<usize>)| {
+        lua.create_function(move |_, (_self, content): (LuaValue, LuaValue)| {
+            let content_idx = {
+                let g = c.borrow();
+                optional_widget_index(&g, content, "setContent")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
                 d.content_idx = content_idx;
@@ -5885,10 +6080,14 @@ fn add_dialog_methods(
     // -- setFooter --
     /// Assigns an optional footer content root for this dialog.
     /// @param | self | LDialog | The widget instance.
-    /// @param | footer_idx | integer? | Optional widget index rendered in the footer slot.
+    /// @param | footer | LUiWidget? | Optional widget handle rendered in the footer slot.
     t.set(
         "setFooter",
-        lua.create_function(move |_, (_self, footer_idx): (LuaValue, Option<usize>)| {
+        lua.create_function(move |_, (_self, footer): (LuaValue, LuaValue)| {
+            let footer_idx = {
+                let g = c.borrow();
+                optional_widget_index(&g, footer, "setFooter")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) {
                 d.footer_idx = footer_idx;
@@ -6457,11 +6656,15 @@ fn add_accordion_methods(
     /// Adds a collapsible section to this accordion.
     /// @param | self | LAccordion | The widget instance.
     /// @param | title | string | The section title.
-    /// @param | content_idx | integer? | Optional widget index for the section content.
+    /// @param | content | LUiWidget? | Optional widget handle for the section content.
     t.set(
         "addSection",
         lua.create_function(
-            move |_, (_self, title, content_idx): (LuaValue, String, Option<usize>)| {
+            move |_, (_self, title, content): (LuaValue, String, LuaValue)| {
+                let content_idx = {
+                    let g = c.borrow();
+                    optional_widget_index(&g, content, "addSection")?
+                };
                 let mut g = c.borrow_mut();
                 if let Some(WidgetKind::Accordion(acc)) = g.widgets.get_mut(idx) {
                     acc.sections.push(AccordionSection {
@@ -6674,10 +6877,14 @@ fn add_tooltip_panel_methods(
     // -- setTarget --
     /// Sets the widget index that this tooltip is attached to.
     /// @param | self | LTooltipPanel | The widget instance.
-    /// @param | target | integer? | The target widget index, or nil to detach.
+    /// @param | target | LUiWidget? | The target widget handle, or nil to detach.
     t.set(
         "setTarget",
-        lua.create_function(move |_, (_self, target): (LuaValue, Option<usize>)| {
+        lua.create_function(move |_, (_self, target): (LuaValue, LuaValue)| {
+            let target = {
+                let g = c.borrow();
+                optional_widget_index(&g, target, "setTarget")?
+            };
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::TooltipPanel(tp)) = g.widgets.get_mut(idx) {
                 tp.target_idx = target;
@@ -8192,8 +8399,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             move |lua, (message, duration): (Option<String>, Option<f32>)| {
                 let toast = Toast::new(message.unwrap_or_default(), duration.unwrap_or(3.0));
                 let mut g = c.borrow_mut();
-                let idx = g.widgets.len();
-                g.widgets.push(WidgetKind::Toast(toast));
+                let idx = g.push_widget(WidgetKind::Toast(toast));
                 drop(g);
                 let t = create_widget_table(lua, &c, idx, &cbs, "LToast")?;
                 add_toast_methods(lua, &t, &c, idx)?;
@@ -8644,8 +8850,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     "lurek.ui.getWidgetFont: widget must be a UI widget table".to_string(),
                 ));
             };
-            let idx = widget.get::<_, usize>("_idx")?;
-            let key = c.borrow().widgets.get(idx).and_then(|w| w.base().font_key);
+            let g = c.borrow();
+            let idx = widget_index_from_table(&g, widget, "getWidgetFont")?;
+            let key = g.widgets.get(idx).and_then(|w| w.base().font_key);
             Ok(key.map(|key| LuaFont {
                 state: s.clone(),
                 key,
@@ -8661,7 +8868,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "setFocus",
         lua.create_function(move |_, widget: Option<LuaTable>| {
             let idx = match widget {
-                Some(t) => Some(t.get::<_, usize>("_idx")?),
+                Some(t) => {
+                    let g = c.borrow();
+                    Some(widget_index_from_table(&g, t, "setFocus")?)
+                }
                 None => None,
             };
             c.borrow_mut().set_focus(idx);
@@ -8820,8 +9030,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "visibleRange",
         lua.create_function(
             move |_, (widget, item_count, item_height): (LuaTable, usize, f32)| {
-                let idx: usize = widget.get("_idx")?;
-                let (start, end) = c.borrow().visible_item_range(idx, item_count, item_height);
+                let g = c.borrow();
+                let idx = widget_index_from_table(&g, widget, "visibleRange")?;
+                let (start, end) = g.visible_item_range(idx, item_count, item_height);
                 Ok((start, end))
             },
         )?,
@@ -8829,7 +9040,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- animateScale --
     /// Animate widget scale from one value to another.
-    /// @param | idx | integer | Widget index.
+    /// @param | widget | LUiWidget | Widget handle.
     /// @param | from_sx | number | Starting X scale.
     /// @param | from_sy | number | Starting Y scale.
     /// @param | to_sx | number | Target X scale.
@@ -8842,8 +9053,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "animateScale",
         lua.create_function(
             move |_,
-                  (idx, from_sx, from_sy, to_sx, to_sy, duration, easing): (
-                usize,
+                  (widget, from_sx, from_sy, to_sx, to_sy, duration, easing): (
+                LuaValue,
                 f32,
                 f32,
                 f32,
@@ -8851,6 +9062,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 f32,
                 Option<String>,
             )| {
+                let idx = {
+                    let g = c.borrow();
+                    widget_index_from_value(&g, widget, "animateScale")?
+                };
                 let ease = easing
                     .as_deref()
                     .and_then(EasingFunction::parse_str)
@@ -8863,7 +9078,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- animateRotation --
     /// Animate widget rotation from one angle to another (in radians).
-    /// @param | idx | integer | Widget index.
+    /// @param | widget | LUiWidget | Widget handle.
     /// @param | from | number | Starting angle in radians.
     /// @param | to | number | Target angle in radians.
     /// @param | duration | number | Duration in seconds.
@@ -8873,7 +9088,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "animateRotation",
         lua.create_function(
-            move |_, (idx, from, to, duration, easing): (usize, f32, f32, f32, Option<String>)| {
+            move |_,
+                  (widget, from, to, duration, easing): (
+                LuaValue,
+                f32,
+                f32,
+                f32,
+                Option<String>,
+            )| {
+                let idx = {
+                    let g = c.borrow();
+                    widget_index_from_value(&g, widget, "animateRotation")?
+                };
                 let ease = easing
                     .as_deref()
                     .and_then(EasingFunction::parse_str)
@@ -8886,7 +9112,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- animateColor --
     /// Animate widget color tint from one RGBA value to another.
-    /// @param | idx | integer | Widget index.
+    /// @param | widget | LUiWidget | Widget handle.
     /// @param | from | table | Starting color {r, g, b, a} (0-1 range).
     /// @param | to | table | Target color {r, g, b, a} (0-1 range).
     /// @param | duration | number | Duration in seconds.
@@ -8897,13 +9123,17 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "animateColor",
         lua.create_function(
             move |_,
-                  (idx, from_tbl, to_tbl, duration, easing): (
-                usize,
+                  (widget, from_tbl, to_tbl, duration, easing): (
+                LuaValue,
                 LuaTable,
                 LuaTable,
                 f32,
                 Option<String>,
             )| {
+                let idx = {
+                    let g = c.borrow();
+                    widget_index_from_value(&g, widget, "animateColor")?
+                };
                 let from = [
                     from_tbl.get::<_, f32>("r").unwrap_or(1.0),
                     from_tbl.get::<_, f32>("g").unwrap_or(1.0),
@@ -8926,13 +9156,37 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     let c = ctx.clone();
-    let _cbs = callbacks.clone();
+    let cbs_clear = callbacks.clone();
     // -- clear --
     /// Clears all retained UI widgets and transient UI state while keeping the active theme.
     /// @return | integer | Number of widgets removed from the retained UI tree.
     tbl.set(
         "clear",
-        lua.create_function(move |_, ()| Ok(c.borrow_mut().clear() as u32))?,
+        lua.create_function(move |_, ()| {
+            let removed = c.borrow_mut().clear() as u32;
+            cbs_clear.borrow_mut().clear();
+            Ok(removed)
+        })?,
+    )?;
+    let c = ctx.clone();
+    let cbs_destroy = callbacks.clone();
+    // -- destroy --
+    /// Destroys a widget handle and, by default, its retained descendant subtree.
+    /// @param | widget | LUiWidget | The live widget table to destroy.
+    /// @param | recursive | boolean? | Whether descendants are destroyed; defaults to true.
+    /// @return | integer | Number of widgets invalidated by the destruction.
+    tbl.set(
+        "destroy",
+        lua.create_function(move |_, (widget, recursive): (LuaValue, Option<bool>)| {
+            let mut g = c.borrow_mut();
+            let idx = widget_index_from_value(&g, widget, "destroy")?;
+            let removed = g
+                .destroy_widget(idx, recursive.unwrap_or(true))
+                .map_err(LuaError::RuntimeError)?;
+            drop(g);
+            cbs_destroy.borrow_mut().remove_widget(idx);
+            Ok(removed as u32)
+        })?,
     )?;
     let c = ctx.clone();
     let _cbs = callbacks.clone();
@@ -9052,71 +9306,117 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "update",
         lua.create_function(move |lua, dt: f32| {
             c.borrow_mut().update(dt);
-            let events = c.borrow_mut().drain_events();
-            for ev in events {
-                match ev {
+            let dispatch_limit = c.borrow().limits().max_pending_events;
+            for _ in 0..dispatch_limit {
+                let ev = {
+                    let mut g = c.borrow_mut();
+                    if g.pending_events.is_empty() {
+                        None
+                    } else {
+                        Some(g.pending_events.remove(0))
+                    }
+                };
+                let Some(ev) = ev else { break };
+                let result: LuaResult<()> = match ev.clone() {
                     GuiEvent::Click(widget_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_click.get(&widget_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) =
+                            callback_function(lua, &cbs_update, UiCallbackKind::Click, widget_idx)?
+                        {
                             f.call::<_, ()>(widget_idx as u64)?;
                         }
+                        Ok(())
                     }
                     GuiEvent::Change(widget_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_change.get(&widget_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) =
+                            callback_function(lua, &cbs_update, UiCallbackKind::Change, widget_idx)?
+                        {
                             f.call::<_, ()>(widget_idx as u64)?;
                         }
+                        Ok(())
                     }
                     GuiEvent::Close(widget_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_close.get(&widget_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) =
+                            callback_function(lua, &cbs_update, UiCallbackKind::Close, widget_idx)?
+                        {
                             f.call::<_, ()>(widget_idx as u64)?;
                         }
+                        Ok(())
                     }
                     GuiEvent::Select(widget_idx, item_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_select.get(&widget_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) =
+                            callback_function(lua, &cbs_update, UiCallbackKind::Select, widget_idx)?
+                        {
                             f.call::<_, ()>((widget_idx as u64, item_idx as u64))?;
                         }
-                        if let Some(key) = cbs_update
-                            .borrow()
-                            .dialog_action
-                            .get(&(widget_idx, item_idx))
-                        {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        let action: Option<LuaFunction> = {
+                            let registry = cbs_update.borrow();
+                            registry
+                                .dialog_action
+                                .get(&(widget_idx, item_idx))
+                                .map(|key| lua.registry_value(key))
+                                .transpose()?
+                        };
+                        if let Some(f) = action {
                             f.call::<_, ()>((widget_idx as u64, (item_idx + 1) as u64))?;
                         }
+                        Ok(())
                     }
                     GuiEvent::DragStart(source_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_drag_start.get(&source_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) = callback_function(
+                            lua,
+                            &cbs_update,
+                            UiCallbackKind::DragStart,
+                            source_idx,
+                        )? {
                             f.call::<_, ()>(source_idx as u64)?;
                         }
+                        Ok(())
                     }
                     GuiEvent::DragEnd(source_idx, target_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_drag_end.get(&source_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) = callback_function(
+                            lua,
+                            &cbs_update,
+                            UiCallbackKind::DragEnd,
+                            source_idx,
+                        )? {
                             f.call::<_, ()>((source_idx as u64, target_idx.map(|idx| idx as u64)))?;
                         }
+                        Ok(())
                     }
                     GuiEvent::DragEnter(source_idx, target_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_drag_enter.get(&target_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) = callback_function(
+                            lua,
+                            &cbs_update,
+                            UiCallbackKind::DragEnter,
+                            target_idx,
+                        )? {
                             f.call::<_, ()>((source_idx as u64, target_idx as u64))?;
                         }
+                        Ok(())
                     }
                     GuiEvent::DragLeave(source_idx, target_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_drag_leave.get(&target_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) = callback_function(
+                            lua,
+                            &cbs_update,
+                            UiCallbackKind::DragLeave,
+                            target_idx,
+                        )? {
                             f.call::<_, ()>((source_idx as u64, target_idx as u64))?;
                         }
+                        Ok(())
                     }
                     GuiEvent::Drop(source_idx, target_idx) => {
-                        if let Some(key) = cbs_update.borrow().on_drop.get(&target_idx) {
-                            let f: LuaFunction = lua.registry_value(key)?;
+                        if let Some(f) =
+                            callback_function(lua, &cbs_update, UiCallbackKind::Drop, target_idx)?
+                        {
                             f.call::<_, ()>((source_idx as u64, target_idx as u64))?;
                         }
+                        Ok(())
                     }
+                };
+                if let Err(error) = result {
+                    c.borrow_mut().pending_events.insert(0, ev);
+                    return Err(error);
                 }
             }
             Ok(())
@@ -9188,7 +9488,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 let mut g = c.borrow_mut();
                 let idx = g.add_custom_widget();
                 if let Some(ref cfg) = config {
-                    let b = g.widgets[idx].base_mut();
+                    let Some(widget) = g.widgets.get_mut(idx) else {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.ui.newCustomWidget: live widget limit reached".into(),
+                        ));
+                    };
+                    let b = widget.base_mut();
                     if let Ok(v) = cfg.get::<_, f32>("x") {
                         b.x = v;
                     }
@@ -9234,6 +9539,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "drawToImage",
         lua.create_function(move |_, (w, h): (u32, u32)| {
+            c.borrow()
+                .limits()
+                .validate_image_dimensions(w, h)
+                .map_err(LuaError::RuntimeError)?;
             let img = c.borrow().draw_to_image(w, h);
             Ok(img)
         })?,
@@ -9338,15 +9647,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "beginDrag",
         lua.create_function(move |_, widget: LuaValue| {
-            let widget_idx = match widget {
-                LuaValue::Table(t) => t.get::<_, usize>("_idx")?,
-                LuaValue::Integer(i) if i >= 0 => i as usize,
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "beginDrag expects a widget table or widget index".into(),
-                    ));
-                }
-            };
+            let g = c.borrow();
+            let widget_idx = widget_index_from_value(&g, widget, "beginDrag")?;
+            drop(g);
             Ok(c.borrow_mut().begin_drag(widget_idx))
         })?,
     )?;
@@ -9366,15 +9669,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "dropOn",
         lua.create_function(move |_, target: LuaValue| {
-            let target_idx = match target {
-                LuaValue::Table(t) => t.get::<_, usize>("_idx")?,
-                LuaValue::Integer(i) if i >= 0 => i as usize,
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "dropOn expects a widget table or widget index".into(),
-                    ));
-                }
-            };
+            let g = c.borrow();
+            let target_idx = widget_index_from_value(&g, target, "dropOn")?;
+            drop(g);
             Ok(c.borrow_mut().drop_on(target_idx))
         })?,
     )?;
@@ -9420,13 +9717,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, def: mlua::Table| {
             let widget_def = lua_table_to_widget_def(&def)?;
             let mut g = c.borrow_mut();
-            let root_idx =
-                crate::ui::load_layout_def(&mut g, &widget_def).map_err(mlua::Error::external)?;
-            g.add_child(0, root_idx);
+            let root_idx = crate::ui::load_layout_def_attached(&mut g, &widget_def)
+                .map_err(mlua::Error::external)?;
             Ok(root_idx as u32)
         })?,
     )?;
     let c = ctx.clone();
+    let s = state.clone();
     // -- loadLayoutFile --
     /// Loads a UI layout from a TOML layout file.
     /// @param | path | string | Path to the TOML layout file.
@@ -9434,17 +9731,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "loadLayoutFile",
         lua.create_function(move |_, path: String| {
-            let src = std::fs::read_to_string(&path).map_err(|e| {
-                mlua::Error::external(format!("loadLayoutFile: cannot read '{path}': {e}"))
-            })?;
+            let src = {
+                let st = s.borrow();
+                st.fs.read_string(&path).map_err(mlua::Error::external)?
+            };
             let mut g = c.borrow_mut();
-            let root_idx =
-                crate::ui::load_layout_toml(&mut g, &src).map_err(mlua::Error::external)?;
-            if !g.add_child(0, root_idx) {
-                return Err(mlua::Error::external(
-                    "loadLayoutFile: failed to attach loaded layout root",
-                ));
-            }
+            let root_idx = crate::ui::load_layout_toml_attached(&mut g, &src)
+                .map_err(mlua::Error::external)?;
             Ok(root_idx as u32)
         })?,
     )?;
@@ -9462,17 +9755,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 st.fs.read_string(&path).map_err(mlua::Error::external)?
             };
             let mut g = c.borrow_mut();
-            let root_idx =
-                crate::ui::load_layout_toml(&mut g, &src).map_err(mlua::Error::external)?;
-            if !g.add_child(0, root_idx) {
-                return Err(mlua::Error::external(
-                    "loadLayoutGameFile: failed to attach loaded layout root",
-                ));
-            }
+            let root_idx = crate::ui::load_layout_toml_attached(&mut g, &src)
+                .map_err(mlua::Error::external)?;
             Ok(root_idx as u32)
         })?,
     )?;
     let c = ctx.clone();
+    let s = state.clone();
     // -- renderToImage --
     /// Renders the entire UI to a PNG image file.
     /// @param | pathOrWidth | any | Output file path for path-first calls, or image width for canonical calls.
@@ -9482,8 +9771,20 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "renderToImage",
         lua.create_function(move |_, args: LuaMultiValue| {
             let (width, height, path) = parse_render_to_image_args(args)?;
-            let mut g = c.borrow_mut();
-            crate::ui::render_to_image(&mut g, width, height, &path).map_err(mlua::Error::external)
+            if path.len() > c.borrow().limits().max_path_bytes {
+                return Err(LuaError::RuntimeError(
+                    "lurek.ui.renderToImage: output path exceeds the path length limit".into(),
+                ));
+            }
+            let png = {
+                let mut g = c.borrow_mut();
+                crate::ui::layout_loader::render_to_image_bytes(&mut g, width, height)
+                    .map_err(mlua::Error::external)?
+            };
+            s.borrow()
+                .fs
+                .write_output_bytes_atomic(&path, &png)
+                .map_err(mlua::Error::external)
         })?,
     )?;
     let c = ctx.clone();
@@ -9520,6 +9821,28 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 }
 /// Converts a Lua table into a `WidgetDef` for layout loading.
 fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::WidgetDef> {
+    lua_table_to_widget_def_at(table, 0)
+}
+
+fn enforce_lua_collection_limit(name: &str, len: usize) -> mlua::Result<()> {
+    let limit = crate::ui::UiLimits::default().max_collection_items;
+    if len > limit {
+        return Err(mlua::Error::external(format!(
+            "loadLayout: {name} exceeds the {limit} item limit"
+        )));
+    }
+    Ok(())
+}
+
+fn lua_table_to_widget_def_at(
+    table: &mlua::Table,
+    depth: usize,
+) -> mlua::Result<crate::ui::WidgetDef> {
+    if depth > crate::ui::UiLimits::default().max_tree_depth {
+        return Err(mlua::Error::external(
+            "loadLayout: widget tree exceeds the depth limit",
+        ));
+    }
     let widget_type: String = table
         .get::<_, String>("type")
         .or_else(|_| table.get::<_, String>("widget_type"))
@@ -9527,7 +9850,7 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
     let mut def = crate::ui::WidgetDef {
         widget_type,
         actions: lua_dialog_actions(table)?,
-        children: lua_widget_children(table)?,
+        children: lua_widget_children(table, depth)?,
         ..Default::default()
     };
     apply_widget_scalar_fields(&mut def, table);
@@ -9538,15 +9861,22 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
     Ok(def)
 }
 
-fn lua_widget_children(table: &mlua::Table) -> mlua::Result<Option<Vec<crate::ui::WidgetDef>>> {
+fn lua_widget_children(
+    table: &mlua::Table,
+    depth: usize,
+) -> mlua::Result<Option<Vec<crate::ui::WidgetDef>>> {
     let Some(children_table) = table.get::<_, Option<mlua::Table>>("children")? else {
         return Ok(None);
     };
     let len = children_table.raw_len();
+    enforce_lua_collection_limit("children", len)?;
     let mut result = Vec::with_capacity(len);
     for i in 1..=len {
         let child_table: mlua::Table = children_table.get(i)?;
-        result.push(lua_table_to_widget_def(&child_table)?);
+        result.push(lua_table_to_widget_def_at(
+            &child_table,
+            depth.saturating_add(1),
+        )?);
     }
     Ok(Some(result))
 }
@@ -9558,6 +9888,7 @@ fn lua_dialog_actions(
         return Ok(None);
     };
     let len = actions_table.raw_len();
+    enforce_lua_collection_limit("actions", len)?;
     let mut result = Vec::with_capacity(len);
     for i in 1..=len {
         let action_table: mlua::Table = actions_table.get(i)?;
@@ -9752,6 +10083,7 @@ fn apply_widget_dialog_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Tabl
 
 fn lua_string_array(table: mlua::Table) -> mlua::Result<Vec<String>> {
     let len = table.raw_len();
+    enforce_lua_collection_limit("items", len)?;
     let mut result = Vec::with_capacity(len);
     for i in 1..=len {
         result.push(table.get(i)?);
@@ -9761,6 +10093,7 @@ fn lua_string_array(table: mlua::Table) -> mlua::Result<Vec<String>> {
 
 fn lua_string_rows(table: mlua::Table) -> mlua::Result<Vec<Vec<String>>> {
     let len = table.raw_len();
+    enforce_lua_collection_limit("rows", len)?;
     let mut rows = Vec::with_capacity(len);
     for row_idx in 1..=len {
         let row_table: mlua::Table = table.get(row_idx)?;
@@ -9793,6 +10126,7 @@ fn lua_columns_def_from_table(
     columns_table: mlua::Table,
 ) -> mlua::Result<Option<crate::ui::layout_loader::ColumnsDef>> {
     let len = columns_table.raw_len();
+    enforce_lua_collection_limit("columns", len)?;
     let mut names = Vec::new();
     let mut objects = Vec::new();
     for i in 1..=len {
@@ -9853,6 +10187,7 @@ fn lua_focus_neighbors(
 
 fn lua_tree_nodes(table: mlua::Table) -> mlua::Result<Vec<crate::ui::layout_loader::TreeNodeDef>> {
     let len = table.raw_len();
+    enforce_lua_collection_limit("nodes", len)?;
     let mut nodes = Vec::with_capacity(len);
     for i in 1..=len {
         let node: mlua::Table = table.get(i)?;

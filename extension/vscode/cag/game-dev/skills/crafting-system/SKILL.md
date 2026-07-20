@@ -7,14 +7,6 @@ description: "Load this skill when implementing recipes, resource conversion, cr
 
 Recipe tables, ingredient matching, multiple outputs, station restrictions, and discovery mechanics.
 
-## Key Concepts
-
-- **Recipe table**: Each recipe has a list of inputs (item_id + count) and one or more outputs.
-- **Fuzzy matching**: Check if inventory contains all required ingredients regardless of slot order.
-- **Station restriction**: Some recipes require a specific crafting station (forge, alchemy table).
-- **Discovery**: Recipes start hidden. Unlock by finding a scroll, or auto-discover when ingredients are available.
-- **Multiple outputs**: A recipe can produce several items (e.g., wood plank recipe yields 4 planks).
-
 ## Recipe Definition
 
 ```lua

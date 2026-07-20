@@ -82,14 +82,14 @@ end
 Animate widget color tint from one RGBA value to another.
 
 ```lua
-lurek.ui.animateColor(idx, from, to, duration, easing)
+lurek.ui.animateColor(widget, from, to, duration, easing)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | number | Widget index. |
+| `widget` | [LUiWidget](#luiwidget) | Widget handle. |
 | `from` | table | Starting color {r, g, b, a} (0-1 range). |
 | `to` | table | Target color {r, g, b, a} (0-1 range). |
 | `duration` | number | Duration in seconds. |
@@ -107,7 +107,7 @@ lurek.ui.animateColor(idx, from, to, duration, easing)
 do
 
     local lbl = lurek.ui.newLabel("Hello")
-    lurek.ui.animateColor(lbl._idx, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
+    lurek.ui.animateColor(lbl, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
     lurek.log.info(tostring("lurek.ui.animateColor ok"))
     lurek.log.info(tostring("label text = " .. lbl:getText()))
     lurek.log.info(tostring("label width = " .. select(3, lbl:getRect())))
@@ -121,14 +121,14 @@ end
 Animate widget rotation from one angle to another (in radians).
 
 ```lua
-lurek.ui.animateRotation(idx, from, to, duration, easing)
+lurek.ui.animateRotation(widget, from, to, duration, easing)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | number | Widget index. |
+| `widget` | [LUiWidget](#luiwidget) | Widget handle. |
 | `from` | number | Starting angle in radians. |
 | `to` | number | Target angle in radians. |
 | `duration` | number | Duration in seconds. |
@@ -146,7 +146,7 @@ lurek.ui.animateRotation(idx, from, to, duration, easing)
 do
 
     local img = lurek.ui.newPanel()
-    lurek.ui.animateRotation(img._idx, 0, 360, 1.0)
+    lurek.ui.animateRotation(img, 0, 360, 1.0)
     lurek.log.info(tostring("lurek.ui.animateRotation ok"))
     lurek.log.info(tostring("panel children = " .. img:getChildCount()))
     lurek.log.info(tostring("panel width = " .. select(3, img:getRect())))
@@ -160,14 +160,14 @@ end
 Animate widget scale from one value to another.
 
 ```lua
-lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing)
+lurek.ui.animateScale(widget, from_sx, from_sy, to_sx, to_sy, duration, easing)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `idx` | number | Widget index. |
+| `widget` | [LUiWidget](#luiwidget) | Widget handle. |
 | `from_sx` | number | Starting X scale. |
 | `from_sy` | number | Starting Y scale. |
 | `to_sx` | number | Target X scale. |
@@ -187,7 +187,7 @@ lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing)
 do
 
     local btn = lurek.ui.newButton("Scale")
-    lurek.ui.animateScale(btn._idx, 1.0, 1.0, 1.2, 1.2, 0.3)
+    lurek.ui.animateScale(btn, 1.0, 1.0, 1.2, 1.2, 0.3)
     lurek.log.info(tostring("lurek.ui.animateScale ok"))
     lurek.log.info(tostring("button text = " .. btn:getText()))
     lurek.log.info(tostring("button width = " .. select(3, btn:getRect())))
@@ -310,6 +310,29 @@ do
     if w > 0 then widget:setVisible(true) end
 end
 ```
+
+---
+
+### `lurek.ui.destroy`
+
+Destroys a widget handle and, by default, its retained descendant subtree.
+
+```lua
+lurek.ui.destroy(widget, recursive)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `widget` | [LUiWidget](#luiwidget) | The live widget table to destroy. |
+| `recursive?` | boolean | Whether descendants are destroyed; defaults to true. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of widgets invalidated by the destruction. |
 
 ---
 
@@ -498,7 +521,7 @@ do
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
-    a:setFocusNeighbor("right", b._idx)
+    a:setFocusNeighbor("right", b)
     lurek.ui.setFocus(a)
     local moved = lurek.ui.focusDirection(1.0, 0.0)
     lurek.log.info(tostring("lurek.ui.focusDirection moved=" .. tostring(moved)))
@@ -534,7 +557,7 @@ do
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
-    a:setFocusNeighbor("right", b._idx)
+    a:setFocusNeighbor("right", b)
     lurek.ui.setFocus(a)
     local moved = lurek.ui.focusNeighbor("right")
     lurek.log.info(tostring("focus moved=" .. tostring(moved)))
@@ -619,7 +642,7 @@ do
     lurek.ui.clear()
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
-    label:setLabelFor(input._idx)
+    label:setLabelFor(input)
     local nodes = lurek.ui.getAccessibilityTree()
     lurek.log.info(tostring("a11y nodes = " .. tostring(#nodes)))
     lurek.log.info(tostring("first node role = " .. tostring(nodes[1] and nodes[1].role)))
@@ -1755,8 +1778,8 @@ do
 
     local footer = lurek.ui.newLayout("horizontal")
     footer:setSize(300, 26)
-    modal:setContent(body._idx)
-    modal:setFooter(footer._idx)
+    modal:setContent(body)
+    modal:setFooter(footer)
     modal:addAction("Equip", function(_, action_idx)
         lurek.log.info(tostring("default action fired:") .. " " .. tostring(action_idx))
     end, "default", true)
@@ -1811,8 +1834,8 @@ do
     sidebar:setSize(200, 0)
     dock:addChild(header)
     dock:addChild(sidebar)
-    dock:dock(header._idx, "top")
-    dock:dock(sidebar._idx, "left")
+    dock:dock(header, "top")
+    dock:dock(sidebar, "left")
     dock:setSplitSize("left", 200)
     dock:setSplitSize("top", 60)
     lurek.log.info(tostring("docked count = " .. dock:getDockedCount()))
@@ -2664,8 +2687,8 @@ do
     local split = lurek.ui.newSplitContainer("vertical")
     local top = lurek.ui.newPanel()
     local bottom = lurek.ui.newPanel()
-    split:setFirstChild(top._idx)
-    split:setSecondChild(bottom._idx)
+    split:setFirstChild(top)
+    split:setSecondChild(bottom)
     lurek.log.info(tostring("split container = " .. split:getOrientation()))
 end
 ```
@@ -2702,8 +2725,8 @@ do
     local right = lurek.ui.newPanel()
     lurek.log.info(tostring("type = " .. split:type()))
     lurek.log.info(tostring("orientation = " .. split:getOrientation()))
-    split:setFirstChild(left._idx)
-    split:setSecondChild(right._idx)
+    split:setFirstChild(left)
+    split:setSecondChild(right)
     split:setSplitPosition(0.3)
     split:setMinPanelSize(100)
     lurek.log.info(tostring("split at " .. split:getSplitPosition()))
@@ -3127,7 +3150,7 @@ do
     local btn = lurek.ui.newButton("Hover me")
     local tip = lurek.ui.newTooltipPanel("Click to submit form")
     tip:setDelay(0.5)
-    tip:setTarget(btn._idx)
+    tip:setTarget(btn)
     lurek.log.info(tostring("tooltip text:") .. " " .. tostring(tip:getText()))
     lurek.log.info(tostring("delay:") .. " " .. tostring(tip:getDelay()))
     lurek.log.info(tostring("target:") .. " " .. tostring(tip:getTarget()))
@@ -3899,7 +3922,7 @@ end
 Adds a collapsible section to this accordion.
 
 ```lua
-LAccordion:addSection(title, content_idx)
+LAccordion:addSection(title, content)
 ```
 
 **Parameters**
@@ -3907,7 +3930,7 @@ LAccordion:addSection(title, content_idx)
 | Name | Type | Description |
 |------|------|-------------|
 | `title` | string | The section title. |
-| `content_idx?` | number | Optional widget index for the section content. |
+| `content?` | [LUiWidget](#luiwidget) | Optional widget handle for the section content. |
 
 **Example**
 
@@ -5474,7 +5497,7 @@ do
 
     local dlg = lurek.ui.newDialog("Footer")
     local footer = lurek.ui.newPanel()
-    dlg:setFooter(footer._idx)
+    dlg:setFooter(footer)
     lurek.log.info(tostring("footer idx:") .. " " .. tostring(dlg:getFooter()))
     lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
@@ -5841,14 +5864,14 @@ end
 Sets the widget index rendered as this dialog's content.
 
 ```lua
-LDialog:setContent(content_idx)
+LDialog:setContent(content)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `content_idx?` | number | Optional widget index for the content slot. |
+| `content?` | [LUiWidget](#luiwidget) | Optional widget handle for the content slot. |
 
 **Returns**
 
@@ -5964,14 +5987,14 @@ end
 Assigns an optional footer content root for this dialog.
 
 ```lua
-LDialog:setFooter(footer_idx)
+LDialog:setFooter(footer)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `footer_idx?` | number | Optional widget index rendered in the footer slot. |
+| `footer?` | [LUiWidget](#luiwidget) | Optional widget handle rendered in the footer slot. |
 
 **Example**
 
@@ -5980,7 +6003,7 @@ do
 
     local dlg = lurek.ui.newDialog("Footer Setter")
     local footer = lurek.ui.newLayout("horizontal")
-    dlg:setFooter(footer._idx)
+    dlg:setFooter(footer)
     lurek.log.info(tostring("setFooter:") .. " " .. tostring(dlg:getFooter()))
     lurek.log.info(tostring("dialog title = " .. dlg:getTitle()))
 end
@@ -6198,14 +6221,14 @@ end
 Docks a child widget to the specified side of this dock panel.
 
 ```lua
-LDockPanel:dock(child_idx, side)
+LDockPanel:dock(child, side)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | number | The widget index to dock. |
+| `child` | [LUiWidget](#luiwidget) | The child widget handle to dock. |
 | `side` | string | The dock side ("left", "right", "top", "bottom", "center"). |
 
 **Example**
@@ -6217,11 +6240,11 @@ do
     local child = lurek.ui.newPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     dp:addChild(child)
-    dp:dock(child._idx, "left")
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     lurek.log.info(tostring("split_size=" .. tostring(dp:getSplitSize("left"))))
     dp:setSplitSize("left", 150)
-    dp:undock(child._idx)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
@@ -6342,14 +6365,14 @@ end
 Removes a child widget from this dock panel.
 
 ```lua
-LDockPanel:undock(child_idx)
+LDockPanel:undock(child)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | number | The widget index to undock. |
+| `child` | [LUiWidget](#luiwidget) | The child widget handle to undock. |
 
 **Example**
 
@@ -6359,9 +6382,9 @@ do
     local dock = lurek.ui.newDockPanel()
     local footer = lurek.ui.newPanel()
     dock:addChild(footer)
-    dock:dock(footer._idx, "bottom")
+    dock:dock(footer, "bottom")
     lurek.log.info(tostring("docked = " .. dock:getDockedCount()))
-    dock:undock(footer._idx)
+    dock:undock(footer)
     lurek.log.info(tostring("after undock = " .. dock:getDockedCount()))
 end
 ```
@@ -7983,14 +8006,14 @@ end
 Adds a menu (by its widget index) to this menu bar.
 
 ```lua
-LMenuBar:addMenu(menu_idx)
+LMenuBar:addMenu(menu)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `menu_idx` | number | The widget index of the menu to add. |
+| `menu` | [LMenuItem](#lmenuitem) | The menu widget handle to add. |
 
 **Example**
 
@@ -8001,9 +8024,9 @@ do
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
     local viewMenu = lurek.ui.newMenuItem("View")
-    bar:addMenu(fileMenu._idx)
-    bar:addMenu(editMenu._idx)
-    bar:addMenu(viewMenu._idx)
+    bar:addMenu(fileMenu)
+    bar:addMenu(editMenu)
+    bar:addMenu(viewMenu)
     lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
     lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
@@ -8035,9 +8058,9 @@ do
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
     local viewMenu = lurek.ui.newMenuItem("View")
-    bar:addMenu(fileMenu._idx)
-    bar:addMenu(editMenu._idx)
-    bar:addMenu(viewMenu._idx)
+    bar:addMenu(fileMenu)
+    bar:addMenu(editMenu)
+    bar:addMenu(viewMenu)
     lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
     lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
@@ -8069,9 +8092,9 @@ do
     local fileMenu = lurek.ui.newMenuItem("File")
     local editMenu = lurek.ui.newMenuItem("Edit")
     local viewMenu = lurek.ui.newMenuItem("View")
-    bar:addMenu(fileMenu._idx)
-    bar:addMenu(editMenu._idx)
-    bar:addMenu(viewMenu._idx)
+    bar:addMenu(fileMenu)
+    bar:addMenu(editMenu)
+    bar:addMenu(viewMenu)
     lurek.log.info(tostring("menus = " .. bar:getMenuCount()))
     local menus = bar:getMenus()
     lurek.log.info(tostring("menu indices: " .. #menus .. " entries"))
@@ -8085,14 +8108,14 @@ end
 Removes a menu from this menu bar by its widget index.
 
 ```lua
-LMenuBar:removeMenu(menu_idx)
+LMenuBar:removeMenu(menu)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `menu_idx` | number | The widget index of the menu to remove. |
+| `menu` | [LMenuItem](#lmenuitem) | The menu widget handle to remove. |
 
 **Returns**
 
@@ -8107,9 +8130,9 @@ do
 
     local bar = lurek.ui.newMenuBar()
     local m = lurek.ui.newMenuItem("Tools")
-    bar:addMenu(m._idx)
+    bar:addMenu(m)
     lurek.log.info(tostring("before remove = " .. bar:getMenuCount()))
-    local ok = bar:removeMenu(m._idx)
+    local ok = bar:removeMenu(m)
     lurek.log.info(tostring("removed = " .. tostring(ok)))
     lurek.log.info(tostring("after remove = " .. bar:getMenuCount()))
 end
@@ -8130,14 +8153,14 @@ end
 Adds a sub-item to this menu item for building nested menus.
 
 ```lua
-LMenuItem:addSubItem(child_idx)
+LMenuItem:addSubItem(child)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | number | The widget index of the sub-item to add. |
+| `child` | [LMenuItem](#lmenuitem) | The sub-item widget handle to add. |
 
 **Example**
 
@@ -8150,9 +8173,9 @@ do
     local saveItem = lurek.ui.newMenuItem("Save")
     saveItem:setShortcut("Ctrl+S")
     local exitItem = lurek.ui.newMenuItem("Exit")
-    fileMenu:addSubItem(openItem._idx)
-    fileMenu:addSubItem(saveItem._idx)
-    fileMenu:addSubItem(exitItem._idx)
+    fileMenu:addSubItem(openItem)
+    fileMenu:addSubItem(saveItem)
+    fileMenu:addSubItem(exitItem)
     local subs = fileMenu:getSubItems()
     lurek.log.info(tostring("File has " .. #subs .. " sub-items"))
 end
@@ -8181,7 +8204,7 @@ do
 
     local mi = lurek.ui.newMenuItem("Tools")
     local sub1 = lurek.ui.newMenuItem("Options")
-    mi:addSubItem(sub1._idx)
+    mi:addSubItem(sub1)
     local subs = mi:getSubItems()
     mi:setShortcut("Ctrl+T")
     local sc = mi:getShortcut()
@@ -8216,9 +8239,9 @@ do
     local saveItem = lurek.ui.newMenuItem("Save")
     saveItem:setShortcut("Ctrl+S")
     local exitItem = lurek.ui.newMenuItem("Exit")
-    fileMenu:addSubItem(openItem._idx)
-    fileMenu:addSubItem(saveItem._idx)
-    fileMenu:addSubItem(exitItem._idx)
+    fileMenu:addSubItem(openItem)
+    fileMenu:addSubItem(saveItem)
+    fileMenu:addSubItem(exitItem)
     local subs = fileMenu:getSubItems()
     lurek.log.info(tostring("File has " .. #subs .. " sub-items"))
 end
@@ -10676,8 +10699,8 @@ do
     local second = lurek.ui.newPanel()
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(first._idx)
-    sp:setSecondChild(second._idx)
+    sp:setFirstChild(first)
+    sp:setSecondChild(second)
     local fc = sp:getFirstChild()
     local sc = sp:getSecondChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
@@ -10715,8 +10738,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -10754,8 +10777,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -10793,8 +10816,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -10832,8 +10855,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -10854,14 +10877,14 @@ end
 Sets the widget index for the first (left/top) panel.
 
 ```lua
-LSplitPanel:setFirstChild(child_idx)
+LSplitPanel:setFirstChild(child)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | number | The widget index. |
+| `child` | [LUiWidget](#luiwidget) | The child widget handle. |
 
 **Example**
 
@@ -10871,8 +10894,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -10910,8 +10933,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -10949,8 +10972,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -10971,14 +10994,14 @@ end
 Sets the widget index for the second (right/bottom) panel.
 
 ```lua
-LSplitPanel:setSecondChild(child_idx)
+LSplitPanel:setSecondChild(child)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child_idx` | number | The widget index. |
+| `child` | [LUiWidget](#luiwidget) | The child widget handle. |
 
 **Example**
 
@@ -10988,8 +11011,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -11027,8 +11050,8 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     lurek.log.info(tostring("type=" .. sp:type()))
     lurek.log.info(tostring("orientation=" .. sp:getOrientation()))
-    sp:setFirstChild(0)
-    sp:setSecondChild(1)
+    sp:setFirstChild(lurek.ui.newPanel())
+    sp:setSecondChild(lurek.ui.newPanel())
     local fc = sp:getFirstChild()
     lurek.log.info(tostring("fc=" .. tostring(fc)))
     local sc = sp:getSecondChild()
@@ -13212,7 +13235,7 @@ LTooltipPanel:setTarget(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target?` | number | The target widget index, or nil to detach. |
+| `target?` | [LUiWidget](#luiwidget) | The target widget handle, or nil to detach. |
 
 **Example**
 
@@ -14217,6 +14240,28 @@ end
 
 ---
 
+#### `LUiWidget:destroy`
+
+Destroys this widget and, by default, its retained descendant subtree.
+
+```lua
+LUiWidget:destroy(recursive)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `recursive?` | boolean | Whether descendants are destroyed; defaults to true. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of widgets invalidated by the destruction. |
+
+---
+
 #### `LUiWidget:detachFromEntity`
 
 Detaches this widget from any previously attached entity.
@@ -14421,7 +14466,7 @@ end
 
 #### `LUiWidget:getChildren`
 
-Returns a table of lightweight child widget references, each containing an _idx field.
+Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
 
 ```lua
 LUiWidget:getChildren()
@@ -14654,7 +14699,7 @@ do
 
     local label = lurek.ui.newLabel("Email")
     local input = lurek.ui.newTextInput()
-    label:setLabelFor(input._idx)
+    label:setLabelFor(input)
     lurek.log.info(tostring("label for = " .. tostring(label:getLabelFor())))
     lurek.log.info(tostring("label text = " .. label:getText()))
 end
@@ -15211,6 +15256,22 @@ end
 
 ---
 
+#### `LUiWidget:isValid`
+
+Returns whether this widget handle still identifies a live widget in its originating UI context.
+
+```lua
+LUiWidget:isValid()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | False after destroy or clear, or when used with a different context. |
+
+---
+
 #### `LUiWidget:isVisible`
 
 Returns whether this widget is currently visible.
@@ -15635,7 +15696,7 @@ LUiWidget:setFocusNeighbor(direction, target)
 | Name | Type | Description |
 |------|------|-------------|
 | `direction` | string | Neighbor direction: "up", "down", "left", or "right". |
-| `target?` | number | Target widget index, or nil to clear the neighbor. |
+| `target?` | [LUiWidget](#luiwidget) | Target widget handle, or nil to clear the neighbor. |
 
 **Returns**
 
@@ -15650,7 +15711,7 @@ do
 
     local a = lurek.ui.newButton("A")
     local b = lurek.ui.newButton("B")
-    a:setFocusNeighbor("right", b._idx)
+    a:setFocusNeighbor("right", b)
     lurek.log.info(tostring("button text = " .. a:getText()))
     lurek.log.info(tostring("button width = " .. select(3, a:getRect())))
 end
@@ -15868,7 +15929,7 @@ LUiWidget:setLabelFor(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target?` | number | Target widget index, or nil to clear the link. |
+| `target?` | [LUiWidget](#luiwidget) | Target widget handle, or nil to clear the link. |
 
 **Example**
 
@@ -15877,7 +15938,7 @@ do
 
     local label = lurek.ui.newLabel("Name")
     local input = lurek.ui.newTextInput()
-    label:setLabelFor(input._idx)
+    label:setLabelFor(input)
     lurek.log.info(tostring("label target = " .. tostring(label:getLabelFor())))
     lurek.log.info(tostring("input idx = " .. tostring(input._idx)))
 end

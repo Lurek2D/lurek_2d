@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-19T10:00:05.216506+00:00",
+    "generated": "2026-07-20T18:16:00.382254+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3362,
-      "rust_modules": 793,
+      "rust_items": 3369,
+      "rust_modules": 794,
       "rust_tests": 506,
       "lua_tests": 290
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3362,
-      "documented": 3360,
-      "modules": 793
+      "total_items": 3369,
+      "documented": 3367,
+      "modules": 794
     },
     "modules": {
       "agent::chat": {
@@ -7019,28 +7019,28 @@
             "kind": "struct",
             "description": "Metadata snapshot for a file or directory in the virtual filesystem.",
             "file": "src/filesystem/vfs.rs",
-            "line": 23
+            "line": 26
           },
           {
             "name": "FileType",
             "kind": "enum",
             "description": "Coarse file kind used by metadata and scripting APIs.",
             "file": "src/filesystem/vfs.rs",
-            "line": 35
+            "line": 38
           },
           {
             "name": "MountLayer",
             "kind": "struct",
             "description": "Mounted source directory with its virtual mountpoint.",
             "file": "src/filesystem/vfs.rs",
-            "line": 58
+            "line": 61
           },
           {
             "name": "GameFS",
             "kind": "struct",
             "description": "Game filesystem rooted at a base directory with optional mount overlays.",
             "file": "src/filesystem/vfs.rs",
-            "line": 66
+            "line": 69
           }
         ]
       },
@@ -26847,28 +26847,42 @@
             "kind": "enum",
             "description": "A typed binding value that can be pushed into widgets via `update_bindings`.",
             "file": "src/ui/context.rs",
-            "line": 66
+            "line": 68
+          },
+          {
+            "name": "WidgetId",
+            "kind": "struct",
+            "description": "Opaque identity for one widget generation in one UI context.  The slot is retained for diagnostics and compatibility with the existing retained widget storage, but callers must validate the complete value. A slot alone is never an authoritative widget reference.",
+            "file": "src/ui/context.rs",
+            "line": 83
           },
           {
             "name": "GuiEvent",
             "kind": "enum",
             "description": "An event emitted by a widget interaction and drained each frame by the Lua binding.",
             "file": "src/ui/context.rs",
-            "line": 76
+            "line": 107
+          },
+          {
+            "name": "UiEventQueue",
+            "kind": "struct",
+            "description": "Bounded event queue used at the Lua/UI boundary.",
+            "file": "src/ui/context.rs",
+            "line": 149
           },
           {
             "name": "WidgetKind",
             "kind": "enum",
             "description": "Discriminated union of all concrete widget types stored in the flat `GuiContext::widgets` list.",
             "file": "src/ui/context.rs",
-            "line": 98
+            "line": 232
           },
           {
             "name": "GuiContext",
             "kind": "struct",
             "description": "Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.",
             "file": "src/ui/context.rs",
-            "line": 327
+            "line": 472
           }
         ]
       },
@@ -27262,84 +27276,118 @@
             "kind": "struct",
             "description": "Declarative dialog footer action loaded from TOML or Lua layout definitions.",
             "file": "src/ui/layout_loader.rs",
-            "line": 22
+            "line": 25
           },
           {
             "name": "PropertyRowDef",
             "kind": "struct",
             "description": "Declarative property row loaded into a `PropertyWidget`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 32
+            "line": 35
           },
           {
             "name": "PropertyGroupDef",
             "kind": "struct",
             "description": "Declarative collapsible property group loaded into a `PropertyWidget`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 46
+            "line": 49
           },
           {
             "name": "FocusNeighborDef",
             "kind": "struct",
             "description": "Declarative keyboard neighbor links resolved by widget id after the tree is built.",
             "file": "src/ui/layout_loader.rs",
-            "line": 56
+            "line": 59
           },
           {
             "name": "TableColumnDef",
             "kind": "enum",
             "description": "Table column entry accepted by `guitable` definitions.",
             "file": "src/ui/layout_loader.rs",
-            "line": 65
+            "line": 68
           },
           {
             "name": "ColumnsDef",
             "kind": "enum",
             "description": "`columns` can be a grid count for layout widgets or table column definitions for `guitable`.",
             "file": "src/ui/layout_loader.rs",
-            "line": 72
+            "line": 75
           },
           {
             "name": "TreeNodeDef",
             "kind": "struct",
             "description": "Tree node entry accepted by `treeview` definitions.",
             "file": "src/ui/layout_loader.rs",
-            "line": 79
+            "line": 82
           },
           {
             "name": "WidgetDef",
             "kind": "struct",
             "description": "Flat description of a single widget produced by TOML deserialisation; children are nested inline.",
             "file": "src/ui/layout_loader.rs",
-            "line": 87
+            "line": 90
           },
           {
             "name": "LayoutDef",
             "kind": "struct",
             "description": "Top-level TOML layout definition containing an optional resolution hint and the root widget tree.",
             "file": "src/ui/layout_loader.rs",
-            "line": 228
+            "line": 231
           },
           {
             "name": "load_layout_def",
             "kind": "fn",
             "description": "Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 235
+            "line": 238
           },
           {
             "name": "load_layout_toml",
             "kind": "fn",
             "description": "Parse `toml_src` into a `LayoutDef` and load it into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 563
+            "line": 705
+          },
+          {
+            "name": "load_layout_def_attached",
+            "kind": "fn",
+            "description": "Load a layout and attach its root to the UI root as one transaction.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 718
+          },
+          {
+            "name": "load_layout_toml_attached",
+            "kind": "fn",
+            "description": "Parse, load, and attach a TOML layout as one transaction.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 734
+          },
+          {
+            "name": "render_to_image_bytes",
+            "kind": "fn",
+            "description": "Rasterise the UI to bounded PNG bytes without touching the host filesystem.",
+            "file": "src/ui/layout_loader.rs",
+            "line": 749
           },
           {
             "name": "render_to_image",
             "kind": "fn",
-            "description": "Run the engine UI rasteriser on `ctx` at the given resolution and save the PNG to `path`.",
+            "description": "Run the engine UI rasteriser on `ctx` at the given resolution and atomically save the PNG to a safe relative path.",
             "file": "src/ui/layout_loader.rs",
-            "line": 569
+            "line": 769
+          }
+        ]
+      },
+      "ui::limits": {
+        "module_doc": "Shared ceilings for Lua-controlled UI input, retained state, traversal, and software capture.  This policy is deliberately owned by `ui`: loaders, Lua conversion helpers, event production, and image capture use the same defaults so one entry path cannot bypass another. Trusted engine setup may replace the policy before a game starts; normal Lua code cannot change it.",
+        "source_file": "src/ui/limits.rs",
+        "items": [
+          {
+            "name": "UiLimits",
+            "kind": "struct",
+            "description": "Bounded resource policy applied at UI trust boundaries.",
+            "file": "src/ui/limits.rs",
+            "line": 10
           }
         ]
       },
@@ -27390,32 +27438,39 @@
             "line": 21
           },
           {
+            "name": "limits",
+            "kind": "mod",
+            "description": "Shared ceilings for UI input, retained state, and software capture.",
+            "file": "src/ui/mod.rs",
+            "line": 23
+          },
+          {
             "name": "render",
             "kind": "mod",
             "description": "UI render helpers and draw-command generation.",
             "file": "src/ui/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "theme",
             "kind": "mod",
             "description": "Theming and per-widget style configuration.",
             "file": "src/ui/mod.rs",
-            "line": 25
+            "line": 27
           },
           {
             "name": "widget",
             "kind": "mod",
             "description": "Base widget trait, state, transitions, and type registry.",
             "file": "src/ui/mod.rs",
-            "line": 27
+            "line": 29
           },
           {
             "name": "layout_loader",
             "kind": "mod",
             "description": "TOML-based declarative layout loader and image renderer.",
             "file": "src/ui/mod.rs",
-            "line": 52
+            "line": 55
           }
         ]
       },

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-19T10:00:44.232082+00:00",
+  "generated_at": "2026-07-20T18:16:30.348982+00:00",
   "summary": {
     "rust": {
-      "total": 9963,
-      "covered": 9963,
-      "missing": 0,
+      "total": 9986,
+      "covered": 9982,
+      "missing": 4,
       "pct": 100.0
     },
     "lua_api": {
@@ -14,13 +14,50 @@
       "pct": 100.0
     },
     "total": {
-      "total": 10215,
-      "covered": 10215,
-      "missing": 0,
+      "total": 10238,
+      "covered": 10234,
+      "missing": 4,
       "pct": 100.0
     }
   },
-  "missing": [],
+  "missing": [
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context/builders.rs",
+      "line": 11,
+      "kind": "fn",
+      "name": "push_widget",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 209,
+      "kind": "fn",
+      "name": "is_empty",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 215,
+      "kind": "fn",
+      "name": "remove",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 218,
+      "kind": "fn",
+      "name": "insert",
+      "has_doc": false
+    }
+  ],
   "items": [
     {
       "source": "rust",
@@ -23669,7 +23706,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 23,
+      "line": 26,
       "kind": "struct",
       "name": "FileInfo",
       "has_doc": true
@@ -23678,7 +23715,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 35,
+      "line": 38,
       "kind": "enum",
       "name": "FileType",
       "has_doc": true
@@ -23687,7 +23724,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 47,
+      "line": 50,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -23696,7 +23733,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 58,
+      "line": 61,
       "kind": "struct",
       "name": "MountLayer",
       "has_doc": true
@@ -23705,7 +23742,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 66,
+      "line": 69,
       "kind": "struct",
       "name": "GameFS",
       "has_doc": true
@@ -23714,7 +23751,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 197,
+      "line": 200,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -23723,7 +23760,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 206,
+      "line": 209,
       "kind": "fn",
       "name": "base_dir",
       "has_doc": true
@@ -23732,7 +23769,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 221,
+      "line": 224,
       "kind": "fn",
       "name": "read_string",
       "has_doc": true
@@ -23741,7 +23778,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 227,
+      "line": 230,
       "kind": "fn",
       "name": "read_bytes",
       "has_doc": true
@@ -23750,7 +23787,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 233,
+      "line": 236,
       "kind": "fn",
       "name": "write_string",
       "has_doc": true
@@ -23759,7 +23796,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 244,
+      "line": 247,
       "kind": "fn",
       "name": "write_bytes",
       "has_doc": true
@@ -23768,7 +23805,16 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 255,
+      "line": 258,
+      "kind": "fn",
+      "name": "write_bytes_atomic",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "filesystem",
+      "file": "src/filesystem/vfs.rs",
+      "line": 319,
       "kind": "fn",
       "name": "read_json",
       "has_doc": true
@@ -23777,7 +23823,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 263,
+      "line": 327,
       "kind": "fn",
       "name": "write_json",
       "has_doc": true
@@ -23786,7 +23832,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 270,
+      "line": 334,
       "kind": "fn",
       "name": "read_or_write_json",
       "has_doc": true
@@ -23795,7 +23841,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 278,
+      "line": 342,
       "kind": "fn",
       "name": "exists",
       "has_doc": true
@@ -23804,7 +23850,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 282,
+      "line": 346,
       "kind": "fn",
       "name": "list",
       "has_doc": true
@@ -23813,7 +23859,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 298,
+      "line": 362,
       "kind": "fn",
       "name": "list_recursive",
       "has_doc": true
@@ -23822,7 +23868,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 343,
+      "line": 407,
       "kind": "fn",
       "name": "get_directory_items",
       "has_doc": true
@@ -23831,7 +23877,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 347,
+      "line": 411,
       "kind": "fn",
       "name": "is_file",
       "has_doc": true
@@ -23840,7 +23886,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 353,
+      "line": 417,
       "kind": "fn",
       "name": "is_directory",
       "has_doc": true
@@ -23849,7 +23895,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 360,
+      "line": 424,
       "kind": "fn",
       "name": "create_directory",
       "has_doc": true
@@ -23858,7 +23904,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 367,
+      "line": 431,
       "kind": "fn",
       "name": "remove",
       "has_doc": true
@@ -23867,7 +23913,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 380,
+      "line": 444,
       "kind": "fn",
       "name": "get_info",
       "has_doc": true
@@ -23876,7 +23922,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 404,
+      "line": 468,
       "kind": "fn",
       "name": "append_string",
       "has_doc": true
@@ -23885,7 +23931,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 424,
+      "line": 488,
       "kind": "fn",
       "name": "get_source",
       "has_doc": true
@@ -23894,7 +23940,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 428,
+      "line": 492,
       "kind": "fn",
       "name": "get_save_directory",
       "has_doc": true
@@ -23903,7 +23949,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 432,
+      "line": 496,
       "kind": "fn",
       "name": "get_working_directory",
       "has_doc": true
@@ -23912,7 +23958,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 440,
+      "line": 504,
       "kind": "fn",
       "name": "get_user_directory",
       "has_doc": true
@@ -23921,7 +23967,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 459,
+      "line": 523,
       "kind": "fn",
       "name": "get_identity",
       "has_doc": true
@@ -23930,7 +23976,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 463,
+      "line": 527,
       "kind": "fn",
       "name": "set_identity",
       "has_doc": true
@@ -23939,7 +23985,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 467,
+      "line": 531,
       "kind": "fn",
       "name": "mount",
       "has_doc": true
@@ -23948,7 +23994,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 506,
+      "line": 570,
       "kind": "fn",
       "name": "mount_full",
       "has_doc": true
@@ -23957,7 +24003,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 523,
+      "line": 587,
       "kind": "fn",
       "name": "unmount",
       "has_doc": true
@@ -23966,7 +24012,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 532,
+      "line": 596,
       "kind": "fn",
       "name": "load_chunk",
       "has_doc": true
@@ -23975,7 +24021,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 536,
+      "line": 600,
       "kind": "fn",
       "name": "get_directory_items_merged",
       "has_doc": true
@@ -23984,7 +24030,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 587,
+      "line": 651,
       "kind": "fn",
       "name": "resolve_read_path",
       "has_doc": true
@@ -23993,7 +24039,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 613,
+      "line": 677,
       "kind": "fn",
       "name": "resolve_save_path",
       "has_doc": true
@@ -24002,7 +24048,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 625,
+      "line": 689,
       "kind": "fn",
       "name": "read_lines",
       "has_doc": true
@@ -24011,7 +24057,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 630,
+      "line": 694,
       "kind": "fn",
       "name": "open_file",
       "has_doc": true
@@ -24020,7 +24066,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 635,
+      "line": 699,
       "kind": "fn",
       "name": "copy_file",
       "has_doc": true
@@ -24029,7 +24075,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 649,
+      "line": 713,
       "kind": "fn",
       "name": "move_file",
       "has_doc": true
@@ -24038,7 +24084,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 662,
+      "line": 726,
       "kind": "fn",
       "name": "remove_dir",
       "has_doc": true
@@ -24047,7 +24093,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 674,
+      "line": 738,
       "kind": "fn",
       "name": "glob",
       "has_doc": true
@@ -24056,7 +24102,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 694,
+      "line": 758,
       "kind": "fn",
       "name": "stat",
       "has_doc": true
@@ -24065,7 +24111,7 @@
       "source": "rust",
       "module": "filesystem",
       "file": "src/filesystem/vfs.rs",
-      "line": 702,
+      "line": 766,
       "kind": "fn",
       "name": "create_temp_file",
       "has_doc": true
@@ -39482,7 +39528,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/ui_api.rs",
-      "line": 7580,
+      "line": 7789,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -85238,7 +85284,16 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 12,
+      "line": 11,
+      "kind": "fn",
+      "name": "push_widget",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context/builders.rs",
+      "line": 22,
       "kind": "fn",
       "name": "add_button",
       "has_doc": true
@@ -85247,7 +85302,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 18,
+      "line": 26,
       "kind": "fn",
       "name": "add_label",
       "has_doc": true
@@ -85256,7 +85311,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 24,
+      "line": 30,
       "kind": "fn",
       "name": "add_text_input",
       "has_doc": true
@@ -85265,7 +85320,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 30,
+      "line": 34,
       "kind": "fn",
       "name": "add_text_area",
       "has_doc": true
@@ -85274,7 +85329,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 36,
+      "line": 38,
       "kind": "fn",
       "name": "add_rich_label",
       "has_doc": true
@@ -85283,7 +85338,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 43,
+      "line": 42,
       "kind": "fn",
       "name": "add_checkbox",
       "has_doc": true
@@ -85292,7 +85347,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 49,
+      "line": 46,
       "kind": "fn",
       "name": "add_slider",
       "has_doc": true
@@ -85301,7 +85356,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 55,
+      "line": 50,
       "kind": "fn",
       "name": "add_progress_bar",
       "has_doc": true
@@ -85310,7 +85365,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 62,
+      "line": 54,
       "kind": "fn",
       "name": "add_combo_box",
       "has_doc": true
@@ -85319,7 +85374,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 68,
+      "line": 58,
       "kind": "fn",
       "name": "add_list_box",
       "has_doc": true
@@ -85328,7 +85383,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 74,
+      "line": 62,
       "kind": "fn",
       "name": "add_panel",
       "has_doc": true
@@ -85337,7 +85392,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 80,
+      "line": 66,
       "kind": "fn",
       "name": "add_layout",
       "has_doc": true
@@ -85346,7 +85401,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 87,
+      "line": 70,
       "kind": "fn",
       "name": "add_aspect_ratio_container",
       "has_doc": true
@@ -85355,7 +85410,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 94,
+      "line": 74,
       "kind": "fn",
       "name": "add_scroll_panel",
       "has_doc": true
@@ -85364,7 +85419,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 101,
+      "line": 78,
       "kind": "fn",
       "name": "add_nine_patch",
       "has_doc": true
@@ -85373,7 +85428,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 107,
+      "line": 82,
       "kind": "fn",
       "name": "add_tab_bar",
       "has_doc": true
@@ -85382,7 +85437,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 113,
+      "line": 86,
       "kind": "fn",
       "name": "add_separator",
       "has_doc": true
@@ -85391,7 +85446,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 120,
+      "line": 90,
       "kind": "fn",
       "name": "add_spacer",
       "has_doc": true
@@ -85400,7 +85455,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 127,
+      "line": 94,
       "kind": "fn",
       "name": "add_tree_view",
       "has_doc": true
@@ -85409,7 +85464,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 133,
+      "line": 98,
       "kind": "fn",
       "name": "add_radio_button",
       "has_doc": true
@@ -85418,7 +85473,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 140,
+      "line": 102,
       "kind": "fn",
       "name": "add_scroll_bar",
       "has_doc": true
@@ -85427,7 +85482,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 147,
+      "line": 106,
       "kind": "fn",
       "name": "add_gui_window",
       "has_doc": true
@@ -85436,7 +85491,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 154,
+      "line": 110,
       "kind": "fn",
       "name": "add_split_panel",
       "has_doc": true
@@ -85445,7 +85500,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 161,
+      "line": 114,
       "kind": "fn",
       "name": "add_stack_container",
       "has_doc": true
@@ -85454,7 +85509,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 168,
+      "line": 118,
       "kind": "fn",
       "name": "add_tab_container",
       "has_doc": true
@@ -85463,7 +85518,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 175,
+      "line": 122,
       "kind": "fn",
       "name": "add_dock_panel",
       "has_doc": true
@@ -85472,7 +85527,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 181,
+      "line": 126,
       "kind": "fn",
       "name": "add_toolbar",
       "has_doc": true
@@ -85481,7 +85536,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 188,
+      "line": 130,
       "kind": "fn",
       "name": "add_menu_bar",
       "has_doc": true
@@ -85490,7 +85545,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 194,
+      "line": 134,
       "kind": "fn",
       "name": "add_menu_item",
       "has_doc": true
@@ -85499,7 +85554,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 200,
+      "line": 138,
       "kind": "fn",
       "name": "add_dialog",
       "has_doc": true
@@ -85508,7 +85563,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 206,
+      "line": 142,
       "kind": "fn",
       "name": "add_status_bar",
       "has_doc": true
@@ -85517,7 +85572,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 212,
+      "line": 146,
       "kind": "fn",
       "name": "add_accordion",
       "has_doc": true
@@ -85526,7 +85581,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 218,
+      "line": 150,
       "kind": "fn",
       "name": "add_tooltip_panel",
       "has_doc": true
@@ -85535,7 +85590,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 225,
+      "line": 154,
       "kind": "fn",
       "name": "add_color_picker",
       "has_doc": true
@@ -85544,7 +85599,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 232,
+      "line": 158,
       "kind": "fn",
       "name": "add_gui_table",
       "has_doc": true
@@ -85553,7 +85608,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 238,
+      "line": 162,
       "kind": "fn",
       "name": "add_property_widget",
       "has_doc": true
@@ -85562,7 +85617,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 246,
+      "line": 168,
       "kind": "fn",
       "name": "add_image_widget",
       "has_doc": true
@@ -85571,7 +85626,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 254,
+      "line": 174,
       "kind": "fn",
       "name": "add_spin_box",
       "has_doc": true
@@ -85580,7 +85635,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 262,
+      "line": 180,
       "kind": "fn",
       "name": "add_switch",
       "has_doc": true
@@ -85589,7 +85644,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 269,
+      "line": 186,
       "kind": "fn",
       "name": "add_badge",
       "has_doc": true
@@ -85598,7 +85653,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 276,
+      "line": 192,
       "kind": "fn",
       "name": "add_custom_widget",
       "has_doc": true
@@ -85607,7 +85662,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 283,
+      "line": 198,
       "kind": "fn",
       "name": "set_default_theme",
       "has_doc": true
@@ -85616,7 +85671,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 288,
+      "line": 203,
       "kind": "fn",
       "name": "set_viewport",
       "has_doc": true
@@ -85625,7 +85680,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/builders.rs",
-      "line": 294,
+      "line": 218,
       "kind": "fn",
       "name": "flush_cache",
       "has_doc": true
@@ -85724,7 +85779,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/geometry.rs",
-      "line": 49,
+      "line": 55,
       "kind": "fn",
       "name": "widget_rect",
       "has_doc": true
@@ -85733,7 +85788,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/geometry.rs",
-      "line": 59,
+      "line": 65,
       "kind": "fn",
       "name": "property_group_header_at",
       "has_doc": true
@@ -85868,7 +85923,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 66,
+      "line": 68,
       "kind": "enum",
       "name": "UiBindingValue",
       "has_doc": true
@@ -85877,7 +85932,43 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 76,
+      "line": 83,
+      "kind": "struct",
+      "name": "WidgetId",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 91,
+      "kind": "fn",
+      "name": "slot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 95,
+      "kind": "fn",
+      "name": "context_id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 99,
+      "kind": "fn",
+      "name": "generation",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 107,
       "kind": "enum",
       "name": "GuiEvent",
       "has_doc": true
@@ -85886,7 +85977,43 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 98,
+      "line": 149,
+      "kind": "struct",
+      "name": "UiEventQueue",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 209,
+      "kind": "fn",
+      "name": "is_empty",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 215,
+      "kind": "fn",
+      "name": "remove",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 218,
+      "kind": "fn",
+      "name": "insert",
+      "has_doc": false
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 232,
       "kind": "enum",
       "name": "WidgetKind",
       "has_doc": true
@@ -85895,7 +86022,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 244,
+      "line": 378,
       "kind": "fn",
       "name": "base",
       "has_doc": true
@@ -85904,7 +86031,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 248,
+      "line": 382,
       "kind": "fn",
       "name": "base_mut",
       "has_doc": true
@@ -85913,7 +86040,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 252,
+      "line": 386,
       "kind": "fn",
       "name": "children",
       "has_doc": true
@@ -85922,7 +86049,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 265,
+      "line": 399,
       "kind": "fn",
       "name": "children_mut",
       "has_doc": true
@@ -85931,7 +86058,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 327,
+      "line": 472,
       "kind": "struct",
       "name": "GuiContext",
       "has_doc": true
@@ -85940,7 +86067,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 371,
+      "line": 526,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -85949,7 +86076,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 398,
+      "line": 564,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -85958,7 +86085,70 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 414,
+      "line": 600,
+      "kind": "fn",
+      "name": "widget_is_live",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 604,
+      "kind": "fn",
+      "name": "widget_id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 612,
+      "kind": "fn",
+      "name": "resolve_widget_id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 625,
+      "kind": "fn",
+      "name": "root_id",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 629,
+      "kind": "fn",
+      "name": "limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 633,
+      "kind": "fn",
+      "name": "set_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 637,
+      "kind": "fn",
+      "name": "destroy_widget",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/context.rs",
+      "line": 745,
       "kind": "fn",
       "name": "mark_widget_dirty",
       "has_doc": true
@@ -85967,7 +86157,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 418,
+      "line": 749,
       "kind": "fn",
       "name": "widget_count",
       "has_doc": true
@@ -85976,7 +86166,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 422,
+      "line": 757,
       "kind": "fn",
       "name": "drain_events",
       "has_doc": true
@@ -85985,7 +86175,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 549,
+      "line": 878,
       "kind": "fn",
       "name": "run_layout_pass",
       "has_doc": true
@@ -85994,7 +86184,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 937,
+      "line": 1301,
       "kind": "fn",
       "name": "begin_drag",
       "has_doc": true
@@ -86003,7 +86193,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 960,
+      "line": 1324,
       "kind": "fn",
       "name": "active_drag",
       "has_doc": true
@@ -86012,7 +86202,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 965,
+      "line": 1329,
       "kind": "fn",
       "name": "end_drag",
       "has_doc": true
@@ -86021,7 +86211,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 976,
+      "line": 1340,
       "kind": "fn",
       "name": "drop_on",
       "has_doc": true
@@ -86030,7 +86220,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1045,
+      "line": 1395,
       "kind": "fn",
       "name": "animate_alpha",
       "has_doc": true
@@ -86039,7 +86229,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1067,
+      "line": 1417,
       "kind": "fn",
       "name": "animate_position",
       "has_doc": true
@@ -86048,7 +86238,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1086,
+      "line": 1436,
       "kind": "fn",
       "name": "animate_scale",
       "has_doc": true
@@ -86057,7 +86247,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1117,
+      "line": 1471,
       "kind": "fn",
       "name": "animate_rotation",
       "has_doc": true
@@ -86066,7 +86256,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1141,
+      "line": 1499,
       "kind": "fn",
       "name": "animate_color",
       "has_doc": true
@@ -86075,7 +86265,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1164,
+      "line": 1526,
       "kind": "fn",
       "name": "cancel_animations",
       "has_doc": true
@@ -86084,7 +86274,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1173,
+      "line": 1535,
       "kind": "fn",
       "name": "is_animating",
       "has_doc": true
@@ -86093,7 +86283,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1179,
+      "line": 1543,
       "kind": "fn",
       "name": "update_bindings",
       "has_doc": true
@@ -86102,7 +86292,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1331,
+      "line": 1695,
       "kind": "fn",
       "name": "add_child",
       "has_doc": true
@@ -86111,7 +86301,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1358,
+      "line": 1725,
       "kind": "fn",
       "name": "validate_tree",
       "has_doc": true
@@ -86120,7 +86310,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1558,
+      "line": 1944,
       "kind": "fn",
       "name": "accessibility_tree",
       "has_doc": true
@@ -86129,7 +86319,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1577,
+      "line": 1963,
       "kind": "fn",
       "name": "validate_ux",
       "has_doc": true
@@ -86138,7 +86328,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1687,
+      "line": 2073,
       "kind": "fn",
       "name": "remove_child",
       "has_doc": true
@@ -86147,7 +86337,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1701,
+      "line": 2087,
       "kind": "fn",
       "name": "child_count",
       "has_doc": true
@@ -86156,7 +86346,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1708,
+      "line": 2097,
       "kind": "fn",
       "name": "find_by_id",
       "has_doc": true
@@ -86165,7 +86355,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1739,
+      "line": 2116,
       "kind": "fn",
       "name": "calculate_minimum_size",
       "has_doc": true
@@ -86174,7 +86364,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context.rs",
-      "line": 1966,
+      "line": 2343,
       "kind": "fn",
       "name": "visible_item_range",
       "has_doc": true
@@ -87911,7 +88101,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 22,
+      "line": 25,
       "kind": "struct",
       "name": "DialogActionDef",
       "has_doc": true
@@ -87920,7 +88110,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 32,
+      "line": 35,
       "kind": "struct",
       "name": "PropertyRowDef",
       "has_doc": true
@@ -87929,7 +88119,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 46,
+      "line": 49,
       "kind": "struct",
       "name": "PropertyGroupDef",
       "has_doc": true
@@ -87938,7 +88128,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 56,
+      "line": 59,
       "kind": "struct",
       "name": "FocusNeighborDef",
       "has_doc": true
@@ -87947,7 +88137,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 65,
+      "line": 68,
       "kind": "enum",
       "name": "TableColumnDef",
       "has_doc": true
@@ -87956,7 +88146,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 72,
+      "line": 75,
       "kind": "enum",
       "name": "ColumnsDef",
       "has_doc": true
@@ -87965,7 +88155,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 79,
+      "line": 82,
       "kind": "struct",
       "name": "TreeNodeDef",
       "has_doc": true
@@ -87974,7 +88164,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 87,
+      "line": 90,
       "kind": "struct",
       "name": "WidgetDef",
       "has_doc": true
@@ -87983,7 +88173,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 228,
+      "line": 231,
       "kind": "struct",
       "name": "LayoutDef",
       "has_doc": true
@@ -87992,7 +88182,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 235,
+      "line": 238,
       "kind": "fn",
       "name": "load_layout_def",
       "has_doc": true
@@ -88001,7 +88191,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 563,
+      "line": 705,
       "kind": "fn",
       "name": "load_layout_toml",
       "has_doc": true
@@ -88010,9 +88200,63 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 569,
+      "line": 718,
+      "kind": "fn",
+      "name": "load_layout_def_attached",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/layout_loader.rs",
+      "line": 734,
+      "kind": "fn",
+      "name": "load_layout_toml_attached",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/layout_loader.rs",
+      "line": 749,
+      "kind": "fn",
+      "name": "render_to_image_bytes",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/layout_loader.rs",
+      "line": 769,
       "kind": "fn",
       "name": "render_to_image",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/limits.rs",
+      "line": 10,
+      "kind": "struct",
+      "name": "UiLimits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/limits.rs",
+      "line": 61,
+      "kind": "fn",
+      "name": "validate_image_dimensions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "ui",
+      "file": "src/ui/limits.rs",
+      "line": 86,
+      "kind": "fn",
+      "name": "normalized_dt",
       "has_doc": true
     },
     {
@@ -88289,7 +88533,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/render.rs",
-      "line": 2019,
+      "line": 2039,
       "kind": "fn",
       "name": "build_render_commands_with_fonts",
       "has_doc": true
@@ -88298,7 +88542,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/render.rs",
-      "line": 2033,
+      "line": 2056,
       "kind": "fn",
       "name": "build_render_commands",
       "has_doc": true
@@ -88307,7 +88551,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/render.rs",
-      "line": 2039,
+      "line": 2062,
       "kind": "fn",
       "name": "generate_render_commands",
       "has_doc": true

@@ -9,13 +9,12 @@
 - `tests/artifacts/current/<module>/`: Fresh evidence output for that module.
 
 ## Rules
-- Use one canonical file per module when the owner is clear: `test_<module>_evidence.lua`.
 - Evidence passes when it produces the intended artifact under `tests/artifacts/current/<module>/`.
 - Do not use file-level `@covers` in this folder.
 - Do not use legacy `-- @evidence` markers; evidence ownership comes from the module file and prose rationale comments.
 - Put a rationale block above every `it()` with exact `-- Does:`, `-- Shows:`, `-- Artifact:`, and `-- Why:` lines.
 - The artifact must make the behavior legible to a reviewer. If the artifact does not clearly prove anything, redesign or remove it.
-- Keep helper export APIs incidental; the owned behavior is the module being evidenced.
+- Keep helper export APIs incidental; the module being evidenced owns the behavior.
 
 ## Workflow
 - Run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category evidence`.

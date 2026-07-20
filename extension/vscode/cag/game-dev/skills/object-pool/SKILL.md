@@ -7,14 +7,6 @@ description: "Load this skill when implementing reusable object pools for bullet
 
 Pre-allocated tables for bullets, particles, and enemies. Acquire/release pattern with resize policy.
 
-## Key Concepts
-
-- **Pre-allocation**: Create all objects at startup. No `table.insert` during gameplay.
-- **Acquire/release**: Mark objects active/inactive instead of creating/destroying.
-- **Resize policy**: If pool exhausts, either recycle oldest or grow by a fixed increment.
-- **Typed pools**: Separate pools for bullets, enemies, particles — different object shapes.
-- **Debug overlay**: Show pool utilization (active/total) for tuning initial sizes.
-
 ## Pool Implementation
 
 ```lua

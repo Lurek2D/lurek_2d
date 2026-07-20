@@ -1491,7 +1491,7 @@ LTransitionsSlideResult = {}
 LTransitionsWipeResult = {}
 
 ---@class LUiWidgetGetChildrenResult
----@field _idx number Widget index.
+---@field _idx number Diagnostic storage slot; never authoritative.
 LUiWidgetGetChildrenResult = {}
 
 ---@class LUnitPathfinderFindPartialPathResult
@@ -35817,8 +35817,8 @@ lurek.tween.update = function(dt) end
 
 --- Adds a collapsible section to this accordion.
 ---@param title string The section title.
----@param content_idx? number Optional widget index for the section content.
-function LAccordion:addSection(title, content_idx) end
+---@param content? LUiWidget Optional widget handle for the section content.
+function LAccordion:addSection(title, content) end
 
 --- Returns the number of sections in this accordion.
 ---@return number The section count.
@@ -36070,9 +36070,9 @@ function LDialog:setCenterOnOpen(value) end
 function LDialog:setCloseable(value) end
 
 --- Sets the widget index rendered as this dialog's content.
----@param content_idx? number Optional widget index for the content slot.
+---@param content? LUiWidget Optional widget handle for the content slot.
 ---@return nil No value is returned.
-function LDialog:setContent(content_idx) end
+function LDialog:setContent(content) end
 
 --- Sets the action triggered by Enter, using a 1-based action index.
 ---@param index? number Action index to bind, or nil to clear the default action.
@@ -36087,8 +36087,8 @@ function LDialog:setDismissOnOutsideClick(value) end
 function LDialog:setDraggable(value) end
 
 --- Assigns an optional footer content root for this dialog.
----@param footer_idx? number Optional widget index rendered in the footer slot.
-function LDialog:setFooter(footer_idx) end
+---@param footer? LUiWidget Optional widget handle rendered in the footer slot.
+function LDialog:setFooter(footer) end
 
 --- Sets optional maximum popup dimensions for this dialog.
 ---@param width? number Maximum width in pixels, or nil for no horizontal cap.
@@ -36120,9 +36120,9 @@ function LDialog:setResizable(value) end
 function LDialog:setTitle(title) end
 
 --- Docks a child widget to the specified side of this dock panel.
----@param child_idx number The widget index to dock.
+---@param child LUiWidget The child widget handle to dock.
 ---@param side string The dock side ("left", "right", "top", "bottom", "center").
-function LDockPanel:dock(child_idx, side) end
+function LDockPanel:dock(child, side) end
 
 --- Returns the number of widgets docked in this dock panel.
 ---@return number The docked widget count.
@@ -36139,8 +36139,8 @@ function LDockPanel:getSplitSize(side) end
 function LDockPanel:setSplitSize(side, size) end
 
 --- Removes a child widget from this dock panel.
----@param child_idx number The widget index to undock.
-function LDockPanel:undock(child_idx) end
+---@param child LUiWidget The child widget handle to undock.
+function LDockPanel:undock(child) end
 
 --- Adds a new column to this table widget.
 ---@param header string The column header text.
@@ -36350,8 +36350,8 @@ function LListBox:setItemHeight(h) end
 function LListBox:setSelectedIndex(index) end
 
 --- Adds a menu (by its widget index) to this menu bar.
----@param menu_idx number The widget index of the menu to add.
-function LMenuBar:addMenu(menu_idx) end
+---@param menu LMenuItem The menu widget handle to add.
+function LMenuBar:addMenu(menu) end
 
 --- Returns the number of menus in this menu bar.
 ---@return number The menu count.
@@ -36362,13 +36362,13 @@ function LMenuBar:getMenuCount() end
 function LMenuBar:getMenus() end
 
 --- Removes a menu from this menu bar by its widget index.
----@param menu_idx number The widget index of the menu to remove.
+---@param menu LMenuItem The menu widget handle to remove.
 ---@return boolean True if the menu was found and removed.
-function LMenuBar:removeMenu(menu_idx) end
+function LMenuBar:removeMenu(menu) end
 
 --- Adds a sub-item to this menu item for building nested menus.
----@param child_idx number The widget index of the sub-item to add.
-function LMenuItem:addSubItem(child_idx) end
+---@param child LMenuItem The sub-item widget handle to add.
+function LMenuItem:addSubItem(child) end
 
 --- Returns the keyboard shortcut string associated with this menu item.
 ---@return string The shortcut text.
@@ -36721,8 +36721,8 @@ function LSplitPanel:getSecondChild() end
 function LSplitPanel:getSplitPosition() end
 
 --- Sets the widget index for the first (left/top) panel.
----@param child_idx number The widget index.
-function LSplitPanel:setFirstChild(child_idx) end
+---@param child LUiWidget The child widget handle.
+function LSplitPanel:setFirstChild(child) end
 
 --- Sets the minimum pixel size of each split sub-panel.
 ---@param v number The minimum size in pixels.
@@ -36733,8 +36733,8 @@ function LSplitPanel:setMinPanelSize(v) end
 function LSplitPanel:setOrientation(v) end
 
 --- Sets the widget index for the second (right/bottom) panel.
----@param child_idx number The widget index.
-function LSplitPanel:setSecondChild(child_idx) end
+---@param child LUiWidget The child widget handle.
+function LSplitPanel:setSecondChild(child) end
 
 --- Sets the split position as a fraction (0.0 to 1.0).
 ---@param v number The split fraction.
@@ -37022,7 +37022,7 @@ function LTooltipPanel:getText() end
 function LTooltipPanel:setDelay(v) end
 
 --- Sets the widget index that this tooltip is attached to.
----@param target? number The target widget index, or nil to detach.
+---@param target? LUiWidget The target widget handle, or nil to detach.
 function LTooltipPanel:setTarget(target) end
 
 --- Sets the tooltip panel display text content.
@@ -37164,6 +37164,11 @@ function LUiWidget:clearIcon() end
 ---@return boolean True if the point is within the widget.
 function LUiWidget:containsPoint(x, y) end
 
+--- Destroys this widget and, by default, its retained descendant subtree.
+---@param recursive? boolean Whether descendants are destroyed; defaults to true.
+---@return number Number of widgets invalidated by the destruction.
+function LUiWidget:destroy(recursive) end
+
 --- Detaches this widget from any previously attached entity.
 function LUiWidget:detachFromEntity() end
 
@@ -37190,7 +37195,7 @@ function LUiWidget:getAriaName() end
 ---@return number The child count.
 function LUiWidget:getChildCount() end
 
---- Returns a table of lightweight child widget references, each containing an _idx field.
+--- Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
 ---@return LUiWidgetGetChildrenResult Array of child widget tables.
 function LUiWidget:getChildren() end
 
@@ -37307,6 +37312,10 @@ function LUiWidget:isDropEnabled() end
 ---@return boolean True if the widget is enabled.
 function LUiWidget:isEnabled() end
 
+--- Returns whether this widget handle still identifies a live widget in its originating UI context.
+---@return boolean False after destroy or clear, or when used with a different context.
+function LUiWidget:isValid() end
+
 --- Returns whether this widget is currently visible.
 ---@return boolean True if the widget is visible.
 function LUiWidget:isVisible() end
@@ -37368,7 +37377,7 @@ function LUiWidget:setFocusGroup(group) end
 
 --- Sets an explicit directional focus neighbor for this widget.
 ---@param direction string Neighbor direction: "up", "down", "left", or "right".
----@param target? number Target widget index, or nil to clear the neighbor.
+---@param target? LUiWidget Target widget handle, or nil to clear the neighbor.
 ---@return boolean True when direction is valid; false otherwise.
 function LUiWidget:setFocusNeighbor(direction, target) end
 
@@ -37400,7 +37409,7 @@ function LUiWidget:setIconSize(size) end
 function LUiWidget:setId(id) end
 
 --- Associates this label widget with another widget for accessibility naming.
----@param target? number Target widget index, or nil to clear the link.
+---@param target? LUiWidget Target widget handle, or nil to clear the link.
 function LUiWidget:setLabelFor(target) end
 
 --- Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
@@ -37555,25 +37564,25 @@ function LUiWidget:unbind() end
 lurek.ui.addToast = function(toast_table) end
 
 --- Animate widget color tint from one RGBA value to another.
----@param idx number Widget index.
+---@param widget LUiWidget Widget handle.
 ---@param from table Starting color {r, g, b, a} (0-1 range).
 ---@param to table Target color {r, g, b, a} (0-1 range).
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
 ---@return nil Schedules the animation; no return value.
-lurek.ui.animateColor = function(idx, from, to, duration, easing) end
+lurek.ui.animateColor = function(widget, from, to, duration, easing) end
 
 --- Animate widget rotation from one angle to another (in radians).
----@param idx number Widget index.
+---@param widget LUiWidget Widget handle.
 ---@param from number Starting angle in radians.
 ---@param to number Target angle in radians.
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
 ---@return nil Schedules the animation; no return value.
-lurek.ui.animateRotation = function(idx, from, to, duration, easing) end
+lurek.ui.animateRotation = function(widget, from, to, duration, easing) end
 
 --- Animate widget scale from one value to another.
----@param idx number Widget index.
+---@param widget LUiWidget Widget handle.
 ---@param from_sx number Starting X scale.
 ---@param from_sy number Starting Y scale.
 ---@param to_sx number Target X scale.
@@ -37581,7 +37590,7 @@ lurek.ui.animateRotation = function(idx, from, to, duration, easing) end
 ---@param duration number Duration in seconds.
 ---@param easing? string Easing function name (default "linear").
 ---@return nil Schedules the animation; no return value.
-lurek.ui.animateScale = function(idx, from_sx, from_sy, to_sx, to_sy, duration, easing) end
+lurek.ui.animateScale = function(widget, from_sx, from_sy, to_sx, to_sy, duration, easing) end
 
 --- Begins a drag operation on a widget.
 ---@param widget table|number The widget table or widget index.
@@ -37597,6 +37606,12 @@ lurek.ui.clearFocus = function() end
 
 --- Clears the global UI font override so the UI falls back to the active render font again.
 lurek.ui.clearFont = function() end
+
+--- Destroys a widget handle and, by default, its retained descendant subtree.
+---@param widget LUiWidget The live widget table to destroy.
+---@param recursive? boolean Whether descendants are destroyed; defaults to true.
+---@return number Number of widgets invalidated by the destruction.
+lurek.ui.destroy = function(widget, recursive) end
 
 --- Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 lurek.ui.draw = function() end

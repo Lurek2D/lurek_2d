@@ -8,274 +8,189 @@
 use super::*;
 
 impl GuiContext {
+    pub(crate) fn push_widget(&mut self, widget: WidgetKind) -> usize {
+        if self.widget_count() >= self.limits.max_live_widgets {
+            return usize::MAX;
+        }
+        let idx = self.widgets.len();
+        self.widgets.push(widget);
+        self.live_slots.push(true);
+        idx
+    }
+
     /// Adds a button widget and returns its widget index.
     pub fn add_button(&mut self, text: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Button(Button::new(text)));
-        idx
+        self.push_widget(WidgetKind::Button(Button::new(text)))
     }
     /// Add a `Label` widget and return its index.
     pub fn add_label(&mut self, text: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Label(Label::new(text)));
-        idx
+        self.push_widget(WidgetKind::Label(Label::new(text)))
     }
     /// Add a `TextInput` widget and return its index.
     pub fn add_text_input(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::TextInput(TextInput::new()));
-        idx
+        self.push_widget(WidgetKind::TextInput(TextInput::new()))
     }
     /// Add a `TextArea` widget and return its index.
     pub fn add_text_area(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::TextArea(TextArea::new()));
-        idx
+        self.push_widget(WidgetKind::TextArea(TextArea::new()))
     }
     /// Add a `RichLabel` widget and return its index.
     pub fn add_rich_label(&mut self, text: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::RichLabel(RichLabel::new(text)));
-        idx
+        self.push_widget(WidgetKind::RichLabel(RichLabel::new(text)))
     }
     /// Add a `CheckBox` widget with the given label and return its index.
     pub fn add_checkbox(&mut self, text: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::CheckBox(CheckBox::new(text)));
-        idx
+        self.push_widget(WidgetKind::CheckBox(CheckBox::new(text)))
     }
     /// Add a `Slider` widget with the given value range and return its index.
     pub fn add_slider(&mut self, min: f64, max: f64) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Slider(Slider::new(min, max)));
-        idx
+        self.push_widget(WidgetKind::Slider(Slider::new(min, max)))
     }
     /// Add a `ProgressBar` widget with the given value range and return its index.
     pub fn add_progress_bar(&mut self, min: f64, max: f64) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::ProgressBar(ProgressBar::new(min, max)));
-        idx
+        self.push_widget(WidgetKind::ProgressBar(ProgressBar::new(min, max)))
     }
     /// Add a `ComboBox` widget and return its index.
     pub fn add_combo_box(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::ComboBox(ComboBox::new()));
-        idx
+        self.push_widget(WidgetKind::ComboBox(ComboBox::new()))
     }
     /// Add a `ListBox` widget and return its index.
     pub fn add_list_box(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::ListBox(ListBox::new()));
-        idx
+        self.push_widget(WidgetKind::ListBox(ListBox::new()))
     }
     /// Add a `Panel` container and return its index.
     pub fn add_panel(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Panel(Panel::new()));
-        idx
+        self.push_widget(WidgetKind::Panel(Panel::new()))
     }
     /// Add a `Layout` container with the given direction and return its index.
     pub fn add_layout(&mut self, direction: crate::ui::LayoutDirection) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::Layout(Layout::new(direction)));
-        idx
+        self.push_widget(WidgetKind::Layout(Layout::new(direction)))
     }
     /// Add an `AspectRatioContainer` and return its index.
     pub fn add_aspect_ratio_container(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::AspectRatioContainer(AspectRatioContainer::new()));
-        idx
+        self.push_widget(WidgetKind::AspectRatioContainer(AspectRatioContainer::new()))
     }
     /// Add a `ScrollPanel` container and return its index.
     pub fn add_scroll_panel(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::ScrollPanel(ScrollPanel::new()));
-        idx
+        self.push_widget(WidgetKind::ScrollPanel(ScrollPanel::new()))
     }
     /// Add a `NinePatch` widget and return its index.
     pub fn add_nine_patch(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::NinePatch(NinePatch::new()));
-        idx
+        self.push_widget(WidgetKind::NinePatch(NinePatch::new()))
     }
     /// Add a `TabBar` widget and return its index.
     pub fn add_tab_bar(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::TabBar(TabBar::new()));
-        idx
+        self.push_widget(WidgetKind::TabBar(TabBar::new()))
     }
     /// Add a `Separator` widget (horizontal or vertical) and return its index.
     pub fn add_separator(&mut self, vertical: bool) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::Separator(Separator::new(vertical)));
-        idx
+        self.push_widget(WidgetKind::Separator(Separator::new(vertical)))
     }
     /// Add a `Spacer` widget with the given dimensions and return its index.
     pub fn add_spacer(&mut self, width: f32, height: f32) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::Spacer(Spacer::new(width, height)));
-        idx
+        self.push_widget(WidgetKind::Spacer(Spacer::new(width, height)))
     }
     /// Add a `TreeView` widget and return its index.
     pub fn add_tree_view(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::TreeView(TreeView::new()));
-        idx
+        self.push_widget(WidgetKind::TreeView(TreeView::new()))
     }
     /// Add a `RadioButton` with the given label and group name and return its index.
     pub fn add_radio_button(&mut self, text: impl Into<String>, group: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::RadioButton(RadioButton::new(text, group)));
-        idx
+        self.push_widget(WidgetKind::RadioButton(RadioButton::new(text, group)))
     }
     /// Add a `ScrollBar` (horizontal or vertical) and return its index.
     pub fn add_scroll_bar(&mut self, vertical: bool) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::ScrollBar(ScrollBar::new(vertical)));
-        idx
+        self.push_widget(WidgetKind::ScrollBar(ScrollBar::new(vertical)))
     }
     /// Add a `GUIWindow` with the given title and return its index.
     pub fn add_gui_window(&mut self, title: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::GUIWindow(GUIWindow::new(title)));
-        idx
+        self.push_widget(WidgetKind::GUIWindow(GUIWindow::new(title)))
     }
     /// Add a `SplitPanel` with the given orientation and return its index.
     pub fn add_split_panel(&mut self, orientation: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::SplitPanel(SplitPanel::new(orientation)));
-        idx
+        self.push_widget(WidgetKind::SplitPanel(SplitPanel::new(orientation)))
     }
     /// Add a `StackContainer` and return its index.
     pub fn add_stack_container(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::StackContainer(StackContainer::new(false)));
-        idx
+        self.push_widget(WidgetKind::StackContainer(StackContainer::new(false)))
     }
     /// Add a `TabContainer` and return its index.
     pub fn add_tab_container(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::TabContainer(StackContainer::new(true)));
-        idx
+        self.push_widget(WidgetKind::TabContainer(StackContainer::new(true)))
     }
     /// Add a `DockPanel` container and return its index.
     pub fn add_dock_panel(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::DockPanel(DockPanel::new()));
-        idx
+        self.push_widget(WidgetKind::DockPanel(DockPanel::new()))
     }
     /// Add a `Toolbar` with the given orientation and return its index.
     pub fn add_toolbar(&mut self, orientation: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::Toolbar(Toolbar::new(orientation)));
-        idx
+        self.push_widget(WidgetKind::Toolbar(Toolbar::new(orientation)))
     }
     /// Add a `MenuBar` and return its index.
     pub fn add_menu_bar(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::MenuBar(MenuBar::new()));
-        idx
+        self.push_widget(WidgetKind::MenuBar(MenuBar::new()))
     }
     /// Add a `MenuItem` with the given label and return its index.
     pub fn add_menu_item(&mut self, text: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::MenuItem(MenuItem::new(text)));
-        idx
+        self.push_widget(WidgetKind::MenuItem(MenuItem::new(text)))
     }
     /// Add a `Dialog` with the given title and return its index.
     pub fn add_dialog(&mut self, title: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Dialog(Dialog::new(title)));
-        idx
+        self.push_widget(WidgetKind::Dialog(Dialog::new(title)))
     }
     /// Add a `StatusBar` and return its index.
     pub fn add_status_bar(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::StatusBar(StatusBar::new()));
-        idx
+        self.push_widget(WidgetKind::StatusBar(StatusBar::new()))
     }
     /// Add an `Accordion` container and return its index.
     pub fn add_accordion(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Accordion(Accordion::new()));
-        idx
+        self.push_widget(WidgetKind::Accordion(Accordion::new()))
     }
     /// Add a `TooltipPanel` with the given text and return its index.
     pub fn add_tooltip_panel(&mut self, text: impl Into<String>) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::TooltipPanel(TooltipPanel::new(text)));
-        idx
+        self.push_widget(WidgetKind::TooltipPanel(TooltipPanel::new(text)))
     }
     /// Add a `ColorPicker` widget and return its index.
     pub fn add_color_picker(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::ColorPicker(ColorPicker::new()));
-        idx
+        self.push_widget(WidgetKind::ColorPicker(ColorPicker::new()))
     }
     /// Add a `GUITable` widget and return its index.
     pub fn add_gui_table(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::GUITable(GUITable::new()));
-        idx
+        self.push_widget(WidgetKind::GUITable(GUITable::new()))
     }
     /// Add a `PropertyWidget` inspector and return its index; marks dirty.
     pub fn add_property_widget(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::PropertyWidget(PropertyWidget::new()));
+        let idx = self.push_widget(WidgetKind::PropertyWidget(PropertyWidget::new()));
         self.dirty = true;
         idx
     }
     /// Add an `ImageWidget` and return its index; also marks context dirty.
     pub fn add_image_widget(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::ImageWidget(ImageWidget::new()));
+        let idx = self.push_widget(WidgetKind::ImageWidget(ImageWidget::new()));
         self.dirty = true;
         idx
     }
     /// Add a `SpinBox` with the given value range and return its index; marks dirty.
     pub fn add_spin_box(&mut self, min: f64, max: f64) -> usize {
-        let idx = self.widgets.len();
-        self.widgets
-            .push(WidgetKind::SpinBox(SpinBox::new(min, max)));
+        let idx = self.push_widget(WidgetKind::SpinBox(SpinBox::new(min, max)));
         self.dirty = true;
         idx
     }
     /// Add a `Switch` with the given initial on state and return its index; marks dirty.
     pub fn add_switch(&mut self, on: bool) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Switch(Switch::new(on)));
+        let idx = self.push_widget(WidgetKind::Switch(Switch::new(on)));
         self.dirty = true;
         idx
     }
     /// Add a `Badge` with the given count and return its index; marks dirty.
     pub fn add_badge(&mut self, count: u32) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Badge(Badge::new(count)));
+        let idx = self.push_widget(WidgetKind::Badge(Badge::new(count)));
         self.mark_dirty_flags(true, false, false, true);
         idx
     }
     /// Add a `CustomWidget` and return its index; marks dirty.
     pub fn add_custom_widget(&mut self) -> usize {
-        let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Custom(CustomWidget::new()));
+        let idx = self.push_widget(WidgetKind::Custom(CustomWidget::new()));
         self.mark_dirty_flags(true, false, false, true);
         idx
     }
@@ -286,6 +201,15 @@ impl GuiContext {
     }
     /// Set the viewport size used for root-relative layout; marks dirty.
     pub fn set_viewport(&mut self, width: f32, height: f32) {
+        if !width.is_finite()
+            || !height.is_finite()
+            || width < 0.0
+            || height < 0.0
+            || width > self.limits.max_image_width as f32
+            || height > self.limits.max_image_height as f32
+        {
+            return;
+        }
         self.viewport_w = width;
         self.viewport_h = height;
         self.mark_dirty_flags(true, false, false, true);

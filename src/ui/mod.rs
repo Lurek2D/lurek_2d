@@ -19,6 +19,8 @@ pub mod diagnostics;
 pub mod extras;
 /// Built-in icon catalog and icon placement metadata.
 pub mod icons;
+/// Shared ceilings for UI input, retained state, and software capture.
+pub mod limits;
 /// UI render helpers and draw-command generation.
 pub mod render;
 /// Theming and per-widget style configuration.
@@ -29,7 +31,7 @@ pub use containers::{
     DockPanel, GUIWindow, Layout, LayoutDirection, NinePatch, NineSlice, Panel, ScrollPanel,
     SplitPanel, StackContainer,
 };
-pub use context::{GuiContext, GuiEvent, UiBindingValue};
+pub use context::{GuiContext, GuiEvent, UiBindingValue, WidgetId};
 pub use controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
     SpinBox, Switch, TabBar, TextInput,
@@ -42,6 +44,7 @@ pub use extras::{
     TreeView,
 };
 pub use icons::{has_icon, icon_names, lookup_icon, UiIcon, UiIconPosition, BUILTIN_UI_ICONS};
+pub use limits::UiLimits;
 pub use theme::{Theme, WidgetStyle};
 pub use widget::{
     EasingFunction, MouseFilter, TextVAlign, WidgetBase, WidgetState, WidgetTransition,
@@ -51,4 +54,7 @@ pub use widget::{
 #[cfg(feature = "ui-layout-loader")]
 pub mod layout_loader;
 #[cfg(feature = "ui-layout-loader")]
-pub use layout_loader::{load_layout_def, load_layout_toml, render_to_image, LayoutDef, WidgetDef};
+pub use layout_loader::{
+    load_layout_def, load_layout_def_attached, load_layout_toml, load_layout_toml_attached,
+    render_to_image, LayoutDef, WidgetDef,
+};

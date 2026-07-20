@@ -18,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `112` functions, `45` types, `395` methods
+- Lua API surface: `113` functions, `45` types, `397` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -217,6 +217,14 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - Provides the local adaptation layer that lets callers reuse UI layout loader rules without duplicating engine decisions.
 - Open this owner before sibling files when a regression centers on UI layout loader state, helpers, or integration rules.
 
+### limits.rs
+
+- Shared ceilings for Lua-controlled UI input, retained state, traversal, and software capture.
+- This policy is deliberately owned by `ui`: loaders, Lua conversion helpers,
+- event production, and image capture use the same defaults so one entry path
+- cannot bypass another. Trusted engine setup may replace the policy before a
+- game starts; normal Lua code cannot change it.
+
 ### mod.rs
 
 - This module re-exports UI surface for `containers.rs`, `context.rs`, `controls.rs`, and `diagnostics.rs` and helpers.
@@ -306,13 +314,14 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 ### Functions
 
 - `lurek.ui.addToast(toast_table) -> nil`: Adds a toast notification to the queue.
-- `lurek.ui.animateColor(idx, from, to, duration, easing?) -> nil`: Animate widget color tint from one RGBA value to another.
-- `lurek.ui.animateRotation(idx, from, to, duration, easing?) -> nil`: Animate widget rotation from one angle to another (in radians).
-- `lurek.ui.animateScale(idx, from_sx, from_sy, to_sx, to_sy, duration, easing?) -> nil`: Animate widget scale from one value to another.
+- `lurek.ui.animateColor(widget, from, to, duration, easing?) -> nil`: Animate widget color tint from one RGBA value to another.
+- `lurek.ui.animateRotation(widget, from, to, duration, easing?) -> nil`: Animate widget rotation from one angle to another (in radians).
+- `lurek.ui.animateScale(widget, from_sx, from_sy, to_sx, to_sy, duration, easing?) -> nil`: Animate widget scale from one value to another.
 - `lurek.ui.beginDrag(widget) -> boolean`: Begins a drag operation on a widget.
 - `lurek.ui.clear() -> integer`: Clears all retained UI widgets and transient UI state while keeping the active theme.
 - `lurek.ui.clearFocus() -> nil`: Clears keyboard focus from all widgets.
 - `lurek.ui.clearFont() -> nil`: Clears the global UI font override so the UI falls back to the active render font again.
+- `lurek.ui.destroy(widget, recursive?) -> integer`: Destroys a widget handle and, by default, its retained descendant subtree.
 - `lurek.ui.draw() -> nil`: Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 - `lurek.ui.drawToImage(w, h) -> LImageData`: Renders the entire UI to an image buffer.
 - `lurek.ui.dropOn(target) -> boolean`: Drops the currently dragged widget onto a target widget.
@@ -454,7 +463,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ##### Methods
 
-- `LAccordion:addSection(title, content_idx?) -> nil`: Adds a collapsible section to this accordion.
+- `LAccordion:addSection(title, content?) -> nil`: Adds a collapsible section to this accordion.
 - `LAccordion:getSectionCount() -> integer`: Returns the number of sections in this accordion.
 - `LAccordion:getSectionTitle(section_idx) -> string`: Returns the title of an accordion section by its 1-based index.
 - `LAccordion:isExclusive() -> boolean`: Returns whether this accordion is in exclusive mode (only one section open at a time).
@@ -590,11 +599,11 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LDialog:setCancelAction(index?) -> nil`: Sets the action triggered by Escape, using a 1-based action index.
 - `LDialog:setCenterOnOpen(value) -> nil`: Controls whether opening this dialog recenters it in the viewport.
 - `LDialog:setCloseable(value) -> nil`: Sets whether this dialog can be dismissed by close affordances or Escape fallback.
-- `LDialog:setContent(content_idx?) -> nil`: Sets the widget index rendered as this dialog's content.
+- `LDialog:setContent(content?) -> nil`: Sets the widget index rendered as this dialog's content.
 - `LDialog:setDefaultAction(index?) -> nil`: Sets the action triggered by Enter, using a 1-based action index.
 - `LDialog:setDismissOnOutsideClick(value) -> nil`: Controls whether clicking outside a non-modal dialog closes it.
 - `LDialog:setDraggable(value) -> nil`: Enables or disables title-bar dragging for this dialog.
-- `LDialog:setFooter(footer_idx?) -> nil`: Assigns an optional footer content root for this dialog.
+- `LDialog:setFooter(footer?) -> nil`: Assigns an optional footer content root for this dialog.
 - `LDialog:setMaxSize(width?, height?) -> nil`: Sets optional maximum popup dimensions for this dialog.
 - `LDialog:setMinSize(width, height) -> nil`: Sets the minimum popup size for this dialog.
 - `LDialog:setModal(v) -> nil`: Sets whether this dialog blocks outside interaction.
@@ -612,11 +621,11 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ##### Methods
 
-- `LDockPanel:dock(child_idx, side) -> nil`: Docks a child widget to the specified side of this dock panel.
+- `LDockPanel:dock(child, side) -> nil`: Docks a child widget to the specified side of this dock panel.
 - `LDockPanel:getDockedCount() -> integer`: Returns the number of widgets docked in this dock panel.
 - `LDockPanel:getSplitSize(side) -> number`: Returns the size configured for a dock panel side region.
 - `LDockPanel:setSplitSize(side, size) -> nil`: Sets the size of a dock panel side region.
-- `LDockPanel:undock(child_idx) -> nil`: Removes a child widget from this dock panel.
+- `LDockPanel:undock(child) -> nil`: Removes a child widget from this dock panel.
 
 #### LGuiTable Type
 
@@ -742,10 +751,10 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ##### Methods
 
-- `LMenuBar:addMenu(menu_idx) -> nil`: Adds a menu (by its widget index) to this menu bar.
+- `LMenuBar:addMenu(menu) -> nil`: Adds a menu (by its widget index) to this menu bar.
 - `LMenuBar:getMenuCount() -> integer`: Returns the number of menus in this menu bar.
 - `LMenuBar:getMenus() -> integer[]`: Returns a table of widget indices for all menus in this menu bar.
-- `LMenuBar:removeMenu(menu_idx) -> boolean`: Removes a menu from this menu bar by its widget index.
+- `LMenuBar:removeMenu(menu) -> boolean`: Removes a menu from this menu bar by its widget index.
 
 #### LMenuItem Type
 
@@ -757,7 +766,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ##### Methods
 
-- `LMenuItem:addSubItem(child_idx) -> nil`: Adds a sub-item to this menu item for building nested menus.
+- `LMenuItem:addSubItem(child) -> nil`: Adds a sub-item to this menu item for building nested menus.
 - `LMenuItem:getShortcut() -> string`: Returns the keyboard shortcut string associated with this menu item.
 - `LMenuItem:getSubItems() -> integer[]`: Returns a table of widget indices for all sub-items of this menu item.
 - `LMenuItem:getText() -> string`: Returns the display text of this menu item.
@@ -989,10 +998,10 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LSplitPanel:getOrientation() -> string`: Returns the orientation of this split panel ("horizontal" or "vertical").
 - `LSplitPanel:getSecondChild() -> integer`: Returns the widget index of the second (right/bottom) child panel.
 - `LSplitPanel:getSplitPosition() -> number`: Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
-- `LSplitPanel:setFirstChild(child_idx) -> nil`: Sets the widget index for the first (left/top) panel.
+- `LSplitPanel:setFirstChild(child) -> nil`: Sets the widget index for the first (left/top) panel.
 - `LSplitPanel:setMinPanelSize(v) -> nil`: Sets the minimum pixel size of each split sub-panel.
 - `LSplitPanel:setOrientation(v) -> nil`: Sets the orientation of this split panel ("horizontal" or "vertical").
-- `LSplitPanel:setSecondChild(child_idx) -> nil`: Sets the widget index for the second (right/bottom) panel.
+- `LSplitPanel:setSecondChild(child) -> nil`: Sets the widget index for the second (right/bottom) panel.
 - `LSplitPanel:setSplitPosition(v) -> nil`: Sets the split position as a fraction (0.0 to 1.0).
 
 #### LStackContainer Type
@@ -1248,6 +1257,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:clearFont() -> nil`: Clears any font override on this widget so it inherits from its parent again.
 - `LUiWidget:clearIcon() -> nil`: Clears this widget's assigned built-in icon.
 - `LUiWidget:containsPoint(x, y) -> boolean`: Tests whether the given screen-space point is inside this widget's bounds.
+- `LUiWidget:destroy(recursive?) -> integer`: Destroys this widget and, by default, its retained descendant subtree.
 - `LUiWidget:detachFromEntity() -> nil`: Detaches this widget from any previously attached entity.
 - `LUiWidget:fadeIn() -> nil`: Instantly makes this widget fully opaque and visible.
 - `LUiWidget:fadeOut() -> nil`: Instantly makes this widget fully transparent and hidden.
@@ -1255,7 +1265,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:getAlpha() -> number`: Returns the current opacity of this widget.
 - `LUiWidget:getAriaName() -> string`: Returns the explicit accessible name metadata for this widget.
 - `LUiWidget:getChildCount() -> integer`: Returns the number of direct child widgets attached to this widget.
-- `LUiWidget:getChildren() -> table`: Returns a table of lightweight child widget references, each containing an _idx field.
+- `LUiWidget:getChildren() -> table`: Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
 - `LUiWidget:getFlexGrow() -> number`: Returns the flex-grow factor of this widget.
 - `LUiWidget:getFlexShrink() -> number`: Returns the flex-shrink factor of this widget.
 - `LUiWidget:getIcon() -> string|nil`: Returns this widget's assigned built-in icon name, or nil when no icon is assigned.
@@ -1281,6 +1291,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:isDragEnabled() -> boolean`: Returns whether pointer-initiated drag-and-drop is enabled for this widget.
 - `LUiWidget:isDropEnabled() -> boolean`: Returns whether this widget accepts pointer drag-and-drop operations.
 - `LUiWidget:isEnabled() -> boolean`: Returns whether this widget is currently enabled and can receive input.
+- `LUiWidget:isValid() -> boolean`: Returns whether this widget handle still identifies a live widget in its originating UI context.
 - `LUiWidget:isVisible() -> boolean`: Returns whether this widget is currently visible.
 - `LUiWidget:removeChild(child) -> nil`: Removes a child widget from this widget's hierarchy.
 - `LUiWidget:setAlpha(alpha) -> nil`: Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
@@ -1341,7 +1352,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ##### Fields
 
-- `_idx` (`integer`): Widget index.
+- `_idx` (`integer`): Diagnostic storage slot; never authoritative.
 
 ##### Methods
 
@@ -1357,6 +1368,11 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ## Notes
 
+- Widget tables carry an engine-owned generational handle. The `_idx` field is diagnostic only; APIs that accept widget references require the live widget table and reject forged, destroyed, or cleared handles.
+- `lurek.ui.destroy(widget, recursive?)`, `widget:destroy(recursive?)`, and `lurek.ui.clear()` remove references, focus/capture state, queued events, and registered callbacks before invalidating the affected handles. A stale table reports `isValid() == false` and cannot address a replacement widget.
+- UI input, layout, event, and render queues are bounded by trusted `UiLimits` ceilings. Layout sources are size-checked and loaded transactionally, with finite numeric fields, collection counts, child counts, and tree depth validated before the live context is committed.
+- `lurek.ui.loadLayoutFile` and `lurek.ui.loadLayoutGameFile` read through GameFS. `lurek.ui.renderToImage` writes only through the GameFS save boundary, validates dimensions and encoded size, and commits output through an atomic temporary-file rename.
+- Callback dispatch removes an event before invoking Lua and restores it at the front if the callback fails, so a failed callback cannot silently discard later queued events. Safe duplicate change/drag-hover events may coalesce at the queue ceiling; critical events are counted and never evict earlier events.
 - `LUiWidget:setShader` and `LUiWidget:setShaderLayer` accept only `ui` shaders created through `lurek.render.newShader`. UI stores `ShaderKey` bindings on retained widget state; WGSL validation, pipeline creation, fallback, and GPU execution remain owned by `render`.
 - `lurek.ui.draw()` queues retained widget render commands before invoking custom draw callbacks. Widget shader bindings affect that live render-command path and are inherited by child widgets until overridden by a child shader.
 - `lurek.ui.drawToImage` and `lurek.ui.renderToImage` remain deterministic software preview/export paths and do not execute GPU shaders.

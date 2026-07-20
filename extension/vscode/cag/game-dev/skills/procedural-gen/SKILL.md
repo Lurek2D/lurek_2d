@@ -7,14 +7,6 @@ description: "Load this skill when implementing procedural maps, loot, encounter
 
 BSP room generation, corridor connection, weighted loot tables, enemy placement, secret rooms, and seeded random.
 
-## Key Concepts
-
-- **BSP (Binary Space Partition)**: Recursively split a rectangle into sub-regions. Place rooms inside leaves.
-- **Corridors**: Connect room centers with L-shaped hallways.
-- **Weighted random**: Select items from a probability table. Used for loot, enemy types, room themes.
-- **Seeded RNG**: Use a fixed seed for reproducible worlds. Store seed in save data.
-- **Enemy placement**: Distribute enemies based on room size and difficulty curve.
-
 ## Seeded Random
 
 ```lua
@@ -140,5 +132,3 @@ end
 - **Not using seeded RNG** — `math.random()` gives different results each run. Use a seedable generator for reproducibility.
 - **Rooms overlapping** — BSP prevents this by design, but validate bounds after padding.
 - **Disconnected rooms** — always connect consecutive rooms in the list. Verify reachability.
-- **Loot in walls** — place items at room center or floor tiles, never on wall tiles.
-- **Difficulty scaling** — increase enemy count and type based on dungeon depth, not uniformly.

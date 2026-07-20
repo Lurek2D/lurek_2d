@@ -24,6 +24,9 @@ impl GuiContext {
         self.run_layout_pass();
         let mut is_child = vec![false; self.widgets.len()];
         for idx in 0..self.widgets.len() {
+            if !self.widget_is_live(idx) {
+                continue;
+            }
             for child_idx in self.traversal_children(idx) {
                 if child_idx < is_child.len() {
                     is_child[child_idx] = true;
@@ -32,11 +35,14 @@ impl GuiContext {
         }
         let root_rect = Rect::new(0.0, 0.0, 0.0, 0.0);
         for (idx, child) in is_child.iter().enumerate().skip(1) {
-            if !child {
+            if !child && self.widget_is_live(idx) {
                 self.layout_widget(idx, &root_rect, true, None);
             }
         }
-        for widget in self.widgets.iter_mut().skip(1) {
+        for (idx, widget) in self.widgets.iter_mut().enumerate().skip(1) {
+            if !self.live_slots.get(idx).copied().unwrap_or(true) {
+                continue;
+            }
             let base = widget.base_mut();
             if base.computed_rect.width <= 0.0 || base.computed_rect.height <= 0.0 {
                 base.computed_rect = Rect::new(base.x, base.y, base.width, base.height);

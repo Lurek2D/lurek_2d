@@ -7,14 +7,6 @@ description: "Load this skill when implementing weather visuals such as rain, sn
 
 Rain particles, snow drift, wind force, lightning flash with thunder SFX, and fog overlay.
 
-## Key Concepts
-
-- **Particle-based weather**: Rain and snow are particle systems with gravity and wind influence.
-- **Wind force**: Global wind vector that affects particle horizontal velocity and can influence gameplay.
-- **Lightning**: Screen-wide flash (draw white rect at high alpha), followed by thunder SFX with distance delay.
-- **Fog overlay**: Semi-transparent gradient rectangle drawn over the scene for atmosphere.
-- **Layered rendering**: Weather draws after the world but before HUD.
-
 ## Wind
 
 ```lua
@@ -152,8 +144,5 @@ end
 
 ## Common Pitfalls
 
-- **Weather in screen space** — rain/snow should not move with the camera. Draw after popping camera transform.
-- **Too many particles** — 300 rain drops is fine; 3000 tanks FPS. Profile and cap.
-- **Lightning every frame** — trigger randomly with low probability per frame: `if math.random() < 0.002 then trigger_lightning() end`.
-- **Thunder without delay** — real thunder arrives after the flash. Use distance-based timer for immersion.
-- **Fog blocks gameplay** — keep density low (0.1–0.3). Too thick and players can't see hazards.
+- Draw weather in screen space after the camera transform and cap particle counts.
+- Trigger lightning rarely, delay thunder, and keep fog thin enough to preserve gameplay visibility.

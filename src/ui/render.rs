@@ -859,6 +859,34 @@ fn render_widget(
     inherited_shader: Option<ShaderKey>,
     cmds: &mut Vec<RenderCommand>,
 ) {
+    render_widget_inner(
+        ctx,
+        idx,
+        font_key,
+        fonts,
+        default_style,
+        inherited_shader,
+        cmds,
+        0,
+    );
+}
+
+fn render_widget_inner(
+    ctx: &GuiContext,
+    idx: usize,
+    font_key: FontKey,
+    fonts: &SlotMap<FontKey, Font>,
+    default_style: &WidgetStyle,
+    inherited_shader: Option<ShaderKey>,
+    cmds: &mut Vec<RenderCommand>,
+    depth: usize,
+) {
+    if depth > ctx.limits().max_tree_depth {
+        return;
+    }
+    if idx >= ctx.widgets.len() || !ctx.widget_is_live(idx) {
+        return;
+    }
     let widget = &ctx.widgets[idx];
     let raw_base = widget.base();
     if !raw_base.visible
@@ -1995,7 +2023,7 @@ fn render_widget(
 
     for child_idx in render_children {
         if child_idx < ctx.widgets.len() {
-            render_widget(
+            render_widget_inner(
                 ctx,
                 child_idx,
                 font_key,
@@ -2003,6 +2031,7 @@ fn render_widget(
                 default_style,
                 effective_shader,
                 cmds,
+                depth.saturating_add(1),
             );
         }
     }
@@ -2026,6 +2055,9 @@ impl GuiContext {
         let mut cmds = Vec::new();
         WidgetRenderer::new(self, font_key, fonts, &default_style, &mut cmds)
             .render_root_children();
+        if cmds.len() > self.limits().max_render_commands {
+            cmds.truncate(self.limits().max_render_commands);
+        }
         cmds
     }
 

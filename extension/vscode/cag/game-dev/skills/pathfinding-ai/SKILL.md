@@ -7,14 +7,6 @@ description: "Load this skill when implementing pathfinding, steering, enemy AI,
 
 A* grid pathfinding, path following, obstacle avoidance, aggro radius, AI modes, and formations.
 
-## Key Concepts
-
-- **A* on grid**: Find shortest path on a tile grid with walkability data. Heuristic: Manhattan or Euclidean.
-- **Path smoothing**: Remove redundant waypoints on straight lines.
-- **Detection radius**: Aggro when player enters range; deaggro after leaving a larger range (hysteresis).
-- **AI modes**: Patrol (follow waypoints), Chase (pursue target), Flee (run away), Idle (wait).
-- **Formations**: Groups of enemies maintain relative positions while moving.
-
 ## A* Implementation
 
 ```lua
@@ -22,22 +14,16 @@ local function astar(grid, start, goal, w, h)
     local open = { [start.x .. "," .. start.y] = { x = start.x, y = start.y, g = 0, f = 0 } }
     local closed = {}
     local came_from = {}
-
     local function heuristic(a, b)
         return math.abs(a.x - b.x) + math.abs(a.y - b.y)
     end
-
     open[start.x .. "," .. start.y].f = heuristic(start, goal)
-
     while next(open) do
-        -- Find lowest f in open
         local best_key, best = nil, nil
         for k, node in pairs(open) do
             if not best or node.f < best.f then best_key, best = k, node end
         end
-
         if best.x == goal.x and best.y == goal.y then
-            -- Reconstruct path
             local path = {}
             local key = best.x .. "," .. best.y
             while key do
@@ -48,10 +34,8 @@ local function astar(grid, start, goal, w, h)
             end
             return path
         end
-
         open[best_key] = nil
         closed[best_key] = true
-
         local dirs = {{0,-1},{0,1},{-1,0},{1,0}}
         for _, d in ipairs(dirs) do
             local nx, ny = best.x + d[1], best.y + d[2]
@@ -75,17 +59,13 @@ end
 ```lua
 local function follow_path(enemy, path, speed, dt)
     if not path or #path == 0 then return end
-    local target = path[1]
-    local tx = target.x * TILE_SIZE + TILE_SIZE * 0.5
-    local ty = target.y * TILE_SIZE + TILE_SIZE * 0.5
-    local dx, dy = tx - enemy.x, ty - enemy.y
+    local p = path[1]
+    local dx = p.x * TILE_SIZE + TILE_SIZE * 0.5 - enemy.x
+    local dy = p.y * TILE_SIZE + TILE_SIZE * 0.5 - enemy.y
     local dist = math.sqrt(dx * dx + dy * dy)
-    if dist < 2 then
-        table.remove(path, 1)
-    else
-        enemy.x = enemy.x + (dx / dist) * speed * dt
-        enemy.y = enemy.y + (dy / dist) * speed * dt
-    end
+    if dist < 2 then table.remove(path, 1); return end
+    enemy.x = enemy.x + dx / dist * speed * dt
+    enemy.y = enemy.y + dy / dist * speed * dt
 end
 ```
 
@@ -137,8 +117,4 @@ end
 
 ## Common Pitfalls
 
-- **Repathing every frame** — A* is expensive. Repath every 0.3–0.5s, not every update.
-- **No deaggro hysteresis** — if aggro and deaggro at the same distance, enemy flickers between modes at the boundary.
-- **Path through closed doors** — regenerate grid walkability when world state changes (doors, bridges).
-- **Diagonal movement on 4-dir grid** — if allowing diagonals, check both adjacent tiles to prevent corner cutting.
-- **String key allocation** — `x..","..y` creates strings every iteration. For performance, use `y * w + x` as numeric key.
+- Repath on a timer, avoid string keys, rebuild walkability after world changes, use aggro hysteresis, and validate diagonal cuts.

@@ -7,14 +7,6 @@ description: "Load this skill when implementing tilemap loading, rendering, coll
 
 Load tilemaps, render layers, tile-based collision, auto-tiling, camera bounds, and trigger zones.
 
-## Key Concepts
-
-- **Tilemap data**: 2D array of tile IDs. Store in TOML or Lua table.
-- **Tileset atlas**: Single image with uniform tile grid. Compute quad from tile ID.
-- **Layers**: Render ground → objects → foreground. Collision uses a separate data layer.
-- **Auto-tiling**: Choose tile variant based on neighbor occupancy (bitmask).
-- **Trigger zones**: Special tile IDs that fire events (door, spike, checkpoint).
-
 ## Tilemap Structure (TOML)
 
 ```toml

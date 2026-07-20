@@ -2,7 +2,6 @@
 
 - Lurek2D is one Rust binary that runs Lua game scripts.
 - Stack: Rust 1.78+, LuaJIT/mlua 0.9, wgpu 22, winit 0.30, rapier2d 0.32, rodio 0.17, fontdue 0.9.
-- AI writes code; human reviews.
 
 ## Mission & Scope
 - This file applies to the whole repo unless a deeper `AGENTS.md` adds local rules.
@@ -27,12 +26,9 @@
 - MCP/repo CLI comes before ad hoc scripts when a matching tool exists.
 - Prefer `tools/python.cmd path/to/script.py` for parsing, reporting, and automation on Windows.
 - When a repo tool enforces a marker, path, registry, or file-shape contract, treat that parser as source of truth and keep the nearest `AGENTS.md` plus task skills synced.
-- Keep output short; cap captured output at 1000 lines.
-- Do not read huge files unless needed.
+- Keep captured output under 1000 lines.
 - Keep scope narrow and never revert unrelated user changes.
-- Ask if instructions are unclear.
-- Write simple English and short bullets.
-- NEVER write any temp files outside of `work/` folder. NEVER !!
+- Write temporary files only under `work/`.
 
 ## Workflow
 - Keep public API changes synced with specs, examples, and coverage.

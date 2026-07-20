@@ -1,8 +1,12 @@
 {
-  "total_apis": 7073,
+  "total_apis": 7076,
   "covered": 7073,
-  "missing": 0,
-  "missing_apis": [],
+  "missing": 3,
+  "missing_apis": [
+    "LUiWidget:destroy",
+    "LUiWidget:isValid",
+    "lurek.ui.destroy"
+  ],
   "duplicate": 0,
   "duplicate_apis": [],
   "stub_counts": {

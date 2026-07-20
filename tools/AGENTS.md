@@ -18,6 +18,5 @@
 - Run light syntax and link checks before heavy Cargo compiles.
 
 ## Workflow
-- Read the nearest nested tools contract or README before tool-family edits.
 - Run the matching generator, audit, or validator before broad checks.
 - If shared contracts, generators, or CAG metadata change, run `tools/python.cmd tools/validate/cag_validate.py`.

@@ -12,7 +12,7 @@
 - `fixtures/`: Deterministic test assets.
 - `artifacts/current/`: Fresh evidence output.
 - `artifacts/baselines/`: Committed golden baselines.
-- `demo_smoke_tests.rs`, `games_load_test.rs`: Demo load and screenshot smoke tests.
+- `demo_smoke_tests.rs`, `games_load_test.rs`: Demo load/screenshot smoke tests.
 
 ## Rules
 - Public `lurek.*` behavior is Lua-first. Put canonical ownership in `tests/lua/unit/`.
@@ -36,4 +36,4 @@
 - Run `cargo test`.
 - Run `python -m unittest discover -s tests/python -p "test_*.py" -q` when changing Python audit or validation tools.
 - Audit example and Lua ownership before broad cleanup with `tools/python.cmd tools/audit/example_coverage.py --report --no-stubs --no-partials`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py`, and `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/unit`; treat example structural lint as a contract gate against top-level Lua helpers or setup outside marker-owned blocks.
-- Audit evidence/golden contract drift with `tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py`, and reseed baselines with `tools/python.cmd tools/audit/reseed_lua_artifacts.py --clean` only after evidence output is intentionally refreshed.
+- Audit evidence/golden drift with `tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py`; reseed only after reviewing refreshed evidence with `tools/python.cmd tools/audit/reseed_lua_artifacts.py --clean`.

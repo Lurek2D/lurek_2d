@@ -7,13 +7,6 @@ description: "Load this skill when implementing game state flow such as menus, p
 
 State stack with push/pop for pause and overlays, state table pattern, transitions, and persistent state.
 
-## Key Concepts
-
-- **State table**: Each state has `enter`, `exit`, `update`, and `draw` methods.
-- **State stack**: Push overlays (pause, game-over) on top of the current state. Pop to resume.
-- **Transitions**: Fade, slide, or instant switch between states.
-- **Persistent state**: Some data (score, settings) survives state changes.
-
 ## State Table Pattern
 
 ```lua

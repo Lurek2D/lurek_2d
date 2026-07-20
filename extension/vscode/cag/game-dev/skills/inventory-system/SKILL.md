@@ -7,14 +7,6 @@ description: "Load this skill when implementing item storage, pickup, equip, con
 
 Item storage, stacking, transfer, equipped state, and serialization for RPG/adventure games.
 
-## Key Concepts
-
-- **Item definition**: Separate item *data* (name, max_stack, icon) from *instance* (count, slot).
-- **Stacking**: Group identical items up to `max_stack`. Overflow creates a new slot.
-- **Transfer**: Move items between inventories (player ↔ chest) with slot-level operations.
-- **Equipped slots**: Named slots (weapon, armor, accessory) with type restrictions.
-- **Serialization**: Convert inventory to a plain table for saving via `lurek.serialize.toToml`.
-
 ## Item Database
 
 ```lua

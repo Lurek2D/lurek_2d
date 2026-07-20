@@ -16,7 +16,10 @@ use crate::ui::extras::{
 use crate::ui::widget::{MouseFilter, TextVAlign};
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::path::{Component, Path};
+use std::sync::atomic::{AtomicU64, Ordering};
 #[derive(Debug, Clone, Deserialize, Default)]
 /// Declarative dialog footer action loaded from TOML or Lua layout definitions.
 pub struct DialogActionDef {
@@ -233,17 +236,153 @@ pub struct LayoutDef {
 }
 /// Recursively instantiate `def` and all its `children` into `ctx`; return the root widget index or an error string.
 pub fn load_layout_def(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {
-    let idx = load_layout_def_inner(ctx, def)?;
-    let id_map = collect_id_map(ctx, idx)?;
-    resolve_layout_references(ctx, idx, def, &id_map)?;
-    let errors = validate_loaded_subtree(ctx, idx);
-    if !errors.is_empty() {
+    let layout_count = validate_layout_def(def, &ctx.limits())?;
+    let exceeds_widget_limit = match ctx.widget_count().checked_add(layout_count) {
+        Some(count) => count > ctx.limits().max_live_widgets,
+        None => true,
+    };
+    if exceeds_widget_limit {
         return Err(format!(
-            "layout tree validation failed: {}",
-            errors.join("; ")
+            "layout would exceed the {} live widget limit",
+            ctx.limits().max_live_widgets
         ));
     }
-    Ok(idx)
+    let snapshot = ctx.clone();
+    let result = (|| {
+        let idx = load_layout_def_inner(ctx, def)?;
+        let id_map = collect_id_map(ctx, idx)?;
+        resolve_layout_references(ctx, idx, def, &id_map)?;
+        let errors = validate_loaded_subtree(ctx, idx);
+        if !errors.is_empty() {
+            return Err(format!(
+                "layout tree validation failed: {}",
+                errors.join("; ")
+            ));
+        }
+        Ok(idx)
+    })();
+    if result.is_err() {
+        *ctx = snapshot;
+    }
+    result
+}
+
+fn validate_layout_def(root: &WidgetDef, limits: &crate::ui::UiLimits) -> Result<usize, String> {
+    fn string_ok(name: &str, value: &str, limits: &crate::ui::UiLimits) -> Result<(), String> {
+        if value.len() > limits.max_string_bytes {
+            return Err(format!(
+                "layout field \"{name}\" exceeds the {} byte string limit",
+                limits.max_string_bytes
+            ));
+        }
+        Ok(())
+    }
+    fn visit(
+        def: &WidgetDef,
+        depth: usize,
+        count: &mut usize,
+        limits: &crate::ui::UiLimits,
+    ) -> Result<(), String> {
+        if depth > limits.max_tree_depth {
+            return Err(format!(
+                "layout tree depth exceeds the {} level limit",
+                limits.max_tree_depth
+            ));
+        }
+        *count = count
+            .checked_add(1)
+            .ok_or_else(|| "layout widget count overflow".to_string())?;
+        if *count > limits.max_live_widgets {
+            return Err(format!(
+                "layout contains more than the {} widget limit",
+                limits.max_live_widgets
+            ));
+        }
+        string_ok("widget_type", &def.widget_type, limits)?;
+        for (name, value) in [
+            ("id", def.id.as_deref()),
+            ("text", def.text.as_deref()),
+            ("placeholder", def.placeholder.as_deref()),
+            ("tooltip", def.tooltip.as_deref()),
+            ("bind", def.bind.as_deref()),
+            ("style_class", def.style_class.as_deref()),
+        ] {
+            if let Some(value) = value {
+                string_ok(name, value, limits)?;
+            }
+        }
+        for (name, value) in [
+            ("x", def.x),
+            ("y", def.y),
+            ("w", def.w),
+            ("h", def.h),
+            ("icon_size", def.icon_size),
+            ("flex_grow", def.flex_grow),
+            ("flex_shrink", def.flex_shrink),
+            ("ratio", def.ratio),
+            ("spacing", def.spacing),
+        ] {
+            if let Some(value) = value {
+                if !value.is_finite() {
+                    return Err(format!("layout field \"{name}\" must be finite"));
+                }
+            }
+        }
+        for (name, values) in [
+            ("items", def.items.as_ref().map(Vec::as_slice)),
+            ("tabs", def.tabs.as_ref().map(Vec::as_slice)),
+        ] {
+            if let Some(values) = values {
+                if values.len() > limits.max_collection_items {
+                    return Err(format!("layout field \"{name}\" exceeds the item limit"));
+                }
+                for value in values {
+                    string_ok(name, value, limits)?;
+                }
+            }
+        }
+        if let Some(children) = &def.children {
+            if children.len() > limits.max_children_per_widget {
+                return Err(format!(
+                    "layout children exceed the {} per-widget limit",
+                    limits.max_children_per_widget
+                ));
+            }
+            for child in children {
+                visit(child, depth.saturating_add(1), count, limits)?;
+            }
+        }
+        if let Some(rows) = &def.rows {
+            if rows.len() > limits.max_collection_items {
+                return Err("layout rows exceed the collection limit".to_string());
+            }
+            for row in rows {
+                if row.len() > limits.max_collection_items {
+                    return Err("layout row exceeds the collection limit".to_string());
+                }
+                for value in row {
+                    string_ok("rows", value, limits)?;
+                }
+            }
+        }
+        if let Some(nodes) = &def.nodes {
+            if nodes.len() > limits.max_collection_items {
+                return Err("layout tree nodes exceed the collection limit".to_string());
+            }
+            for node in nodes {
+                string_ok("nodes.text", &node.text, limits)?;
+                if let Some(parent) = node.parent {
+                    if parent >= nodes.len() {
+                        return Err(format!("tree node parent {parent} is out of range"));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+    let mut count = 0;
+    visit(root, 0, &mut count, limits)?;
+    Ok(count)
 }
 
 fn collect_id_map(ctx: &GuiContext, root_idx: usize) -> Result<HashMap<String, usize>, String> {
@@ -561,11 +700,69 @@ fn load_layout_def_inner(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize,
 }
 /// Parse `toml_src` into a `LayoutDef` and load it into `ctx`; return the root widget index or an error string.
 pub fn load_layout_toml(ctx: &mut GuiContext, toml_src: &str) -> Result<usize, String> {
+    if toml_src.len() > ctx.limits().max_layout_bytes {
+        return Err(format!(
+            "layout source exceeds the {} byte limit",
+            ctx.limits().max_layout_bytes
+        ));
+    }
     let layout_def: LayoutDef =
         toml::from_str(toml_src).map_err(|e| format!("TOML parse error: {e}"))?;
     load_layout_def(ctx, &layout_def.root)
 }
-/// Run the engine UI rasteriser on `ctx` at the given resolution and save the PNG to `path`.
+
+/// Load a layout and attach its root to the UI root as one transaction.
+pub fn load_layout_def_attached(ctx: &mut GuiContext, def: &WidgetDef) -> Result<usize, String> {
+    let snapshot = ctx.clone();
+    let result = load_layout_def(ctx, def).and_then(|root_idx| {
+        if ctx.add_child(0, root_idx) {
+            Ok(root_idx)
+        } else {
+            Err("failed to attach loaded layout root".to_string())
+        }
+    });
+    if result.is_err() {
+        *ctx = snapshot;
+    }
+    result
+}
+
+/// Parse, load, and attach a TOML layout as one transaction.
+pub fn load_layout_toml_attached(ctx: &mut GuiContext, toml_src: &str) -> Result<usize, String> {
+    let snapshot = ctx.clone();
+    let result = load_layout_toml(ctx, toml_src).and_then(|root_idx| {
+        if ctx.add_child(0, root_idx) {
+            Ok(root_idx)
+        } else {
+            Err("failed to attach loaded layout root".to_string())
+        }
+    });
+    if result.is_err() {
+        *ctx = snapshot;
+    }
+    result
+}
+/// Rasterise the UI to bounded PNG bytes without touching the host filesystem.
+pub fn render_to_image_bytes(
+    ctx: &mut GuiContext,
+    width: u32,
+    height: u32,
+) -> Result<Vec<u8>, String> {
+    let limits = ctx.limits();
+    limits.validate_image_dimensions(width, height)?;
+    ctx.set_viewport(width as f32, height as f32);
+    let img = ctx.draw_to_image(width, height);
+    let png = img.encode_png()?;
+    if png.len() > limits.max_encoded_image_bytes {
+        return Err(format!(
+            "render_to_image: encoded image exceeds the {} byte limit",
+            limits.max_encoded_image_bytes
+        ));
+    }
+    Ok(png)
+}
+
+/// Run the engine UI rasteriser on `ctx` at the given resolution and atomically save the PNG to a safe relative path.
 pub fn render_to_image(
     ctx: &mut GuiContext,
     width: u32,
@@ -573,6 +770,9 @@ pub fn render_to_image(
     path: &str,
 ) -> Result<(), String> {
     let path = Path::new(path);
+    if path.to_string_lossy().len() > ctx.limits().max_path_bytes {
+        return Err("render_to_image: output path exceeds the path length limit".to_string());
+    }
     if path.is_absolute()
         || path
             .components()
@@ -582,11 +782,47 @@ pub fn render_to_image(
             "render_to_image: output path must stay relative to the current workspace".to_string(),
         );
     }
-    ctx.set_viewport(width as f32, height as f32);
-    let img = ctx.draw_to_image(width, height);
-    let png = img.encode_png()?;
-    std::fs::write(path, png)
-        .map_err(|e| format!("render_to_image: failed to save '{}': {e}", path.display()))
+    let png = render_to_image_bytes(ctx, width, height)?;
+    write_bytes_atomically(path, &png)
+}
+
+static NEXT_OUTPUT_TEMP: AtomicU64 = AtomicU64::new(1);
+
+fn write_bytes_atomically(path: &Path, bytes: &[u8]) -> Result<(), String> {
+    let parent = path.parent().unwrap_or_else(|| Path::new("."));
+    if let Some(parent_canonical) = parent.canonicalize().ok() {
+        if !parent_canonical
+            .starts_with(std::env::current_dir().map_err(|e| format!("render_to_image: {e}"))?)
+        {
+            return Err("render_to_image: output parent escaped the workspace".to_string());
+        }
+    }
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| "render_to_image: output path must have a valid file name".to_string())?;
+    let temp_name = format!(
+        ".{file_name}.tmp-{}",
+        NEXT_OUTPUT_TEMP.fetch_add(1, Ordering::Relaxed)
+    );
+    let temp_path = parent.join(temp_name);
+    let result = (|| {
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&temp_path)
+            .map_err(|e| format!("render_to_image: failed to create temporary output: {e}"))?;
+        file.write_all(bytes)
+            .map_err(|e| format!("render_to_image: failed to write output: {e}"))?;
+        file.sync_all()
+            .map_err(|e| format!("render_to_image: failed to flush output: {e}"))?;
+        std::fs::rename(&temp_path, path)
+            .map_err(|e| format!("render_to_image: failed to commit output: {e}"))
+    })();
+    if result.is_err() {
+        let _ = std::fs::remove_file(&temp_path);
+    }
+    result
 }
 
 fn ensure_finite_f32(name: &str, value: f32) -> Result<f32, String> {

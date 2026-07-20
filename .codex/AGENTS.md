@@ -18,6 +18,10 @@ Owns Codex-only guidance for `lurek_2D`.
 - Keep the existing `.codex/skills/` catalog intact; do not create replacement skills without explicit user approval.
 - Route only to agent profiles that actually exist under `.codex/agents/`.
 - Keep skill owner labels synced with the registered profile names they target.
+- Skill frontmatter descriptions are the routing source for when to load or skip a skill.
+- Keep active skills compact: retain only mission, unique domain knowledge, workflow, and references.
+- Shared CAG process rules belong here; do not repeat them in every skill.
+- Before broad reads, query RAG; prefer existing MCP/repo tools; modify the existing owning artifact.
 - Keep optional local runtimes repo-scoped; use `tools/dev/headroom_runtime.py` instead of hard-wiring Headroom into active `config.toml`.
 
 ## Workflow

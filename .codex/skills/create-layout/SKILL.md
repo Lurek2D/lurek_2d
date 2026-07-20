@@ -2,60 +2,32 @@
 name: create-layout
 description: "Load this skill when creating or modifying TOML UI layouts under content/layouts and producing visual/evidence validation. Skip it for HTML UI, engine renderer internals, or non-layout Lua examples."
 ---
+
 # create-layout
 
 ## Mission
 - Create or modify layout assets that follow current content rules and visual evidence expectations.
 
-## When To Load
-- Creating or modifying TOML UI layouts under content/layouts and producing visual/evidence validation.
-
-## When To Skip
-- HTML UI, engine renderer internals, or non-layout Lua examples.
-
 ## Domain Knowledge
-- Read root `AGENTS.md`, then every listed contract nearest to the target path.
-- Run the listed RAG query before broad file reads and start from top hits.
-- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
-- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
-- Read the nearest source, spec, test, doc, or config before editing.
-- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
+- Layout TOML under `content/layouts/apps` and `content/layouts/games` is deserialized by the engine UI system; valid TOML can still fail when keys or hierarchies are unsupported.
+- Responsive relationships belong in parent/child flow, alignment, wrapping, and anchors; fixed coordinates are appropriate for deliberate overlays, not as a substitute for container structure.
+- Stable `snake_case` IDs are the Lua interaction contract used by `lurek.ui`; renaming an ID is behavior change even if the frame looks identical.
+- Visual proof must include content pressure and states—long text, focus, disabled controls, clipping, overlap, z-order, and target dimensions—not only default geometry.
+- Snap/fixer tools normalize layout but cannot judge intended grouping, so their diff requires visual review.
+- Layout IDs and widget types form a binding surface with game/app Lua; a visual refactor that replaces a component or changes nesting can alter event routing, focus order, and lookup behavior even when IDs remain present.
+- Text metrics use the engine's supported bitmap fonts, so line height, wrapping, and intrinsic dimensions must be tested with actual localized or maximum-length content rather than browser/system-font expectations.
+- Overlay order and input capture should follow screen semantics: modal layers must block underlying actions, passive HUD layers must not steal focus, and hidden components should not remain interactive through stale bounds.
 
 ## Workflow
-- Inspect existing layouts and UI primitives before editing.
-- Modify a matching layout when present; create a new TOML layout only when no existing asset owns the screen.
-- Keep layout dimensions, anchors, and naming consistent with content conventions; use `w`/`h` keys and bitmap font sizes 8, 10, 12, 16, 20, 24, or 30.
-- Run snap-to-grid and layout fixer after hand edits.
-- Render evidence or preview output and iterate on visual alignment.
-- Finish by reporting changed files and validation evidence.
-
-## Success Criteria
-- The target artifact was created or modified in the narrowest owning location.
-- Existing content was preserved and updated when it already owned the behavior.
-- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
-
-## Stop Conditions
-- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
-- A referenced owner path or tool is absent after checking the repository.
-- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
-
-## Companion File Index
-- Contracts: `content/AGENTS.md`, `content/layouts/AGENTS.md`, `content/examples/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10`, `tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive`, `tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix`, `tests/lua/evidence/test_ui_evidence.lua`
-- Owner profile: `content`
-
-## Common RAG Queries
-- Use when locating current UI layout conventions:
-  - `content layouts TOML UI primitives`
-  - `content layouts button label stack`
-  - `hud menu overlay layout`
-- Common areas to inspect after top hits:
-  - `content/layouts/`
-  - `content/games/`
-  - `docs/` UI or layout notes
-  - rendering support in `src/`
+- Identify the runtime screen and Lua code consuming each widget ID, then sketch container hierarchy and state variants; extend the existing app/game layout when it owns that interaction surface.
+- Implement hierarchy before pixel geometry with deserializer-supported fields, preserving consumed IDs and testing representative long labels and dense values instead of placeholders.
+- Run the fixer and 8-pixel snap tool, inspect their diffs, then render the owning app/game at target dimensions and exercise focus, disabled, overlay, and resize states.
+- Iterate from visual evidence until alignment, clipping, hierarchy, and readability stabilize; retain an artifact that demonstrates the changed screen rather than relying on parse success.
+- Trace focus and action order with keyboard/controller-style navigation as well as pointer input, verifying that visual order, tab/focus order, default action, and cancel path agree for menus and dialogs.
+- Compare the layout at minimum, target, and expanded dimensions; document any intentionally fixed viewport and ensure flexible containers absorb extra space without stretching icons, breaking aspect ratios, or obscuring world content.
 
 ## References
 - `contracts: content/AGENTS.md, content/layouts/AGENTS.md, content/examples/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10, tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive, tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix, tests/lua/evidence/test_ui_evidence.lua`
 - `agent: content`
+- RAG: `content layouts TOML UI primitives`; `content layouts button label stack`; `hud menu overlay layout`; `content/layouts/`; `content/games/`; `docs/` UI or layout notes; rendering support in `src/`

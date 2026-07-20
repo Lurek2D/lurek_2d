@@ -7,14 +7,6 @@ description: "Load this skill when implementing quest state, objectives, progres
 
 Quest tables, objective types, multi-step progression, journal UI, and completion rewards.
 
-## Key Concepts
-
-- **Quest table**: Each quest has id, title, description, objectives, state, and rewards.
-- **Objective types**: Reach a location, collect N items, defeat N enemies, talk to NPC.
-- **State machine**: `inactive` → `active` → `complete` (or `failed`).
-- **Multi-step**: Objectives completed in sequence. Next objective unlocks when previous completes.
-- **Journal UI**: List active quests, show progress, highlight tracked quest.
-
 ## Quest Data
 
 ```lua
@@ -71,58 +63,30 @@ end
 
 ## Objective Progress
 
+Use one notifier for reach, collect, kill, and talk objectives; the wrappers keep call sites readable.
+
 ```lua
-local function notify_reach(location_id)
-    for _, q in ipairs(active_quests) do
-        local obj = current_objective(q)
-        if obj and obj.type == "reach" and obj.target == location_id then
-            obj.done = true
-            check_quest_complete(q)
+local function notify_objective(kind, target, amount)
+    for _, quest in ipairs(active_quests) do
+        local obj = current_objective(quest)
+        if obj and obj.type == kind and obj.target == target then
+            if obj.count then obj.current = (obj.current or 0) + (amount or 1) end
+            if not obj.count or obj.current >= obj.count then obj.done = true end
+            check_quest_complete(quest)
         end
     end
 end
 
-local function notify_collect(item_id, count)
-    for _, q in ipairs(active_quests) do
-        local obj = current_objective(q)
-        if obj and obj.type == "collect" and obj.target == item_id then
-            obj.current = obj.current + count
-            if obj.current >= obj.count then
-                obj.done = true
-                check_quest_complete(q)
-            end
-        end
-    end
-end
-
-local function notify_kill(enemy_type)
-    for _, q in ipairs(active_quests) do
-        local obj = current_objective(q)
-        if obj and obj.type == "kill" and obj.target == enemy_type then
-            obj.current = (obj.current or 0) + 1
-            if obj.current >= obj.count then
-                obj.done = true
-                check_quest_complete(q)
-            end
-        end
-    end
-end
-
-local function notify_talk(npc_id)
-    for _, q in ipairs(active_quests) do
-        local obj = current_objective(q)
-        if obj and obj.type == "talk" and obj.target == npc_id then
-            obj.done = true
-            check_quest_complete(q)
-        end
-    end
-end
+local notify_reach = function(id) notify_objective("reach", id) end
+local notify_collect = function(id, n) notify_objective("collect", id, n) end
+local notify_kill = function(kind) notify_objective("kill", kind) end
+local notify_talk = function(id) notify_objective("talk", id) end
 
 local function check_quest_complete(quest)
     for _, obj in ipairs(quest.objectives) do
         if not obj.done then return end
     end
-    complete_quest(quest)
+            complete_quest(quest)
 end
 ```
 
@@ -156,8 +120,5 @@ end
 
 ## Common Pitfalls
 
-- **Objectives out of order** — `current_objective` returns the first incomplete one. If you want parallel objectives, iterate all instead.
-- **Duplicate notifications** — guard against double-counting (e.g., picking up 2 items fires `notify_collect` twice with count=1).
-- **Quest not removed from active** — when completed or failed, remove from `active_quests` or filter in the UI.
-- **Missing save integration** — quest state must be serialized. Save `state`, `current` counts, and `done` flags.
-- **Reward overflow** — check inventory space before granting item rewards. Handle full inventory gracefully.
+- `current_objective` enforces sequence; iterate all objectives for parallel quests and guard duplicate notifications.
+- Remove completed quests from active state, serialize progress, and handle full inventory before granting rewards.

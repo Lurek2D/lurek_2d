@@ -4,19 +4,8 @@ description: "Use this skill when the task clearly matches this domain. Skip it 
 ---
 # skill-name
 
-## TL;DR
-
-- TODO: Write summary.
-
-
 ## Mission
 - Own one narrow knowledge area.
-
-## When To Load
-- Specific task shapes that need this knowledge.
-
-## When To Skip
-- Nearby tasks that belong to another skill.
 
 ## Domain Knowledge
 - High-value repo-specific rules.
@@ -24,12 +13,14 @@ description: "Use this skill when the task clearly matches this domain. Skip it 
 - Constraints, sync rules, and failure modes.
 - Keep this section concrete, unique, and concise.
 
-## Companion File Index
-- None.
+## Workflow
+- Read the owning files and primary specs first.
+- Run the narrowest relevant validation before closing.
+- Report touched files, proof, and residual risk.
 
 ## References
 - Path to the main source file, folder, or tool.
 
 ## Template Notes
 - Copy this file to `.codex/skills/<skill-name>/SKILL.md`.
-- Keep the skill narrow and concrete; use the nearest `AGENTS.md` for folder-local invariants.
+- Put load/skip routing in frontmatter and folder-local invariants in the nearest `AGENTS.md`.

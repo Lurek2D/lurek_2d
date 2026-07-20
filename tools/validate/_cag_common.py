@@ -93,10 +93,8 @@ REPO_AGENT_REQUIRED_SECTIONS = (
 
 SKILL_REQUIRED_SECTIONS = (
     "Mission",
-    "When To Load",
-    "When To Skip",
     "Domain Knowledge",
-    "Companion File Index",
+    "Workflow",
     "References",
 )
 

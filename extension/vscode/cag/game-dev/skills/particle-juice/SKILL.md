@@ -7,13 +7,6 @@ description: "Load this skill when implementing particle effects, impact feedbac
 
 On-hit sparks, walk dust, landing impact, death explosion, coin collect, and healing shimmer using lurek.particle.
 
-## Key Concepts
-
-- **Particle system**: Pre-configured emitter with lifetime, speed, color, and emission rate.
-- **Burst vs steady**: Burst for one-shot effects (explosion), steady rate for ambient (rain, dust trail).
-- **Juice feel**: Small particle bursts on every game event make the world feel responsive and alive.
-- **Color over lifetime**: Fade alpha to 0 at end of life. Shift hue for fire/magic effects.
-
 ## Creating a Particle System
 
 ```lua

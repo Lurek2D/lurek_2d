@@ -18,6 +18,5 @@
 - Write contributor docs for developers and modders in clear terms.
 
 ## Workflow
-- Read the nearest nested docs contract first.
 - Run strict link checks after structural doc edits.
 - Rebuild generated API refs only when binding docs or generator inputs change.

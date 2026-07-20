@@ -97,6 +97,29 @@ mod vfs_tests {
     }
 
     #[test]
+    fn atomic_write_replaces_save_file_without_leaking_temp_files() {
+        let dir = make_temp_game("atomic_write");
+        let fs = GameFS::new(&dir);
+        fs.write_bytes_atomic("save/preview.png", b"first").unwrap();
+        fs.write_bytes_atomic("save/preview.png", b"second")
+            .unwrap();
+        assert_eq!(
+            std::fs::read(dir.join("save/preview.png")).unwrap(),
+            b"second"
+        );
+        let leftovers = std::fs::read_dir(dir.join("save"))
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter(|entry| entry.file_name().to_string_lossy().contains(".tmp-"))
+            .count();
+        assert_eq!(leftovers, 0);
+        assert!(fs
+            .write_bytes_atomic("outside/preview.png", b"nope")
+            .is_err());
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
     fn filetype_as_str() {
         assert_eq!(FileType::File.as_str(), "file");
         assert_eq!(FileType::Directory.as_str(), "directory");

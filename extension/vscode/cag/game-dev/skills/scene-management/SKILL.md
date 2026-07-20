@@ -7,14 +7,6 @@ description: "Load this skill when implementing scene loading, transitions, scen
 
 Scene table pattern, transitions, scene stacking, preloading, and cleanup for multi-screen games.
 
-## Key Concepts
-
-- **Scene table**: Each scene is a table with `load`, `update`, `draw`, and `unload` methods.
-- **Scene stack**: Push scenes for overlays (pause menu over gameplay). Pop to return.
-- **Transitions**: Fade-out → switch → fade-in. Use a timer-driven transition state.
-- **Preloading**: Load assets in the background before switching to avoid frame hitches.
-- **Cleanup**: `unload` releases assets and clears event handlers to prevent leaks.
-
 ## Scene Table
 
 ```lua

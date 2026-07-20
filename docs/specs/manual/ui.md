@@ -50,6 +50,11 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ## Notes
 
+- Widget tables carry an engine-owned generational handle. The `_idx` field is diagnostic only; APIs that accept widget references require the live widget table and reject forged, destroyed, or cleared handles.
+- `lurek.ui.destroy(widget, recursive?)`, `widget:destroy(recursive?)`, and `lurek.ui.clear()` remove references, focus/capture state, queued events, and registered callbacks before invalidating the affected handles. A stale table reports `isValid() == false` and cannot address a replacement widget.
+- UI input, layout, event, and render queues are bounded by trusted `UiLimits` ceilings. Layout sources are size-checked and loaded transactionally, with finite numeric fields, collection counts, child counts, and tree depth validated before the live context is committed.
+- `lurek.ui.loadLayoutFile` and `lurek.ui.loadLayoutGameFile` read through GameFS. `lurek.ui.renderToImage` writes only through the GameFS save boundary, validates dimensions and encoded size, and commits output through an atomic temporary-file rename.
+- Callback dispatch removes an event before invoking Lua and restores it at the front if the callback fails, so a failed callback cannot silently discard later queued events. Safe duplicate change/drag-hover events may coalesce at the queue ceiling; critical events are counted and never evict earlier events.
 - `LUiWidget:setShader` and `LUiWidget:setShaderLayer` accept only `ui` shaders created through `lurek.render.newShader`. UI stores `ShaderKey` bindings on retained widget state; WGSL validation, pipeline creation, fallback, and GPU execution remain owned by `render`.
 - `lurek.ui.draw()` queues retained widget render commands before invoking custom draw callbacks. Widget shader bindings affect that live render-command path and are inherited by child widgets until overridden by a child shader.
 - `lurek.ui.drawToImage` and `lurek.ui.renderToImage` remain deterministic software preview/export paths and do not execute GPU shaders.

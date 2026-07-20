@@ -7,13 +7,6 @@ description: "Load this skill when implementing top-down player or NPC movement,
 
 8-directional, grid-locked RPG, and analog movement for overhead perspective games.
 
-## Key Concepts
-
-- **Diagonal normalization**: Raw 8-dir input gives magnitude 1.41 on diagonals. Normalize to prevent speed boost.
-- **Grid-locked movement**: Player moves tile-to-tile. Queue next direction mid-step for fluid RPG feel.
-- **Facing direction**: Track last non-zero input direction for attack/interact orientation.
-- **Bump/slide collision**: When blocked, slide along the non-blocked axis instead of full stop.
-
 ## Parameters
 
 ```lua

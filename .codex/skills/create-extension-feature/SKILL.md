@@ -2,60 +2,32 @@
 name: create-extension-feature
 description: "Load this skill when creating or modifying VS Code extension commands, providers, webviews, snippets integration, or package wiring. Skip it for engine runtime changes, Lua demos, or generated API data without extension behavior changes."
 ---
+
 # create-extension-feature
 
 ## Mission
 - Create or modify VS Code extension features while preserving package wiring, generated API usage, and webview safety.
 
-## When To Load
-- Creating or modifying VS Code extension commands, providers, webviews, snippets integration, or package wiring.
-
-## When To Skip
-- Engine runtime changes, Lua demos, or generated API data without extension behavior changes.
-
 ## Domain Knowledge
-- Read root `AGENTS.md`, then every listed contract nearest to the target path.
-- Run the listed RAG query before broad file reads and start from top hits.
-- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
-- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
-- Read the nearest source, spec, test, doc, or config before editing.
-- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
+- Extension ownership is divided among `extension/vscode/src/commands`, `providers`, `editors`, `panels`, and `services`; `extension/vscode/package.json` is the declarative counterpart that makes commands, views, menus, settings, and activation reachable.
+- Generated engine/API descriptors under extension data/generated paths originate in repository generators; consumers may change, but parallel handwritten schemas will drift.
+- Webviews cross a trust boundary: the extension host owns filesystem/process access, while pages use typed messages, strict CSP, explicit state restoration, and disposal-aware lifecycle.
+- Providers and completion/hover features run on editor-critical paths, so indexing, engine invocation, and filesystem scans belong in services/background work rather than activation or synchronous UI callbacks.
+- Command identifiers form a three-way contract among registration code, manifest contributions, and menus/keybindings.
+- Workspace trust, remote workspaces, untitled documents, and multi-root folders affect filesystem and process features; commands must derive scope from VS Code URIs and active workspace state rather than assuming a local single-root path.
+- Webview protocol changes need versioned or backward-tolerant message handling when panels can restore after extension reload, and every listener, watcher, terminal, and panel resource must join the extension disposal lifecycle.
+- User-facing errors should distinguish unavailable engine/tooling, invalid project content, cancellation, and extension defects so commands do not collapse actionable conditions into a generic notification.
 
 ## Workflow
-- Read `extension/vscode/AGENTS.md` and inspect `extension/vscode/package.json` plus relevant `src/` owner files.
-- Modify existing command, provider, editor, or webview code when ownership already exists; create a new owner only when necessary.
-- Declare every user-facing command, activation hook, setting, and menu contribution in `package.json`.
-- Keep heavy logic out of activation and use generated API descriptors instead of ad hoc schemas.
-- Run `npm run build` from `extension/vscode/`, then `npm run test` when behavior changed.
-- Finish by reporting changed files and validation evidence.
-
-## Success Criteria
-- The target artifact was created or modified in the narrowest owning location.
-- Existing content was preserved and updated when it already owned the behavior.
-- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
-
-## Stop Conditions
-- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
-- A referenced owner path or tool is absent after checking the repository.
-- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
-
-## Companion File Index
-- Contracts: `extension/vscode/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "VS Code extension package.json webview commands" --profile engine --limit 10`, `npm run build`, `npm run test`
-- Owner profile: `extension`
-
-## Common RAG Queries
-- Use when locating current VS Code extension ownership:
-  - `VS Code extension package.json webview commands`
-  - `package.json contributes commands views`
-  - `hover completion tree view snippet`
-- Common areas to inspect after top hits:
-  - `extension/src/`
-  - `extension/package.json`
-  - `extension/webviews/`
-  - `docs/` extension references
+- Map the user journey from manifest contribution to registration, service/provider owner, and webview channel; inspect generated data provenance before deciding whether TypeScript, manifest, generator, or several layers must change.
+- Implement in the smallest owner with lazy activation, disposable registrations, cancellation for long work, URI-safe workspace access, and typed host/webview messages with CSP-compatible assets.
+- Wire exact identifiers through `package.json`, registration, views/menus/settings, and tests; regenerate engine-derived data with `tools/docs/gen_extension_api.py` instead of patching emitted JSON.
+- Build and test from `extension/vscode/`, exercise UI in an Extension Development Host, and verify reload/disposal plus empty-workspace and missing-engine paths before packaging.
+- Trace telemetry/logging and output-channel behavior for the new flow, keeping user data and workspace contents out of diagnostics unless explicitly required while still preserving commands and paths needed for reproduction.
+- Verify command enablement and visibility contexts against supported editor/file/workspace states so the feature is neither unreachable in valid Lurek projects nor offered where it can only fail.
 
 ## References
 - `contracts: extension/vscode/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "VS Code extension package.json webview commands" --profile engine --limit 10, npm run build, npm run test`
 - `agent: extension`
+- RAG: `VS Code extension package.json webview commands`; `package.json contributes commands views`; `hover completion tree view snippet`; `extension/src/`; `extension/package.json`; `extension/webviews/`; `docs/` extension references

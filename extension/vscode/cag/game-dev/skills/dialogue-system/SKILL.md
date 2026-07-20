@@ -7,32 +7,18 @@ description: "Load this skill when implementing dialogue trees, text flow, choic
 
 Dialog node trees, portraits, typewriter text, conditional branches, choices, and shop integration.
 
-## Key Concepts
-
-- **Dialog tree**: Array of nodes. Each node has speaker, text, optional choices, and a next pointer.
-- **Choices**: Player selects from options. Each option can have conditions and a target node.
-- **Typewriter effect**: Reveal text character-by-character at a configurable speed.
-- **Conditions**: Gate choices or branches on game flags (`boss_defeated`, inventory state).
-- **Portraits**: Speaker image displayed beside the text box.
-
 ## Dialog Data Structure
 
 ```lua
 local dialog_intro = {
     { id = 1, speaker = "Elder", portrait = "elder.png",
-      text = "Welcome, traveler. The forest is dangerous.",
-      next = 2 },
+      text = "Welcome, traveler. The forest is dangerous.", next = 2 },
     { id = 2, speaker = "Elder", portrait = "elder.png",
-      text = "Will you help us?",
-      choices = {
-          { text = "Yes, I'll help.",  next = 3 },
-          { text = "Tell me more.",    next = 4 },
-          { text = "Not interested.",  next = 5, condition = function() return not game.flags.forced end },
-      } },
-    { id = 3, speaker = "Elder", text = "Thank you! Take this sword.", next = nil,
-      on_complete = function() add_item(player.inv, "sword", 1) end },
-    { id = 4, speaker = "Elder", text = "Dark creatures have invaded the forest.", next = 2 },
-    { id = 5, speaker = "Elder", text = "I understand. Safe travels.", next = nil },
+      text = "Will you help us?", choices = {
+        { text = "Yes", next = 3 },
+        { text = "Tell me more", next = 4 },
+        { text = "No", next = 5, condition = function() return not game.flags.forced end },
+    }},
 }
 ```
 
@@ -119,30 +105,18 @@ end
 ```lua
 local function draw_dialog()
     if not dialog.active then return end
-    local node = current_node()
-    if not node then return end
-    local sw, sh = 800, 600
-    local bx, by, bw, bh = 20, sh - 140, sw - 40, 120
-
+    local node = current_node(); if not node then return end
+    local bx, by, bw, bh = 20, 460, 760, 120
     lurek.render.setColor(0, 0, 0, 0.85)
     lurek.render.rectangle("fill", bx, by, bw, bh)
     lurek.render.setColor(1, 1, 1, 1)
     lurek.render.rectangle("line", bx, by, bw, bh)
-
-    -- Speaker name
-    if node.speaker then
-        lurek.render.print(node.speaker, bx + 10, by + 6)
-    end
-
-    -- Typewriter text
-    local visible = node.text:sub(1, dialog.char_index)
-    lurek.render.print(visible, bx + 10, by + 26)
-
-    -- Choices
+    if node.speaker then lurek.render.print(node.speaker, bx + 10, by + 6) end
+    lurek.render.print(node.text:sub(1, dialog.char_index), bx + 10, by + 26)
     if node.choices and dialog.char_index >= #node.text then
-        for i, c in ipairs(node.choices) do
-            local prefix = (i == (dialog.choice_index or 1)) and "> " or "  "
-            lurek.render.print(prefix .. c.text, bx + 20, by + 50 + (i - 1) * 18)
+        for i, choice in ipairs(node.choices) do
+            local mark = i == (dialog.choice_index or 1) and "> " or "  "
+            lurek.render.print(mark .. choice.text, bx + 20, by + 50 + (i - 1) * 18)
         end
     end
 end
@@ -150,8 +124,5 @@ end
 
 ## Common Pitfalls
 
-- **Missing node ID** — always check `current_node()` for nil. A bad `next` pointer crashes the dialog.
-- **Conditions not filtered** — filter out choices whose `condition()` returns false before displaying.
-- **Typewriter speed tied to framerate** — use `dt`-based timing, not frame count.
-- **Dialog not blocking input** — while dialog is active, suppress game movement input (check `dialog.active`).
-- **on_complete never called** — ensure it fires when advancing past the final node, not just when choosing.
+- Validate node IDs and filter conditional choices before display.
+- Use `dt` for typewriter timing, block gameplay input while active, and fire completion after the final node.

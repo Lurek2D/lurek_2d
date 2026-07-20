@@ -22,7 +22,6 @@
 - Do not hide warnings with `.vscode/settings.json` or `---@diagnostic disable`.
 
 ## Workflow
-- Read the nearest nested content contract first.
 - Run only validators and smoke flows for the edited content type.
 - For examples, run `tools/python.cmd tools/audit/example_coverage.py --report --no-stubs --no-partials`; for games, use `tools/python.cmd tools/demos/audit_games.py` first and `tools/python.cmd tools/demos/gen_demo_catalog.py` only after the catalog metadata is current.
 - For layouts, run `tools/ui/fix_layouts.py` and `tools/ui/snap_to_grid.py`, then verify visual output.

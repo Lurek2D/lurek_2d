@@ -2,6 +2,7 @@
 name: review-tests
 description: "Load this skill when auditing and fixing Lua unit test coverage, structure, harness registration, and public API test gaps. Skip it for Rust-only internal tests or non-test code reviews."
 ---
+
 # review-tests
 
 ## Mission
@@ -14,54 +15,32 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
   - `golden`: compare current artifacts to stored baselines and fail on unacceptable drift
   - `integration`: markers should match the APIs actually exercised by each scenario
 
-## When To Load
-- Auditing and fixing Lua test coverage, structure, harness registration, and public API test gaps.
-
-## When To Skip
-- Rust-only internal tests or non-test code reviews.
-
 ## Domain Knowledge
-- Read root `AGENTS.md`, then every listed contract nearest to the reviewed path.
-- Run the listed RAG query and audit/report tools before broad manual inspection.
-- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
-- Produce findings first with severity, affected files, and evidence.
-- If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
-- Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
+- Test layers have distinct proof obligations: Lua unit owns each public API once, integration proves module boundaries, stress/security owns bounded or hostile families, evidence produces legible artifacts, golden compares reviewed baselines, and Rust targets private seams.
+- Coverage counts are ownership metadata, not execution proof. A marker can be exact while its block never runs, asserts defaults, or tests a helper instead of the named API.
+- Canonical module ownership prevents consumer-propagation scenarios from inflating producer coverage; render, physics, or serialization tests using a data module do not replace that module's own contract tests.
+- Harness registration, filter names, BDD grammar, marker adjacency/indentation, and final `test_summary()` are executable structure; each can fail independently of assertion quality.
+- Evidence rationale and artifact legibility, golden provenance, deterministic fixtures, and typed/epsilon assertions require semantic inspection beyond coverage audits.
+- Duplicate public API owners are defects because they divide the canonical contract; richer coverage belongs inside the one owner or in a correctly classified non-unit layer.
+- Mutation testing or deliberate assertion perturbation is especially valuable for blocks that only inspect types, non-nil handles, or default state; these tests can pass even when the named operation does nothing.
+- Float, randomized, frame-driven, and concurrent tests need an explicit stability strategy—epsilon, seed, bounded step count, deterministic scheduling seam, or release-only threshold—rather than repeated retries.
+- Test fixture ownership should mirror subsystem boundaries. Shared helpers may construct common context, but they must not perform the named operation or assertion invisibly because coverage then attributes behavior to the wrong block.
 
 ## Workflow
-- Run Lua API coverage and structure audits before reading many test files.
-- Start unit-suite status with `tools/python.cmd tools/audit/unit_test_api_coverage.py` and read these counts first: total Lua APIs, APIs with exactly one unit owner test, APIs with no Lua unit owner test, APIs duplicated across multiple unit `it()` blocks.
-- For non-unit suites, run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` and read these counts first: category totals, duplicate primary markers in `stress/security`, evidence file ownership and rationale compliance, and integration marker mismatches.
-- Compare audit output with `tests/lua/` canonical files and harness registration.
-- Compare Rust test file ownership with the module under test, and flag consumer propagation tests stored under a producer module.
-- Report missing `@covers`, structure issues, uncovered public APIs, duplicated API owners, stale evidence markers, and weak rationale blocks first.
-- Verify tool-enforced Lua structure before edits land: plain file header, `-- @describe` before `describe()`, folder-specific primary marker indented like `it()`, no legacy markers, and one final bare `test_summary()`.
-- Keep canonical unit ownership module-local: one `test_<module>_unit.lua` file per module, with `lurek.<module>.*` tests before userdata/object method coverage.
-- If edit-capable, fix tests and rerun coverage, structure audit, and `cargo test --test lua_tests`.
-- If read-only, hand off to `tester` with exact missing API coverage.
-- Finish by reporting changed files and validation evidence.
-
-## Success Criteria
-- Audit output was collected before fixes or handoff.
-- Findings are either fixed and revalidated, or handed off with an explicit owner profile and blocker.
-- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
-
-## Stop Conditions
-- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
-- A referenced owner path or tool is absent after checking the repository.
-- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
-
-## Companion File Index
-- Contracts: `AGENTS.md`, `tests/AGENTS.md`, `tests/lua/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/unit`, `cargo test --test lua_tests`
-- Owner profile: `tester`
-
-## Common RAG Queries
-- Start with: `Lua test coverage structure harness public API`, `Lua unit tests public API coverage`, `tests contract Lua API coverage harness`
-- Focus areas first: `tests/lua/unit/`, `tests/lua/`, `tests/`, `content/examples/`, `docs/specs/`
-- Append the target module, API path, or failing test file before broad reads
+- Run unit ownership, Lua structure, non-unit, and evidence/golden contract audits first; build a module-by-layer matrix of missing/exact/duplicate owners, registration, execution target, artifacts, and affected generated API names.
+- Inspect a risk-weighted sample plus every flagged block for assertion sensitivity, correct owner, boundary/error coverage, deterministic setup, cleanup, and category semantics; verify registered filters actually execute the file and that evidence/golden output proves its stated behavior.
+- Report structural metadata defects separately from weak assertions, missing behavior, misclassified layers, orphan targets, consumer-owned duplication, and stale baselines, always including the narrow command and expected result that would close the finding.
+- If editable, use the matching test-creation skill to consolidate or add canonical owners, rerun focused harness filters and all relevant audits, then `cargo test --test lua_tests` or exact Rust targets; otherwise hand off exact files/APIs/artifacts to `tester`.
+- Reconcile every Lua unit API name against the generated inventory and inspect duplicate owners before missing owners, because consolidating duplicates may reveal the correct canonical block without adding new tests.
+- Run representative filters from each non-unit category and confirm harness output names the expected file/describe/it, catching registered-but-unfilterable suites and filters that accidentally execute a different owner.
+- Trace shared fixtures and helper calls used by flagged tests, identifying hidden assertions, state mutation, ambient globals, artifact paths, and cleanup that can make tests pass in suite order but fail alone.
+- Review negative-path sensitivity by changing one input across a valid boundary or forcing one callback/error path; ensure the test fails on the intended assertion and leaves later cases clean.
+- For evidence, open artifacts and compare rationale to visible content; for golden, verify baseline provenance and current-output generation; for stress/security, confirm declared ceilings or hostile families rather than merely large input counts.
+- For Rust targets, match every file to `Cargo.toml`, check public-Lua duplication, and separate deterministic unit/golden seams from device/runtime extension tests that require different execution conditions.
+- After fixes, run isolated block, module/category suite, full Lua/Rust target, and structure/coverage/artifact audits in increasing breadth, recording residual flaky or environment-bound cases separately from contract gaps.
 
 ## References
 - `contracts: AGENTS.md, tests/AGENTS.md, tests/lua/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10, tools/python.cmd tools/audit/unit_test_api_coverage.py, tools/python.cmd tools/audit/lua_nonunit_test_coverage.py, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/unit, cargo test --test lua_tests`
 - `agent: tester`
+- RAG: Start with: `Lua test coverage structure harness public API`, `Lua unit tests public API coverage`, `tests contract Lua API coverage harness`; Focus areas first: `tests/lua/unit/`, `tests/lua/`, `tests/`, `content/examples/`, `docs/specs/`; Append the target module, API path, or failing test file before broad reads
