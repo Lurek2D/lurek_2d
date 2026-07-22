@@ -26883,13 +26883,13 @@
         "module": "ui",
         "name": "GuiContext::build_render_commands",
         "file": "src/ui/render.rs",
-        "line": 2065
+        "line": 2066
       },
       {
         "module": "ui",
         "name": "GuiContext::generate_render_commands",
         "file": "src/ui/render.rs",
-        "line": 2071
+        "line": 2072
       },
       {
         "module": "ui",
@@ -45497,7 +45497,7 @@
         "module": "ui",
         "name": "GuiContext::focus_direction",
         "file": "src/ui/context/focus.rs",
-        "line": 210
+        "line": 214
       },
       {
         "module": "ui",
@@ -45509,19 +45509,19 @@
         "module": "ui",
         "name": "GuiContext::ensure_input_layout",
         "file": "src/ui/context/geometry.rs",
-        "line": 23
+        "line": 32
       },
       {
         "module": "ui",
         "name": "GuiContext::widget_rect",
         "file": "src/ui/context/geometry.rs",
-        "line": 55
+        "line": 64
       },
       {
         "module": "ui",
         "name": "GuiContext::property_group_header_at",
         "file": "src/ui/context/geometry.rs",
-        "line": 65
+        "line": 74
       },
       {
         "module": "ui",
@@ -46157,7 +46157,7 @@
         "module": "ui",
         "name": "GuiContext::build_render_commands_with_fonts",
         "file": "src/ui/render.rs",
-        "line": 2048
+        "line": 2049
       },
       {
         "module": "ui",

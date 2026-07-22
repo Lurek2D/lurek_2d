@@ -1711,3 +1711,63 @@ fn ui_limits_reject_oversized_image_dimensions() {
     assert!(limits.validate_image_dimensions(4097, 1).is_err());
     assert!(limits.validate_image_dimensions(4096, 4096).is_ok());
 }
+
+#[test]
+fn ui_limits_bound_widget_and_child_growth() {
+    let mut ctx = GuiContext::new();
+    let mut limits = lurek2d::ui::UiLimits::default();
+    limits.max_live_widgets = 4;
+    limits.max_children_per_widget = 1;
+    ctx.set_limits(limits);
+
+    let parent = ctx.add_panel();
+    let first_child = ctx.add_button("first");
+    let second_child = ctx.add_button("second");
+    assert!(ctx.add_child(0, parent));
+    assert!(ctx.add_child(parent, first_child));
+    assert!(!ctx.add_child(parent, second_child));
+    assert_eq!(ctx.add_button("over limit"), usize::MAX);
+    assert_eq!(ctx.widget_count(), 4);
+}
+
+#[test]
+fn randomized_handle_lifecycle_never_resolves_dead_identity() {
+    let mut ctx = GuiContext::new();
+    let mut handles = Vec::new();
+
+    for step in 0..512usize {
+        match step % 8 {
+            0 | 1 => {
+                let idx = ctx.add_button(format!("button-{step}"));
+                handles.push(ctx.widget_id(idx).expect("created widget handle"));
+            }
+            2 => {
+                if let Some(handle) = handles.get(step / 8).copied() {
+                    if let Ok(idx) = ctx.resolve_widget_id(handle) {
+                        let _ = ctx.destroy_widget(idx, false);
+                    }
+                }
+            }
+            3 => {
+                for handle in &handles {
+                    if let Ok(idx) = ctx.resolve_widget_id(*handle) {
+                        assert!(ctx.widget_is_live(idx));
+                    }
+                }
+            }
+            4 => {
+                ctx.clear();
+                assert!(handles
+                    .iter()
+                    .all(|handle| ctx.resolve_widget_id(*handle).is_err()));
+            }
+            5..=7 => {
+                let idx = ctx.add_label(format!("label-{step}"));
+                if idx != usize::MAX {
+                    assert!(ctx.widget_is_live(idx));
+                }
+            }
+            _ => unreachable!(),
+        }
+    }
+}

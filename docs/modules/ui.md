@@ -3799,7 +3799,7 @@ lurek.ui.visibleRange(widget, item_count, item_height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | table | Widget table with _idx field. |
+| `widget` | table | Live widget table carrying an engine-owned handle. |
 | `item_count` | number | Total number of items. |
 | `item_height` | number | Height of each item in pixels. |
 
@@ -13946,7 +13946,7 @@ LUiWidget:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LUiWidget](#luiwidget)|number | The child widget table or widget index to add. |
+| `child` | [LUiWidget](#luiwidget) | The live child widget table to add. |
 
 **Example**
 
@@ -15341,7 +15341,7 @@ LUiWidget:removeChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LUiWidget](#luiwidget)|number | The child widget table or widget index to remove. |
+| `child` | [LUiWidget](#luiwidget) | The live child widget table to remove. |
 
 **Example**
 

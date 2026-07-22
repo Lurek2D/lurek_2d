@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-20",
+  "generated": "2026-07-22",
   "modules": [
     {
       "name": "agent",
@@ -34942,7 +34942,7 @@
             {
               "name": "widget",
               "type": "table",
-              "description": "Widget table with _idx field.",
+              "description": "Live widget table carrying an engine-owned handle.",
               "optional": false
             },
             {
@@ -35020,7 +35020,7 @@
         {
           "name": "animateRotation",
           "fullPath": "lurek.ui.animateRotation",
-          "signature": "(widget, from, to, duration, [easing])",
+          "signature": "lurek.ui.animateRotation(widget, from, to, duration, [easing])",
           "description": "Animate widget rotation from one angle to another (in radians).",
           "parameters": [
             {
@@ -39041,8 +39041,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -39059,8 +39059,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -45104,8 +45104,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -45122,8 +45122,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -47635,8 +47635,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -47653,8 +47653,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -53931,8 +53931,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -53949,8 +53949,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -58783,8 +58783,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -58801,8 +58801,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -61477,8 +61477,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -61495,8 +61495,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -63377,8 +63377,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -63395,8 +63395,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -70555,8 +70555,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -70573,8 +70573,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -73438,8 +73438,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -73456,8 +73456,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -77296,8 +77296,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -77314,8 +77314,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -85609,8 +85609,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -85627,8 +85627,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -87383,8 +87383,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -87401,8 +87401,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -91838,8 +91838,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -91856,8 +91856,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -93791,8 +93791,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -93809,8 +93809,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -96731,8 +96731,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -96749,8 +96749,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -98371,8 +98371,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -98389,8 +98389,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -100869,8 +100869,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -100887,8 +100887,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -105057,8 +105057,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -105075,8 +105075,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -108655,8 +108655,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -108673,8 +108673,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -110429,8 +110429,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -110447,8 +110447,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -118388,8 +118388,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -118406,8 +118406,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -123524,8 +123524,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -123542,8 +123542,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -131458,8 +131458,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -131476,8 +131476,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -137133,8 +137133,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -137151,8 +137151,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -141540,8 +141540,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -141558,8 +141558,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -145905,8 +145905,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -145923,8 +145923,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -150445,8 +150445,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -150463,8 +150463,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -152177,8 +152177,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -152195,8 +152195,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -154026,8 +154026,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -154044,8 +154044,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -157852,8 +157852,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -157870,8 +157870,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -160272,8 +160272,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -160290,8 +160290,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -162455,8 +162455,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -162473,8 +162473,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -164240,8 +164240,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -164258,8 +164258,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -168333,8 +168333,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -168351,8 +168351,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -170357,8 +170357,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -170375,8 +170375,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -173886,8 +173886,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -173904,8 +173904,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -175734,8 +175734,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -175752,8 +175752,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -177461,8 +177461,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -177479,8 +177479,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -180441,8 +180441,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -180459,8 +180459,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -182208,8 +182208,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -182226,8 +182226,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -189918,8 +189918,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -189936,8 +189936,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -191724,8 +191724,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -191742,8 +191742,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -193451,8 +193451,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -193469,8 +193469,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -196532,8 +196532,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -196550,8 +196550,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],
@@ -199718,8 +199718,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to add.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to add.",
               "optional": false
             }
           ],
@@ -199736,8 +199736,8 @@
           "parameters": [
             {
               "name": "child",
-              "type": "LUiWidget|integer",
-              "description": "The child widget table or widget index to remove.",
+              "type": "LUiWidget",
+              "description": "The live child widget table to remove.",
               "optional": false
             }
           ],

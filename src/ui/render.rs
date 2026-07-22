@@ -871,6 +871,7 @@ fn render_widget(
     );
 }
 
+#[allow(clippy::too_many_arguments)]
 fn render_widget_inner(
     ctx: &GuiContext,
     idx: usize,

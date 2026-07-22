@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-22T20:36:14.682788+00:00",
+    "generated": "2026-07-22T20:32:39.139001+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -161835,8 +161835,8 @@
             "kind": "function",
             "owner_type": "",
             "description": "Calculate the visible item range for a scrollable list widget.",
-            "full_doc": "Calculate the visible item range for a scrollable list widget.\n@param | widget | table | Widget table with _idx field.\n@param | item_count | integer | Total number of items.\n@param | item_height | number | Height of each item in pixels.\n@return | integer | Start index (0-based).\n@return | integer | End index (exclusive).",
-            "params_doc": "- `widget` â€” `table`: Widget table with _idx field.\n- `item_count` â€” `integer`: Total number of items.\n- `item_height` â€” `number`: Height of each item in pixels.",
+            "full_doc": "Calculate the visible item range for a scrollable list widget.\n@param | widget | table | Live widget table carrying an engine-owned handle.\n@param | item_count | integer | Total number of items.\n@param | item_height | number | Height of each item in pixels.\n@return | integer | Start index (0-based).\n@return | integer | End index (exclusive).",
+            "params_doc": "- `widget` â€” `table`: Live widget table carrying an engine-owned handle.\n- `item_count` â€” `integer`: Total number of items.\n- `item_height` â€” `number`: Height of each item in pixels.",
             "returns_doc": "integer",
             "inferred_sig": "(widget, item_count, item_height)",
             "typed_params": [
@@ -161844,7 +161844,7 @@
                 "widget",
                 "table",
                 false,
-                "Widget table with _idx field."
+                "Live widget table carrying an engine-owned handle."
               ],
               [
                 "item_count",
@@ -163827,16 +163827,16 @@
                 "kind": "method",
                 "owner_type": "LUiWidget",
                 "description": "Adds a child widget to this widget's hierarchy.",
-                "full_doc": "Adds a child widget to this widget's hierarchy.\n@param | self | LUiWidget | The widget instance.\n@param | child | LUiWidget|integer | The child widget table or widget index to add.",
-                "params_doc": "- `child` â€” `LUiWidget|integer`: The child widget table or widget index to add.",
+                "full_doc": "Adds a child widget to this widget's hierarchy.\n@param | self | LUiWidget | The widget instance.\n@param | child | LUiWidget | The live child widget table to add.",
+                "params_doc": "- `child` â€” `LUiWidget`: The live child widget table to add.",
                 "returns_doc": "",
                 "inferred_sig": "(child)",
                 "typed_params": [
                   [
                     "child",
-                    "LUiWidget|integer",
+                    "LUiWidget",
                     false,
-                    "The child widget table or widget index to add."
+                    "The live child widget table to add."
                   ]
                 ],
                 "inferred_return": "",
@@ -163850,16 +163850,16 @@
                 "kind": "method",
                 "owner_type": "LUiWidget",
                 "description": "Removes a child widget from this widget's hierarchy.",
-                "full_doc": "Removes a child widget from this widget's hierarchy.\n@param | self | LUiWidget | The widget instance.\n@param | child | LUiWidget|integer | The child widget table or widget index to remove.",
-                "params_doc": "- `child` â€” `LUiWidget|integer`: The child widget table or widget index to remove.",
+                "full_doc": "Removes a child widget from this widget's hierarchy.\n@param | self | LUiWidget | The widget instance.\n@param | child | LUiWidget | The live child widget table to remove.",
+                "params_doc": "- `child` â€” `LUiWidget`: The live child widget table to remove.",
                 "returns_doc": "",
                 "inferred_sig": "(child)",
                 "typed_params": [
                   [
                     "child",
-                    "LUiWidget|integer",
+                    "LUiWidget",
                     false,
-                    "The child widget table or widget index to remove."
+                    "The live child widget table to remove."
                   ]
                 ],
                 "inferred_return": "",

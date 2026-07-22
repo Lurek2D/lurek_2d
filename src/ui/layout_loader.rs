@@ -329,8 +329,8 @@ fn validate_layout_def(root: &WidgetDef, limits: &crate::ui::UiLimits) -> Result
             }
         }
         for (name, values) in [
-            ("items", def.items.as_ref().map(Vec::as_slice)),
-            ("tabs", def.tabs.as_ref().map(Vec::as_slice)),
+            ("items", def.items.as_deref()),
+            ("tabs", def.tabs.as_deref()),
         ] {
             if let Some(values) = values {
                 if values.len() > limits.max_collection_items {
@@ -790,7 +790,7 @@ static NEXT_OUTPUT_TEMP: AtomicU64 = AtomicU64::new(1);
 
 fn write_bytes_atomically(path: &Path, bytes: &[u8]) -> Result<(), String> {
     let parent = path.parent().unwrap_or_else(|| Path::new("."));
-    if let Some(parent_canonical) = parent.canonicalize().ok() {
+    if let Ok(parent_canonical) = parent.canonicalize() {
         if !parent_canonical
             .starts_with(std::env::current_dir().map_err(|e| format!("render_to_image: {e}"))?)
         {

@@ -1829,12 +1829,14 @@ end)
 -- @describe ui extended animations
 describe("ui extended animations", function()
     -- @covers lurek.ui.animateScale
-    it("starts scale animation on valid widgets and rejects invalid indices", function()
+    it("starts scale animation on valid widgets and rejects forged handles", function()
         local panel = lurek.ui.newPanel()
         local result = lurek.ui.animateScale(panel, 1.0, 1.0, 2.0, 2.0, 0.5, "cubic_out")
         expect_true(result, "animateScale should return true for valid widget")
-        local invalid = lurek.ui.animateScale(99999, 1.0, 1.0, 2.0, 2.0, 0.5)
-        expect_equal(false, invalid)
+        local ok = pcall(function()
+            lurek.ui.animateScale({ _idx = 99999 }, 1.0, 1.0, 2.0, 2.0, 0.5)
+        end)
+        expect_false(ok, "forged widget tables should be rejected")
     end)
 
     -- @covers lurek.ui.animateRotation

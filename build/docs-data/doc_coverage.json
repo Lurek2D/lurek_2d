@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22T20:36:54.534048+00:00",
+  "generated_at": "2026-07-22T20:33:14.835993+00:00",
   "summary": {
     "rust": {
       "total": 9987,
@@ -85761,7 +85761,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/focus.rs",
-      "line": 210,
+      "line": 214,
       "kind": "fn",
       "name": "focus_direction",
       "has_doc": true
@@ -85779,7 +85779,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/geometry.rs",
-      "line": 23,
+      "line": 32,
       "kind": "fn",
       "name": "ensure_input_layout",
       "has_doc": true
@@ -85788,7 +85788,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/geometry.rs",
-      "line": 55,
+      "line": 64,
       "kind": "fn",
       "name": "widget_rect",
       "has_doc": true
@@ -85797,7 +85797,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/context/geometry.rs",
-      "line": 65,
+      "line": 74,
       "kind": "fn",
       "name": "property_group_header_at",
       "has_doc": true
@@ -88542,7 +88542,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/render.rs",
-      "line": 2048,
+      "line": 2049,
       "kind": "fn",
       "name": "build_render_commands_with_fonts",
       "has_doc": true
@@ -88551,7 +88551,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/render.rs",
-      "line": 2065,
+      "line": 2066,
       "kind": "fn",
       "name": "build_render_commands",
       "has_doc": true
@@ -88560,7 +88560,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/render.rs",
-      "line": 2071,
+      "line": 2072,
       "kind": "fn",
       "name": "generate_render_commands",
       "has_doc": true

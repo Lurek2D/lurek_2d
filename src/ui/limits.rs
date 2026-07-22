@@ -85,7 +85,7 @@ impl UiLimits {
     /// Normalize a frame delta to a finite, bounded value.
     pub fn normalized_dt(&self, dt: f32) -> f32 {
         if dt.is_finite() {
-            dt.max(0.0).min(0.25)
+            dt.clamp(0.0, 0.25)
         } else {
             0.0
         }

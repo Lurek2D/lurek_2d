@@ -1284,7 +1284,7 @@ fn create_widget_table<'a>(
     // -- addChild --
     /// Adds a child widget to this widget's hierarchy.
     /// @param | self | LUiWidget | The widget instance.
-    /// @param | child | LUiWidget|integer | The child widget table or widget index to add.
+    /// @param | child | LUiWidget | The live child widget table to add.
     t.set(
         "addChild",
         lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
@@ -1298,7 +1298,7 @@ fn create_widget_table<'a>(
     // -- removeChild --
     /// Removes a child widget from this widget's hierarchy.
     /// @param | self | LUiWidget | The widget instance.
-    /// @param | child | LUiWidget|integer | The child widget table or widget index to remove.
+    /// @param | child | LUiWidget | The live child widget table to remove.
     t.set(
         "removeChild",
         lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
@@ -9020,7 +9020,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- visibleRange --
     /// Calculate the visible item range for a scrollable list widget.
-    /// @param | widget | table | Widget table with _idx field.
+    /// @param | widget | table | Live widget table carrying an engine-owned handle.
     /// @param | item_count | integer | Total number of items.
     /// @param | item_height | number | Height of each item in pixels.
     /// @return | integer | Start index (0-based).

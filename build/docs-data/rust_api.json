@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-22T20:36:11.377648+00:00",
+    "generated": "2026-07-22T20:32:35.009595+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {

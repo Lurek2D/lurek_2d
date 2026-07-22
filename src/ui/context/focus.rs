@@ -198,7 +198,11 @@ impl GuiContext {
 
             // Score: lower is better (closer + more aligned)
             let score = dist / dot;
-            if best.is_none() || score < best.unwrap().1 {
+            let improves_best = match best {
+                None => true,
+                Some((_, best_score)) => score < best_score,
+            };
+            if improves_best {
                 best = Some((idx, score));
             }
         }

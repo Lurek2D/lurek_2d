@@ -8,6 +8,15 @@ use super::*;
 impl GuiContext {
     /// Updates viewport resolution state and marks layout data dirty.
     pub fn update_resolution(&mut self, width: f32, height: f32) {
+        if !width.is_finite()
+            || !height.is_finite()
+            || width <= 0.0
+            || height <= 0.0
+            || width > self.limits.max_image_width as f32
+            || height > self.limits.max_image_height as f32
+        {
+            return;
+        }
         self.viewport_w = width;
         self.viewport_h = height;
         self.scale_factor = if self.base_resolution.1 > 0.0 {

@@ -37120,7 +37120,7 @@ function LTreeView:setSelectedNode(index) end
 function LTreeView:toggleNode(index) end
 
 --- Adds a child widget to this widget's hierarchy.
----@param child LUiWidget|number The child widget table or widget index to add.
+---@param child LUiWidget The live child widget table to add.
 function LUiWidget:addChild(child) end
 
 --- Smoothly animates this widget's opacity toward a target value over the given duration.
@@ -37321,7 +37321,7 @@ function LUiWidget:isValid() end
 function LUiWidget:isVisible() end
 
 --- Removes a child widget from this widget's hierarchy.
----@param child LUiWidget|number The child widget table or widget index to remove.
+---@param child LUiWidget The live child widget table to remove.
 function LUiWidget:removeChild(child) end
 
 --- Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
@@ -38092,7 +38092,7 @@ lurek.ui.update_bindings = function(data) end
 lurek.ui.validateUx = function() end
 
 --- Calculate the visible item range for a scrollable list widget.
----@param widget table Widget table with _idx field.
+---@param widget table Live widget table carrying an engine-owned handle.
 ---@param item_count number Total number of items.
 ---@param item_height number Height of each item in pixels.
 ---@return number Start index (0-based).
