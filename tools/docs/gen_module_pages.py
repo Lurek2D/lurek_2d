@@ -29,7 +29,12 @@ MODULE_GUIDES_MD = ROOT / "docs" / "module-guides.md"
 
 def api_module_name(module: str) -> str:
     """Return the public `lurek.<name>` module name for Pages output."""
-    namespace = module_registry.module_namespace(module)
+    try:
+        namespace = module_registry.module_namespace(module)
+    except KeyError:
+        # Generated API data can already use the public namespace key even
+        # though the registry is keyed by source module names.
+        return module
     if namespace.startswith("lurek."):
         return namespace.split(".", 1)[1]
     return module
@@ -486,7 +491,12 @@ def load_module_classes() -> dict[str, list[str]]:
     for module_name, module_data in modules.items():
         classes = sorted((module_data.get("classes") or {}).keys())
         if classes:
-            out[module_name] = classes
+            # API data is keyed by Rust/source module names, while Pages
+            # routes follow the public Lua namespace (for example,
+            # ``flownet`` is published as ``graph``). Keep ownership and
+            # local type links on the public route so generated Markdown
+            # never points at a non-existent source-module page.
+            out[api_module_name(module_name)] = classes
     return out
 
 
@@ -802,7 +812,7 @@ def main():
     class_owner: dict[str, str] = {}
     for mod_name, classes in module_classes.items():
         for cls in classes:
-            class_owner[cls] = mod_name
+            class_owner[cls] = api_module_name(mod_name)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 

@@ -93,7 +93,6 @@ def check_module_pages_indexed(errors: list[str]) -> None:
         "getting-started.md",
         "first-game.md",
         "project-structure.md",
-        "lua-api.md",
         "examples.md",
         "reference-games.md",
         "recipes.md",

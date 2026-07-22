@@ -13,7 +13,6 @@ exclude_docs: |
   getting-started.md
   first-game.md
   project-structure.md
-  lua-api.md
   examples.md
   reference-games.md
   recipes.md
@@ -95,6 +94,7 @@ extra:
       link: https://github.com/Lurek2D/lurek_2d
 
 nav:
+  - Lua API Overview: lua-api.md
   - Module API Specs:
     - Overview: module-guides.md
     - Agent: modules/agent.md

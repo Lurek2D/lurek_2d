@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-07-20T18:16:00.382254+00:00",
+    "generated": "2026-07-22T20:36:11.377648+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
@@ -26868,21 +26868,21 @@
             "kind": "struct",
             "description": "Bounded event queue used at the Lua/UI boundary.",
             "file": "src/ui/context.rs",
-            "line": 149
+            "line": 146
           },
           {
             "name": "WidgetKind",
             "kind": "enum",
             "description": "Discriminated union of all concrete widget types stored in the flat `GuiContext::widgets` list.",
             "file": "src/ui/context.rs",
-            "line": 232
+            "line": 222
           },
           {
             "name": "GuiContext",
             "kind": "struct",
             "description": "Retained-mode GUI context owning all widgets, focus state, animations, drag state, and event queue.",
             "file": "src/ui/context.rs",
-            "line": 472
+            "line": 462
           }
         ]
       },
@@ -27346,35 +27346,35 @@
             "kind": "fn",
             "description": "Parse `toml_src` into a `LayoutDef` and load it into `ctx`; return the root widget index or an error string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 705
+            "line": 702
           },
           {
             "name": "load_layout_def_attached",
             "kind": "fn",
             "description": "Load a layout and attach its root to the UI root as one transaction.",
             "file": "src/ui/layout_loader.rs",
-            "line": 718
+            "line": 715
           },
           {
             "name": "load_layout_toml_attached",
             "kind": "fn",
             "description": "Parse, load, and attach a TOML layout as one transaction.",
             "file": "src/ui/layout_loader.rs",
-            "line": 734
+            "line": 731
           },
           {
             "name": "render_to_image_bytes",
             "kind": "fn",
             "description": "Rasterise the UI to bounded PNG bytes without touching the host filesystem.",
             "file": "src/ui/layout_loader.rs",
-            "line": 749
+            "line": 746
           },
           {
             "name": "render_to_image",
             "kind": "fn",
             "description": "Run the engine UI rasteriser on `ctx` at the given resolution and atomically save the PNG to a safe relative path.",
             "file": "src/ui/layout_loader.rs",
-            "line": 769
+            "line": 766
           }
         ]
       },

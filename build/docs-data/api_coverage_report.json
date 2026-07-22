@@ -1,12 +1,8 @@
 {
   "total_apis": 7076,
-  "covered": 7073,
-  "missing": 3,
-  "missing_apis": [
-    "LUiWidget:destroy",
-    "LUiWidget:isValid",
-    "lurek.ui.destroy"
-  ],
+  "covered": 7076,
+  "missing": 0,
+  "missing_apis": [],
   "duplicate": 0,
   "duplicate_apis": [],
   "stub_counts": {
@@ -5144,6 +5140,7 @@
     "LUiWidget:clearFont": 1,
     "LUiWidget:clearIcon": 1,
     "LUiWidget:containsPoint": 1,
+    "LUiWidget:destroy": 1,
     "LUiWidget:detachFromEntity": 1,
     "LUiWidget:fadeIn": 1,
     "LUiWidget:fadeOut": 1,
@@ -5179,6 +5176,7 @@
     "LUiWidget:isDragEnabled": 1,
     "LUiWidget:isDropEnabled": 1,
     "LUiWidget:isEnabled": 1,
+    "LUiWidget:isValid": 1,
     "LUiWidget:isVisible": 1,
     "LUiWidget:removeChild": 1,
     "LUiWidget:setAlign": 1,
@@ -7357,6 +7355,7 @@
     "lurek.ui.clear": 1,
     "lurek.ui.clearFocus": 1,
     "lurek.ui.clearFont": 1,
+    "lurek.ui.destroy": 1,
     "lurek.ui.draw": 1,
     "lurek.ui.drawToImage": 1,
     "lurek.ui.dropOn": 1,

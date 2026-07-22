@@ -334,6 +334,15 @@ lurek.ui.destroy(widget, recursive)
 |------|-------------|
 | number | Number of widgets invalidated by the destruction. |
 
+**Example**
+
+```lua
+do
+    local widget = lurek.ui.newButton("Destroy me")
+    lurek.ui.destroy(widget)
+end
+```
+
 ---
 
 ### `lurek.ui.draw`
@@ -14260,6 +14269,15 @@ LUiWidget:destroy(recursive)
 |------|-------------|
 | number | Number of widgets invalidated by the destruction. |
 
+**Example**
+
+```lua
+do
+    local widget = lurek.ui.newButton("Destroy me")
+    widget:destroy()
+end
+```
+
 ---
 
 #### `LUiWidget:detachFromEntity`
@@ -15269,6 +15287,15 @@ LUiWidget:isValid()
 | Type | Description |
 |------|-------------|
 | boolean | False after destroy or clear, or when used with a different context. |
+
+**Example**
+
+```lua
+do
+    local widget = lurek.ui.newButton("Lifecycle")
+    lurek.log.info(tostring("live=" .. tostring(widget:isValid())))
+end
+```
 
 ---
 
