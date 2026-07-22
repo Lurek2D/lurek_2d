@@ -6,7 +6,7 @@ description: "Load this skill when creating or modifying TOML UI layouts under c
 # create-layout
 
 ## Mission
-- Create or modify layout assets that follow current content rules and visual evidence expectations.
+- Cr eate or modify layout assets that follow current content rules and visual evidence expectations.
 
 ## Domain Knowledge
 - Layout TOML under `content/layouts/apps` and `content/layouts/games` is deserialized by the engine UI system; valid TOML can still fail when keys or hierarchies are unsupported.
