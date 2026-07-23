@@ -36,7 +36,7 @@ Lurek is not mobile-first, web-first, 3D-first, or editor-first. It does not cen
 
 | Step | Link | Purpose |
 |---|---|---|
-| 1 | [GitHub Pages documentation](https://lurek2d.github.io/lurek_2d/) | Official public docs entry point. |
+| 1 | [GitHub Pages documentation](https://lurek2d.github.io/lurek_2d_pages/) | Official public docs entry point. |
 | 2 | [Getting Started](https://lurek2d.github.io/lurek_2d/getting-started.html) | First commands and project shape. |
 | 3 | [First Game](https://lurek2d.github.io/lurek_2d/first-game.html) | Minimal `main.lua` with update and draw callbacks. |
 | 4 | [Lua API Overview](https://lurek2d.github.io/lurek_2d/lua-api.html) | How to read and use the generated `lurek.*` API. |
@@ -51,7 +51,7 @@ Lurek is not mobile-first, web-first, 3D-first, or editor-first. It does not cen
 | Lua stubs | [docs/api/lurek.lua](docs/api/lurek.lua) | Generated LuaCATS/EmmyLua declarations for editor tooling and agents. |
 | Module guides | [docs/modules/](docs/modules/) | Generated module pages combining purpose, examples, and API details. |
 | Examples | [content/examples/README.md](content/examples/README.md) | Runnable one-file examples for public API coverage. |
-| Reference games | [content/games/README.md](content/games/README.md) | Larger playable demos and catalog candidates. |
+| Reference games | [`lurek_2d_games`](lurek_2d_games/README.md) | Larger playable demos and catalog candidates in a nested repository. |
 | Wiki | [docs/wiki/Home.md](docs/wiki/Home.md) | Generated cookbook/onboarding/FAQ-style material, not the API source of truth. |
 | Architecture | [docs/architecture/](docs/architecture/) | Contributor-facing design, positioning, boundaries, and durable decisions. |
 | Specs | [docs/specs/README.md](docs/specs/README.md) | Contributor-facing generated module contracts and technical source of truth. |
@@ -70,7 +70,7 @@ For VS Code and Lua language servers, point workspace library settings at `docs/
 ## Examples And Reference Games
 
 - [Examples guide](content/examples/README.md) explains the one-file examples under `content/examples/`.
-- [Reference game catalog](content/games/README.md) lists complete playable projects under `content/games/`.
+- [Reference game catalog](lurek_2d_games/README.md) lists complete playable projects under `lurek_2d_games/games/`.
 - Pages also includes [Examples](https://lurek2d.github.io/lurek_2d/examples.html) and [Reference Games](https://lurek2d.github.io/lurek_2d/reference-games.html) indexes.
 
 ## For Contributors
@@ -88,7 +88,7 @@ Generated outputs should not be edited by hand. Update source doc comments, spec
 
 ## Development Status
 
-Lurek2D is an active Lua/Rust runtime project. The repository contains the Rust engine, generated API docs, examples, reference games, Lua libraries, tests, VS Code tooling, and CAG guidance for AI-assisted workflows.
+Lurek2D is an active Lua/Rust runtime project. This repository contains the Rust engine, source documentation, examples, tests, VS Code tooling, and CAG guidance. The published site, playable games, and Lua libraries are nested sibling repositories: `lurek_2d_pages/`, `lurek_2d_games/`, and `lurek_2d_libraries/`.
 
 ---
 

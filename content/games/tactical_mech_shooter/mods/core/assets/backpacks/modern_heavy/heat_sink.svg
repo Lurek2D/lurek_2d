@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
-<title>heat_sink</title><desc>Top-down pixel-art backpack on a transparent background: a layered blue radiator with six pale cyan fins, dark coolant pipes, orange heat warning lights, and a compact rear manifold; repeated fins make cooling function obvious.</desc>
-<metadata data-authoring="individual" data-source="mods/core/races/modern_heavy/backpacks.toml"/><rect x="18" y="15" width="28" height="37" fill="#141b25"/><rect x="22" y="19" width="20" height="29" fill="#465d72"/><rect x="27" y="21" width="10" height="21" fill="#9ae8ff"/><rect x="24" y="50" width="16" height="5" fill="#e3b451"/><circle cx="38" cy="35" r="1" fill="#e3b451" opacity="1"/></svg>

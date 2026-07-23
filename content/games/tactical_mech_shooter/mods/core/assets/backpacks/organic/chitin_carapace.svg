@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
-<title>chitin_carapace</title><desc>Top-down pixel-art organic backpack on a transparent background: overlapping green-brown chitin plates, pink growth seams, two small breathing pores, and glossy lime highlights; irregular shell edges make it look grown rather than manufactured.</desc>
-<metadata data-authoring="individual" data-source="mods/core/races/organic/backpacks.toml"/><ellipse cx="32" cy="32" rx="22" ry="25" fill="#1d3022"/><ellipse cx="32" cy="29" rx="17" ry="19" fill="#4e9744"/><circle cx="32" cy="27" r="7" fill="#9ed153" opacity="1"/><circle cx="32" cy="27" r="3" fill="#e1ff80" opacity="1"/><circle cx="22" cy="39" r="3" fill="#df735b" opacity="1"/><circle cx="42" cy="39" r="3" fill="#df735b" opacity="1"/><circle cx="35" cy="37" r="1" fill="#df735b" opacity="1"/></svg>

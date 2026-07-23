@@ -1,7 +1,0 @@
-# Modern mechanical race family for the tactical mech shooter.
-[race]
-id = "modern_light"
-name = "Modern Light"
-description = "Top-down pixel-art faction icon on a transparent background: a compact blue-gray personnel mech with a bright cyan visor, slim shoulders, two articulated arms, and a small amber status light; crisp 1-pixel dark outlines and restrained steel-blue highlights make the light infantry silhouette readable at 64px."
-flags = ["modern", "modern_light", "mechanical", "personnel"]
-icon = "mods/core/assets/races/modern_light.png"

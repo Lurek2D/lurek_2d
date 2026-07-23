@@ -1,7 +1,0 @@
-SELECT
-    category_clean,
-    SUM(expense_amount),
-    COUNT(*)
-FROM filtered_transactions
-WHERE expense_amount > 0
-GROUP BY category_clean

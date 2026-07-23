@@ -1,7 +1,0 @@
-# Modern mechanical race family for the tactical mech shooter.
-[race]
-id = "modern_heavy"
-name = "Modern Heavy"
-description = "Top-down pixel-art faction icon on a transparent background: a broad dark-slate armored vehicle with a rectangular gold command window, thick side armor, a low turret block, and two heavy track shapes; chunky 1-pixel outlines and blue-gray highlights communicate mass at 64px."
-flags = ["modern", "modern_heavy", "mechanical", "vehicle"]
-icon = "mods/core/assets/races/modern_heavy.png"

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
-<title>none</title><desc>Top-down pixel-art empty-mount icon on a transparent background: no solid backpack body, only two small dark mounting brackets and a faint gray connector plate; leave most pixels transparent so the absence of equipment is obvious.</desc>
-<metadata data-authoring="individual" data-source="mods/core/races/modern_light/backpacks.toml"/><rect x="18" y="29" width="28" height="7" fill="#101a29"/><rect x="25" y="31" width="14" height="2" fill="#63a9d1"/><circle cx="32" cy="45" r="1" fill="#e4a542" opacity="1"/><circle cx="29" cy="37" r="2" fill="#e4a542" opacity="1"/><circle cx="26" cy="42" r="1" fill="#e4a542" opacity="1"/><circle cx="40" cy="34" r="2" fill="#e4a542" opacity="1"/></svg>

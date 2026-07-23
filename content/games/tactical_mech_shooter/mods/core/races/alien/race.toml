@@ -1,7 +1,0 @@
-# Alien battlefield family for advanced non-human technology.
-[race]
-id = "alien"
-name = "Alien"
-description = "Top-down pixel-art faction icon on a transparent background: an angular violet and cyan off-world machine with a central glowing cross-shaped reactor, four sharp fins, and a dark geometric shell; high-contrast neon accents and 1-pixel outlines make the alien silhouette readable at 64px."
-flags = ["alien", "advanced_tech", "nonhuman"]
-icon = "mods/core/assets/races/alien.png"

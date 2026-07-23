@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
-<title>alien</title><desc>Top-down pixel-art faction icon on a transparent background: an angular violet and cyan off-world machine with a central glowing cross-shaped reactor, four sharp fins, and a dark geometric shell; high-contrast neon accents and 1-pixel outlines make the alien silhouette readable at 64px.</desc>
-<metadata data-authoring="individual" data-source="mods/core/races/alien/race.toml"/><circle cx="32" cy="32" r="28" fill="#211735" opacity="1"/><polygon points="32,10 54,32 32,54 10,32" fill="#7544ae"/><polygon points="32,16 48,32 32,48 16,32" fill="#54d5ca"/><rect x="28" y="16" width="8" height="32" fill="#c7a4ff"/><rect x="16" y="28" width="32" height="8" fill="#c7a4ff"/><circle cx="32" cy="32" r="4" fill="#211735" opacity="1"/></svg>
