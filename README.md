@@ -51,7 +51,9 @@ Lurek is not mobile-first, web-first, 3D-first, or editor-first. It does not cen
 | Lua stubs | [docs/api/lurek.lua](docs/api/lurek.lua) | Generated LuaCATS/EmmyLua declarations for editor tooling and agents. |
 | Module guides | [docs/modules/](docs/modules/) | Generated module pages combining purpose, examples, and API details. |
 | Examples | [content/examples/README.md](content/examples/README.md) | Runnable one-file examples for public API coverage. |
-| Reference games | [`lurek_2d_games`](lurek_2d_games/README.md) | Larger playable demos and catalog candidates in a nested repository. |
+| Content | [`lurek_2d_content`](lurek_2d_content/README.md) | Games, reusable Lua libraries, and design references in a nested repository. |
+| VS Code extension | [`lurek_2d_extension`](lurek_2d_extension/README.md) | Standalone VS Code extension repository. |
+| Workbench | [`lurek_2d_workbench`](lurek_2d_workbench/README.md) | Standalone native Lurek Workbench repository. |
 | Wiki | [docs/wiki/Home.md](docs/wiki/Home.md) | Generated cookbook/onboarding/FAQ-style material, not the API source of truth. |
 | Architecture | [docs/architecture/](docs/architecture/) | Contributor-facing design, positioning, boundaries, and durable decisions. |
 | Specs | [docs/specs/README.md](docs/specs/README.md) | Contributor-facing generated module contracts and technical source of truth. |
@@ -70,7 +72,7 @@ For VS Code and Lua language servers, point workspace library settings at `docs/
 ## Examples And Reference Games
 
 - [Examples guide](content/examples/README.md) explains the one-file examples under `content/examples/`.
-- [Reference game catalog](lurek_2d_games/README.md) lists complete playable projects under `lurek_2d_games/games/`.
+- [Content catalog](lurek_2d_content/README.md) covers complete games, reusable Lua libraries, and game-design references.
 - Pages also includes [Examples](https://lurek2d.github.io/lurek_2d/examples.html) and [Reference Games](https://lurek2d.github.io/lurek_2d/reference-games.html) indexes.
 
 ## For Contributors
@@ -88,7 +90,7 @@ Generated outputs should not be edited by hand. Update source doc comments, spec
 
 ## Development Status
 
-Lurek2D is an active Lua/Rust runtime project. This repository contains the Rust engine, source documentation, examples, tests, VS Code tooling, and CAG guidance. The published site, playable games, and Lua libraries are nested sibling repositories: `lurek_2d_pages/`, `lurek_2d_games/`, and `lurek_2d_libraries/`.
+Lurek2D is an active Lua/Rust runtime project. This repository contains the Rust engine, source documentation, examples, tests, and CAG guidance. The published site, game content, VS Code extension, and Workbench are nested sibling repositories: `lurek_2d_pages/`, `lurek_2d_content/`, `lurek_2d_extension/`, and `lurek_2d_workbench/`.
 
 ---
 

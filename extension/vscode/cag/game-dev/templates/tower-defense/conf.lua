@@ -1,6 +1,0 @@
-function lurek.conf(cfg)
-    cfg.window.title  = "Tower Defense"
-    cfg.window.width  = 800
-    cfg.window.height = 600
-    cfg.window.vsync  = true
-end

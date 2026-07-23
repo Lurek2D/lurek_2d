@@ -46,5 +46,6 @@ tools/rag/rag_index.db
 tools/rag/rag_index.duckdb
 tools/rag/rag_index.duckdb.wal
 /lurek_2d_pages/
-/lurek_2d_games/
-/lurek_2d_libraries/
+/lurek_2d_content/
+/lurek_2d_extension/
+/lurek_2d_workbench/
