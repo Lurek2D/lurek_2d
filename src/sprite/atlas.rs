@@ -5,6 +5,7 @@
 //! Open this file when packed-region semantics or atlas import rules change, not single-sprite transform behavior.
 
 use crate::animation::aseprite::load_aseprite_json;
+use crate::sprite::SpriteLimits;
 use std::collections::HashMap;
 
 fn json_u32(value: Option<&serde_json::Value>, field: &str, name: &str) -> Result<u32, String> {
@@ -13,6 +14,17 @@ fn json_u32(value: Option<&serde_json::Value>, field: &str, name: &str) -> Resul
         .ok_or_else(|| format!("Frame '{}' missing '{}'", name, field))?;
     u32::try_from(raw).map_err(|_| format!("Frame '{}' '{}' exceeds u32 range", name, field))
 }
+
+/// Returns the maximum container nesting depth in a JSON value without allocating derived data.
+fn json_depth(value: &serde_json::Value) -> usize {
+    match value {
+        serde_json::Value::Array(items) => 1 + items.iter().map(json_depth).max().unwrap_or(0),
+        serde_json::Value::Object(fields) => 1 + fields.values().map(json_depth).max().unwrap_or(0),
+        _ => 0,
+    }
+}
+/// # Fields
+///
 /// Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.
 #[derive(Debug, Clone)]
 pub struct AtlasEntry {
@@ -43,6 +55,8 @@ impl AtlasEntry {
         cloned
     }
 }
+/// # Fields
+///
 /// Named-region lookup table backed by a Vec for ordered access and a HashMap for O(1) lookup.
 #[derive(Debug, Clone)]
 pub struct SpriteAtlas {
@@ -105,6 +119,29 @@ impl SpriteAtlas {
     pub fn entry_names(&self) -> Vec<&str> {
         self.entries.iter().map(|e| e.name.as_str()).collect()
     }
+    /// Ensure every atlas region fits within a supplied source image.
+    pub fn validate_bounds(&self, width: u32, height: u32) -> Result<(), String> {
+        for entry in &self.entries {
+            if entry.w == 0 || entry.h == 0 {
+                return Err(format!("entry '{}' has zero size", entry.name));
+            }
+            let right = entry
+                .x
+                .checked_add(entry.w)
+                .ok_or_else(|| format!("entry '{}' overflows x + w", entry.name))?;
+            let bottom = entry
+                .y
+                .checked_add(entry.h)
+                .ok_or_else(|| format!("entry '{}' overflows y + h", entry.name))?;
+            if right > width || bottom > height {
+                return Err(format!(
+                    "entry '{}' is outside source image bounds",
+                    entry.name
+                ));
+            }
+        }
+        Ok(())
+    }
 }
 /// Default delegates to new().
 impl Default for SpriteAtlas {
@@ -115,8 +152,20 @@ impl Default for SpriteAtlas {
 }
 /// Parse a TexturePacker JSON string (array or object frames format) into a SpriteAtlas; returns Err on malformed input.
 pub fn parse_texturepacker_json(json_str: &str) -> Result<SpriteAtlas, String> {
+    if json_str.len() > SpriteLimits::MAX_ATLAS_JSON_BYTES {
+        return Err(format!(
+            "atlas JSON exceeds {} bytes",
+            SpriteLimits::MAX_ATLAS_JSON_BYTES
+        ));
+    }
     let value: serde_json::Value =
         serde_json::from_str(json_str).map_err(|e| format!("JSON parse error: {}", e))?;
+    if json_depth(&value) > SpriteLimits::MAX_ATLAS_JSON_DEPTH {
+        return Err(format!(
+            "atlas JSON nesting exceeds {} levels",
+            SpriteLimits::MAX_ATLAS_JSON_DEPTH
+        ));
+    }
     let frames = value
         .get("frames")
         .ok_or("Missing 'frames' key in TexturePacker JSON")?;
@@ -124,17 +173,28 @@ pub fn parse_texturepacker_json(json_str: &str) -> Result<SpriteAtlas, String> {
     match frames {
         serde_json::Value::Array(arr) => {
             for item in arr {
+                if atlas.entry_count() >= SpriteLimits::MAX_ATLAS_ENTRIES {
+                    return Err("atlas has too many entries".into());
+                }
                 let name = item
                     .get("filename")
                     .and_then(|v| v.as_str())
                     .ok_or("Array-format frame missing 'filename'")?
                     .to_owned();
+                if atlas.get_entry(&name).is_some() {
+                    return Err(format!("duplicate frame name '{}'", name));
+                }
                 let entry = parse_frame_entry(name, item)?;
                 atlas.add_entry(entry);
             }
         }
         serde_json::Value::Object(map) => {
-            for (name, item) in map {
+            let mut sorted: Vec<_> = map.iter().collect();
+            sorted.sort_by(|a, b| a.0.cmp(b.0));
+            for (name, item) in sorted {
+                if atlas.entry_count() >= SpriteLimits::MAX_ATLAS_ENTRIES {
+                    return Err("atlas has too many entries".into());
+                }
                 let entry = parse_frame_entry(name.clone(), item)?;
                 atlas.add_entry(entry);
             }
@@ -145,6 +205,9 @@ pub fn parse_texturepacker_json(json_str: &str) -> Result<SpriteAtlas, String> {
 }
 /// Extract a single AtlasEntry from a TexturePacker JSON frame value using the given name.
 fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntry, String> {
+    if name.is_empty() || name.len() > SpriteLimits::MAX_NAME_BYTES {
+        return Err("frame name is empty or too long".into());
+    }
     let frame = item
         .get("frame")
         .ok_or_else(|| format!("Frame '{}' missing 'frame' rect object", name))?;
@@ -152,6 +215,13 @@ fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntr
     let y = json_u32(frame.get("y"), "frame.y", &name)?;
     let w = json_u32(frame.get("w"), "frame.w", &name)?;
     let h = json_u32(frame.get("h"), "frame.h", &name)?;
+    if w == 0 || h == 0 {
+        return Err(format!("Frame '{}' has zero size", name));
+    }
+    x.checked_add(w)
+        .ok_or_else(|| format!("Frame '{}' overflows x + w", name))?;
+    y.checked_add(h)
+        .ok_or_else(|| format!("Frame '{}' overflows y + h", name))?;
     let rotated = item
         .get("rotated")
         .and_then(|v| v.as_bool())
@@ -169,14 +239,47 @@ fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntr
 }
 /// Parse an Aseprite JSON string (array or object frames format) into a SpriteAtlas; returns Err on malformed input.
 pub fn parse_aseprite_json(json_str: &str) -> Result<SpriteAtlas, String> {
+    if json_str.len() > SpriteLimits::MAX_ATLAS_JSON_BYTES {
+        return Err(format!(
+            "Aseprite atlas JSON exceeds {} bytes",
+            SpriteLimits::MAX_ATLAS_JSON_BYTES
+        ));
+    }
+    let value: serde_json::Value =
+        serde_json::from_str(json_str).map_err(|e| format!("Aseprite JSON parse error: {e}"))?;
+    if json_depth(&value) > SpriteLimits::MAX_ATLAS_JSON_DEPTH {
+        return Err(format!(
+            "Aseprite atlas JSON nesting exceeds {} levels",
+            SpriteLimits::MAX_ATLAS_JSON_DEPTH
+        ));
+    }
     let mut atlas = SpriteAtlas::new();
     let parsed = load_aseprite_json(json_str).map_err(|e| match e.strip_prefix("aseprite: ") {
         Some(msg) => format!("Aseprite {}", msg),
         None => e,
     })?;
     for frame in parsed.frames {
+        if atlas.entry_count() >= SpriteLimits::MAX_ATLAS_ENTRIES {
+            return Err("Aseprite atlas has too many entries".into());
+        }
         if frame.name.is_empty() {
             return Err("Aseprite array frame missing 'filename'".into());
+        }
+        if frame.name.len() > SpriteLimits::MAX_NAME_BYTES {
+            return Err("Aseprite frame name is too long".into());
+        }
+        if atlas.get_entry(&frame.name).is_some() {
+            return Err(format!("duplicate frame name '{}'", frame.name));
+        }
+        if frame.w == 0
+            || frame.h == 0
+            || frame.x.checked_add(frame.w).is_none()
+            || frame.y.checked_add(frame.h).is_none()
+        {
+            return Err(format!(
+                "Aseprite frame '{}' has invalid bounds",
+                frame.name
+            ));
         }
         atlas.add_entry(AtlasEntry {
             name: frame.name,

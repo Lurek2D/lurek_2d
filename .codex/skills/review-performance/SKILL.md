@@ -19,6 +19,7 @@ description: "Load this skill when auditing performance regressions, baselines, 
 - Derived caches should be charged to the operation that invalidates or rebuilds them, not only the later read that happens to trigger work; lazy behavior can move cost across frames and mislead attribution.
 - Import, export, and restore paths need separate peak-memory analysis because temporary decoded buffers or duplicated snapshots may exceed steady-state storage even when final structures fit their limits.
 - Codec measurements must record encoded input, decoded output, aggregate frames/layers, and effect/work multipliers against explicit ceilings.
+- Timed animation/import reviews must measure `dt * rate` catch-up, callback/event amplification, parser depth/count, and precomputed-table growth independently of steady-state rendering.
 
 ## Workflow
 - Define the hypothesis and measurement protocol before broad reads, capture a release baseline through the perf gate/stress report, and save raw scenario parameters/results under `work/<short-chat-name>/` with warm-up and repetition details.

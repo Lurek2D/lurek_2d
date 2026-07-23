@@ -66,13 +66,13 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [province.lua](../blob/main/content/examples/province.lua) | `lurek.province` | API example |
 | [raycaster.lua](../blob/main/content/examples/raycaster.lua) | `lurek.raycaster` | API example |
 | [render.lua](../blob/main/content/examples/render.lua) | `lurek.render` | API example |
+| [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.render` | API example |
 | [repl.lua](../blob/main/content/examples/repl.lua) | `lurek.repl` | API example |
 | [runtime.lua](../blob/main/content/examples/runtime.lua) | `lurek.runtime` | API example |
 | [save.lua](../blob/main/content/examples/save.lua) | `lurek.save` | API example |
 | [scene.lua](../blob/main/content/examples/scene.lua) | `lurek.scene` | API example |
 | [serialize.lua](../blob/main/content/examples/serialize.lua) | `lurek.serialize` | API example |
 | [spine.lua](../blob/main/content/examples/spine.lua) | `lurek.spine` | API example |
-| [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.sprite` | API example |
 | [svg.lua](../blob/main/content/examples/svg.lua) | `lurek.svg` | API example |
 | [terminal.lua](../blob/main/content/examples/terminal.lua) | `lurek.terminal` | API example |
 | [thread.lua](../blob/main/content/examples/thread.lua) | `lurek.thread` | API example |

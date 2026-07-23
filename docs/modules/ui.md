@@ -339,7 +339,10 @@ lurek.ui.destroy(widget, recursive)
 ```lua
 do
     local widget = lurek.ui.newButton("Destroy me")
+    local before = widget:isValid()
     lurek.ui.destroy(widget)
+    local after = widget:isValid()
+    lurek.log.info(tostring("destroyed " .. tostring(before) .. " -> " .. tostring(after)))
 end
 ```
 
@@ -6282,12 +6285,13 @@ do
     local dp = lurek.ui.newDockPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
-    dp:dock(0, "left")
+    dp:addChild(child)
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
     lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
-    dp:undock(0)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
@@ -6322,12 +6326,13 @@ do
     local dp = lurek.ui.newDockPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
-    dp:dock(0, "left")
+    dp:addChild(child)
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
     lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
-    dp:undock(0)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
@@ -6357,12 +6362,13 @@ do
     local dp = lurek.ui.newDockPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
-    dp:dock(0, "left")
+    dp:addChild(child)
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
     lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
-    dp:undock(0)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 ```
@@ -13256,7 +13262,7 @@ do
     tp:setDelay(0.5)
     local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
-    tp:setTarget(btn:getId() and 1 or 1)
+    tp:setTarget(btn)
     lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("delay:") .. " " .. tostring(d))
 end
 ```
@@ -14274,7 +14280,10 @@ LUiWidget:destroy(recursive)
 ```lua
 do
     local widget = lurek.ui.newButton("Destroy me")
+    local before = widget:isValid()
     widget:destroy()
+    local after = widget:isValid()
+    lurek.log.info(tostring("destroyed " .. tostring(before) .. " -> " .. tostring(after)))
 end
 ```
 
@@ -15293,7 +15302,11 @@ LUiWidget:isValid()
 ```lua
 do
     local widget = lurek.ui.newButton("Lifecycle")
-    lurek.log.info(tostring("live=" .. tostring(widget:isValid())))
+    local before = widget:isValid()
+    widget:setText("Lifecycle check")
+    local after = widget:isValid()
+    lurek.log.info(tostring("live before=" .. tostring(before)))
+    lurek.log.info(tostring("live after=" .. tostring(after)))
 end
 ```
 

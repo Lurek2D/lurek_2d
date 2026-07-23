@@ -350,9 +350,9 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 - `LPaletteLUT:type() -> string`: Returns the Lua-visible type name for this palette lookup table handle.
 - `LPaletteLUT:typeOf(name) -> boolean`: Returns whether this palette lookup table handle matches a supported type name.
 
-#### LProvinceGrid Type
+#### LUnknown Type
 
-- Lua-side compatibility handle for a province id grid decoded by the province subsystem.
+- Lua-visible object type.
 
 ##### Fields
 
@@ -360,22 +360,22 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 ##### Methods
 
-- `LProvinceGrid:adjacencies() -> table`: Returns province adjacency records and shared border pixel counts.
-- `LProvinceGrid:borderSegments() -> table`: Returns border line segments between neighboring provinces.
-- `LProvinceGrid:deserializeShapeData(bytes) -> LuaValue`: Decodes serialized province shape data into span and segment tables.
-- `LProvinceGrid:drawShapes(x?, y?, w?, h?) -> integer`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
-- `LProvinceGrid:getAt(x, y) -> integer`: Returns the province id stored at grid coordinates.
-- `LProvinceGrid:getHeight() -> integer`: Returns the province grid height. This method is available to Lua scripts.
-- `LProvinceGrid:getPolygons() -> table`: Returns polygon rings for every province.
-- `LProvinceGrid:getPolygonsSimplified() -> table`: Returns simplified polygon rings for every province.
-- `LProvinceGrid:getWidth() -> integer`: Returns the province grid width. This method is available to Lua scripts.
-- `LProvinceGrid:provinceCount() -> integer`: Returns the number of distinct provinces in the grid.
-- `LProvinceGrid:provinceSpans() -> table`: Returns horizontal province spans by row.
-- `LProvinceGrid:serializeShapeData() -> string`: Serializes province span and border shape data into a binary Lua string.
-- `LProvinceGrid:type() -> string`: Returns the Lua-visible type name for this province grid handle.
-- `LProvinceGrid:typeOf(name) -> boolean`: Returns whether this province grid handle matches a supported type name.
+- `LUnknown:adjacencies() -> table`: Returns province adjacency records and shared border pixel counts.
+- `LUnknown:borderSegments() -> table`: Returns border line segments between neighboring provinces.
+- `LUnknown:deserializeShapeData(bytes) -> LuaValue`: Decodes serialized province shape data into span and segment tables.
+- `LUnknown:drawShapes(x?, y?, w?, h?) -> integer`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+- `LUnknown:getAt(x, y) -> integer`: Returns the province id stored at grid coordinates.
+- `LUnknown:getHeight() -> integer`: Returns the province grid height. This method is available to Lua scripts.
+- `LUnknown:getPolygons() -> table`: Returns polygon rings for every province.
+- `LUnknown:getPolygonsSimplified() -> table`: Returns simplified polygon rings for every province.
+- `LUnknown:getWidth() -> integer`: Returns the province grid width. This method is available to Lua scripts.
+- `LUnknown:provinceCount() -> integer`: Returns the number of distinct provinces in the grid.
+- `LUnknown:provinceSpans() -> table`: Returns horizontal province spans by row.
+- `LUnknown:serializeShapeData() -> string`: Serializes province span and border shape data into a binary Lua string.
+- `LUnknown:type() -> string`: Returns the Lua-visible type name for this province grid handle.
+- `LUnknown:typeOf(name) -> boolean`: Returns whether this province grid handle matches a supported type name.
 
-#### LProvinceGridAdjacenciesResult Type
+#### LUnknownAdjacenciesResult Type
 
 - Generated result shape from @field tags.
 
@@ -389,7 +389,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LProvinceGridBorderSegmentsResult Type
+#### LUnknownBorderSegmentsResult Type
 
 - Generated result shape from @field tags.
 
@@ -406,7 +406,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LProvinceGridGetPolygonsResult Type
+#### LUnknownGetPolygonsResult Type
 
 - Generated result shape from @field tags.
 
@@ -419,7 +419,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LProvinceGridGetPolygonsSimplifiedResult Type
+#### LUnknownGetPolygonsSimplifiedResult Type
 
 - Generated result shape from @field tags.
 
@@ -432,7 +432,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LProvinceGridProvinceSpansResult Type
+#### LUnknownProvinceSpansResult Type
 
 - Generated result shape from @field tags.
 

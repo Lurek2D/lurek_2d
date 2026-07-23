@@ -1387,6 +1387,23 @@ impl World {
                 generation ^= u64::from(value.to_bits());
                 generation = generation.wrapping_mul(0x100_0000_01b3);
             }
+            for flag in [
+                shape.is_static,
+                shape.is_sleeping,
+                shape.is_sensor,
+                shape.is_circle,
+            ] {
+                generation ^= u64::from(flag);
+                generation = generation.wrapping_mul(0x100_0000_01b3);
+            }
+            generation ^= shape.hull_verts.len() as u64;
+            generation = generation.wrapping_mul(0x100_0000_01b3);
+            for vertex in &shape.hull_verts {
+                for value in vertex {
+                    generation ^= u64::from(value.to_bits());
+                    generation = generation.wrapping_mul(0x100_0000_01b3);
+                }
+            }
         }
         PhysicsSnapshot { generation, shapes }
     }

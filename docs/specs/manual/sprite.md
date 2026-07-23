@@ -20,6 +20,12 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 ## Notes
 
+- Lua frame, group-start, atlas-index, and compatibility tile-ID inputs are one-based; zero is rejected rather than aliasing the first item. Grid rows and columns are explicitly zero-based.
+- Sprite sheets require divisible texture/frame dimensions. Atlas regions imported with an image must fit within that image, and atlas/group name exports are deterministic.
+- Sprite clips are intentionally lightweight. FPS and delta time must be finite; updates advance arithmetically and emit only a bounded set of trailing events. Use `animation` for state machines, blends, and authored Aseprite timing/tags.
+- The CPU sprite-batch data type lives with sprite, but public creation and drawing are render-owned through `lurek.render.newSpriteBatch` and `drawBatch`.
+- Nine-slice is reusable texture geometry; UI widgets and layout remain UI-owned.
+
 - Sprite shader materials:
   `LSprite:setShader(shader)`, `LSprite:getShader()`, and `LSprite:setShaderUniform(name, value)` bind render-owned `target = "sprite"` WGSL shaders to sprite instances. The sprite module stores only the `LShader` handle and semantic material choice; `render` owns WGSL validation, uniform validation, GPU pipeline cache, and execution. The current sprite target is fragment-only and uses the existing textured contract: sampled sprite color at `@location(0)` and uv at `@location(1)`.
 

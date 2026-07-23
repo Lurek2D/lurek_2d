@@ -296,9 +296,10 @@ end
 -- @param fn     : function     operation under test
 -- @return number elapsed seconds
 function measure(name, count, fn)
-    local start = os.clock()
+    local now = rawget(_G, "_test_monotonic_seconds") or os.clock
+    local start = now()
     for _ = 1, count do fn() end
-    local elapsed = os.clock() - start
+    local elapsed = now() - start
     local ops_sec = (elapsed > 0) and (count / elapsed) or math.huge
     io.write(string.format("[PERF] %s: %d ops in %.4fs (%.0f ops/sec)\n",
         name, count, elapsed, ops_sec))

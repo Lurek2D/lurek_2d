@@ -4987,6 +4987,29 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
+    #[cfg(feature = "voxel-loader")]
+    let state_for_voxel = state.clone();
+    // -- loadVoxel --
+    /// Loads a MagicaVoxel `.vox` static prop with palette colours and a configurable world-space voxel size.
+    /// @param | path | string | File path to the `.vox` file relative to the game directory.
+    /// @param | voxelSize | number? | World-space size of one source voxel (default 1).
+    /// @return | LVoxelModel | The loaded voxel model handle.
+    #[cfg(feature = "voxel-loader")]
+    graphics.set(
+        "loadVoxel",
+        lua.create_function(move |_, (path, voxel_size): (String, Option<f32>)| {
+            let full_path = {
+                let st = state_for_voxel.borrow();
+                st.game_dir.join(&path)
+            };
+            let model = crate::render::voxel_loader::VoxelModel::load_file(
+                &full_path,
+                voxel_size.unwrap_or(1.0),
+            )
+            .map_err(|e| LuaError::RuntimeError(format!("loadVoxel '{}': {}", path, e)))?;
+            Ok(LuaVoxelModel { model })
+        })?,
+    )?;
     #[cfg(feature = "obj-loader")]
     let state_for_model = state.clone();
     // -- loadModel --
@@ -5133,5 +5156,36 @@ impl LuaUserData for LuaObjModel {
                 Ok(out)
             },
         );
+    }
+}
+
+#[cfg(feature = "voxel-loader")]
+use crate::render::voxel_loader::VoxelModel;
+
+/// Loaded static MagicaVoxel model handle for raycaster model instances.
+#[cfg(feature = "voxel-loader")]
+pub struct LuaVoxelModel {
+    pub(crate) model: VoxelModel,
+}
+
+#[cfg(feature = "voxel-loader")]
+impl LuaUserData for LuaVoxelModel {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getVoxelCount --
+        /// Returns the number of occupied source voxels.
+        methods.add_method("getVoxelCount", |_, this, ()| Ok(this.model.voxel_count()));
+        // -- getBounds --
+        /// Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.
+        methods.add_method("getBounds", |lua, this, ()| {
+            let bounds = this.model.bounds();
+            let result = lua.create_table()?;
+            result.set("minX", bounds[0])?;
+            result.set("minY", bounds[1])?;
+            result.set("minZ", bounds[2])?;
+            result.set("maxX", bounds[3])?;
+            result.set("maxY", bounds[4])?;
+            result.set("maxZ", bounds[5])?;
+            Ok(result)
+        });
     }
 }

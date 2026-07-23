@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `124` functions, `14` types, `93` methods
+- Lua API surface: `125` functions, `15` types, `95` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -29,7 +29,8 @@
 - Resource inputs are validated before backend allocation or shader-source generation: texture and canvas dimensions must be non-zero and within device limits, RGBA uploads must match exact byte length, dynamic font atlases are bounded, OBJ material paths must stay under their base directory, and shader uniform names must be valid non-reserved WGSL identifiers.
 - Centralizing those resources matters because otherwise each visual feature would invent its own backend conventions, lifetime rules, and upload paths. `render` provides one stable home for those concerns and reduces backend duplication.
 - Rendering commands and pipeline structures give the engine a common language between feature modules and execution code. This shared command vocabulary is what allows gameplay-facing APIs to remain expressive while still mapping onto a disciplined backend.
-- The module is broader than simple 2D quad drawing. Mesh support, OBJ loading, tessellation, decals, shape batching, and specialized pipelines show that it can represent both standard 2D workflows and richer geometric or stylized visual features without leaving the engine's main render authority.
+- The module is broader than simple 2D quad drawing. Mesh support, OBJ and MagicaVoxel loading, tessellation, decals, shape batching, and specialized pipelines show that it can represent both standard 2D workflows and richer geometric or stylized visual features without leaving the engine's main render authority.
+- MagicaVoxel props flatten their static scene graph once, preserve palette colour, and remove hidden interior faces before entering the existing projected-model path. They are object geometry; raycaster wall, floor, and ceiling terrain remains texture/block driven.
 - Text and font integration are part of the same visual surface, not a parallel universe. Menus, labels, debug overlays, editor tools, and evidence images all need text rendering that cooperates with layers, transforms, clipping, and final composition.
 - Post-processing support matters after scene composition has already happened. Once a view exists, users often want bloom-like treatments, color transforms, blur-like effects, or custom shader passes, and `render` provides the controlled place where those frame-wide or target-specific effects belong.
 - Lighting and shadow support connect scene-level illumination data to actual frame execution. Neighboring modules define lights, occluders, and light-world state, but `render` owns how those concepts become shaded images, masks, and composited outputs.
@@ -465,6 +466,12 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Preserves deterministic behavior by keeping software capture calculations explicit at their owner boundary.
 - Provides the local adaptation layer that lets callers avoid duplicating render rules while keeping call sites explicit.
 
+### voxel_loader.rs
+
+- Loads MagicaVoxel assets into cached, palette-coloured surface triangles for projected rendering.
+- Owns bounded VOX parsing, voxel-to-Y-up coordinate conversion, exposed-face extraction, and model metadata.
+- The resulting geometry is immutable and can be reused by the raycaster without reparsing or remeshing.
+
 
 
 ## Lua API Ref
@@ -536,6 +543,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.line(...) -> nil`: Draws a line between two points, or a polyline through multiple points.
 - `lurek.render.loadModel(path) -> LObjModel`: Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 - `lurek.render.loadObj(path) -> LObjModel`: Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
+- `lurek.render.loadVoxel(path, voxelSize?) -> LVoxelModel`: Loads a MagicaVoxel `.vox` static prop with palette colours and a configurable world-space voxel size.
 - `lurek.render.newCanvas(width, height) -> LCanvas`: Creates a new off-screen render target with the given dimensions.
 - `lurek.render.newDepthSorter() -> LDepthSorter`: Registers the depth-sorted drawing helper constructor in the render module.
 - `lurek.render.newDrawLayer() -> LDrawLayer`: Creates a new z-ordered draw layer for sorting draw callbacks by depth.
@@ -873,6 +881,19 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `LSpriteBatch:release() -> boolean`: Releases the sprite batch resource.
 - `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LVoxelModel Type
+
+- Loaded static MagicaVoxel model handle for raycaster model instances.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LVoxelModel:getBounds() -> nil`: Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.
+- `LVoxelModel:getVoxelCount() -> nil`: Returns the number of occupied source voxels.
 
 ## Examples
 

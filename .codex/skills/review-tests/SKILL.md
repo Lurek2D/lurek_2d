@@ -18,6 +18,7 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 ## Domain Knowledge
 - Test layers have distinct proof obligations: Lua unit owns each public API once, integration proves module boundaries, stress/security owns bounded or hostile families, evidence produces legible artifacts, golden compares reviewed baselines, and Rust targets private seams.
 - Every public parser or codec needs a security suite covering malformed, truncated, oversized, and expansion-bomb inputs; marker completeness never substitutes for adversarial assertions.
+- Stateful visual modules need registered security and stress suites that prove index semantics, finite numeric/resource validation, callback ceilings, and parser/packing bounds in addition to unit ownership.
 - Coverage counts are ownership metadata, not execution proof. A marker can be exact while its block never runs, asserts defaults, or tests a helper instead of the named API.
 - Canonical module ownership prevents consumer-propagation scenarios from inflating producer coverage; render, physics, or serialization tests using a data module do not replace that module's own contract tests.
 - Harness registration, filter names, BDD grammar, marker adjacency/indentation, and final `test_summary()` are executable structure; each can fail independently of assertion quality.

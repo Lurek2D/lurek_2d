@@ -95,7 +95,7 @@ pub use scene::{
     RaycasterOverlayEffect, RaycasterParticle, RaycasterScene, WallQuad,
 };
 #[cfg(feature = "obj-loader")]
-pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel};
+pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel, SceneAdapterModelAsset};
 pub use scene_adapter::{
     ResolvedSceneTransform, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneTransform,
 };

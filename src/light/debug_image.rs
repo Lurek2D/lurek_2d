@@ -35,7 +35,7 @@ pub(crate) fn draw(world: &LightWorld, width: u32, height: u32) -> ImageData {
     let occluders: Vec<RenderOccluder<'_>> = world
         .occluders
         .values()
-        .filter(|occ| occ.enabled && occ.opacity > 0.0 && occ.vertices.len() >= 3)
+        .filter(|occ| occ.enabled && occ.opacity > 0.0 && occ.is_render_valid())
         .map(|occ| RenderOccluder {
             vertices: &occ.vertices,
             position: occ.position,

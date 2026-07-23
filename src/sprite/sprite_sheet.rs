@@ -8,7 +8,10 @@
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{SS01, SS02};
+use crate::sprite::SpriteLimits;
 use std::collections::HashMap;
+/// # Fields
+///
 /// Named contiguous frame range within a SpriteSheet, used by get_group().
 #[derive(Debug, Clone)]
 pub struct FrameGroup {
@@ -19,6 +22,8 @@ pub struct FrameGroup {
     /// Number of frames in this group.
     pub count: usize,
 }
+/// # Variants
+///
 /// Axis along which direction slots are arranged in a directional sprite sheet.
 #[derive(Debug, Clone, PartialEq)]
 pub enum DirectionLayout {
@@ -28,6 +33,8 @@ pub enum DirectionLayout {
     Columns,
 }
 
+/// # Fields
+///
 /// Zero-allocation column iterator over frame rects in a SpriteSheet.
 pub struct ColumnFrames<'a> {
     frames: &'a [Rect],
@@ -58,6 +65,8 @@ impl<'a> Iterator for ColumnFrames<'a> {
 }
 
 impl ExactSizeIterator for ColumnFrames<'_> {}
+/// # Fields
+///
 /// Uniform grid frame extractor for a single texture with optional named groups and directional layout.
 pub struct SpriteSheet {
     /// Width of each frame in pixels.
@@ -83,6 +92,36 @@ pub struct SpriteSheet {
 }
 /// Construction and frame/group/direction methods for SpriteSheet.
 impl SpriteSheet {
+    /// Validate a uniform grid before allocating its frame table.
+    pub fn validate_dimensions(
+        texture_width: u32,
+        texture_height: u32,
+        frame_width: u32,
+        frame_height: u32,
+    ) -> Result<(), String> {
+        if frame_width == 0 || frame_height == 0 {
+            return Err("frame dimensions must be greater than zero".into());
+        }
+        if frame_width > texture_width || frame_height > texture_height {
+            return Err("frame dimensions must not exceed texture dimensions".into());
+        }
+        #[allow(clippy::manual_is_multiple_of)]
+        // Keep compatibility with the Rust 1.78 project MSRV.
+        let has_remainder = texture_width % frame_width != 0 || texture_height % frame_height != 0;
+        if has_remainder {
+            return Err("texture dimensions must be divisible by frame dimensions".into());
+        }
+        let frames = (texture_width / frame_width)
+            .checked_mul(texture_height / frame_height)
+            .ok_or("sheet frame count overflow")? as usize;
+        if frames > SpriteLimits::MAX_SHEET_FRAMES {
+            return Err(format!(
+                "sheet has more than {} frames",
+                SpriteLimits::MAX_SHEET_FRAMES
+            ));
+        }
+        Ok(())
+    }
     /// Create a SpriteSheet from texture dimensions and per-frame size; precomputes all frame Rects.
     pub fn new(
         texture_width: u32,
@@ -90,6 +129,22 @@ impl SpriteSheet {
         frame_width: u32,
         frame_height: u32,
     ) -> Self {
+        if Self::validate_dimensions(texture_width, texture_height, frame_width, frame_height)
+            .is_err()
+        {
+            return Self {
+                frame_width,
+                frame_height,
+                columns: 0,
+                rows: 0,
+                texture_width,
+                texture_height,
+                frames: Vec::new(),
+                groups: HashMap::new(),
+                direction_count: None,
+                direction_layout: DirectionLayout::Rows,
+            };
+        }
         let columns = if frame_width > 0 {
             texture_width / frame_width
         } else {
@@ -125,6 +180,21 @@ impl SpriteSheet {
             direction_count: None,
             direction_layout: DirectionLayout::Rows,
         }
+    }
+    /// Strict constructor used for public sheet creation.
+    pub fn try_new(
+        texture_width: u32,
+        texture_height: u32,
+        frame_width: u32,
+        frame_height: u32,
+    ) -> Result<Self, String> {
+        Self::validate_dimensions(texture_width, texture_height, frame_width, frame_height)?;
+        Ok(Self::new(
+            texture_width,
+            texture_height,
+            frame_width,
+            frame_height,
+        ))
     }
     /// Return the Rect for frame at linear index, or None when out of bounds.
     pub fn get_frame(&self, index: usize) -> Option<Rect> {
@@ -182,6 +252,10 @@ impl SpriteSheet {
             },
         );
     }
+    /// Return the number of registered named groups.
+    pub fn group_count(&self) -> usize {
+        self.groups.len()
+    }
     /// Return the Rects for the named group, or None when the name is not registered.
     pub fn get_group(&self, name: &str) -> Option<Vec<Rect>> {
         let group = self.groups.get(name)?;
@@ -189,7 +263,9 @@ impl SpriteSheet {
     }
     /// Return all registered group names in unspecified order.
     pub fn get_group_names(&self) -> Vec<String> {
-        self.groups.keys().cloned().collect()
+        let mut names: Vec<_> = self.groups.keys().cloned().collect();
+        names.sort();
+        names
     }
     /// Configure the sheet for directional animation with count directions arranged by layout.
     pub fn set_directions(&mut self, count: u32, layout: DirectionLayout) {

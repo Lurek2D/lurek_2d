@@ -162,6 +162,18 @@ mod light_world_tests {
     }
 
     #[test]
+    fn renderer_selection_excludes_corrupted_shadow_and_cone_state() {
+        let mut world = LightWorld::new();
+        let key = world.add_light(Light2D::new(1.0, 2.0, 10.0)).unwrap();
+        world.get_light_mut(key).unwrap().direction = f32::NAN;
+        assert!(world.selected_render_lights().is_empty());
+
+        let mut occluder = rectangle_occluder(0.0, 0.0, 1.0, 1.0);
+        occluder.vertices[0].x = f32::INFINITY;
+        assert!(world.add_occluder(occluder).is_err());
+    }
+
+    #[test]
     fn preview_limit_is_checked_before_image_allocation() {
         let mut world = LightWorld::new();
         world.limits.max_debug_preview_pixels = 16;
@@ -225,6 +237,29 @@ mod light_world_tests {
             .collect();
         assert!((after[0] - 2.0).abs() < 1e-6);
         assert!((after[1] - 3.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn renderer_selection_prefers_explicit_priority_and_reports_culling() {
+        let mut world = LightWorld::new();
+        world.max_lights = 1;
+        let low = world.add_light(Light2D::new(1.0, 0.0, 10.0)).unwrap();
+        let high = world.add_light(Light2D::new(2.0, 0.0, 10.0)).unwrap();
+        world.get_light_mut(high).unwrap().set_priority(10);
+        world.get_light_mut(low).unwrap().set_enabled(false);
+        let invalid = world.add_light(Light2D::new(3.0, 0.0, 10.0)).unwrap();
+        world.get_light_mut(invalid).unwrap().direction = f32::NAN;
+        world.add_light(Light2D::new(4.0, 0.0, 10.0)).unwrap();
+
+        let selected = world.selected_render_lights();
+        assert_eq!(selected.len(), 1);
+        assert!((selected[0].1.x - 2.0).abs() < 1e-6);
+        let diagnostics = world.selection_diagnostics();
+        assert_eq!(diagnostics.selected_count, 1);
+        assert_eq!(diagnostics.rejected_by_limit, 1);
+        assert_eq!(diagnostics.rejected_disabled, 1);
+        assert_eq!(diagnostics.rejected_invalid, 1);
+        assert_eq!(diagnostics.rejected_zero_energy, 0);
     }
 
     #[test]

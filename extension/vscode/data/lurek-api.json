@@ -28992,6 +28992,30 @@
           "objectType": null
         },
         {
+          "name": "loadVoxel",
+          "fullPath": "lurek.render.loadVoxel",
+          "signature": "(path, [voxel_size])",
+          "description": "Loads a MagicaVoxel `.vox` static prop with palette colours and a configurable world-space voxel size.",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "File path to the `.vox` file relative to the game directory.",
+              "optional": false
+            },
+            {
+              "name": "voxelSize",
+              "type": "number",
+              "description": "World-space size of one source voxel (default 1).",
+              "optional": true
+            }
+          ],
+          "returns": "LVoxelModel",
+          "returnType": "LVoxelModel",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "loadModel",
           "fullPath": "lurek.render.loadModel",
           "signature": "(path)",
@@ -30811,7 +30835,7 @@
             {
               "name": "texture_id",
               "type": "integer",
-              "description": "Texture handle used by the sprite.",
+              "description": "Live opaque image handle used by the sprite.",
               "optional": false
             },
             {
@@ -30914,7 +30938,7 @@
           "name": "newRPGMakerSheet",
           "fullPath": "lurek.sprite.newRPGMakerSheet",
           "signature": "(tw, th)",
-          "description": "Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).",
+          "description": "Creates a sprite sheet using RPG Maker's standard character layout (3 columns by 4 rows per character block).",
           "parameters": [
             {
               "name": "tw",
@@ -46036,7 +46060,7 @@
           "name": "pack",
           "fullPath": "LAtlasPacker:pack",
           "signature": "(name, w, h)",
-          "description": "Packs a named region into this atlas and returns whether allocation succeeded.",
+          "description": "Packs a named region into this atlas and returns success plus an optional failure code.",
           "parameters": [
             {
               "name": "name",
@@ -138023,218 +138047,6 @@
       ]
     },
     {
-      "name": "LProvinceGrid",
-      "description": "Lua-side compatibility handle for a province id grid decoded by the province subsystem.",
-      "methods": [
-        {
-          "name": "getWidth",
-          "fullPath": "LProvinceGrid:getWidth",
-          "signature": "()",
-          "description": "Returns the province grid width. This method is available to Lua scripts.",
-          "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "getHeight",
-          "fullPath": "LProvinceGrid:getHeight",
-          "signature": "()",
-          "description": "Returns the province grid height. This method is available to Lua scripts.",
-          "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "getAt",
-          "fullPath": "LProvinceGrid:getAt",
-          "signature": "(x, y)",
-          "description": "Returns the province id stored at grid coordinates.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "integer",
-              "description": "X coordinate.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "integer",
-              "description": "Y coordinate.",
-              "optional": false
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "provinceCount",
-          "fullPath": "LProvinceGrid:provinceCount",
-          "signature": "()",
-          "description": "Returns the number of distinct provinces in the grid.",
-          "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "adjacencies",
-          "fullPath": "LProvinceGrid:adjacencies",
-          "signature": "()",
-          "description": "Returns province adjacency records and shared border pixel counts.",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "provinceSpans",
-          "fullPath": "LProvinceGrid:provinceSpans",
-          "signature": "()",
-          "description": "Returns horizontal province spans by row.",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "borderSegments",
-          "fullPath": "LProvinceGrid:borderSegments",
-          "signature": "()",
-          "description": "Returns border line segments between neighboring provinces.",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "getPolygons",
-          "fullPath": "LProvinceGrid:getPolygons",
-          "signature": "()",
-          "description": "Returns polygon rings for every province.",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "getPolygonsSimplified",
-          "fullPath": "LProvinceGrid:getPolygonsSimplified",
-          "signature": "()",
-          "description": "Returns simplified polygon rings for every province.",
-          "parameters": [],
-          "returns": "table",
-          "returnType": "table",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "drawShapes",
-          "fullPath": "LProvinceGrid:drawShapes",
-          "signature": "(...)",
-          "description": "Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "Viewport left edge (required if providing a viewport).",
-              "optional": true
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "Viewport top edge (required if providing a viewport).",
-              "optional": true
-            },
-            {
-              "name": "w",
-              "type": "number",
-              "description": "Viewport width (required if providing a viewport).",
-              "optional": true
-            },
-            {
-              "name": "h",
-              "type": "number",
-              "description": "Viewport height (required if providing a viewport).",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "type",
-          "fullPath": "LProvinceGrid:type",
-          "signature": "()",
-          "description": "Returns the Lua-visible type name for this province grid handle.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LProvinceGrid:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this province grid handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `LProvinceGrid` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "serializeShapeData",
-          "fullPath": "LProvinceGrid:serializeShapeData",
-          "signature": "()",
-          "description": "Serializes province span and border shape data into a binary Lua string.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        },
-        {
-          "name": "deserializeShapeData",
-          "fullPath": "LProvinceGrid:deserializeShapeData",
-          "signature": "(bytes)",
-          "description": "Decodes serialized province shape data into span and segment tables.",
-          "parameters": [
-            {
-              "name": "bytes",
-              "type": "string",
-              "description": "Serialized shape data bytes.",
-              "optional": false
-            }
-          ],
-          "returns": "LuaValue",
-          "returnType": "LuaValue",
-          "isMethod": true,
-          "objectType": "LProvinceGrid"
-        }
-      ]
-    },
-    {
       "name": "LProvinceRegistry",
       "description": "Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.",
       "methods": [
@@ -148354,12 +148166,12 @@
           "name": "addModel",
           "fullPath": "LSceneAdapter:addModel",
           "signature": "(model_ud, x, y, [opts])",
-          "description": "Adds a static OBJ model instance entry.",
+          "description": "Adds a static OBJ or MagicaVoxel model instance entry.",
           "parameters": [
             {
               "name": "model",
-              "type": "LObjModel",
-              "description": "OBJ model handle.",
+              "type": "LObjModel|LVoxelModel",
+              "description": "Model handle.",
               "optional": false
             },
             {
@@ -148390,7 +148202,7 @@
           "name": "bindBodyModel",
           "fullPath": "LSceneAdapter:bindBodyModel",
           "signature": "(body, model_ud, [opts])",
-          "description": "Binds an OBJ model instance to a live physics body.",
+          "description": "Binds an OBJ or MagicaVoxel model instance to a live physics body.",
           "parameters": [
             {
               "name": "body",
@@ -148400,8 +148212,8 @@
             },
             {
               "name": "model",
-              "type": "LObjModel",
-              "description": "OBJ model handle.",
+              "type": "LObjModel|LVoxelModel",
+              "description": "Model handle.",
               "optional": false
             },
             {
@@ -165335,7 +165147,7 @@
             {
               "name": "texture_id",
               "type": "integer",
-              "description": "Texture handle used as the normal-map source.",
+              "description": "Live opaque image handle used as the normal-map source.",
               "optional": false
             }
           ],
@@ -179371,6 +179183,35 @@
           ],
           "returns": "nil",
           "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
+          "name": "setColliderStrategy",
+          "fullPath": "LTerrain:setColliderStrategy",
+          "signature": "(strategy)",
+          "description": "Selects static terrain collider generation. `rowRuns` is the fast filled default; `contourEdges` emits only exposed cell boundaries.",
+          "parameters": [
+            {
+              "name": "strategy",
+              "type": "string",
+              "description": "`rowRuns` or `contourEdges`.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTerrain"
+        },
+        {
+          "name": "getColliderStrategy",
+          "fullPath": "LTerrain:getColliderStrategy",
+          "signature": "()",
+          "description": "Returns the static terrain collider generation strategy.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LTerrain"
         },
@@ -202816,6 +202657,218 @@
       ]
     },
     {
+      "name": "LUnknown",
+      "description": "",
+      "methods": [
+        {
+          "name": "getWidth",
+          "fullPath": "LUnknown:getWidth",
+          "signature": "()",
+          "description": "Returns the province grid width. This method is available to Lua scripts.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LUnknown:getHeight",
+          "signature": "()",
+          "description": "Returns the province grid height. This method is available to Lua scripts.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "getAt",
+          "fullPath": "LUnknown:getAt",
+          "signature": "(x, y)",
+          "description": "Returns the province id stored at grid coordinates.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "provinceCount",
+          "fullPath": "LUnknown:provinceCount",
+          "signature": "()",
+          "description": "Returns the number of distinct provinces in the grid.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "adjacencies",
+          "fullPath": "LUnknown:adjacencies",
+          "signature": "()",
+          "description": "Returns province adjacency records and shared border pixel counts.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "provinceSpans",
+          "fullPath": "LUnknown:provinceSpans",
+          "signature": "()",
+          "description": "Returns horizontal province spans by row.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "borderSegments",
+          "fullPath": "LUnknown:borderSegments",
+          "signature": "()",
+          "description": "Returns border line segments between neighboring provinces.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "getPolygons",
+          "fullPath": "LUnknown:getPolygons",
+          "signature": "()",
+          "description": "Returns polygon rings for every province.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "getPolygonsSimplified",
+          "fullPath": "LUnknown:getPolygonsSimplified",
+          "signature": "()",
+          "description": "Returns simplified polygon rings for every province.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "drawShapes",
+          "fullPath": "LUnknown:drawShapes",
+          "signature": "(...)",
+          "description": "Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Viewport left edge (required if providing a viewport).",
+              "optional": true
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Viewport top edge (required if providing a viewport).",
+              "optional": true
+            },
+            {
+              "name": "w",
+              "type": "number",
+              "description": "Viewport width (required if providing a viewport).",
+              "optional": true
+            },
+            {
+              "name": "h",
+              "type": "number",
+              "description": "Viewport height (required if providing a viewport).",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "type",
+          "fullPath": "LUnknown:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this province grid handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LUnknown:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this province grid handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LProvinceGrid` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "serializeShapeData",
+          "fullPath": "LUnknown:serializeShapeData",
+          "signature": "()",
+          "description": "Serializes province span and border shape data into a binary Lua string.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        },
+        {
+          "name": "deserializeShapeData",
+          "fullPath": "LUnknown:deserializeShapeData",
+          "signature": "(bytes)",
+          "description": "Decodes serialized province shape data into span and segment tables.",
+          "parameters": [
+            {
+              "name": "bytes",
+              "type": "string",
+              "description": "Serialized shape data bytes.",
+              "optional": false
+            }
+          ],
+          "returns": "LuaValue",
+          "returnType": "LuaValue",
+          "isMethod": true,
+          "objectType": "LUnknown"
+        }
+      ]
+    },
+    {
       "name": "LUtilityAI",
       "description": "Lua handle for utility AI action scoring and consideration curves.",
       "methods": [
@@ -204340,6 +204393,34 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LVecFrame"
+        }
+      ]
+    },
+    {
+      "name": "LVoxelModel",
+      "description": "Loaded static MagicaVoxel model handle for raycaster model instances.",
+      "methods": [
+        {
+          "name": "getVoxelCount",
+          "fullPath": "LVoxelModel:getVoxelCount",
+          "signature": "()",
+          "description": "Returns the number of occupied source voxels.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LVoxelModel"
+        },
+        {
+          "name": "getBounds",
+          "fullPath": "LVoxelModel:getBounds",
+          "signature": "()",
+          "description": "Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LVoxelModel"
         }
       ]
     },

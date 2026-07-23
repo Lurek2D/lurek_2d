@@ -14,6 +14,68 @@ fn dummy_key() -> TextureKey {
     TextureKey::from(KeyData::from_ffi(1))
 }
 
+mod sprite_hardening_tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    #[test]
+    fn strict_sheet_rejects_remainders_and_excessive_frame_counts() {
+        assert!(SpriteSheet::try_new(65, 32, 32, 32).is_err());
+        assert!(SpriteSheet::try_new(1_000_000, 1_000_000, 1, 1).is_err());
+    }
+
+    #[test]
+    fn strict_atlas_rejects_oversized_dimensions_and_invalid_padding() {
+        assert!(TextureAtlas::try_new(SpriteLimits::MAX_ATLAS_DIMENSION + 1, 1, 0).is_err());
+        assert!(TextureAtlas::try_new(64, 64, 64).is_err());
+        assert!(TextureAtlas::try_new(64, 64, 0).is_ok());
+    }
+
+    #[test]
+    fn animator_normalizes_non_finite_fps_and_caps_events() {
+        let clip = SpriteClip {
+            fps: f32::NAN,
+            ..SpriteClip::default()
+        }
+        .normalized();
+        assert!(clip.fps.is_finite());
+        let mut clips = HashMap::new();
+        clips.insert(
+            "walk".to_string(),
+            SpriteClip {
+                from: 1,
+                to: 2,
+                fps: 1_000.0,
+                looping: true,
+                ..SpriteClip::default()
+            },
+        );
+        let mut animator = SpriteAnimator::new(clips);
+        assert!(animator.play("walk", true));
+        assert!(animator.update(1_000_000.0).len() <= SpriteLimits::MAX_ANIMATOR_EVENTS);
+        assert!(animator.update(f32::NAN).is_empty());
+        assert!(!animator.play("missing", true));
+    }
+
+    #[test]
+    fn atlas_parser_rejects_duplicates_and_bounds_are_checked() {
+        let duplicate = r#"{"frames":[{"filename":"a","frame":{"x":0,"y":0,"w":1,"h":1}},{"filename":"a","frame":{"x":1,"y":0,"w":1,"h":1}}]}"#;
+        assert!(parse_texturepacker_json(duplicate).is_err());
+        let atlas =
+            parse_texturepacker_json(r#"{"frames":{"a":{"frame":{"x":3,"y":0,"w":2,"h":1}}}}"#)
+                .unwrap();
+        assert!(atlas.validate_bounds(4, 4).is_err());
+        let deep = format!(
+            "{}{}",
+            "[".repeat(SpriteLimits::MAX_ATLAS_JSON_DEPTH + 1),
+            "]".repeat(SpriteLimits::MAX_ATLAS_JSON_DEPTH + 1)
+        );
+        assert!(parse_texturepacker_json(&deep)
+            .unwrap_err()
+            .contains("nesting"));
+    }
+}
+
 // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ sprite Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 #[allow(clippy::module_inception)]

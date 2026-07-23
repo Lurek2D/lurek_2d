@@ -2535,15 +2535,20 @@ describe("destructible terrain", function()
     end)
 
     -- @covers LTerrain:setColliderStrategy
+    it("setColliderStrategy selects boundary contours and rejects unknown strategies", function()
+        local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
+        terrain:setColliderStrategy("contourEdges")
+        terrain:setCell(1, 1, true)
+        terrain:flush()
+        expect_error(function() terrain:setColliderStrategy("invalid") end, "lurek.physics.setColliderStrategy")
+    end)
+
     -- @covers LTerrain:getColliderStrategy
-    it("terrain collider strategy can use boundary contours without internal rectangle seams", function()
+    it("getColliderStrategy reports the configured collider representation", function()
         local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
         expect_equal("rowRuns", terrain:getColliderStrategy())
         terrain:setColliderStrategy("contourEdges")
         expect_equal("contourEdges", terrain:getColliderStrategy())
-        terrain:setCell(1, 1, true)
-        terrain:flush()
-        expect_error(function() terrain:setColliderStrategy("invalid") end, "lurek.physics.setColliderStrategy")
     end)
 
     -- @covers LTerrain:isDirty

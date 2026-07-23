@@ -37,10 +37,11 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `drawToImage` rejects previews whose pixels or conservative pixel/light/occluder-edge work exceed `LightLimits`; it never allocates an unbounded debug bitmap.
 - CPU preview rasterization is isolated from `LightWorld` and borrows selected lights and occluder geometry rather than cloning transformed scene polygons. It is debug/evidence-only; GPU rendering remains owned by `render`.
 - Occluders require 3–512 finite vertices. Invalid geometry is rejected and leaves existing occluders unchanged.
+- Occluder geometry revisions use a non-wrapping `u128` generation for shadow-edge cache invalidation; generation saturates rather than recycling a prior cache key.
 - A new world enables itself on its first light only until `setEnabled` is called. An explicit disable persists across later additions and `clear`; `clear` removes scene objects and resets ambient without changing that enable decision.
 - Cookie paths are authoritative per-light resource references shared by every handle. They are configuration only until renderer cookie sampling is implemented.
 - `transitionTo` stores state on the authoritative light and is advanced by `LLight:updateTransition(dt)`; all aliases observe the same progress, but it is not a world-frame animation.
-- When eligible lights exceed `max_lights`, renderer and preview selection uses stable insertion order. Removing and re-adding a light gives it a new order at the end of the selection queue.
+- When eligible lights exceed `max_lights`, renderer and preview selection uses descending explicit priority, then stable insertion order for equal priorities. Removing and re-adding a light gives it a new order at the end of an equal-priority selection queue. `LightWorld::selection_diagnostics` reports selected, limit-rejected, disabled, invalid, and zero-energy counts without exposing renderer internals.
 
 ## Architecture Links
 

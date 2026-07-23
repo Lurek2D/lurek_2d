@@ -159,6 +159,9 @@ LNetworkState = {}
 ---@class LObject
 LObject = {}
 
+---@class LProvinceGrid
+LProvinceGrid = {}
+
 ---@class LSpacer
 LSpacer = {}
 
@@ -998,38 +1001,6 @@ LProcgenWfcGenerateResult = {}
 ---@field regions table Array of region tables, each with id (integer), name (string), x (number), y (number), tags (string[]).
 LProcgenWorldGraphResult = {}
 
----@class LProvinceGridAdjacenciesResult
----@field border_pixels number Number of shared border pixels.
----@field province_a number First province id.
----@field province_b number Second province id.
-LProvinceGridAdjacenciesResult = {}
-
----@class LProvinceGridBorderSegmentsResult
----@field province_a number First province id.
----@field province_b number Second province id.
----@field x0 number Segment start x.
----@field x1 number Segment end x.
----@field y0 number Segment start y.
----@field y1 number Segment end y.
-LProvinceGridBorderSegmentsResult = {}
-
----@class LProvinceGridGetPolygonsResult
----@field province_id number Province id.
----@field rings table Array of rings; each ring is an array of [x, y] pairs.
-LProvinceGridGetPolygonsResult = {}
-
----@class LProvinceGridGetPolygonsSimplifiedResult
----@field province_id number Province id.
----@field rings table Array of simplified rings; each ring is an array of [x, y] pairs.
-LProvinceGridGetPolygonsSimplifiedResult = {}
-
----@class LProvinceGridProvinceSpansResult
----@field province_id number Province id.
----@field x0 number Start x coordinate.
----@field x1 number End x coordinate.
----@field y number Scanline y coordinate.
-LProvinceGridProvinceSpansResult = {}
-
 ---@class LProvinceRegistryAdjacenciesResult
 ---@field province_a number First province id.
 ---@field province_b number Second province id.
@@ -1538,6 +1509,38 @@ LUniverseSnapshotResult = {}
 ---@field dirty_entities number[] Modified entity ids.
 ---@field removed_components table Array of {entity_id, name} tables.
 LUniverseTakeSnapshotDiffResult = {}
+
+---@class LUnknownAdjacenciesResult
+---@field border_pixels number Number of shared border pixels.
+---@field province_a number First province id.
+---@field province_b number Second province id.
+LUnknownAdjacenciesResult = {}
+
+---@class LUnknownBorderSegmentsResult
+---@field province_a number First province id.
+---@field province_b number Second province id.
+---@field x0 number Segment start x.
+---@field x1 number Segment end x.
+---@field y0 number Segment start y.
+---@field y1 number Segment end y.
+LUnknownBorderSegmentsResult = {}
+
+---@class LUnknownGetPolygonsResult
+---@field province_id number Province id.
+---@field rings table Array of rings; each ring is an array of [x, y] pairs.
+LUnknownGetPolygonsResult = {}
+
+---@class LUnknownGetPolygonsSimplifiedResult
+---@field province_id number Province id.
+---@field rings table Array of simplified rings; each ring is an array of [x, y] pairs.
+LUnknownGetPolygonsSimplifiedResult = {}
+
+---@class LUnknownProvinceSpansResult
+---@field province_id number Province id.
+---@field x0 number Start x coordinate.
+---@field x1 number End x coordinate.
+---@field y number Scanline y coordinate.
+LUnknownProvinceSpansResult = {}
 
 ---@class LValidationReportGetIssuesResult
 ---@field hint string? Optional fix hint.
@@ -2429,9 +2432,8 @@ LLayeredImage = {}
 ---@class LPaletteLUT
 LPaletteLUT = {}
 
---- Lua-side compatibility handle for a province id grid decoded by the province subsystem.
----@class LProvinceGrid
-LProvinceGrid = {}
+---@class LUnknown
+LUnknown = {}
 
 --- Lua-side combo detector handle tracking ordered key sequences.
 ---@class LCombo
@@ -3028,6 +3030,10 @@ LShape = {}
 --- Batched sprite renderer for efficiently drawing many copies of the same texture.
 ---@class LSpriteBatch
 LSpriteBatch = {}
+
+--- Loaded static MagicaVoxel model handle for raycaster model instances.
+---@class LVoxelModel
+LVoxelModel = {}
 
 --- Lua-side REPL session handle with bounded history.
 ---@class LReplSession
@@ -15826,17 +15832,17 @@ function LPaletteLUT:type() end
 function LPaletteLUT:typeOf(name) end
 
 --- Returns province adjacency records and shared border pixel counts.
----@return LProvinceGridAdjacenciesResult Array table with `province_a`, `province_b`, and `border_pixels` fields.
-function LProvinceGrid:adjacencies() end
+---@return LUnknownAdjacenciesResult Array table with `province_a`, `province_b`, and `border_pixels` fields.
+function LUnknown:adjacencies() end
 
 --- Returns border line segments between neighboring provinces.
----@return LProvinceGridBorderSegmentsResult Array table with province ids and segment coordinates.
-function LProvinceGrid:borderSegments() end
+---@return LUnknownBorderSegmentsResult Array table with province ids and segment coordinates.
+function LUnknown:borderSegments() end
 
 --- Decodes serialized province shape data into span and segment tables.
 ---@param bytes string Serialized shape data bytes.
 ---@return LuaValue Table with `spans` and `segments`, or nil when decoding fails.
-function LProvinceGrid:deserializeShapeData(bytes) end
+function LUnknown:deserializeShapeData(bytes) end
 
 --- Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
 ---@param x? number Viewport left edge (required if providing a viewport).
@@ -15844,50 +15850,50 @@ function LProvinceGrid:deserializeShapeData(bytes) end
 ---@param w? number Viewport width (required if providing a viewport).
 ---@param h? number Viewport height (required if providing a viewport).
 ---@return number Number of polygons emitted to the render command queue.
-function LProvinceGrid:drawShapes(x, y, w, h) end
+function LUnknown:drawShapes(x, y, w, h) end
 
 --- Returns the province id stored at grid coordinates.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
 ---@return number Province id at the pixel.
-function LProvinceGrid:getAt(x, y) end
+function LUnknown:getAt(x, y) end
 
 --- Returns the province grid height. This method is available to Lua scripts.
 ---@return number Grid height in pixels.
-function LProvinceGrid:getHeight() end
+function LUnknown:getHeight() end
 
 --- Returns polygon rings for every province.
----@return LProvinceGridGetPolygonsResult Array table of province polygon records with `province_id` and `rings` fields.
-function LProvinceGrid:getPolygons() end
+---@return LUnknownGetPolygonsResult Array table of province polygon records with `province_id` and `rings` fields.
+function LUnknown:getPolygons() end
 
 --- Returns simplified polygon rings for every province.
----@return LProvinceGridGetPolygonsSimplifiedResult Array table of simplified province polygon records with `province_id` and `rings` fields.
-function LProvinceGrid:getPolygonsSimplified() end
+---@return LUnknownGetPolygonsSimplifiedResult Array table of simplified province polygon records with `province_id` and `rings` fields.
+function LUnknown:getPolygonsSimplified() end
 
 --- Returns the province grid width. This method is available to Lua scripts.
 ---@return number Grid width in pixels.
-function LProvinceGrid:getWidth() end
+function LUnknown:getWidth() end
 
 --- Returns the number of distinct provinces in the grid.
 ---@return number Province count.
-function LProvinceGrid:provinceCount() end
+function LUnknown:provinceCount() end
 
 --- Returns horizontal province spans by row.
----@return LProvinceGridProvinceSpansResult Array table with `province_id`, `y`, `x0`, and `x1` fields.
-function LProvinceGrid:provinceSpans() end
+---@return LUnknownProvinceSpansResult Array table with `province_id`, `y`, `x0`, and `x1` fields.
+function LUnknown:provinceSpans() end
 
 --- Serializes province span and border shape data into a binary Lua string.
 ---@return string Serialized shape data bytes.
-function LProvinceGrid:serializeShapeData() end
+function LUnknown:serializeShapeData() end
 
 --- Returns the Lua-visible type name for this province grid handle.
 ---@return string The string `LProvinceGrid`.
-function LProvinceGrid:type() end
+function LUnknown:type() end
 
 --- Returns whether this province grid handle matches a supported type name.
 ---@param name string Type name to compare against `LProvinceGrid` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
-function LProvinceGrid:typeOf(name) end
+function LUnknown:typeOf(name) end
 
 --- Returns a completed screen capture image or requests one for a future call.
 ---@return LImageData nil | `LImageData` when capture data is ready, or nil after requesting capture.
@@ -25254,6 +25260,10 @@ function LTerrain:flush(maxDirtyChunks) end
 ---@return boolean True if the cell is solid.
 function LTerrain:getCell(cx, cy) end
 
+--- Returns the static terrain collider generation strategy.
+---@return string `rowRuns` or `contourEdges`.
+function LTerrain:getColliderStrategy() end
+
 --- Returns terrain chunks pending collider rebuild after terrain edits.
 ---@return table Array of `{cx, cy}` chunk coordinates.
 function LTerrain:getDirtyChunks() end
@@ -25272,6 +25282,10 @@ function LTerrain:loadFromBytes(data) end
 ---@param cy number Cell row (0-based).
 ---@param solid boolean True for solid, false for empty.
 function LTerrain:setCell(cx, cy, solid) end
+
+--- Selects static terrain collider generation. `rowRuns` is the fast filled default; `contourEdges` emits only exposed cell boundaries.
+---@param strategy string `rowRuns` or `contourEdges`.
+function LTerrain:setColliderStrategy(strategy) end
 
 --- Returns all solid cell centers as a table of `{x, y}` entries in world coordinates.
 ---@return LTerrainSolidPositionsResult Array of tables with x and y fields (world-space centers).
@@ -29639,8 +29653,8 @@ function LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left, opts
 ---@param opts? table Optional {intensity?, color?, r?, g?, b?, level?}.
 function LSceneAdapter:addLight(x, y, radius, opts) end
 
---- Adds a static OBJ model instance entry.
----@param model LObjModel OBJ model handle.
+--- Adds a static OBJ or MagicaVoxel model instance entry.
+---@param model LObjModel|LVoxelModel Model handle.
 ---@param x number World X position.
 ---@param y number World Y position.
 ---@param opts? table Optional {id?, level?, yaw?, z?, scale?}.
@@ -29668,9 +29682,9 @@ function LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, left,
 ---@param opts? table Optional {intensity?, color?, r?, g?, b?, level?, offset_x?, offset_y?}.
 function LSceneAdapter:bindBodyLight(body, radius, opts) end
 
---- Binds an OBJ model instance to a live physics body.
+--- Binds an OBJ or MagicaVoxel model instance to a live physics body.
 ---@param body LBody Physics body handle.
----@param model LObjModel OBJ model handle.
+---@param model LObjModel|LVoxelModel Model handle.
 ---@param opts? table Optional {id?, level?, yaw_offset?, offset_x?, offset_y?, z?, scale?}.
 function LSceneAdapter:bindBodyModel(body, model, opts) end
 
@@ -30397,6 +30411,12 @@ function LSpriteBatch:type() end
 ---@return boolean True if the name matches.
 function LSpriteBatch:typeOf(name) end
 
+--- Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.
+function LVoxelModel:getBounds() end
+
+--- Returns the number of occupied source voxels.
+function LVoxelModel:getVoxelCount() end
+
 --- Applies a post-processing effect or stack from one canvas into another canvas.
 ---@param sourceCanvas LCanvas Canvas used as the source texture.
 ---@param targetCanvas LCanvas Canvas receiving the processed output.
@@ -30789,6 +30809,12 @@ lurek.render.loadModel = function(path) end
 ---@param path string File path to the .obj file relative to the game directory.
 ---@return LObjModel The loaded OBJ model handle.
 lurek.render.loadObj = function(path) end
+
+--- Loads a MagicaVoxel `.vox` static prop with palette colours and a configurable world-space voxel size.
+---@param path string File path to the `.vox` file relative to the game directory.
+---@param voxelSize? number World-space size of one source voxel (default 1).
+---@return LVoxelModel The loaded voxel model handle.
+lurek.render.loadVoxel = function(path, voxelSize) end
 
 --- Creates a new off-screen render target with the given dimensions.
 ---@param width number Canvas width in pixels (must be > 0).
@@ -32070,11 +32096,12 @@ function LAtlasPacker:getDimensions() end
 ---@return LAtlasPackerGetRegionResult Region table `{name, x, y, w, h, nine_slice}` or nil when missing.
 function LAtlasPacker:getRegion(name) end
 
---- Packs a named region into this atlas and returns whether allocation succeeded.
+--- Packs a named region into this atlas and returns success plus an optional failure code.
 ---@param name string Region key used for later lookups.
 ---@param w number Region width in pixels.
 ---@param h number Region height in pixels.
 ---@return boolean True when the region was packed.
+---@return string? `duplicate`; `invalid`; `overflow`; or `full` when packing fails.
 function LAtlasPacker:pack(name, w, h) end
 
 --- Returns the number of currently packed regions.
@@ -32128,7 +32155,7 @@ function LSprite:hasNormalMap() end
 function LSprite:setNormalIntensity(intensity) end
 
 --- Assigns the texture used as this sprite's normal map for lit sprite workflows.
----@param texture_id number Texture handle used as the normal-map source.
+---@param texture_id number Live opaque image handle used as the normal-map source.
 function LSprite:setNormalMap(texture_id) end
 
 --- Sets the sprite anchor position in pixels.
@@ -32403,7 +32430,7 @@ lurek.sprite.newAutoTileSheet = function(image, layout, opts) end
 ---@return LNineSlice The 9-slice handle.
 lurek.sprite.newNineSlice = function(image, top, right, bottom, left) end
 
---- Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
+--- Creates a sprite sheet using RPG Maker's standard character layout (3 columns by 4 rows per character block).
 ---@param tw number Full texture width in pixels.
 ---@param th number Full texture height in pixels.
 ---@return LSpriteSheet A new sprite sheet configured for RPG Maker character sprites.
@@ -32424,7 +32451,7 @@ lurek.sprite.newSheet = function(tw, th, fw, fh) end
 lurek.sprite.newSheetFromImage = function(image, opts) end
 
 --- Creates a lightweight sprite record with transform and optional normal-map metadata.
----@param texture_id number Texture handle used by the sprite.
+---@param texture_id number Live opaque image handle used by the sprite.
 ---@param x number Initial world X position.
 ---@param y number Initial world Y position.
 ---@return LSprite A new sprite object.

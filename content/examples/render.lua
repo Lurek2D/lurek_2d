@@ -1086,6 +1086,48 @@ do
     lurek.log.info("obj faces=" .. faces .. " verts=" .. verts .. " normals=" .. normals)
 end
 
+--@api: lurek.render.loadVoxel
+do
+
+    local function le32(value)
+        return string.char(value % 256, math.floor(value / 256) % 256, math.floor(value / 65536) % 256, math.floor(value / 16777216) % 256)
+    end
+    local children = "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) .. "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+    local path = "save/voxel_example.vox"
+    lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+    local model = lurek.render.loadVoxel(path, 0.25)
+    local bounds = model:getBounds()
+    lurek.log.info("voxel count=" .. model:getVoxelCount() .. " height=" .. bounds.maxY)
+end
+
+--@api: LVoxelModel:getVoxelCount
+do
+
+    local function le32(value)
+        return string.char(value % 256, math.floor(value / 256) % 256, math.floor(value / 65536) % 256, math.floor(value / 16777216) % 256)
+    end
+    local children = "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) .. "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+    local path = "save/voxel_count_example.vox"
+    lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+    local model = lurek.render.loadVoxel(path, 0.5)
+    local count = model:getVoxelCount()
+    lurek.log.info("source voxels=" .. count)
+end
+
+--@api: LVoxelModel:getBounds
+do
+
+    local function le32(value)
+        return string.char(value % 256, math.floor(value / 256) % 256, math.floor(value / 65536) % 256, math.floor(value / 16777216) % 256)
+    end
+    local children = "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(2) .. le32(1) .. "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+    local path = "save/voxel_bounds_example.vox"
+    lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+    local model = lurek.render.loadVoxel(path, 0.5)
+    local bounds = model:getBounds()
+    lurek.log.info("voxel bounds y=" .. bounds.minY .. ".." .. bounds.maxY)
+end
+
 --@api: LObjModel:projectToMesh
 do
 

@@ -59,6 +59,22 @@ pub struct NormalMapLightHint {
     pub strength: f32,
 }
 
+/// Summary of one renderer-light selection pass.
+/// # Fields
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct LightSelectionDiagnostics {
+    /// Number of registered lights selected for rendering.
+    pub selected_count: usize,
+    /// Eligible lights omitted only because `max_lights` was reached.
+    pub rejected_by_limit: usize,
+    /// Registered lights disabled by their authored enabled flag.
+    pub rejected_disabled: usize,
+    /// Registered lights rejected because direct Rust mutation made their render state invalid.
+    pub rejected_invalid: usize,
+    /// Registered lights with zero energy, which cannot contribute to rendering.
+    pub rejected_zero_energy: usize,
+}
+
 impl LightWorld {
     /// Create an empty world with ambient=0.1, disabled, and max_lights=64.
     pub fn new() -> Self {
@@ -79,13 +95,8 @@ impl LightWorld {
     }
     /// Insert a light when the registered-light ceiling permits it.
     pub fn add_light(&mut self, mut light: Light2D) -> Result<LightKey, String> {
-        if !light.x.is_finite() || !light.y.is_finite() {
-            return Err("lurek.light.newLight: position must be finite".to_string());
-        }
-        if !light.radius.is_finite() || light.radius <= 0.0 {
-            return Err(
-                "lurek.light.newLight: radius must be finite and greater than zero".to_string(),
-            );
+        if !light.is_render_valid() {
+            return Err("lurek.light.newLight: light state must be finite and valid".to_string());
         }
         if self.lights.len() >= self.limits.max_registered_lights {
             return Err(format!(
@@ -109,8 +120,10 @@ impl LightWorld {
     }
     /// Insert an occluder when all storage ceilings permit it.
     pub fn add_occluder(&mut self, occluder: Occluder) -> Result<OccluderKey, String> {
-        if !occluder.position.x.is_finite() || !occluder.position.y.is_finite() {
-            return Err("lurek.light.newOccluder: position must be finite".to_string());
+        if !occluder.is_render_valid() {
+            return Err(
+                "lurek.light.newOccluder: occluder state must be finite and valid".to_string(),
+            );
         }
         if self.occluders.len() >= self.limits.max_registered_occluders {
             return Err(format!(
@@ -253,25 +266,41 @@ impl LightWorld {
         }
         self.flicker_index_dirty = false;
     }
-    /// Return eligible render lights in stable insertion order, capped by `max_lights`.
+    /// Return eligible render lights ordered by priority descending then stable insertion order.
     pub fn selected_render_lights(&self) -> Vec<(LightKey, &Light2D)> {
         let mut selected: Vec<_> = self
             .lights
             .iter()
-            .filter(|(_, light)| {
-                light.enabled
-                    && light.x.is_finite()
-                    && light.y.is_finite()
-                    && light.radius.is_finite()
-                    && light.radius > 0.0
-                    && light.intensity.is_finite()
-                    && light.energy.is_finite()
-                    && light.energy > 0.0
-            })
+            .filter(|(_, light)| light.enabled && light.is_render_valid() && light.energy > 0.0)
             .collect();
-        selected.sort_by_key(|(_, light)| light.insertion_order);
+        selected.sort_by(|(_, left), (_, right)| {
+            right
+                .priority
+                .cmp(&left.priority)
+                .then_with(|| left.insertion_order.cmp(&right.insertion_order))
+        });
         selected.truncate(self.max_lights as usize);
         selected
+    }
+    /// Return bounded renderer-selection counts without exposing renderer internals.
+    pub fn selection_diagnostics(&self) -> LightSelectionDiagnostics {
+        let mut diagnostics = LightSelectionDiagnostics::default();
+        let mut eligible = 0usize;
+        for light in self.lights.values() {
+            if !light.enabled {
+                diagnostics.rejected_disabled = diagnostics.rejected_disabled.saturating_add(1);
+            } else if !light.is_render_valid() {
+                diagnostics.rejected_invalid = diagnostics.rejected_invalid.saturating_add(1);
+            } else if light.energy <= 0.0 {
+                diagnostics.rejected_zero_energy =
+                    diagnostics.rejected_zero_energy.saturating_add(1);
+            } else {
+                eligible = eligible.saturating_add(1);
+            }
+        }
+        diagnostics.selected_count = eligible.min(self.max_lights as usize);
+        diagnostics.rejected_by_limit = eligible.saturating_sub(diagnostics.selected_count);
+        diagnostics
     }
     /// Render an approximate light-map preview after validating bounded preview cost.
     pub fn draw_to_image(

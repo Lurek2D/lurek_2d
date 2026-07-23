@@ -11,9 +11,10 @@ use crate::sprite::animator::{AnimatorEvent, SpriteAnimator, SpriteClip};
 use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, SpriteAtlas};
 use crate::sprite::sprite::Sprite;
 use crate::sprite::sprite_sheet::SpriteSheet;
-use crate::sprite::{NineSliceInsets, TextureAtlas};
+use crate::sprite::{NineSliceInsets, SpriteLimits, TextureAtlas};
 use crate::tilemap::{AutoTileLayout, AutoTileSheet};
 use mlua::prelude::*;
+use slotmap::KeyData;
 use std::borrow::Borrow;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -29,6 +30,57 @@ fn require_positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32>
     Ok(value)
 }
 
+/// Converts a public one-based Lua index without allowing zero to alias item one.
+fn lua_one_based_index(api: &str, index: usize) -> LuaResult<usize> {
+    index.checked_sub(1).ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "{api}: index must be one-based (greater than zero)"
+        ))
+    })
+}
+
+fn require_finite(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if !value.is_finite() {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be finite"
+        )));
+    }
+    Ok(value)
+}
+
+/// Resolves an opaque Lua image ID only while it still names a live render texture.
+fn require_live_texture_id(
+    state: &Rc<RefCell<SharedState>>,
+    api: &str,
+    raw_id: usize,
+) -> LuaResult<usize> {
+    let key = crate::runtime::resource_keys::TextureKey::from(KeyData::from_ffi(raw_id as u64));
+    if RefCell::borrow(state.as_ref()).textures.contains_key(key) {
+        Ok(raw_id)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: texture handle is invalid or was released"
+        )))
+    }
+}
+
+/// Converts one Lua number to a finite `f32` uniform component.
+fn uniform_component(api: &str, value: LuaValue) -> LuaResult<f32> {
+    match value {
+        LuaValue::Integer(value) if value >= f32::MIN as i64 && value <= f32::MAX as i64 => {
+            Ok(value as f32)
+        }
+        LuaValue::Number(value)
+            if value.is_finite() && value >= f32::MIN as f64 && value <= f32::MAX as f64 =>
+        {
+            Ok(value as f32)
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "{api}: uniform vector components must be finite f32 values"
+        ))),
+    }
+}
+
 fn parse_autotile_layout(api: &str, layout: &str) -> LuaResult<AutoTileLayout> {
     match layout {
         "blob47" => Ok(AutoTileLayout::Blob47),
@@ -42,19 +94,166 @@ fn parse_autotile_layout(api: &str, layout: &str) -> LuaResult<AutoTileLayout> {
     }
 }
 
+fn sheet_from_image_options(image: &ImageData, opts: LuaTable) -> LuaResult<SpriteSheet> {
+    let image_w = image.width();
+    let image_h = image.height();
+    let frame_w = opts
+        .get::<_, Option<u32>>("frameWidth")?
+        .or_else(|| opts.get::<_, Option<u32>>("fw").ok().flatten())
+        .or_else(|| {
+            opts.get::<_, Option<u32>>("columns")
+                .ok()
+                .flatten()
+                .and_then(|cols| (cols > 0).then_some(image_w / cols))
+        })
+        .ok_or_else(|| {
+            LuaError::RuntimeError(
+                "lurek.sprite.newSheetFromImage: expected frameWidth or columns".into(),
+            )
+        })?;
+    let frame_h = opts
+        .get::<_, Option<u32>>("frameHeight")?
+        .or_else(|| opts.get::<_, Option<u32>>("fh").ok().flatten())
+        .or_else(|| {
+            opts.get::<_, Option<u32>>("rows")
+                .ok()
+                .flatten()
+                .and_then(|rows| (rows > 0).then_some(image_h / rows))
+        })
+        .ok_or_else(|| {
+            LuaError::RuntimeError(
+                "lurek.sprite.newSheetFromImage: expected frameHeight or rows".into(),
+            )
+        })?;
+    let frame_w = require_positive_u32("lurek.sprite.newSheetFromImage", "frameWidth", frame_w)?;
+    let frame_h = require_positive_u32("lurek.sprite.newSheetFromImage", "frameHeight", frame_h)?;
+    SpriteSheet::try_new(image_w, image_h, frame_w, frame_h)
+        .map_err(|e| LuaError::RuntimeError(format!("lurek.sprite.newSheetFromImage: {e}")))
+}
+
+fn animator_from_lua(clips: Option<LuaTable>) -> LuaResult<SpriteAnimator> {
+    let mut parsed = HashMap::new();
+    if let Some(clips_table) = clips {
+        for pair in clips_table.pairs::<String, LuaTable>() {
+            let (name, def) = pair?;
+            if name.is_empty() || name.len() > SpriteLimits::MAX_NAME_BYTES {
+                return Err(LuaError::RuntimeError(
+                    "lurek.sprite.newAnimator: clip name is empty or too long".into(),
+                ));
+            }
+            if parsed.len() >= SpriteLimits::MAX_CLIPS {
+                return Err(LuaError::RuntimeError(
+                    "lurek.sprite.newAnimator: too many clips".into(),
+                ));
+            }
+            parsed.insert(name, clip_from_lua(def)?);
+        }
+    }
+    Ok(SpriteAnimator::new(parsed))
+}
+
+fn atlas_from_image_json(image: &ImageData, atlas_json: &str) -> LuaResult<SpriteAtlas> {
+    let atlas = parse_texturepacker_json(atlas_json)
+        .or_else(|_| parse_aseprite_json(atlas_json))
+        .map_err(|e| LuaError::RuntimeError(format!("newAtlasFromImage: {e}")))?;
+    atlas
+        .validate_bounds(image.width(), image.height())
+        .map_err(|e| LuaError::RuntimeError(format!("newAtlasFromImage: {e}")))?;
+    Ok(atlas)
+}
+
+fn autotile_sheet_from_options(
+    image: &ImageData,
+    layout: &str,
+    opts: LuaTable,
+) -> LuaResult<AutoTileSheet> {
+    let tile_w = opts
+        .get::<_, Option<u32>>("tileWidth")?
+        .or_else(|| opts.get::<_, Option<u32>>("tileW").ok().flatten())
+        .unwrap_or(image.width());
+    let tile_h = opts
+        .get::<_, Option<u32>>("tileHeight")?
+        .or_else(|| opts.get::<_, Option<u32>>("tileH").ok().flatten())
+        .unwrap_or(image.height());
+    Ok(AutoTileSheet::new(
+        require_positive_u32("lurek.sprite.newAutoTileSheet", "tileWidth", tile_w)?,
+        require_positive_u32("lurek.sprite.newAutoTileSheet", "tileHeight", tile_h)?,
+        parse_autotile_layout("lurek.sprite.newAutoTileSheet", layout)?,
+    ))
+}
+
+fn nine_slice_from_image(
+    image: LuaAnyUserData,
+    top: f32,
+    right: f32,
+    bottom: f32,
+    left: f32,
+) -> LuaResult<LuaNineSlice> {
+    if !top.is_finite()
+        || !right.is_finite()
+        || !bottom.is_finite()
+        || !left.is_finite()
+        || top < 0.0
+        || right < 0.0
+        || bottom < 0.0
+        || left < 0.0
+    {
+        return Err(LuaError::RuntimeError(
+            "lurek.sprite.newNineSlice: border insets must be non-negative".into(),
+        ));
+    }
+    let img = image.borrow::<LuaImage>()?;
+    let state = RefCell::borrow(img.state.as_ref());
+    let (tex_w, tex_h) = state
+        .textures
+        .get(img.key)
+        .map(|texture| (texture.width, texture.height))
+        .ok_or_else(|| {
+            LuaError::RuntimeError("lurek.sprite.newNineSlice: image handle is invalid".into())
+        })?;
+    if tex_w == 0 || tex_h == 0 || left + right > tex_w as f32 || top + bottom > tex_h as f32 {
+        return Err(LuaError::RuntimeError(
+            "lurek.sprite.newNineSlice: insets must fit the live texture".into(),
+        ));
+    }
+    Ok(LuaNineSlice {
+        key: img.key,
+        tex_w,
+        tex_h,
+        top,
+        right,
+        bottom,
+        left,
+    })
+}
+
 fn lua_value_to_uniform(api: &str, value: LuaValue) -> LuaResult<UniformValue> {
     match value {
-        LuaValue::Number(n) => Ok(UniformValue::Float(n as f32)),
-        LuaValue::Integer(n) => Ok(UniformValue::Int(n as i32)),
+        LuaValue::Number(n) if n.is_finite() && n >= f32::MIN as f64 && n <= f32::MAX as f64 => {
+            Ok(UniformValue::Float(n as f32))
+        }
+        LuaValue::Number(_) => Err(LuaError::RuntimeError(format!(
+            "{api}: float uniform must be finite and within f32 range"
+        ))),
+        LuaValue::Integer(n) => i32::try_from(n).map(UniformValue::Int).map_err(|_| {
+            LuaError::RuntimeError(format!("{api}: integer uniform exceeds i32 range"))
+        }),
         LuaValue::Boolean(b) => Ok(UniformValue::Bool(b)),
         LuaValue::Table(t) => match t.raw_len() {
-            2 => Ok(UniformValue::Vec2([t.get(1)?, t.get(2)?])),
-            3 => Ok(UniformValue::Vec3([t.get(1)?, t.get(2)?, t.get(3)?])),
+            2 => Ok(UniformValue::Vec2([
+                uniform_component(api, t.get(1)?)?,
+                uniform_component(api, t.get(2)?)?,
+            ])),
+            3 => Ok(UniformValue::Vec3([
+                uniform_component(api, t.get(1)?)?,
+                uniform_component(api, t.get(2)?)?,
+                uniform_component(api, t.get(3)?)?,
+            ])),
             4 => Ok(UniformValue::Vec4([
-                t.get(1)?,
-                t.get(2)?,
-                t.get(3)?,
-                t.get(4)?,
+                uniform_component(api, t.get(1)?)?,
+                uniform_component(api, t.get(2)?)?,
+                uniform_component(api, t.get(3)?)?,
+                uniform_component(api, t.get(4)?)?,
             ])),
             _ => Err(LuaError::RuntimeError(format!(
                 "{api}: uniform table must have 2, 3, or 4 elements"
@@ -79,6 +278,8 @@ impl LuaUserData for LuaSprite {
         /// @param | x | number | World X position.
         /// @param | y | number | World Y position.
         methods.add_method_mut("setPosition", |_, this, (x, y): (f32, f32)| {
+            require_finite("LSprite:setPosition", "x", x)?;
+            require_finite("LSprite:setPosition", "y", y)?;
             this.inner.set_position(x, y);
             Ok(())
         });
@@ -91,8 +292,10 @@ impl LuaUserData for LuaSprite {
         });
         // -- setNormalMap --
         /// Assigns the texture used as this sprite's normal map for lit sprite workflows.
-        /// @param | texture_id | integer | Texture handle used as the normal-map source.
+        /// @param | texture_id | integer | Live opaque image handle used as the normal-map source.
         methods.add_method_mut("setNormalMap", |_, this, texture_id: usize| {
+            let texture_id =
+                require_live_texture_id(&this.state, "LSprite:setNormalMap", texture_id)?;
             this.inner.set_normal_map(texture_id);
             Ok(())
         });
@@ -118,6 +321,12 @@ impl LuaUserData for LuaSprite {
         /// Sets the normal-map intensity used by lit sprite workflows.
         /// @param | intensity | number | Non-negative intensity multiplier.
         methods.add_method_mut("setNormalIntensity", |_, this, intensity: f32| {
+            require_finite("LSprite:setNormalIntensity", "intensity", intensity)?;
+            if intensity < 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "LSprite:setNormalIntensity: intensity must be non-negative".into(),
+                ));
+            }
             this.inner.set_normal_intensity(intensity);
             Ok(())
         });
@@ -159,6 +368,11 @@ impl LuaUserData for LuaSprite {
         methods.add_method_mut(
             "setShaderUniform",
             |_, this, (name, value): (String, LuaValue)| {
+                if name.is_empty() || name.len() > SpriteLimits::MAX_NAME_BYTES {
+                    return Err(LuaError::RuntimeError(
+                        "LSprite:setShaderUniform: uniform name is empty or too long".into(),
+                    ));
+                }
                 let key = this.inner.get_shader().ok_or_else(|| {
                     LuaError::runtime("LSprite:setShaderUniform: no shader is bound")
                 })?;
@@ -203,6 +417,7 @@ impl LuaUserData for LuaSpriteSheet {
         /// @field | w | number | W.
         /// @field | h | number | H.
         methods.add_method("getFrame", |lua, this, index: usize| {
+            let index = lua_one_based_index("LSpriteSheet:getFrame", index)?;
             match this.inner.get_frame(index) {
                 Some(r) => {
                     let t = quad_table(lua, r)?;
@@ -276,6 +491,28 @@ impl LuaUserData for LuaSpriteSheet {
         methods.add_method_mut(
             "nameGroup",
             |_, this, (name, start, count): (String, usize, usize)| {
+                let start = lua_one_based_index("LSpriteSheet:nameGroup", start)?;
+                if name.is_empty() || name.len() > SpriteLimits::MAX_NAME_BYTES {
+                    return Err(LuaError::RuntimeError(
+                        "LSpriteSheet:nameGroup: group name is empty or too long".into(),
+                    ));
+                }
+                if this.inner.group_count() >= SpriteLimits::MAX_GROUPS
+                    && this.inner.get_group(&name).is_none()
+                {
+                    return Err(LuaError::RuntimeError(
+                        "LSpriteSheet:nameGroup: too many named groups".into(),
+                    ));
+                }
+                if count == 0
+                    || start
+                        .checked_add(count)
+                        .is_none_or(|end| end > this.inner.get_frame_count())
+                {
+                    return Err(LuaError::RuntimeError(
+                        "LSpriteSheet:nameGroup: range is out of bounds".into(),
+                    ));
+                }
                 this.inner.name_group(name, start, count);
                 Ok(())
             },
@@ -437,7 +674,8 @@ impl LuaUserData for LuaSpriteAtlas {
         /// @field | flip_x | boolean | Flip horizontally.
         /// @field | flip_y | boolean | Flip vertically.
         methods.add_method("getByIndex", |lua, this, index: usize| {
-            match this.inner.get_by_index(index.saturating_sub(1)) {
+            let index = lua_one_based_index("LSpriteAtlas:getByIndex", index)?;
+            match this.inner.get_by_index(index) {
                 Some(e) => {
                     let t = lua.create_table()?;
                     /// Performs the 'name' operation.
@@ -559,7 +797,9 @@ impl LuaUserData for LuaSpriteAutoTileSheet {
         /// @param | tile_id | integer | One-based tile id.
         /// @return | table | Rectangle table.
         methods.add_method("getQuad", |lua, this, tile_id: u32| {
-            let r = this.inner.get_quad(tile_id.saturating_sub(1));
+            let tile_id =
+                lua_one_based_index("LSpriteAutoTileSheet:getQuad", tile_id as usize)? as u32;
+            let r = this.inner.get_quad(tile_id);
             quad_table(lua, r)
         });
         // -- getBitmaskForTile --
@@ -567,7 +807,10 @@ impl LuaUserData for LuaSpriteAutoTileSheet {
         /// @param | tile_id | integer | One-based tile id.
         /// @return | integer | Bitmask.
         methods.add_method("getBitmaskForTile", |_, this, tile_id: u32| {
-            Ok(this.inner.get_bitmask_for_tile(tile_id.saturating_sub(1)))
+            let tile_id =
+                lua_one_based_index("LSpriteAutoTileSheet:getBitmaskForTile", tile_id as usize)?
+                    as u32;
+            Ok(this.inner.get_bitmask_for_tile(tile_id))
         });
         // -- getTileForBitmask --
         /// Returns a one-based tile id for a bitmask, or nil when missing.
@@ -607,14 +850,22 @@ pub struct LuaAtlasPacker {
 impl LuaUserData for LuaAtlasPacker {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- pack --
-        /// Packs a named region into this atlas and returns whether allocation succeeded.
+        /// Packs a named region into this atlas and returns success plus an optional failure code.
         /// @param | name | string | Region key used for later lookups.
         /// @param | w | integer | Region width in pixels.
         /// @param | h | integer | Region height in pixels.
         /// @return | boolean | True when the region was packed.
-        methods.add_method_mut("pack", |_, this, (name, w, h): (String, u32, u32)| {
-            Ok(this.inner.pack(&name, w, h))
-        });
+        /// @return | string? | `duplicate`, `invalid`, `overflow`, or `full` when packing fails.
+        methods.add_method_mut(
+            "pack",
+            |lua, this, (name, w, h): (String, u32, u32)| match this
+                .inner
+                .pack_checked(&name, w, h, None)
+            {
+                Ok(()) => Ok((true, LuaValue::Nil)),
+                Err(reason) => Ok((false, LuaValue::String(lua.create_string(reason.as_str())?))),
+            },
+        );
         // -- setNineSlice --
         /// Sets nine-slice insets for a previously packed region.
         /// @param | name | string | Packed region key.
@@ -706,10 +957,10 @@ impl LuaUserData for LuaAtlasPacker {
 
 /// Lua-visible wrapper around Rust-side clip animation playback state.
 pub struct LuaSpriteAnimator {
-    inner: SpriteAnimator,
-    on_frame: Option<LuaRegistryKey>,
-    on_loop: Option<LuaRegistryKey>,
-    on_end: Option<LuaRegistryKey>,
+    inner: RefCell<SpriteAnimator>,
+    on_frame: RefCell<Option<LuaRegistryKey>>,
+    on_loop: RefCell<Option<LuaRegistryKey>>,
+    on_end: RefCell<Option<LuaRegistryKey>>,
 }
 
 impl LuaUserData for LuaSpriteAnimator {
@@ -718,71 +969,79 @@ impl LuaUserData for LuaSpriteAnimator {
         /// Plays or restarts a named animation clip.
         /// @param | name | string | Clip name.
         /// @param | restart | boolean? | Whether to restart when already playing this clip. Defaults to true.
-        methods.add_method_mut(
+        methods.add_method(
             "play",
             |_, this, (name, restart): (String, Option<bool>)| {
-                this.inner.play(&name, restart.unwrap_or(true));
-                Ok(())
+                Ok(this.inner.borrow_mut().play(&name, restart.unwrap_or(true)))
             },
         );
 
         // -- pause --
         /// Pause playback without resetting frame state.
-        methods.add_method_mut("pause", |_, this, ()| {
-            this.inner.pause();
+        methods.add_method("pause", |_, this, ()| {
+            this.inner.borrow_mut().pause();
             Ok(())
         });
 
         // -- resume --
         /// Resume playback from current frame when a clip is selected.
-        methods.add_method_mut("resume", |_, this, ()| {
-            this.inner.resume();
+        methods.add_method("resume", |_, this, ()| {
+            this.inner.borrow_mut().resume();
             Ok(())
         });
 
         // -- stop --
         /// Stop playback and reset to the first frame of the current clip.
-        methods.add_method_mut("stop", |_, this, ()| {
-            this.inner.stop();
+        methods.add_method("stop", |_, this, ()| {
+            this.inner.borrow_mut().stop();
             Ok(())
         });
 
         // -- isPlaying --
         /// Return whether the animator is currently playing.
         /// @return | boolean | True when playing.
-        methods.add_method("isPlaying", |_, this, ()| Ok(this.inner.is_playing()));
+        methods.add_method("isPlaying", |_, this, ()| {
+            Ok(this.inner.borrow().is_playing())
+        });
 
         // -- currentClip --
         /// Return the currently selected clip name.
         /// @return | string | Active clip name, or nil if none.
         methods.add_method("currentClip", |_, this, ()| {
-            Ok(this.inner.current_clip().map(|name| name.to_string()))
+            Ok(this
+                .inner
+                .borrow()
+                .current_clip()
+                .map(|name| name.to_string()))
         });
 
         // -- currentFrame --
         /// Return current draw frame as sprite-sheet row and column.
         /// @return | integer | Sprite-sheet row.
         /// @return | integer | Sprite-sheet column (frame index).
-        methods.add_method("currentFrame", |_, this, ()| Ok(this.inner.current_frame()));
+        methods.add_method("currentFrame", |_, this, ()| {
+            Ok(this.inner.borrow().current_frame())
+        });
 
         // -- update --
         /// Advance playback by delta time and dispatch callback events.
         /// @param | dt | number | Delta time in seconds.
-        methods.add_method_mut("update", |lua, this, dt: f32| {
-            let frame_cb = match this.on_frame.as_ref() {
+        methods.add_method("update", |lua, this, dt: f32| {
+            let frame_cb = match this.on_frame.borrow().as_ref() {
                 Some(key) => Some(lua.registry_value::<LuaFunction>(key)?),
                 None => None,
             };
-            let loop_cb = match this.on_loop.as_ref() {
+            let loop_cb = match this.on_loop.borrow().as_ref() {
                 Some(key) => Some(lua.registry_value::<LuaFunction>(key)?),
                 None => None,
             };
-            let end_cb = match this.on_end.as_ref() {
+            let end_cb = match this.on_end.borrow().as_ref() {
                 Some(key) => Some(lua.registry_value::<LuaFunction>(key)?),
                 None => None,
             };
 
-            let events = this.inner.update(dt);
+            // Snapshot events then release mutable domain state before user code runs.
+            let events = this.inner.borrow_mut().update(dt);
             for event in events {
                 match event {
                     AnimatorEvent::Frame { row, col, clip } => {
@@ -808,24 +1067,24 @@ impl LuaUserData for LuaSpriteAnimator {
         // -- onFrame --
         /// Set callback fired on each frame advance.
         /// @param | fn | function | Callback signature `(row, col, clip_name)`.
-        methods.add_method_mut("onFrame", |lua, this, callback: LuaFunction| {
-            this.on_frame = Some(lua.create_registry_value(callback)?);
+        methods.add_method("onFrame", |lua, this, callback: LuaFunction| {
+            *this.on_frame.borrow_mut() = Some(lua.create_registry_value(callback)?);
             Ok(())
         });
 
         // -- onLoop --
         /// Set callback fired when a looping clip wraps.
         /// @param | fn | function | Callback signature `(clip_name)`.
-        methods.add_method_mut("onLoop", |lua, this, callback: LuaFunction| {
-            this.on_loop = Some(lua.create_registry_value(callback)?);
+        methods.add_method("onLoop", |lua, this, callback: LuaFunction| {
+            *this.on_loop.borrow_mut() = Some(lua.create_registry_value(callback)?);
             Ok(())
         });
 
         // -- onEnd --
         /// Set callback fired when a non-looping clip reaches its end.
         /// @param | fn | function | Callback signature `(clip_name)`.
-        methods.add_method_mut("onEnd", |lua, this, callback: LuaFunction| {
-            this.on_end = Some(lua.create_registry_value(callback)?);
+        methods.add_method("onEnd", |lua, this, callback: LuaFunction| {
+            *this.on_end.borrow_mut() = Some(lua.create_registry_value(callback)?);
             Ok(())
         });
 
@@ -833,9 +1092,9 @@ impl LuaUserData for LuaSpriteAnimator {
         /// Add or replace a named clip definition.
         /// @param | name | string | Clip name.
         /// @param | def | table | Clip definition table with `row`, `from`, `to`, `fps`, and optional `loop`.
-        methods.add_method_mut("addClip", |_, this, (name, def): (String, LuaTable)| {
+        methods.add_method("addClip", |_, this, (name, def): (String, LuaTable)| {
             let clip = clip_from_lua(def)?;
-            this.inner.add_clip(name, clip);
+            this.inner.borrow_mut().add_clip(name, clip);
             Ok(())
         });
 
@@ -843,13 +1102,15 @@ impl LuaUserData for LuaSpriteAnimator {
         /// Return frame duration for the current clip.
         /// @return | number | Seconds per frame.
         methods.add_method("frameDuration", |_, this, ()| {
-            Ok(this.inner.frame_duration())
+            Ok(this.inner.borrow().frame_duration())
         });
 
         // -- clipDuration --
         /// Return full one-pass duration for the current clip.
         /// @return | number | Total clip duration in seconds.
-        methods.add_method("clipDuration", |_, this, ()| Ok(this.inner.clip_duration()));
+        methods.add_method("clipDuration", |_, this, ()| {
+            Ok(this.inner.borrow().clip_duration())
+        });
 
         // -- type --
         /// Returns the type name of this object.
@@ -870,15 +1131,19 @@ impl LuaUserData for LuaSpriteAnimator {
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
+    // --- sprite instance and lightweight animator ---
     // -- newSprite --
     /// Creates a lightweight sprite record with transform and optional normal-map metadata.
-    /// @param | texture_id | integer | Texture handle used by the sprite.
+    /// @param | texture_id | integer | Live opaque image handle used by the sprite.
     /// @param | x | number | Initial world X position.
     /// @param | y | number | Initial world Y position.
     /// @return | LSprite | A new sprite object.
     tbl.set(
         "newSprite",
         lua.create_function(move |lua, (texture_id, x, y): (usize, f32, f32)| {
+            require_finite("lurek.sprite.newSprite", "x", x)?;
+            require_finite("lurek.sprite.newSprite", "y", y)?;
+            let texture_id = require_live_texture_id(&state, "lurek.sprite.newSprite", texture_id)?;
             lua.create_userdata(LuaSprite {
                 state: state.clone(),
                 inner: Sprite::new(texture_id, Vec2::new(x, y)),
@@ -893,23 +1158,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newAnimator",
         lua.create_function(|lua, clips: Option<LuaTable>| {
-            let mut parsed = HashMap::new();
-            if let Some(clips_table) = clips {
-                for pair in clips_table.pairs::<String, LuaTable>() {
-                    let (name, def) = pair?;
-                    parsed.insert(name, clip_from_lua(def)?);
-                }
-            }
-
             lua.create_userdata(LuaSpriteAnimator {
-                inner: SpriteAnimator::new(parsed),
-                on_frame: None,
-                on_loop: None,
-                on_end: None,
+                inner: RefCell::new(animator_from_lua(clips)?),
+                on_frame: RefCell::new(None),
+                on_loop: RefCell::new(None),
+                on_end: RefCell::new(None),
             })
         })?,
     )?;
 
+    // --- sheets, atlas import, and compatibility adapters ---
     // -- newSheet --
     /// Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
     /// @param | tw | integer | Full texture width in pixels.
@@ -924,9 +1182,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let th = require_positive_u32("lurek.sprite.newSheet", "th", th)?;
             let fw = require_positive_u32("lurek.sprite.newSheet", "fw", fw)?;
             let fh = require_positive_u32("lurek.sprite.newSheet", "fh", fh)?;
-            lua.create_userdata(LuaSpriteSheet {
-                inner: SpriteSheet::new(tw, th, fw, fh),
-            })
+            let sheet = SpriteSheet::try_new(tw, th, fw, fh)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.sprite.newSheet: {e}")))?;
+            lua.create_userdata(LuaSpriteSheet { inner: sheet })
         })?,
     )?;
     // -- newSheetFromImage --
@@ -938,47 +1196,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "newSheetFromImage",
         lua.create_function(|lua, (image_ud, opts): (LuaAnyUserData, LuaTable)| {
             let image = image_ud.borrow::<ImageData>()?;
-            let image_w = image.width();
-            let image_h = image.height();
-            let frame_w = opts
-                .get::<_, Option<u32>>("frameWidth")?
-                .or_else(|| opts.get::<_, Option<u32>>("fw").ok().flatten())
-                .or_else(|| {
-                    opts.get::<_, Option<u32>>("columns")
-                        .ok()
-                        .flatten()
-                        .and_then(|cols| (cols > 0).then_some(image_w / cols))
-                })
-                .ok_or_else(|| {
-                    LuaError::RuntimeError(
-                        "lurek.sprite.newSheetFromImage: expected frameWidth or columns".into(),
-                    )
-                })?;
-            let frame_h = opts
-                .get::<_, Option<u32>>("frameHeight")?
-                .or_else(|| opts.get::<_, Option<u32>>("fh").ok().flatten())
-                .or_else(|| {
-                    opts.get::<_, Option<u32>>("rows")
-                        .ok()
-                        .flatten()
-                        .and_then(|rows| (rows > 0).then_some(image_h / rows))
-                })
-                .ok_or_else(|| {
-                    LuaError::RuntimeError(
-                        "lurek.sprite.newSheetFromImage: expected frameHeight or rows".into(),
-                    )
-                })?;
-            let frame_w =
-                require_positive_u32("lurek.sprite.newSheetFromImage", "frameWidth", frame_w)?;
-            let frame_h =
-                require_positive_u32("lurek.sprite.newSheetFromImage", "frameHeight", frame_h)?;
-            lua.create_userdata(LuaSpriteSheet {
-                inner: SpriteSheet::new(image_w, image_h, frame_w, frame_h),
-            })
+            let sheet = sheet_from_image_options(&image, opts)?;
+            lua.create_userdata(LuaSpriteSheet { inner: sheet })
         })?,
     )?;
     // -- newRPGMakerSheet --
-    /// Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
+    /// Creates a sprite sheet using RPG Maker's standard character layout (3 columns by 4 rows per character block).
     /// @param | tw | integer | Full texture width in pixels.
     /// @param | th | integer | Full texture height in pixels.
     /// @return | LSpriteSheet | A new sprite sheet configured for RPG Maker character sprites.
@@ -1016,13 +1239,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newAtlasFromImage",
         lua.create_function(|lua, (image_ud, atlas_json): (LuaAnyUserData, String)| {
-            let _image = image_ud.borrow::<ImageData>()?;
-            match parse_texturepacker_json(&atlas_json)
-                .or_else(|_| parse_aseprite_json(&atlas_json))
-            {
-                Ok(atlas) => lua.create_userdata(LuaSpriteAtlas { inner: atlas }),
-                Err(e) => Err(LuaError::RuntimeError(format!("newAtlasFromImage: {}", e))),
-            }
+            let image = image_ud.borrow::<ImageData>()?;
+            lua.create_userdata(LuaSpriteAtlas {
+                inner: atlas_from_image_json(&image, &atlas_json)?,
+            })
         })?,
     )?;
     // -- newAutoTileSheet --
@@ -1036,25 +1256,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(
             |lua, (image_ud, layout, opts): (LuaAnyUserData, String, LuaTable)| {
                 let image = image_ud.borrow::<ImageData>()?;
-                let tile_w = opts
-                    .get::<_, Option<u32>>("tileWidth")?
-                    .or_else(|| opts.get::<_, Option<u32>>("tileW").ok().flatten())
-                    .unwrap_or(image.width());
-                let tile_h = opts
-                    .get::<_, Option<u32>>("tileHeight")?
-                    .or_else(|| opts.get::<_, Option<u32>>("tileH").ok().flatten())
-                    .unwrap_or(image.height());
-                let layout = parse_autotile_layout("lurek.sprite.newAutoTileSheet", &layout)?;
                 lua.create_userdata(LuaSpriteAutoTileSheet {
-                    inner: AutoTileSheet::new(
-                        require_positive_u32("lurek.sprite.newAutoTileSheet", "tileWidth", tile_w)?,
-                        require_positive_u32(
-                            "lurek.sprite.newAutoTileSheet",
-                            "tileHeight",
-                            tile_h,
-                        )?,
-                        layout,
-                    ),
+                    inner: autotile_sheet_from_options(&image, &layout, opts)?,
                 })
             },
         )?,
@@ -1076,6 +1279,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
+    // --- runtime packing and nine-slice descriptors ---
     // -- newAtlasPacker --
     /// Creates a runtime atlas packer for dynamically allocating named sprite regions.
     /// @param | width | integer | Atlas width in pixels.
@@ -1087,9 +1291,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, (width, height, padding): (u32, u32, u32)| {
             let width = require_positive_u32("lurek.sprite.newAtlasPacker", "width", width)?;
             let height = require_positive_u32("lurek.sprite.newAtlasPacker", "height", height)?;
-            lua.create_userdata(LuaAtlasPacker {
-                inner: TextureAtlas::new(width, height, padding),
-            })
+            let atlas = TextureAtlas::try_new(width, height, padding)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.sprite.newAtlasPacker: {e}")))?;
+            lua.create_userdata(LuaAtlasPacker { inner: atlas })
         })?,
     )?;
     // -- newNineSlice --
@@ -1104,27 +1308,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "newNineSlice",
         lua.create_function(
             |_, (image, top, right, bottom, left): (LuaAnyUserData, f32, f32, f32, f32)| {
-                if top < 0.0 || right < 0.0 || bottom < 0.0 || left < 0.0 {
-                    return Err(LuaError::RuntimeError(
-                        "lurek.sprite.newNineSlice: border insets must be non-negative".into(),
-                    ));
-                }
-                let img = image.borrow::<LuaImage>()?;
-                let state = RefCell::borrow(img.state.as_ref());
-                let (tex_w, tex_h) = state
-                    .textures
-                    .get(img.key)
-                    .map(|texture| (texture.width, texture.height))
-                    .unwrap_or((0, 0));
-                Ok(LuaNineSlice {
-                    key: img.key,
-                    tex_w,
-                    tex_h,
-                    top,
-                    right,
-                    bottom,
-                    left,
-                })
+                nine_slice_from_image(image, top, right, bottom, left)
             },
         )?,
     )?;
@@ -1185,6 +1369,18 @@ fn clip_from_lua(def: LuaTable) -> LuaResult<SpriteClip> {
     let to = def.get::<_, Option<u32>>("to")?.unwrap_or(from);
     let fps = def.get::<_, Option<f32>>("fps")?.unwrap_or(8.0);
     let looping = def.get::<_, Option<bool>>("loop")?.unwrap_or(true);
+    if row == 0
+        || from == 0
+        || to < from
+        || !fps.is_finite()
+        || fps <= 0.0
+        || fps > SpriteLimits::MAX_FPS
+    {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.sprite.newAnimator: clip requires one-based row/from, to >= from, and finite fps in (0, {}]",
+            SpriteLimits::MAX_FPS
+        )));
+    }
     Ok(SpriteClip {
         row,
         from,

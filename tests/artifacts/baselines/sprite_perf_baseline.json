@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "max_slowdown_ratio": 12.0,
+  "required_scenarios": [
+    "uniform_sheet",
+    "texturepacker_parse_lookup",
+    "aseprite_parse",
+    "generic_packer",
+    "animator_catch_up"
+  ],
+  "notes": "Refresh deliberately with tools/python.cmd tools/audit/sprite_perf_gate.py --update-baseline after a release-mode run on the reference machine. The ratio absorbs workstation variance while preserving scenario coverage and regression detection.",
+  "scenarios": {
+    "uniform_sheet": {
+      "elapsed_ns": 172100,
+      "iterations": 200,
+      "json_bytes": 0,
+      "scenario": "uniform_sheet",
+      "units": 51200
+    },
+    "texturepacker_parse_lookup": {
+      "elapsed_ns": 24757900,
+      "iterations": 100,
+      "json_bytes": 7070,
+      "scenario": "texturepacker_parse_lookup",
+      "units": 12800
+    },
+    "aseprite_parse": {
+      "elapsed_ns": 2501400,
+      "iterations": 500,
+      "json_bytes": 89,
+      "scenario": "aseprite_parse",
+      "units": 500
+    },
+    "generic_packer": {
+      "elapsed_ns": 12604300,
+      "iterations": 100,
+      "json_bytes": 0,
+      "scenario": "generic_packer",
+      "units": 12800
+    },
+    "animator_catch_up": {
+      "elapsed_ns": 60213000,
+      "iterations": 10000,
+      "json_bytes": 0,
+      "scenario": "animator_catch_up",
+      "units": 1360000
+    }
+  }
+}

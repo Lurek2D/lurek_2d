@@ -1,6 +1,11 @@
--- Canonical evidence file for lurek.sprite visual artifacts.
+﻿-- Canonical evidence file for lurek.sprite visual artifacts.
 
 local OUT = evidence_output_dir("sprite")
+
+local SPRITE_TEXTURE = lurek.render.newImage("assets/icon.png")
+local function sprite_texture_id()
+    return SPRITE_TEXTURE:getId()
+end
 
 local FONT = {
     [" "] = { "000", "000", "000", "000", "000", "000", "000" },
@@ -130,8 +135,8 @@ describe("evidence: sprite", function()
     -- Why: This proves LSpriteSheet:getGridSize, nameGroup, getGroupFrames, and drawToImage describe inspectable frame layout.
     it("PNG: sheet groups and grid preview", function()
         local sheet = lurek.sprite.newSheet(96, 64, 24, 16)
-        sheet:nameGroup("idle", 0, 2)
-        sheet:nameGroup("run", 2, 4)
+        sheet:nameGroup("idle", 1, 2)
+        sheet:nameGroup("run", 3, 4)
         local preview = sheet:drawToImage(192, 128)
         local img = new_canvas("SPRITE SHEET GROUPS")
         img:paste(preview, 522, 112)
@@ -258,12 +263,12 @@ describe("evidence: sprite", function()
     -- Artifact: tests/artifacts/current/sprite/sprite_lit_normal_state.png
     -- Why: This proves LSprite is more than a texture id; it owns per-instance state used by lit sprite workflows.
     it("PNG: lit sprite normal map state", function()
-        local sprite = lurek.sprite.newSprite(7, 40, 72)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 40, 72)
         sprite:setPosition(96, 128)
-        sprite:setNormalMap(11)
+        sprite:setNormalMap(sprite_texture_id())
         sprite:setNormalIntensity(2.5)
-        local plain = lurek.sprite.newSprite(8, 220, 128)
-        plain:setNormalMap(12)
+        local plain = lurek.sprite.newSprite(sprite_texture_id(), 220, 128)
+        plain:setNormalMap(sprite_texture_id())
         plain:clearNormalMap()
         local x, y = sprite:getPosition()
         local img = new_canvas("SPRITE LIT STATE")

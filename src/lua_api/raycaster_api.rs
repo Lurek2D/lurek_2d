@@ -7,13 +7,13 @@ use crate::color::Color;
 use crate::lua_api::physics_api::LuaBody;
 #[cfg(feature = "obj-loader")]
 use crate::lua_api::render_api::LuaObjModel;
+#[cfg(feature = "voxel-loader")]
+use crate::lua_api::render_api::LuaVoxelModel;
 use crate::lua_api::render_api::{
     ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader,
 };
 use crate::raycaster::lighting::{apply_global_light, apply_lit_shade};
 use crate::raycaster::sprite_manager::SpriteManager;
-#[cfg(feature = "obj-loader")]
-use crate::raycaster::SceneAdapterModel;
 use crate::raycaster::{
     compute_lighting, distance_shade, DirectionalSpriteTextures, DoorDirection, DoorManager,
     DoorState, EntityPickResult, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid,
@@ -24,6 +24,8 @@ use crate::raycaster::{
     SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams, WallFeature,
     WallFeatureKind, WorldSprite,
 };
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
+use crate::raycaster::{SceneAdapterModel, SceneAdapterModelAsset};
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
 use crate::render::renderer::ParticleRenderShape;
@@ -1769,7 +1771,7 @@ fn parse_model_instance_yaw(model_tbl: &LuaTable) -> LuaResult<f32> {
     }
 }
 
-#[cfg(feature = "obj-loader")]
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 fn collect_model_tables_by_level<'lua>(
     models_tbl: &LuaTable<'lua>,
     default_level: usize,
@@ -1786,7 +1788,7 @@ fn collect_model_tables_by_level<'lua>(
     Ok(grouped)
 }
 
-#[cfg(feature = "obj-loader")]
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 #[allow(clippy::too_many_arguments)]
 fn project_model_instance(
     mt: &LuaTable,
@@ -1802,9 +1804,6 @@ fn project_model_instance(
 ) -> LuaResult<Option<ModelMesh>> {
     // add_method
     let model_ud = mt.get::<_, LuaAnyUserData>("model")?;
-    let model_ref = model_ud.borrow::<LuaObjModel>().map_err(|_| {
-        LuaError::RuntimeError(format!("{}: models[].model must be LuaObjModel", api_name))
-    })?;
     let world_x = mt.get::<_, f32>("x")?;
     let world_y = mt.get::<_, f32>("y")?;
     let entity_id = mt.get::<_, Option<u32>>("id")?;
@@ -1812,18 +1811,55 @@ fn project_model_instance(
     let scale = mt.get::<_, Option<f32>>("scale")?.unwrap_or(1.0);
     let z_offset = mt.get::<_, Option<f32>>("z")?.unwrap_or(0.0);
     let attrs = table_string_attrs(mt, "attrs")?;
-    let (mut mesh, depth, triangle_depths) = model_ref.model.project_instance_to_mesh(
-        cam_pos,
-        cam_target,
-        params.fov,
-        params.screen_width,
-        params.screen_height,
-        world_x,
-        world_y,
-        base_y + z_offset,
-        yaw,
-        scale,
-    );
+    #[cfg(feature = "obj-loader")]
+    let obj_projection = || -> LuaResult<_> {
+        let model_ref = model_ud.borrow::<LuaObjModel>().map_err(|_| {
+            LuaError::RuntimeError(format!("{}: model is not an OBJ model", api_name))
+        })?;
+        Ok(model_ref.model.project_instance_to_mesh(
+            cam_pos,
+            cam_target,
+            params.fov,
+            params.screen_width,
+            params.screen_height,
+            world_x,
+            world_y,
+            base_y + z_offset,
+            yaw,
+            scale,
+        ))
+    };
+    #[cfg(feature = "voxel-loader")]
+    let voxel_projection = || -> LuaResult<_> {
+        let model_ref = model_ud.borrow::<LuaVoxelModel>().map_err(|_| {
+            LuaError::RuntimeError(format!("{}: model is not a MagicaVoxel model", api_name))
+        })?;
+        Ok(model_ref.model.project_instance_to_mesh(
+            cam_pos,
+            cam_target,
+            params.fov,
+            params.screen_width,
+            params.screen_height,
+            world_x,
+            world_y,
+            base_y + z_offset,
+            yaw,
+            scale,
+        ))
+    };
+    #[cfg(all(feature = "obj-loader", feature = "voxel-loader"))]
+    let (mut mesh, depth, triangle_depths) = obj_projection()
+        .or_else(|_| voxel_projection())
+        .map_err(|_| {
+            LuaError::RuntimeError(format!(
+                "{}: models[].model must be LObjModel or LVoxelModel",
+                api_name
+            ))
+        })?;
+    #[cfg(all(feature = "obj-loader", not(feature = "voxel-loader")))]
+    let (mut mesh, depth, triangle_depths) = obj_projection()?;
+    #[cfg(all(feature = "voxel-loader", not(feature = "obj-loader")))]
+    let (mut mesh, depth, triangle_depths) = voxel_projection()?;
     if mesh.vertices.is_empty() {
         return Ok(None);
     }
@@ -5825,14 +5861,21 @@ impl LuaRaycasterSceneAdapter {
         result.set("lights", lights_tbl)?;
 
         let models_tbl = lua.create_table()?;
-        #[cfg(feature = "obj-loader")]
+        #[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
         for (idx, model) in self.inner.resolve_models().into_iter().enumerate() {
             let entry = lua.create_table()?;
-            let model_ud = lua.create_userdata(LuaObjModel {
-                state: self.state.clone(),
-                model: model.model,
-                sprite_cache: HashMap::new(),
-            })?;
+            let model_ud = match model.model {
+                #[cfg(feature = "obj-loader")]
+                SceneAdapterModelAsset::Obj(model) => lua.create_userdata(LuaObjModel {
+                    state: self.state.clone(),
+                    model,
+                    sprite_cache: HashMap::new(),
+                })?,
+                #[cfg(feature = "voxel-loader")]
+                SceneAdapterModelAsset::Voxel(model) => {
+                    lua.create_userdata(LuaVoxelModel { model })?
+                }
+            };
             entry.set("model", model_ud)?;
             entry.set("x", model.world_x)?;
             entry.set("y", model.world_y)?;
@@ -6199,23 +6242,31 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                 Ok(())
             },
         );
-        #[cfg(feature = "obj-loader")]
+        #[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
         {
             // -- addModel --
-            /// Adds a static OBJ model instance entry.
-            /// @param | model | LObjModel | OBJ model handle.
+            /// Adds a static OBJ or MagicaVoxel model instance entry.
+            /// @param | model | LObjModel|LVoxelModel | Model handle.
             /// @param | x | number | World X position.
             /// @param | y | number | World Y position.
             /// @param | opts | table? | Optional {id?, level?, yaw?, z?, scale?}.
             methods.add_method_mut(
                 "addModel",
                 |_, this, (model_ud, x, y, opts): (LuaAnyUserData, f32, f32, Option<LuaTable>)| {
-                    let model_ref = model_ud.borrow::<LuaObjModel>().map_err(|_| {
-                        LuaError::RuntimeError(
-                            "lurek.raycaster.LSceneAdapter:addModel: model must be LuaObjModel"
-                                .into(),
-                        )
-                    })?;
+                    #[cfg(feature = "obj-loader")]
+                    let obj_model = model_ud.borrow::<LuaObjModel>().ok().map(|model| model.model.clone());
+                    #[cfg(feature = "voxel-loader")]
+                    let voxel_model = model_ud.borrow::<LuaVoxelModel>().ok().map(|model| model.model.clone());
+                    let model = {
+                        #[cfg(all(feature = "obj-loader", feature = "voxel-loader"))]
+                        { obj_model.map(SceneAdapterModelAsset::Obj).or_else(|| voxel_model.map(SceneAdapterModelAsset::Voxel)) }
+                        #[cfg(all(feature = "obj-loader", not(feature = "voxel-loader")))]
+                        { obj_model.map(SceneAdapterModelAsset::Obj) }
+                        #[cfg(all(feature = "voxel-loader", not(feature = "obj-loader")))]
+                        { voxel_model.map(SceneAdapterModelAsset::Voxel) }
+                    }.ok_or_else(|| LuaError::RuntimeError(
+                        "lurek.raycaster.LSceneAdapter:addModel: model must be LObjModel or LVoxelModel".into(),
+                    ))?;
                     let entity_id = match opts.as_ref() {
                         Some(opts) => opts.get::<_, Option<u32>>("id")?,
                         None => None,
@@ -6243,7 +6294,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         None => HashMap::new(),
                     };
                     this.inner.add_model(SceneAdapterModel {
-                        model: model_ref.model.clone(),
+                        model,
                         entity_id,
                         level_index,
                         transform: SceneTransform::static_xy(x, y, yaw),
@@ -6255,19 +6306,27 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                 },
             );
             // -- bindBodyModel --
-            /// Binds an OBJ model instance to a live physics body.
+            /// Binds an OBJ or MagicaVoxel model instance to a live physics body.
             /// @param | body | LBody | Physics body handle.
-            /// @param | model | LObjModel | OBJ model handle.
+            /// @param | model | LObjModel|LVoxelModel | Model handle.
             /// @param | opts | table? | Optional {id?, level?, yaw_offset?, offset_x?, offset_y?, z?, scale?}.
             methods.add_method_mut(
                 "bindBodyModel",
                 |_, this, (body, model_ud, opts): (LuaAnyUserData, LuaAnyUserData, Option<LuaTable>)| {
-                    let model_ref = model_ud.borrow::<LuaObjModel>().map_err(|_| {
-                        LuaError::RuntimeError(
-                            "lurek.raycaster.LSceneAdapter:bindBodyModel: model must be LuaObjModel"
-                                .into(),
-                        )
-                    })?;
+                    #[cfg(feature = "obj-loader")]
+                    let obj_model = model_ud.borrow::<LuaObjModel>().ok().map(|model| model.model.clone());
+                    #[cfg(feature = "voxel-loader")]
+                    let voxel_model = model_ud.borrow::<LuaVoxelModel>().ok().map(|model| model.model.clone());
+                    let model = {
+                        #[cfg(all(feature = "obj-loader", feature = "voxel-loader"))]
+                        { obj_model.map(SceneAdapterModelAsset::Obj).or_else(|| voxel_model.map(SceneAdapterModelAsset::Voxel)) }
+                        #[cfg(all(feature = "obj-loader", not(feature = "voxel-loader")))]
+                        { obj_model.map(SceneAdapterModelAsset::Obj) }
+                        #[cfg(all(feature = "voxel-loader", not(feature = "obj-loader")))]
+                        { voxel_model.map(SceneAdapterModelAsset::Voxel) }
+                    }.ok_or_else(|| LuaError::RuntimeError(
+                        "lurek.raycaster.LSceneAdapter:bindBodyModel: model must be LObjModel or LVoxelModel".into(),
+                    ))?;
                     let entity_id = match opts.as_ref() {
                         Some(opts) => opts.get::<_, Option<u32>>("id")?,
                         None => None,
@@ -6289,7 +6348,7 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
                         None => HashMap::new(),
                     };
                     this.inner.add_model(SceneAdapterModel {
-                        model: model_ref.model.clone(),
+                        model,
                         entity_id,
                         level_index,
                         transform: parse_scene_transform_from_body(

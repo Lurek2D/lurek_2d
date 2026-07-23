@@ -1,10 +1,15 @@
--- Reorganized unit test file.
+﻿-- Reorganized unit test file.
 -- Source files are isolated in do-end blocks to preserve local helper scope.
 
 -- BEGIN test_sprite_core_unit.lua
 do
 -- Lurek2D Lua BDD tests for lurek.sprite
 -- Headless: no GPU, no audio, no window.
+
+local SPRITE_TEXTURE = lurek.render.newImage("assets/icon.png")
+local function sprite_texture_id()
+    return SPRITE_TEXTURE:getId()
+end
 
 -- module interface
 
@@ -171,7 +176,7 @@ end)
 describe("sprite lit sprite normal map support", function()
     -- @covers LSprite:setShader
     it("setShader binds and clears a sprite-target shader", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
         local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
@@ -194,7 +199,7 @@ fn fs_main(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
 
     -- @covers LSprite:getShader
     it("getShader returns the bound sprite shader", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
         local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
@@ -207,7 +212,7 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
 
     -- @covers LSprite:setShaderUniform
     it("setShaderUniform forwards values to the bound sprite shader", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
         local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
@@ -221,57 +226,59 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
 
     -- @covers LSprite:hasNormalMap
     it("hasNormalMap reflects whether a sprite has normal map data", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
         expect_false(sprite:hasNormalMap())
-        sprite:setNormalMap(11)
+        sprite:setNormalMap(sprite_texture_id())
         expect_true(sprite:hasNormalMap())
     end)
 
     -- @covers LSprite:getNormalMap
     it("getNormalMap returns the assigned normal map id", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
-        sprite:setNormalMap(11)
-        expect_equal(11, sprite:getNormalMap())
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
+        local normal_id = sprite_texture_id()
+        sprite:setNormalMap(normal_id)
+        expect_equal(normal_id, sprite:getNormalMap())
     end)
 
     -- @covers LSprite:setNormalIntensity
     it("setNormalIntensity persists the intensity scalar", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
         sprite:setNormalIntensity(2.5)
         expect_near(2.5, sprite:getNormalIntensity(), 0.001)
     end)
 
     -- @covers LSprite:getNormalIntensity
     it("getNormalIntensity returns the assigned intensity scalar", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
         sprite:setNormalIntensity(2.5)
         expect_near(2.5, sprite:getNormalIntensity(), 0.001)
     end)
 
     -- @covers LSprite:setNormalMap
     it("stores and exposes normal map data for a lit sprite", function()
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
 
         expect_false(sprite:hasNormalMap())
-        sprite:setNormalMap(11)
+        local normal_id = sprite_texture_id()
+        sprite:setNormalMap(normal_id)
         sprite:setNormalIntensity(2.5)
 
         expect_true(sprite:hasNormalMap())
-        expect_equal(11, sprite:getNormalMap())
+        expect_equal(normal_id, sprite:getNormalMap())
         expect_near(2.5, sprite:getNormalIntensity(), 0.001)
     end)
 
     -- @covers LSprite:clearNormalMap
     it("clears the normal map from a lit sprite", function()
-        local sprite = lurek.sprite.newSprite(7, 0, 0)
-        sprite:setNormalMap(3)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 0, 0)
+        sprite:setNormalMap(sprite_texture_id())
         sprite:clearNormalMap()
         expect_false(sprite:hasNormalMap())
     end)
 
     -- @covers LSprite:setPosition
     it("setPosition updates sprite coordinates", function()
-        local sprite = lurek.sprite.newSprite(7, 0, 0)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 0, 0)
         sprite:setPosition(12, 34)
         local x, y = sprite:getPosition()
         expect_equal(12, x)
@@ -280,7 +287,7 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
 
     -- @covers LSprite:getPosition
     it("getPosition returns constructor coordinates", function()
-        local sprite = lurek.sprite.newSprite(7, 5, 9)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 5, 9)
         local x, y = sprite:getPosition()
         expect_equal(5, x)
         expect_equal(9, y)
@@ -288,13 +295,13 @@ fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @locati
 
     -- @covers LSprite:type
     it("type reports LSprite", function()
-        local sprite = lurek.sprite.newSprite(7, 0, 0)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 0, 0)
         expect_equal("LSprite", sprite:type())
     end)
 
     -- @covers LSprite:typeOf
     it("typeOf recognizes sprite type names", function()
-        local sprite = lurek.sprite.newSprite(7, 0, 0)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 0, 0)
         expect_equal(true, sprite:typeOf("LSprite"))
         expect_equal(true, sprite:typeOf("LObject"))
         expect_equal(false, sprite:typeOf("LAtlasPacker"))
@@ -459,7 +466,7 @@ describe("newSheet()", function()
     -- @covers LSpriteSheet:getFrame
     it("returns consistent quad geometry for multiple frame indices", function()
         local s = lurek.sprite.newSheet(64, 64, 16, 16)
-        local q = s:getFrame(0)
+        local q = s:getFrame(1)
         expect_type("table", q)
         expect_type("number", q.x)
         expect_type("number", q.y)
@@ -467,7 +474,8 @@ describe("newSheet()", function()
         expect_type("number", q.h)
         expect_equal(0, q.x)
         expect_equal(0, q.y)
-        q = s:getFrame(1)
+        expect_error(function() s:getFrame(0) end)
+        q = s:getFrame(2)
         expect_equal(16, q.x)
         expect_equal(0, q.y)
     end)
@@ -483,7 +491,7 @@ describe("newSheet()", function()
     -- @covers LSpriteSheet:nameGroup
     it("nameGroup registers retrievable group", function()
         local s = lurek.sprite.newSheet(64, 64, 16, 16)
-        s:nameGroup("run", 0, 4)
+        s:nameGroup("run", 1, 4)
         local g = s:getGroupFrames("run")
         expect_type("table", g)
         expect_equal(4, #g)
@@ -492,8 +500,8 @@ describe("newSheet()", function()
     -- @covers LSpriteSheet:getGroupNames
     it("getGroupNames returns names for regular and RPGMaker sheets", function()
         local s = lurek.sprite.newSheet(64, 64, 16, 16)
-        s:nameGroup("idle", 0, 2)
-        s:nameGroup("walk", 2, 4)
+        s:nameGroup("idle", 1, 2)
+        s:nameGroup("walk", 3, 4)
         local names = s:getGroupNames()
         expect_type("table", names)
         expect_equal(2, #names)
@@ -701,8 +709,8 @@ describe("lurek.sprite regression coverage", function()
     -- @covers LSpriteSheet:drawToImage
     it("SpriteSheet group helpers and drawToImage return usable results", function()
         local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
-        sheet:nameGroup("idle", 0, 2)
-        sheet:nameGroup("run", 2, 4)
+        sheet:nameGroup("idle", 1, 2)
+        sheet:nameGroup("run", 3, 4)
 
         local idle = sheet:getGroupFrames("idle")
         local names = sheet:getGroupNames()
@@ -717,7 +725,7 @@ describe("lurek.sprite regression coverage", function()
     -- @covers LSpriteSheet:getColumn
     it("SpriteSheet geometry helpers stay consistent", function()
         local sheet = lurek.sprite.newSheet(96, 64, 32, 32)
-        local frame = sheet:getFrame(4)
+        local frame = sheet:getFrame(5)
         local row = sheet:getRow(1)
         local column = sheet:getColumn(1)
         local frame_w, frame_h = sheet:getFrameSize()

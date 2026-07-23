@@ -98,8 +98,8 @@ do
     local b = lurek.image.newImageData(2, 2)
     a:fill(255, 0, 0, 255)
     b:fill(0, 255, 0, 255)
-    lurek.image.saveGIF({ a, b }, "work/example_animation_from_gif.gif", { delayMs = 40 })
-    local decoded = lurek.image.loadAnimated("work/example_animation_from_gif.gif")
+    lurek.image.saveGIF({ a, b }, "save/example_animation_from_gif.gif", { delayMs = 40 })
+    local decoded = lurek.image.loadAnimated("save/example_animation_from_gif.gif")
     local anim = lurek.animation.fromAnimatedImage(decoded, { name = "gif", loop = true })
     lurek.log.info("[animation] fromAnimatedImage frames=" .. tostring(anim:getFrameCount()))
 end
@@ -205,7 +205,7 @@ lurek.animation.fromSpriteSheet(sheet, opts)
 ```lua
 do
     local sheet = lurek.sprite.newSheet(64, 16, 16, 16)
-    sheet:nameGroup("walk", 0, 4)
+    sheet:nameGroup("walk", 1, 4)
     local anim = lurek.animation.fromSpriteSheet(sheet, { group = "walk", name = "walk", fps = 10 })
     local clips = anim:getClipCount()
     lurek.log.info("[animation] fromSpriteSheet clips=" .. tostring(clips))

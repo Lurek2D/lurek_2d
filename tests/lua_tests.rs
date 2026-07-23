@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::path::PathBuf;
 use std::rc::Rc;
-use std::sync::{Mutex, OnceLock};
+use std::sync::{Condvar, Mutex, OnceLock};
 use std::time::Instant;
 
 use lurek2d::lua_api::{create_lua_vm, SharedState};
@@ -17,6 +17,26 @@ fn create_test_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(shared));
     state.borrow_mut().load_default_fonts();
     let lua = create_lua_vm(state, &Config::default().modules).expect("Failed to create Lua VM");
+
+    // On Windows `os.clock()` is process-wide CPU time, so parallel Rust tests
+    // inflate Lua stress measurements with unrelated work. Supply every VM with
+    // an independent monotonic wall clock for attributable stress timing.
+    let clock_started = Instant::now();
+    let monotonic_seconds = lua
+        .create_function(move |_, ()| Ok(clock_started.elapsed().as_secs_f64()))
+        .expect("Failed to create monotonic test clock");
+    lua.globals()
+        .set("_test_monotonic_seconds", monotonic_seconds)
+        .expect("Failed to register monotonic test clock");
+    let os_clock_started = clock_started;
+    let os_clock = lua
+        .create_function(move |_, ()| Ok(os_clock_started.elapsed().as_secs_f64()))
+        .expect("Failed to create monotonic os.clock replacement");
+    {
+        let os: mlua::Table = lua.globals().get("os").expect("Missing os table");
+        os.set("clock", os_clock)
+            .expect("Failed to register monotonic os.clock replacement");
+    }
 
     // Expose a safe read-only file helper for static-analysis tests.
     // The sandbox removes io.open; this restores read-only access to workspace files.
@@ -128,7 +148,75 @@ fn run_lua_test_at_path(display_name: &str, file_path: &str) {
     });
 }
 
+#[derive(Default)]
+struct LuaPerformanceGateState {
+    readers: usize,
+    waiting_writers: usize,
+    writer_active: bool,
+}
+
+struct LuaPerformanceGateGuard {
+    gate: &'static (Mutex<LuaPerformanceGateState>, Condvar),
+    exclusive: bool,
+}
+
+impl Drop for LuaPerformanceGateGuard {
+    fn drop(&mut self) {
+        let (state, wake) = self.gate;
+        let mut state = state
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        if self.exclusive {
+            state.writer_active = false;
+        } else {
+            state.readers = state.readers.saturating_sub(1);
+        }
+        wake.notify_all();
+    }
+}
+
+fn acquire_lua_performance_slot(exclusive: bool) -> LuaPerformanceGateGuard {
+    static LUA_PERFORMANCE_GATE: OnceLock<(Mutex<LuaPerformanceGateState>, Condvar)> =
+        OnceLock::new();
+    let gate = LUA_PERFORMANCE_GATE.get_or_init(|| {
+        (
+            Mutex::new(LuaPerformanceGateState::default()),
+            Condvar::new(),
+        )
+    });
+    let (state, wake) = gate;
+    let mut state = state
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    if exclusive {
+        state.waiting_writers += 1;
+        while state.readers != 0 || state.writer_active {
+            state = wake
+                .wait(state)
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+        }
+        state.waiting_writers -= 1;
+        state.writer_active = true;
+    } else {
+        while state.writer_active || state.waiting_writers != 0 {
+            state = wake
+                .wait(state)
+                .unwrap_or_else(|poisoned| poisoned.into_inner());
+        }
+        state.readers += 1;
+    }
+    drop(state);
+    LuaPerformanceGateGuard { gate, exclusive }
+}
+
 fn with_lua_test_lock<T>(display_name: &str, run: impl FnOnce() -> T) -> T {
+    let _performance_guard =
+        acquire_lua_performance_slot(needs_exclusive_lua_performance_slot(display_name));
+
+    with_lua_state_lock(display_name, run)
+}
+
+fn with_lua_state_lock<T>(display_name: &str, run: impl FnOnce() -> T) -> T {
     if !needs_lua_test_lock(display_name) {
         return run();
     }
@@ -137,6 +225,12 @@ fn with_lua_test_lock<T>(display_name: &str, run: impl FnOnce() -> T) -> T {
     let lock = LUA_TEST_LOCK.get_or_init(|| Mutex::new(()));
     let _guard = lock.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
     run()
+}
+
+fn needs_exclusive_lua_performance_slot(display_name: &str) -> bool {
+    // Stress and complete-game scenarios enforce elapsed-time ceilings. Let their
+    // measured workload own the CPU instead of competing with unrelated Lua VMs.
+    display_name.starts_with("stress/") || display_name.starts_with("content/games/")
 }
 
 fn needs_lua_test_lock(display_name: &str) -> bool {
@@ -858,6 +952,11 @@ fn lua_integration_animation_tween_integration() {
 }
 
 #[test]
+fn lua_integration_sprite_image_integration() {
+    run_lua_test("integration/test_sprite_image_integration.lua");
+}
+
+#[test]
 fn lua_integration_audio_event_integration() {
     run_lua_test("integration/test_audio_event_integration.lua");
 }
@@ -923,6 +1022,11 @@ fn lua_integration_tilefield_light_integration() {
 }
 
 #[test]
+fn lua_integration_tilefield_physics_integration() {
+    run_lua_test("integration/test_tilefield_physics_integration.lua");
+}
+
+#[test]
 fn lua_integration_event_entity_integration() {
     run_lua_test("integration/test_event_entity_integration.lua");
 }
@@ -940,6 +1044,11 @@ fn lua_integration_i18n_ui_integration() {
 #[test]
 fn lua_integration_image_dataframe_integration() {
     run_lua_test("integration/test_image_dataframe_integration.lua");
+}
+
+#[test]
+fn lua_integration_image_physics_integration() {
+    run_lua_test("integration/test_image_physics_integration.lua");
 }
 
 #[test]
@@ -1253,6 +1362,11 @@ fn lua_security_tileset_security() {
 }
 
 #[test]
+fn lua_security_sprite_security() {
+    run_lua_test("security/test_sprite_security.lua");
+}
+
+#[test]
 fn lua_stress_ai_stress() {
     run_lua_test("stress/test_ai_stress.lua");
 }
@@ -1405,6 +1519,11 @@ fn lua_stress_timer_stress() {
 #[test]
 fn lua_stress_tween_stress() {
     run_lua_test("stress/test_tween_stress.lua");
+}
+
+#[test]
+fn lua_stress_sprite_stress() {
+    run_lua_test("stress/test_sprite_stress.lua");
 }
 
 #[test]

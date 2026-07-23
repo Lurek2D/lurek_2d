@@ -1749,6 +1749,33 @@ describe("render strict: batch text and OBJ APIs", function()
         expect_type("userdata", mdl)
     end)
 
+    -- @covers lurek.render.loadVoxel
+    -- @covers LVoxelModel:getVoxelCount
+    -- @covers LVoxelModel:getBounds
+    it("loadVoxel parses a palette-coloured MagicaVoxel prop", function()
+        local function le32(value)
+            return string.char(
+                value % 256,
+                math.floor(value / 256) % 256,
+                math.floor(value / 65536) % 256,
+                math.floor(value / 16777216) % 256
+            )
+        end
+        local children =
+            "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) ..
+            "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+        local path = "save/_render_voxel_unit.vox"
+        lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+
+        local voxel = lurek.render.loadVoxel(path, 2)
+        expect_type("userdata", voxel)
+        expect_equal(1, voxel:getVoxelCount())
+        local bounds = voxel:getBounds()
+        expect_equal(-1, bounds.minX)
+        expect_equal(2, bounds.maxY)
+
+    end)
+
     -- @covers lurek.render.setBold
     it("isBold and setBold work correctly", function()
         local prev = lurek.render.isBold()

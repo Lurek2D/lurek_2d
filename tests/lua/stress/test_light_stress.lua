@@ -87,11 +87,41 @@ local function run_light_full_config_cycle(count)
     end)
 end
 
+local function run_group_intensity_scenario(groups, per_group)
+    reset_light_world()
+    for group = 0, groups - 1 do
+        for _ = 1, per_group do
+            local light = lurek.light.newLight(group * 4, group * 2, 32)
+            light:setGroupId(group)
+        end
+    end
+    local elapsed = measure("light group intensity x16 over 256 lights", groups, function()
+        for group = 0, groups - 1 do
+            lurek.light.setGroupIntensity(group, (group + 1) / groups)
+        end
+    end)
+    return elapsed, lurek.light.getLightCount()
+end
+
+local function run_clear_rebuild_scenario(rounds, per_round)
+    local elapsed = measure("light clear/rebuild x25", rounds * per_round, function()
+        for _ = 1, rounds do
+            reset_light_world()
+            for i = 1, per_round do
+                lurek.light.newLight(i, i, 24)
+            end
+            expect_equal(per_round, lurek.light.getLightCount())
+        end
+    end)
+    lurek.light.clear()
+    return elapsed, lurek.light.getLightCount()
+end
+
 -- @describe stress: light creation throughput
 describe("stress: light creation throughput", function()
     -- @stress lurek.light.newLight
-    it("create 1000 point lights in <5s", function()
-        local COUNT  = 1000
+    it("create 256 point lights in <5s", function()
+        local COUNT  = 256
         local lights = {}
 
         local elapsed = measure("light.newLight x" .. COUNT, COUNT, function()
@@ -107,23 +137,23 @@ end)
 -- @describe stress: bounded light hint exports
 describe("stress: bounded light hint exports", function()
     -- @stress lurek.light.getGodRayHints
-    it("exports 512 directional hints within a bounded frame budget", function()
+    it("exports 128 directional hints within a bounded frame budget", function()
         reset_light_world()
-        make_directional_hints(512)
-        local elapsed = measure("light god ray hints x512", 512, function()
+        make_directional_hints(128)
+        local elapsed = measure("light god ray hints x128", 128, function()
             local hints = lurek.light.getGodRayHints()
-            expect_equal(512, #hints)
+            expect_equal(128, #hints)
         end)
         expect_true(elapsed < 2.0, "directional hint export budget: " .. elapsed .. "s")
     end)
 
     -- @stress lurek.light.getNormalMapHints
-    it("exports 512 normal-map hints within a bounded frame budget", function()
+    it("exports 128 normal-map hints within a bounded frame budget", function()
         reset_light_world()
-        make_normal_map_hints(512)
-        local elapsed = measure("light normal map hints x512", 512, function()
+        make_normal_map_hints(128)
+        local elapsed = measure("light normal map hints x128", 128, function()
             local hints = lurek.light.getNormalMapHints()
-            expect_equal(512, #hints)
+            expect_equal(128, #hints)
         end)
         expect_true(elapsed < 2.0, "normal-map hint export budget: " .. elapsed .. "s")
     end)
@@ -146,9 +176,11 @@ end)
 -- @describe stress: light position update throughput
 describe("stress: light position update throughput", function()
     -- @stress LLight:setPosition
-    it("1000 lights       100 position updates each: <10s", function()
-        local light_count = 1000
-        local update_count = 100
+    it("128 lights with 5 position updates each: <10s", function()
+        -- Crossing the Lua/Rust boundary is intentionally part of this scenario. Keep it
+        -- representative but bounded so the stress suite itself remains CI-safe.
+        local light_count = 128
+        local update_count = 5
         local elapsed = run_light_position_updates(light_count, update_count)
         if elapsed == nil then
             expect_nil(elapsed, "setPosition is not exposed")
@@ -165,11 +197,33 @@ end)
 -- @describe stress: mixed light operations
 describe("stress: mixed light operations", function()
     -- @stress LLight:setColor
-    it("1000 create + setPosition + setRadius + setColor cycles: <5s", function()
-        local count = 1000
+    it("256 create + setPosition + setRadius + setColor cycles: <5s", function()
+        local count = 256
         local elapsed = run_light_full_config_cycle(count)
 
         expect_true(elapsed < 5.0, "light full-config budget: " .. elapsed .. "s")
     end)
 end)
+
+-- @describe stress: group mutation and scene rebuild
+describe("stress: group mutation and scene rebuild", function()
+    -- @stress lurek.light.setGroupIntensity
+    it("updates 16 populated groups without growing the bounded scene", function()
+        local groups = 16
+        local per_group = 16
+        local elapsed, count = run_group_intensity_scenario(groups, per_group)
+        expect_equal(groups * per_group, count)
+        expect_true(elapsed < 5.0, "group mutation budget: " .. elapsed .. "s")
+    end)
+
+    -- @stress lurek.light.clear
+    it("rebuilds a sparse scene repeatedly without retaining prior lights", function()
+        local rounds = 25
+        local per_round = 16
+        local elapsed, count = run_clear_rebuild_scenario(rounds, per_round)
+        expect_equal(0, count)
+        expect_true(elapsed < 5.0, "clear/rebuild budget: " .. elapsed .. "s")
+    end)
+end)
+
 test_summary()

@@ -375,7 +375,7 @@ lurek.province.newGrid(filename)
 
 | Type | Description |
 |------|-------------|
-| [LProvinceGrid](image.md#lprovincegrid) | New province grid handle. |
+| LProvinceGrid | New province grid handle. |
 
 **Example**
 

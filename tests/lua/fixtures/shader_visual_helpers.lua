@@ -1,4 +1,9 @@
-local ShaderEvidence = {}
+﻿local ShaderEvidence = {}
+
+local SPRITE_TEXTURE = lurek.render.newImage("assets/icon.png")
+local function sprite_texture_id()
+    return SPRITE_TEXTURE:getId()
+end
 
 local function save_png(img, path)
     lurek.image.savePNG(img, path)
@@ -369,7 +374,7 @@ local function sprite_visual(slug, shader)
     local sheet = lurek.sprite.newSheet(128, 96, 32, 32)
     sheet:nameGroup("idle", 1, 4)
     sheet:nameGroup("run", 5, 8)
-    local sprite = lurek.sprite.newSprite(7, 52, 48)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 52, 48)
     sprite:setShader(shader)
     sprite:setShaderUniform("team_color", slug == "team_color" and { 0.1, 0.45, 1.0, 1.0 } or { 0.95, 0.35, 0.18, 1.0 })
     local img = lurek.image.newImageData(240, 140)

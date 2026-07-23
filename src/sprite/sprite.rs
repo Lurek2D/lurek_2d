@@ -7,6 +7,8 @@ use crate::color::Color;
 use crate::math::Vec2;
 use crate::runtime::resource_keys::ShaderKey;
 
+/// # Fields
+///
 /// A single drawable texture instance with position, scale, rotation, and colour tint.
 pub struct Sprite {
     /// Index of the texture resource used to draw this sprite.

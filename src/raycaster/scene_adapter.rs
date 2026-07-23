@@ -10,8 +10,10 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::physics::World;
-#[cfg(feature = "obj-loader")]
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 use crate::render::obj_loader::ObjModel;
+#[cfg(feature = "voxel-loader")]
+use crate::render::voxel_loader::VoxelModel;
 use crate::runtime::resource_keys::TextureKey;
 use std::collections::HashMap;
 
@@ -173,11 +175,11 @@ impl SceneAdapterLight {
 }
 
 /// Resolved model instance for later Lua-side projection.
-#[cfg(feature = "obj-loader")]
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 #[derive(Clone)]
 pub struct ResolvedSceneModel {
     /// Model geometry.
-    pub model: ObjModel,
+    pub model: SceneAdapterModelAsset,
     /// Optional stable caller entity id.
     pub entity_id: Option<u32>,
     /// Owning multilevel slice.
@@ -197,11 +199,24 @@ pub struct ResolvedSceneModel {
 }
 
 /// Model binding owned by a `SceneAdapter`.
-#[cfg(feature = "obj-loader")]
+/// Geometry owned by a raycaster scene-adapter model binding.
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
+#[derive(Clone)]
+pub enum SceneAdapterModelAsset {
+    /// Wavefront OBJ geometry.
+    #[cfg(feature = "obj-loader")]
+    Obj(ObjModel),
+    /// Palette-coloured MagicaVoxel geometry.
+    #[cfg(feature = "voxel-loader")]
+    Voxel(VoxelModel),
+}
+
+/// Model binding owned by a `SceneAdapter`.
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 #[derive(Clone)]
 pub struct SceneAdapterModel {
     /// Model geometry.
-    pub model: ObjModel,
+    pub model: SceneAdapterModelAsset,
     /// Optional stable caller entity id.
     pub entity_id: Option<u32>,
     /// Owning multilevel slice.
@@ -216,7 +231,7 @@ pub struct SceneAdapterModel {
     pub attrs: HashMap<String, String>,
 }
 
-#[cfg(feature = "obj-loader")]
+#[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 impl SceneAdapterModel {
     /// Resolve into a model instance description.
     pub fn resolve(&self) -> Option<ResolvedSceneModel> {
@@ -240,7 +255,7 @@ impl SceneAdapterModel {
 pub struct SceneAdapter {
     sprites: Vec<SceneAdapterSprite>,
     lights: Vec<SceneAdapterLight>,
-    #[cfg(feature = "obj-loader")]
+    #[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
     models: Vec<SceneAdapterModel>,
 }
 

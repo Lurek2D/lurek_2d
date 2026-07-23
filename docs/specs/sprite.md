@@ -65,6 +65,10 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - Lookup helpers support name access, index access, name listing, and atlas construction from engine texture regions.
 - Open this file when packed-region semantics or atlas import rules change, not single-sprite transform behavior.
 
+### limits.rs
+
+- Defines bounded input and work limits for sprite-owned runtime data.
+
 ### mod.rs
 
 - Exports the sprite surface for single sprites, sheets, atlases, nine-slice panels, texture packs, and batches.
@@ -124,7 +128,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
 - `lurek.sprite.newAutoTileSheet(image, layout, opts) -> LSpriteAutoTileSheet`: Creates an autotile sheet descriptor from an image source, layout, and tile options.
 - `lurek.sprite.newNineSlice(image, top, right, bottom, left) -> LNineSlice`: Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
-- `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
+- `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (3 columns by 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
 - `lurek.sprite.newSheetFromImage(image, opts) -> LSpriteSheet`: Creates a sprite sheet from an existing `LImageData` source and frame options.
 - `lurek.sprite.newSprite(texture_id, x, y) -> LSprite`: Creates a lightweight sprite record with transform and optional normal-map metadata.
@@ -156,7 +160,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `LAtlasPacker:clear() -> nil`: Removes all packed regions and resets packing shelves.
 - `LAtlasPacker:getDimensions() -> integer`: Returns the current width and height of this atlas packer.
 - `LAtlasPacker:getRegion(name) -> table`: Returns the named packed atlas region, or nil if not found.
-- `LAtlasPacker:pack(name, w, h) -> boolean`: Packs a named region into this atlas and returns whether allocation succeeded.
+- `LAtlasPacker:pack(name, w, h) -> boolean`: Packs a named region into this atlas and returns success plus an optional failure code.
 - `LAtlasPacker:regionCount() -> integer`: Returns the number of currently packed regions.
 - `LAtlasPacker:setNineSlice(name, left, right, top, bottom) -> boolean`: Sets nine-slice insets for a previously packed region.
 - `LAtlasPacker:type() -> string`: Returns the type name of this object.
@@ -417,6 +421,12 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - Intentionally empty.
 
 ## Notes
+
+- Lua frame, group-start, atlas-index, and compatibility tile-ID inputs are one-based; zero is rejected rather than aliasing the first item. Grid rows and columns are explicitly zero-based.
+- Sprite sheets require divisible texture/frame dimensions. Atlas regions imported with an image must fit within that image, and atlas/group name exports are deterministic.
+- Sprite clips are intentionally lightweight. FPS and delta time must be finite; updates advance arithmetically and emit only a bounded set of trailing events. Use `animation` for state machines, blends, and authored Aseprite timing/tags.
+- The CPU sprite-batch data type lives with sprite, but public creation and drawing are render-owned through `lurek.render.newSpriteBatch` and `drawBatch`.
+- Nine-slice is reusable texture geometry; UI widgets and layout remain UI-owned.
 
 - Sprite shader materials:
   `LSprite:setShader(shader)`, `LSprite:getShader()`, and `LSprite:setShaderUniform(name, value)` bind render-owned `target = "sprite"` WGSL shaders to sprite instances. The sprite module stores only the `LShader` handle and semantic material choice; `render` owns WGSL validation, uniform validation, GPU pipeline cache, and execution. The current sprite target is fragment-only and uses the existing textured contract: sampled sprite color at `@location(0)` and uv at `@location(1)`.

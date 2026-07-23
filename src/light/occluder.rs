@@ -20,7 +20,8 @@ pub struct Occluder {
     /// Whether this occluder participates in shadow computation; when false, it is skipped.
     pub enabled: bool,
     /// Monotonic generation for local vertices and world-space position used by shadow edge caches.
-    edge_generation: u64,
+    /// Uses `u128` so a cache generation is never silently recycled by normal engine operation.
+    edge_generation: u128,
 }
 impl Occluder {
     /// Create an occluder after validating finite convex-polygon vertices.
@@ -96,8 +97,17 @@ impl Occluder {
     }
 
     /// Return the geometry generation used to invalidate cached shadow edges.
-    pub fn edge_generation(&self) -> u64 {
+    pub fn edge_generation(&self) -> u128 {
         self.edge_generation
+    }
+
+    /// Return whether this occluder remains safe for preview and GPU shadow math.
+    pub fn is_render_valid(&self) -> bool {
+        Self::validate_vertices(&self.vertices).is_ok()
+            && self.position.x.is_finite()
+            && self.position.y.is_finite()
+            && self.opacity.is_finite()
+            && (0.0..=1.0).contains(&self.opacity)
     }
 
     fn validate_vertices(vertices: &[Vec2]) -> Result<(), String> {
@@ -135,6 +145,9 @@ impl Occluder {
     }
 
     fn bump_edge_generation(&mut self) {
-        self.edge_generation = self.edge_generation.checked_add(1).unwrap_or(0);
+        // Saturation is explicit: unlike a wrapping counter it cannot collide with a prior cache
+        // generation. Reaching `u128::MAX` requires more mutations than a practical process can
+        // perform, and remains safer than silently reusing generation zero.
+        self.edge_generation = self.edge_generation.saturating_add(1);
     }
 }

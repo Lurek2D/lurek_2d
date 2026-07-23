@@ -728,11 +728,11 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 - `LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left?, opts?) -> nil`: Adds a static directional billboard sprite entry.
 - `LSceneAdapter:addLight(x, y, radius, opts?) -> nil`: Adds a static point light entry to the adapter.
-- `LSceneAdapter:addModel(model, x, y, opts?) -> nil`: Adds a static OBJ model instance entry.
+- `LSceneAdapter:addModel(model, x, y, opts?) -> nil`: Adds a static OBJ or MagicaVoxel model instance entry.
 - `LSceneAdapter:addSprite(x, y, texture, opts?) -> nil`: Adds a static billboard sprite entry.
 - `LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, left?, opts?) -> nil`: Binds a directional billboard sprite to a live physics body.
 - `LSceneAdapter:bindBodyLight(body, radius, opts?) -> nil`: Binds a point light to a live physics body.
-- `LSceneAdapter:bindBodyModel(body, model, opts?) -> nil`: Binds an OBJ model instance to a live physics body.
+- `LSceneAdapter:bindBodyModel(body, model, opts?) -> nil`: Binds an OBJ or MagicaVoxel model instance to a live physics body.
 - `LSceneAdapter:bindBodySprite(body, texture, opts?) -> nil`: Binds a billboard sprite to a live physics body.
 - `LSceneAdapter:clear() -> nil`: Removes every tracked entry from the adapter.
 - `LSceneAdapter:clearLights() -> nil`: Removes every tracked light entry from the adapter.
@@ -796,6 +796,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Scene params for `buildScene`, `buildMultiLevelScene`, and `LMultiLevelGrid:buildScene` now include `time_seconds`, `background`, and `overlays`. Shader backgrounds and shader overlays accept `overlay`, `postfx`, or `draw` targets, and raycaster forwards auto uniforms such as `ray_player_pos`, `ray_screen_size`, `ray_camera_angle`, `ray_fov`, `ray_horizon`, `ray_camera_height`, and `ray_max_distance`.
 - Depth-aware fog is a first-class overlay mode. Use `{ type = "depth_fog", ... }` or `{ type = "fog", mode = "depth", ... }` when the effect should read per-column scene depth instead of only layering a flat fullscreen tint.
 - `LRaycaster:addParticleEmitter(emitter)` spawns deterministic projected 2.5D particles during scene builds. Emitters can bind textures, `particle` shaders, blend modes, seeded jitter, and volumetric placement hints (`z`, `radius`, `height`) while still remaining raycaster scene data instead of direct render command ownership.
+- `models[]` and `LSceneAdapter:addModel` accept OBJ and static MagicaVoxel handles. Updating short-lived voxel model instances each scene build is the supported object-first route for voxel debris or particles; the billboard particle emitter remains texture-based.
 - `lurek.raycaster.drawLastScene(width, height)` is an evidence-oriented CPU fallback. It preserves base textures, tint, UV scrolling, frame-atlas animation, depth fog, and projected particle placement, but it does not execute WGSL for raycaster materials, shader backgrounds, or shader overlays.
 - Raycaster picking now carries semantic metadata for cursor/runtime consumers. `pickScreen*` and multilevel pick helpers return stable `kind` strings plus optional `attrs` on wall, floor, ceiling, sprite, and model hits.
 - `LRaycaster:setPickAttr/getPickAttr/clearPickAttr` and the matching `LMultiLevelGrid` methods store per-surface metadata on `wall`, `floor`, `ceiling`, or shared `any` channels so first-person surfaces can declare cursor states or effects without hardcoded Lua branching.

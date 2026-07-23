@@ -1,6 +1,11 @@
--- Canonical evidence file for lurek.render shader target contracts and shader-bound module APIs.
+﻿-- Canonical evidence file for lurek.render shader target contracts and shader-bound module APIs.
 
 local OUT = evidence_output_dir("render")
+
+local SPRITE_TEXTURE = lurek.render.newImage("assets/icon.png")
+local function sprite_texture_id()
+    return SPRITE_TEXTURE:getId()
+end
 
 local function save_text(path, text)
     if write_file then
@@ -118,7 +123,7 @@ describe("Evidence: lurek.render", function()
         target_lines.light[#target_lines.light + 1] = "light.world=" .. lurek.light.getShader():getTarget()
         target_lines.light[#target_lines.light + 1] = "light.instance=" .. light:getShader():getTarget()
 
-        local sprite = lurek.sprite.newSprite(7, 10, 20)
+        local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
         sprite:setShader(shaders.sprite)
         sprite:setShaderUniform("team_color", { 0.2, 0.6, 1.0, 1.0 })
         lines[#lines + 1] = "sprite.shader=" .. sprite:getShader():getTarget()

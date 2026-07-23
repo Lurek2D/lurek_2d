@@ -5,6 +5,8 @@
 
 use crate::runtime::resource_keys::TextureKey;
 
+/// # Fields
+///
 /// Deferred sprite draw-call collector bound to a single texture.
 pub struct SpriteBatch {
     /// Texture all entries in this batch draw from.
@@ -14,6 +16,8 @@ pub struct SpriteBatch {
     /// Upper bound on entries; 0 means unlimited, otherwise add() returns None when full.
     max_entries: usize,
 }
+/// # Fields
+///
 /// A single sprite draw entry with world position, source quad, transform, and origin offset.
 pub struct BatchEntry {
     /// World-space X position of this sprite.

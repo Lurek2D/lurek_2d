@@ -7,6 +7,8 @@ use crate::runtime::resource_keys::TextureKey;
 
 /// Source and destination rect tuple: (src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h).
 pub type Patch = (f32, f32, f32, f32, f32, f32, f32, f32);
+/// # Fields
+///
 /// Nine-slice border descriptor: stores texture key and the four border inset sizes.
 #[derive(Debug, Clone)]
 pub struct NineSlice {

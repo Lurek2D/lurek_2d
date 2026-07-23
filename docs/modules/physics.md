@@ -5586,6 +5586,22 @@ end
 
 ---
 
+#### `LTerrain:getColliderStrategy`
+
+Returns the static terrain collider generation strategy.
+
+```lua
+LTerrain:getColliderStrategy()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | `rowRuns` or `contourEdges`. |
+
+---
+
 #### `LTerrain:getDirtyChunks`
 
 Returns terrain chunks pending collider rebuild after terrain edits.
@@ -5712,6 +5728,22 @@ do
     lurek.log.info("dirty=" .. tostring(terrain:isDirty()))
 end
 ```
+
+---
+
+#### `LTerrain:setColliderStrategy`
+
+Selects static terrain collider generation. `rowRuns` is the fast filled default; `contourEdges` emits only exposed cell boundaries.
+
+```lua
+LTerrain:setColliderStrategy(strategy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `strategy` | string | `rowRuns` or `contourEdges`. |
 
 ---
 

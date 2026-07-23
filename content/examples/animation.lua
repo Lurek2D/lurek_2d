@@ -800,7 +800,7 @@ end
 --@api: lurek.animation.fromSpriteSheet
 do
     local sheet = lurek.sprite.newSheet(64, 16, 16, 16)
-    sheet:nameGroup("walk", 0, 4)
+    sheet:nameGroup("walk", 1, 4)
     local anim = lurek.animation.fromSpriteSheet(sheet, { group = "walk", name = "walk", fps = 10 })
     local clips = anim:getClipCount()
     lurek.log.info("[animation] fromSpriteSheet clips=" .. tostring(clips))

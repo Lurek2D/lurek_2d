@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-23T13:37:25.483472+00:00",
+    "generated": "2026-07-23T20:04:27.823285+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3314,
-      "rust_modules": 785,
-      "rust_tests": 509,
-      "lua_tests": 293
+      "rust_items": 3331,
+      "rust_modules": 787,
+      "rust_tests": 515,
+      "lua_tests": 299
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3314,
-      "documented": 3312,
-      "modules": 785
+      "total_items": 3331,
+      "documented": 3329,
+      "modules": 787
     },
     "modules": {
       "agent::chat": {
@@ -10675,6 +10675,13 @@
             "description": "Snapshot of a single light's normal-map binding used by the renderer for surface shading. # Fields",
             "file": "src/light/light_world.rs",
             "line": 45
+          },
+          {
+            "name": "LightSelectionDiagnostics",
+            "kind": "struct",
+            "description": "Summary of one renderer-light selection pass. # Fields",
+            "file": "src/light/light_world.rs",
+            "line": 65
           }
         ]
       },
@@ -15293,93 +15300,93 @@
           {
             "name": "AltitudeSampleMode",
             "kind": "enum",
-            "description": "Sampling policy for altitude-layer world-coordinate lookups.",
+            "description": "Sampling policy for altitude-layer world-coordinate lookups. # Variants",
             "file": "src/physics/altitude.rs",
-            "line": 14
+            "line": 15
           },
           {
             "name": "AltitudeLayerData",
             "kind": "struct",
-            "description": "Serialized altitude-layer payload used for save/load and Lua-facing snapshots.",
+            "description": "Serialized altitude-layer payload used for save/load and Lua-facing snapshots. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "AltitudeLayer",
             "kind": "struct",
-            "description": "Deterministic authored terrain-height and clearance grid for 2.5D gameplay.",
+            "description": "Deterministic authored terrain-height and clearance grid for 2.5D gameplay. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 42
+            "line": 45
           },
           {
             "name": "AltitudeMode",
             "kind": "enum",
-            "description": "Body altitude interpretation mode.",
+            "description": "Body altitude interpretation mode. # Variants",
             "file": "src/physics/altitude.rs",
-            "line": 54
+            "line": 58
           },
           {
             "name": "AltitudeCollisionOptions",
             "kind": "struct",
-            "description": "Flags controlling how altitude metadata participates in 2.5D collision rules.",
+            "description": "Flags controlling how altitude metadata participates in 2.5D collision rules. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 67
+            "line": 72
           },
           {
             "name": "BodyAltitudeState",
             "kind": "struct",
-            "description": "Per-body vertical sidecar state stored by `World`.",
+            "description": "Per-body vertical sidecar state stored by `World`. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 88
+            "line": 94
           },
           {
             "name": "AltitudeHitKind",
             "kind": "enum",
-            "description": "Result classification for future 2.5D hits and projectile traces.",
+            "description": "Result classification for future 2.5D hits and projectile traces. # Variants",
             "file": "src/physics/altitude.rs",
-            "line": 134
+            "line": 141
           },
           {
             "name": "AltitudeHit",
             "kind": "struct",
-            "description": "Shared 2.5D hit payload owned by the physics domain.",
+            "description": "Shared 2.5D hit payload owned by the physics domain. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 147
+            "line": 155
           },
           {
             "name": "CircleCast25DOptions",
             "kind": "struct",
-            "description": "Options for a future 2.5D swept-circle query.",
+            "description": "Options for a future 2.5D swept-circle query. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 170
+            "line": 179
           },
           {
             "name": "BallisticArcOptions",
             "kind": "struct",
-            "description": "Options for a future deterministic ballistic trace.",
+            "description": "Options for a future deterministic ballistic trace. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 193
+            "line": 203
           },
           {
             "name": "BallisticProjectileOptions",
             "kind": "struct",
-            "description": "Options for an engine-owned ballistic projectile.",
+            "description": "Options for an engine-owned ballistic projectile. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 214
+            "line": 225
           },
           {
             "name": "BallisticTrace",
             "kind": "struct",
-            "description": "Deterministic ballistic trace result.",
+            "description": "Deterministic ballistic trace result. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 245
+            "line": 257
           },
           {
             "name": "BallisticProjectile",
             "kind": "struct",
-            "description": "Engine-owned ballistic projectile state for future world stepping.",
+            "description": "Engine-owned ballistic projectile state for future world stepping. # Fields",
             "file": "src/physics/altitude.rs",
-            "line": 258
+            "line": 271
           }
         ]
       },
@@ -15404,16 +15411,16 @@
           {
             "name": "BodyFlowInfluence",
             "kind": "struct",
-            "description": "Per-body coefficients controlling how authored flow fields affect this body.",
+            "description": "Per-body coefficients controlling how authored flow fields affect this body. # Fields",
             "file": "src/physics/body.rs",
-            "line": 50
+            "line": 51
           },
           {
             "name": "Body",
             "kind": "struct",
             "description": "Data-only description of a physics body passed to `World` for simulation. # Fields - `position`: world-space body center. - `velocity`: linear velocity in world units per second. - `mass`: body mass in kilograms. - `body_type`: simulation role used by the solver. - `shape`: primary primitive shape used for broad behavior. - `restitution`: bounce coefficient. - `reflective`: whether gameplay beam tracing should treat the body as a mirror surface. - `beam_reflectivity`: energy multiplier applied after a beam reflection. - `projectile_reflectivity`: gameplay reflectivity hint for projectile ricochets. - `layer`: collision layer membership mask. - `mask`: collision interaction mask. - `width`: cached AABB-equivalent width. - `height`: cached AABB-equivalent height. - `friction`: surface friction coefficient. - `angle`: rotation in radians. - `angular_velocity`: rotational velocity in radians per second. - `bullet`: whether continuous collision detection should be enabled for this body. - `shape_ext`: optional extended polygon/edge/chain geometry. - `flow_influence`: authored coefficients used when flow fields affect the body.",
             "file": "src/physics/body.rs",
-            "line": 98
+            "line": 99
           }
         ]
       },
@@ -15471,9 +15478,9 @@
           {
             "name": "PhysicsError",
             "kind": "enum",
-            "description": "Error returned by safe physics constructors, bounded helpers, and strict mutators.",
+            "description": "Error returned by safe physics constructors, bounded helpers, and strict mutators. # Variants",
             "file": "src/physics/error.rs",
-            "line": 12
+            "line": 13
           }
         ]
       },
@@ -15491,72 +15498,72 @@
           {
             "name": "FlowMedium",
             "kind": "enum",
-            "description": "Medium classification used by per-body response scaling.",
+            "description": "Medium classification used by per-body response scaling. # Variants",
             "file": "src/physics/flow.rs",
-            "line": 19
+            "line": 20
           },
           {
             "name": "FlowCombineMode",
             "kind": "enum",
-            "description": "How overlapping fields should be combined.",
+            "description": "How overlapping fields should be combined. # Variants",
             "file": "src/physics/flow.rs",
-            "line": 34
+            "line": 36
           },
           {
             "name": "FlowApplicationMode",
             "kind": "enum",
-            "description": "How the sampled flow vector should influence bodies.",
+            "description": "How the sampled flow vector should influence bodies. # Variants",
             "file": "src/physics/flow.rs",
-            "line": 43
+            "line": 46
           },
           {
             "name": "FlowFalloff",
             "kind": "enum",
-            "description": "Distance-to-edge falloff curve for one flow field.",
+            "description": "Distance-to-edge falloff curve for one flow field. # Variants",
             "file": "src/physics/flow.rs",
-            "line": 52
+            "line": 56
           },
           {
             "name": "FlowDirectionMode",
             "kind": "enum",
-            "description": "Direction-selection strategy for one authored field.",
+            "description": "Direction-selection strategy for one authored field. # Variants",
             "file": "src/physics/flow.rs",
-            "line": 63
+            "line": 68
           },
           {
             "name": "FlowGeometry",
             "kind": "enum",
-            "description": "Geometry variants supported by the flow-field sampler.",
+            "description": "Geometry variants supported by the flow-field sampler. # Variants",
             "file": "src/physics/flow.rs",
-            "line": 82
+            "line": 88
           },
           {
             "name": "FlowContribution",
             "kind": "struct",
-            "description": "One field-level contribution inside a sampled overlap result.",
+            "description": "One field-level contribution inside a sampled overlap result. # Fields",
             "file": "src/physics/flow.rs",
-            "line": 107
+            "line": 114
           },
           {
             "name": "FlowSample",
             "kind": "struct",
-            "description": "Sample result returned by `World::sample_flow`.",
+            "description": "Sample result returned by `World::sample_flow`. # Fields",
             "file": "src/physics/flow.rs",
-            "line": 124
+            "line": 132
           },
           {
             "name": "FlowField",
             "kind": "struct",
-            "description": "One authored flow field stored by the physics world.",
+            "description": "One authored flow field stored by the physics world. # Fields",
             "file": "src/physics/flow.rs",
-            "line": 139
+            "line": 148
           },
           {
             "name": "combine_contributions",
             "kind": "fn",
             "description": "Combines contributions that share one overlap sample into a final vector.",
             "file": "src/physics/flow.rs",
-            "line": 423
+            "line": 432
           }
         ]
       },
@@ -15567,9 +15574,9 @@
           {
             "name": "PhysicsLimits",
             "kind": "struct",
-            "description": "Shared safety limits for physics geometry, terrain allocations, and bounded stepping.",
+            "description": "Shared safety limits for physics geometry, terrain allocations, and bounded stepping. # Fields",
             "file": "src/physics/limits.rs",
-            "line": 11
+            "line": 12
           }
         ]
       },
@@ -15580,51 +15587,51 @@
           {
             "name": "LiquidKind",
             "kind": "enum",
-            "description": "Discrete authored liquid material stored per cell.",
+            "description": "Discrete authored liquid material stored per cell. # Variants",
             "file": "src/physics/liquid.rs",
-            "line": 34
+            "line": 73
           },
           {
             "name": "LiquidCell",
             "kind": "struct",
-            "description": "One grid cell of liquid state.",
+            "description": "One grid cell of liquid state. # Fields",
             "file": "src/physics/liquid.rs",
-            "line": 72
+            "line": 112
           },
           {
             "name": "LiquidStepOptions",
             "kind": "struct",
-            "description": "Tunable flow controls for one liquid step call.",
+            "description": "Tunable flow controls for one liquid step call. # Fields",
             "file": "src/physics/liquid.rs",
-            "line": 90
+            "line": 131
           },
           {
             "name": "LiquidStepStats",
             "kind": "struct",
-            "description": "Diagnostics returned after stepping a liquid map.",
+            "description": "Diagnostics returned after stepping a liquid map. # Fields",
             "file": "src/physics/liquid.rs",
-            "line": 148
+            "line": 190
           },
           {
             "name": "LiquidBodyForceOptions",
             "kind": "struct",
-            "description": "Sampling and force controls for liquid-to-body interaction.",
+            "description": "Sampling and force controls for liquid-to-body interaction. # Fields",
             "file": "src/physics/liquid.rs",
-            "line": 159
+            "line": 202
           },
           {
             "name": "LiquidBodyForceStats",
             "kind": "struct",
-            "description": "Diagnostics returned after applying liquid forces to a world.",
+            "description": "Diagnostics returned after applying liquid forces to a world. # Fields",
             "file": "src/physics/liquid.rs",
-            "line": 205
+            "line": 249
           },
           {
             "name": "LiquidMap",
             "kind": "struct",
-            "description": "Separate grid-based liquid storage used for leaking tanks, settling, and simple buoyancy sampling.",
+            "description": "Separate grid-based liquid storage used for leaking tanks, settling, and simple buoyancy sampling. # Fields",
             "file": "src/physics/liquid.rs",
-            "line": 213
+            "line": 258
           }
         ]
       },
@@ -15633,11 +15640,18 @@
         "source_file": "src/physics/material.rs",
         "items": [
           {
+            "name": "MaterialCombineRule",
+            "kind": "enum",
+            "description": "Rule used by the solver to combine two collider coefficients at contact. # Variants",
+            "file": "src/physics/material.rs",
+            "line": 13
+          },
+          {
             "name": "PhysicsMaterial",
             "kind": "struct",
-            "description": "Reusable physics material properties shared by bodies and fixtures.  Solver-backed fields map onto Rapier body or collider settings, while gameplay fields remain metadata until higher-level systems consume them.",
+            "description": "Reusable physics material properties shared by bodies and fixtures.  Solver-backed fields map onto Rapier body or collider settings, while gameplay fields remain metadata until higher-level systems consume them. # Fields",
             "file": "src/physics/material.rs",
-            "line": 15
+            "line": 31
           }
         ]
       },
@@ -15784,23 +15798,23 @@
           {
             "name": "AlphaShapeOptions",
             "kind": "struct",
-            "description": "Options for deriving a collision shape from an image alpha mask.",
+            "description": "Options for deriving a collision shape from an image alpha mask. # Fields",
             "file": "src/physics/shape.rs",
-            "line": 19
+            "line": 20
           },
           {
             "name": "Shape",
             "kind": "enum",
             "description": "Physics primitive shape used in `Body` and `StandaloneShape`. # Variants - `Rect`: axis-aligned box with width and height. - `Circle`: circle with a radius. - `Polygon`: convex polygon vertex list. - `Edge`: single line segment. - `Chain`: open or closed polyline.",
             "file": "src/physics/shape.rs",
-            "line": 51
+            "line": 52
           },
           {
             "name": "StandaloneShape",
             "kind": "struct",
             "description": "A `Shape` combined with material properties for standalone collision testing. # Fields - `shape`: underlying geometry. - `density`: mass per area unit. - `friction`: friction coefficient. - `restitution`: bounce coefficient. - `sensor`: whether overlap-only sensor behavior is enabled.",
             "file": "src/physics/shape.rs",
-            "line": 490
+            "line": 492
           }
         ]
       },
@@ -15813,63 +15827,70 @@
             "kind": "struct",
             "description": "Key identifying a chunk by its chunk-grid coordinates. # Fields - `cx`: chunk-space column index. - `cy`: chunk-space row index.",
             "file": "src/physics/terrain.rs",
-            "line": 32
+            "line": 52
           },
           {
             "name": "TerrainRegion",
             "kind": "struct",
             "description": "Inclusive-low, exclusive-high cell-space bounds for terrain scans or component extents. # Fields - `x0`: First included cell column. - `y0`: First included cell row. - `x1`: One-past-last included cell column. - `y1`: One-past-last included cell row.",
             "file": "src/physics/terrain.rs",
-            "line": 46
+            "line": 66
           },
           {
             "name": "TerrainComponent",
             "kind": "struct",
             "description": "One connected solid terrain component expressed as cell coordinates plus support flags. # Fields - `cells`: All solid cells that belong to this connected component. - `bounds`: Cell-space bounds containing every component cell. - `touches_bottom`: Whether any component cell touches the bottom terrain border. - `touches_border`: Whether any component cell touches any terrain border.",
             "file": "src/physics/terrain.rs",
-            "line": 88
+            "line": 108
           },
           {
             "name": "TerrainSupportRule",
             "kind": "enum",
-            "description": "Support policy used when deciding whether a terrain component should collapse.",
+            "description": "Support policy used when deciding whether a terrain component should collapse. # Variants",
             "file": "src/physics/terrain.rs",
-            "line": 101
+            "line": 122
           },
           {
             "name": "TerrainCollapseMode",
             "kind": "enum",
-            "description": "Action applied to unsupported terrain components.",
+            "description": "Action applied to unsupported terrain components. # Variants",
             "file": "src/physics/terrain.rs",
-            "line": 110
+            "line": 132
           },
           {
             "name": "TerrainCollapseOptions",
             "kind": "struct",
             "description": "Policy options for unsupported-terrain collapse passes. # Fields - `support_rule`: Rule deciding which components count as supported. - `mode`: Action applied to unsupported components that pass the minimum-size filter. - `min_component_cells`: Minimum number of cells a component must have before the policy applies. - `max_debris`: Maximum number of debris bodies to spawn across the whole collapse call. - `debris_mass`: Mass assigned to spawned debris bodies. - `debris_restitution`: Restitution assigned to spawned debris bodies.",
             "file": "src/physics/terrain.rs",
-            "line": 130
+            "line": 152
           },
           {
             "name": "TerrainCollapseResult",
             "kind": "struct",
             "description": "Result returned after collapsing unsupported terrain components. # Fields - `components`: Number of unsupported components that matched the size threshold. - `removed_cells`: Number of terrain cells removed from the grid. - `debris_body_ids`: Body ids spawned for debris mode.",
             "file": "src/physics/terrain.rs",
-            "line": 183
+            "line": 205
           },
           {
             "name": "TerrainFlushStats",
             "kind": "struct",
             "description": "Diagnostics returned by the most recent terrain collider rebuild pass. # Fields - `dirty_chunks_rebuilt`: Number of dirty chunks rebuilt during this flush call. - `dirty_chunks_remaining`: Number of dirty chunks still queued after this flush call. - `bodies_destroyed`: Number of old terrain bodies removed before rebuild. - `bodies_created`: Number of new terrain bodies created by rebuild. - `elapsed_micros`: Wall-clock duration of the rebuild pass in microseconds.",
             "file": "src/physics/terrain.rs",
-            "line": 200
+            "line": 222
+          },
+          {
+            "name": "TerrainColliderStrategy",
+            "kind": "enum",
+            "description": "Static-collider representation selected for dirty terrain chunks. # Variants",
+            "file": "src/physics/terrain.rs",
+            "line": 238
           },
           {
             "name": "TerrainMap",
             "kind": "struct",
             "description": "Tile-based terrain map that synchronises static physics bodies with a `World`. # Fields - `width`: Grid width in cells. - `height`: Grid height in cells. - `cell_size`: World units per cell side. - `offset_x`: World-space x origin. - `offset_y`: World-space y origin.",
             "file": "src/physics/terrain.rs",
-            "line": 220
+            "line": 253
           }
         ]
       },
@@ -15927,105 +15948,126 @@
             "kind": "struct",
             "description": "A pair of body ids that have started or are overlapping. # Fields - `body_a`: first body id. - `body_b`: second body id.",
             "file": "src/physics/world.rs",
-            "line": 97
+            "line": 98
           },
           {
             "name": "RaycastHit",
             "kind": "struct",
             "description": "The closest raycast intersection result. # Fields - `body_id`: body hit by the ray. - `point`: world-space hit point. - `normal`: outward hit normal. - `toi`: parametric distance along the cast.",
             "file": "src/physics/world.rs",
-            "line": 110
+            "line": 111
+          },
+          {
+            "name": "RaycastQuery",
+            "kind": "struct",
+            "description": "One directional ray request for [`World::raycast_all_batch`]. # Fields",
+            "file": "src/physics/world.rs",
+            "line": 124
           },
           {
             "name": "ShapeSweepHit",
             "kind": "struct",
             "description": "The closest swept-shape intersection result. # Fields - `body_id`: body hit by the sweep. - `point`: world-space impact point on the hit collider. - `normal`: outward hit normal on the hit collider. - `toi`: travel distance from the cast origin to the first impact. - `safe_fraction`: normalized travel fraction in `0.0..=1.0` before the impact.",
             "file": "src/physics/world.rs",
-            "line": 128
+            "line": 144
           },
           {
             "name": "BeamHitMode",
             "kind": "enum",
-            "description": "Beam hit collection mode for instant gameplay beams.",
+            "description": "Beam hit collection mode for instant gameplay beams. # Variants",
             "file": "src/physics/world.rs",
-            "line": 142
+            "line": 159
           },
           {
             "name": "BeamOptions",
             "kind": "struct",
             "description": "Options controlling one instant beam query. # Fields - `max_distance`: maximum beam travel distance in world units. - `thickness`: beam radius in world units; only `0.0` is currently supported. - `hit_mode`: how many hits to collect. - `reflect`: whether the beam should continue reflecting from mirror bodies. - `max_bounces`: maximum number of reflections allowed when `reflect` is true. - `energy`: starting beam energy multiplier used with reflective surfaces. - `min_energy`: beam tracing stops when reflected energy would drop below this threshold. - `filter`: collision and sensor filtering shared with other physics queries.",
             "file": "src/physics/world.rs",
-            "line": 164
+            "line": 181
           },
           {
             "name": "BeamHit",
             "kind": "struct",
             "description": "One beam hit ready for gameplay or debug rendering. # Fields - `body_id`: body hit by the beam. - `point`: world-space hit point. - `normal`: outward surface normal. - `distance`: beam travel distance from the origin to the hit point. - `segment_index`: 1-based segment index for reflected or chained traces. - `reflected`: whether the beam continued past this hit by reflecting. - `incoming_dir`: normalized incoming beam direction at the hit. - `outgoing_dir`: normalized reflected direction, if the hit reflected the beam. - `reflectivity`: beam reflectivity multiplier used for the hit body.",
             "file": "src/physics/world.rs",
-            "line": 194
+            "line": 211
           },
           {
             "name": "BeamSegment",
             "kind": "struct",
             "description": "One visible segment of a beam trace. # Fields - `from`: segment start in world space. - `to`: segment end in world space. - `blocked_by`: body that stopped this segment, if any.",
             "file": "src/physics/world.rs",
-            "line": 220
+            "line": 237
           },
           {
             "name": "BeamTrace",
             "kind": "struct",
             "description": "Full instant beam query result. # Fields - `hits`: ordered hit results. - `segments`: ordered beam segments for gameplay and rendering. - `reached_max_range`: whether the trace extended to the requested max range.",
             "file": "src/physics/world.rs",
-            "line": 234
+            "line": 251
           },
           {
             "name": "ContactInfo",
             "kind": "struct",
             "description": "Contact information between two bodies. # Fields - `body_a`: first body id. - `body_b`: second body id. - `normal_x`: contact normal x component. - `normal_y`: contact normal y component. - `is_touching`: whether the bodies are currently touching.",
             "file": "src/physics/world.rs",
-            "line": 250
+            "line": 267
           },
           {
             "name": "PhysicsShapeSnapshot",
             "kind": "struct",
-            "description": "Snapshot of a physics shape used for debug rendering. # Fields - `x`: world-space x center. - `y`: world-space y center. - `half_w`: half-width for box-like shapes. - `half_h`: half-height for box-like shapes. - `angle`: rotation in radians. - `is_static`: whether the source body is static. - `is_sleeping`: whether the source body is sleeping. - `is_sensor`: whether the source collider is a sensor. - `is_circle`: whether the shape should be rendered as a circle. - `hull_verts`: polygon hull vertices for non-rectangular shapes.",
+            "description": "Snapshot of a physics shape used for debug rendering. # Fields - `body_id`: stable source body id. - `x`: world-space x center. - `y`: world-space y center. - `half_w`: half-width for box-like shapes. - `half_h`: half-height for box-like shapes. - `angle`: rotation in radians. - `is_static`: whether the source body is static. - `is_sleeping`: whether the source body is sleeping. - `is_sensor`: whether the source collider is a sensor. - `is_circle`: whether the shape should be rendered as a circle. - `hull_verts`: polygon hull vertices for non-rectangular shapes.",
             "file": "src/physics/world.rs",
-            "line": 274
+            "line": 293
+          },
+          {
+            "name": "PhysicsSnapshot",
+            "kind": "struct",
+            "description": "Immutable debug/tooling snapshot of the current physics shapes. # Fields",
+            "file": "src/physics/world.rs",
+            "line": 320
+          },
+          {
+            "name": "PhysicsSnapshotDiff",
+            "kind": "struct",
+            "description": "Difference between two immutable physics snapshots. # Fields",
+            "file": "src/physics/world.rs",
+            "line": 330
           },
           {
             "name": "PhysicsQueryFilter",
             "kind": "struct",
             "description": "Optional filters applied to physics spatial queries. # Fields - `layer`: optional query-side collision layer mask. - `mask`: optional query-side collision mask. - `groups`: optional 16-group query-side membership mask. - `include_sensors`: whether sensor colliders should be returned. - `exclude_body`: optional body whose colliders should be excluded.",
             "file": "src/physics/world.rs",
-            "line": 304
+            "line": 350
           },
           {
             "name": "GravityVector",
             "kind": "struct",
             "description": "Additive directional gravity vector applied to matching dynamic bodies before the solver step. # Fields - `id`: stable gravity vector identifier. - `gx`: x acceleration in world units per second squared. - `gy`: y acceleration in world units per second squared. - `layer_mask`: body layer mask; bodies with `body.layer & layer_mask == 0` are skipped. - `enabled`: whether the vector participates in the next step.",
             "file": "src/physics/world.rs",
-            "line": 336
+            "line": 382
           },
           {
             "name": "PhysicsDiagnostics",
             "kind": "struct",
             "description": "Runtime diagnostics recorded by the physics world across steps and strict mutators. # Fields - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `last_bodies_scanned`: body slots examined during the most recent step. - `last_colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `last_zone_checks`: body-zone containment checks performed during the most recent step. - `last_flow_samples`: field samples evaluated during the most recent step. - `last_flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `last_contacts`: contact events emitted during the most recent step. - `last_synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 361
+            "line": 407
           },
           {
             "name": "PhysicsWorldStats",
             "kind": "struct",
             "description": "Lightweight world diagnostics for Lua/editor tooling. # Fields - `bodies`: active body count. - `body_slots`: total allocated body slots. - `colliders`: active collider count. - `joints`: active joint count. - `joint_slots`: total allocated joint slots. - `zones`: active zone count. - `gravity_vectors`: active additive gravity vector count. - `flow_fields`: active flow-field count. - `sleeping_bodies`: active bodies currently sleeping. - `skipped_steps`: invalid or empty `step` calls rejected before rapier. - `clamped_steps`: `step` calls whose dt was reduced to the configured ceiling. - `invalid_operations`: strict helper failures observed through legacy wrappers. - `bodies_scanned`: body slots examined during the most recent step. - `colliders_rebuilt`: collider rebuilds triggered during the most recent step. - `zone_checks`: body-zone containment checks performed during the most recent step. - `flow_samples`: flow-field samples evaluated during the most recent step. - `flow_affected_bodies`: dynamic bodies that received non-zero flow influence during the most recent step. - `contacts`: contact events emitted during the most recent step. - `synced_bodies`: body mirrors pushed into rapier during the most recent step.",
             "file": "src/physics/world.rs",
-            "line": 405
+            "line": 451
           },
           {
             "name": "World",
             "kind": "struct",
             "description": "Full rapier2d-backed simulation world. # Fields - `bodies`: Lua-visible body mirrors. - `body_handles`: rapier rigid body handles for each slot. - `body_active`: active/tombstoned body slot state. - `collider_handles`: primary collider per body. - `extra_collider_handles`: additional colliders per body. - `collider_to_body`: reverse collider-to-body lookup. - `cached_shapes`: cached shape descriptors for rebuild detection. - `cached_restitutions`: cached restitution values per body. - `cached_layers`: cached layer/mask pairs per body. - `collision_group_masks`: world-level 16-group collision matrix rows. - `cached_frictions`: cached friction values per body. - `pipeline`: rapier simulation pipeline. - `gravity`: world gravity vector. - `params`: integration parameters. - `islands`: rapier island manager. - `broad_phase`: rapier broad phase. - `narrow_phase`: rapier narrow phase. - `rbodies`: rapier rigid body storage. - `rcolliders`: rapier collider storage. - `impulse_joints`: rapier impulse joint storage. - `multibody_joints`: rapier multibody joint storage. - `ccd_solver`: rapier CCD solver. - `joint_handles`: rapier impulse joint handles by slot. - `joint_active`: active/tombstoned joint slot state. - `collision_events`: buffered overlap/contact events. - `begin_contact_events`: body pairs that started touching this step. - `end_contact_events`: body pairs that stopped touching this step. - `event_handler`: local rapier event collector. - `joint_types`: joint type labels by stable joint id. - `mouse_joint_anchors`: mouse-joint anchor body lookup. - `pixels_per_meter`: pixels-to-meter conversion ratio. - `joint_break_forces`: optional joint break thresholds. - `one_way_normals`: one-way platform normals by body id. - `body_dirty_sync`: explicit mirror-to-rapier sync flags for dynamic bodies. - `body_base_gravity_scales`: gravity scales restored after temporary zone overrides. - `body_base_linear_damping`: linear damping restored after temporary zone overrides. - `body_base_angular_damping`: angular damping restored after temporary zone overrides. - `body_mass_overrides`: explicit mass values authored through `setMass`. - `body_materials`: body-default material snapshots kept in sync with direct setters. - `fixture_materials`: extra-fixture material snapshots keyed by `(body_id, fixture_index)`. - `altitude_layer`: optional terrain-height grid used for terrain-relative altitude rules. - `body_altitudes`: per-body vertical sidecar state keyed by stable body id. - `ballistic_projectiles`: engine-owned projectile slots keyed by stable projectile id. - `ballistic_projectile_hits`: buffered projectile hit events from the last step. - `zones`: registered physics zones. - `gravity_vectors`: additive world gravity vectors. - `flow_fields`: authored flow fields sampled before the solver step. - `gravity_vector_id_counter`: next stable additive gravity vector id. - `zone_id_counter`: next stable zone id. - `flow_field_id_counter`: next stable flow-field id. - `zone_tracker`: body/zone membership tracker. - `zone_events`: buffered zone enter/leave events. - `limits`: shared safety ceilings for strict helpers and bounded stepping. - `diagnostics`: cumulative and per-step instrumentation counters. - `rebuild_scratch`: reusable body-id buffer for collider rebuild scans. - `sync_scratch`: reusable mirror-state buffer for rapier sync. - `sorted_zone_indices`: reusable priority-order buffer for zones. - `default_gravity`: gravity captured at construction for full reset semantics. # Fields See inline field docs below for the authoritative per-field details.",
             "file": "src/physics/world.rs",
-            "line": 507
+            "line": 553
           }
         ]
       },
@@ -19119,49 +19161,56 @@
             "kind": "struct",
             "description": "A resolved 2D transform sampled from a static point or a live physics body.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "SceneTransform",
             "kind": "enum",
             "description": "Source of a raycaster-facing transform.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 34
+            "line": 36
           },
           {
             "name": "SceneAdapterSprite",
             "kind": "struct",
             "description": "Sprite binding owned by a `SceneAdapter`.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 103
+            "line": 105
           },
           {
             "name": "SceneAdapterLight",
             "kind": "struct",
             "description": "Point light binding owned by a `SceneAdapter`.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 147
+            "line": 149
           },
           {
             "name": "ResolvedSceneModel",
             "kind": "struct",
             "description": "Resolved model instance for later Lua-side projection.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 178
+            "line": 180
+          },
+          {
+            "name": "SceneAdapterModelAsset",
+            "kind": "enum",
+            "description": "Model binding owned by a `SceneAdapter`. Geometry owned by a raycaster scene-adapter model binding.",
+            "file": "src/raycaster/scene_adapter.rs",
+            "line": 205
           },
           {
             "name": "SceneAdapterModel",
             "kind": "struct",
             "description": "Model binding owned by a `SceneAdapter`.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 202
+            "line": 217
           },
           {
             "name": "SceneAdapter",
             "kind": "struct",
             "description": "Aggregates raycaster-facing scene inputs from static entries and live physics bodies.",
             "file": "src/raycaster/scene_adapter.rs",
-            "line": 240
+            "line": 255
           }
         ]
       },
@@ -20313,6 +20362,13 @@
             "description": "CPU fallback for evidence-oriented screenshot capture from queued render commands.",
             "file": "src/render/mod.rs",
             "line": 72
+          },
+          {
+            "name": "voxel_loader",
+            "kind": "mod",
+            "description": "MagicaVoxel `.vox` parser and palette-coloured surface mesh generation.",
+            "file": "src/render/mod.rs",
+            "line": 75
           }
         ]
       },
@@ -20766,6 +20822,54 @@
             "description": "Replay queued render commands and return software-capture diagnostics alongside the image.",
             "file": "src/render/software_capture.rs",
             "line": 790
+          }
+        ]
+      },
+      "render::voxel_loader": {
+        "module_doc": "Loads MagicaVoxel assets into cached, palette-coloured surface triangles for projected rendering. Owns bounded VOX parsing, voxel-to-Y-up coordinate conversion, exposed-face extraction, and model metadata. The resulting geometry is immutable and can be reused by the raycaster without reparsing or remeshing.",
+        "source_file": "src/render/voxel_loader.rs",
+        "items": [
+          {
+            "name": "MAX_VOXEL_CELLS",
+            "kind": "const",
+            "description": "Maximum dense source cells accepted by one voxel asset.",
+            "file": "src/render/voxel_loader.rs",
+            "line": 10
+          },
+          {
+            "name": "MAX_OCCUPIED_VOXELS",
+            "kind": "const",
+            "description": "Maximum occupied voxels accepted by one voxel asset.",
+            "file": "src/render/voxel_loader.rs",
+            "line": 12
+          },
+          {
+            "name": "MAX_VOXEL_TRIANGLES",
+            "kind": "const",
+            "description": "Maximum triangles emitted by one voxel asset.",
+            "file": "src/render/voxel_loader.rs",
+            "line": 14
+          },
+          {
+            "name": "VoxelVertex",
+            "kind": "struct",
+            "description": "One colour-bearing vertex in a cached voxel surface triangle.",
+            "file": "src/render/voxel_loader.rs",
+            "line": 18
+          },
+          {
+            "name": "VoxelTriangle",
+            "kind": "struct",
+            "description": "Immutable triangle emitted from the exposed surface of a voxel volume.",
+            "file": "src/render/voxel_loader.rs",
+            "line": 27
+          },
+          {
+            "name": "VoxelModel",
+            "kind": "struct",
+            "description": "A parsed MagicaVoxel asset represented as palette-coloured surface triangles.",
+            "file": "src/render/voxel_loader.rs",
+            "line": 34
           }
         ]
       },
@@ -24158,23 +24262,23 @@
           {
             "name": "SpriteClip",
             "kind": "struct",
-            "description": "One named animation clip definition used by [`SpriteAnimator`].",
+            "description": "# Fields  One named animation clip definition used by [`SpriteAnimator`].",
             "file": "src/sprite/animator.rs",
-            "line": 12
+            "line": 15
           },
           {
             "name": "AnimatorEvent",
             "kind": "enum",
-            "description": "Playback events emitted while advancing an animator.",
+            "description": "# Variants  Playback events emitted while advancing an animator.",
             "file": "src/sprite/animator.rs",
-            "line": 55
+            "line": 60
           },
           {
             "name": "SpriteAnimator",
             "kind": "struct",
-            "description": "Stateful clip animator with named clips and frame stepping.",
+            "description": "# Fields  Stateful clip animator with named clips and frame stepping.",
             "file": "src/sprite/animator.rs",
-            "line": 66
+            "line": 73
           }
         ]
       },
@@ -24185,30 +24289,43 @@
           {
             "name": "AtlasEntry",
             "kind": "struct",
-            "description": "Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.",
+            "description": "# Fields  Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.",
             "file": "src/sprite/atlas.rs",
-            "line": 18
+            "line": 30
           },
           {
             "name": "SpriteAtlas",
             "kind": "struct",
-            "description": "Named-region lookup table backed by a Vec for ordered access and a HashMap for O(1) lookup.",
+            "description": "# Fields  Named-region lookup table backed by a Vec for ordered access and a HashMap for O(1) lookup.",
             "file": "src/sprite/atlas.rs",
-            "line": 48
+            "line": 62
           },
           {
             "name": "parse_texturepacker_json",
             "kind": "fn",
             "description": "Parse a TexturePacker JSON string (array or object frames format) into a SpriteAtlas; returns Err on malformed input.",
             "file": "src/sprite/atlas.rs",
-            "line": 117
+            "line": 154
           },
           {
             "name": "parse_aseprite_json",
             "kind": "fn",
             "description": "Parse an Aseprite JSON string (array or object frames format) into a SpriteAtlas; returns Err on malformed input.",
             "file": "src/sprite/atlas.rs",
-            "line": 171
+            "line": 241
+          }
+        ]
+      },
+      "sprite::limits": {
+        "module_doc": "Defines bounded input and work limits for sprite-owned runtime data.",
+        "source_file": "src/sprite/limits.rs",
+        "items": [
+          {
+            "name": "SpriteLimits",
+            "kind": "struct",
+            "description": "# Fields  Limits that prevent sprite sheets, atlases, and animation catch-up from growing without bound.",
+            "file": "src/sprite/limits.rs",
+            "line": 6
           }
         ]
       },
@@ -24231,39 +24348,46 @@
             "line": 11
           },
           {
+            "name": "limits",
+            "kind": "mod",
+            "description": "Shared limits for untrusted sprite construction and update work.",
+            "file": "src/sprite/mod.rs",
+            "line": 13
+          },
+          {
             "name": "nine_slice",
             "kind": "mod",
             "description": "Nine-slice panel geometry for scalable UI borders and boxes.",
             "file": "src/sprite/mod.rs",
-            "line": 13
+            "line": 15
           },
           {
             "name": "sprite",
             "kind": "mod",
             "description": "Core Sprite type with transform, tint, and region data.",
             "file": "src/sprite/mod.rs",
-            "line": 16
+            "line": 18
           },
           {
             "name": "sprite_batch",
             "kind": "mod",
             "description": "SpriteBatch: deferred draw-call accumulation for grouped sprite rendering.",
             "file": "src/sprite/mod.rs",
-            "line": 18
+            "line": 20
           },
           {
             "name": "sprite_sheet",
             "kind": "mod",
             "description": "SpriteSheet: uniform grid frame extraction from a single texture.",
             "file": "src/sprite/mod.rs",
-            "line": 20
+            "line": 22
           },
           {
             "name": "texture_atlas",
             "kind": "mod",
             "description": "Texture atlas packing, named regions, and region-level nine-slice metadata.",
             "file": "src/sprite/mod.rs",
-            "line": 22
+            "line": 24
           }
         ]
       },
@@ -24281,9 +24405,9 @@
           {
             "name": "NineSlice",
             "kind": "struct",
-            "description": "Nine-slice border descriptor: stores texture key and the four border inset sizes.",
+            "description": "# Fields  Nine-slice border descriptor: stores texture key and the four border inset sizes.",
             "file": "src/sprite/nine_slice.rs",
-            "line": 12
+            "line": 14
           }
         ]
       },
@@ -24294,9 +24418,9 @@
           {
             "name": "Sprite",
             "kind": "struct",
-            "description": "A single drawable texture instance with position, scale, rotation, and colour tint.",
+            "description": "# Fields  A single drawable texture instance with position, scale, rotation, and colour tint.",
             "file": "src/sprite/sprite.rs",
-            "line": 11
+            "line": 13
           }
         ]
       },
@@ -24307,16 +24431,16 @@
           {
             "name": "SpriteBatch",
             "kind": "struct",
-            "description": "Deferred sprite draw-call collector bound to a single texture.",
+            "description": "# Fields  Deferred sprite draw-call collector bound to a single texture.",
             "file": "src/sprite/sprite_batch.rs",
-            "line": 9
+            "line": 11
           },
           {
             "name": "BatchEntry",
             "kind": "struct",
-            "description": "A single sprite draw entry with world position, source quad, transform, and origin offset.",
+            "description": "# Fields  A single sprite draw entry with world position, source quad, transform, and origin offset.",
             "file": "src/sprite/sprite_batch.rs",
-            "line": 18
+            "line": 22
           }
         ]
       },
@@ -24327,30 +24451,30 @@
           {
             "name": "FrameGroup",
             "kind": "struct",
-            "description": "Named contiguous frame range within a SpriteSheet, used by get_group().",
+            "description": "# Fields  Named contiguous frame range within a SpriteSheet, used by get_group().",
             "file": "src/sprite/sprite_sheet.rs",
-            "line": 14
+            "line": 17
           },
           {
             "name": "DirectionLayout",
             "kind": "enum",
-            "description": "Axis along which direction slots are arranged in a directional sprite sheet.",
+            "description": "# Variants  Axis along which direction slots are arranged in a directional sprite sheet.",
             "file": "src/sprite/sprite_sheet.rs",
-            "line": 24
+            "line": 29
           },
           {
             "name": "ColumnFrames",
             "kind": "struct",
-            "description": "Zero-allocation column iterator over frame rects in a SpriteSheet.",
+            "description": "# Fields  Zero-allocation column iterator over frame rects in a SpriteSheet.",
             "file": "src/sprite/sprite_sheet.rs",
-            "line": 32
+            "line": 39
           },
           {
             "name": "SpriteSheet",
             "kind": "struct",
-            "description": "Uniform grid frame extractor for a single texture with optional named groups and directional layout.",
+            "description": "# Fields  Uniform grid frame extractor for a single texture with optional named groups and directional layout.",
             "file": "src/sprite/sprite_sheet.rs",
-            "line": 62
+            "line": 71
           }
         ]
       },
@@ -24361,23 +24485,30 @@
           {
             "name": "NineSliceInsets",
             "kind": "struct",
-            "description": "Nine-slice border distances used to preserve corners and edges.",
+            "description": "# Fields  Nine-slice border distances used to preserve corners and edges.",
             "file": "src/sprite/texture_atlas.rs",
-            "line": 11
+            "line": 14
           },
           {
             "name": "AtlasRegion",
             "kind": "struct",
-            "description": "A packed atlas region with coordinates, size, and optional nine-slice data.",
+            "description": "# Fields  A packed atlas region with coordinates, size, and optional nine-slice data.",
             "file": "src/sprite/texture_atlas.rs",
-            "line": 23
+            "line": 28
+          },
+          {
+            "name": "AtlasPackError",
+            "kind": "enum",
+            "description": "# Variants  Why a runtime atlas insertion was rejected.",
+            "file": "src/sprite/texture_atlas.rs",
+            "line": 46
           },
           {
             "name": "TextureAtlas",
             "kind": "struct",
-            "description": "Shelf-based texture atlas for packing named regions into a fixed canvas.",
+            "description": "# Fields  Shelf-based texture atlas for packing named regions into a fixed canvas.",
             "file": "src/sprite/texture_atlas.rs",
-            "line": 38
+            "line": 71
           }
         ]
       },
@@ -29374,2009 +29505,2051 @@
         "module": "lua",
         "name": "lua_config_runtime_config",
         "description": "",
-        "line": 241
+        "line": 335
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_ai_evidence",
         "description": "",
-        "line": 246
+        "line": 340
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_animation_evidence",
         "description": "",
-        "line": 251
+        "line": 345
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_agent_evidence",
         "description": "",
-        "line": 256
+        "line": 350
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_awareness_evidence",
         "description": "",
-        "line": 261
+        "line": 355
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_automation_evidence",
         "description": "",
-        "line": 266
+        "line": 360
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_audio_evidence",
         "description": "",
-        "line": 271
+        "line": 365
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_binary_evidence",
         "description": "",
-        "line": 276
+        "line": 370
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_color_evidence",
         "description": "",
-        "line": 281
+        "line": 375
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_camera_evidence",
         "description": "",
-        "line": 286
+        "line": 380
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_charts_evidence",
         "description": "",
-        "line": 291
+        "line": 385
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_cinematic_evidence",
         "description": "",
-        "line": 296
+        "line": 390
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_compute_evidence",
         "description": "",
-        "line": 301
+        "line": 395
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_dsp_evidence",
         "description": "",
-        "line": 306
+        "line": 400
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_dataframe_evidence",
         "description": "",
-        "line": 311
+        "line": 405
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_ecs_evidence",
         "description": "",
-        "line": 316
+        "line": 410
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_effect_evidence",
         "description": "",
-        "line": 321
+        "line": 415
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_globe_evidence",
         "description": "",
-        "line": 326
+        "line": 420
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_image_evidence",
         "description": "",
-        "line": 331
+        "line": 425
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_flownet_evidence",
         "description": "",
-        "line": 336
+        "line": 430
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_layout_evidence",
         "description": "",
-        "line": 341
+        "line": 435
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_light_evidence",
         "description": "",
-        "line": 346
+        "line": 440
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_math_evidence",
         "description": "",
-        "line": 351
+        "line": 445
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_mapblock_evidence",
         "description": "",
-        "line": 356
+        "line": 450
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_minimap_evidence",
         "description": "",
-        "line": 361
+        "line": 455
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_particle_evidence",
         "description": "",
-        "line": 366
+        "line": 460
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_parallax_evidence",
         "description": "",
-        "line": 371
+        "line": 465
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_overlay_evidence",
         "description": "",
-        "line": 376
+        "line": 470
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_province_evidence",
         "description": "",
-        "line": 381
+        "line": 475
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_pathfind_evidence",
         "description": "",
-        "line": 386
+        "line": 480
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_physics_evidence",
         "description": "",
-        "line": 391
+        "line": 485
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_procgen_evidence",
         "description": "",
-        "line": 396
+        "line": 490
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_progression_evidence",
         "description": "",
-        "line": 401
+        "line": 495
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_raycaster_evidence",
         "description": "",
-        "line": 406
+        "line": 500
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_repl_evidence",
         "description": "",
-        "line": 411
+        "line": 505
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_render_evidence",
         "description": "",
-        "line": 416
+        "line": 510
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_scene_evidence",
         "description": "",
-        "line": 421
+        "line": 515
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_render_shader_evidence",
         "description": "",
-        "line": 426
+        "line": 520
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_spine_evidence",
         "description": "",
-        "line": 431
+        "line": 525
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_sprite_evidence",
         "description": "",
-        "line": 436
+        "line": 530
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_svg_evidence",
         "description": "",
-        "line": 441
+        "line": 535
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_tilemap_evidence",
         "description": "",
-        "line": 446
+        "line": 540
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_tilefield_evidence",
         "description": "",
-        "line": 451
+        "line": 545
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_tilelight_evidence",
         "description": "",
-        "line": 456
+        "line": 550
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_terminal_evidence",
         "description": "",
-        "line": 461
+        "line": 555
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_tween_evidence",
         "description": "",
-        "line": 466
+        "line": 560
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_evidence_ui_evidence",
         "description": "",
-        "line": 471
+        "line": 565
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ai_golden",
         "description": "",
-        "line": 476
+        "line": 570
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_animation_golden",
         "description": "",
-        "line": 484
+        "line": 578
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_agent_golden",
         "description": "",
-        "line": 492
+        "line": 586
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_awareness_golden",
         "description": "",
-        "line": 500
+        "line": 594
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_automation_golden",
         "description": "",
-        "line": 508
+        "line": 602
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_audio_golden",
         "description": "",
-        "line": 516
+        "line": 610
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_binary_golden",
         "description": "",
-        "line": 524
+        "line": 618
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_camera_golden",
         "description": "",
-        "line": 532
+        "line": 626
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_charts_golden",
         "description": "",
-        "line": 540
+        "line": 634
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_cinematic_golden",
         "description": "",
-        "line": 548
+        "line": 642
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_color_golden",
         "description": "",
-        "line": 556
+        "line": 650
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_compute_golden",
         "description": "",
-        "line": 564
+        "line": 658
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dataframe_golden",
         "description": "",
-        "line": 572
+        "line": 666
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ecs_golden",
         "description": "",
-        "line": 580
+        "line": 674
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_dsp_golden",
         "description": "",
-        "line": 588
+        "line": 682
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_effect_golden",
         "description": "",
-        "line": 596
+        "line": 690
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_globe_golden",
         "description": "",
-        "line": 604
+        "line": 698
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_image_golden",
         "description": "",
-        "line": 612
+        "line": 706
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_flownet_golden",
         "description": "",
-        "line": 620
+        "line": 714
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_layout_golden",
         "description": "",
-        "line": 628
+        "line": 722
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_light_golden",
         "description": "",
-        "line": 636
+        "line": 730
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_math_golden",
         "description": "",
-        "line": 644
+        "line": 738
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_mapblock_golden",
         "description": "",
-        "line": 652
+        "line": 746
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_minimap_golden",
         "description": "",
-        "line": 660
+        "line": 754
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_overlay_golden",
         "description": "",
-        "line": 668
+        "line": 762
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_particle_golden",
         "description": "",
-        "line": 676
+        "line": 770
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_parallax_golden",
         "description": "",
-        "line": 684
+        "line": 778
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_pathfind_golden",
         "description": "",
-        "line": 692
+        "line": 786
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_physics_golden",
         "description": "",
-        "line": 700
+        "line": 794
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_procgen_golden",
         "description": "",
-        "line": 708
+        "line": 802
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_province_golden",
         "description": "",
-        "line": 716
+        "line": 810
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_raycaster_golden",
         "description": "",
-        "line": 724
+        "line": 818
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_repl_golden",
         "description": "",
-        "line": 732
+        "line": 826
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_render_golden",
         "description": "",
-        "line": 740
+        "line": 834
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_scene_golden",
         "description": "",
-        "line": 748
+        "line": 842
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_serialize_golden",
         "description": "",
-        "line": 756
+        "line": 850
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_spine_golden",
         "description": "",
-        "line": 764
+        "line": 858
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_sprite_golden",
         "description": "",
-        "line": 772
+        "line": 866
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_svg_golden",
         "description": "",
-        "line": 780
+        "line": 874
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilemap_golden",
         "description": "",
-        "line": 788
+        "line": 882
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilefield_golden",
         "description": "",
-        "line": 796
+        "line": 890
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tilelight_golden",
         "description": "",
-        "line": 804
+        "line": 898
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_terminal_golden",
         "description": "",
-        "line": 812
+        "line": 906
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_tween_golden",
         "description": "",
-        "line": 820
+        "line": 914
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_golden_ui_golden",
         "description": "",
-        "line": 828
+        "line": 922
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_ecs_scene_integration",
         "description": "",
-        "line": 836
+        "line": 930
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_pathfind_integration",
         "description": "",
-        "line": 841
+        "line": 935
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_physics_integration",
         "description": "",
-        "line": 846
+        "line": 940
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ai_scene_camera_integration",
         "description": "",
-        "line": 851
+        "line": 945
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_animation_tween_integration",
         "description": "",
-        "line": 856
+        "line": 950
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_sprite_image_integration",
+        "description": "",
+        "line": 955
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_event_integration",
         "description": "",
-        "line": 861
+        "line": 960
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_audio_scene_integration",
         "description": "",
-        "line": 866
+        "line": 965
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_automation_event_integration",
         "description": "",
-        "line": 871
+        "line": 970
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_compute_integration",
         "description": "",
-        "line": 876
+        "line": 975
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_binary_filesystem_integration",
         "description": "",
-        "line": 881
+        "line": 980
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_compute_dataframe_integration",
         "description": "",
-        "line": 886
+        "line": 985
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_ai_integration",
         "description": "",
-        "line": 891
+        "line": 990
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_scene_object_model_integration",
         "description": "",
-        "line": 896
+        "line": 995
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_physics_integration",
         "description": "",
-        "line": 901
+        "line": 1000
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_render_integration",
         "description": "",
-        "line": 906
+        "line": 1005
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_camera_integration",
         "description": "",
-        "line": 911
+        "line": 1010
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_effect_light_integration",
         "description": "",
-        "line": 916
+        "line": 1015
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_light_integration",
         "description": "",
-        "line": 921
+        "line": 1020
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_tilefield_physics_integration",
+        "description": "",
+        "line": 1025
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_event_entity_integration",
         "description": "",
-        "line": 926
+        "line": 1030
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ecs_progression_integration",
         "description": "",
-        "line": 931
+        "line": 1035
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_i18n_ui_integration",
         "description": "",
-        "line": 936
+        "line": 1040
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_image_dataframe_integration",
         "description": "",
-        "line": 941
+        "line": 1045
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_integration_image_physics_integration",
+        "description": "",
+        "line": 1050
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_pathfind_integration",
         "description": "",
-        "line": 946
+        "line": 1055
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_math_physics_integration",
         "description": "",
-        "line": 951
+        "line": 1060
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_pathfind_integration",
         "description": "",
-        "line": 956
+        "line": 1065
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_tilemap_camera_integration",
         "description": "",
-        "line": 961
+        "line": 1070
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_mods_filesystem_integration",
         "description": "",
-        "line": 966
+        "line": 1075
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_network_save_integration",
         "description": "",
-        "line": 971
+        "line": 1080
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_parallax_camera_integration",
         "description": "",
-        "line": 976
+        "line": 1085
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_particle_timer_integration",
         "description": "",
-        "line": 981
+        "line": 1090
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_shooter_helpers_integration",
         "description": "",
-        "line": 986
+        "line": 1095
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_ecs_integration",
         "description": "",
-        "line": 991
+        "line": 1100
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_pathfind_graph_integration",
         "description": "",
-        "line": 996
+        "line": 1105
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_postfx_camera_integration",
         "description": "",
-        "line": 1001
+        "line": 1110
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_procgen_tilemap_integration",
         "description": "",
-        "line": 1006
+        "line": 1115
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_render_integration",
         "description": "",
-        "line": 1011
+        "line": 1120
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_raycaster_tilemap_integration",
         "description": "",
-        "line": 1016
+        "line": 1125
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_animation_integration",
         "description": "",
-        "line": 1021
+        "line": 1130
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_svg_animation_integration",
         "description": "",
-        "line": 1026
+        "line": 1135
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_render_camera_integration",
         "description": "",
-        "line": 1031
+        "line": 1140
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_integration",
         "description": "",
-        "line": 1036
+        "line": 1145
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_ecs_scene_integration",
         "description": "",
-        "line": 1041
+        "line": 1150
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_save_tilemap_integration",
         "description": "",
-        "line": 1046
+        "line": 1155
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_scene_camera_integration",
         "description": "",
-        "line": 1051
+        "line": 1160
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_scene_physics_activation_integration",
         "description": "",
-        "line": 1056
+        "line": 1165
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_serialize_filesystem_integration",
         "description": "",
-        "line": 1061
+        "line": 1170
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_terminal_input_integration",
         "description": "",
-        "line": 1066
+        "line": 1175
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_thread_data_integration",
         "description": "",
-        "line": 1071
+        "line": 1180
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_camera_integration",
         "description": "",
-        "line": 1076
+        "line": 1185
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_pathfind_integration",
         "description": "",
-        "line": 1081
+        "line": 1190
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_pathfind_integration",
         "description": "",
-        "line": 1086
+        "line": 1195
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_awareness_integration",
         "description": "",
-        "line": 1091
+        "line": 1200
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_raycaster_integration",
         "description": "",
-        "line": 1096
+        "line": 1205
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_minimap_tilefield_integration",
         "description": "",
-        "line": 1101
+        "line": 1210
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilefield_systems_integration",
         "description": "",
-        "line": 1106
+        "line": 1215
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_procgen_tilefield_integration",
         "description": "",
-        "line": 1111
+        "line": 1220
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tilemap_physics_integration",
         "description": "",
-        "line": 1116
+        "line": 1225
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_event_integration",
         "description": "",
-        "line": 1121
+        "line": 1230
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_timer_math_integration",
         "description": "",
-        "line": 1126
+        "line": 1235
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_camera_integration",
         "description": "",
-        "line": 1131
+        "line": 1240
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_tween_ecs_integration",
         "description": "",
-        "line": 1136
+        "line": 1245
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_ui_localization_data_integration",
         "description": "",
-        "line": 1141
+        "line": 1250
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_integration_workbench_particle_integration",
         "description": "",
-        "line": 1146
+        "line": 1255
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_battle_library",
         "description": "",
-        "line": 1151
+        "line": 1260
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_combat_library",
         "description": "",
-        "line": 1156
+        "line": 1265
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_crafting_library",
         "description": "",
-        "line": 1161
+        "line": 1270
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_doll_library",
         "description": "",
-        "line": 1166
+        "line": 1275
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_economy_library",
         "description": "",
-        "line": 1171
+        "line": 1280
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_inventory_library",
         "description": "",
-        "line": 1176
+        "line": 1285
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_item_library",
         "description": "",
-        "line": 1181
+        "line": 1290
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_loot_library",
         "description": "",
-        "line": 1186
+        "line": 1295
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_library_roguelike_library",
         "description": "",
-        "line": 1191
+        "line": 1300
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_filesystem_security",
         "description": "",
-        "line": 1196
+        "line": 1305
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_image_security",
         "description": "",
-        "line": 1201
+        "line": 1310
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_network_security",
         "description": "",
-        "line": 1206
+        "line": 1315
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_render_security",
         "description": "",
-        "line": 1211
+        "line": 1320
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_runtime_security",
         "description": "",
-        "line": 1216
+        "line": 1325
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_save_security",
         "description": "",
-        "line": 1221
+        "line": 1330
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_tilefield_security",
         "description": "",
-        "line": 1226
+        "line": 1335
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_tilelight_security",
         "description": "",
-        "line": 1231
+        "line": 1340
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_light_security",
         "description": "",
-        "line": 1236
+        "line": 1345
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_security_physics_security",
+        "description": "",
+        "line": 1350
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_tilemap_security",
         "description": "",
-        "line": 1241
+        "line": 1355
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_security_tileset_security",
         "description": "",
-        "line": 1246
+        "line": 1360
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_security_sprite_security",
+        "description": "",
+        "line": 1365
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_ai_stress",
         "description": "",
-        "line": 1251
+        "line": 1370
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_animation_stress",
         "description": "",
-        "line": 1256
+        "line": 1375
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_binary_stress",
         "description": "",
-        "line": 1261
+        "line": 1380
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_camera_stress",
         "description": "",
-        "line": 1266
+        "line": 1385
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_compute_stress",
         "description": "",
-        "line": 1271
+        "line": 1390
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_dataframe_stress",
         "description": "",
-        "line": 1276
+        "line": 1395
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_ecs_stress",
         "description": "",
-        "line": 1281
+        "line": 1400
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_event_stress",
         "description": "",
-        "line": 1286
+        "line": 1405
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_filesystem_stress",
         "description": "",
-        "line": 1291
+        "line": 1410
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_image_stress",
         "description": "",
-        "line": 1296
+        "line": 1415
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_learning_stress",
         "description": "",
-        "line": 1301
+        "line": 1420
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_light_stress",
         "description": "",
-        "line": 1306
+        "line": 1425
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_math_stress",
         "description": "",
-        "line": 1311
+        "line": 1430
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_particle_stress",
         "description": "",
-        "line": 1316
+        "line": 1435
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_pathfind_stress",
         "description": "",
-        "line": 1321
+        "line": 1440
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_patterns_stress",
         "description": "",
-        "line": 1326
+        "line": 1445
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_physics_stress",
         "description": "",
-        "line": 1331
+        "line": 1450
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_procgen_stress",
         "description": "",
-        "line": 1336
+        "line": 1455
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_progression_stress",
         "description": "",
-        "line": 1341
+        "line": 1460
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_render_stress",
         "description": "",
-        "line": 1346
+        "line": 1465
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_svg_stress",
         "description": "",
-        "line": 1351
+        "line": 1470
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_save_stress",
         "description": "",
-        "line": 1356
+        "line": 1475
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_scene_stress",
         "description": "",
-        "line": 1361
+        "line": 1480
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_serialize_stress",
         "description": "",
-        "line": 1366
+        "line": 1485
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_thread_stress",
         "description": "",
-        "line": 1371
+        "line": 1490
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tilemap_stress",
         "description": "",
-        "line": 1376
+        "line": 1495
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tileset_stress",
         "description": "",
-        "line": 1381
+        "line": 1500
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tilefield_stress",
         "description": "",
-        "line": 1386
+        "line": 1505
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tilelight_stress",
         "description": "",
-        "line": 1391
+        "line": 1510
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_timer_stress",
         "description": "",
-        "line": 1396
+        "line": 1515
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_stress_tween_stress",
         "description": "",
-        "line": 1401
+        "line": 1520
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_stress_sprite_stress",
+        "description": "",
+        "line": 1525
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_agent_unit",
         "description": "",
-        "line": 1406
+        "line": 1530
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ai_unit",
         "description": "",
-        "line": 1411
+        "line": 1535
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_animation_unit",
         "description": "",
-        "line": 1416
+        "line": 1540
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_asset_unit",
         "description": "",
-        "line": 1421
+        "line": 1545
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_audio_unit",
         "description": "",
-        "line": 1426
+        "line": 1550
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_automation_unit",
         "description": "",
-        "line": 1431
+        "line": 1555
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_beat_clock_unit",
         "description": "",
-        "line": 1436
+        "line": 1560
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_binary_unit",
         "description": "",
-        "line": 1441
+        "line": 1565
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_camera_unit",
         "description": "",
-        "line": 1446
+        "line": 1570
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_charts_unit",
         "description": "",
-        "line": 1451
+        "line": 1575
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_cinematic_unit",
         "description": "",
-        "line": 1456
+        "line": 1580
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_collision_unit",
         "description": "",
-        "line": 1461
+        "line": 1585
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_color_unit",
         "description": "",
-        "line": 1466
+        "line": 1590
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_compute_unit",
         "description": "",
-        "line": 1471
+        "line": 1595
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_cursor_unit",
         "description": "",
-        "line": 1476
+        "line": 1600
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dataframe_unit",
         "description": "",
-        "line": 1481
+        "line": 1605
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_debugbridge_unit",
         "description": "",
-        "line": 1486
+        "line": 1610
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_devtools_unit",
         "description": "",
-        "line": 1491
+        "line": 1615
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dialog_unit",
         "description": "",
-        "line": 1496
+        "line": 1620
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_docs_unit",
         "description": "",
-        "line": 1501
+        "line": 1625
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_dsp_unit",
         "description": "",
-        "line": 1506
+        "line": 1630
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ecs_unit",
         "description": "",
-        "line": 1511
+        "line": 1635
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_effect_unit",
         "description": "",
-        "line": 1516
+        "line": 1640
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_engine_unit",
         "description": "",
-        "line": 1521
+        "line": 1645
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_event_unit",
         "description": "",
-        "line": 1526
+        "line": 1650
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_filesystem_unit",
         "description": "",
-        "line": 1531
+        "line": 1655
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_flownet_unit",
         "description": "",
-        "line": 1536
+        "line": 1660
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_font_unit",
         "description": "",
-        "line": 1541
+        "line": 1665
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_globe_unit",
         "description": "",
-        "line": 1546
+        "line": 1670
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_grep_unit",
         "description": "",
-        "line": 1551
+        "line": 1675
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_i18n_unit",
         "description": "",
-        "line": 1556
+        "line": 1680
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_image_unit",
         "description": "",
-        "line": 1561
+        "line": 1685
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_input_unit",
         "description": "",
-        "line": 1566
+        "line": 1690
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_learning_unit",
         "description": "",
-        "line": 1571
+        "line": 1695
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_layout_unit",
         "description": "",
-        "line": 1576
+        "line": 1700
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_light_unit",
         "description": "",
-        "line": 1581
+        "line": 1705
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_log_unit",
         "description": "",
-        "line": 1586
+        "line": 1710
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_loot_unit",
         "description": "",
-        "line": 1591
+        "line": 1715
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_math_unit",
         "description": "",
-        "line": 1596
+        "line": 1720
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_mapblock_unit",
         "description": "",
-        "line": 1601
+        "line": 1725
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_minimap_unit",
         "description": "",
-        "line": 1606
+        "line": 1730
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_mods_unit",
         "description": "",
-        "line": 1611
+        "line": 1735
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_modular_topdown_api_unit",
         "description": "",
-        "line": 1616
+        "line": 1740
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_net_unit",
         "description": "",
-        "line": 1621
+        "line": 1745
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_network_unit",
         "description": "",
-        "line": 1626
+        "line": 1750
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_overlay_unit",
         "description": "",
-        "line": 1631
+        "line": 1755
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_parallax_unit",
         "description": "",
-        "line": 1636
+        "line": 1760
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_particle_unit",
         "description": "",
-        "line": 1641
+        "line": 1765
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_pathfind_unit",
         "description": "",
-        "line": 1646
+        "line": 1770
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_patterns_unit",
         "description": "",
-        "line": 1651
+        "line": 1775
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_physics_unit",
         "description": "",
-        "line": 1656
+        "line": 1780
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_pipeline_unit",
         "description": "",
-        "line": 1661
+        "line": 1785
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_progression_unit",
         "description": "",
-        "line": 1666
+        "line": 1790
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_procgen_unit",
         "description": "",
-        "line": 1671
+        "line": 1795
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_procgen_gap_unit",
         "description": "",
-        "line": 1676
+        "line": 1800
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_province_unit",
         "description": "",
-        "line": 1681
+        "line": 1805
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_raycaster_unit",
         "description": "",
-        "line": 1686
+        "line": 1810
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_render_unit",
         "description": "",
-        "line": 1691
+        "line": 1815
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_repl_unit",
         "description": "",
-        "line": 1696
+        "line": 1820
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_runtime_unit",
         "description": "",
-        "line": 1701
+        "line": 1825
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_save_unit",
         "description": "",
-        "line": 1706
+        "line": 1830
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_scene_unit",
         "description": "",
-        "line": 1711
+        "line": 1835
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_serialize_unit",
         "description": "",
-        "line": 1716
+        "line": 1840
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_shape_unit",
         "description": "",
-        "line": 1721
+        "line": 1845
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_spine_unit",
         "description": "",
-        "line": 1726
+        "line": 1850
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_sprite_unit",
         "description": "",
-        "line": 1731
+        "line": 1855
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_svg_unit",
         "description": "",
-        "line": 1736
+        "line": 1860
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_terminal_unit",
         "description": "",
-        "line": 1741
+        "line": 1865
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_thread_unit",
         "description": "",
-        "line": 1746
+        "line": 1870
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilemap_unit",
         "description": "",
-        "line": 1751
+        "line": 1875
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilefield_unit",
         "description": "",
-        "line": 1756
+        "line": 1880
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilefield_gap_unit",
         "description": "",
-        "line": 1761
+        "line": 1885
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tilelight_unit",
         "description": "",
-        "line": 1766
+        "line": 1890
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tileset_unit",
         "description": "",
-        "line": 1771
+        "line": 1895
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_timer_unit",
         "description": "",
-        "line": 1776
+        "line": 1900
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_tween_unit",
         "description": "",
-        "line": 1781
+        "line": 1905
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_ui_unit",
         "description": "",
-        "line": 1786
+        "line": 1910
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_validator_unit",
         "description": "",
-        "line": 1791
+        "line": 1915
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_awareness_unit",
         "description": "",
-        "line": 1796
+        "line": 1920
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_unit_window_unit",
         "description": "",
-        "line": 1801
+        "line": 1925
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
         "name": "lua_demo_colocated_games",
         "description": "",
-        "line": 1806
+        "line": 1930
       },
       {
         "file": "tests/workbench_smoke_tests.rs",
@@ -31657,7 +31830,7 @@
         "file": "tests/lua/evidence/test_render_shader_evidence.lua",
         "module": "test_render_shader_evidence",
         "name": "test_render_shader_evidence",
-        "description": "Canonical evidence file for lurek.render shader target contracts and shader-bound module APIs.",
+        "description": "",
         "kind": "lua"
       },
       {
@@ -31685,7 +31858,7 @@
         "file": "tests/lua/evidence/test_sprite_evidence.lua",
         "module": "test_sprite_evidence",
         "name": "test_sprite_evidence",
-        "description": "Canonical evidence file for lurek.sprite visual artifacts.",
+        "description": "",
         "kind": "lua"
       },
       {
@@ -32242,6 +32415,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_image_physics_integration.lua",
+        "module": "test_image_physics_integration",
+        "name": "test_image_physics_integration",
+        "description": "Integration: image alpha data feeds physics shape inference and receives physics debug output.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_math_pathfind_integration.lua",
         "module": "test_math_pathfind_integration",
         "name": "test_math_pathfind_integration",
@@ -32417,6 +32597,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_sprite_image_integration.lua",
+        "module": "test_sprite_image_integration",
+        "name": "test_sprite_image_integration",
+        "description": "Cross-module proof for image-backed sprite sheet and atlas validation.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_svg_animation_integration.lua",
         "module": "test_svg_animation_integration",
         "name": "test_svg_animation_integration",
@@ -32456,6 +32643,13 @@
         "module": "test_tilefield_pathfind_integration",
         "name": "test_tilefield_pathfind_integration",
         "description": "Integration: tilefield movement semantics feed pathfinding.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_tilefield_physics_integration.lua",
+        "module": "test_tilefield_physics_integration",
+        "name": "test_tilefield_physics_integration",
+        "description": "Integration: tilefield collision metadata is consumed by the canonical physics adapter.",
         "kind": "lua"
       },
       {
@@ -32627,6 +32821,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/security/test_physics_security.lua",
+        "module": "test_physics_security",
+        "name": "test_physics_security",
+        "description": "Adversarial coverage for bounded physics construction, stepping, and numeric conversion.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/security/test_render_security.lua",
         "module": "test_render_security",
         "name": "test_render_security",
@@ -32645,6 +32846,13 @@
         "module": "test_save_security",
         "name": "test_save_security",
         "description": "test_save.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/security/test_sprite_security.lua",
+        "module": "test_sprite_security",
+        "name": "test_sprite_security",
+        "description": "Adversarial coverage for sprite indexing, bounded constructors, parsers, and timing.",
         "kind": "lua"
       },
       {
@@ -32834,6 +33042,13 @@
         "module": "test_serialize_stress",
         "name": "test_serialize_stress",
         "description": "Lurek2D Stress Test: Serial Module",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/stress/test_sprite_stress.lua",
+        "module": "test_sprite_stress",
+        "name": "test_sprite_stress",
+        "description": "Bounded workload coverage for sprite sheets, atlas packing, and animator catch-up.",
         "kind": "lua"
       },
       {
@@ -33358,7 +33573,7 @@
         "file": "tests/lua/unit/test_sprite_unit.lua",
         "module": "test_sprite_unit",
         "name": "test_sprite_unit",
-        "description": "Reorganized unit test file.",
+        "description": "Source files are isolated in do-end blocks to preserve local helper scope.",
         "kind": "lua"
       },
       {

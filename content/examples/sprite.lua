@@ -1,4 +1,4 @@
--- content/examples/sprite.lua
+﻿-- content/examples/sprite.lua
 -- Auto-generated from content/examples2/sprite_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/sprite.lua
 
@@ -7,6 +7,11 @@
 
 
 --- Sprite Module: sheets, atlases, packing, lit sprites, and frame animation.
+
+local SPRITE_TEXTURE = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+local function sprite_texture_id()
+    return SPRITE_TEXTURE:getId()
+end
 
 --@api: lurek.sprite.newNineSlice
 do
@@ -33,7 +38,7 @@ end
 do
 
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
-    local first = sheet:getFrame(0)
+    local first = sheet:getFrame(1)
     local second = sheet:getFrame(1)
     local count = sheet:getFrameCount()
     lurek.log.info("getFrame count=" .. count .. " first=" .. first.x .. "," .. first.y .. " second=" .. second.x .. "," .. second.y)
@@ -63,7 +68,7 @@ end
 do
 
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
-    sheet:nameGroup("run", 0, 4)
+    sheet:nameGroup("run", 1, 4)
     local names = sheet:getGroupNames()
     local frames = sheet:getGroupFrames("run")
     lurek.log.info("nameGroup groups=" .. #names .. " run_frames=" .. #frames .. " first_group=" .. tostring(names[1]))
@@ -73,8 +78,8 @@ end
 do
 
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
-    sheet:nameGroup("idle", 0, 2)
-    sheet:nameGroup("walk", 2, 4)
+    sheet:nameGroup("idle", 1, 2)
+    sheet:nameGroup("walk", 3, 4)
     local walk = sheet:getGroupFrames("walk")
     lurek.log.info("getGroupFrames walk_size=" .. #walk .. " first=" .. walk[1].x .. "," .. walk[1].y .. " last=" .. walk[#walk].x .. "," .. walk[#walk].y)
 end
@@ -93,7 +98,7 @@ end
 do
 
     local sheet = lurek.sprite.newSheet(64, 64, 16, 16)
-    sheet:nameGroup("idle", 0, 2)
+    sheet:nameGroup("idle", 1, 2)
     local image = sheet:drawToImage(64, 64)
     local width = image:getWidth()
     local height = image:getHeight()
@@ -215,7 +220,7 @@ do
     }))
     local sheet = lurek.sprite.newAtlasSheet(atlas, 64, 64)
     local count = sheet:getFrameCount()
-    local first = sheet:getFrame(0)
+    local first = sheet:getFrame(1)
     local fw, fh = sheet:getFrameSize()
     lurek.log.info("newAtlasSheet type=" .. sheet:type() .. " frames=" .. count .. " frame=" .. fw .. "x" .. fh .. " first=" .. first.x .. "," .. first.y)
 end
@@ -460,7 +465,7 @@ end
 --@api: lurek.sprite.newSprite
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local x, y = sprite:getPosition()
     local has_normal = sprite:hasNormalMap()
     local kind = sprite:type()
@@ -470,7 +475,7 @@ end
 --@api: LSprite:setShader
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
@@ -486,7 +491,7 @@ end
 --@api: LSprite:getShader
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
@@ -502,7 +507,7 @@ end
 --@api: LSprite:setShaderUniform
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local shader = lurek.render.newShader([[
 @fragment
 fn fs_main(@location(0) color: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> {
@@ -517,8 +522,8 @@ end
 --@api: LSprite:setNormalMap
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
-    sprite:setNormalMap(11)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
+    sprite:setNormalMap(sprite_texture_id())
     local texture = sprite:getNormalMap()
     local has_normal = sprite:hasNormalMap()
     lurek.log.info("setNormalMap texture=" .. tostring(texture) .. " has_normal=" .. tostring(has_normal))
@@ -527,8 +532,8 @@ end
 --@api: LSprite:getNormalMap
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
-    sprite:setNormalMap(11)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
+    sprite:setNormalMap(sprite_texture_id())
     local texture = sprite:getNormalMap()
     local intensity = sprite:getNormalIntensity()
     lurek.log.info("getNormalMap texture=" .. tostring(texture) .. " intensity=" .. tostring(intensity))
@@ -537,9 +542,9 @@ end
 --@api: LSprite:hasNormalMap
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local before = sprite:hasNormalMap()
-    sprite:setNormalMap(3)
+    sprite:setNormalMap(sprite_texture_id())
     local after = sprite:hasNormalMap()
     lurek.log.info("hasNormalMap before=" .. tostring(before) .. " after=" .. tostring(after))
 end
@@ -547,8 +552,8 @@ end
 --@api: LSprite:clearNormalMap
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
-    sprite:setNormalMap(3)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
+    sprite:setNormalMap(sprite_texture_id())
     local before = sprite:hasNormalMap()
     sprite:clearNormalMap()
     lurek.log.info("clearNormalMap before=" .. tostring(before) .. " after=" .. tostring(sprite:hasNormalMap()))
@@ -557,8 +562,8 @@ end
 --@api: LSprite:setNormalIntensity
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
-    sprite:setNormalMap(11)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
+    sprite:setNormalMap(sprite_texture_id())
     sprite:setNormalIntensity(2.5)
     local intensity = sprite:getNormalIntensity()
     lurek.log.info("setNormalIntensity intensity=" .. tostring(intensity) .. " texture=" .. tostring(sprite:getNormalMap()))
@@ -567,7 +572,7 @@ end
 --@api: LSprite:getNormalIntensity
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     sprite:setNormalIntensity(2.5)
     local intensity = sprite:getNormalIntensity()
     local x, y = sprite:getPosition()
@@ -577,7 +582,7 @@ end
 --@api: LSprite:setPosition
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     sprite:setPosition(32, 48)
     local x, y = sprite:getPosition()
     local kind = sprite:type()
@@ -587,7 +592,7 @@ end
 --@api: LSprite:getPosition
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local x, y = sprite:getPosition()
     local has_normal = sprite:hasNormalMap()
     local kind = sprite:type()
@@ -597,7 +602,7 @@ end
 --@api: LSprite:type
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local kind = sprite:type()
     local x, y = sprite:getPosition()
     local has_normal = sprite:hasNormalMap()
@@ -607,7 +612,7 @@ end
 --@api: LSprite:typeOf
 do
 
-    local sprite = lurek.sprite.newSprite(7, 10, 20)
+    local sprite = lurek.sprite.newSprite(sprite_texture_id(), 10, 20)
     local is_sprite = sprite:typeOf("LSprite")
     local is_object = sprite:typeOf("LObject")
     local x, y = sprite:getPosition()
@@ -863,7 +868,7 @@ end
 --@api: LSpriteSheet:toFrames
 do
     local sheet = lurek.sprite.newSheet(32, 16, 16, 16)
-    sheet:nameGroup("idle", 0, 2)
+    sheet:nameGroup("idle", 1, 2)
     local frames = sheet:toFrames("idle")
     local first = frames[1]
     lurek.log.info("[sprite] toFrames first=" .. tostring(first.w))
@@ -872,7 +877,7 @@ end
 --@api: LSpriteSheet:toAnimationClip
 do
     local sheet = lurek.sprite.newSheet(32, 16, 16, 16)
-    sheet:nameGroup("idle", 0, 2)
+    sheet:nameGroup("idle", 1, 2)
     local clip = sheet:toAnimationClip({ group = "idle", name = "idle", fps = 8 })
     local frame_count = #clip.frames
     lurek.log.info("[sprite] clip frames=" .. tostring(frame_count))

@@ -10,9 +10,11 @@ readme = "README.md"
 
 [features]
 # LuaJIT — default scripting backend; JIT compilation for x86_64 desktop (Windows/Linux/macOS).
-default = ["lua-jit", "automation-plugin", "devtools-plugin", "charts", "ui-layout-loader", "flownet", "flownet-parallel", "pipeline", "spine", "obj-loader"]
+default = ["lua-jit", "automation-plugin", "devtools-plugin", "charts", "ui-layout-loader", "flownet", "flownet-parallel", "pipeline", "spine", "obj-loader", "voxel-loader"]
 # OBJ model loader for 2D projection (raycaster, globe). Disable to reduce binary size.
 obj-loader = []
+# MagicaVoxel .vox loader for palette-coloured 3D props projected by render and raycaster.
+voxel-loader = ["obj-loader", "dep:dot_vox"]
 lua-jit = ["mlua/luajit", "mlua/vendored"]
 # Lua 5.4 fallback — use on platforms where LuaJIT is unavailable (WASM, some ARM targets).
 lua54 = ["mlua/lua54", "mlua/vendored"]
@@ -61,6 +63,9 @@ mlua = { version = "0.9", default-features = false }
 # Image loading — PNG only. JPEG and BMP decoders removed to reduce binary size.
 # To re-enable: add "jpeg" or "bmp" back to features array.
 image = { version = "0.24", default-features = false, features = ["png"] }
+# Keep this exact Rust-2021 release: newer dot_vox releases require edition 2024,
+# while Lurek2D supports Rust 1.78.
+dot_vox = { version = "=5.1.1", default-features = false, optional = true }
 # Animated GIF encoding for evidence artifacts and frame-sequence exports.
 gif = "0.13"
 # Runtime TTF/OTF rasterization into bitmap atlases for lurek.render.newFont(path, size).
@@ -456,6 +461,10 @@ path = "tests/rust/unit/spine_tests.rs"
 [[test]]
 name = "sprite_tests"
 path = "tests/rust/unit/sprite_tests.rs"
+
+[[test]]
+name = "sprite_perf_tests"
+path = "tests/rust/perf/sprite_perf_tests.rs"
 
 [[test]]
 name = "color_tests"

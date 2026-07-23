@@ -47,7 +47,7 @@ pub struct ShadowEdgeCache {
 }
 
 struct CachedShadowEdges {
-    generation: u64,
+    generation: u128,
     edge_count: usize,
     world_aabb: Option<(f32, f32, f32, f32)>,
     world_edges: Option<Vec<ShadowEdgeGpu>>,
@@ -98,7 +98,7 @@ pub fn collect_shadow_edges_with_cache(
     let light_pos = Vec2::new(light_x, light_y);
     for occ_ref in occluders {
         let occ = occ_ref.borrow();
-        if !occ.enabled {
+        if !occ.enabled || !occ.is_render_valid() {
             continue;
         }
         if occ.light_mask & shadow_mask == 0 {

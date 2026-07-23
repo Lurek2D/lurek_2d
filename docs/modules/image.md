@@ -125,8 +125,8 @@ do
     local b = lurek.image.newImageData(2, 2)
     a:fill(255, 0, 0, 255)
     b:fill(0, 255, 0, 255)
-    lurek.image.saveGIF({ a, b }, "work/example_load_animated.gif", { delayMs = 40 })
-    local animated = lurek.image.loadAnimated("work/example_load_animated.gif")
+    lurek.image.saveGIF({ a, b }, "save/example_load_animated.gif", { delayMs = 40 })
+    local animated = lurek.image.loadAnimated("save/example_load_animated.gif")
     lurek.log.info("[image] animated frames=" .. tostring(animated:frameCount()))
 end
 ```
@@ -398,7 +398,7 @@ lurek.image.newProvinceGrid(filename)
 
 | Type | Description |
 |------|-------------|
-| [LProvinceGrid](#lprovincegrid) | New province grid handle. |
+| LProvinceGrid | New province grid handle. |
 
 **Example**
 
@@ -575,7 +575,7 @@ end
 - [LImageShaderJob](#limageshaderjob)
 - [LLayeredImage](#llayeredimage)
 - [LPaletteLUT](#lpalettelut)
-- [LProvinceGrid](#lprovincegrid)
+- [LUnknown](#lunknown)
 
 ## LAnimatedImage
 
@@ -605,8 +605,8 @@ LAnimatedImage:frameCount()
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(255, 255, 255, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_count.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_count.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_count.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_count.gif")
     local count = animated:frameCount()
     lurek.log.info("[image] frameCount=" .. tostring(count))
 end
@@ -640,8 +640,8 @@ LAnimatedImage:getDuration(index)
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(20, 40, 80, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_duration.gif", { delayMs = 50 })
-    local animated = lurek.image.loadAnimated("work/example_anim_duration.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_duration.gif", { delayMs = 50 })
+    local animated = lurek.image.loadAnimated("save/example_anim_duration.gif")
     local duration = animated:getDuration(1)
     lurek.log.info("[image] duration=" .. tostring(duration))
 end
@@ -669,8 +669,8 @@ LAnimatedImage:getDurations()
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(80, 40, 20, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_durations.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_durations.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_durations.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_durations.gif")
     local durations = animated:getDurations()
     lurek.log.info("[image] durations table=" .. tostring(#durations))
 end
@@ -704,8 +704,8 @@ LAnimatedImage:getFrame(index)
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(20, 40, 80, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frame.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_frame.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_frame.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_frame.gif")
     local first = animated:getFrame(1)
     lurek.log.info("[image] first frame width=" .. tostring(first:getWidth()))
 end
@@ -733,8 +733,8 @@ LAnimatedImage:getFrames()
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(80, 40, 20, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frames.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_frames.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_frames.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_frames.gif")
     local frames = animated:getFrames()
     lurek.log.info("[image] frames table=" .. tostring(#frames))
 end
@@ -762,8 +762,8 @@ LAnimatedImage:type()
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(1, 2, 3, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_type.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_type.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_type.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_type.gif")
     local kind = animated:type()
     lurek.log.info("[image] animated type=" .. kind)
 end
@@ -797,8 +797,8 @@ LAnimatedImage:typeOf(name)
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(1, 2, 3, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_typeof.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_typeof.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_typeof.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_typeof.gif")
     local ok = animated:typeOf("LObject")
     lurek.log.info("[image] animated typeOf=" .. tostring(ok))
 end
@@ -3567,7 +3567,7 @@ end
 
 ---
 
-## LProvinceGrid
+## LUnknown
 
 ### Type Fields
 
@@ -3575,70 +3575,44 @@ end
 
 ### Type Methods
 
-#### `LProvinceGrid:adjacencies`
+#### `LUnknown:adjacencies`
 
 Returns province adjacency records and shared border pixel counts.
 
 ```lua
-LProvinceGrid:adjacencies()
+LUnknown:adjacencies()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| LProvinceGridAdjacenciesResult | Array table with `province_a`, `province_b`, and `border_pixels` fields. |
-
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local adj = grid:adjacencies()
-    local borders = grid:borderSegments()
-    local first = adj[1]
-    lurek.log.info("adjacency records = " .. #adj)
-end
-```
+| LUnknownAdjacenciesResult | Array table with `province_a`, `province_b`, and `border_pixels` fields. |
 
 ---
 
-#### `LProvinceGrid:borderSegments`
+#### `LUnknown:borderSegments`
 
 Returns border line segments between neighboring provinces.
 
 ```lua
-LProvinceGrid:borderSegments()
+LUnknown:borderSegments()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| LProvinceGridBorderSegmentsResult | Array table with province ids and segment coordinates. |
-
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local segs = grid:borderSegments()
-    local polys = grid:getPolygonsSimplified()
-    local first = segs[1]
-    lurek.log.info("border segments = " .. #segs)
-end
-```
+| LUnknownBorderSegmentsResult | Array table with province ids and segment coordinates. |
 
 ---
 
-#### `LProvinceGrid:deserializeShapeData`
+#### `LUnknown:deserializeShapeData`
 
 Decodes serialized province shape data into span and segment tables.
 
 ```lua
-LProvinceGrid:deserializeShapeData(bytes)
+LUnknown:deserializeShapeData(bytes)
 ```
 
 **Parameters**
@@ -3653,27 +3627,14 @@ LProvinceGrid:deserializeShapeData(bytes)
 |------|-------------|
 | LuaValue | Table with `spans` and `segments`, or nil when decoding fails. |
 
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local data = grid:serializeShapeData()
-    lurek.log.info("serialized " .. #data .. " bytes")
-    grid:deserializeShapeData(data)
-    lurek.log.info("deserialized")
-end
-```
-
 ---
 
-#### `LProvinceGrid:drawShapes`
+#### `LUnknown:drawShapes`
 
 Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
 
 ```lua
-LProvinceGrid:drawShapes(x, y, w, h)
+LUnknown:drawShapes(x, y, w, h)
 ```
 
 **Parameters**
@@ -3691,27 +3652,14 @@ LProvinceGrid:drawShapes(x, y, w, h)
 |------|-------------|
 | number | Number of polygons emitted to the render command queue. |
 
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local count = grid:drawShapes(0, 0, 800, 600)
-    local provinces = grid:provinceCount()
-    local w = grid:getWidth()
-    lurek.log.info("drew " .. count .. " polygons")
-end
-```
-
 ---
 
-#### `LProvinceGrid:getAt`
+#### `LUnknown:getAt`
 
 Returns the province id stored at grid coordinates.
 
 ```lua
-LProvinceGrid:getAt(x, y)
+LUnknown:getAt(x, y)
 ```
 
 **Parameters**
@@ -3727,27 +3675,14 @@ LProvinceGrid:getAt(x, y)
 |------|-------------|
 | number | Province id at the pixel. |
 
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local id = grid:getAt(10, 10)
-    local neighbor = grid:getAt(11, 10)
-    local total = grid:provinceCount()
-    lurek.log.info("province at (10,10) = " .. id)
-end
-```
-
 ---
 
-#### `LProvinceGrid:getHeight`
+#### `LUnknown:getHeight`
 
 Returns the province grid height. This method is available to Lua scripts.
 
 ```lua
-LProvinceGrid:getHeight()
+LUnknown:getHeight()
 ```
 
 **Returns**
@@ -3756,85 +3691,46 @@ LProvinceGrid:getHeight()
 |------|-------------|
 | number | Grid height in pixels. |
 
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local width = grid:getWidth()
-    local provinces = grid:provinceCount()
-    local start = grid:getAt(0, 0)
-    lurek.log.info("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
-end
-```
-
 ---
 
-#### `LProvinceGrid:getPolygons`
+#### `LUnknown:getPolygons`
 
 Returns polygon rings for every province.
 
 ```lua
-LProvinceGrid:getPolygons()
+LUnknown:getPolygons()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| LProvinceGridGetPolygonsResult | Array table of province polygon records with `province_id` and `rings` fields. |
-
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local polys = grid:getPolygons()
-    local simplified = grid:getPolygonsSimplified()
-    local first = polys[1]
-    lurek.log.info("polygon records = " .. #polys)
-end
-```
+| LUnknownGetPolygonsResult | Array table of province polygon records with `province_id` and `rings` fields. |
 
 ---
 
-#### `LProvinceGrid:getPolygonsSimplified`
+#### `LUnknown:getPolygonsSimplified`
 
 Returns simplified polygon rings for every province.
 
 ```lua
-LProvinceGrid:getPolygonsSimplified()
+LUnknown:getPolygonsSimplified()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| LProvinceGridGetPolygonsSimplifiedResult | Array table of simplified province polygon records with `province_id` and `rings` fields. |
-
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local polys = grid:getPolygonsSimplified()
-    local full = grid:getPolygons()
-    local first = polys[1]
-    lurek.log.info("simplified records = " .. #polys)
-end
-```
+| LUnknownGetPolygonsSimplifiedResult | Array table of simplified province polygon records with `province_id` and `rings` fields. |
 
 ---
 
-#### `LProvinceGrid:getWidth`
+#### `LUnknown:getWidth`
 
 Returns the province grid width. This method is available to Lua scripts.
 
 ```lua
-LProvinceGrid:getWidth()
+LUnknown:getWidth()
 ```
 
 **Returns**
@@ -3843,27 +3739,14 @@ LProvinceGrid:getWidth()
 |------|-------------|
 | number | Grid width in pixels. |
 
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local height = grid:getHeight()
-    local provinces = grid:provinceCount()
-    local start = grid:getAt(0, 0)
-    lurek.log.info("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
-end
-```
-
 ---
 
-#### `LProvinceGrid:provinceCount`
+#### `LUnknown:provinceCount`
 
 Returns the number of distinct provinces in the grid.
 
 ```lua
-LProvinceGrid:provinceCount()
+LUnknown:provinceCount()
 ```
 
 **Returns**
@@ -3872,56 +3755,30 @@ LProvinceGrid:provinceCount()
 |------|-------------|
 | number | Province count. |
 
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local w = grid:getWidth()
-    local h = grid:getHeight()
-    local start = grid:getAt(0, 0)
-    lurek.log.info("provinces = " .. grid:provinceCount())
-end
-```
-
 ---
 
-#### `LProvinceGrid:provinceSpans`
+#### `LUnknown:provinceSpans`
 
 Returns horizontal province spans by row.
 
 ```lua
-LProvinceGrid:provinceSpans()
+LUnknown:provinceSpans()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| LProvinceGridProvinceSpansResult | Array table with `province_id`, `y`, `x0`, and `x1` fields. |
-
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local spans = grid:provinceSpans()
-    local provinces = grid:provinceCount()
-    local first = spans[1]
-    lurek.log.info("total spans = " .. #spans)
-end
-```
+| LUnknownProvinceSpansResult | Array table with `province_id`, `y`, `x0`, and `x1` fields. |
 
 ---
 
-#### `LProvinceGrid:serializeShapeData`
+#### `LUnknown:serializeShapeData`
 
 Serializes province span and border shape data into a binary Lua string.
 
 ```lua
-LProvinceGrid:serializeShapeData()
+LUnknown:serializeShapeData()
 ```
 
 **Returns**
@@ -3930,81 +3787,42 @@ LProvinceGrid:serializeShapeData()
 |------|-------------|
 | string | Serialized shape data bytes. |
 
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local data = grid:serializeShapeData()
-    lurek.log.info("serialized " .. #data .. " bytes")
-    grid:deserializeShapeData(data)
-    lurek.log.info("deserialized")
-end
-```
-
 ---
 
-#### `LProvinceGrid:type`
+#### `LUnknown:type`
 
 Returns the Lua-visible type name for this province grid handle.
 
 ```lua
-LProvinceGrid:type()
+LUnknown:type()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| string | The string `[LProvinceGrid](#lprovincegrid)`. |
-
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local sample = grid:getAt(10, 10)
-    local provinces = grid:provinceCount()
-    lurek.log.info("type = " .. grid:type())
-    lurek.log.info("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
-end
-```
+| string | The string `LProvinceGrid`. |
 
 ---
 
-#### `LProvinceGrid:typeOf`
+#### `LUnknown:typeOf`
 
 Returns whether this province grid handle matches a supported type name.
 
 ```lua
-LProvinceGrid:typeOf(name)
+LUnknown:typeOf(name)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to compare against `[LProvinceGrid](#lprovincegrid)` and `Object`. |
+| `name` | string | Type name to compare against `LProvinceGrid` and `Object`. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
 | boolean | True when the supplied type name matches this handle. |
-
-**Example**
-
-```lua
-do
-
-    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
-    local sample = grid:getAt(10, 10)
-    local is_object = grid:typeOf("LObject")
-    lurek.log.info("type = " .. grid:type())
-    lurek.log.info("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
-end
-```
 
 ---

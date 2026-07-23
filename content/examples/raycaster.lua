@@ -2608,12 +2608,25 @@ do
     local count = rc:buildSceneWithModels(params, nil, nil, nil, {
         { model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
     })
+    local function le32(value)
+        return string.char(value % 256, math.floor(value / 256) % 256, math.floor(value / 65536) % 256, math.floor(value / 16777216) % 256)
+    end
+    local voxel_children = "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) .. "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+    lurek.filesystem.writeBytes("save/raycaster_voxel_particle.vox", "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#voxel_children) .. voxel_children)
+    local voxel = lurek.render.loadVoxel("save/raycaster_voxel_particle.vox", 0.15)
+    local debris = {
+        { model = voxel, x = 9.5, y = 7.8, z = 0.25, scale = 0.6, yaw = 0.1 },
+        { model = voxel, x = 10.1, y = 8.3, z = 0.55, scale = 0.4, yaw = 1.2 },
+        { model = voxel, x = 10.8, y = 7.7, z = 0.35, scale = 0.5, yaw = 2.1 },
+    }
+    local voxel_particle_count = rc:buildSceneWithModels(params, nil, nil, nil, debris)
     local model_pick = rc:pickScreen(80, 60, params, nil, {
         { id = 42, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
     })
 
     lurek.log.info("quad count without model = " .. baseline)
     lurek.log.info("quad count with model = " .. count)
+    lurek.log.info("voxel debris model count = " .. voxel_particle_count)
     if model_pick then
         lurek.log.info("model pick surface = " .. model_pick.surface)
         lurek.log.info("model pick id = " .. tostring(model_pick.id))

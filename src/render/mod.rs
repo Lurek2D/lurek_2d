@@ -70,6 +70,9 @@ pub mod shader;
 pub mod shape;
 /// CPU fallback for evidence-oriented screenshot capture from queued render commands.
 pub mod software_capture;
+/// MagicaVoxel `.vox` parser and palette-coloured surface mesh generation.
+#[cfg(feature = "voxel-loader")]
+pub mod voxel_loader;
 pub use canvas::Canvas;
 pub use decal_surface::DecalSurface;
 pub use draw_layer::DrawLayer;

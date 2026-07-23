@@ -21,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `28` functions, `26` types, `298` methods
+- Lua API surface: `28` functions, `26` types, `300` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -551,10 +551,12 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LTerrain:fillRect(wx, wy, w, h, solid) -> nil`: Fills or clears a rectangular region of terrain cells.
 - `LTerrain:flush(maxDirtyChunks?) -> table`: Regenerates physics colliders from the current terrain grid state and returns rebuild diagnostics.
 - `LTerrain:getCell(cx, cy) -> boolean`: Returns whether a cell is solid. This method is available to Lua scripts.
+- `LTerrain:getColliderStrategy() -> string`: Returns the static terrain collider generation strategy.
 - `LTerrain:getDirtyChunks() -> table`: Returns terrain chunks pending collider rebuild after terrain edits.
 - `LTerrain:isDirty() -> boolean`: Returns true if terrain cells have been modified since the last flush.
 - `LTerrain:loadFromBytes(data) -> boolean`: Restores terrain grid state from binary data previously produced by toBytes.
 - `LTerrain:setCell(cx, cy, solid) -> nil`: Sets a single terrain cell to solid or empty.
+- `LTerrain:setColliderStrategy(strategy) -> nil`: Selects static terrain collider generation. `rowRuns` is the fast filled default; `contourEdges` emits only exposed cell boundaries.
 - `LTerrain:solidPositions() -> table`: Returns all solid cell centers as a table of `{x, y}` entries in world coordinates.
 - `LTerrain:spawnDebris(positions, mass, restitution) -> integer[]`: Spawns small dynamic debris bodies at the given positions (for destruction effects).
 - `LTerrain:toBytes() -> string`: Serializes the terrain grid to a compact binary format for saving.

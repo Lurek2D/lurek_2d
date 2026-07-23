@@ -5,8 +5,11 @@
 //! Playback helpers add clips, switch current clips, pause, resume, stop, and report active frame or durations.
 //! Open this file when clip-timing semantics change; sheet geometry and render submission belong to siblings.
 
+use crate::sprite::SpriteLimits;
 use std::collections::HashMap;
 
+/// # Fields
+///
 /// One named animation clip definition used by [`SpriteAnimator`].
 #[derive(Clone, Debug)]
 pub struct SpriteClip {
@@ -43,13 +46,15 @@ impl SpriteClip {
         if self.to < self.from {
             self.to = self.from;
         }
-        if self.fps <= 0.0 {
+        if !self.fps.is_finite() || self.fps <= 0.0 || self.fps > SpriteLimits::MAX_FPS {
             self.fps = 8.0;
         }
         self
     }
 }
 
+/// # Variants
+///
 /// Playback events emitted while advancing an animator.
 #[derive(Clone, Debug, PartialEq)]
 pub enum AnimatorEvent {
@@ -61,6 +66,8 @@ pub enum AnimatorEvent {
     End { clip: String },
 }
 
+/// # Fields
+///
 /// Stateful clip animator with named clips and frame stepping.
 #[derive(Clone, Debug, Default)]
 pub struct SpriteAnimator {
@@ -95,18 +102,19 @@ impl SpriteAnimator {
     }
 
     /// Start or restart playback for the named clip.
-    pub fn play(&mut self, name: &str, restart: bool) {
+    pub fn play(&mut self, name: &str, restart: bool) -> bool {
         let Some(def) = self.clips.get(name).cloned() else {
-            return;
+            return false;
         };
         if self.current_clip.as_deref() == Some(name) && !restart && self.playing {
-            return;
+            return true;
         }
         self.current_clip = Some(name.to_string());
         self.current_def = Some(def.clone());
         self.frame = def.from;
         self.elapsed = 0.0;
         self.playing = true;
+        true
     }
 
     /// Pause playback without changing frame state.
@@ -167,7 +175,7 @@ impl SpriteAnimator {
 
     /// Advance playback by `dt` and emit any frame/loop/end events.
     pub fn update(&mut self, dt: f32) -> Vec<AnimatorEvent> {
-        if !self.playing {
+        if !self.playing || !dt.is_finite() || dt <= 0.0 {
             return Vec::new();
         }
         let Some(def) = self.current_def.clone() else {
@@ -177,38 +185,38 @@ impl SpriteAnimator {
             return Vec::new();
         };
 
-        self.elapsed += dt.max(0.0);
+        self.elapsed = (self.elapsed + dt).min(60.0);
         let frame_time = 1.0 / def.fps;
-        let mut events = Vec::new();
-
-        while self.elapsed >= frame_time {
-            self.elapsed -= frame_time;
-            self.frame += 1;
-
-            if self.frame > def.to {
-                if def.looping {
-                    self.frame = def.from;
-                    events.push(AnimatorEvent::Loop {
-                        clip: clip_name.clone(),
-                    });
-                } else {
-                    self.frame = def.to;
-                    self.playing = false;
-                    events.push(AnimatorEvent::End {
-                        clip: clip_name.clone(),
-                    });
-                    break;
-                }
+        let steps = (self.elapsed / frame_time).floor() as u64;
+        if steps == 0 {
+            return Vec::new();
+        }
+        self.elapsed -= (steps as f32) * frame_time;
+        if !def.looping && self.frame as u64 + steps >= def.to as u64 {
+            self.frame = def.to;
+            self.playing = false;
+            return vec![AnimatorEvent::End { clip: clip_name }];
+        }
+        let frame_count = (def.to - def.from + 1) as u64;
+        let start = self.frame as u64 - def.from as u64;
+        let final_offset = (start + steps) % frame_count;
+        self.frame = def.from + final_offset as u32;
+        let emitted_steps = steps.min((SpriteLimits::MAX_ANIMATOR_EVENTS / 2) as u64);
+        let mut events = Vec::with_capacity((emitted_steps * 2) as usize);
+        for offset in (steps - emitted_steps + 1)..=steps {
+            let before = (start + offset - 1) % frame_count;
+            let after = (start + offset) % frame_count;
+            if after < before {
+                events.push(AnimatorEvent::Loop {
+                    clip: clip_name.clone(),
+                });
             }
-
-            let (row, col) = self.current_frame();
             events.push(AnimatorEvent::Frame {
-                row,
-                col,
+                row: def.row,
+                col: def.from + after as u32,
                 clip: clip_name.clone(),
             });
         }
-
         events
     }
 }

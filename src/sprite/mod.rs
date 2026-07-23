@@ -9,6 +9,8 @@
 pub mod animator;
 /// Texture atlas region map and TexturePacker JSON parser.
 pub mod atlas;
+/// Shared limits for untrusted sprite construction and update work.
+pub mod limits;
 /// Nine-slice panel geometry for scalable UI borders and boxes.
 pub mod nine_slice;
 /// Core Sprite type with transform, tint, and region data.
@@ -22,8 +24,9 @@ pub mod sprite_sheet;
 pub mod texture_atlas;
 pub use animator::{AnimatorEvent, SpriteAnimator, SpriteClip};
 pub use atlas::{parse_texturepacker_json, AtlasEntry, SpriteAtlas};
+pub use limits::SpriteLimits;
 pub use nine_slice::NineSlice;
 pub use sprite::Sprite;
 pub use sprite_batch::SpriteBatch;
 pub use sprite_sheet::SpriteSheet;
-pub use texture_atlas::{AtlasRegion, NineSliceInsets, TextureAtlas};
+pub use texture_atlas::{AtlasPackError, AtlasRegion, NineSliceInsets, TextureAtlas};

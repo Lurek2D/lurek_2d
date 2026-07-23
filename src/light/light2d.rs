@@ -134,6 +134,8 @@ pub struct Light2D {
     pub flicker: FlickerConfig,
     /// Optional group id used to batch lights in `LightWorld`.
     pub group_id: u16,
+    /// Renderer selection priority; higher values win before stable insertion-order ties.
+    pub priority: i16,
     /// Whether volumetric scattering should be simulated for this light.
     pub volumetric: bool,
     /// Optional path to a normal map texture used for surface-lighting.
@@ -177,6 +179,7 @@ impl Light2D {
             attenuation: Attenuation::default(),
             flicker: FlickerConfig::default(),
             group_id: 0,
+            priority: 0,
             volumetric: false,
             normal_map_path: None,
             cookie_path: None,
@@ -185,6 +188,76 @@ impl Light2D {
             normal_strength: 1.0,
             shader: None,
         }
+    }
+    /// Return whether every numeric value consumed by preview or GPU rendering is finite and valid.
+    ///
+    /// Lua validation normally guarantees this. The predicate also protects rendering against
+    /// direct Rust field mutation after a light has entered a `LightWorld`.
+    pub fn is_render_valid(&self) -> bool {
+        let color_is_finite = |color: Color| {
+            color.r.is_finite() && color.g.is_finite() && color.b.is_finite() && color.a.is_finite()
+        };
+        let attenuation_is_valid = self.attenuation.constant.is_finite()
+            && self.attenuation.linear.is_finite()
+            && self.attenuation.quadratic.is_finite()
+            && self.attenuation.constant >= 0.0
+            && self.attenuation.linear >= 0.0
+            && self.attenuation.quadratic >= 0.0;
+        let flicker_is_valid = self.flicker.speed.is_finite()
+            && self.flicker.strength.is_finite()
+            && self.flicker.phase.is_finite()
+            && self.flicker.strength >= 0.0;
+        let transition_is_valid = match &self.transition {
+            None => true,
+            Some(transition) => {
+                transition.from_color.iter().all(|value| value.is_finite())
+                    && transition.to_color.iter().all(|value| value.is_finite())
+                    && transition.from_intensity.is_finite()
+                    && transition.to_intensity.is_finite()
+                    && transition.from_intensity >= 0.0
+                    && transition.to_intensity >= 0.0
+                    && transition.from_radius.is_finite()
+                    && transition.to_radius.is_finite()
+                    && transition.from_radius > 0.0
+                    && transition.to_radius > 0.0
+                    && transition.duration.is_finite()
+                    && transition.duration > 0.0
+                    && transition.elapsed.is_finite()
+            }
+        };
+        self.x.is_finite()
+            && self.y.is_finite()
+            && self.radius.is_finite()
+            && self.radius > 0.0
+            && color_is_finite(self.color)
+            && self.intensity.is_finite()
+            && self.intensity >= 0.0
+            && self.energy.is_finite()
+            && self.energy >= 0.0
+            && color_is_finite(self.shadow_color)
+            && self.shadow_smooth.is_finite()
+            && self.shadow_smooth >= 0.0
+            && self.shadow_softness.is_finite()
+            && self.shadow_softness >= 0.0
+            && self.direction.is_finite()
+            && self.inner_angle.is_finite()
+            && self.outer_angle.is_finite()
+            && self.inner_angle >= 0.0
+            && self.inner_angle <= self.outer_angle
+            && self.outer_angle <= std::f32::consts::PI
+            && attenuation_is_valid
+            && flicker_is_valid
+            && self.normal_strength.is_finite()
+            && (0.0..=1.0).contains(&self.normal_strength)
+            && transition_is_valid
+    }
+    /// Set this light's renderer selection priority.
+    pub fn set_priority(&mut self, priority: i16) {
+        self.priority = priority;
+    }
+    /// Return this light's renderer selection priority.
+    pub fn get_priority(&self) -> i16 {
+        self.priority
     }
     /// Set world-space position and log at trace level.
     pub fn set_position(&mut self, x: f32, y: f32) {

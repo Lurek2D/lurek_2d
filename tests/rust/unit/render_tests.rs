@@ -27,6 +27,151 @@ use lurek2d::render::software_capture::{
     capture_commands_to_image, capture_commands_to_image_with_diagnostics,
 };
 
+#[cfg(feature = "voxel-loader")]
+mod voxel_loader_tests {
+    use lurek2d::render::voxel_loader::VoxelModel;
+
+    fn palette() -> Vec<dot_vox::Color> {
+        vec![dot_vox::Color {
+            r: 200,
+            g: 100,
+            b: 50,
+            a: 255,
+        }]
+    }
+
+    #[test]
+    fn exposed_faces_are_emitted_and_the_model_is_grounded() {
+        let model = dot_vox::Model {
+            size: dot_vox::Size { x: 1, y: 1, z: 1 },
+            voxels: vec![dot_vox::Voxel {
+                x: 0,
+                y: 0,
+                z: 0,
+                i: 0,
+            }],
+        };
+        let voxel = VoxelModel::from_model(&model, &palette(), 2.0, 1).unwrap();
+
+        assert_eq!(voxel.voxel_count(), 1);
+        assert_eq!(voxel.source_model_count(), 1);
+        assert_eq!(voxel.triangle_count(), 12);
+        assert_eq!(voxel.bounds(), [-1.0, 0.0, -1.0, 1.0, 2.0, 1.0]);
+    }
+
+    #[test]
+    fn shared_voxel_faces_are_not_emitted() {
+        let model = dot_vox::Model {
+            size: dot_vox::Size { x: 2, y: 1, z: 1 },
+            voxels: vec![
+                dot_vox::Voxel {
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                    i: 0,
+                },
+                dot_vox::Voxel {
+                    x: 1,
+                    y: 0,
+                    z: 0,
+                    i: 0,
+                },
+            ],
+        };
+        let voxel = VoxelModel::from_model(&model, &palette(), 1.0, 1).unwrap();
+
+        assert_eq!(voxel.triangle_count(), 20);
+    }
+
+    #[test]
+    fn static_scene_nodes_are_flattened_with_their_translations() {
+        let model = || dot_vox::Model {
+            size: dot_vox::Size { x: 1, y: 1, z: 1 },
+            voxels: vec![dot_vox::Voxel {
+                x: 0,
+                y: 0,
+                z: 0,
+                i: 0,
+            }],
+        };
+        let frame = |translation: &str| {
+            let mut attributes = dot_vox::Dict::new();
+            attributes.insert("_t".to_string(), translation.to_string());
+            dot_vox::Frame::new(attributes)
+        };
+        let shape = |model_id| dot_vox::SceneNode::Shape {
+            attributes: dot_vox::Dict::new(),
+            models: vec![dot_vox::ShapeModel {
+                model_id,
+                attributes: dot_vox::Dict::new(),
+            }],
+        };
+        let scene = dot_vox::DotVoxData {
+            version: 150,
+            models: vec![model(), model()],
+            palette: palette(),
+            materials: vec![],
+            scenes: vec![
+                dot_vox::SceneNode::Group {
+                    attributes: dot_vox::Dict::new(),
+                    children: vec![1, 2],
+                },
+                dot_vox::SceneNode::Transform {
+                    attributes: dot_vox::Dict::new(),
+                    frames: vec![frame("0 0 0")],
+                    child: 3,
+                    layer_id: 0,
+                },
+                dot_vox::SceneNode::Transform {
+                    attributes: dot_vox::Dict::new(),
+                    frames: vec![frame("3 0 0")],
+                    child: 4,
+                    layer_id: 0,
+                },
+                shape(0),
+                shape(1),
+            ],
+            layers: vec![],
+        };
+        let voxel = VoxelModel::from_data(&scene, 1.0).unwrap();
+
+        assert_eq!(voxel.voxel_count(), 2);
+        assert_eq!(voxel.source_model_count(), 2);
+        assert_eq!(voxel.triangle_count(), 24);
+        assert_eq!(voxel.bounds(), [-2.0, 0.0, -0.5, 2.0, 1.0, 0.5]);
+    }
+
+    #[test]
+    fn voxel_surface_projects_to_a_raycaster_model_mesh() {
+        let model = dot_vox::Model {
+            size: dot_vox::Size { x: 1, y: 1, z: 1 },
+            voxels: vec![dot_vox::Voxel {
+                x: 0,
+                y: 0,
+                z: 0,
+                i: 0,
+            }],
+        };
+        let voxel = VoxelModel::from_model(&model, &palette(), 1.0, 1).unwrap();
+        let (mesh, depth, triangle_depths) = voxel.project_instance_to_mesh(
+            lurek2d::render::obj_loader::Vec3::new(0.0, 1.0, -4.0),
+            lurek2d::render::obj_loader::Vec3::new(0.0, 0.5, 0.0),
+            std::f32::consts::FRAC_PI_3,
+            320.0,
+            180.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+        );
+
+        assert!(!mesh.vertices.is_empty());
+        assert!(depth.is_finite() && depth > 0.0);
+        assert_eq!(mesh.vertices.len() / 3, triangle_depths.len());
+    }
+}
+
 mod province_map_pipeline_tests {
     use super::*;
 

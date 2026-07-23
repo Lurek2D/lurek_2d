@@ -14,7 +14,8 @@ Orchestrates the engine's visual backend using a device-facing wgpu renderer. - 
 - Resource inputs are validated before backend allocation or shader-source generation: texture and canvas dimensions must be non-zero and within device limits, RGBA uploads must match exact byte length, dynamic font atlases are bounded, OBJ material paths must stay under their base directory, and shader uniform names must be valid non-reserved WGSL identifiers.
 - Centralizing those resources matters because otherwise each visual feature would invent its own backend conventions, lifetime rules, and upload paths. `render` provides one stable home for those concerns and reduces backend duplication.
 - Rendering commands and pipeline structures give the engine a common language between feature modules and execution code. This shared command vocabulary is what allows gameplay-facing APIs to remain expressive while still mapping onto a disciplined backend.
-- The module is broader than simple 2D quad drawing. Mesh support, OBJ loading, tessellation, decals, shape batching, and specialized pipelines show that it can represent both standard 2D workflows and richer geometric or stylized visual features without leaving the engine's main render authority.
+- The module is broader than simple 2D quad drawing. Mesh support, OBJ and MagicaVoxel loading, tessellation, decals, shape batching, and specialized pipelines show that it can represent both standard 2D workflows and richer geometric or stylized visual features without leaving the engine's main render authority.
+- MagicaVoxel props flatten their static scene graph once, preserve palette colour, and remove hidden interior faces before entering the existing projected-model path. They are object geometry; raycaster wall, floor, and ceiling terrain remains texture/block driven.
 - Text and font integration are part of the same visual surface, not a parallel universe. Menus, labels, debug overlays, editor tools, and evidence images all need text rendering that cooperates with layers, transforms, clipping, and final composition.
 - Post-processing support matters after scene composition has already happened. Once a view exists, users often want bloom-like treatments, color transforms, blur-like effects, or custom shader passes, and `render` provides the controlled place where those frame-wide or target-specific effects belong.
 - Lighting and shadow support connect scene-level illumination data to actual frame execution. Neighboring modules define lights, occluders, and light-world state, but `render` owns how those concepts become shaded images, masks, and composited outputs.
@@ -2231,6 +2232,46 @@ end
 
 ---
 
+### `lurek.render.loadVoxel`
+
+Loads a MagicaVoxel `.vox` static prop with palette colours and a configurable world-space voxel size.
+
+```lua
+lurek.render.loadVoxel(path, voxelSize)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | string | File path to the `.vox` file relative to the game directory. |
+| `voxelSize?` | number | World-space size of one source voxel (default 1). |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LVoxelModel](#lvoxelmodel) | The loaded voxel model handle. |
+
+**Example**
+
+```lua
+do
+
+    local function le32(value)
+        return string.char(value % 256, math.floor(value / 256) % 256, math.floor(value / 65536) % 256, math.floor(value / 16777216) % 256)
+    end
+    local children = "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) .. "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+    local path = "save/voxel_example.vox"
+    lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+    local model = lurek.render.loadVoxel(path, 0.25)
+    local bounds = model:getBounds()
+    lurek.log.info("voxel count=" .. model:getVoxelCount() .. " height=" .. bounds.maxY)
+end
+```
+
+---
+
 ### `lurek.render.newCanvas`
 
 Creates a new off-screen render target with the given dimensions.
@@ -4185,6 +4226,7 @@ end
 - [LShader](#lshader)
 - [LShape](#lshape)
 - [LSpriteBatch](#lspritebatch)
+- [LVoxelModel](#lvoxelmodel)
 
 ## LCanvas
 
@@ -8021,6 +8063,68 @@ do
     lurek.log.info("batch typeOf LSpriteBatch = " .. tostring(batch:typeOf("LSpriteBatch")))
     lurek.log.info("batch capacity = 8")
     batch:release()
+end
+```
+
+---
+
+## LVoxelModel
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LVoxelModel:getBounds`
+
+Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.
+
+```lua
+LVoxelModel:getBounds()
+```
+
+**Example**
+
+```lua
+do
+
+    local function le32(value)
+        return string.char(value % 256, math.floor(value / 256) % 256, math.floor(value / 65536) % 256, math.floor(value / 16777216) % 256)
+    end
+    local children = "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(2) .. le32(1) .. "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+    local path = "save/voxel_bounds_example.vox"
+    lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+    local model = lurek.render.loadVoxel(path, 0.5)
+    local bounds = model:getBounds()
+    lurek.log.info("voxel bounds y=" .. bounds.minY .. ".." .. bounds.maxY)
+end
+```
+
+---
+
+#### `LVoxelModel:getVoxelCount`
+
+Returns the number of occupied source voxels.
+
+```lua
+LVoxelModel:getVoxelCount()
+```
+
+**Example**
+
+```lua
+do
+
+    local function le32(value)
+        return string.char(value % 256, math.floor(value / 256) % 256, math.floor(value / 65536) % 256, math.floor(value / 16777216) % 256)
+    end
+    local children = "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) .. "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+    local path = "save/voxel_count_example.vox"
+    lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+    local model = lurek.render.loadVoxel(path, 0.5)
+    local count = model:getVoxelCount()
+    lurek.log.info("source voxels=" .. count)
 end
 ```
 
