@@ -1,8 +1,6 @@
 # Build artifacts
 
 /build/*
-!/build/docs-data/
-!/build/docs-data/**
 /target/
 /dist/
 
