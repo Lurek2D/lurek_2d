@@ -28,7 +28,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 ## Notes
 
-- `province` owns conversion from painted province maps into province ids, spans, borders, polygons, and registry state. `image` owns generic pixel buffers and keeps `newProvinceGrid` as a compatibility ingest facade.
+- `province` owns conversion from painted province maps into province ids, spans, borders, polygons, and registry state. Use `lurek.province.newGrid` for bounded GameFS-backed grid ingestion; `image` owns generic pixel buffers and retains `newProvinceGrid` only as a compatibility facade.
 - `province` owns topology as territory data, but `pathfind` owns reusable path search, weighted traversal, connectivity traversal, movement budgets, and reachability over that topology. Province route methods should stay thin adapters over pathfind graph traversal.
 - Flow simulation over graph nodes, items, queues, capacity, and supply/demand belongs to `flownet`/`lurek.graph`; province adjacency can feed it but should not implement transport semantics.
 - `province` may expose `fitCamera`, `screenToProvince`, and `zoomCameraAt` for strategy-map ergonomics, but generic viewport and zoom-anchor math belongs to `camera`.

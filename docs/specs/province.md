@@ -15,7 +15,7 @@
 - Source path: `src/province`
 - Binding: `src/lua_api/province_api.rs`
 - Namespace: `lurek.province`
-- Lua API surface: `15` functions, `8` types, `52` methods
+- Lua API surface: `16` functions, `8` types, `52` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -231,6 +231,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `lurek.province.getProperty(id, key) -> number`: Gets a numeric property from a province. Returns nil if not set.
 - `lurek.province.hasFlag(id, bit) -> boolean`: Checks whether a flag bit is set on a province.
 - `lurek.province.newFromPng(name, png_path) -> LProvinceRegistry`: Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.
+- `lurek.province.newGrid(filename) -> LProvinceGrid`: Loads a province id grid from a GameFS-authorized encoded image.
 - `lurek.province.remove(name) -> boolean`: Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.
 - `lurek.province.sanitizeMarkedPng(input_png, output_png, opts?) -> table`: Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.
 - `lurek.province.setActive(name) -> boolean`: Sets the named registry as the active province registry. Returns false if no registry with that name exists.
@@ -427,7 +428,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 
 ## Notes
 
-- `province` owns conversion from painted province maps into province ids, spans, borders, polygons, and registry state. `image` owns generic pixel buffers and keeps `newProvinceGrid` as a compatibility ingest facade.
+- `province` owns conversion from painted province maps into province ids, spans, borders, polygons, and registry state. Use `lurek.province.newGrid` for bounded GameFS-backed grid ingestion; `image` owns generic pixel buffers and retains `newProvinceGrid` only as a compatibility facade.
 - `province` owns topology as territory data, but `pathfind` owns reusable path search, weighted traversal, connectivity traversal, movement budgets, and reachability over that topology. Province route methods should stay thin adapters over pathfind graph traversal.
 - Flow simulation over graph nodes, items, queues, capacity, and supply/demand belongs to `flownet`/`lurek.graph`; province adjacency can feed it but should not implement transport semantics.
 - `province` may expose `fitCamera`, `screenToProvince`, and `zoomCameraAt` for strategy-map ergonomics, but generic viewport and zoom-anchor math belongs to `camera`.

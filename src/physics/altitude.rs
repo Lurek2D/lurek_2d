@@ -10,6 +10,7 @@ use crate::physics::limits::{
 };
 
 /// Sampling policy for altitude-layer world-coordinate lookups.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AltitudeSampleMode {
     /// Snap to the nearest authored cell center.
@@ -19,6 +20,7 @@ pub enum AltitudeSampleMode {
 }
 
 /// Serialized altitude-layer payload used for save/load and Lua-facing snapshots.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct AltitudeLayerData {
     /// Grid width in cells.
@@ -38,6 +40,7 @@ pub struct AltitudeLayerData {
 }
 
 /// Deterministic authored terrain-height and clearance grid for 2.5D gameplay.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct AltitudeLayer {
     width: u32,
@@ -50,6 +53,7 @@ pub struct AltitudeLayer {
 }
 
 /// Body altitude interpretation mode.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AltitudeMode {
     /// Body stays grounded relative to sampled terrain height.
@@ -63,6 +67,7 @@ pub enum AltitudeMode {
 }
 
 /// Flags controlling how altitude metadata participates in 2.5D collision rules.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct AltitudeCollisionOptions {
     /// Enables vertical collision filtering for this body.
@@ -84,6 +89,7 @@ impl Default for AltitudeCollisionOptions {
 }
 
 /// Per-body vertical sidecar state stored by `World`.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct BodyAltitudeState {
     /// Terrain-relative or world-space altitude, depending on `mode`.
@@ -130,6 +136,7 @@ impl BodyAltitudeState {
 }
 
 /// Result classification for future 2.5D hits and projectile traces.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AltitudeHitKind {
     /// Hit a body after XY and Z filtering.
@@ -143,6 +150,7 @@ pub enum AltitudeHitKind {
 }
 
 /// Shared 2.5D hit payload owned by the physics domain.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct AltitudeHit {
     /// Body that was hit, when applicable.
@@ -166,6 +174,7 @@ pub struct AltitudeHit {
 }
 
 /// Options for a future 2.5D swept-circle query.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CircleCast25DOptions {
     /// Start X.
@@ -189,6 +198,7 @@ pub struct CircleCast25DOptions {
 }
 
 /// Options for a future deterministic ballistic trace.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct BallisticArcOptions {
     /// Trace origin in XY and altitude.
@@ -210,6 +220,7 @@ pub struct BallisticArcOptions {
 }
 
 /// Options for an engine-owned ballistic projectile.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct BallisticProjectileOptions {
     /// Optional owning body id.
@@ -241,6 +252,7 @@ pub struct BallisticProjectileOptions {
 }
 
 /// Deterministic ballistic trace result.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct BallisticTrace {
     /// Sampled projectile points in `(x, y, z)` order.
@@ -254,6 +266,7 @@ pub struct BallisticTrace {
 }
 
 /// Engine-owned ballistic projectile state for future world stepping.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct BallisticProjectile {
     /// Stable projectile id within the world.

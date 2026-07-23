@@ -23,6 +23,44 @@ const LIQUID_CHUNK_SIZE: u32 = 16;
 const LIQUID_MAX_AMOUNT: f32 = 1.0;
 const LIQUID_EPSILON: f32 = 0.000_1;
 
+fn read_u32(bytes: &[u8], offset: usize, context: &'static str) -> Result<u32, PhysicsError> {
+    let end = offset.checked_add(4).ok_or(PhysicsError::InvalidLength {
+        context,
+        expected: usize::MAX,
+        actual: bytes.len(),
+    })?;
+    let slice = bytes.get(offset..end).ok_or(PhysicsError::InvalidLength {
+        context,
+        expected: end,
+        actual: bytes.len(),
+    })?;
+    let array: [u8; 4] = slice.try_into().map_err(|_| PhysicsError::InvalidLength {
+        context,
+        expected: end,
+        actual: bytes.len(),
+    })?;
+    Ok(u32::from_le_bytes(array))
+}
+
+fn read_u16(bytes: &[u8], offset: usize, context: &'static str) -> Result<u16, PhysicsError> {
+    let end = offset.checked_add(2).ok_or(PhysicsError::InvalidLength {
+        context,
+        expected: usize::MAX,
+        actual: bytes.len(),
+    })?;
+    let slice = bytes.get(offset..end).ok_or(PhysicsError::InvalidLength {
+        context,
+        expected: end,
+        actual: bytes.len(),
+    })?;
+    let array: [u8; 2] = slice.try_into().map_err(|_| PhysicsError::InvalidLength {
+        context,
+        expected: end,
+        actual: bytes.len(),
+    })?;
+    Ok(u16::from_le_bytes(array))
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct LiquidChunkId {
     cx: u32,
@@ -30,6 +68,7 @@ struct LiquidChunkId {
 }
 
 /// Discrete authored liquid material stored per cell.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LiquidKind {
     /// Standard water-like liquid with no intrinsic damage.
@@ -68,6 +107,7 @@ impl LiquidKind {
 }
 
 /// One grid cell of liquid state.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LiquidCell {
     /// Liquid fill amount in `0.0..=1.0`.
@@ -86,6 +126,7 @@ impl Default for LiquidCell {
 }
 
 /// Tunable flow controls for one liquid step call.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LiquidStepOptions {
     /// Maximum downward transfer per substep, in cell-fill units.
@@ -144,6 +185,7 @@ impl LiquidStepOptions {
 }
 
 /// Diagnostics returned after stepping a liquid map.
+/// # Fields
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub struct LiquidStepStats {
     /// Total amount transferred between cells during the call.
@@ -155,6 +197,7 @@ pub struct LiquidStepStats {
 }
 
 /// Sampling and force controls for liquid-to-body interaction.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct LiquidBodyForceOptions {
     /// Layer mask used to select eligible bodies.
@@ -201,6 +244,7 @@ impl LiquidBodyForceOptions {
 }
 
 /// Diagnostics returned after applying liquid forces to a world.
+/// # Fields
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct LiquidBodyForceStats {
     /// Number of dynamic bodies that matched the layer mask.
@@ -210,6 +254,7 @@ pub struct LiquidBodyForceStats {
 }
 
 /// Separate grid-based liquid storage used for leaking tanks, settling, and simple buoyancy sampling.
+/// # Fields
 pub struct LiquidMap {
     /// Grid width in cells.
     pub width: u32,
@@ -896,16 +941,16 @@ impl LiquidMap {
                 actual: bytes.len(),
             });
         }
-        let version = u32::from_le_bytes(bytes[0..4].try_into().unwrap());
+        let version = read_u32(bytes, 0, "physics liquid bytes")?;
         if version != LIQUID_BYTES_VERSION {
             return Err(PhysicsError::UnsupportedVersion {
                 context: "physics liquid bytes",
                 version,
             });
         }
-        let width = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
-        let height = u32::from_le_bytes(bytes[8..12].try_into().unwrap());
-        let cell_size = f32::from_bits(u32::from_le_bytes(bytes[12..16].try_into().unwrap()));
+        let width = read_u32(bytes, 4, "physics liquid bytes")?;
+        let height = read_u32(bytes, 8, "physics liquid bytes")?;
+        let cell_size = f32::from_bits(read_u32(bytes, 12, "physics liquid bytes")?);
         let total = checked_liquid_cells(width, height, limits)?;
         let expected_len = 16 + total * 8;
         if bytes.len() != expected_len {
@@ -918,11 +963,10 @@ impl LiquidMap {
         let mut liquid = Self::try_new_with_limits(width, height, cell_size, limits)?;
         let mut cursor = 16usize;
         for cell in &mut liquid.cells {
-            let amount = f32::from_bits(u32::from_le_bytes(
-                bytes[cursor..cursor + 4].try_into().unwrap(),
-            ));
-            let tag = u16::from_le_bytes(bytes[cursor + 4..cursor + 6].try_into().unwrap());
-            let custom = u16::from_le_bytes(bytes[cursor + 6..cursor + 8].try_into().unwrap());
+            let amount = f32::from_bits(read_u32(bytes, cursor, "physics liquid bytes")?);
+            validate_finite("liquid amount", f64::from(amount))?;
+            let tag = read_u16(bytes, cursor + 4, "physics liquid bytes")?;
+            let custom = read_u16(bytes, cursor + 6, "physics liquid bytes")?;
             cursor += 8;
             cell.amount = amount.clamp(0.0, LIQUID_MAX_AMOUNT);
             cell.kind = if cell.amount <= LIQUID_EPSILON {

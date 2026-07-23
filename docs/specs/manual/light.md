@@ -31,6 +31,16 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `lurek.tilefield` owns the tile data consumed by tile lighting: per-tile `"light"` blockers, transmission costs, and multilevel sun occlusion.
 - `lurek.tilelight` owns tile-based environment lighting: grid point lights, ambient light, global top light, and computed RGB/luma layers.
 - Do not use `lurek.light` as the source of truth for tile movement, sight, action, or tile-light gameplay semantics.
+- Light storage is bounded independently of renderer selection: `max_lights` selects at most 1–256 active lights for rendering, while `LightLimits` caps 4,096 registered lights, 4,096 occluders, 512 vertices per occluder, 65,536 total vertices, and 4,096 exported hints before insertion/export.
+- Cookie and normal-map resource keys must be non-empty UTF-8 strings of at most 1,024 bytes. Asset resolution and texture binding remain render/asset responsibilities.
+- Debug previews allow at most 4,194,304 pixels and 100,000,000 conservative work units: one direct sample per selected light plus `relevant edges × PCF taps` for shadowed lights (1, 5, or 13 taps).
+- `drawToImage` rejects previews whose pixels or conservative pixel/light/occluder-edge work exceed `LightLimits`; it never allocates an unbounded debug bitmap.
+- CPU preview rasterization is isolated from `LightWorld` and borrows selected lights and occluder geometry rather than cloning transformed scene polygons. It is debug/evidence-only; GPU rendering remains owned by `render`.
+- Occluders require 3–512 finite vertices. Invalid geometry is rejected and leaves existing occluders unchanged.
+- A new world enables itself on its first light only until `setEnabled` is called. An explicit disable persists across later additions and `clear`; `clear` removes scene objects and resets ambient without changing that enable decision.
+- Cookie paths are authoritative per-light resource references shared by every handle. They are configuration only until renderer cookie sampling is implemented.
+- `transitionTo` stores state on the authoritative light and is advanced by `LLight:updateTransition(dt)`; all aliases observe the same progress, but it is not a world-frame animation.
+- When eligible lights exceed `max_lights`, renderer and preview selection uses stable insertion order. Removing and re-adding a light gives it a new order at the end of the selection queue.
 
 ## Architecture Links
 

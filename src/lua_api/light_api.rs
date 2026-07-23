@@ -1,12 +1,12 @@
 //! Registers the `lurek.light` Lua API for light worlds, occluders, blends, and validated lighting options.
 
 use super::render_api::{ensure_shader_target, shader_key_from_userdata, LuaShader};
+use super::tilefield_api::create_lights_from_tileset;
 use super::SharedState;
 use crate::color::Color;
-use crate::light::transition::LightTransition;
 use crate::light::{
     Attenuation, FalloffMode, FlickerConfig, Light2D, Light2DOptionsPatch, LightBlendMode,
-    LightType, Occluder, ShadowFilter,
+    LightLimits, LightType, Occluder, ShadowFilter,
 };
 use crate::math::Vec2;
 use crate::render::ShaderTarget;
@@ -64,14 +64,23 @@ fn unit_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
 fn optional_f32_field(opts: &LuaTable, field: &str) -> LuaResult<Option<f32>> {
     match opts.get::<_, LuaValue>(field)? {
         LuaValue::Nil => Ok(None),
-        LuaValue::Number(value) => Ok(Some(value as f32)),
-        LuaValue::Integer(value) => Ok(Some(value as f32)),
+        LuaValue::Number(value) => lua_number_to_f32(field, value).map(Some),
+        LuaValue::Integer(value) => lua_number_to_f32(field, value as f64).map(Some),
         value => Err(LuaError::RuntimeError(format!(
             "expected number for '{}', got {}",
             field,
             value.type_name()
         ))),
     }
+}
+
+fn lua_number_to_f32(field: &str, value: f64) -> LuaResult<f32> {
+    if !value.is_finite() || value.abs() > f32::MAX as f64 {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.light: '{field}' must be a finite f32-range number"
+        )));
+    }
+    Ok(value as f32)
 }
 
 fn optional_u16_field(opts: &LuaTable, field: &str) -> LuaResult<Option<u16>> {
@@ -112,11 +121,47 @@ fn optional_string_field(opts: &LuaTable, field: &str) -> LuaResult<Option<Strin
     }
 }
 
+fn resource_path(api: &str, field: &str, path: String) -> LuaResult<String> {
+    let limit = LightLimits::default().max_resource_path_bytes;
+    if path.is_empty() || path.len() > limit {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must be non-empty and at most {limit} UTF-8 bytes"
+        )));
+    }
+    Ok(path)
+}
+
+fn reject_unknown_fields(opts: &LuaTable, api: &str, allowed: &[&str]) -> LuaResult<()> {
+    for entry in opts.clone().pairs::<LuaValue, LuaValue>() {
+        let (key, _) = entry?;
+        let LuaValue::String(key) = key else {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: option keys must be strings"
+            )));
+        };
+        let name = key.to_str()?;
+        if !allowed.contains(&name) {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: unknown option '{name}'"
+            )));
+        }
+    }
+    Ok(())
+}
+
 fn color_table_channel(tbl: &LuaTable, index: i32, field: &str) -> LuaResult<f32> {
     match tbl.get::<_, LuaValue>(index)? {
         LuaValue::Nil => Ok(1.0),
-        LuaValue::Number(value) => unit_f32("lurek.light color table", field, value as f32),
-        LuaValue::Integer(value) => unit_f32("lurek.light color table", field, value as f32),
+        LuaValue::Number(value) => unit_f32(
+            "lurek.light color table",
+            field,
+            lua_number_to_f32(field, value)?,
+        ),
+        LuaValue::Integer(value) => unit_f32(
+            "lurek.light color table",
+            field,
+            lua_number_to_f32(field, value as f64)?,
+        ),
         value => Err(LuaError::RuntimeError(format!(
             "expected numeric color channel for '{}[{}]', got {}",
             field,
@@ -240,7 +285,54 @@ fn parse_opt_color(opts: &LuaTable, field: &str) -> LuaResult<Option<Color>> {
 }
 /// Applies Lua light option fields to a light instance.
 fn apply_light_opts(light: &mut Light2D, opts: &LuaTable) -> LuaResult<()> {
-    light.apply_options_patch(light_options_patch(opts)?);
+    reject_unknown_fields(
+        opts,
+        "lurek.light.newLight",
+        &[
+            "color",
+            "intensity",
+            "energy",
+            "blend",
+            "falloff",
+            "enabled",
+            "shadowEnabled",
+            "shadowColor",
+            "shadowFilter",
+            "shadowSmooth",
+            "shadowSoftness",
+            "lightMask",
+            "shadowMask",
+            "type",
+            "direction",
+            "innerAngle",
+            "outerAngle",
+            "groupId",
+            "volumetric",
+            "flickerSpeed",
+            "flickerStrength",
+            "normalMap",
+            "normalStrength",
+            "attConstant",
+            "attLinear",
+            "attQuadratic",
+        ],
+    )?;
+    let patch = light_options_patch(opts)?;
+    let inner = patch.inner_angle.unwrap_or(light.inner_angle);
+    let outer = patch.outer_angle.unwrap_or(light.outer_angle);
+    validate_spot_cone("lurek.light.newLight", inner, outer)?;
+    light.apply_options_patch(patch);
+    Ok(())
+}
+
+fn validate_spot_cone(api: &str, inner: f32, outer: f32) -> LuaResult<()> {
+    let inner = non_negative_f32(api, "innerAngle", inner)?;
+    let outer = non_negative_f32(api, "outerAngle", outer)?;
+    if outer > std::f32::consts::PI || inner > outer {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: cone angles must satisfy 0 <= innerAngle <= outerAngle <= pi"
+        )));
+    }
     Ok(())
 }
 
@@ -359,7 +451,11 @@ fn parse_light_effect_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> 
         )?);
     }
     if let Some(path) = optional_string_field(opts, "normalMap")? {
-        patch.normal_map_path = Some(path);
+        patch.normal_map_path = Some(resource_path(
+            "lurek.light.newLight",
+            "opts.normalMap",
+            path,
+        )?);
     }
     if let Some(v) = optional_f32_field(opts, "normalStrength")? {
         patch.normal_strength = Some(unit_f32("lurek.light.newLight", "opts.normalStrength", v)?);
@@ -393,13 +489,18 @@ fn parse_light_attenuation_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable
 }
 /// Applies Lua occluder option fields to an occluder instance.
 fn apply_occluder_opts(occ: &mut Occluder, opts: &LuaTable) -> LuaResult<()> {
-    if let Ok(v) = opts.get::<_, f32>("opacity") {
-        occ.set_opacity(v);
+    reject_unknown_fields(
+        opts,
+        "lurek.light.newOccluder",
+        &["opacity", "lightMask", "enabled"],
+    )?;
+    if let Some(v) = optional_f32_field(opts, "opacity")? {
+        occ.set_opacity(unit_f32("lurek.light.newOccluder", "opts.opacity", v)?);
     }
-    if let Ok(v) = opts.get::<_, u16>("lightMask") {
+    if let Some(v) = optional_u16_field(opts, "lightMask")? {
         occ.set_light_mask(v);
     }
-    if let Ok(v) = opts.get::<_, bool>("enabled") {
+    if let Some(v) = optional_bool_field(opts, "enabled")? {
         occ.set_enabled(v);
     }
     Ok(())
@@ -411,24 +512,21 @@ pub struct LuaLight {
     state: Rc<RefCell<SharedState>>,
     /// Slot-map key identifying the light inside the light world.
     key: LightKey,
-    /// Optional active transition for color, intensity, and radius.
-    transition: RefCell<Option<LightTransition>>,
-    /// Optional cookie texture path associated with this light.
-    cookie_path: RefCell<Option<String>>,
 }
 
 /// Create a Lua light handle by inserting a prepared light into the shared light world.
-pub(crate) fn lua_light_from_light(state: Rc<RefCell<SharedState>>, light: Light2D) -> LuaLight {
+pub(crate) fn lua_light_from_light(
+    state: Rc<RefCell<SharedState>>,
+    light: Light2D,
+) -> LuaResult<LuaLight> {
     let mut st = state.borrow_mut();
-    let key = st.light_world.add_light(light);
+    let key = st
+        .light_world
+        .add_light(light)
+        .map_err(LuaError::RuntimeError)?;
     st.light_world.reindex_flickers();
     drop(st);
-    LuaLight {
-        state,
-        key,
-        transition: RefCell::new(None),
-        cookie_path: RefCell::new(None),
-    }
+    Ok(LuaLight { state, key })
 }
 
 /// Provides Lua methods for editing, animating, and inspecting one light.
@@ -439,6 +537,8 @@ impl LuaUserData for LuaLight {
         /// @param | x | number | Light x coordinate.
         /// @param | y | number | Light y coordinate.
         methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            let x = finite_f32("Light:setPosition", "x", x)?;
+            let y = finite_f32("Light:setPosition", "y", y)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -699,6 +799,7 @@ impl LuaUserData for LuaLight {
         /// Sets this light shadow smoothing value.
         /// @param | s | number | Shadow smoothing value.
         methods.add_method("setShadowSmooth", |_, this, s: f32| {
+            let s = non_negative_f32("Light:setShadowSmooth", "s", s)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -839,6 +940,7 @@ impl LuaUserData for LuaLight {
         /// Sets this light direction angle. This method is available to Lua scripts.
         /// @param | dir | number | Direction angle in radians or engine units.
         methods.add_method("setDirection", |_, this, dir: f32| {
+            let dir = finite_f32("Light:setDirection", "dir", dir)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -862,11 +964,13 @@ impl LuaUserData for LuaLight {
         /// Sets this spot light inner cone angle.
         /// @param | a | number | Inner angle.
         methods.add_method("setInnerAngle", |_, this, a: f32| {
+            let a = non_negative_f32("Light:setInnerAngle", "a", a)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
                 .get_light_mut(this.key)
                 .ok_or_else(|| invalid_light("Light:setInnerAngle"))?;
+            validate_spot_cone("Light:setInnerAngle", a, light.get_outer_angle())?;
             light.set_inner_angle(a);
             Ok(())
         });
@@ -885,11 +989,13 @@ impl LuaUserData for LuaLight {
         /// Sets this spot light outer cone angle.
         /// @param | a | number | Outer angle.
         methods.add_method("setOuterAngle", |_, this, a: f32| {
+            let a = non_negative_f32("Light:setOuterAngle", "a", a)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
                 .get_light_mut(this.key)
                 .ok_or_else(|| invalid_light("Light:setOuterAngle"))?;
+            validate_spot_cone("Light:setOuterAngle", light.get_inner_angle(), a)?;
             light.set_outer_angle(a);
             Ok(())
         });
@@ -910,6 +1016,9 @@ impl LuaUserData for LuaLight {
         /// @param | l | number | Linear coefficient.
         /// @param | q | number | Quadratic coefficient.
         methods.add_method("setAttenuation", |_, this, (c, l, q): (f32, f32, f32)| {
+            let c = non_negative_f32("Light:setAttenuation", "c", c)?;
+            let l = non_negative_f32("Light:setAttenuation", "l", l)?;
+            let q = non_negative_f32("Light:setAttenuation", "q", q)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -1161,15 +1270,12 @@ impl LuaUserData for LuaLight {
                         )))
                     }
                 };
-                *this.transition.borrow_mut() = Some(LightTransition::new(
-                    from_color,
-                    to_color,
-                    from_intensity,
-                    to_intensity,
-                    from_radius,
-                    to_radius,
-                    duration,
-                ));
+                let mut st = this.state.borrow_mut();
+                let light = st
+                    .light_world
+                    .get_light_mut(this.key)
+                    .ok_or_else(|| invalid_light("Light:transitionTo"))?;
+                light.start_transition(to_color, to_intensity, to_radius, duration);
                 Ok(())
             },
         );
@@ -1178,66 +1284,76 @@ impl LuaUserData for LuaLight {
         /// @param | dt | number | Delta time in seconds.
         /// @return | boolean | True when a transition value was applied.
         methods.add_method("updateTransition", |_, this, dt: f32| {
-            let result = this
-                .transition
-                .borrow_mut()
-                .as_mut()
-                .and_then(|t| t.update(dt));
-            if let Some((color, intensity, radius)) = result {
-                let mut st = this.state.borrow_mut();
-                if let Some(light) = st.light_world.get_light_mut(this.key) {
-                    light.color.r = color[0];
-                    light.color.g = color[1];
-                    light.color.b = color[2];
-                    light.color.a = color[3];
-                    light.intensity = intensity;
-                    light.set_radius(radius);
-                }
-                Ok(true)
-            } else {
-                Ok(false)
-            }
+            let dt = non_negative_f32("Light:updateTransition", "dt", dt)?;
+            let mut st = this.state.borrow_mut();
+            let light = st
+                .light_world
+                .get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:updateTransition"))?;
+            Ok(light.advance_transition(dt))
         });
         // -- stopTransition --
         /// Stops and clears this light's active transition.
         methods.add_method("stopTransition", |_, this, ()| {
-            this.transition.borrow_mut().take();
+            let mut st = this.state.borrow_mut();
+            let light = st
+                .light_world
+                .get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:stopTransition"))?;
+            light.clear_transition();
             Ok(())
         });
         // -- transitionProgress --
         /// Returns active transition progress or 1.0 when no transition is active.
         /// @return | number | Transition progress.
         methods.add_method("transitionProgress", |_, this, ()| {
-            Ok(this
-                .transition
-                .borrow()
-                .as_ref()
-                .map(|t| t.progress())
-                .unwrap_or(1.0))
+            let st = this.state.borrow();
+            let light = st
+                .light_world
+                .get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:transitionProgress"))?;
+            Ok(light.transition_progress())
         });
         // -- setCookie --
-        /// Stores a cookie texture path on this Lua light handle.
+        /// Stores a cookie resource path on the authoritative light state. It is not sampled until a renderer supports cookies.
         /// @param | path | string | Cookie texture path.
         methods.add_method("setCookie", |_, this, path: String| {
-            *this.cookie_path.borrow_mut() = Some(path);
+            let path = resource_path("Light:setCookie", "path", path)?;
+            let mut st = this.state.borrow_mut();
+            let light = st
+                .light_world
+                .get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setCookie"))?;
+            light.set_cookie_path(path);
             Ok(())
         });
         // -- getCookie --
-        /// Returns the cookie texture path stored on this Lua light handle.
+        /// Returns the cookie resource path stored on the authoritative light state.
         /// @return | string | Cookie texture path, or nil when absent.
         methods.add_method("getCookie", |_, this, ()| {
-            Ok(this.cookie_path.borrow().clone())
+            let st = this.state.borrow();
+            let light = st
+                .light_world
+                .get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getCookie"))?;
+            Ok(light.get_cookie_path().map(str::to_string))
         });
         // -- clearCookie --
-        /// Clears the cookie texture path stored on this Lua light handle.
+        /// Clears the cookie resource path from the authoritative light state.
         methods.add_method("clearCookie", |_, this, ()| {
-            this.cookie_path.borrow_mut().take();
+            let mut st = this.state.borrow_mut();
+            let light = st
+                .light_world
+                .get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:clearCookie"))?;
+            light.clear_cookie_path();
             Ok(())
         });
         // -- setNormalMap --
         /// Sets the normal map path used by this light.
         /// @param | path | string | Normal map path.
         methods.add_method("setNormalMap", |_, this, path: String| {
+            let path = resource_path("Light:setNormalMap", "path", path)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -1352,9 +1468,13 @@ pub struct LuaOccluder {
 pub(crate) fn lua_occluder_from_occluder(
     state: Rc<RefCell<SharedState>>,
     occluder: Occluder,
-) -> LuaOccluder {
-    let key = state.borrow_mut().light_world.add_occluder(occluder);
-    LuaOccluder { state, key }
+) -> LuaResult<LuaOccluder> {
+    let key = state
+        .borrow_mut()
+        .light_world
+        .add_occluder(occluder)
+        .map_err(LuaError::RuntimeError)?;
+    Ok(LuaOccluder { state, key })
 }
 
 /// Provides Lua methods for editing and inspecting one light occluder.
@@ -1371,7 +1491,8 @@ impl LuaUserData for LuaOccluder {
                 .light_world
                 .get_occluder_mut(this.key)
                 .ok_or_else(|| invalid_occluder("Occluder:setVertices"))?;
-            occ.set_vertices(tmp.vertices);
+            occ.try_set_vertices(tmp.vertices)
+                .map_err(LuaError::RuntimeError)?;
             Ok(())
         });
         // -- getVertices --
@@ -1395,6 +1516,8 @@ impl LuaUserData for LuaOccluder {
         /// @param | x | number | X coordinate.
         /// @param | y | number | Y coordinate.
         methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            let x = finite_f32("Occluder:setPosition", "x", x)?;
+            let y = finite_f32("Occluder:setPosition", "y", y)?;
             let mut st = this.state.borrow_mut();
             let occ = st
                 .light_world
@@ -1528,6 +1651,7 @@ impl LuaUserData for LuaOccluder {
 /// Registers `lurek.light` light-world constructors and global lighting controls.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // --- World shader and construction bindings ---
     let s = state.clone();
     // -- setShader --
     /// Sets or clears the default custom light shader for the light world.
@@ -1582,13 +1706,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     apply_light_opts(&mut light, opts)?;
                 }
                 let mut st = s.borrow_mut();
-                let key = st.light_world.add_light(light);
+                let key = st
+                    .light_world
+                    .try_add_light(light)
+                    .map_err(LuaError::RuntimeError)?;
                 st.light_world.reindex_flickers();
                 Ok(LuaLight {
                     state: s.clone(),
                     key,
-                    transition: RefCell::new(None),
-                    cookie_path: RefCell::new(None),
                 })
             },
         )?,
@@ -1607,7 +1732,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             if let Some(ref opts) = opts {
                 apply_occluder_opts(&mut occ, opts)?;
             }
-            let key = s.borrow_mut().light_world.add_occluder(occ);
+            let key = s
+                .borrow_mut()
+                .light_world
+                .try_add_occluder(occ)
+                .map_err(LuaError::RuntimeError)?;
             Ok(LuaOccluder {
                 state: s.clone(),
                 key,
@@ -1654,7 +1783,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setEnabled",
         lua.create_function(move |_, enabled: bool| {
-            s.borrow_mut().light_world.enabled = enabled;
+            s.borrow_mut().light_world.set_enabled(enabled);
             Ok(())
         })?,
     )?;
@@ -1692,12 +1821,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- setMaxLights --
-    /// Sets the maximum configured light count, clamped to 1 through 256.
+    /// Sets the renderer selection count; values must be 1 through 256.
     /// @param | n | integer | Requested maximum light count.
     tbl.set(
         "setMaxLights",
         lua.create_function(move |_, n: u16| {
-            s.borrow_mut().light_world.max_lights = n.clamp(1, 256);
+            if !(1..=256).contains(&n) {
+                return Err(LuaError::RuntimeError(
+                    "lurek.light.setMaxLights: n must be in 1..=256".into(),
+                ));
+            }
+            s.borrow_mut().light_world.max_lights = n;
             Ok(())
         })?,
     )?;
@@ -1876,11 +2010,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |lua, (width, height): (u32, u32)| {
             let width = positive_u32("lurek.light.drawToImage", "width", width)?;
             let height = positive_u32("lurek.light.drawToImage", "height", height)?;
-            let img = s.borrow().light_world.draw_to_image(width, height);
+            let img = s
+                .borrow()
+                .light_world
+                .try_draw_to_image(width, height)
+                .map_err(LuaError::RuntimeError)?;
             lua.create_userdata(img)
         })?,
     )?;
 
+    let s = state.clone();
     // -- createLightsFromTilefield --
     /// Creates render lights and occluders from `lurek.tilefield` refs and tileset object metadata.
     /// This consumer-owned facade is the canonical integration surface; the tilefield method remains a compatibility alias.
@@ -1889,7 +2028,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | tileset | LTileSet | Tileset with tile object metadata.
     /// @param | opts | table? | `{z?/level?, refIsGid?, originX?, originY?, tileWidth?, tileHeight?}`.
     /// @return | table | `{lights=Llight[], occluders=LOccluder[]}`.
-    let lurek_key = lua.create_registry_value(lurek.clone())?;
     tbl.set(
         "createLightsFromTilefield",
         lua.create_function(
@@ -1900,10 +2038,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 LuaAnyUserData,
                 Option<LuaTable>,
             )| {
-                let root: LuaTable = lua.registry_value(&lurek_key)?;
-                let tilefield: LuaTable = root.get("tilefield")?;
-                let compatibility: LuaFunction = tilefield.get("createLightsFromTileset")?;
-                compatibility.call::<_, LuaTable>((field, slot, tileset, opts))
+                create_lights_from_tileset(
+                    lua,
+                    s.clone(),
+                    field,
+                    slot,
+                    tileset,
+                    opts,
+                    "createLightsFromTilefield",
+                )
             },
         )?,
     )?;

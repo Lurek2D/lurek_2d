@@ -1,15 +1,15 @@
 {
   "meta": {
-    "generated": "2026-07-22T20:33:34.959291+00:00",
+    "generated": "2026-07-23T13:37:58.206447+00:00",
     "generator": "tools/audit/lua_api_test_coverage.py",
     "mode": "hybrid",
     "module_filter": null,
-    "total_api_functions": 7103,
-    "marker_covered": 7076,
-    "describe_covered": 150,
+    "total_api_functions": 7104,
+    "marker_covered": 7077,
+    "describe_covered": 151,
     "describe_coverage_pct": 2.1,
     "heuristic_covered": 0,
-    "total_covered": 7103,
+    "total_covered": 7104,
     "coverage_pct": 100.0
   },
   "modules": {
@@ -47492,14 +47492,14 @@
       ]
     },
     "province": {
-      "total": 67,
-      "marker_covered": 67,
-      "describe_covered": 1,
+      "total": 68,
+      "marker_covered": 68,
+      "describe_covered": 2,
       "heuristic_covered": 0,
-      "covered": 67,
+      "covered": 68,
       "coverage_pct": 100.0,
-      "describe_coverage_pct": 1.5,
-      "describe_score": 0.015,
+      "describe_coverage_pct": 2.9,
+      "describe_score": 0.029,
       "uncovered": [],
       "test_files": [
         "tests/lua/unit/test_province_unit.lua"
@@ -47508,6 +47508,15 @@
         "tests/lua/unit/test_province_unit.lua"
       ],
       "functions": [
+        {
+          "lua_name": "lurek.province.newGrid",
+          "kind": "function",
+          "marker_covered": true,
+          "describe_covered": true,
+          "heuristic_covered": false,
+          "covered": true,
+          "describe_score": 1.0
+        },
         {
           "lua_name": "lurek.province.newFromPng",
           "kind": "function",

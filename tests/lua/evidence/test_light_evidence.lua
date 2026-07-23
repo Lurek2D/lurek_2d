@@ -336,7 +336,9 @@ describe("Evidence: lurek.light scenarios", function()
         lurek.light.setEnabled(true)
         lurek.light.setAmbient(0.02, 0.025, 0.04, 1.0)
 
-        local W, H = 840, 480
+        -- Keep the PCF5 scene beneath the bounded CPU-preview work ceiling:
+        -- 720 × 400 × (4 direct samples + 16 edges × 20 shadow taps) = 93,312,000.
+        local W, H = 720, 400
         local machines = {
             { x = 120, y = 160, w = 70, h = 140, color = { 0.2, 1.0, 0.9, 1.0 }, radius = 180, intensity = 1.3, screen = { 0.3, 1.0, 0.9 } },
             { x = 280, y = 175, w = 65, h = 130, color = { 0.3, 0.4, 1.0, 1.0 }, radius = 160, intensity = 1.2, screen = { 0.4, 0.5, 1.0 } },

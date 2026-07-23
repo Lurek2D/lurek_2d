@@ -5,7 +5,7 @@
 ## TL;DR
 
 - Manages CPU image buffers, PNG texture loading, layered stacks, palette remapping, and atlases.
-- Supports pixel-level effects, nine-slices, compatibility province-grid ingest, and graphical debug visualizations.
+- Supports bounded pixel-level effects, layers, palette mapping, CPU-side atlas preparation, and encoded-byte export.
 
 ## General Info
 
@@ -20,14 +20,14 @@
 ## Summary
 
 - The `image` module is the engine's CPU-side image workbench for users who need pixel data to be loaded, transformed, composed, inspected, compared, and exported under one coherent API.
-- Its role is broader than ordinary file loading. Raw buffers, filters, resizing, layers, palettes, atlas packing, drawing helpers, visualization output, and serialization all live here because real image workflows usually chain several of those operations together.
+- Its role is broader than ordinary file loading. Raw buffers, filters, resizing, layers, palettes, atlas packing, drawing helpers, and serialization all live here because real image workflows usually chain several of those operations together.
 - This breadth matters because many projects need to do image work inside the engine, not only before runtime in an external editor. Asset preparation, theme variation, generated visuals, screenshots, comparison tests, and data extraction can all depend on image processing.
 - Layer support is especially important for tooling and content workflows where staged or partially non-destructive composition is useful.
 - Color and tone operations expand the module into style control, while filter kernels and geometric transforms make it practical for more technical pixel-space workflows such as resampling, blur-like effects, and rotation.
 - Atlas and texture-preparation helpers are critical from a runtime perspective because many images become packed regions, sprite sources, UI textures, or render-ready assets rather than staying as isolated files.
 - This makes the module a bridge between authored content and render consumption. `render` eventually uses the resulting textures, but `image` owns the CPU-side transformations that prepare and validate them.
-- Comparison and diff-style helpers turn the module into a testing and evidence surface, and visualization support makes it useful for diagnostics as well as assets.
-- Visualization support is one of the most distinctive capabilities. Audio analysis, graph structures, easing curves, procedural outputs, camera data, and other runtime information can all be turned into inspectable images, making the module useful for debugging as well as for asset work.
+- Comparison and diff-style helpers turn the module into a testing and evidence surface without making image the owner of cross-domain diagnostics.
+- Image-only drawing and diagnostic output remain useful for debugging, but camera, audio, animation, UI, graph, and procedural domain diagnostics belong to their respective owners.
 - Image data can be a source of gameplay structure, but `image` owns the pixel-domain side of that pipeline. Province-specific id extraction, topology, spans, and polygons are owned by `province`.
 - That two-way relationship is important: `image` is useful both after a visual asset exists and when visual data is being used as input to another system.
 - Serialization and format conversion keep the module connected to the outside world. The same subsystem can move between files, generated runtime state, debugging artifacts, and exported outputs without pushing those conversions into ad hoc helpers.
@@ -36,7 +36,7 @@
 - `render` consumes prepared results, but `image` owns pixel-domain manipulation, inspection, packing, and export before or outside final rendering.
 - Read `image` as the engine's pixel-domain authority for asset prep and tooling.
 
-This module primarily collaborates with `animation`, `camera`, `color`, `math`, `province`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
+This module primarily collaborates with `color`, `math`, `province`, `render`, and `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Ownership
 
@@ -44,16 +44,12 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - Owning tier: `Platform Services`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/image_api.rs`
-- Referenced engine modules: `animation`, `camera`, `color`, `font`, `math`, `province`, `render`, `runtime`
+- Referenced engine modules: `color`, `font`, `render`, `runtime`
 
 ## Imports
 
-- `animation`: Imports or references `src/animation/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
-- `camera`: Imports or references `src/camera/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Foundations`.
 - `font`: Imports or references `src/font/`. Dependency stays inside `Platform Services` and should remain acyclic.
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Platform Services` into `Foundations`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
 - `render`: Imports or references `src/render/`. Dependency stays inside `Platform Services` and should remain acyclic.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Platform Services` into `Core Runtime`.
 
@@ -70,10 +66,11 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ### compressed.rs
 
-- Owns the image compressed implementation for the image subsystem and keeps related runtime rules local here.
-- Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates.
-- Defines how image compressed data is validated, transformed, or stored before neighboring systems consume it.
-- Separates image compressed behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Provides bounded compatibility diagnostics for legacy DDS texture assets.
+- This runtime deliberately has no DDS decode/upload path: PNG-backed `ImageData` is the
+- supported image interchange format. The types below remain only so callers can recognize a
+- DDS magic header and receive a clear migration error. They never expose a usable compressed
+- texture or grant Lua code direct filesystem authority.
 
 ### effects.rs
 
@@ -108,6 +105,11 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - Adds and removes layers while preserving author-facing metadata instead of flattening every edit eagerly.
 - Merges layers through alpha compositing into one ImageData output for downstream save and preview features.
 - Open this owner when layer ordering, visibility, opacity, or flattening output does not match expectations.
+
+### limits.rs
+
+- Defines the resource ceilings shared by CPU image allocation, codecs, and pixel-domain work.
+- Lua-facing image operations always use these conservative defaults; tools may supply explicit limits.
 
 ### mod.rs
 
@@ -156,109 +158,6 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - Parses sRGB and linear color-space labels, rejecting unknown tags before they leak into renderer behavior.
 - Provides alpha premultiplication on RGBA8 bytes for pipelines that expect premultiplied blend semantics.
 - Open this file when texture ingest, color-space tagging, or premultiply handling causes visual mismatches.
-
-### visualization/animation.rs
-
-- Renders animation state into debug images that show frame grids, playback steps, and control-state panels.
-- Highlights the current frame inside generated grids so asset review can spot sequencing mistakes quickly.
-- Builds timeline strips from snapshot indices, making playback history visible without a live renderer.
-- Draws run, idle, pause, resume, and summary labels so screenshot-based tests can verify animation states.
-- Open this file when animation debug imagery is wrong even though the underlying Animation data is correct.
-
-### visualization/audio.rs
-
-- Turns mono and stereo sample arrays into waveform images for debugging audio content and UI visualizers.
-- Normalizes peak amplitude per render so quiet and loud sources stay readable on the same plotting surface.
-- Draws baseline guides, channel separators, and bounds frames to make timing and clipping easy to inspect.
-- Supports a zoomed waveform mode that interpolates early samples for transient-focused signal inspection.
-- Provides a labeled colored strip renderer for HUD or tool previews that need lightweight waveform graphics.
-- Open this owner when waveform scaling, channel layout, or sample-to-pixel mapping looks visually wrong.
-
-### visualization/camera.rs
-
-- Produces camera-debug images that visualize viewport framing, zoom, follow logic, rotation, and shake.
-- Draws world grids, viewport rectangles, and center markers so camera position and scale stay inspectable.
-- Builds zoom-comparison panels that reveal how viewport size changes across multiple authored zoom values.
-- Renders rotated point sets through Camera2D transforms to expose world-to-screen mapping behavior clearly.
-- Shows bounds lists, follow trails, targets, dead zones, and shake traces inside standalone image reports.
-- Includes wrapper helpers that package the same camera diagnostics under alternative call shapes for tests.
-- Depends on Camera2D and ImageData only, keeping these visual probes separate from runtime scene rendering.
-- Open this file when camera visualization is misleading or when movement diagnostics need new image evidence.
-
-### visualization/easing.rs
-
-- Renders easing and Bezier diagnostics into charts so motion curves can be inspected without live playback.
-- Builds multi-panel galleries and shared comparison graphs for side-by-side evaluation of easing behavior.
-- Plots arbitrary curve callbacks onto raster images, making this the owner for sampled chart generation.
-- Visualizes Bezier control points, segments, derivatives, and edits using the math Bezier runtime directly.
-- Supports advanced screenshots that show interpolation angle and length for curve-editing regression checks.
-- Open this file when motion-curve images are wrong or when new charting views are needed for animation work.
-
-### visualization/facade.rs
-
-- Provides the shared HSV-to-RGB helper used by visualization modules that need stable debug color palettes.
-- Keeps hue conversion local to the image-visualization layer so callers do not duplicate color-wheel math.
-- Open this tiny owner when visualization colors drift or when a new debug view needs HSV-based swatches.
-
-### visualization/geometry.rs
-
-- Renders geometry demonstrations into images for validating rasterized shapes and math helper behavior.
-- Draws polygon galleries, spirals, and filled primitive samples so tool output can prove drawing basics.
-- Uses math helpers like convex hull, centroids, Bresenham lines, and angles to create visual test fixtures.
-- Shows segment, circle, and line intersections with explicit markers so spatial edge cases stay inspectable.
-- Keeps geometry visualization separate from math implementations, making screenshots a consumer not an owner.
-- Open this file when geometry proof images are wrong even though lower-level math functions may still pass.
-
-### visualization/graph.rs
-
-- Renders graph and flow diagrams into images with nodes, edges, labels, and summary text overlays.
-- Shows active and removed edges separately so topology edits or diff states remain visible in one snapshot.
-- Draws item-flow arrows and moving payload markers for logic demos that need graph-like status imagery.
-- Keeps graph visualization lightweight by consuming plain positions, colors, and labels instead of graph types.
-- Open this owner when graph screenshots need layout or styling fixes without changing the source simulation.
-
-### visualization/image_ops.rs
-
-- Builds composite images that compare source variants, transform grids, and color-wheel style references.
-- Places labeled inputs side by side so image-processing deltas can be checked in one exported frame.
-- Generates a four-column transform grid showing original, inverted, grayscale, and tinted sample outputs.
-- Renders an HSV wheel directly into pixels, making this a general visualization helper for color debugging.
-- Open this file when comparison layouts or operation showcase images need changes for docs or regression art.
-
-### visualization/mod.rs
-
-- Exports the image-visualization surface that groups debug renderers for animation, audio, camera, and UI.
-- Acts as the index for raster helpers that turn engine data into screenshots and proof images for tooling.
-- Re-exports the facade helper internally so sibling visualization files can share one HSV color conversion.
-- Points readers to geometry, graph, image-op, noise, and procgen views instead of mixing those concerns here.
-- Keeps visualization module visibility centralized, which makes spec generation and ownership tracing simpler.
-- Open this file first when adding a new debug image module or when public visualization exports must change.
-- This index owns composition of visualization helpers rather than the sampled drawing logic inside each file.
-- Use it to see the complete visualization feature set before editing a specific owner like camera or audio.
-
-### visualization/noise.rs
-
-- Turns scalar noise functions and cached height arrays into grayscale or terrain-colored diagnostic images.
-- Supports normalized and raw grayscale views so callers can compare clamped terrain input against source data.
-- Applies biome-style color bands for water, shore, land, and snow to make threshold decisions immediately visible.
-- Builds side-by-side comparison strips from multiple maps, which is useful for tuning frequency and persistence.
-- Open this file when noise previews, elevation coloring, or map-to-pixel conversion look inconsistent.
-
-### visualization/procgen.rs
-
-- Visualizes procedural-generation structures such as cellular grids, dungeons, Voronoi cells, and Delaunay meshes.
-- Renders occupancy grids with caller-supplied colors so automata and map-carving stages stay easy to inspect.
-- Draws point clouds and colored samples without extra graph types, keeping procgen debug output lightweight.
-- Uses HSV-derived edge colors for triangulation views so adjacent triangles remain readable in dense outputs.
-- Open this file when procgen screenshots are wrong or when a new generator needs a quick image proof helper.
-
-### visualization/ui.rs
-
-- Renders UI mockups and HUD previews into images for layout checks, screenshots, and documentation examples.
-- Builds a settings-style panel with labels, toggles, sliders, progress bars, swatches, and action buttons.
-- Draws gameplay HUD bars for health, mana, stamina, experience, and cooldown states with readable labels.
-- Keeps presentation experiments local to image tooling so UI visuals can evolve without touching runtime widgets.
-- Open this file when mock panel composition or HUD status imagery needs adjustment for tests or docs.
 
 
 
@@ -558,6 +457,9 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ## Notes
 
-- `lurek.image.newProvinceGrid` remains a compatibility facade for image-origin province data. Canonical province region semantics belong to `province`.
-- DDS compressed texture decode is intentionally not part of this runtime build. `isCompressed` can still detect DDS headers for migration/diagnostics, but game textures should load through PNG-backed `newImageData`.
+- `lurek.province.newGrid` is the canonical GameFS-backed constructor for province id grids. `lurek.image.newProvinceGrid` remains a compatibility facade for image-origin content and delegates to the same bounded province adapter; migrate new code to `lurek.province.newGrid`.
+- Lua image construction, codecs, callbacks, frames, layers, and byte exports use `ImageLimits`; oversized dimensions, encoded input, decompression output, aggregate state, or pixel work fail before allocation or iteration.
+- Lua save operations encode bounded bytes and write through GameFS atomically. Normal output is restricted to `save/`; the engine's approved `tests/artifacts/current/` evidence root is available to test runs through the same checked atomic writer. Host paths, traversal, and direct filesystem writes are not image responsibilities.
+- Callback pixel mapping is transactional: if a callback fails, the original image remains unchanged. Image bytes are straight RGBA; callers own any color-space or premultiplied-alpha conversion policy.
+- DDS compressed texture decode is intentionally not part of this runtime build. `isCompressed` can still detect DDS headers for migration/diagnostics, but game textures should load through PNG-backed `newImageData`. Legacy DDS diagnostics enforce the same encoded-byte ceiling before reading or returning the unsupported-format error.
 - `ImageData:applyShader` and `lurek.image.requestShader` accept `target = "image"` WGSL shaders and run an off-screen render-owned GPU pass that reads RGBA8 pixels back into `ImageData`.

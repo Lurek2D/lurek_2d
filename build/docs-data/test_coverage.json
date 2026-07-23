@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 7771,
-    "covered": 4527,
-    "uncovered": 3244,
-    "coverage_pct": 58.3,
+    "total": 7748,
+    "covered": 4492,
+    "uncovered": 3256,
+    "coverage_pct": 58.0,
     "covered_items": [
       {
         "module": "agent",
@@ -2305,12 +2305,6 @@
       },
       {
         "module": "awareness",
-        "name": "AwarenessFlags::intersect",
-        "file": "src/awareness/flags.rs",
-        "line": 43
-      },
-      {
-        "module": "awareness",
         "name": "AwarenessFlags::count",
         "file": "src/awareness/flags.rs",
         "line": 48
@@ -3808,12 +3802,6 @@
         "name": "Color::mix",
         "file": "src/color/color_core.rs",
         "line": 252
-      },
-      {
-        "module": "color",
-        "name": "hsv_to_rgb",
-        "file": "src/color/color_core.rs",
-        "line": 271
       },
       {
         "module": "color",
@@ -8691,523 +8679,553 @@
         "module": "image",
         "name": "CompressedFormat::as_str",
         "file": "src/image/compressed.rs",
-        "line": 29
+        "line": 36
       },
       {
         "module": "image",
         "name": "CompressedImageData::from_dds",
         "file": "src/image/compressed.rs",
-        "line": 56
+        "line": 67
       },
       {
         "module": "image",
         "name": "CompressedImageData::get_dimensions",
         "file": "src/image/compressed.rs",
-        "line": 62
+        "line": 76
       },
       {
         "module": "image",
         "name": "CompressedImageData::get_mipmap_count",
         "file": "src/image/compressed.rs",
-        "line": 66
+        "line": 80
       },
       {
         "module": "image",
         "name": "CompressedImageData::get_format",
         "file": "src/image/compressed.rs",
-        "line": 70
+        "line": 84
       },
       {
         "module": "image",
         "name": "CompressedImageData::is_dds_magic",
         "file": "src/image/compressed.rs",
-        "line": 74
+        "line": 88
       },
       {
         "module": "image",
         "name": "CompressedImageData::from_file",
         "file": "src/image/compressed.rs",
-        "line": 78
+        "line": 95
       },
       {
         "module": "image",
         "name": "CompressedImageData::is_dds_file",
         "file": "src/image/compressed.rs",
-        "line": 84
+        "line": 110
       },
       {
         "module": "image",
         "name": "ResizeFilter::parse",
         "file": "src/image/effects.rs",
-        "line": 61
+        "line": 69
       },
       {
         "module": "image",
         "name": "ImageData::brightness",
         "file": "src/image/effects.rs",
-        "line": 168
+        "line": 176
       },
       {
         "module": "image",
         "name": "ImageData::contrast",
         "file": "src/image/effects.rs",
-        "line": 177
+        "line": 185
       },
       {
         "module": "image",
         "name": "ImageData::saturation",
         "file": "src/image/effects.rs",
-        "line": 184
+        "line": 192
       },
       {
         "module": "image",
         "name": "ImageData::gamma",
         "file": "src/image/effects.rs",
-        "line": 192
+        "line": 200
       },
       {
         "module": "image",
         "name": "ImageData::tint",
         "file": "src/image/effects.rs",
-        "line": 203
+        "line": 211
       },
       {
         "module": "image",
         "name": "ImageData::grayscale",
         "file": "src/image/effects.rs",
-        "line": 212
+        "line": 220
       },
       {
         "module": "image",
         "name": "ImageData::sepia",
         "file": "src/image/effects.rs",
-        "line": 219
+        "line": 227
       },
       {
         "module": "image",
         "name": "ImageData::invert",
         "file": "src/image/effects.rs",
-        "line": 231
+        "line": 239
       },
       {
         "module": "image",
         "name": "ImageData::threshold",
         "file": "src/image/effects.rs",
-        "line": 235
+        "line": 243
       },
       {
         "module": "image",
         "name": "ImageData::posterize",
         "file": "src/image/effects.rs",
-        "line": 243
+        "line": 251
       },
       {
         "module": "image",
         "name": "ImageData::fill",
         "file": "src/image/effects.rs",
-        "line": 252
+        "line": 260
       },
       {
         "module": "image",
         "name": "ImageData::noise",
         "file": "src/image/effects.rs",
-        "line": 256
+        "line": 264
       },
       {
         "module": "image",
         "name": "ImageData::alpha_mask",
         "file": "src/image/effects.rs",
-        "line": 281
+        "line": 289
       },
       {
         "module": "image",
         "name": "ImageData::levels",
         "file": "src/image/effects.rs",
-        "line": 307
+        "line": 315
       },
       {
         "module": "image",
         "name": "ImageData::flip_horizontal",
         "file": "src/image/effects.rs",
-        "line": 322
+        "line": 330
       },
       {
         "module": "image",
         "name": "ImageData::flip_vertical",
         "file": "src/image/effects.rs",
-        "line": 338
+        "line": 346
       },
       {
         "module": "image",
         "name": "ImageData::rotate_90_cw",
         "file": "src/image/effects.rs",
-        "line": 350
+        "line": 358
       },
       {
         "module": "image",
         "name": "ImageData::crop",
         "file": "src/image/effects.rs",
-        "line": 368
+        "line": 376
       },
       {
         "module": "image",
         "name": "ImageData::resize_nearest",
         "file": "src/image/effects.rs",
-        "line": 382
+        "line": 390
       },
       {
         "module": "image",
         "name": "ImageData::blur",
         "file": "src/image/effects.rs",
-        "line": 400
+        "line": 408
       },
       {
         "module": "image",
         "name": "ImageData::motion_blur",
         "file": "src/image/effects.rs",
-        "line": 479
+        "line": 487
       },
       {
         "module": "image",
         "name": "ImageData::normal_map",
         "file": "src/image/effects.rs",
-        "line": 505
+        "line": 513
       },
       {
         "module": "image",
         "name": "ImageData::glow",
         "file": "src/image/effects.rs",
-        "line": 576
+        "line": 584
       },
       {
         "module": "image",
         "name": "ImageData::dither",
         "file": "src/image/effects.rs",
-        "line": 594
+        "line": 602
       },
       {
         "module": "image",
         "name": "ImageData::sharpen",
         "file": "src/image/effects.rs",
-        "line": 609
+        "line": 617
       },
       {
         "module": "image",
         "name": "ImageData::resize",
         "file": "src/image/effects.rs",
-        "line": 637
+        "line": 645
       },
       {
         "module": "image",
         "name": "ImageData::resize_with_filter",
         "file": "src/image/effects.rs",
-        "line": 641
+        "line": 649
       },
       {
         "module": "image",
         "name": "ImageData::blit",
         "file": "src/image/effects.rs",
-        "line": 741
+        "line": 749
       },
       {
         "module": "image",
         "name": "ImageData::draw_nine_slice",
         "file": "src/image/effects.rs",
-        "line": 803
+        "line": 811
       },
       {
         "module": "image",
         "name": "ImageData::get_region",
         "file": "src/image/effects.rs",
-        "line": 942
+        "line": 950
       },
       {
         "module": "image",
         "name": "ImageData::diff",
         "file": "src/image/effects.rs",
-        "line": 957
+        "line": 965
       },
       {
         "module": "image",
         "name": "ImageData::try_new",
         "file": "src/image/image_data.rs",
-        "line": 44
+        "line": 36
+      },
+      {
+        "module": "image",
+        "name": "ImageData::try_new_with_limits",
+        "file": "src/image/image_data.rs",
+        "line": 40
       },
       {
         "module": "image",
         "name": "ImageData::new",
         "file": "src/image/image_data.rs",
-        "line": 53
+        "line": 61
       },
       {
         "module": "image",
         "name": "ImageData::from_file",
         "file": "src/image/image_data.rs",
-        "line": 57
+        "line": 65
       },
       {
         "module": "image",
         "name": "ImageData::from_bytes",
         "file": "src/image/image_data.rs",
-        "line": 83
+        "line": 111
+      },
+      {
+        "module": "image",
+        "name": "ImageData::from_bytes_with_limits",
+        "file": "src/image/image_data.rs",
+        "line": 115
       },
       {
         "module": "image",
         "name": "ImageData::width",
         "file": "src/image/image_data.rs",
-        "line": 108
+        "line": 145
       },
       {
         "module": "image",
         "name": "ImageData::height",
         "file": "src/image/image_data.rs",
-        "line": 112
+        "line": 149
       },
       {
         "module": "image",
         "name": "ImageData::dimensions",
         "file": "src/image/image_data.rs",
-        "line": 116
+        "line": 153
       },
       {
         "module": "image",
         "name": "ImageData::get_pixel",
         "file": "src/image/image_data.rs",
-        "line": 120
+        "line": 157
       },
       {
         "module": "image",
         "name": "ImageData::set_pixel",
         "file": "src/image/image_data.rs",
-        "line": 133
+        "line": 172
       },
       {
         "module": "image",
         "name": "ImageData::paste",
         "file": "src/image/image_data.rs",
-        "line": 145
+        "line": 184
       },
       {
         "module": "image",
         "name": "ImageData::map_pixel",
         "file": "src/image/image_data.rs",
-        "line": 159
+        "line": 198
+      },
+      {
+        "module": "image",
+        "name": "ImageData::map_pixel_transactional",
+        "file": "src/image/image_data.rs",
+        "line": 218
       },
       {
         "module": "image",
         "name": "ImageData::draw_rect",
         "file": "src/image/image_data.rs",
-        "line": 180
+        "line": 241
       },
       {
         "module": "image",
         "name": "ImageData::draw_circle",
         "file": "src/image/image_data.rs",
-        "line": 193
+        "line": 254
       },
       {
         "module": "image",
         "name": "ImageData::draw_line",
         "file": "src/image/image_data.rs",
-        "line": 212
+        "line": 273
       },
       {
         "module": "image",
         "name": "ImageData::draw_label",
         "file": "src/image/image_data.rs",
-        "line": 239
+        "line": 306
       },
       {
         "module": "image",
         "name": "ImageData::encode_png",
         "file": "src/image/image_data.rs",
-        "line": 542
+        "line": 609
       },
       {
         "module": "image",
         "name": "ImageData::as_bytes",
         "file": "src/image/image_data.rs",
-        "line": 555
+        "line": 623
       },
       {
         "module": "image",
         "name": "ImageData::get_string",
         "file": "src/image/image_data.rs",
-        "line": 563
+        "line": 631
       },
       {
         "module": "image",
         "name": "ImageData::set_raw_data",
         "file": "src/image/image_data.rs",
-        "line": 567
+        "line": 635
       },
       {
         "module": "image",
         "name": "ImageData::map_pixel_par",
         "file": "src/image/image_data.rs",
-        "line": 583
+        "line": 651
       },
       {
         "module": "image",
         "name": "ImageLayer::new",
         "file": "src/image/layers.rs",
-        "line": 22
+        "line": 26
       },
       {
         "module": "image",
         "name": "LayeredImage::new",
         "file": "src/image/layers.rs",
-        "line": 43
+        "line": 51
       },
       {
         "module": "image",
         "name": "LayeredImage::width",
         "file": "src/image/layers.rs",
-        "line": 51
+        "line": 59
       },
       {
         "module": "image",
         "name": "LayeredImage::height",
         "file": "src/image/layers.rs",
-        "line": 55
+        "line": 63
       },
       {
         "module": "image",
         "name": "LayeredImage::layer_count",
         "file": "src/image/layers.rs",
-        "line": 59
+        "line": 67
       },
       {
         "module": "image",
         "name": "LayeredImage::add_layer",
         "file": "src/image/layers.rs",
-        "line": 63
+        "line": 71
       },
       {
         "module": "image",
         "name": "LayeredImage::remove_layer",
         "file": "src/image/layers.rs",
-        "line": 69
+        "line": 77
       },
       {
         "module": "image",
         "name": "LayeredImage::get_layer",
         "file": "src/image/layers.rs",
-        "line": 77
+        "line": 85
       },
       {
         "module": "image",
         "name": "LayeredImage::get_layer_mut",
         "file": "src/image/layers.rs",
-        "line": 81
+        "line": 89
       },
       {
         "module": "image",
         "name": "LayeredImage::set_opacity",
         "file": "src/image/layers.rs",
-        "line": 85
+        "line": 93
       },
       {
         "module": "image",
         "name": "LayeredImage::set_visible",
         "file": "src/image/layers.rs",
-        "line": 94
+        "line": 105
       },
       {
         "module": "image",
         "name": "LayeredImage::set_name",
         "file": "src/image/layers.rs",
-        "line": 103
+        "line": 114
       },
       {
         "module": "image",
         "name": "LayeredImage::set_layer_image",
         "file": "src/image/layers.rs",
-        "line": 112
+        "line": 123
       },
       {
         "module": "image",
         "name": "LayeredImage::swap_layers",
         "file": "src/image/layers.rs",
-        "line": 127
+        "line": 138
       },
       {
         "module": "image",
         "name": "LayeredImage::move_layer",
         "file": "src/image/layers.rs",
-        "line": 136
+        "line": 147
       },
       {
         "module": "image",
         "name": "LayeredImage::merge",
         "file": "src/image/layers.rs",
-        "line": 146
+        "line": 157
+      },
+      {
+        "module": "image",
+        "name": "ImageLimits::rgba_bytes",
+        "file": "src/image/limits.rs",
+        "line": 61
+      },
+      {
+        "module": "image",
+        "name": "ImageLimits::work",
+        "file": "src/image/limits.rs",
+        "line": 99
       },
       {
         "module": "image",
         "name": "PaletteLUT::new",
         "file": "src/image/palette_lut.rs",
-        "line": 19
+        "line": 23
       },
       {
         "module": "image",
         "name": "PaletteLUT::set_color",
         "file": "src/image/palette_lut.rs",
-        "line": 30
+        "line": 34
       },
       {
         "module": "image",
         "name": "PaletteLUT::get_to_color",
         "file": "src/image/palette_lut.rs",
-        "line": 43
+        "line": 47
       },
       {
         "module": "image",
         "name": "PaletteLUT::clear",
         "file": "src/image/palette_lut.rs",
-        "line": 47
+        "line": 51
       },
       {
         "module": "image",
         "name": "PaletteLUT::cycle_to_colors",
         "file": "src/image/palette_lut.rs",
-        "line": 52
+        "line": 56
       },
       {
         "module": "image",
         "name": "PaletteLUT::apply",
         "file": "src/image/palette_lut.rs",
-        "line": 64
+        "line": 68
       },
       {
         "module": "image",
         "name": "RectPacker::new",
         "file": "src/image/rect_packing.rs",
-        "line": 49
+        "line": 57
       },
       {
         "module": "image",
         "name": "RectPacker::pack",
         "file": "src/image/rect_packing.rs",
-        "line": 59
+        "line": 67
       },
       {
         "module": "image",
         "name": "RectPacker::clear",
         "file": "src/image/rect_packing.rs",
-        "line": 108
+        "line": 119
       },
       {
         "module": "image",
         "name": "RectPacker::size",
         "file": "src/image/rect_packing.rs",
-        "line": 130
+        "line": 141
       },
       {
         "module": "image",
         "name": "RectPacker::padding",
         "file": "src/image/rect_packing.rs",
-        "line": 134
+        "line": 145
       },
       {
         "module": "image",
@@ -9225,385 +9243,91 @@
         "module": "image",
         "name": "save_image",
         "file": "src/image/serial.rs",
-        "line": 23
+        "line": 24
       },
       {
         "module": "image",
         "name": "load_image",
         "file": "src/image/serial.rs",
-        "line": 28
+        "line": 29
       },
       {
         "module": "image",
         "name": "load_image_from_bytes",
         "file": "src/image/serial.rs",
-        "line": 33
+        "line": 34
       },
       {
         "module": "image",
         "name": "save_layered",
         "file": "src/image/serial.rs",
-        "line": 44
+        "line": 45
       },
       {
         "module": "image",
         "name": "load_layered",
         "file": "src/image/serial.rs",
-        "line": 49
+        "line": 50
       },
       {
         "module": "image",
         "name": "load_layered_from_bytes",
         "file": "src/image/serial.rs",
-        "line": 54
+        "line": 55
       },
       {
         "module": "image",
         "name": "encode_flat",
         "file": "src/image/serial.rs",
-        "line": 119
+        "line": 135
       },
       {
         "module": "image",
         "name": "decode_flat",
         "file": "src/image/serial.rs",
-        "line": 128
+        "line": 145
       },
       {
         "module": "image",
         "name": "parse_header",
         "file": "src/image/serial.rs",
-        "line": 254
+        "line": 305
       },
       {
         "module": "image",
         "name": "premultiply_alpha_rgba8_in_place",
         "file": "src/image/texture.rs",
-        "line": 32
+        "line": 40
       },
       {
         "module": "image",
         "name": "Texture::parse_color_space",
         "file": "src/image/texture.rs",
-        "line": 42
+        "line": 50
       },
       {
         "module": "image",
         "name": "Texture::load",
         "file": "src/image/texture.rs",
-        "line": 50
+        "line": 58
       },
       {
         "module": "image",
         "name": "Texture::load_with_color_space",
         "file": "src/image/texture.rs",
-        "line": 57
+        "line": 65
       },
       {
         "module": "image",
         "name": "Texture::from_rgba",
         "file": "src/image/texture.rs",
-        "line": 79
+        "line": 86
       },
       {
         "module": "image",
         "name": "Texture::from_rgba_with_color_space",
         "file": "src/image/texture.rs",
-        "line": 88
-      },
-      {
-        "module": "image",
-        "name": "draw_animation_frame_grid_to_image",
-        "file": "src/image/visualization/animation.rs",
-        "line": 10
-      },
-      {
-        "module": "image",
-        "name": "draw_animation_playback_to_image",
-        "file": "src/image/visualization/animation.rs",
-        "line": 50
-      },
-      {
-        "module": "image",
-        "name": "animation_playback_control_to_image",
-        "file": "src/image/visualization/animation.rs",
-        "line": 86
-      },
-      {
-        "module": "image",
-        "name": "draw_animation_to_image",
-        "file": "src/image/visualization/animation.rs",
-        "line": 147
-      },
-      {
-        "module": "image",
-        "name": "waveform_to_image",
-        "file": "src/image/visualization/audio.rs",
-        "line": 10
-      },
-      {
-        "module": "image",
-        "name": "waveform_stereo_to_image",
-        "file": "src/image/visualization/audio.rs",
-        "line": 76
-      },
-      {
-        "module": "image",
-        "name": "waveform_zoomed_to_image",
-        "file": "src/image/visualization/audio.rs",
-        "line": 138
-      },
-      {
-        "module": "image",
-        "name": "draw_sound_waveform_to_image",
-        "file": "src/image/visualization/audio.rs",
-        "line": 214
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_debug_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 14
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_zoom_comparison_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 61
-      },
-      {
-        "module": "image",
-        "name": "camera_rotation_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 101
-      },
-      {
-        "module": "image",
-        "name": "camera_bounds_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 163
-      },
-      {
-        "module": "image",
-        "name": "camera_follow_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 190
-      },
-      {
-        "module": "image",
-        "name": "camera_shake_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 240
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_rotation_grid_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 287
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_bounds_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 348
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_follow_trail_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 375
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_shake_trail_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 422
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_to_image",
-        "file": "src/image/visualization/camera.rs",
-        "line": 472
-      },
-      {
-        "module": "image",
-        "name": "easing_gallery_to_image",
-        "file": "src/image/visualization/easing.rs",
-        "line": 10
-      },
-      {
-        "module": "image",
-        "name": "easing_comparison_to_image",
-        "file": "src/image/visualization/easing.rs",
-        "line": 48
-      },
-      {
-        "module": "image",
-        "name": "bezier_curves_to_image",
-        "file": "src/image/visualization/easing.rs",
-        "line": 77
-      },
-      {
-        "module": "image",
-        "name": "draw_bezier_advanced_to_image",
-        "file": "src/image/visualization/easing.rs",
-        "line": 123
-      },
-      {
-        "module": "image",
-        "name": "hsv_to_rgb_viz",
-        "file": "src/image/visualization/facade.rs",
-        "line": 6
-      },
-      {
-        "module": "image",
-        "name": "polygon_gallery_to_image",
-        "file": "src/image/visualization/geometry.rs",
-        "line": 12
-      },
-      {
-        "module": "image",
-        "name": "spiral_to_image",
-        "file": "src/image/visualization/geometry.rs",
-        "line": 73
-      },
-      {
-        "module": "image",
-        "name": "filled_primitives_to_image",
-        "file": "src/image/visualization/geometry.rs",
-        "line": 94
-      },
-      {
-        "module": "image",
-        "name": "draw_geometry_shapes_to_image",
-        "file": "src/image/visualization/geometry.rs",
-        "line": 124
-      },
-      {
-        "module": "image",
-        "name": "draw_geometry_intersections_to_image",
-        "file": "src/image/visualization/geometry.rs",
-        "line": 211
-      },
-      {
-        "module": "image",
-        "name": "draw_graph_operations_to_image",
-        "file": "src/image/visualization/graph.rs",
-        "line": 10
-      },
-      {
-        "module": "image",
-        "name": "draw_graph_item_flow_to_image",
-        "file": "src/image/visualization/graph.rs",
-        "line": 56
-      },
-      {
-        "module": "image",
-        "name": "draw_image_comparison_to_image",
-        "file": "src/image/visualization/image_ops.rs",
-        "line": 10
-      },
-      {
-        "module": "image",
-        "name": "draw_pixel_transform_grid_to_image",
-        "file": "src/image/visualization/image_ops.rs",
-        "line": 46
-      },
-      {
-        "module": "image",
-        "name": "draw_color_wheel_to_image",
-        "file": "src/image/visualization/image_ops.rs",
-        "line": 96
-      },
-      {
-        "module": "image",
-        "name": "noise_to_image",
-        "file": "src/image/visualization/noise.rs",
-        "line": 9
-      },
-      {
-        "module": "image",
-        "name": "noise_raw_to_image",
-        "file": "src/image/visualization/noise.rs",
-        "line": 26
-      },
-      {
-        "module": "image",
-        "name": "noise_terrain_to_image",
-        "file": "src/image/visualization/noise.rs",
-        "line": 43
-      },
-      {
-        "module": "image",
-        "name": "heightmap_to_image",
-        "file": "src/image/visualization/noise.rs",
-        "line": 73
-      },
-      {
-        "module": "image",
-        "name": "terrain_elevation_to_image",
-        "file": "src/image/visualization/noise.rs",
-        "line": 114
-      },
-      {
-        "module": "image",
-        "name": "noise_map_to_image",
-        "file": "src/image/visualization/noise.rs",
-        "line": 141
-      },
-      {
-        "module": "image",
-        "name": "noise_comparison_to_image",
-        "file": "src/image/visualization/noise.rs",
-        "line": 153
-      },
-      {
-        "module": "image",
-        "name": "cellular_grid_to_image",
-        "file": "src/image/visualization/procgen.rs",
-        "line": 10
-      },
-      {
-        "module": "image",
-        "name": "voronoi_to_image",
-        "file": "src/image/visualization/procgen.rs",
-        "line": 33
-      },
-      {
-        "module": "image",
-        "name": "points_to_image",
-        "file": "src/image/visualization/procgen.rs",
-        "line": 50
-      },
-      {
-        "module": "image",
-        "name": "dungeon_grid_to_image",
-        "file": "src/image/visualization/procgen.rs",
-        "line": 67
-      },
-      {
-        "module": "image",
-        "name": "colored_points_to_image",
-        "file": "src/image/visualization/procgen.rs",
-        "line": 92
-      },
-      {
-        "module": "image",
-        "name": "draw_delaunay_to_image",
-        "file": "src/image/visualization/procgen.rs",
-        "line": 106
-      },
-      {
-        "module": "image",
-        "name": "panel_layout_to_image",
-        "file": "src/image/visualization/ui.rs",
-        "line": 9
-      },
-      {
-        "module": "image",
-        "name": "hud_bars_to_image",
-        "file": "src/image/visualization/ui.rs",
-        "line": 102
+        "line": 95
       },
       {
         "module": "input",
@@ -10803,295 +10527,385 @@
         "module": "light",
         "name": "Attenuation::new",
         "file": "src/light/attenuation.rs",
-        "line": 19
+        "line": 20
       },
       {
         "module": "light",
         "name": "Attenuation::factor",
         "file": "src/light/attenuation.rs",
-        "line": 27
+        "line": 28
+      },
+      {
+        "module": "light",
+        "name": "draw",
+        "file": "src/light/debug_image.rs",
+        "line": 17
       },
       {
         "module": "light",
         "name": "FlickerConfig::new",
         "file": "src/light/flicker.rs",
-        "line": 20
+        "line": 21
       },
       {
         "module": "light",
         "name": "FlickerConfig::multiplier",
         "file": "src/light/flicker.rs",
-        "line": 29
+        "line": 30
       },
       {
         "module": "light",
         "name": "FlickerConfig::advance",
         "file": "src/light/flicker.rs",
-        "line": 37
+        "line": 38
       },
       {
         "module": "light",
         "name": "Light2D::new",
         "file": "src/light/light2d.rs",
-        "line": 144
+        "line": 154
       },
       {
         "module": "light",
         "name": "Light2D::set_position",
         "file": "src/light/light2d.rs",
-        "line": 177
+        "line": 190
       },
       {
         "module": "light",
         "name": "Light2D::get_position",
         "file": "src/light/light2d.rs",
-        "line": 183
+        "line": 196
       },
       {
         "module": "light",
         "name": "Light2D::get_radius",
         "file": "src/light/light2d.rs",
-        "line": 192
+        "line": 205
       },
       {
         "module": "light",
         "name": "Light2D::set_color",
         "file": "src/light/light2d.rs",
-        "line": 196
+        "line": 209
       },
       {
         "module": "light",
         "name": "Light2D::set_intensity",
         "file": "src/light/light2d.rs",
-        "line": 204
+        "line": 217
       },
       {
         "module": "light",
         "name": "Light2D::set_enabled",
         "file": "src/light/light2d.rs",
-        "line": 212
+        "line": 225
       },
       {
         "module": "light",
         "name": "Light2D::set_shadow_enabled",
         "file": "src/light/light2d.rs",
-        "line": 244
+        "line": 257
       },
       {
         "module": "light",
         "name": "Light2D::set_shadow_softness",
         "file": "src/light/light2d.rs",
-        "line": 276
+        "line": 289
       },
       {
         "module": "light",
         "name": "Light2D::get_shadow_softness",
         "file": "src/light/light2d.rs",
-        "line": 280
+        "line": 293
       },
       {
         "module": "light",
         "name": "Light2D::set_light_mask",
         "file": "src/light/light2d.rs",
-        "line": 284
+        "line": 297
       },
       {
         "module": "light",
         "name": "Light2D::set_direction",
         "file": "src/light/light2d.rs",
-        "line": 308
+        "line": 321
       },
       {
         "module": "light",
         "name": "Light2D::get_direction",
         "file": "src/light/light2d.rs",
-        "line": 312
+        "line": 325
       },
       {
         "module": "light",
         "name": "Light2D::flicker_mut",
         "file": "src/light/light2d.rs",
-        "line": 340
+        "line": 353
       },
       {
         "module": "light",
         "name": "Light2D::flicker",
         "file": "src/light/light2d.rs",
-        "line": 344
+        "line": 357
       },
       {
         "module": "light",
         "name": "Light2D::set_normal_map_path",
         "file": "src/light/light2d.rs",
-        "line": 364
+        "line": 377
       },
       {
         "module": "light",
         "name": "Light2D::clear_normal_map_path",
         "file": "src/light/light2d.rs",
-        "line": 368
+        "line": 381
       },
       {
         "module": "light",
         "name": "Light2D::get_normal_map_path",
         "file": "src/light/light2d.rs",
-        "line": 372
+        "line": 385
+      },
+      {
+        "module": "light",
+        "name": "Light2D::set_cookie_path",
+        "file": "src/light/light2d.rs",
+        "line": 389
+      },
+      {
+        "module": "light",
+        "name": "Light2D::clear_cookie_path",
+        "file": "src/light/light2d.rs",
+        "line": 393
+      },
+      {
+        "module": "light",
+        "name": "Light2D::get_cookie_path",
+        "file": "src/light/light2d.rs",
+        "line": 397
+      },
+      {
+        "module": "light",
+        "name": "Light2D::start_transition",
+        "file": "src/light/light2d.rs",
+        "line": 401
+      },
+      {
+        "module": "light",
+        "name": "Light2D::advance_transition",
+        "file": "src/light/light2d.rs",
+        "line": 419
+      },
+      {
+        "module": "light",
+        "name": "Light2D::clear_transition",
+        "file": "src/light/light2d.rs",
+        "line": 431
+      },
+      {
+        "module": "light",
+        "name": "Light2D::transition_progress",
+        "file": "src/light/light2d.rs",
+        "line": 435
       },
       {
         "module": "light",
         "name": "Light2D::set_normal_strength",
         "file": "src/light/light2d.rs",
-        "line": 376
+        "line": 441
       },
       {
         "module": "light",
         "name": "Light2D::get_normal_strength",
         "file": "src/light/light2d.rs",
-        "line": 380
+        "line": 445
       },
       {
         "module": "light",
         "name": "LightWorld::new",
         "file": "src/light/light_world.rs",
-        "line": 92
+        "line": 64
       },
       {
         "module": "light",
         "name": "LightWorld::add_light",
         "file": "src/light/light_world.rs",
-        "line": 106
+        "line": 81
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::try_add_light",
+        "file": "src/light/light_world.rs",
+        "line": 107
       },
       {
         "module": "light",
         "name": "LightWorld::add_occluder",
         "file": "src/light/light_world.rs",
-        "line": 116
+        "line": 111
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::try_add_occluder",
+        "file": "src/light/light_world.rs",
+        "line": 141
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::remove_light",
+        "file": "src/light/light_world.rs",
+        "line": 145
       },
       {
         "module": "light",
         "name": "LightWorld::get_light",
         "file": "src/light/light_world.rs",
-        "line": 129
+        "line": 154
       },
       {
         "module": "light",
         "name": "LightWorld::get_light_mut",
         "file": "src/light/light_world.rs",
-        "line": 133
+        "line": 158
       },
       {
         "module": "light",
         "name": "LightWorld::get_occluder",
         "file": "src/light/light_world.rs",
-        "line": 138
+        "line": 163
       },
       {
         "module": "light",
         "name": "LightWorld::get_occluder_mut",
         "file": "src/light/light_world.rs",
-        "line": 142
+        "line": 167
       },
       {
         "module": "light",
         "name": "LightWorld::light_count",
         "file": "src/light/light_world.rs",
-        "line": 146
+        "line": 171
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::set_enabled",
+        "file": "src/light/light_world.rs",
+        "line": 175
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::occluder_count",
+        "file": "src/light/light_world.rs",
+        "line": 180
       },
       {
         "module": "light",
         "name": "LightWorld::clear",
         "file": "src/light/light_world.rs",
-        "line": 154
+        "line": 184
       },
       {
         "module": "light",
         "name": "LightWorld::has_active_lights",
         "file": "src/light/light_world.rs",
-        "line": 162
+        "line": 193
       },
       {
         "module": "light",
         "name": "LightWorld::advance_flickers",
         "file": "src/light/light_world.rs",
-        "line": 197
+        "line": 228
       },
       {
         "module": "light",
         "name": "LightWorld::reindex_flickers",
         "file": "src/light/light_world.rs",
-        "line": 216
+        "line": 247
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::selected_render_lights",
+        "file": "src/light/light_world.rs",
+        "line": 257
       },
       {
         "module": "light",
         "name": "LightWorld::draw_to_image",
         "file": "src/light/light_world.rs",
-        "line": 226
+        "line": 268
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::try_draw_to_image",
+        "file": "src/light/light_world.rs",
+        "line": 282
       },
       {
         "module": "light",
         "name": "LightWorld::normal_map_light_hints",
         "file": "src/light/light_world.rs",
-        "line": 340
+        "line": 333
       },
       {
         "module": "light",
-        "name": "Occluder::new",
+        "name": "Occluder::try_new",
         "file": "src/light/occluder.rs",
-        "line": 26
+        "line": 27
       },
       {
         "module": "light",
         "name": "Occluder::set_position",
         "file": "src/light/occluder.rs",
-        "line": 69
+        "line": 63
       },
       {
         "module": "light",
         "name": "Occluder::get_position",
         "file": "src/light/occluder.rs",
-        "line": 76
+        "line": 70
       },
       {
         "module": "light",
         "name": "Occluder::set_opacity",
         "file": "src/light/occluder.rs",
-        "line": 80
+        "line": 74
       },
       {
         "module": "light",
         "name": "Occluder::set_light_mask",
         "file": "src/light/occluder.rs",
-        "line": 88
+        "line": 82
       },
       {
         "module": "light",
         "name": "Occluder::set_enabled",
         "file": "src/light/occluder.rs",
-        "line": 96
+        "line": 90
       },
       {
         "module": "light",
         "name": "Occluder::edge_generation",
         "file": "src/light/occluder.rs",
-        "line": 105
+        "line": 99
       },
       {
         "module": "light",
         "name": "LightTransition::new",
         "file": "src/light/transition.rs",
-        "line": 30
+        "line": 31
       },
       {
         "module": "light",
         "name": "LightTransition::update",
         "file": "src/light/transition.rs",
-        "line": 52
+        "line": 53
       },
       {
         "module": "light",
         "name": "LightTransition::progress",
         "file": "src/light/transition.rs",
-        "line": 77
+        "line": 78
       },
       {
         "module": "log",
@@ -11625,7 +11439,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/image_api.rs",
-        "line": 807
+        "line": 862
       },
       {
         "module": "lua_api",
@@ -11649,7 +11463,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/light_api.rs",
-        "line": 1529
+        "line": 1652
       },
       {
         "module": "lua_api",
@@ -11919,7 +11733,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/province_api.rs",
-        "line": 2363
+        "line": 2388
       },
       {
         "module": "lua_api",
@@ -12021,7 +11835,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3695
+        "line": 3796
       },
       {
         "module": "lua_api",
@@ -13084,12 +12898,6 @@
         "name": "Rect::contains",
         "file": "src/math/rect.rs",
         "line": 44
-      },
-      {
-        "module": "math",
-        "name": "Rect::intersect",
-        "file": "src/math/rect.rs",
-        "line": 60
       },
       {
         "module": "math",
@@ -19855,12 +19663,6 @@
       },
       {
         "module": "province",
-        "name": "ProvinceGrid::province_spans",
-        "file": "src/province/province_grid.rs",
-        "line": 148
-      },
-      {
-        "module": "province",
         "name": "ProvinceGrid::border_segments",
         "file": "src/province/province_grid.rs",
         "line": 172
@@ -19876,18 +19678,6 @@
         "name": "ProvinceGrid::province_polygons_simplified",
         "file": "src/province/province_grid.rs",
         "line": 291
-      },
-      {
-        "module": "province",
-        "name": "ProvinceGrid::serialize_shape_data",
-        "file": "src/province/province_grid.rs",
-        "line": 617
-      },
-      {
-        "module": "province",
-        "name": "ProvinceGrid::deserialize_shape_data",
-        "file": "src/province/province_grid.rs",
-        "line": 647
       },
       {
         "module": "province",
@@ -23103,55 +22893,55 @@
         "module": "sprite",
         "name": "TextureAtlas::new",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 60
+        "line": 52
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::pack",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 70
+        "line": 66
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::pack_with_nine_slice",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 74
+        "line": 70
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::set_nine_slice",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 131
+        "line": 102
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::get_region",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 144
+        "line": 117
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::get_region_count",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 148
+        "line": 121
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::get_dimensions",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 152
+        "line": 125
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::get_regions",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 156
+        "line": 129
       },
       {
         "module": "sprite",
         "name": "TextureAtlas::clear",
         "file": "src/sprite/texture_atlas.rs",
-        "line": 160
+        "line": 133
       },
       {
         "module": "svg",
@@ -29733,6 +29523,12 @@
       },
       {
         "module": "awareness",
+        "name": "AwarenessFlags::intersect",
+        "file": "src/awareness/flags.rs",
+        "line": 43
+      },
+      {
+        "module": "awareness",
         "name": "AwarenessGrid::get_fog_intensity",
         "file": "src/awareness/grid.rs",
         "line": 103
@@ -30906,6 +30702,12 @@
         "name": "Color::with_alpha",
         "file": "src/color/color_core.rs",
         "line": 227
+      },
+      {
+        "module": "color",
+        "name": "hsv_to_rgb",
+        "file": "src/color/color_core.rs",
+        "line": 271
       },
       {
         "module": "color",
@@ -34685,127 +34487,145 @@
         "module": "image",
         "name": "encode_gif",
         "file": "src/image/animated_gif.rs",
-        "line": 108
+        "line": 139
       },
       {
         "module": "image",
         "name": "decode_gif",
         "file": "src/image/animated_gif.rs",
-        "line": 140
+        "line": 172
       },
       {
         "module": "image",
         "name": "load_gif",
         "file": "src/image/animated_gif.rs",
-        "line": 186
+        "line": 245
       },
       {
         "module": "image",
         "name": "save_gif",
         "file": "src/image/animated_gif.rs",
-        "line": 193
+        "line": 252
       },
       {
         "module": "image",
         "name": "ImageData::apply_effect_named",
         "file": "src/image/effects.rs",
-        "line": 95
+        "line": 103
       },
       {
         "module": "image",
         "name": "ImageData::apply_mask_image",
         "file": "src/image/effects.rs",
-        "line": 141
+        "line": 149
       },
       {
         "module": "image",
         "name": "ImageData::transform_image",
         "file": "src/image/effects.rs",
-        "line": 160
+        "line": 168
       },
       {
         "module": "image",
         "name": "ImageData::invert_alpha",
         "file": "src/image/effects.rs",
-        "line": 288
+        "line": 296
       },
       {
         "module": "image",
         "name": "ImageData::auto_level",
         "file": "src/image/effects.rs",
-        "line": 292
+        "line": 300
       },
       {
         "module": "image",
         "name": "ImageData::median",
         "file": "src/image/effects.rs",
-        "line": 448
+        "line": 456
       },
       {
         "module": "image",
         "name": "ImageData::drop_shadow",
         "file": "src/image/effects.rs",
-        "line": 528
+        "line": 536
       },
       {
         "module": "image",
         "name": "ImageData::outline",
         "file": "src/image/effects.rs",
-        "line": 545
+        "line": 553
       },
       {
         "module": "image",
         "name": "ImageData::convolve",
         "file": "src/image/effects.rs",
-        "line": 986
+        "line": 994
       },
       {
         "module": "image",
         "name": "ImageData::rgba_byte_len",
         "file": "src/image/image_data.rs",
-        "line": 26
+        "line": 32
       },
       {
         "module": "image",
         "name": "ImageData::from_encoded_bytes",
         "file": "src/image/image_data.rs",
-        "line": 70
+        "line": 77
+      },
+      {
+        "module": "image",
+        "name": "ImageData::from_encoded_bytes_with_limits",
+        "file": "src/image/image_data.rs",
+        "line": 81
       },
       {
         "module": "image",
         "name": "ImageData::draw_text_with_font",
         "file": "src/image/image_data.rs",
-        "line": 466
+        "line": 533
       },
       {
         "module": "image",
         "name": "ImageData::as_mut_bytes",
         "file": "src/image/image_data.rs",
-        "line": 559
+        "line": 627
+      },
+      {
+        "module": "image",
+        "name": "ImageLimits::encoded_bytes",
+        "file": "src/image/limits.rs",
+        "line": 113
       },
       {
         "module": "image",
         "name": "PaletteLUT::get_color_count",
         "file": "src/image/palette_lut.rs",
-        "line": 26
+        "line": 30
       },
       {
         "module": "image",
         "name": "PaletteLUT::get_from_color",
         "file": "src/image/palette_lut.rs",
-        "line": 39
+        "line": 43
       },
       {
         "module": "image",
         "name": "RectPacker::packed_rects",
         "file": "src/image/rect_packing.rs",
-        "line": 113
+        "line": 124
       },
       {
         "module": "image",
         "name": "RectPacker::occupancy",
         "file": "src/image/rect_packing.rs",
-        "line": 117
+        "line": 128
+      },
+      {
+        "module": "image",
+        "name": "encode_layered",
+        "file": "src/image/serial.rs",
+        "line": 169
       },
       {
         "module": "input",
@@ -35279,227 +35099,215 @@
         "module": "light",
         "name": "Attenuation::draw_attenuation_curves_to_image",
         "file": "src/light/attenuation.rs",
-        "line": 36
+        "line": 37
       },
       {
         "module": "light",
         "name": "Light2D::set_radius",
         "file": "src/light/light2d.rs",
-        "line": 187
+        "line": 200
       },
       {
         "module": "light",
         "name": "Light2D::get_color",
         "file": "src/light/light2d.rs",
-        "line": 200
+        "line": 213
       },
       {
         "module": "light",
         "name": "Light2D::get_intensity",
         "file": "src/light/light2d.rs",
-        "line": 208
+        "line": 221
       },
       {
         "module": "light",
         "name": "Light2D::is_enabled",
         "file": "src/light/light2d.rs",
-        "line": 216
+        "line": 229
       },
       {
         "module": "light",
         "name": "Light2D::set_energy",
         "file": "src/light/light2d.rs",
-        "line": 220
+        "line": 233
       },
       {
         "module": "light",
         "name": "Light2D::get_energy",
         "file": "src/light/light2d.rs",
-        "line": 224
+        "line": 237
       },
       {
         "module": "light",
         "name": "Light2D::set_blend_mode",
         "file": "src/light/light2d.rs",
-        "line": 228
+        "line": 241
       },
       {
         "module": "light",
         "name": "Light2D::get_blend_mode",
         "file": "src/light/light2d.rs",
-        "line": 232
+        "line": 245
       },
       {
         "module": "light",
         "name": "Light2D::set_falloff",
         "file": "src/light/light2d.rs",
-        "line": 236
+        "line": 249
       },
       {
         "module": "light",
         "name": "Light2D::get_falloff",
         "file": "src/light/light2d.rs",
-        "line": 240
+        "line": 253
       },
       {
         "module": "light",
         "name": "Light2D::is_shadow_enabled",
         "file": "src/light/light2d.rs",
-        "line": 248
+        "line": 261
       },
       {
         "module": "light",
         "name": "Light2D::set_shadow_color",
         "file": "src/light/light2d.rs",
-        "line": 252
+        "line": 265
       },
       {
         "module": "light",
         "name": "Light2D::get_shadow_color",
         "file": "src/light/light2d.rs",
-        "line": 256
+        "line": 269
       },
       {
         "module": "light",
         "name": "Light2D::set_shadow_filter",
         "file": "src/light/light2d.rs",
-        "line": 260
+        "line": 273
       },
       {
         "module": "light",
         "name": "Light2D::get_shadow_filter",
         "file": "src/light/light2d.rs",
-        "line": 264
+        "line": 277
       },
       {
         "module": "light",
         "name": "Light2D::set_shadow_smooth",
         "file": "src/light/light2d.rs",
-        "line": 268
+        "line": 281
       },
       {
         "module": "light",
         "name": "Light2D::get_shadow_smooth",
         "file": "src/light/light2d.rs",
-        "line": 272
+        "line": 285
       },
       {
         "module": "light",
         "name": "Light2D::get_light_mask",
         "file": "src/light/light2d.rs",
-        "line": 288
+        "line": 301
       },
       {
         "module": "light",
         "name": "Light2D::set_shadow_mask",
         "file": "src/light/light2d.rs",
-        "line": 292
+        "line": 305
       },
       {
         "module": "light",
         "name": "Light2D::get_shadow_mask",
         "file": "src/light/light2d.rs",
-        "line": 296
+        "line": 309
       },
       {
         "module": "light",
         "name": "Light2D::set_light_type",
         "file": "src/light/light2d.rs",
-        "line": 300
+        "line": 313
       },
       {
         "module": "light",
         "name": "Light2D::get_light_type",
         "file": "src/light/light2d.rs",
-        "line": 304
+        "line": 317
       },
       {
         "module": "light",
         "name": "Light2D::set_inner_angle",
         "file": "src/light/light2d.rs",
-        "line": 316
+        "line": 329
       },
       {
         "module": "light",
         "name": "Light2D::get_inner_angle",
         "file": "src/light/light2d.rs",
-        "line": 320
+        "line": 333
       },
       {
         "module": "light",
         "name": "Light2D::set_outer_angle",
         "file": "src/light/light2d.rs",
-        "line": 324
+        "line": 337
       },
       {
         "module": "light",
         "name": "Light2D::get_outer_angle",
         "file": "src/light/light2d.rs",
-        "line": 328
+        "line": 341
       },
       {
         "module": "light",
         "name": "Light2D::set_attenuation",
         "file": "src/light/light2d.rs",
-        "line": 332
+        "line": 345
       },
       {
         "module": "light",
         "name": "Light2D::get_attenuation",
         "file": "src/light/light2d.rs",
-        "line": 336
+        "line": 349
       },
       {
         "module": "light",
         "name": "Light2D::set_group_id",
         "file": "src/light/light2d.rs",
-        "line": 348
+        "line": 361
       },
       {
         "module": "light",
         "name": "Light2D::get_group_id",
         "file": "src/light/light2d.rs",
-        "line": 352
+        "line": 365
       },
       {
         "module": "light",
         "name": "Light2D::set_volumetric",
         "file": "src/light/light2d.rs",
-        "line": 356
+        "line": 369
       },
       {
         "module": "light",
         "name": "Light2D::is_volumetric",
         "file": "src/light/light2d.rs",
-        "line": 360
+        "line": 373
       },
       {
         "module": "light",
         "name": "Light2D::apply_options_patch",
         "file": "src/light/light2d.rs",
-        "line": 385
+        "line": 450
       },
       {
         "module": "light",
         "name": "Light2D::draw_falloff_comparison_to_image",
         "file": "src/light/light2d.rs",
-        "line": 473
-      },
-      {
-        "module": "light",
-        "name": "LightWorld::remove_light",
-        "file": "src/light/light_world.rs",
-        "line": 120
+        "line": 538
       },
       {
         "module": "light",
         "name": "LightWorld::remove_occluder",
-        "file": "src/light/light_world.rs",
-        "line": 125
-      },
-      {
-        "module": "light",
-        "name": "LightWorld::occluder_count",
         "file": "src/light/light_world.rs",
         "line": 150
       },
@@ -35507,73 +35315,91 @@
         "module": "light",
         "name": "LightWorld::set_group_enabled",
         "file": "src/light/light_world.rs",
-        "line": 166
+        "line": 197
       },
       {
         "module": "light",
         "name": "LightWorld::set_group_intensity",
         "file": "src/light/light_world.rs",
-        "line": 174
+        "line": 205
       },
       {
         "module": "light",
         "name": "LightWorld::set_group_color",
         "file": "src/light/light_world.rs",
-        "line": 182
+        "line": 213
       },
       {
         "module": "light",
         "name": "LightWorld::group_count",
         "file": "src/light/light_world.rs",
-        "line": 190
+        "line": 221
       },
       {
         "module": "light",
         "name": "LightWorld::ambient_color_hint",
         "file": "src/light/light_world.rs",
-        "line": 323
+        "line": 306
       },
       {
         "module": "light",
         "name": "LightWorld::directional_light_hints",
         "file": "src/light/light_world.rs",
-        "line": 332
+        "line": 315
       },
       {
         "module": "light",
-        "name": "Occluder::set_vertices",
+        "name": "LightWorld::write_directional_light_hints",
+        "file": "src/light/light_world.rs",
+        "line": 321
+      },
+      {
+        "module": "light",
+        "name": "LightWorld::write_normal_map_light_hints",
+        "file": "src/light/light_world.rs",
+        "line": 339
+      },
+      {
+        "module": "light",
+        "name": "LightLimits::check_preview",
+        "file": "src/light/limits.rs",
+        "line": 43
+      },
+      {
+        "module": "light",
+        "name": "Occluder::try_set_vertices",
         "file": "src/light/occluder.rs",
-        "line": 42
+        "line": 39
       },
       {
         "module": "light",
         "name": "Occluder::from_flat_coords",
         "file": "src/light/occluder.rs",
-        "line": 54
+        "line": 48
       },
       {
         "module": "light",
         "name": "Occluder::get_vertices",
         "file": "src/light/occluder.rs",
-        "line": 65
+        "line": 59
       },
       {
         "module": "light",
         "name": "Occluder::get_opacity",
         "file": "src/light/occluder.rs",
-        "line": 84
+        "line": 78
       },
       {
         "module": "light",
         "name": "Occluder::get_light_mask",
         "file": "src/light/occluder.rs",
-        "line": 92
+        "line": 86
       },
       {
         "module": "light",
         "name": "Occluder::is_enabled",
         "file": "src/light/occluder.rs",
-        "line": 100
+        "line": 94
       },
       {
         "module": "log",
@@ -35891,13 +35717,13 @@
         "module": "lua_api",
         "name": "lua_light_from_light",
         "file": "src/lua_api/light_api.rs",
-        "line": 421
+        "line": 518
       },
       {
         "module": "lua_api",
         "name": "lua_occluder_from_occluder",
         "file": "src/lua_api/light_api.rs",
-        "line": 1352
+        "line": 1468
       },
       {
         "module": "lua_api",
@@ -36027,9 +35853,15 @@
       },
       {
         "module": "lua_api",
+        "name": "new_grid_from_gamefs",
+        "file": "src/lua_api/province_api.rs",
+        "line": 51
+      },
+      {
+        "module": "lua_api",
         "name": "LuaProvinceRegistry::with_registry",
         "file": "src/lua_api/province_api.rs",
-        "line": 601
+        "line": 626
       },
       {
         "module": "lua_api",
@@ -36054,6 +35886,12 @@
         "name": "field_from_provider",
         "file": "src/lua_api/tilefield_api.rs",
         "line": 852
+      },
+      {
+        "module": "lua_api",
+        "name": "create_lights_from_tileset",
+        "file": "src/lua_api/tilefield_api.rs",
+        "line": 1369
       },
       {
         "module": "lua_api",
@@ -36936,6 +36774,12 @@
         "name": "Rect::intersects",
         "file": "src/math/rect.rs",
         "line": 52
+      },
+      {
+        "module": "math",
+        "name": "Rect::intersect",
+        "file": "src/math/rect.rs",
+        "line": 60
       },
       {
         "module": "math",
@@ -41463,9 +41307,27 @@
       },
       {
         "module": "province",
+        "name": "ProvinceGrid::province_spans",
+        "file": "src/province/province_grid.rs",
+        "line": 148
+      },
+      {
+        "module": "province",
         "name": "ProvinceGrid::build_shape_cache",
         "file": "src/province/province_grid.rs",
         "line": 303
+      },
+      {
+        "module": "province",
+        "name": "ProvinceGrid::serialize_shape_data",
+        "file": "src/province/province_grid.rs",
+        "line": 617
+      },
+      {
+        "module": "province",
+        "name": "ProvinceGrid::deserialize_shape_data",
+        "file": "src/province/province_grid.rs",
+        "line": 647
       },
       {
         "module": "province",
@@ -46636,8 +46498,8 @@
     ]
   },
   "lua": {
-    "total": 7103,
-    "covered": 7103,
+    "total": 7104,
+    "covered": 7104,
     "uncovered": 0,
     "coverage_pct": 100.0,
     "covered_items": [
@@ -64146,826 +64008,826 @@
         "lua_name": "LProvinceGrid:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 195
+        "line": 223
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 199
+        "line": 227
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getAt",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 205
+        "line": 233
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:provinceCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 211
+        "line": 239
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:adjacencies",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 220
+        "line": 248
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:provinceSpans",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 241
+        "line": 269
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:borderSegments",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 266
+        "line": 294
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getPolygons",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 292
+        "line": 320
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:getPolygonsSimplified",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 323
+        "line": 351
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:drawShapes",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 357
+        "line": 385
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 430
+        "line": 458
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 435
+        "line": 463
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:serializeShapeData",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 441
+        "line": 469
       },
       {
         "module": "image",
         "lua_name": "LProvinceGrid:deserializeShapeData",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 449
+        "line": 477
       },
       {
         "module": "image",
         "lua_name": "LAnimatedImage:frameCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 507
+        "line": 535
       },
       {
         "module": "image",
         "lua_name": "LAnimatedImage:getFrame",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 512
+        "line": 540
       },
       {
         "module": "image",
         "lua_name": "LAnimatedImage:getDuration",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 525
+        "line": 553
       },
       {
         "module": "image",
         "lua_name": "LAnimatedImage:getFrames",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 537
+        "line": 565
       },
       {
         "module": "image",
         "lua_name": "LAnimatedImage:getDurations",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 547
+        "line": 575
       },
       {
         "module": "image",
         "lua_name": "LAnimatedImage:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 557
+        "line": 585
       },
       {
         "module": "image",
         "lua_name": "LAnimatedImage:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 562
+        "line": 590
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 578
+        "line": 608
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 582
+        "line": 612
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:layerCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 586
+        "line": 616
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:addLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 591
+        "line": 621
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:removeLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 600
+        "line": 643
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 610
+        "line": 653
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 624
+        "line": 667
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getOpacity",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 640
+        "line": 683
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setOpacity",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 654
+        "line": 697
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:isVisible",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 664
+        "line": 708
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setVisible",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 678
+        "line": 722
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:getName",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 688
+        "line": 732
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:setName",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 702
+        "line": 746
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:swapLayers",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 713
+        "line": 763
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:moveLayer",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 724
+        "line": 774
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:merge",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 736
+        "line": 786
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:save",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 742
+        "line": 792
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 748
+        "line": 803
       },
       {
         "module": "image",
         "lua_name": "LLayeredImage:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 753
+        "line": 808
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 769
+        "line": 824
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 773
+        "line": 828
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getDimensions",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 778
+        "line": 833
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getMipmapCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 784
+        "line": 839
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:getFormat",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 790
+        "line": 845
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 796
+        "line": 851
       },
       {
         "module": "image",
         "lua_name": "LCompressedImageData:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 801
+        "line": 856
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newImageData",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 815
+        "line": 871
       },
       {
         "module": "image",
         "lua_name": "lurek.image.requestShader",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 854
+        "line": 910
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newImageDataFromBytes",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 884
+        "line": 940
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newCompressedData",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 900
+        "line": 958
       },
       {
         "module": "image",
         "lua_name": "lurek.image.isCompressed",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 920
+        "line": 978
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newLayeredImage",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 935
+        "line": 994
       },
       {
         "module": "image",
         "lua_name": "lurek.image.saveImage",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 951
+        "line": 1011
       },
       {
         "module": "image",
         "lua_name": "lurek.image.savePNG",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 969
+        "line": 1029
       },
       {
         "module": "image",
         "lua_name": "lurek.image.saveGIF",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 989
+        "line": 1048
       },
       {
         "module": "image",
         "lua_name": "lurek.image.loadImage",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 1016
+        "line": 1078
       },
       {
         "module": "image",
         "lua_name": "lurek.image.loadAnimated",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 1034
+        "line": 1096
       },
       {
         "module": "image",
         "lua_name": "lurek.image.loadLayered",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 1065
+        "line": 1127
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newPaletteLut",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 1081
+        "line": 1146
       },
       {
         "module": "image",
         "lua_name": "lurek.image.newProvinceGrid",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 1094
+        "line": 1159
       },
       {
         "module": "image",
         "lua_name": "lurek.image.fromScreen",
         "kind": "function",
         "file": "src/lua_api/image_api.rs",
-        "line": 1113
+        "line": 1169
       },
       {
         "module": "image",
         "lua_name": "LImageData:getWidth",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1135
+        "line": 1191
       },
       {
         "module": "image",
         "lua_name": "LImageData:getHeight",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1139
+        "line": 1195
       },
       {
         "module": "image",
         "lua_name": "LImageData:getDimensions",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1144
+        "line": 1200
       },
       {
         "module": "image",
         "lua_name": "LImageData:clone",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1151
+        "line": 1207
       },
       {
         "module": "image",
         "lua_name": "LImageData:copyRegion",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1159
+        "line": 1215
       },
       {
         "module": "image",
         "lua_name": "LImageData:applyEffect",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1173
+        "line": 1229
       },
       {
         "module": "image",
         "lua_name": "LImageData:applyEffects",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1206
+        "line": 1262
       },
       {
         "module": "image",
         "lua_name": "LImageData:applyShader",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1255
+        "line": 1332
       },
       {
         "module": "image",
         "lua_name": "LImageData:applyMask",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1284
+        "line": 1361
       },
       {
         "module": "image",
         "lua_name": "LImageData:transform",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1292
+        "line": 1369
       },
       {
         "module": "image",
         "lua_name": "LImageData:getPixel",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1307
+        "line": 1384
       },
       {
         "module": "image",
         "lua_name": "LImageData:setPixel",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1326
+        "line": 1403
       },
       {
         "module": "image",
         "lua_name": "LImageData:encode",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1346
+        "line": 1423
       },
       {
         "module": "image",
         "lua_name": "LImageData:getString",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1356
+        "line": 1433
       },
       {
         "module": "image",
         "lua_name": "LImageData:mapPixel",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1360
+        "line": 1440
       },
       {
         "module": "image",
         "lua_name": "LImageData:brightness",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1379
+        "line": 1459
       },
       {
         "module": "image",
         "lua_name": "LImageData:contrast",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1386
+        "line": 1466
       },
       {
         "module": "image",
         "lua_name": "LImageData:saturation",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1393
+        "line": 1473
       },
       {
         "module": "image",
         "lua_name": "LImageData:gamma",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1400
+        "line": 1480
       },
       {
         "module": "image",
         "lua_name": "LImageData:tint",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1410
+        "line": 1490
       },
       {
         "module": "image",
         "lua_name": "LImageData:grayscale",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1419
+        "line": 1504
       },
       {
         "module": "image",
         "lua_name": "LImageData:sepia",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1425
+        "line": 1510
       },
       {
         "module": "image",
         "lua_name": "LImageData:invert",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1431
+        "line": 1516
       },
       {
         "module": "image",
         "lua_name": "LImageData:threshold",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1438
+        "line": 1523
       },
       {
         "module": "image",
         "lua_name": "LImageData:posterize",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1445
+        "line": 1530
       },
       {
         "module": "image",
         "lua_name": "LImageData:fill",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1455
+        "line": 1540
       },
       {
         "module": "image",
         "lua_name": "LImageData:noise",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1462
+        "line": 1547
       },
       {
         "module": "image",
         "lua_name": "LImageData:alphaMask",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1469
+        "line": 1554
       },
       {
         "module": "image",
         "lua_name": "LImageData:flipHorizontal",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1475
+        "line": 1560
       },
       {
         "module": "image",
         "lua_name": "LImageData:flipVertical",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1481
+        "line": 1566
       },
       {
         "module": "image",
         "lua_name": "LImageData:rotate90cw",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1488
+        "line": 1573
       },
       {
         "module": "image",
         "lua_name": "LImageData:crop",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1498
+        "line": 1583
       },
       {
         "module": "image",
         "lua_name": "LImageData:resizeNearest",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1518
+        "line": 1603
       },
       {
         "module": "image",
         "lua_name": "LImageData:blur",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1525
+        "line": 1610
       },
       {
         "module": "image",
         "lua_name": "LImageData:sharpen",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1531
+        "line": 1616
       },
       {
         "module": "image",
         "lua_name": "LImageData:drawRect",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1544
+        "line": 1629
       },
       {
         "module": "image",
         "lua_name": "LImageData:drawCircle",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1560
+        "line": 1645
       },
       {
         "module": "image",
         "lua_name": "LImageData:drawLine",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1577
+        "line": 1662
       },
       {
         "module": "image",
         "lua_name": "LImageData:resize",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1590
+        "line": 1676
       },
       {
         "module": "image",
         "lua_name": "LImageData:blit",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1636
+        "line": 1722
       },
       {
         "module": "image",
         "lua_name": "LImageData:getRegion",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1651
+        "line": 1737
       },
       {
         "module": "image",
         "lua_name": "LImageData:getRawBytes",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1661
+        "line": 1747
       },
       {
         "module": "image",
         "lua_name": "LImageData:diff",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1668
+        "line": 1755
       },
       {
         "module": "image",
         "lua_name": "LImageData:mapPixels",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1675
+        "line": 1762
       },
       {
         "module": "image",
         "lua_name": "LImageData:convolve",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1693
+        "line": 1780
       },
       {
         "module": "image",
         "lua_name": "LImageData:applyPaletteLut",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1710
+        "line": 1821
       },
       {
         "module": "image",
         "lua_name": "LImageData:setRawData",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1718
+        "line": 1829
       },
       {
         "module": "image",
         "lua_name": "LImageData:paste",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1727
+        "line": 1838
       },
       {
         "module": "image",
         "lua_name": "LImageData:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1738
+        "line": 1849
       },
       {
         "module": "image",
         "lua_name": "LImageData:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1743
+        "line": 1854
       },
       {
         "module": "image",
         "lua_name": "LPaletteLUT:setColor",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1766
+        "line": 1877
       },
       {
         "module": "image",
         "lua_name": "LPaletteLUT:getColorCount",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1790
+        "line": 1908
       },
       {
         "module": "image",
         "lua_name": "LPaletteLUT:clear",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1795
+        "line": 1913
       },
       {
         "module": "image",
         "lua_name": "LPaletteLUT:cycle",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1802
+        "line": 1920
       },
       {
         "module": "image",
         "lua_name": "LPaletteLUT:type",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1809
+        "line": 1927
       },
       {
         "module": "image",
         "lua_name": "LPaletteLUT:typeOf",
         "kind": "method",
         "file": "src/lua_api/image_api.rs",
-        "line": 1814
+        "line": 1932
       },
       {
         "module": "input",
@@ -66862,728 +66724,728 @@
         "lua_name": "LLight:setPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 441
+        "line": 539
       },
       {
         "module": "light",
         "lua_name": "LLight:getPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 454
+        "line": 554
       },
       {
         "module": "light",
         "lua_name": "LLight:setRadius",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 465
+        "line": 565
       },
       {
         "module": "light",
         "lua_name": "LLight:getRadius",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 478
+        "line": 578
       },
       {
         "module": "light",
         "lua_name": "LLight:setColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 492
+        "line": 592
       },
       {
         "module": "light",
         "lua_name": "LLight:getColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 514
+        "line": 614
       },
       {
         "module": "light",
         "lua_name": "LLight:setIntensity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 526
+        "line": 626
       },
       {
         "module": "light",
         "lua_name": "LLight:getIntensity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 539
+        "line": 639
       },
       {
         "module": "light",
         "lua_name": "LLight:setEnergy",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 550
+        "line": 650
       },
       {
         "module": "light",
         "lua_name": "LLight:getEnergy",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 562
+        "line": 662
       },
       {
         "module": "light",
         "lua_name": "LLight:setBlendMode",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 573
+        "line": 673
       },
       {
         "module": "light",
         "lua_name": "LLight:getBlendMode",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 586
+        "line": 686
       },
       {
         "module": "light",
         "lua_name": "LLight:setFalloff",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 597
+        "line": 697
       },
       {
         "module": "light",
         "lua_name": "LLight:getFalloff",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 610
+        "line": 710
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 621
+        "line": 721
       },
       {
         "module": "light",
         "lua_name": "LLight:isShadowEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 633
+        "line": 733
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 647
+        "line": 747
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowColor",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 665
+        "line": 765
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowFilter",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 677
+        "line": 777
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowFilter",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 690
+        "line": 790
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowSmooth",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 701
+        "line": 801
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowSmooth",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 713
+        "line": 814
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowSoftness",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 724
+        "line": 825
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowSoftness",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 737
+        "line": 838
       },
       {
         "module": "light",
         "lua_name": "LLight:setLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 748
+        "line": 849
       },
       {
         "module": "light",
         "lua_name": "LLight:getLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 760
+        "line": 861
       },
       {
         "module": "light",
         "lua_name": "LLight:setShadowMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 771
+        "line": 872
       },
       {
         "module": "light",
         "lua_name": "LLight:getShadowMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 783
+        "line": 884
       },
       {
         "module": "light",
         "lua_name": "LLight:setEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 794
+        "line": 895
       },
       {
         "module": "light",
         "lua_name": "LLight:isEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 806
+        "line": 907
       },
       {
         "module": "light",
         "lua_name": "LLight:setLightType",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 817
+        "line": 918
       },
       {
         "module": "light",
         "lua_name": "LLight:getLightType",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 830
+        "line": 931
       },
       {
         "module": "light",
         "lua_name": "LLight:setDirection",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 841
+        "line": 942
       },
       {
         "module": "light",
         "lua_name": "LLight:getDirection",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 853
+        "line": 955
       },
       {
         "module": "light",
         "lua_name": "LLight:setInnerAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 864
+        "line": 966
       },
       {
         "module": "light",
         "lua_name": "LLight:getInnerAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 876
+        "line": 980
       },
       {
         "module": "light",
         "lua_name": "LLight:setOuterAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 887
+        "line": 991
       },
       {
         "module": "light",
         "lua_name": "LLight:getOuterAngle",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 899
+        "line": 1005
       },
       {
         "module": "light",
         "lua_name": "LLight:setAttenuation",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 912
+        "line": 1018
       },
       {
         "module": "light",
         "lua_name": "LLight:getAttenuation",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 926
+        "line": 1035
       },
       {
         "module": "light",
         "lua_name": "LLight:setFlicker",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 939
+        "line": 1048
       },
       {
         "module": "light",
         "lua_name": "LLight:getFlicker",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 957
+        "line": 1066
       },
       {
         "module": "light",
         "lua_name": "LLight:setFlickerEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 969
+        "line": 1078
       },
       {
         "module": "light",
         "lua_name": "LLight:isFlickerEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 984
+        "line": 1093
       },
       {
         "module": "light",
         "lua_name": "LLight:setGroupId",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 995
+        "line": 1104
       },
       {
         "module": "light",
         "lua_name": "LLight:getGroupId",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1007
+        "line": 1116
       },
       {
         "module": "light",
         "lua_name": "LLight:setVolumetric",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1018
+        "line": 1127
       },
       {
         "module": "light",
         "lua_name": "LLight:isVolumetric",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1030
+        "line": 1139
       },
       {
         "module": "light",
         "lua_name": "LLight:remove",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1040
+        "line": 1149
       },
       {
         "module": "light",
         "lua_name": "LLight:isValid",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1047
+        "line": 1156
       },
       {
         "module": "light",
         "lua_name": "LLight:addFlicker",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1067
+        "line": 1176
       },
       {
         "module": "light",
         "lua_name": "LLight:transitionTo",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1088
+        "line": 1197
       },
       {
         "module": "light",
         "lua_name": "LLight:updateTransition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1180
+        "line": 1286
       },
       {
         "module": "light",
         "lua_name": "LLight:stopTransition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1203
+        "line": 1297
       },
       {
         "module": "light",
         "lua_name": "LLight:transitionProgress",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1210
+        "line": 1309
       },
       {
         "module": "light",
         "lua_name": "LLight:setCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1221
+        "line": 1320
       },
       {
         "module": "light",
         "lua_name": "LLight:getCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1228
+        "line": 1333
       },
       {
         "module": "light",
         "lua_name": "LLight:clearCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1233
+        "line": 1343
       },
       {
         "module": "light",
         "lua_name": "LLight:setNormalMap",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1240
+        "line": 1355
       },
       {
         "module": "light",
         "lua_name": "LLight:getNormalMap",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1252
+        "line": 1368
       },
       {
         "module": "light",
         "lua_name": "LLight:clearNormalMap",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1262
+        "line": 1378
       },
       {
         "module": "light",
         "lua_name": "LLight:setNormalStrength",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1274
+        "line": 1390
       },
       {
         "module": "light",
         "lua_name": "LLight:getNormalStrength",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1287
+        "line": 1403
       },
       {
         "module": "light",
         "lua_name": "LLight:setShader",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1298
+        "line": 1414
       },
       {
         "module": "light",
         "lua_name": "LLight:getShader",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1318
+        "line": 1434
       },
       {
         "module": "light",
         "lua_name": "LLight:type",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1332
+        "line": 1448
       },
       {
         "module": "light",
         "lua_name": "LLight:typeOf",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1337
+        "line": 1453
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setVertices",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1366
+        "line": 1486
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getVertices",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1380
+        "line": 1501
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1397
+        "line": 1518
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getPosition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1410
+        "line": 1533
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setOpacity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1422
+        "line": 1545
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getOpacity",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1434
+        "line": 1557
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1445
+        "line": 1568
       },
       {
         "module": "light",
         "lua_name": "LOccluder:getLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1457
+        "line": 1580
       },
       {
         "module": "light",
         "lua_name": "LOccluder:setEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1468
+        "line": 1591
       },
       {
         "module": "light",
         "lua_name": "LOccluder:isEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1480
+        "line": 1603
       },
       {
         "module": "light",
         "lua_name": "LOccluder:remove",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1490
+        "line": 1613
       },
       {
         "module": "light",
         "lua_name": "LOccluder:isValid",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1500
+        "line": 1623
       },
       {
         "module": "light",
         "lua_name": "LOccluder:type",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1518
+        "line": 1641
       },
       {
         "module": "light",
         "lua_name": "LOccluder:typeOf",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 1523
+        "line": 1646
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setShader",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1535
+        "line": 1659
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getShader",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1555
+        "line": 1679
       },
       {
         "module": "light",
         "lua_name": "lurek.light.newLight",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1573
+        "line": 1697
       },
       {
         "module": "light",
         "lua_name": "lurek.light.newOccluder",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1602
+        "line": 1727
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setAmbient",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1624
+        "line": 1753
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getAmbient",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1643
+        "line": 1772
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setEnabled",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1654
+        "line": 1783
       },
       {
         "module": "light",
         "lua_name": "lurek.light.isEnabled",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1665
+        "line": 1794
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getLightCount",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1673
+        "line": 1802
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getOccluderCount",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1681
+        "line": 1810
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getMaxLights",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1689
+        "line": 1818
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setMaxLights",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1697
+        "line": 1826
       },
       {
         "module": "light",
         "lua_name": "lurek.light.clear",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1707
+        "line": 1841
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setGroupEnabled",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1719
+        "line": 1853
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setGroupIntensity",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1733
+        "line": 1867
       },
       {
         "module": "light",
         "lua_name": "lurek.light.setGroupColor",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1752
+        "line": 1886
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getGroupCount",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1774
+        "line": 1908
       },
       {
         "module": "light",
         "lua_name": "lurek.light.advanceFlickers",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1784
+        "line": 1918
       },
       {
         "module": "light",
         "lua_name": "lurek.light.syncAmbient",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1799
+        "line": 1933
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getGodRayHints",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1813
+        "line": 1947
       },
       {
         "module": "light",
         "lua_name": "lurek.light.getNormalMapHints",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1842
+        "line": 1976
       },
       {
         "module": "light",
         "lua_name": "lurek.light.drawToImage",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1874
+        "line": 2008
       },
       {
         "module": "light",
         "lua_name": "lurek.light.createLightsFromTilefield",
         "kind": "function",
         "file": "src/lua_api/light_api.rs",
-        "line": 1893
+        "line": 2031
       },
       {
         "module": "log",
@@ -82871,469 +82733,476 @@
         "lua_name": "LProvinceRegistry:getName",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 811
+        "line": 836
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getWidth",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 815
+        "line": 840
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getHeight",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 819
+        "line": 844
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setShader",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 825
+        "line": 850
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getShader",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 853
+        "line": 878
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getAt",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 865
+        "line": 890
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:fitCamera",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 874
+        "line": 899
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:screenToMap",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 897
+        "line": 922
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:screenToProvince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 929
+        "line": 954
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:viewportRect",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 965
+        "line": 990
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:provinceCount",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1004
+        "line": 1029
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:provinceIds",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1010
+        "line": 1035
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:adjacencies",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1023
+        "line": 1048
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:provinceSpans",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1043
+        "line": 1068
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:borderSegments",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1069
+        "line": 1094
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:borderSegmentsWhere",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1094
+        "line": 1119
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getRevision",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1156
+        "line": 1181
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getProvince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1169
+        "line": 1194
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1242
+        "line": 1267
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findRoute",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1256
+        "line": 1281
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:drawCapitalPath",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1313
+        "line": 1338
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findRoutes",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1379
+        "line": 1404
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getConnectedComponents",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1441
+        "line": 1466
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:findIsolatedProvinces",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1467
+        "line": 1492
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:isConnected",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1504
+        "line": 1529
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:totalAttrForOwner",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1526
+        "line": 1551
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1563
+        "line": 1588
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1572
+        "line": 1597
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderClass",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1586
+        "line": 1611
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderClass",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1595
+        "line": 1620
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:registerBorderType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1608
+        "line": 1633
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderPairStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1639
+        "line": 1664
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getBorderPairStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1654
+        "line": 1679
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setPoliticalColor",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1685
+        "line": 1710
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setTerrainType",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1698
+        "line": 1723
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setBorderStyle",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1709
+        "line": 1734
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setFogState",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1720
+        "line": 1745
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setVisibilityState",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1728
+        "line": 1753
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setVisualState",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1741
+        "line": 1766
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setAttr",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1751
+        "line": 1776
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setCapital",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1763
+        "line": 1788
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setLabelLine",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1774
+        "line": 1799
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setLabelText",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1785
+        "line": 1810
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:importMetadataFromFiles",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1796
+        "line": 1821
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:render",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 1871
+        "line": 1896
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getChangesSince",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 2099
+        "line": 2124
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:registerMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 2237
+        "line": 2262
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:setMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 2282
+        "line": 2307
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:getMapMode",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 2289
+        "line": 2314
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:resolveMapModeColors",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 2298
+        "line": 2323
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:type",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 2352
+        "line": 2377
       },
       {
         "module": "province",
         "lua_name": "LProvinceRegistry:typeOf",
         "kind": "method",
         "file": "src/lua_api/province_api.rs",
-        "line": 2357
+        "line": 2382
+      },
+      {
+        "module": "province",
+        "lua_name": "lurek.province.newGrid",
+        "kind": "function",
+        "file": "src/lua_api/province_api.rs",
+        "line": 2396
       },
       {
         "module": "province",
         "lua_name": "lurek.province.newFromPng",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2371
+        "line": 2408
       },
       {
         "module": "province",
         "lua_name": "lurek.province.sanitizeMarkedPng",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2397
+        "line": 2434
       },
       {
         "module": "province",
         "lua_name": "lurek.province.get",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2421
+        "line": 2458
       },
       {
         "module": "province",
         "lua_name": "lurek.province.exists",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2440
+        "line": 2477
       },
       {
         "module": "province",
         "lua_name": "lurek.province.remove",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2451
+        "line": 2488
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setActive",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2467
+        "line": 2504
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getActive",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2483
+        "line": 2520
       },
       {
         "module": "province",
         "lua_name": "lurek.province.zoomCameraAt",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2502
+        "line": 2539
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setProperty",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2526
+        "line": 2563
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getProperty",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2541
+        "line": 2578
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setAttr",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2553
+        "line": 2590
       },
       {
         "module": "province",
         "lua_name": "lurek.province.getAttr",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2568
+        "line": 2605
       },
       {
         "module": "province",
         "lua_name": "lurek.province.setFlag",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2583
+        "line": 2620
       },
       {
         "module": "province",
         "lua_name": "lurek.province.hasFlag",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2596
+        "line": 2633
       },
       {
         "module": "province",
         "lua_name": "lurek.province.clearProperties",
         "kind": "function",
         "file": "src/lua_api/province_api.rs",
-        "line": 2606
+        "line": 2643
       },
       {
         "module": "raycaster",
@@ -89143,700 +89012,700 @@
         "lua_name": "LTileField:getSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1612
+        "line": 1713
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1617
+        "line": 1718
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1627
+        "line": 1728
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setOccupant",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1639
+        "line": 1740
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearOccupant",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1653
+        "line": 1754
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getOccupant",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1670
+        "line": 1771
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setResource",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1684
+        "line": 1785
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getResource",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1701
+        "line": 1802
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setBuildable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1715
+        "line": 1816
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:isBuildable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1732
+        "line": 1833
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1746
+        "line": 1847
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionRect",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1774
+        "line": 1875
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1796
+        "line": 1897
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeRegion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1817
+        "line": 1918
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:regionContains",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1828
+        "line": 1929
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionCells",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1840
+        "line": 1941
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionNames",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1851
+        "line": 1952
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRegionProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1864
+        "line": 1965
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1884
+        "line": 1985
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRegionProperties",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1899
+        "line": 2000
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:regionsAt",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1920
+        "line": 2021
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clear",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1940
+        "line": 2041
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1952
+        "line": 2053
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1969
+        "line": 2070
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCell",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 1987
+        "line": 2088
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2105
+        "line": 2206
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocks",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2124
+        "line": 2225
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2140
+        "line": 2241
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2159
+        "line": 2260
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2172
+        "line": 2273
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2197
+        "line": 2298
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategories",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2212
+        "line": 2313
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2225
+        "line": 2326
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryBlock",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2239
+        "line": 2340
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:blocksCategory",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2257
+        "line": 2358
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2272
+        "line": 2373
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryCost",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2290
+        "line": 2391
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2305
+        "line": 2406
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryTransmission",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2323
+        "line": 2424
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2338
+        "line": 2439
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getCategoryFilter",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2361
+        "line": 2462
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:footprintPassable",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2383
+        "line": 2484
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getVersion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2397
+        "line": 2498
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:beginEdit",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2403
+        "line": 2504
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getDirtyRects",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2412
+        "line": 2513
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:drainDirtyRects",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2421
+        "line": 2522
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:commitEdit",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2430
+        "line": 2531
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineBlockWorldSlots",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2438
+        "line": 2539
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:snapshot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2457
+        "line": 2558
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:restore",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2581
+        "line": 2682
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2792
+        "line": 2893
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getSunOcclusion",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2809
+        "line": 2910
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2821
+        "line": 2922
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2836
+        "line": 2937
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2848
+        "line": 2949
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2863
+        "line": 2964
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2875
+        "line": 2976
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2886
+        "line": 2987
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:defineSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2896
+        "line": 2997
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:removeSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2907
+        "line": 3008
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:hasSlot",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2918
+        "line": 3019
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:setRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2929
+        "line": 3030
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2969
+        "line": 3070
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 2990
+        "line": 3091
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyProfile",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3007
+        "line": 3108
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearModifier",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3025
+        "line": 3126
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getModifiers",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3042
+        "line": 3143
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObject",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3064
+        "line": 3165
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:applyTilesetObjectLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3112
+        "line": 3213
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperty",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3173
+        "line": 3274
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyNumber",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3224
+        "line": 3325
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefPropertyBool",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3274
+        "line": 3375
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefProperties",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3323
+        "line": 3424
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearRef",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3376
+        "line": 3477
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:getRefSlots",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3393
+        "line": 3494
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:line",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3405
+        "line": 3506
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:clearLine",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3426
+        "line": 3527
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:firstBlocker",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3446
+        "line": 3547
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3475
+        "line": 3576
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3490
+        "line": 3591
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeBlockLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3505
+        "line": 3606
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeCostLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3527
+        "line": 3628
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:exportRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3548
+        "line": 3649
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:writeRefLayer",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3562
+        "line": 3663
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3581
+        "line": 3682
       },
       {
         "module": "tilefield",
         "lua_name": "LTileField:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3587
+        "line": 3688
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getMapSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3600
+        "line": 3701
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getFieldSize",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3609
+        "line": 3710
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getTopology",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3616
+        "line": 3717
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:inBounds",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3626
+        "line": 3727
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:getField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3645
+        "line": 3746
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:setField",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3665
+        "line": 3766
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:type",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3682
+        "line": 3783
       },
       {
         "module": "tilefield",
         "lua_name": "LTileFieldMap:typeOf",
         "kind": "method",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3688
+        "line": 3789
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.new",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3704
+        "line": 3805
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromProvider",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3731
+        "line": 3832
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.newFieldMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3745
+        "line": 3846
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.fromTileMap",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3793
+        "line": 3894
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.createPhysicsFromTileset",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3928
+        "line": 4029
       },
       {
         "module": "tilefield",
         "lua_name": "lurek.tilefield.createLightsFromTileset",
         "kind": "function",
         "file": "src/lua_api/tilefield_api.rs",
-        "line": 3994
+        "line": 4095
       },
       {
         "module": "tilelight",

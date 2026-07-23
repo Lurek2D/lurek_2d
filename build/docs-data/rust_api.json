@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-07-22T20:32:35.009595+00:00",
+    "generated": "2026-07-23T13:37:25.483472+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "rust_items": 3369,
-      "rust_modules": 794,
-      "rust_tests": 506,
-      "lua_tests": 290
+      "rust_items": 3314,
+      "rust_modules": 785,
+      "rust_tests": 509,
+      "lua_tests": 293
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 3369,
-      "documented": 3367,
-      "modules": 794
+      "total_items": 3314,
+      "documented": 3312,
+      "modules": 785
     },
     "modules": {
       "agent::chat": {
@@ -9094,71 +9094,71 @@
           {
             "name": "AnimatedGifRepeat",
             "kind": "enum",
-            "description": "Repeat policy for animated GIF output.",
+            "description": "Repeat policy for animated GIF output.  # Variants  `Infinite` loops forever, `Finite` loops a bounded count, and `None` omits repeat metadata.",
             "file": "src/image/animated_gif.rs",
-            "line": 14
+            "line": 19
           },
           {
             "name": "AnimatedGifOptions",
             "kind": "struct",
-            "description": "GIF export settings shared across image and Lua-facing callers.",
+            "description": "GIF export settings shared across image and Lua-facing callers.  # Fields  Delay, quantizer speed, and repeat policy bound the generated GIF stream.",
             "file": "src/image/animated_gif.rs",
-            "line": 25
+            "line": 34
           },
           {
             "name": "AnimatedGifFrame",
             "kind": "struct",
-            "description": "Decoded animated GIF frame with its display duration.",
+            "description": "Decoded animated GIF frame with its display duration.  # Fields  `image` is one composited RGBA snapshot and `duration_ms` is its bounded display delay.",
             "file": "src/image/animated_gif.rs",
-            "line": 36
+            "line": 49
           },
           {
             "name": "encode_gif",
             "kind": "fn",
             "description": "Encode a list of equally sized RGBA frames into animated GIF bytes.",
             "file": "src/image/animated_gif.rs",
-            "line": 108
+            "line": 139
           },
           {
             "name": "decode_gif",
             "kind": "fn",
             "description": "Decode animated GIF bytes into composited RGBA frames and frame durations.",
             "file": "src/image/animated_gif.rs",
-            "line": 140
+            "line": 172
           },
           {
             "name": "load_gif",
             "kind": "fn",
             "description": "Load and decode an animated GIF from disk.",
             "file": "src/image/animated_gif.rs",
-            "line": 186
+            "line": 245
           },
           {
             "name": "save_gif",
             "kind": "fn",
             "description": "Save a list of equally sized RGBA frames as an animated GIF on disk.",
             "file": "src/image/animated_gif.rs",
-            "line": 193
+            "line": 252
           }
         ]
       },
       "image::compressed": {
-        "module_doc": "Owns the image compressed implementation for the image subsystem and keeps related runtime rules local here. Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates. Defines how image compressed data is validated, transformed, or stored before neighboring systems consume it. Separates image compressed behavior from Lua bindings, tests, and sibling owners so integration stays readable.",
+        "module_doc": "Provides bounded compatibility diagnostics for legacy DDS texture assets.  This runtime deliberately has no DDS decode/upload path: PNG-backed `ImageData` is the supported image interchange format. The types below remain only so callers can recognize a DDS magic header and receive a clear migration error. They never expose a usable compressed texture or grant Lua code direct filesystem authority.",
         "source_file": "src/image/compressed.rs",
         "items": [
           {
             "name": "CompressedFormat",
             "kind": "enum",
-            "description": "Compressed texture format recognized from DDS metadata.",
+            "description": "Compressed texture format recognized from DDS metadata.  # Variants  Each variant names a recognized block-compression family; `Unknown` is retained for diagnostics.",
             "file": "src/image/compressed.rs",
-            "line": 9
+            "line": 16
           },
           {
             "name": "CompressedImageData",
             "kind": "struct",
-            "description": "Legacy DDS image metadata shape retained for API compatibility.",
+            "description": "Legacy DDS image metadata shape retained for API compatibility.  # Fields  Format, base dimensions, and mip payloads describe a DDS surface when a runtime supports it.",
             "file": "src/image/compressed.rs",
-            "line": 44
+            "line": 55
           }
         ]
       },
@@ -9169,16 +9169,16 @@
           {
             "name": "ResizeFilter",
             "kind": "enum",
-            "description": "Resize kernels supported by the image resampler.",
+            "description": "Resize kernels supported by the image resampler.  # Variants  `Bilinear` is the default smooth filter; `Lanczos3` uses a wider high-quality window.",
             "file": "src/image/effects.rs",
-            "line": 16
+            "line": 20
           },
           {
             "name": "ImageEffectOptions",
             "kind": "struct",
-            "description": "Parsed options for named image effects.",
+            "description": "Parsed options for named image effects.  # Fields  Scalar, integer, dimensions, optional color, and filter values describe one validated effect request.",
             "file": "src/image/effects.rs",
-            "line": 24
+            "line": 32
           }
         ]
       },
@@ -9189,9 +9189,9 @@
           {
             "name": "ImageData",
             "kind": "struct",
-            "description": "Mutable RGBA image buffer used across rendering, serialization, and analysis.",
+            "description": "Mutable RGBA image buffer used across rendering, serialization, and analysis.  # Fields  Width and height describe the checked pixel extent; `pixels` is packed row-major RGBA8 storage.",
             "file": "src/image/image_data.rs",
-            "line": 15
+            "line": 21
           }
         ]
       },
@@ -9202,16 +9202,29 @@
           {
             "name": "ImageLayer",
             "kind": "struct",
-            "description": "A single named image layer with opacity, visibility, and pixel data.",
+            "description": "A single named image layer with opacity, visibility, and pixel data.  # Fields  Name, finite opacity, visibility, and same-sized image data define one compositing input.",
             "file": "src/image/layers.rs",
-            "line": 10
+            "line": 14
           },
           {
             "name": "LayeredImage",
             "kind": "struct",
-            "description": "A same-sized stack of image layers that can be merged into one image.",
+            "description": "A same-sized stack of image layers that can be merged into one image.  # Fields  Canvas dimensions and ordered back-to-front layers define the compositing state.",
             "file": "src/image/layers.rs",
-            "line": 33
+            "line": 41
+          }
+        ]
+      },
+      "image::limits": {
+        "module_doc": "Defines the resource ceilings shared by CPU image allocation, codecs, and pixel-domain work. Lua-facing image operations always use these conservative defaults; tools may supply explicit limits.",
+        "source_file": "src/image/limits.rs",
+        "items": [
+          {
+            "name": "ImageLimits",
+            "kind": "struct",
+            "description": "Resource ceilings for untrusted image input and CPU-side image operations.  # Fields  Each field is an independent allocation, aggregate, parser, or work ceiling enforced by image entry points.",
+            "file": "src/image/limits.rs",
+            "line": 10
           }
         ]
       },
@@ -9227,74 +9240,74 @@
             "line": 9
           },
           {
+            "name": "limits",
+            "kind": "mod",
+            "description": "Shared CPU image resource ceilings.",
+            "file": "src/image/mod.rs",
+            "line": 11
+          },
+          {
             "name": "compressed",
             "kind": "mod",
             "description": "Compressed image file decoding helpers.",
             "file": "src/image/mod.rs",
-            "line": 13
+            "line": 17
           },
           {
             "name": "effects",
             "kind": "mod",
             "description": "Image-space effects and resampling filters.",
             "file": "src/image/mod.rs",
-            "line": 15
+            "line": 19
           },
           {
             "name": "palette_lut",
             "kind": "mod",
             "description": "Palette lookup tables and color remapping helpers.",
             "file": "src/image/mod.rs",
-            "line": 19
+            "line": 23
           },
           {
             "name": "layers",
             "kind": "mod",
             "description": "Layered image storage and compositing.",
             "file": "src/image/mod.rs",
-            "line": 23
+            "line": 27
           },
           {
             "name": "animated_gif",
             "kind": "mod",
             "description": "Animated GIF encoding helpers.",
             "file": "src/image/mod.rs",
-            "line": 27
+            "line": 31
           },
           {
             "name": "rect_packing",
             "kind": "mod",
             "description": "Online rectangle bin-packing algorithm for texture atlases.",
             "file": "src/image/mod.rs",
-            "line": 29
+            "line": 33
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Image-to-render-command bridge helpers.",
             "file": "src/image/mod.rs",
-            "line": 31
+            "line": 35
           },
           {
             "name": "serial",
             "kind": "mod",
             "description": "Custom image serialization helpers.",
             "file": "src/image/mod.rs",
-            "line": 33
+            "line": 37
           },
           {
             "name": "texture",
             "kind": "mod",
             "description": "Texture loading and CPU-side texture metadata.",
             "file": "src/image/mod.rs",
-            "line": 35
-          },
-          {
-            "name": "visualization",
-            "kind": "mod",
-            "description": "Image visualizations for debugging and analysis.",
-            "file": "src/image/mod.rs",
-            "line": 37
+            "line": 39
           }
         ]
       },
@@ -9305,9 +9318,9 @@
           {
             "name": "PaletteLUT",
             "kind": "struct",
-            "description": "Source-to-target color mapping used to remap image pixels.",
+            "description": "Source-to-target color mapping used to remap image pixels.  # Fields  Source and destination color arrays remain index-aligned to define replacement pairs.",
             "file": "src/image/palette_lut.rs",
-            "line": 11
+            "line": 15
           }
         ]
       },
@@ -9318,16 +9331,16 @@
           {
             "name": "PackedRect",
             "kind": "struct",
-            "description": "Placement result for a single packed rectangle.",
+            "description": "Placement result for a single packed rectangle.  # Fields  Optional caller id and checked atlas coordinates describe one content rectangle.",
             "file": "src/image/rect_packing.rs",
-            "line": 9
+            "line": 13
           },
           {
             "name": "RectPacker",
             "kind": "struct",
-            "description": "Shelf-first texture-atlas packer with configurable atlas dimensions and uniform padding.",
+            "description": "Shelf-first texture-atlas packer with configurable atlas dimensions and uniform padding.  # Fields  Atlas dimensions, padding, internal shelves, and insertion-order placements define one packing session.",
             "file": "src/image/rect_packing.rs",
-            "line": 35
+            "line": 43
           }
         ]
       },
@@ -9345,63 +9358,70 @@
             "kind": "fn",
             "description": "Save a flat image as LIMG bytes on disk.",
             "file": "src/image/serial.rs",
-            "line": 23
+            "line": 24
           },
           {
             "name": "load_image",
             "kind": "fn",
             "description": "Load a flat image from disk and decode it from LIMG bytes.",
             "file": "src/image/serial.rs",
-            "line": 28
+            "line": 29
           },
           {
             "name": "load_image_from_bytes",
             "kind": "fn",
             "description": "Load a flat image from raw LIMG bytes and validate the type flag.",
             "file": "src/image/serial.rs",
-            "line": 33
+            "line": 34
           },
           {
             "name": "save_layered",
             "kind": "fn",
             "description": "Save a layered image as LIMG bytes on disk.",
             "file": "src/image/serial.rs",
-            "line": 44
+            "line": 45
           },
           {
             "name": "load_layered",
             "kind": "fn",
             "description": "Load a layered image from disk and decode it from LIMG bytes.",
             "file": "src/image/serial.rs",
-            "line": 49
+            "line": 50
           },
           {
             "name": "load_layered_from_bytes",
             "kind": "fn",
             "description": "Load a layered image from raw LIMG bytes and validate the type flag.",
             "file": "src/image/serial.rs",
-            "line": 54
+            "line": 55
           },
           {
             "name": "encode_flat",
             "kind": "fn",
             "description": "Encode a flat image into a LIMG byte vector.",
             "file": "src/image/serial.rs",
-            "line": 119
+            "line": 135
           },
           {
             "name": "decode_flat",
             "kind": "fn",
             "description": "Decode a flat image from a LIMG payload.",
             "file": "src/image/serial.rs",
-            "line": 128
+            "line": 145
+          },
+          {
+            "name": "encode_layered",
+            "kind": "fn",
+            "description": "Encode a layered image into a LIMG byte vector. Encode a layered image into bounded LIMG bytes without performing filesystem I/O.",
+            "file": "src/image/serial.rs",
+            "line": 169
           },
           {
             "name": "parse_header",
             "kind": "fn",
             "description": "Parse a LIMG header and return the type flag plus the remaining payload.",
             "file": "src/image/serial.rs",
-            "line": 254
+            "line": 305
           }
         ]
       },
@@ -9412,507 +9432,23 @@
           {
             "name": "TextureColorSpace",
             "kind": "enum",
-            "description": "Texture color space stored alongside decoded pixels.",
+            "description": "Texture color space stored alongside decoded pixels.  # Variants  `Srgb` stores display-referred texture bytes; `Linear` stores linear-light bytes.",
             "file": "src/image/texture.rs",
-            "line": 16
+            "line": 20
           },
           {
             "name": "Texture",
             "kind": "struct",
-            "description": "CPU-side texture handle and its uploaded dimensions.",
+            "description": "CPU-side texture handle and its uploaded dimensions.  # Fields  The texture key identifies renderer storage while width and height describe the checked source extent.",
             "file": "src/image/texture.rs",
-            "line": 23
+            "line": 31
           },
           {
             "name": "premultiply_alpha_rgba8_in_place",
             "kind": "fn",
             "description": "Premultiply RGB channels by alpha for each RGBA pixel in place.",
             "file": "src/image/texture.rs",
-            "line": 32
-          }
-        ]
-      },
-      "image::visualization::animation": {
-        "module_doc": "Renders animation state into debug images that show frame grids, playback steps, and control-state panels. Highlights the current frame inside generated grids so asset review can spot sequencing mistakes quickly. Builds timeline strips from snapshot indices, making playback history visible without a live renderer. Draws run, idle, pause, resume, and summary labels so screenshot-based tests can verify animation states. Open this file when animation debug imagery is wrong even though the underlying Animation data is correct.",
-        "source_file": "src/image/visualization/animation.rs",
-        "items": [
-          {
-            "name": "draw_animation_frame_grid_to_image",
-            "kind": "fn",
-            "description": "Render an animation frame grid into an image.",
-            "file": "src/image/visualization/animation.rs",
-            "line": 10
-          },
-          {
-            "name": "draw_animation_playback_to_image",
-            "kind": "fn",
-            "description": "Render a playback timeline preview into an image.",
-            "file": "src/image/visualization/animation.rs",
-            "line": 50
-          },
-          {
-            "name": "animation_playback_control_to_image",
-            "kind": "fn",
-            "description": "Render playback control states into an image.",
-            "file": "src/image/visualization/animation.rs",
-            "line": 86
-          },
-          {
-            "name": "draw_animation_to_image",
-            "kind": "fn",
-            "description": "Render a frame grid using the default cell dimensions.",
-            "file": "src/image/visualization/animation.rs",
-            "line": 147
-          }
-        ]
-      },
-      "image::visualization::audio": {
-        "module_doc": "Turns mono and stereo sample arrays into waveform images for debugging audio content and UI visualizers. Normalizes peak amplitude per render so quiet and loud sources stay readable on the same plotting surface. Draws baseline guides, channel separators, and bounds frames to make timing and clipping easy to inspect. Supports a zoomed waveform mode that interpolates early samples for transient-focused signal inspection. Provides a labeled colored strip renderer for HUD or tool previews that need lightweight waveform graphics. Open this owner when waveform scaling, channel layout, or sample-to-pixel mapping looks visually wrong.",
-        "source_file": "src/image/visualization/audio.rs",
-        "items": [
-          {
-            "name": "waveform_to_image",
-            "kind": "fn",
-            "description": "Render a mono waveform preview into an image.",
-            "file": "src/image/visualization/audio.rs",
-            "line": 10
-          },
-          {
-            "name": "waveform_stereo_to_image",
-            "kind": "fn",
-            "description": "Render a stereo waveform preview into an image.",
-            "file": "src/image/visualization/audio.rs",
-            "line": 76
-          },
-          {
-            "name": "waveform_zoomed_to_image",
-            "kind": "fn",
-            "description": "Render a zoomed waveform preview into an image.",
-            "file": "src/image/visualization/audio.rs",
-            "line": 138
-          },
-          {
-            "name": "draw_sound_waveform_to_image",
-            "kind": "fn",
-            "description": "Render a labeled waveform strip with a custom color into an image.",
-            "file": "src/image/visualization/audio.rs",
-            "line": 214
-          }
-        ]
-      },
-      "image::visualization::camera": {
-        "module_doc": "Produces camera-debug images that visualize viewport framing, zoom, follow logic, rotation, and shake. Draws world grids, viewport rectangles, and center markers so camera position and scale stay inspectable. Builds zoom-comparison panels that reveal how viewport size changes across multiple authored zoom values. Renders rotated point sets through Camera2D transforms to expose world-to-screen mapping behavior clearly. Shows bounds lists, follow trails, targets, dead zones, and shake traces inside standalone image reports. Includes wrapper helpers that package the same camera diagnostics under alternative call shapes for tests. Depends on Camera2D and ImageData only, keeping these visual probes separate from runtime scene rendering. Open this file when camera visualization is misleading or when movement diagnostics need new image evidence.",
-        "source_file": "src/image/visualization/camera.rs",
-        "items": [
-          {
-            "name": "draw_camera_debug_to_image",
-            "kind": "fn",
-            "description": "Render a camera debug overlay into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 14
-          },
-          {
-            "name": "draw_camera_zoom_comparison_to_image",
-            "kind": "fn",
-            "description": "Render a panel comparing multiple camera zoom levels.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 61
-          },
-          {
-            "name": "camera_rotation_to_image",
-            "kind": "fn",
-            "description": "Render a camera rotation comparison grid.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 101
-          },
-          {
-            "name": "camera_bounds_to_image",
-            "kind": "fn",
-            "description": "Render camera bounds, labels, and positions into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 163
-          },
-          {
-            "name": "camera_follow_to_image",
-            "kind": "fn",
-            "description": "Render a camera trail and target markers into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 190
-          },
-          {
-            "name": "camera_shake_to_image",
-            "kind": "fn",
-            "description": "Render a camera shake trail with displacement and area info into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 240
-          },
-          {
-            "name": "draw_camera_rotation_grid_to_image",
-            "kind": "fn",
-            "description": "Render a grid of camera rotation previews into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 287
-          },
-          {
-            "name": "draw_camera_bounds_to_image",
-            "kind": "fn",
-            "description": "Render camera bounds and labelled position list into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 348
-          },
-          {
-            "name": "draw_camera_follow_trail_to_image",
-            "kind": "fn",
-            "description": "Render a camera follow trail with dead-zone overlay into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 375
-          },
-          {
-            "name": "draw_camera_shake_trail_to_image",
-            "kind": "fn",
-            "description": "Render a camera shake trail with moved position and visible area info into an image.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 422
-          },
-          {
-            "name": "draw_camera_to_image",
-            "kind": "fn",
-            "description": "Render a camera debug overlay scaled to the full image dimensions.",
-            "file": "src/image/visualization/camera.rs",
-            "line": 472
-          }
-        ]
-      },
-      "image::visualization::easing": {
-        "module_doc": "Renders easing and Bezier diagnostics into charts so motion curves can be inspected without live playback. Builds multi-panel galleries and shared comparison graphs for side-by-side evaluation of easing behavior. Plots arbitrary curve callbacks onto raster images, making this the owner for sampled chart generation. Visualizes Bezier control points, segments, derivatives, and edits using the math Bezier runtime directly. Supports advanced screenshots that show interpolation angle and length for curve-editing regression checks. Open this file when motion-curve images are wrong or when new charting views are needed for animation work.",
-        "source_file": "src/image/visualization/easing.rs",
-        "items": [
-          {
-            "name": "easing_gallery_to_image",
-            "kind": "fn",
-            "description": "Render a gallery of easing curves in a grid into an image.",
-            "file": "src/image/visualization/easing.rs",
-            "line": 10
-          },
-          {
-            "name": "easing_comparison_to_image",
-            "kind": "fn",
-            "description": "Render multiple easing curves overlaid on a single chart into an image.",
-            "file": "src/image/visualization/easing.rs",
-            "line": 48
-          },
-          {
-            "name": "bezier_curves_to_image",
-            "kind": "fn",
-            "description": "Render a set of Bezier curves with control points into an image.",
-            "file": "src/image/visualization/easing.rs",
-            "line": 77
-          },
-          {
-            "name": "draw_bezier_advanced_to_image",
-            "kind": "fn",
-            "description": "Render an advanced Bezier demo with derivatives, segments, and edit operations into an image.",
-            "file": "src/image/visualization/easing.rs",
-            "line": 123
-          }
-        ]
-      },
-      "image::visualization::facade": {
-        "module_doc": "Provides the shared HSV-to-RGB helper used by visualization modules that need stable debug color palettes. Keeps hue conversion local to the image-visualization layer so callers do not duplicate color-wheel math. Open this tiny owner when visualization colors drift or when a new debug view needs HSV-based swatches.",
-        "source_file": "src/image/visualization/facade.rs",
-        "items": []
-      },
-      "image::visualization::geometry": {
-        "module_doc": "Renders geometry demonstrations into images for validating rasterized shapes and math helper behavior. Draws polygon galleries, spirals, and filled primitive samples so tool output can prove drawing basics. Uses math helpers like convex hull, centroids, Bresenham lines, and angles to create visual test fixtures. Shows segment, circle, and line intersections with explicit markers so spatial edge cases stay inspectable. Keeps geometry visualization separate from math implementations, making screenshots a consumer not an owner. Open this file when geometry proof images are wrong even though lower-level math functions may still pass.",
-        "source_file": "src/image/visualization/geometry.rs",
-        "items": [
-          {
-            "name": "polygon_gallery_to_image",
-            "kind": "fn",
-            "description": "Render a gallery of regular polygons in varying sizes and colors into an image.",
-            "file": "src/image/visualization/geometry.rs",
-            "line": 12
-          },
-          {
-            "name": "spiral_to_image",
-            "kind": "fn",
-            "description": "Render an Archimedes spiral by sampling angle steps into an image.",
-            "file": "src/image/visualization/geometry.rs",
-            "line": 73
-          },
-          {
-            "name": "filled_primitives_to_image",
-            "kind": "fn",
-            "description": "Render filled rectangles, circles, and a brightness grid into an image.",
-            "file": "src/image/visualization/geometry.rs",
-            "line": 94
-          },
-          {
-            "name": "draw_geometry_shapes_to_image",
-            "kind": "fn",
-            "description": "Render convex hull, polygon centroid, Bresenham line, and circle tests into an image.",
-            "file": "src/image/visualization/geometry.rs",
-            "line": 124
-          },
-          {
-            "name": "draw_geometry_intersections_to_image",
-            "kind": "fn",
-            "description": "Render segment-segment, circle-line, and circle-segment intersection proofs into an image.",
-            "file": "src/image/visualization/geometry.rs",
-            "line": 211
-          }
-        ]
-      },
-      "image::visualization::graph": {
-        "module_doc": "Renders graph and flow diagrams into images with nodes, edges, labels, and summary text overlays. Shows active and removed edges separately so topology edits or diff states remain visible in one snapshot. Draws item-flow arrows and moving payload markers for logic demos that need graph-like status imagery. Keeps graph visualization lightweight by consuming plain positions, colors, and labels instead of graph types. Open this owner when graph screenshots need layout or styling fixes without changing the source simulation.",
-        "source_file": "src/image/visualization/graph.rs",
-        "items": [
-          {
-            "name": "draw_graph_operations_to_image",
-            "kind": "fn",
-            "description": "Render a node-edge graph with labels and transfer-weight edges into an image.",
-            "file": "src/image/visualization/graph.rs",
-            "line": 10
-          },
-          {
-            "name": "draw_graph_item_flow_to_image",
-            "kind": "fn",
-            "description": "Render an item-flow graph with nodes, flows, accumulations, and path highlights into an image.",
-            "file": "src/image/visualization/graph.rs",
-            "line": 56
-          }
-        ]
-      },
-      "image::visualization::image_ops": {
-        "module_doc": "Builds composite images that compare source variants, transform grids, and color-wheel style references. Places labeled inputs side by side so image-processing deltas can be checked in one exported frame. Generates a four-column transform grid showing original, inverted, grayscale, and tinted sample outputs. Renders an HSV wheel directly into pixels, making this a general visualization helper for color debugging. Open this file when comparison layouts or operation showcase images need changes for docs or regression art.",
-        "source_file": "src/image/visualization/image_ops.rs",
-        "items": [
-          {
-            "name": "draw_image_comparison_to_image",
-            "kind": "fn",
-            "description": "Render side-by-side labeled images into a composite image.",
-            "file": "src/image/visualization/image_ops.rs",
-            "line": 10
-          },
-          {
-            "name": "draw_pixel_transform_grid_to_image",
-            "kind": "fn",
-            "description": "Render a grid of pixel transform samples across a palette into an image.",
-            "file": "src/image/visualization/image_ops.rs",
-            "line": 46
-          },
-          {
-            "name": "draw_color_wheel_to_image",
-            "kind": "fn",
-            "description": "Render an HSV color wheel into an image.",
-            "file": "src/image/visualization/image_ops.rs",
-            "line": 96
-          }
-        ]
-      },
-      "image::visualization": {
-        "module_doc": "Exports the image-visualization surface that groups debug renderers for animation, audio, camera, and UI. Acts as the index for raster helpers that turn engine data into screenshots and proof images for tooling. Re-exports the facade helper internally so sibling visualization files can share one HSV color conversion. Points readers to geometry, graph, image-op, noise, and procgen views instead of mixing those concerns here. Keeps visualization module visibility centralized, which makes spec generation and ownership tracing simpler. Open this file first when adding a new debug image module or when public visualization exports must change. This index owns composition of visualization helpers rather than the sampled drawing logic inside each file. Use it to see the complete visualization feature set before editing a specific owner like camera or audio.",
-        "source_file": "src/image/visualization/mod.rs",
-        "items": [
-          {
-            "name": "animation",
-            "kind": "mod",
-            "description": "Animation visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 11
-          },
-          {
-            "name": "audio",
-            "kind": "mod",
-            "description": "Audio visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 13
-          },
-          {
-            "name": "camera",
-            "kind": "mod",
-            "description": "Camera visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 15
-          },
-          {
-            "name": "easing",
-            "kind": "mod",
-            "description": "Easing visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 17
-          },
-          {
-            "name": "facade",
-            "kind": "mod",
-            "description": "Shared visualization helpers.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 19
-          },
-          {
-            "name": "geometry",
-            "kind": "mod",
-            "description": "Geometry visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 21
-          },
-          {
-            "name": "graph",
-            "kind": "mod",
-            "description": "Graph visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 23
-          },
-          {
-            "name": "image_ops",
-            "kind": "mod",
-            "description": "Image-operation visualizations.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 25
-          },
-          {
-            "name": "noise",
-            "kind": "mod",
-            "description": "Noise visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 27
-          },
-          {
-            "name": "procgen",
-            "kind": "mod",
-            "description": "Procedural-generation visualizations.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 29
-          },
-          {
-            "name": "ui",
-            "kind": "mod",
-            "description": "UI visualizations. This module is publicly re-exported.",
-            "file": "src/image/visualization/mod.rs",
-            "line": 31
-          }
-        ]
-      },
-      "image::visualization::noise": {
-        "module_doc": "Turns scalar noise functions and cached height arrays into grayscale or terrain-colored diagnostic images. Supports normalized and raw grayscale views so callers can compare clamped terrain input against source data. Applies biome-style color bands for water, shore, land, and snow to make threshold decisions immediately visible. Builds side-by-side comparison strips from multiple maps, which is useful for tuning frequency and persistence. Open this file when noise previews, elevation coloring, or map-to-pixel conversion look inconsistent.",
-        "source_file": "src/image/visualization/noise.rs",
-        "items": [
-          {
-            "name": "noise_to_image",
-            "kind": "fn",
-            "description": "Render a noise function as a grayscale image, scaling range to full byte range.",
-            "file": "src/image/visualization/noise.rs",
-            "line": 9
-          },
-          {
-            "name": "noise_raw_to_image",
-            "kind": "fn",
-            "description": "Render a noise function as a raw unscaled grayscale image.",
-            "file": "src/image/visualization/noise.rs",
-            "line": 26
-          },
-          {
-            "name": "noise_terrain_to_image",
-            "kind": "fn",
-            "description": "Render a noise function as a terrain color image with water, land, and mountain bands.",
-            "file": "src/image/visualization/noise.rs",
-            "line": 43
-          },
-          {
-            "name": "heightmap_to_image",
-            "kind": "fn",
-            "description": "Render a pre-computed heightmap slice as a grayscale image.",
-            "file": "src/image/visualization/noise.rs",
-            "line": 73
-          },
-          {
-            "name": "terrain_elevation_to_image",
-            "kind": "fn",
-            "description": "Render terrain elevation data as a biome-colored image.",
-            "file": "src/image/visualization/noise.rs",
-            "line": 114
-          },
-          {
-            "name": "noise_map_to_image",
-            "kind": "fn",
-            "description": "Render a noise map as a continuous-hue image.",
-            "file": "src/image/visualization/noise.rs",
-            "line": 141
-          },
-          {
-            "name": "noise_comparison_to_image",
-            "kind": "fn",
-            "description": "Render multiple noise map tiles in a row for comparison into an image.",
-            "file": "src/image/visualization/noise.rs",
-            "line": 153
-          }
-        ]
-      },
-      "image::visualization::procgen": {
-        "module_doc": "Visualizes procedural-generation structures such as cellular grids, dungeons, Voronoi cells, and Delaunay meshes. Renders occupancy grids with caller-supplied colors so automata and map-carving stages stay easy to inspect. Draws point clouds and colored samples without extra graph types, keeping procgen debug output lightweight. Uses HSV-derived edge colors for triangulation views so adjacent triangles remain readable in dense outputs. Open this file when procgen screenshots are wrong or when a new generator needs a quick image proof helper.",
-        "source_file": "src/image/visualization/procgen.rs",
-        "items": [
-          {
-            "name": "cellular_grid_to_image",
-            "kind": "fn",
-            "description": "Render a cellular automata grid with cell size and alive-cell color into an image.",
-            "file": "src/image/visualization/procgen.rs",
-            "line": 10
-          },
-          {
-            "name": "voronoi_to_image",
-            "kind": "fn",
-            "description": "Render Voronoi cells for a set of seed points into an image.",
-            "file": "src/image/visualization/procgen.rs",
-            "line": 33
-          },
-          {
-            "name": "points_to_image",
-            "kind": "fn",
-            "description": "Render point samples as colored dots into an image.",
-            "file": "src/image/visualization/procgen.rs",
-            "line": 50
-          },
-          {
-            "name": "dungeon_grid_to_image",
-            "kind": "fn",
-            "description": "Render a dungeon grid with wall and floor tiles scaled by cell size into an image.",
-            "file": "src/image/visualization/procgen.rs",
-            "line": 67
-          },
-          {
-            "name": "colored_points_to_image",
-            "kind": "fn",
-            "description": "Render point samples as HSV-colored circles into an image.",
-            "file": "src/image/visualization/procgen.rs",
-            "line": 92
-          },
-          {
-            "name": "draw_delaunay_to_image",
-            "kind": "fn",
-            "description": "Render a Delaunay triangulation with edges and circumcenters into an image.",
-            "file": "src/image/visualization/procgen.rs",
-            "line": 106
-          }
-        ]
-      },
-      "image::visualization::ui": {
-        "module_doc": "Renders UI mockups and HUD previews into images for layout checks, screenshots, and documentation examples. Builds a settings-style panel with labels, toggles, sliders, progress bars, swatches, and action buttons. Draws gameplay HUD bars for health, mana, stamina, experience, and cooldown states with readable labels. Keeps presentation experiments local to image tooling so UI visuals can evolve without touching runtime widgets. Open this file when mock panel composition or HUD status imagery needs adjustment for tests or docs.",
-        "source_file": "src/image/visualization/ui.rs",
-        "items": [
-          {
-            "name": "panel_layout_to_image",
-            "kind": "fn",
-            "description": "Render a panel layout with borders, labels, and content areas into an image.",
-            "file": "src/image/visualization/ui.rs",
-            "line": 9
-          },
-          {
-            "name": "hud_bars_to_image",
-            "kind": "fn",
-            "description": "Render a HUD with labeled health, mana, and XP bars at various fill levels into an image.",
-            "file": "src/image/visualization/ui.rs",
-            "line": 102
+            "line": 40
           }
         ]
       },
@@ -11032,9 +10568,9 @@
           {
             "name": "Attenuation",
             "kind": "struct",
-            "description": "Quadratic attenuation coefficients for distance-based light intensity falloff.",
+            "description": "Quadratic attenuation coefficients for distance-based light intensity falloff. # Fields",
             "file": "src/light/attenuation.rs",
-            "line": 8
+            "line": 9
           }
         ]
       },
@@ -11045,11 +10581,16 @@
           {
             "name": "LightBlendMode",
             "kind": "enum",
-            "description": "Blend mode for how a light's contribution is combined with the light accumulation buffer.",
+            "description": "Blend mode for how a light's contribution is combined with the light accumulation buffer. # Variants",
             "file": "src/light/blend_mode.rs",
-            "line": 7
+            "line": 8
           }
         ]
+      },
+      "light::debug_image": {
+        "module_doc": "Bounded CPU light-map rasterization used only for debug previews and visual evidence. Scene storage, renderer snapshots, and GPU command submission remain outside this module.",
+        "source_file": "src/light/debug_image.rs",
+        "items": []
       },
       "light::falloff": {
         "module_doc": "This file owns `FalloffMode`, the enum that shapes radial brightness inside a light's effective radius. It distinguishes linear, smooth, and constant profiles so lights can vary edge softness without new code paths. Open this file when radial falloff semantics change; attenuation math and full light state live in sibling files.",
@@ -11058,9 +10599,9 @@
           {
             "name": "FalloffMode",
             "kind": "enum",
-            "description": "Radial intensity falloff shape applied on top of attenuation distance decay.",
+            "description": "Radial intensity falloff shape applied on top of attenuation distance decay. # Variants",
             "file": "src/light/falloff.rs",
-            "line": 7
+            "line": 8
           }
         ]
       },
@@ -11071,9 +10612,9 @@
           {
             "name": "FlickerConfig",
             "kind": "struct",
-            "description": "Sine-based flicker config that modulates a light's intensity by a small oscillating factor.",
+            "description": "Sine-based flicker config that modulates a light's intensity by a small oscillating factor. # Fields",
             "file": "src/light/flicker.rs",
-            "line": 8
+            "line": 9
           }
         ]
       },
@@ -11084,23 +10625,23 @@
           {
             "name": "Light2DAttenuationPatch",
             "kind": "struct",
-            "description": "Optional attenuation coefficient updates for a light option patch.",
+            "description": "Optional attenuation coefficient updates for a light option patch. # Fields",
             "file": "src/light/light2d.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "Light2DOptionsPatch",
             "kind": "struct",
-            "description": "Optional field updates applied to an existing `Light2D`.",
+            "description": "Optional field updates applied to an existing `Light2D`. # Fields",
             "file": "src/light/light2d.rs",
-            "line": 34
+            "line": 37
           },
           {
             "name": "Light2D",
             "kind": "struct",
-            "description": "Complete 2D light definition: position, color, radius, type, shadow, masks, flicker, and attenuation.",
+            "description": "Complete 2D light definition: position, color, radius, type, shadow, masks, flicker, and attenuation. # Fields",
             "file": "src/light/light2d.rs",
-            "line": 86
+            "line": 90
           }
         ]
       },
@@ -11111,29 +10652,42 @@
           {
             "name": "LightType",
             "kind": "enum",
-            "description": "Discriminant for the geometric illumination model used by a `Light2D`.",
+            "description": "Discriminant for the geometric illumination model used by a `Light2D`. # Variants",
             "file": "src/light/light_type.rs",
-            "line": 7
+            "line": 8
           }
         ]
       },
       "light::light_world": {
-        "module_doc": "Owns the light world owner for the light subsystem and keeps its rules local to this file. Keeps light data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior. Defines how light world data is validated, transformed, or stored before neighboring systems use it. Owns light behavior with explicit state, validation, and crate-local integration boundaries. Keeps public crate helpers focused on light world behavior while Lua registration stays elsewhere. Documents where light callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior. Use this file when changing light world defaults, lifecycle handling, validation, or data ownership. Keeps failure paths and edge cases near the light state that can explain them while keeping call sites explicit.",
+        "module_doc": "Stores the scene's validated light and occluder state plus bounded render-facing snapshots. GPU command submission and texture binding remain in `render`; this module only selects, validates, and exposes data for those consumers. The CPU preview is a bounded debug helper.",
         "source_file": "src/light/light_world.rs",
         "items": [
           {
             "name": "LightWorld",
             "kind": "struct",
-            "description": "Scene-level container for all `Light2D` instances and `Occluder` shapes.",
+            "description": "Scene-level container for all `Light2D` instances and `Occluder` shapes. # Fields",
             "file": "src/light/light_world.rs",
-            "line": 25
+            "line": 17
           },
           {
             "name": "NormalMapLightHint",
             "kind": "struct",
-            "description": "Snapshot of a single light's normal-map binding used by the renderer for surface shading.",
+            "description": "Snapshot of a single light's normal-map binding used by the renderer for surface shading. # Fields",
             "file": "src/light/light_world.rs",
-            "line": 46
+            "line": 45
+          }
+        ]
+      },
+      "light::limits": {
+        "module_doc": "Defines the fixed resource ceilings shared by light-world storage and debug previews. These limits bound Lua-reachable scene state before insertion and preview work before allocation.",
+        "source_file": "src/light/limits.rs",
+        "items": [
+          {
+            "name": "LightLimits",
+            "kind": "struct",
+            "description": "Resource ceilings for one `LightWorld`. # Fields",
+            "file": "src/light/limits.rs",
+            "line": 7
           }
         ]
       },
@@ -11160,56 +10714,63 @@
             "kind": "mod",
             "description": "Radial and custom falloff mode definitions.",
             "file": "src/light/mod.rs",
-            "line": 13
+            "line": 15
           },
           {
             "name": "flicker",
             "kind": "mod",
             "description": "Flicker animation config for dynamic light variation.",
             "file": "src/light/mod.rs",
-            "line": 15
+            "line": 17
           },
           {
             "name": "light2d",
             "kind": "mod",
             "description": "Core `Light2D` definition with all per-light properties.",
             "file": "src/light/mod.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "light_type",
             "kind": "mod",
             "description": "`LightType` enum distinguishing point, spot, and area lights.",
             "file": "src/light/mod.rs",
-            "line": 19
+            "line": 21
           },
           {
             "name": "light_world",
             "kind": "mod",
-            "description": "`LightWorld` accumulator that processes lights and emits render commands.",
+            "description": "`LightWorld` scene-state accumulator that validates lights and emits bounded snapshots; GPU commands stay in `render`.",
             "file": "src/light/mod.rs",
-            "line": 21
+            "line": 23
+          },
+          {
+            "name": "limits",
+            "kind": "mod",
+            "description": "Shared storage and debug-preview resource ceilings.",
+            "file": "src/light/mod.rs",
+            "line": 25
           },
           {
             "name": "occluder",
             "kind": "mod",
             "description": "Occluder shape used for shadow casting.",
             "file": "src/light/mod.rs",
-            "line": 23
+            "line": 27
           },
           {
             "name": "shadow",
             "kind": "mod",
             "description": "Shadow filter quality and radius settings.",
             "file": "src/light/mod.rs",
-            "line": 25
+            "line": 29
           },
           {
             "name": "transition",
             "kind": "mod",
             "description": "Tween-style transition helpers for animating light properties.",
             "file": "src/light/mod.rs",
-            "line": 27
+            "line": 31
           }
         ]
       },
@@ -11220,9 +10781,9 @@
           {
             "name": "Occluder",
             "kind": "struct",
-            "description": "Convex polygon shape that blocks light and casts shadows in `LightWorld`.",
+            "description": "Convex polygon shape that blocks light and casts shadows in `LightWorld`. # Fields",
             "file": "src/light/occluder.rs",
-            "line": 10
+            "line": 11
           }
         ]
       },
@@ -11233,9 +10794,9 @@
           {
             "name": "ShadowFilter",
             "kind": "enum",
-            "description": "Shadow filter quality preset controlling the soft-shadow sample kernel.",
+            "description": "Shadow filter quality preset controlling the soft-shadow sample kernel. # Variants",
             "file": "src/light/shadow.rs",
-            "line": 7
+            "line": 8
           }
         ]
       },
@@ -11246,9 +10807,9 @@
           {
             "name": "LightTransition",
             "kind": "struct",
-            "description": "Time-based linear tween that interpolates a light's color, intensity, and radius.",
+            "description": "Time-based linear tween that interpolates a light's color, intensity, and radius. # Fields",
             "file": "src/light/transition.rs",
-            "line": 8
+            "line": 9
           }
         ]
       },
@@ -24802,21 +24363,21 @@
             "kind": "struct",
             "description": "Nine-slice border distances used to preserve corners and edges.",
             "file": "src/sprite/texture_atlas.rs",
-            "line": 10
+            "line": 11
           },
           {
             "name": "AtlasRegion",
             "kind": "struct",
             "description": "A packed atlas region with coordinates, size, and optional nine-slice data.",
             "file": "src/sprite/texture_atlas.rs",
-            "line": 22
+            "line": 23
           },
           {
             "name": "TextureAtlas",
             "kind": "struct",
             "description": "Shelf-based texture atlas for packing named regions into a fixed canvas.",
             "file": "src/sprite/texture_atlas.rs",
-            "line": 46
+            "line": 38
           }
         ]
       },
@@ -30574,1227 +30135,1248 @@
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_event_entity_integration",
+        "name": "lua_integration_tilefield_light_integration",
         "description": "",
         "line": 921
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_ecs_progression_integration",
+        "name": "lua_integration_event_entity_integration",
         "description": "",
         "line": 926
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_i18n_ui_integration",
+        "name": "lua_integration_ecs_progression_integration",
         "description": "",
         "line": 931
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_image_dataframe_integration",
+        "name": "lua_integration_i18n_ui_integration",
         "description": "",
         "line": 936
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_math_pathfind_integration",
+        "name": "lua_integration_image_dataframe_integration",
         "description": "",
         "line": 941
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_math_physics_integration",
+        "name": "lua_integration_math_pathfind_integration",
         "description": "",
         "line": 946
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_minimap_pathfind_integration",
+        "name": "lua_integration_math_physics_integration",
         "description": "",
         "line": 951
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_minimap_tilemap_camera_integration",
+        "name": "lua_integration_minimap_pathfind_integration",
         "description": "",
         "line": 956
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_mods_filesystem_integration",
+        "name": "lua_integration_minimap_tilemap_camera_integration",
         "description": "",
         "line": 961
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_network_save_integration",
+        "name": "lua_integration_mods_filesystem_integration",
         "description": "",
         "line": 966
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_parallax_camera_integration",
+        "name": "lua_integration_network_save_integration",
         "description": "",
         "line": 971
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_particle_timer_integration",
+        "name": "lua_integration_parallax_camera_integration",
         "description": "",
         "line": 976
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_shooter_helpers_integration",
+        "name": "lua_integration_particle_timer_integration",
         "description": "",
         "line": 981
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_pathfind_ecs_integration",
+        "name": "lua_integration_shooter_helpers_integration",
         "description": "",
         "line": 986
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_pathfind_graph_integration",
+        "name": "lua_integration_pathfind_ecs_integration",
         "description": "",
         "line": 991
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_postfx_camera_integration",
+        "name": "lua_integration_pathfind_graph_integration",
         "description": "",
         "line": 996
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_procgen_tilemap_integration",
+        "name": "lua_integration_postfx_camera_integration",
         "description": "",
         "line": 1001
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_raycaster_render_integration",
+        "name": "lua_integration_procgen_tilemap_integration",
         "description": "",
         "line": 1006
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_raycaster_tilemap_integration",
+        "name": "lua_integration_raycaster_render_integration",
         "description": "",
         "line": 1011
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_render_animation_integration",
+        "name": "lua_integration_raycaster_tilemap_integration",
         "description": "",
         "line": 1016
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_svg_animation_integration",
+        "name": "lua_integration_render_animation_integration",
         "description": "",
         "line": 1021
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_render_camera_integration",
+        "name": "lua_integration_svg_animation_integration",
         "description": "",
         "line": 1026
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_save_ecs_integration",
+        "name": "lua_integration_render_camera_integration",
         "description": "",
         "line": 1031
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_save_ecs_scene_integration",
+        "name": "lua_integration_save_ecs_integration",
         "description": "",
         "line": 1036
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_save_tilemap_integration",
+        "name": "lua_integration_save_ecs_scene_integration",
         "description": "",
         "line": 1041
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_scene_camera_integration",
+        "name": "lua_integration_save_tilemap_integration",
         "description": "",
         "line": 1046
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_scene_physics_activation_integration",
+        "name": "lua_integration_scene_camera_integration",
         "description": "",
         "line": 1051
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_serialize_filesystem_integration",
+        "name": "lua_integration_scene_physics_activation_integration",
         "description": "",
         "line": 1056
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_terminal_input_integration",
+        "name": "lua_integration_serialize_filesystem_integration",
         "description": "",
         "line": 1061
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_thread_data_integration",
+        "name": "lua_integration_terminal_input_integration",
         "description": "",
         "line": 1066
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilemap_camera_integration",
+        "name": "lua_integration_thread_data_integration",
         "description": "",
         "line": 1071
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilemap_pathfind_integration",
+        "name": "lua_integration_tilemap_camera_integration",
         "description": "",
         "line": 1076
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilefield_pathfind_integration",
+        "name": "lua_integration_tilemap_pathfind_integration",
         "description": "",
         "line": 1081
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilefield_awareness_integration",
+        "name": "lua_integration_tilefield_pathfind_integration",
         "description": "",
         "line": 1086
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilefield_raycaster_integration",
+        "name": "lua_integration_tilefield_awareness_integration",
         "description": "",
         "line": 1091
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_minimap_tilefield_integration",
+        "name": "lua_integration_tilefield_raycaster_integration",
         "description": "",
         "line": 1096
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilefield_systems_integration",
+        "name": "lua_integration_minimap_tilefield_integration",
         "description": "",
         "line": 1101
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_procgen_tilefield_integration",
+        "name": "lua_integration_tilefield_systems_integration",
         "description": "",
         "line": 1106
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tilemap_physics_integration",
+        "name": "lua_integration_procgen_tilefield_integration",
         "description": "",
         "line": 1111
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_timer_event_integration",
+        "name": "lua_integration_tilemap_physics_integration",
         "description": "",
         "line": 1116
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_timer_math_integration",
+        "name": "lua_integration_timer_event_integration",
         "description": "",
         "line": 1121
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tween_camera_integration",
+        "name": "lua_integration_timer_math_integration",
         "description": "",
         "line": 1126
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_tween_ecs_integration",
+        "name": "lua_integration_tween_camera_integration",
         "description": "",
         "line": 1131
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_ui_localization_data_integration",
+        "name": "lua_integration_tween_ecs_integration",
         "description": "",
         "line": 1136
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_integration_workbench_particle_integration",
+        "name": "lua_integration_ui_localization_data_integration",
         "description": "",
         "line": 1141
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_battle_library",
+        "name": "lua_integration_workbench_particle_integration",
         "description": "",
         "line": 1146
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_combat_library",
+        "name": "lua_library_battle_library",
         "description": "",
         "line": 1151
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_crafting_library",
+        "name": "lua_library_combat_library",
         "description": "",
         "line": 1156
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_doll_library",
+        "name": "lua_library_crafting_library",
         "description": "",
         "line": 1161
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_economy_library",
+        "name": "lua_library_doll_library",
         "description": "",
         "line": 1166
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_inventory_library",
+        "name": "lua_library_economy_library",
         "description": "",
         "line": 1171
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_item_library",
+        "name": "lua_library_inventory_library",
         "description": "",
         "line": 1176
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_loot_library",
+        "name": "lua_library_item_library",
         "description": "",
         "line": 1181
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_library_roguelike_library",
+        "name": "lua_library_loot_library",
         "description": "",
         "line": 1186
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_filesystem_security",
+        "name": "lua_library_roguelike_library",
         "description": "",
         "line": 1191
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_network_security",
+        "name": "lua_security_filesystem_security",
         "description": "",
         "line": 1196
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_render_security",
+        "name": "lua_security_image_security",
         "description": "",
         "line": 1201
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_runtime_security",
+        "name": "lua_security_network_security",
         "description": "",
         "line": 1206
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_save_security",
+        "name": "lua_security_render_security",
         "description": "",
         "line": 1211
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_tilefield_security",
+        "name": "lua_security_runtime_security",
         "description": "",
         "line": 1216
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_tilelight_security",
+        "name": "lua_security_save_security",
         "description": "",
         "line": 1221
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_tilemap_security",
+        "name": "lua_security_tilefield_security",
         "description": "",
         "line": 1226
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_security_tileset_security",
+        "name": "lua_security_tilelight_security",
         "description": "",
         "line": 1231
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ai_stress",
+        "name": "lua_security_light_security",
         "description": "",
         "line": 1236
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_animation_stress",
+        "name": "lua_security_tilemap_security",
         "description": "",
         "line": 1241
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_binary_stress",
+        "name": "lua_security_tileset_security",
         "description": "",
         "line": 1246
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_camera_stress",
+        "name": "lua_stress_ai_stress",
         "description": "",
         "line": 1251
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_compute_stress",
+        "name": "lua_stress_animation_stress",
         "description": "",
         "line": 1256
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_dataframe_stress",
+        "name": "lua_stress_binary_stress",
         "description": "",
         "line": 1261
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_ecs_stress",
+        "name": "lua_stress_camera_stress",
         "description": "",
         "line": 1266
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_event_stress",
+        "name": "lua_stress_compute_stress",
         "description": "",
         "line": 1271
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_filesystem_stress",
+        "name": "lua_stress_dataframe_stress",
         "description": "",
         "line": 1276
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_image_stress",
+        "name": "lua_stress_ecs_stress",
         "description": "",
         "line": 1281
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_learning_stress",
+        "name": "lua_stress_event_stress",
         "description": "",
         "line": 1286
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_light_stress",
+        "name": "lua_stress_filesystem_stress",
         "description": "",
         "line": 1291
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_math_stress",
+        "name": "lua_stress_image_stress",
         "description": "",
         "line": 1296
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_particle_stress",
+        "name": "lua_stress_learning_stress",
         "description": "",
         "line": 1301
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_pathfind_stress",
+        "name": "lua_stress_light_stress",
         "description": "",
         "line": 1306
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_patterns_stress",
+        "name": "lua_stress_math_stress",
         "description": "",
         "line": 1311
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_physics_stress",
+        "name": "lua_stress_particle_stress",
         "description": "",
         "line": 1316
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_procgen_stress",
+        "name": "lua_stress_pathfind_stress",
         "description": "",
         "line": 1321
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_progression_stress",
+        "name": "lua_stress_patterns_stress",
         "description": "",
         "line": 1326
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_render_stress",
+        "name": "lua_stress_physics_stress",
         "description": "",
         "line": 1331
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_svg_stress",
+        "name": "lua_stress_procgen_stress",
         "description": "",
         "line": 1336
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_save_stress",
+        "name": "lua_stress_progression_stress",
         "description": "",
         "line": 1341
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_scene_stress",
+        "name": "lua_stress_render_stress",
         "description": "",
         "line": 1346
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_serialize_stress",
+        "name": "lua_stress_svg_stress",
         "description": "",
         "line": 1351
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_thread_stress",
+        "name": "lua_stress_save_stress",
         "description": "",
         "line": 1356
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilemap_stress",
+        "name": "lua_stress_scene_stress",
         "description": "",
         "line": 1361
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tileset_stress",
+        "name": "lua_stress_serialize_stress",
         "description": "",
         "line": 1366
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilefield_stress",
+        "name": "lua_stress_thread_stress",
         "description": "",
         "line": 1371
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tilelight_stress",
+        "name": "lua_stress_tilemap_stress",
         "description": "",
         "line": 1376
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_timer_stress",
+        "name": "lua_stress_tileset_stress",
         "description": "",
         "line": 1381
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_stress_tween_stress",
+        "name": "lua_stress_tilefield_stress",
         "description": "",
         "line": 1386
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_agent_unit",
+        "name": "lua_stress_tilelight_stress",
         "description": "",
         "line": 1391
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ai_unit",
+        "name": "lua_stress_timer_stress",
         "description": "",
         "line": 1396
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_animation_unit",
+        "name": "lua_stress_tween_stress",
         "description": "",
         "line": 1401
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_asset_unit",
+        "name": "lua_unit_agent_unit",
         "description": "",
         "line": 1406
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_audio_unit",
+        "name": "lua_unit_ai_unit",
         "description": "",
         "line": 1411
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_automation_unit",
+        "name": "lua_unit_animation_unit",
         "description": "",
         "line": 1416
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_beat_clock_unit",
+        "name": "lua_unit_asset_unit",
         "description": "",
         "line": 1421
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_binary_unit",
+        "name": "lua_unit_audio_unit",
         "description": "",
         "line": 1426
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_camera_unit",
+        "name": "lua_unit_automation_unit",
         "description": "",
         "line": 1431
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_charts_unit",
+        "name": "lua_unit_beat_clock_unit",
         "description": "",
         "line": 1436
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cinematic_unit",
+        "name": "lua_unit_binary_unit",
         "description": "",
         "line": 1441
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_collision_unit",
+        "name": "lua_unit_camera_unit",
         "description": "",
         "line": 1446
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_color_unit",
+        "name": "lua_unit_charts_unit",
         "description": "",
         "line": 1451
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_compute_unit",
+        "name": "lua_unit_cinematic_unit",
         "description": "",
         "line": 1456
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_cursor_unit",
+        "name": "lua_unit_collision_unit",
         "description": "",
         "line": 1461
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dataframe_unit",
+        "name": "lua_unit_color_unit",
         "description": "",
         "line": 1466
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_debugbridge_unit",
+        "name": "lua_unit_compute_unit",
         "description": "",
         "line": 1471
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_devtools_unit",
+        "name": "lua_unit_cursor_unit",
         "description": "",
         "line": 1476
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dialog_unit",
+        "name": "lua_unit_dataframe_unit",
         "description": "",
         "line": 1481
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_docs_unit",
+        "name": "lua_unit_debugbridge_unit",
         "description": "",
         "line": 1486
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_dsp_unit",
+        "name": "lua_unit_devtools_unit",
         "description": "",
         "line": 1491
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ecs_unit",
+        "name": "lua_unit_dialog_unit",
         "description": "",
         "line": 1496
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_effect_unit",
+        "name": "lua_unit_docs_unit",
         "description": "",
         "line": 1501
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_engine_unit",
+        "name": "lua_unit_dsp_unit",
         "description": "",
         "line": 1506
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_event_unit",
+        "name": "lua_unit_ecs_unit",
         "description": "",
         "line": 1511
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_filesystem_unit",
+        "name": "lua_unit_effect_unit",
         "description": "",
         "line": 1516
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_flownet_unit",
+        "name": "lua_unit_engine_unit",
         "description": "",
         "line": 1521
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_font_unit",
+        "name": "lua_unit_event_unit",
         "description": "",
         "line": 1526
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_globe_unit",
+        "name": "lua_unit_filesystem_unit",
         "description": "",
         "line": 1531
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_grep_unit",
+        "name": "lua_unit_flownet_unit",
         "description": "",
         "line": 1536
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_i18n_unit",
+        "name": "lua_unit_font_unit",
         "description": "",
         "line": 1541
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_image_unit",
+        "name": "lua_unit_globe_unit",
         "description": "",
         "line": 1546
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_input_unit",
+        "name": "lua_unit_grep_unit",
         "description": "",
         "line": 1551
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_learning_unit",
+        "name": "lua_unit_i18n_unit",
         "description": "",
         "line": 1556
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_layout_unit",
+        "name": "lua_unit_image_unit",
         "description": "",
         "line": 1561
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_light_unit",
+        "name": "lua_unit_input_unit",
         "description": "",
         "line": 1566
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_log_unit",
+        "name": "lua_unit_learning_unit",
         "description": "",
         "line": 1571
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_loot_unit",
+        "name": "lua_unit_layout_unit",
         "description": "",
         "line": 1576
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_math_unit",
+        "name": "lua_unit_light_unit",
         "description": "",
         "line": 1581
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mapblock_unit",
+        "name": "lua_unit_log_unit",
         "description": "",
         "line": 1586
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_minimap_unit",
+        "name": "lua_unit_loot_unit",
         "description": "",
         "line": 1591
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_mods_unit",
+        "name": "lua_unit_math_unit",
         "description": "",
         "line": 1596
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_modular_topdown_api_unit",
+        "name": "lua_unit_mapblock_unit",
         "description": "",
         "line": 1601
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_net_unit",
+        "name": "lua_unit_minimap_unit",
         "description": "",
         "line": 1606
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_network_unit",
+        "name": "lua_unit_mods_unit",
         "description": "",
         "line": 1611
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_overlay_unit",
+        "name": "lua_unit_modular_topdown_api_unit",
         "description": "",
         "line": 1616
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_parallax_unit",
+        "name": "lua_unit_net_unit",
         "description": "",
         "line": 1621
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_particle_unit",
+        "name": "lua_unit_network_unit",
         "description": "",
         "line": 1626
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pathfind_unit",
+        "name": "lua_unit_overlay_unit",
         "description": "",
         "line": 1631
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_patterns_unit",
+        "name": "lua_unit_parallax_unit",
         "description": "",
         "line": 1636
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_physics_unit",
+        "name": "lua_unit_particle_unit",
         "description": "",
         "line": 1641
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_pipeline_unit",
+        "name": "lua_unit_pathfind_unit",
         "description": "",
         "line": 1646
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_progression_unit",
+        "name": "lua_unit_patterns_unit",
         "description": "",
         "line": 1651
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_unit",
+        "name": "lua_unit_physics_unit",
         "description": "",
         "line": 1656
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_procgen_gap_unit",
+        "name": "lua_unit_pipeline_unit",
         "description": "",
         "line": 1661
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_province_unit",
+        "name": "lua_unit_progression_unit",
         "description": "",
         "line": 1666
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_raycaster_unit",
+        "name": "lua_unit_procgen_unit",
         "description": "",
         "line": 1671
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_render_unit",
+        "name": "lua_unit_procgen_gap_unit",
         "description": "",
         "line": 1676
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_repl_unit",
+        "name": "lua_unit_province_unit",
         "description": "",
         "line": 1681
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_runtime_unit",
+        "name": "lua_unit_raycaster_unit",
         "description": "",
         "line": 1686
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_save_unit",
+        "name": "lua_unit_render_unit",
         "description": "",
         "line": 1691
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_scene_unit",
+        "name": "lua_unit_repl_unit",
         "description": "",
         "line": 1696
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_serialize_unit",
+        "name": "lua_unit_runtime_unit",
         "description": "",
         "line": 1701
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_shape_unit",
+        "name": "lua_unit_save_unit",
         "description": "",
         "line": 1706
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_spine_unit",
+        "name": "lua_unit_scene_unit",
         "description": "",
         "line": 1711
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_sprite_unit",
+        "name": "lua_unit_serialize_unit",
         "description": "",
         "line": 1716
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_svg_unit",
+        "name": "lua_unit_shape_unit",
         "description": "",
         "line": 1721
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_terminal_unit",
+        "name": "lua_unit_spine_unit",
         "description": "",
         "line": 1726
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_thread_unit",
+        "name": "lua_unit_sprite_unit",
         "description": "",
         "line": 1731
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilemap_unit",
+        "name": "lua_unit_svg_unit",
         "description": "",
         "line": 1736
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_unit",
+        "name": "lua_unit_terminal_unit",
         "description": "",
         "line": 1741
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilefield_gap_unit",
+        "name": "lua_unit_thread_unit",
         "description": "",
         "line": 1746
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tilelight_unit",
+        "name": "lua_unit_tilemap_unit",
         "description": "",
         "line": 1751
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tileset_unit",
+        "name": "lua_unit_tilefield_unit",
         "description": "",
         "line": 1756
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_timer_unit",
+        "name": "lua_unit_tilefield_gap_unit",
         "description": "",
         "line": 1761
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_tween_unit",
+        "name": "lua_unit_tilelight_unit",
         "description": "",
         "line": 1766
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_ui_unit",
+        "name": "lua_unit_tileset_unit",
         "description": "",
         "line": 1771
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_validator_unit",
+        "name": "lua_unit_timer_unit",
         "description": "",
         "line": 1776
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_awareness_unit",
+        "name": "lua_unit_tween_unit",
         "description": "",
         "line": 1781
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_unit_window_unit",
+        "name": "lua_unit_ui_unit",
         "description": "",
         "line": 1786
       },
       {
         "file": "tests/lua_tests.rs",
         "module": "lua",
-        "name": "lua_demo_colocated_games",
+        "name": "lua_unit_validator_unit",
         "description": "",
         "line": 1791
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_awareness_unit",
+        "description": "",
+        "line": 1796
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_unit_window_unit",
+        "description": "",
+        "line": 1801
+      },
+      {
+        "file": "tests/lua_tests.rs",
+        "module": "lua",
+        "name": "lua_demo_colocated_games",
+        "description": "",
+        "line": 1806
       },
       {
         "file": "tests/workbench_smoke_tests.rs",
@@ -32863,6 +32445,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_tilefield_light_integration.lua",
+        "module": "test_tilefield_light_integration",
+        "name": "test_tilefield_light_integration",
+        "description": "Integration: authored tilefield refs become bounded light-world render previews.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_tilefield_pathfind_integration.lua",
         "module": "test_tilefield_pathfind_integration",
         "name": "test_tilefield_pathfind_integration",
@@ -33014,6 +32603,20 @@
         "module": "test_filesystem_security",
         "name": "test_filesystem_security",
         "description": "test_filesystem.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/security/test_image_security.lua",
+        "module": "test_image_security",
+        "name": "test_image_security",
+        "description": "Adversarial coverage for bounded image allocation, raw buffers, and transactional pixel callbacks.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/security/test_light_security.lua",
+        "module": "test_light_security",
+        "name": "test_light_security",
+        "description": "Adversarial coverage for light-world numeric validation, bounded previews, and stale handles.",
         "kind": "lua"
       },
       {

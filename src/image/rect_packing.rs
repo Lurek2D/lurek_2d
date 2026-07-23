@@ -5,6 +5,10 @@
 //! Open this file when atlas occupancy, placement order, or padding handling produces wasted or invalid space.
 
 /// Placement result for a single packed rectangle.
+///
+/// # Fields
+///
+/// Optional caller id and checked atlas coordinates describe one content rectangle.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PackedRect {
     /// Optional label assigned by the caller for mapping back to source assets.
@@ -31,6 +35,10 @@ struct Shelf {
 }
 
 /// Shelf-first texture-atlas packer with configurable atlas dimensions and uniform padding.
+///
+/// # Fields
+///
+/// Atlas dimensions, padding, internal shelves, and insertion-order placements define one packing session.
 #[derive(Debug, Clone)]
 pub struct RectPacker {
     /// Atlas width in pixels.
@@ -57,6 +65,9 @@ impl RectPacker {
     }
     /// Place a `w × h` rectangle with optional `id` label; returns placement or `None` when no space remains.
     pub fn pack(&mut self, w: u32, h: u32, id: Option<String>) -> Option<PackedRect> {
+        if self.packed.len() >= crate::image::ImageLimits::default().max_atlas_rectangles {
+            return None;
+        }
         if w == 0 || h == 0 {
             return None;
         }

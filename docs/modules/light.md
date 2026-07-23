@@ -685,7 +685,7 @@ end
 
 ### `lurek.light.setMaxLights`
 
-Sets the maximum configured light count, clamped to 1 through 256.
+Sets the renderer selection count; values must be 1 through 256.
 
 ```lua
 lurek.light.setMaxLights(n)
@@ -829,7 +829,7 @@ end
 
 #### `LLight:clearCookie`
 
-Clears the cookie texture path stored on this Lua light handle.
+Clears the cookie resource path from the authoritative light state.
 
 ```lua
 LLight:clearCookie()
@@ -976,7 +976,7 @@ end
 
 #### `LLight:getCookie`
 
-Returns the cookie texture path stored on this Lua light handle.
+Returns the cookie resource path stored on the authoritative light state.
 
 ```lua
 LLight:getCookie()
@@ -1894,7 +1894,7 @@ end
 
 #### `LLight:setCookie`
 
-Stores a cookie texture path on this Lua light handle.
+Stores a cookie resource path on the authoritative light state. It is not sampled until a renderer supports cookies.
 
 ```lua
 LLight:setCookie(path)

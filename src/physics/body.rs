@@ -46,6 +46,7 @@ pub enum BodyShape {
 }
 
 /// Per-body coefficients controlling how authored flow fields affect this body.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct BodyFlowInfluence {
     /// Enables or disables flow-field participation for this body.

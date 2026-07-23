@@ -7,7 +7,6 @@
 //! Neighboring systems include import, rendering, routing, map modes, and GPU bridges that consume registry records.
 //! Open this file whenever province state semantics, mutation APIs, or revision contracts need coordinated updates.
 
-use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::{MapModeConfig, MapModeRegistry};
 use crate::province::topology::ProvinceGraph;
@@ -15,6 +14,7 @@ use crate::province::types::{
     BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot, ProvinceStyle,
     ProvinceVisualState,
 };
+use crate::province::ProvinceGrid;
 use crate::runtime::resource_keys::ShaderKey;
 use std::collections::HashMap;
 

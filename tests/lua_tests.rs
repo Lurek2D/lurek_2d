@@ -918,6 +918,11 @@ fn lua_integration_effect_light_integration() {
 }
 
 #[test]
+fn lua_integration_tilefield_light_integration() {
+    run_lua_test("integration/test_tilefield_light_integration.lua");
+}
+
+#[test]
 fn lua_integration_event_entity_integration() {
     run_lua_test("integration/test_event_entity_integration.lua");
 }
@@ -1193,6 +1198,11 @@ fn lua_security_filesystem_security() {
 }
 
 #[test]
+fn lua_security_image_security() {
+    run_lua_test("security/test_image_security.lua");
+}
+
+#[test]
 fn lua_security_network_security() {
     run_lua_test("security/test_network_security.lua");
 }
@@ -1220,6 +1230,16 @@ fn lua_security_tilefield_security() {
 #[test]
 fn lua_security_tilelight_security() {
     run_lua_test("security/test_tilelight_security.lua");
+}
+
+#[test]
+fn lua_security_light_security() {
+    run_lua_test("security/test_light_security.lua");
+}
+
+#[test]
+fn lua_security_physics_security() {
+    run_lua_test("security/test_physics_security.lua");
 }
 
 #[test]

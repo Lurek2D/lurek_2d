@@ -6,10 +6,15 @@
 //! Use this file when changing image animated gif defaults, lifecycle handling, validation, or data ownership rules.
 
 use crate::image::ImageData;
-use ::gif::{ColorOutput, DecodeOptions, Encoder, Frame, Repeat};
+use crate::image::ImageLimits;
+use gif::{ColorOutput, DecodeOptions, Encoder, Frame, Repeat};
 use std::io::Cursor;
 
 /// Repeat policy for animated GIF output.
+///
+/// # Variants
+///
+/// `Infinite` loops forever, `Finite` loops a bounded count, and `None` omits repeat metadata.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AnimatedGifRepeat {
     /// Loop forever.
@@ -21,6 +26,10 @@ pub enum AnimatedGifRepeat {
 }
 
 /// GIF export settings shared across image and Lua-facing callers.
+///
+/// # Fields
+///
+/// Delay, quantizer speed, and repeat policy bound the generated GIF stream.
 #[derive(Debug, Clone, Copy)]
 pub struct AnimatedGifOptions {
     /// Frame delay in milliseconds.
@@ -32,6 +41,10 @@ pub struct AnimatedGifOptions {
 }
 
 /// Decoded animated GIF frame with its display duration.
+///
+/// # Fields
+///
+/// `image` is one composited RGBA snapshot and `duration_ms` is its bounded display delay.
 #[derive(Debug, Clone)]
 pub struct AnimatedGifFrame {
     /// RGBA pixels for the composited frame.
@@ -75,11 +88,29 @@ impl AnimatedGifOptions {
 }
 
 fn validate_frames(frames: &[ImageData]) -> Result<(u16, u16), String> {
+    let limits = ImageLimits::default();
+    if frames.len() > limits.max_frames_or_layers {
+        return Err(format!(
+            "saveGIF has {} frames, limit is {}",
+            frames.len(),
+            limits.max_frames_or_layers
+        ));
+    }
     let first = frames
         .first()
         .ok_or_else(|| "saveGIF requires at least one frame".to_string())?;
     let width = first.width();
     let height = first.height();
+    let frame_bytes = limits.rgba_bytes(width, height)?;
+    let aggregate = frame_bytes
+        .checked_mul(frames.len())
+        .ok_or_else(|| "saveGIF aggregate frame bytes overflow".to_string())?;
+    if aggregate > limits.max_aggregate_bytes {
+        return Err(format!(
+            "saveGIF frame bytes {} exceed limit {}",
+            aggregate, limits.max_aggregate_bytes
+        ));
+    }
     if width == 0 || height == 0 {
         return Err("saveGIF does not support zero-sized frames".into());
     }
@@ -133,11 +164,14 @@ pub fn encode_gif(frames: &[ImageData], options: AnimatedGifOptions) -> Result<V
         }
     }
 
+    ImageLimits::default().encoded_bytes(bytes.len(), "GIF output")?;
     Ok(bytes)
 }
 
 /// Decode animated GIF bytes into composited RGBA frames and frame durations.
 pub fn decode_gif(bytes: &[u8], label: &str) -> Result<Vec<AnimatedGifFrame>, String> {
+    let limits = ImageLimits::default();
+    limits.encoded_bytes(bytes.len(), &format!("GIF '{}' input", label))?;
     let mut options = DecodeOptions::new();
     options.set_color_output(ColorOutput::RGBA);
     let mut reader = options
@@ -149,7 +183,8 @@ pub fn decode_gif(bytes: &[u8], label: &str) -> Result<Vec<AnimatedGifFrame>, St
         return Err(format!("GIF '{}' has zero-sized canvas", label));
     }
 
-    let mut canvas = ImageData::new(canvas_w, canvas_h);
+    let canvas_bytes = limits.rgba_bytes(canvas_w, canvas_h)?;
+    let mut canvas = ImageData::try_new_with_limits(canvas_w, canvas_h, limits)?;
     let mut frames = Vec::new();
     while let Some(frame) = reader
         .read_next_frame()
@@ -159,7 +194,16 @@ pub fn decode_gif(bytes: &[u8], label: &str) -> Result<Vec<AnimatedGifFrame>, St
         let fh = frame.height as u32;
         let left = frame.left as u32;
         let top = frame.top as u32;
-        let expected = ImageData::rgba_byte_len(fw, fh)?;
+        let right = left
+            .checked_add(fw)
+            .ok_or_else(|| format!("GIF '{}' frame rectangle overflows", label))?;
+        let bottom = top
+            .checked_add(fh)
+            .ok_or_else(|| format!("GIF '{}' frame rectangle overflows", label))?;
+        if right > canvas_w || bottom > canvas_h {
+            return Err(format!("GIF '{}' frame rectangle exceeds canvas", label));
+        }
+        let expected = limits.rgba_bytes(fw, fh)?;
         if frame.buffer.len() != expected {
             return Err(format!(
                 "GIF '{}' frame has {} bytes, expected {}",
@@ -168,7 +212,22 @@ pub fn decode_gif(bytes: &[u8], label: &str) -> Result<Vec<AnimatedGifFrame>, St
                 expected
             ));
         }
-        let frame_image = ImageData::from_bytes(fw, fh, frame.buffer.to_vec())?;
+        if frames.len() >= limits.max_frames_or_layers {
+            return Err(format!(
+                "GIF '{}' exceeds frame limit {}",
+                label, limits.max_frames_or_layers
+            ));
+        }
+        let aggregate = canvas_bytes
+            .checked_mul(frames.len() + 1)
+            .ok_or_else(|| format!("GIF '{}' aggregate frame bytes overflow", label))?;
+        if aggregate > limits.max_aggregate_bytes {
+            return Err(format!(
+                "GIF '{}' decoded frame bytes exceed limit {}",
+                label, limits.max_aggregate_bytes
+            ));
+        }
+        let frame_image = ImageData::from_bytes_with_limits(fw, fh, frame.buffer.to_vec(), limits)?;
         canvas.blit(&frame_image, left as i32, top as i32);
         let duration_ms = (frame.delay as u32).saturating_mul(10).max(10);
         frames.push(AnimatedGifFrame {

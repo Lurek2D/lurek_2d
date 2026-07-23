@@ -410,7 +410,7 @@ impl World {
         validate_finite("target_y", f64::from(target_y))?;
         validate_positive("max_force", f64::from(max_force))?;
         let anchor = Body::try_new(target_x, target_y, 0.2, 0.2, BodyType::Kinematic)?;
-        let anchor_id = self.add_body(anchor);
+        let anchor_id = self.try_add_body(anchor)?;
         let ha = self.body_handles[body_id];
         let hb = self.body_handles[anchor_id.0];
         let stiffness = max_force;

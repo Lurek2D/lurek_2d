@@ -10,7 +10,5 @@ Active source of truth:
 - `.codex/skills/`
 
 Legacy reference:
-- `.github/copilot-instructions.md`
-- `.github/agents/`
-- `.github/skills/`
-- `.github/prompts/`
+- The former `.github` Copilot guidance was retired during migration. The active `.codex/`
+  guidance listed above is the only supported source of workflow instructions.

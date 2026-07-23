@@ -3,6 +3,7 @@
 //! Open this file when shadow-filter semantics change; per-light state and occluder ownership live in sibling files.
 
 /// Shadow filter quality preset controlling the soft-shadow sample kernel.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ShadowFilter {
     /// Hard shadows with no filtering; fastest (default).

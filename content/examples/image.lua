@@ -1093,8 +1093,8 @@ do
     local b = lurek.image.newImageData(2, 2)
     a:fill(255, 0, 0, 255)
     b:fill(0, 255, 0, 255)
-    lurek.image.saveGIF({ a, b }, "work/example_load_animated.gif", { delayMs = 40 })
-    local animated = lurek.image.loadAnimated("work/example_load_animated.gif")
+    lurek.image.saveGIF({ a, b }, "save/example_load_animated.gif", { delayMs = 40 })
+    local animated = lurek.image.loadAnimated("save/example_load_animated.gif")
     lurek.log.info("[image] animated frames=" .. tostring(animated:frameCount()))
 end
 
@@ -1102,8 +1102,8 @@ end
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(255, 255, 255, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_count.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_count.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_count.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_count.gif")
     local count = animated:frameCount()
     lurek.log.info("[image] frameCount=" .. tostring(count))
 end
@@ -1112,8 +1112,8 @@ end
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(20, 40, 80, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frame.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_frame.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_frame.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_frame.gif")
     local first = animated:getFrame(1)
     lurek.log.info("[image] first frame width=" .. tostring(first:getWidth()))
 end
@@ -1122,8 +1122,8 @@ end
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(20, 40, 80, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_duration.gif", { delayMs = 50 })
-    local animated = lurek.image.loadAnimated("work/example_anim_duration.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_duration.gif", { delayMs = 50 })
+    local animated = lurek.image.loadAnimated("save/example_anim_duration.gif")
     local duration = animated:getDuration(1)
     lurek.log.info("[image] duration=" .. tostring(duration))
 end
@@ -1132,8 +1132,8 @@ end
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(80, 40, 20, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_frames.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_frames.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_frames.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_frames.gif")
     local frames = animated:getFrames()
     lurek.log.info("[image] frames table=" .. tostring(#frames))
 end
@@ -1142,8 +1142,8 @@ end
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(80, 40, 20, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_durations.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_durations.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_durations.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_durations.gif")
     local durations = animated:getDurations()
     lurek.log.info("[image] durations table=" .. tostring(#durations))
 end
@@ -1152,8 +1152,8 @@ end
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(1, 2, 3, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_type.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_type.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_type.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_type.gif")
     local kind = animated:type()
     lurek.log.info("[image] animated type=" .. kind)
 end
@@ -1162,8 +1162,8 @@ end
 do
     local frame = lurek.image.newImageData(2, 2)
     frame:fill(1, 2, 3, 255)
-    lurek.image.saveGIF({ frame, frame }, "work/example_anim_typeof.gif", { delayMs = 30 })
-    local animated = lurek.image.loadAnimated("work/example_anim_typeof.gif")
+    lurek.image.saveGIF({ frame, frame }, "save/example_anim_typeof.gif", { delayMs = 30 })
+    local animated = lurek.image.loadAnimated("save/example_anim_typeof.gif")
     local ok = animated:typeOf("LObject")
     lurek.log.info("[image] animated typeOf=" .. tostring(ok))
 end

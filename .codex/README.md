@@ -20,4 +20,5 @@ Optional Headroom:
 - Use `tools/python.cmd tools/dev/headroom_runtime.py proxy` or `mcp-serve` when you want proxy or MCP mode without modifying active `config.toml`.
 
 Legacy note:
-- `.github/agents`, `.github/prompts`, and `.github/skills` remain as migration reference only.
+- The former repository-hosted Copilot role, prompt, and skill directories were retired; use the
+  active `.codex/` guidance above.

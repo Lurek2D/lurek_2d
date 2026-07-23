@@ -5,7 +5,7 @@
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
-use lurek2d::image::{ImageData, ProvinceGrid};
+use lurek2d::image::ImageData;
 use lurek2d::province::cache::ProvinceGeometryCache;
 use lurek2d::province::import::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
@@ -30,6 +30,7 @@ use lurek2d::province::{
     distance_field::compute_distance_field_from_registry,
     gpu_bridge::{build_border_style_gpu_records, build_dense_gpu_records},
     gpu_upload::{pack_u16_pixels_le, pack_u32_pixels_le},
+    ProvinceGrid,
 };
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::runtime::resource_keys::FontKey;

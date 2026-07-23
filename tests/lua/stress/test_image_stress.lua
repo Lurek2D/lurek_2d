@@ -60,5 +60,37 @@ describe("stress: image creation throughput", function()
 
         expect_true(elapsed < 5.0, "pixel write budget: " .. elapsed .. "s")
     end)
+
+    -- @stress LImageData:resize
+    it("resize a 256x256 image ten times: <10s", function()
+        local img = new_img(256, 256)
+        if img == nil or type(img.resize) ~= "function" then
+            expect_true(img == nil or type(img.resize) ~= "function")
+            return
+        end
+
+        local elapsed = measure("image:resize 256x256 x10", 10, function()
+            local resized = img:resize(128, 128, "bilinear")
+            expect_true(resized ~= nil, "resize returns an image")
+        end)
+
+        expect_true(elapsed < 10.0, "resize budget: " .. elapsed .. "s")
+    end)
+
+    -- @stress LImageData:drawLine
+    it("draw 10000 diagonal lines on a 256x256 image: <10s", function()
+        local img = new_img(256, 256)
+        if img == nil or type(img.drawLine) ~= "function" then
+            expect_true(img == nil or type(img.drawLine) ~= "function")
+            return
+        end
+
+        local COUNT = 10000
+        local elapsed = measure("image:drawLine x" .. COUNT, COUNT, function()
+            img:drawLine(0, 0, 255, 255, 255, 255, 255, 255)
+        end)
+
+        expect_true(elapsed < 10.0, "line rasterization budget: " .. elapsed .. "s")
+    end)
 end)
 test_summary()

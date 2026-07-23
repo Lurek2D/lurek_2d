@@ -9,6 +9,8 @@
 pub mod attenuation;
 /// Additive, multiply, and screen blend mode variants for light accumulation.
 pub mod blend_mode;
+/// Bounded CPU debug preview rasterizer; not part of the renderer's GPU submission path.
+pub(crate) mod debug_image;
 /// Radial and custom falloff mode definitions.
 pub mod falloff;
 /// Flicker animation config for dynamic light variation.
@@ -17,8 +19,10 @@ pub mod flicker;
 pub mod light2d;
 /// `LightType` enum distinguishing point, spot, and area lights.
 pub mod light_type;
-/// `LightWorld` accumulator that processes lights and emits render commands.
+/// `LightWorld` scene-state accumulator that validates lights and emits bounded snapshots; GPU commands stay in `render`.
 pub mod light_world;
+/// Shared storage and debug-preview resource ceilings.
+pub mod limits;
 /// Occluder shape used for shadow casting.
 pub mod occluder;
 /// Shadow filter quality and radius settings.
@@ -39,6 +43,8 @@ pub use light2d::{Light2D, Light2DAttenuationPatch, Light2DOptionsPatch};
 pub use light_type::LightType;
 /// Light world accumulator and normal-map hint types.
 pub use light_world::{LightWorld, NormalMapLightHint};
+/// Resource ceilings for the light world.
+pub use limits::LightLimits;
 /// Occluder shape for shadow casting by opaque geometry.
 pub use occluder::Occluder;
 /// Shadow filter settings controlling soft-shadow quality.

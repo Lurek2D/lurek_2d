@@ -8,6 +8,7 @@
 use std::fmt;
 
 /// Error returned by safe physics constructors, bounded helpers, and strict mutators.
+/// # Variants
 #[derive(Debug, Clone, PartialEq)]
 pub enum PhysicsError {
     /// A Lua or API body id was negative or otherwise invalid for the stable slot model.

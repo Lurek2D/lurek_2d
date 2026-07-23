@@ -113,6 +113,10 @@ local function new_zone_world()
     return world
 end
 
+local function new_empty_physics_world()
+    return lurek.physics.newWorld(0, 0)
+end
+
 -- @describe physics stress: 1000 bodies
 describe("physics stress: 1000 bodies", function()
     -- @stress lurek.physics.newBody
@@ -256,6 +260,85 @@ describe("stress: physics zones throughput", function()
 
         local events = world:getZoneEvents()
         expect_type("table", events)
+    end)
+end)
+
+-- @describe physics stress: authored force ceilings
+describe("physics stress: authored force ceilings", function()
+    -- @stress LWorld:addGravityVector
+    it("registers 512 additive gravity vectors without rejecting valid work", function()
+        local world = new_empty_physics_world()
+        local last_id = nil
+        for i = 1, 512 do
+            last_id = world:addGravityVector(i % 2, -(i % 3))
+        end
+        expect_type("number", last_id)
+        expect_true(last_id >= 0)
+    end)
+
+    -- @stress LWorld:addFlowField
+    it("registers 512 bounded rectangular flow fields without error", function()
+        local world = new_empty_physics_world()
+        local last_field = nil
+        for i = 1, 512 do
+            last_field = world:addFlowField({
+                geometry = "rect",
+                x = (i % 32) * 16,
+                y = math.floor(i / 32) * 16,
+                w = 12,
+                h = 12,
+                direction = "explicit",
+                directionVector = { x = 1, y = 0 },
+                strength = 20,
+            })
+        end
+        expect_type("userdata", last_field)
+    end)
+end)
+
+-- @describe physics stress: query and ballistic sidecars
+describe("physics stress: query and ballistic sidecars", function()
+    -- @stress LWorld:raycastAll
+    it("returns deterministic bounded all-hit queries across dense static bodies", function()
+        local world = new_empty_physics_world()
+        for i = 1, 512 do
+            world:newBody(i * 4, 0, 2, 2, "static")
+        end
+        world:step(1 / 60)
+
+        local first_ids = nil
+        for _ = 1, 32 do
+            local hits = world:raycastAll(0, 0, 1, 0, 4096)
+            expect_equal(512, #hits, "all static bodies are reported")
+            if first_ids == nil then
+                first_ids = { hits[1].bodyId, hits[#hits].bodyId }
+            else
+                expect_equal(first_ids[1], hits[1].bodyId, "first hit ordering is stable")
+                expect_equal(first_ids[2], hits[#hits].bodyId, "last hit ordering is stable")
+            end
+        end
+    end)
+
+    -- @stress LWorld:spawnBallisticProjectile
+    it("advances a dense bounded set of engine-owned ballistic projectiles", function()
+        local world = new_empty_physics_world()
+        for i = 1, 128 do
+            world:spawnBallisticProjectile({
+                from = { x = 0, y = i, z = 10 },
+                to = { x = 50, y = i, z = 10 },
+                speed = 100,
+                gravity = 0,
+                radius = 1,
+                height = 1,
+                maxTime = 1,
+                sampleDt = 0.05,
+            })
+        end
+
+        for _ = 1, 10 do
+            world:step(1 / 60)
+        end
+        expect_not_nil(world:getBallisticProjectile(0), "first projectile remains queryable")
     end)
 end)
 test_summary()

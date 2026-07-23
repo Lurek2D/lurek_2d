@@ -479,19 +479,11 @@
     ],
     "current_artifacts": [
       "tests/artifacts/current/effect/effect_capture_preset_state.json",
-      "tests/artifacts/current/effect/effect_custom_shader_pass_map.png",
-      "tests/artifacts/current/effect/effect_enable_dedup_matrix.png",
-      "tests/artifacts/current/effect/effect_image_chain_parameters.png",
       "tests/artifacts/current/effect/effect_image_chain_state.json",
-      "tests/artifacts/current/effect/effect_parameter_response_curves.png",
-      "tests/artifacts/current/effect/effect_preset_stack_contact_sheet.png",
       "tests/artifacts/current/effect/effect_shader_visual_01_custom_pass.png",
       "tests/artifacts/current/effect/effect_shader_visual_02_auto_uniforms.png",
       "tests/artifacts/current/effect/effect_shader_visual_03_screen_transition.png",
-      "tests/artifacts/current/effect/effect_stack_order_lookbook.gif",
-      "tests/artifacts/current/effect/effect_stack_pipeline.gif",
-      "tests/artifacts/current/effect/effect_stack_state.json",
-      "tests/artifacts/current/effect/effect_type_catalog.png"
+      "tests/artifacts/current/effect/effect_stack_state.json"
     ],
     "evidence_tests": [
       "tests/lua/evidence/test_effect_evidence.lua"
@@ -867,18 +859,10 @@
       "tests/artifacts/baselines/overlay/overlay_weather_wind_field.png"
     ],
     "current_artifacts": [
-      "tests/artifacts/current/overlay/overlay_atmosphere_compositor.png",
-      "tests/artifacts/current/overlay/overlay_environment_layers.gif",
-      "tests/artifacts/current/overlay/overlay_flash_shake_fade_composite.gif",
-      "tests/artifacts/current/overlay/overlay_screen_effects_timeline.gif",
       "tests/artifacts/current/overlay/overlay_shader_visual_01_screen_overlay.png",
       "tests/artifacts/current/overlay/overlay_shader_visual_02_heat_haze.png",
       "tests/artifacts/current/overlay/overlay_shader_visual_03_fog_layer.png",
-      "tests/artifacts/current/overlay/overlay_storm_front_wind_sweep.gif",
-      "tests/artifacts/current/overlay/overlay_transition_mask_atlas.png",
-      "tests/artifacts/current/overlay/overlay_transition_modes.gif",
-      "tests/artifacts/current/overlay/overlay_weather_state_trace.json",
-      "tests/artifacts/current/overlay/overlay_weather_wind_field.png"
+      "tests/artifacts/current/overlay/overlay_weather_state_trace.json"
     ],
     "evidence_tests": [
       "tests/lua/evidence/test_overlay_evidence.lua"
@@ -930,20 +914,9 @@
       "tests/artifacts/baselines/particle/particle_velocity_burst.gif"
     ],
     "current_artifacts": [
-      "tests/artifacts/current/particle/particle_archetype_showcase.png",
-      "tests/artifacts/current/particle/particle_attractor_field.gif",
-      "tests/artifacts/current/particle/particle_bounds_bounce_box.gif",
-      "tests/artifacts/current/particle/particle_control_state_timeline.gif",
-      "tests/artifacts/current/particle/particle_emission_area_shapes.png",
-      "tests/artifacts/current/particle/particle_lifecycle_chart.png",
-      "tests/artifacts/current/particle/particle_paint_composite.png",
       "tests/artifacts/current/particle/particle_shader_visual_01_dissolve.png",
       "tests/artifacts/current/particle/particle_shader_visual_02_glow.png",
-      "tests/artifacts/current/particle/particle_shader_visual_03_trail_tint.png",
-      "tests/artifacts/current/particle/particle_shape_size_keyframes.png",
-      "tests/artifacts/current/particle/particle_subemitter_death_burst.gif",
-      "tests/artifacts/current/particle/particle_trail_ribbon_decay.gif",
-      "tests/artifacts/current/particle/particle_velocity_burst.gif"
+      "tests/artifacts/current/particle/particle_shader_visual_03_trail_tint.png"
     ],
     "evidence_tests": [
       "tests/lua/evidence/test_particle_evidence.lua"

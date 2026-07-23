@@ -15,6 +15,7 @@ use super::error::PhysicsError;
 use super::limits::{validate_finite, validate_positive, validate_range, PhysicsLimits};
 
 /// Options for deriving a collision shape from an image alpha mask.
+/// # Fields
 #[derive(Debug, Clone, Copy)]
 pub struct AlphaShapeOptions {
     /// Alpha channel threshold. Pixels with alpha >= threshold are considered solid.
@@ -216,9 +217,10 @@ impl Shape {
 
         if vertices.len() > 1 {
             let first = vertices[0];
-            let last = *vertices.last().unwrap();
-            if (first.x - last.x).abs() <= 0.25 && (first.y - last.y).abs() <= 0.25 {
-                vertices.pop();
+            if let Some(&last) = vertices.last() {
+                if (first.x - last.x).abs() <= 0.25 && (first.y - last.y).abs() <= 0.25 {
+                    vertices.pop();
+                }
             }
         }
         vertices

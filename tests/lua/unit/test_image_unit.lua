@@ -39,7 +39,7 @@ local function new_layered_fixture()
 end
 
 local function load_test_animated_image()
-    local path = "work/test_load_animated.gif"
+    local path = "save/test_load_animated.gif"
     local a = solid_image(2, 2, 255, 0, 0, 255)
     local b = solid_image(2, 2, 0, 255, 0, 255)
     lurek.image.saveGIF({ a, b }, path, { delayMs = 40 })

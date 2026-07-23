@@ -1,10 +1,17 @@
-//! Owns the image compressed implementation for the image subsystem and keeps related runtime rules local here.
-//! Keeps image data, encoded assets, and effect helpers ownership so helpers stay close to invariants this file updates.
-//! Defines how image compressed data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates image compressed behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Provides bounded compatibility diagnostics for legacy DDS texture assets.
+//!
+//! This runtime deliberately has no DDS decode/upload path: PNG-backed `ImageData` is the
+//! supported image interchange format. The types below remain only so callers can recognize a
+//! DDS magic header and receive a clear migration error. They never expose a usable compressed
+//! texture or grant Lua code direct filesystem authority.
 
+use crate::image::ImageLimits;
 use crate::runtime::EngineError;
 /// Compressed texture format recognized from DDS metadata.
+///
+/// # Variants
+///
+/// Each variant names a recognized block-compression family; `Unknown` is retained for diagnostics.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CompressedFormat {
     /// BC1 / DXT1 compressed texture.
@@ -40,6 +47,10 @@ impl CompressedFormat {
     }
 }
 /// Legacy DDS image metadata shape retained for API compatibility.
+///
+/// # Fields
+///
+/// Format, base dimensions, and mip payloads describe a DDS surface when a runtime supports it.
 #[derive(Debug, Clone)]
 pub struct CompressedImageData {
     /// Detected compressed format.
@@ -53,7 +64,10 @@ pub struct CompressedImageData {
 }
 impl CompressedImageData {
     /// Reject DDS bytes in this PNG-only runtime build.
-    pub fn from_dds(_bytes: &[u8]) -> Result<Self, EngineError> {
+    pub fn from_dds(bytes: &[u8]) -> Result<Self, EngineError> {
+        ImageLimits::default()
+            .encoded_bytes(bytes.len(), "DDS input")
+            .map_err(EngineError::FileSystemError)?;
         Err(EngineError::FileSystemError(
             "DDS compressed textures are not supported in this runtime build; use PNG".to_string(),
         ))
@@ -74,8 +88,20 @@ impl CompressedImageData {
     pub fn is_dds_magic(bytes: &[u8]) -> bool {
         bytes.len() >= 4 && bytes[..4] == [0x44, 0x44, 0x53, 0x20]
     }
-    /// Read a DDS file from disk and return the same unsupported-DDS error as `from_dds`.
+    /// Read a bounded DDS file from disk and return the same unsupported-DDS error as `from_dds`.
+    ///
+    /// Prefer the GameFS-backed Lua diagnostics instead; this legacy Rust helper accepts a host
+    /// path solely for compatibility with non-script tooling.
     pub fn from_file(path: &str) -> Result<Self, EngineError> {
+        let metadata = std::fs::metadata(path).map_err(|e| {
+            EngineError::FileSystemError(format!("Cannot inspect '{}': {}", path, e))
+        })?;
+        let len = usize::try_from(metadata.len()).map_err(|_| {
+            EngineError::FileSystemError(format!("DDS input '{}': file is too large", path))
+        })?;
+        ImageLimits::default()
+            .encoded_bytes(len, "DDS input")
+            .map_err(EngineError::FileSystemError)?;
         let bytes = std::fs::read(path)
             .map_err(|e| EngineError::FileSystemError(format!("Cannot read '{}': {}", path, e)))?;
         Self::from_dds(&bytes)

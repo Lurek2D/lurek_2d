@@ -119,11 +119,15 @@ describe("lurek.light module", function()
     end)
 
     -- @covers lurek.light.setMaxLights
-    it("setMaxLights clamps and stores the limit", function()
-        lurek.light.setMaxLights(0)
-        expect_equal(1, lurek.light.getMaxLights())
-        lurek.light.setMaxLights(999)
-        expect_equal(256, lurek.light.getMaxLights())
+    it("setMaxLights rejects invalid values and stores valid limits", function()
+        expect_error(function()
+            lurek.light.setMaxLights(0)
+        end, "setMaxLights")
+        expect_error(function()
+            lurek.light.setMaxLights(999)
+        end, "setMaxLights")
+        lurek.light.setMaxLights(32)
+        expect_equal(32, lurek.light.getMaxLights())
     end)
 
     -- @covers lurek.light.getGroupCount

@@ -6,7 +6,7 @@ use super::SharedState;
 use crate::color::Color;
 use crate::light::{FalloffMode, Light2D, LightBlendMode, LightType, Occluder};
 use crate::lua_api::light_api::{lua_light_from_light, lua_occluder_from_occluder};
-use crate::lua_api::physics_api::{lua_body_from_body, LuaWorld};
+use crate::lua_api::physics_api::{try_lua_bodies_from_bodies, LuaWorld};
 use crate::math::Vec2;
 use crate::physics::{Body, BodyType};
 use crate::tilefield::{
@@ -1303,18 +1303,19 @@ impl TileFieldMaterializer {
         occluder: &TileObjectOccluder,
         coord: CellCoord,
         opts: &TileMaterializeOptions,
-    ) -> Occluder {
+    ) -> LuaResult<Occluder> {
         let (x, y) = Self::tile_center(coord, opts);
-        let mut occ = Occluder::new(Self::tile_polygon(
+        let mut occ = Occluder::try_new(Self::tile_polygon(
             occluder.shape,
             opts.tile_width,
             opts.tile_height,
-        ));
+        ))
+        .map_err(LuaError::RuntimeError)?;
         occ.set_position(Vec2::new(x, y));
         occ.set_opacity(occluder.opacity);
         occ.set_light_mask(occluder.light_mask);
         occ.set_enabled(occluder.enabled);
-        occ
+        Ok(occ)
     }
 }
 
@@ -1358,8 +1359,108 @@ fn occluder_from_tile(
     occluder: &TileObjectOccluder,
     coord: CellCoord,
     opts: &TileMaterializeOptions,
-) -> Occluder {
+) -> LuaResult<Occluder> {
     TileFieldMaterializer::occluder_from_tile(occluder, coord, opts)
+}
+
+/// Build every tile-derived light and occluder before mutating the shared light world.
+/// This is the common transactional implementation used by the canonical light facade and
+/// the temporary tilefield compatibility alias.
+pub(crate) fn create_lights_from_tileset<'lua>(
+    lua: &'lua Lua,
+    state: Rc<RefCell<SharedState>>,
+    field_ud: LuaAnyUserData<'lua>,
+    slot: String,
+    tileset_ud: LuaAnyUserData<'lua>,
+    opts: Option<LuaTable<'lua>>,
+    api: &str,
+) -> LuaResult<LuaTable<'lua>> {
+    let field_ud = field_ud.borrow::<LuaTileField>()?;
+    let tileset_ud = tileset_ud.borrow::<LuaTileSet>()?;
+    let tileset = tileset_ud.inner.borrow();
+    let options = materialize_options(opts.as_ref(), &tileset, api)?;
+    let field = field_ud.inner.borrow();
+    let (width, height, levels) = field.size();
+    if options.z >= levels {
+        return Err(lua_err(api, "z is out of bounds"));
+    }
+
+    let mut pending_lights = Vec::new();
+    let mut pending_occluders = Vec::new();
+    for y in 0..height {
+        for x in 0..width {
+            let coord = CellCoord { x, y, z: options.z };
+            let Some(archetype) =
+                archetype_for_ref(&field, coord, &slot, &tileset, options.ref_is_gid, api)?
+            else {
+                continue;
+            };
+            if let Some(render_light) = archetype.render_light.as_ref() {
+                pending_lights.push(render_light_from_tile(render_light, coord, &options, api)?);
+            }
+            if let Some(occluder) = archetype.occluder.as_ref() {
+                pending_occluders.push(occluder_from_tile(occluder, coord, &options)?);
+            }
+        }
+    }
+    drop(field);
+    drop(tileset);
+
+    let total_vertices = pending_occluders
+        .iter()
+        .map(|item| item.vertices.len())
+        .sum::<usize>();
+    {
+        let st = state.borrow();
+        let world = &st.light_world;
+        if world.light_count().saturating_add(pending_lights.len())
+            > world.limits.max_registered_lights
+        {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.light.{api}: registered light limit {} reached",
+                world.limits.max_registered_lights
+            )));
+        }
+        if world
+            .occluder_count()
+            .saturating_add(pending_occluders.len())
+            > world.limits.max_registered_occluders
+        {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.light.{api}: registered occluder limit {} reached",
+                world.limits.max_registered_occluders
+            )));
+        }
+        let existing_vertices = world
+            .occluders
+            .values()
+            .map(|item| item.vertices.len())
+            .sum::<usize>();
+        if existing_vertices.saturating_add(total_vertices)
+            > world.limits.max_total_occluder_vertices
+        {
+            return Err(LuaError::RuntimeError(format!(
+                "lurek.light.{api}: total occluder vertex limit {} reached",
+                world.limits.max_total_occluder_vertices
+            )));
+        }
+    }
+
+    let lights = lua.create_table()?;
+    for (index, light) in pending_lights.into_iter().enumerate() {
+        lights.set(index + 1, lua_light_from_light(state.clone(), light)?)?;
+    }
+    let occluders = lua.create_table()?;
+    for (index, occluder) in pending_occluders.into_iter().enumerate() {
+        occluders.set(
+            index + 1,
+            lua_occluder_from_occluder(state.clone(), occluder)?,
+        )?;
+    }
+    let result = lua.create_table()?;
+    result.set("lights", lights)?;
+    result.set("occluders", occluders)?;
+    Ok(result)
 }
 
 fn archetype_for_ref(
@@ -3947,8 +4048,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 if options.z >= levels {
                     return Err(lua_err("createPhysicsFromTileset", "z is out of bounds"));
                 }
-                let bodies = lua.create_table()?;
-                let mut index = 1;
+                let mut authored_bodies = Vec::new();
                 let world = world_ud.world_handle();
                 for y in 0..height {
                     for x in 0..width {
@@ -3973,9 +4073,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                             &options,
                             "createPhysicsFromTileset",
                         )?;
-                        bodies.set(index, lua_body_from_body(world.clone(), body))?;
-                        index += 1;
+                        authored_bodies.push(body);
                     }
+                }
+                let body_handles = try_lua_bodies_from_bodies(world, authored_bodies)
+                    .map_err(|err| lua_err("createPhysicsFromTileset", err))?;
+                let bodies = lua.create_table()?;
+                for (index, body) in body_handles.into_iter().enumerate() {
+                    bodies.set(index + 1, body)?;
                 }
                 Ok(bodies)
             },
@@ -4001,63 +4106,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 LuaAnyUserData,
                 Option<LuaTable>,
             )| {
-                let field_ud = field_ud.borrow::<LuaTileField>()?;
-                let tileset_ud = tileset_ud.borrow::<LuaTileSet>()?;
-                let tileset = tileset_ud.inner.borrow();
-                let options =
-                    materialize_options(opts.as_ref(), &tileset, "createLightsFromTileset")?;
-                let field = field_ud.inner.borrow();
-                let (width, height, levels) = field.size();
-                if options.z >= levels {
-                    return Err(lua_err("createLightsFromTileset", "z is out of bounds"));
-                }
-                let lights = lua.create_table()?;
-                let occluders = lua.create_table()?;
-                let mut light_index = 1;
-                let mut occluder_index = 1;
-                for y in 0..height {
-                    for x in 0..width {
-                        let coord = CellCoord { x, y, z: options.z };
-                        let Some(archetype) = archetype_for_ref(
-                            &field,
-                            coord,
-                            &slot,
-                            &tileset,
-                            options.ref_is_gid,
-                            "createLightsFromTileset",
-                        )?
-                        else {
-                            continue;
-                        };
-                        if let Some(render_light) = archetype.render_light.as_ref() {
-                            let light = render_light_from_tile(
-                                render_light,
-                                coord,
-                                &options,
-                                "createLightsFromTileset",
-                            )?;
-                            lights.set(
-                                light_index,
-                                lua_light_from_light(light_state.clone(), light),
-                            )?;
-                            light_index += 1;
-                        }
-                        if let Some(occluder) = archetype.occluder.as_ref() {
-                            occluders.set(
-                                occluder_index,
-                                lua_occluder_from_occluder(
-                                    light_state.clone(),
-                                    occluder_from_tile(occluder, coord, &options),
-                                ),
-                            )?;
-                            occluder_index += 1;
-                        }
-                    }
-                }
-                let result = lua.create_table()?;
-                result.set("lights", lights)?;
-                result.set("occluders", occluders)?;
-                Ok(result)
+                create_lights_from_tileset(
+                    lua,
+                    light_state.clone(),
+                    field_ud,
+                    slot,
+                    tileset_ud,
+                    opts,
+                    "createLightsFromTilefield",
+                )
             },
         )?,
     )?;

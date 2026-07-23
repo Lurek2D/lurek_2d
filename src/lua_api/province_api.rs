@@ -2,7 +2,7 @@
 
 use super::render_api::{ensure_shader_target, LuaImage, LuaShader};
 use super::SharedState;
-use crate::image::ProvinceGrid;
+use crate::image::ImageData;
 use crate::image::TextureColorSpace;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::{resolve_color_fallback, MapModeConfig};
@@ -22,6 +22,7 @@ use crate::province::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
 };
+use crate::province::{ProvinceGrid, ProvinceShapeCacheEntry};
 use crate::render::renderer::{ProvinceMapEffectOptions, RenderCommand, TextureData};
 use crate::render::ShaderTarget;
 use crate::runtime::shared_state::ProvinceSegmentTextureCache;
@@ -31,6 +32,27 @@ use std::collections::{hash_map::DefaultHasher, HashMap};
 use std::hash::{Hash, Hasher};
 use std::path::Path;
 use std::rc::Rc;
+
+/// Lua-side province id grid with topology and lazily cached draw geometry.
+///
+/// This userdata belongs to the province subsystem even when the deprecated image compatibility
+/// constructor creates it.
+pub struct LuaProvinceGrid {
+    /// Province grid, color mapping, adjacency, spans, and polygon extraction data.
+    pub(crate) inner: ProvinceGrid,
+    /// Shared runtime state receiving province shape draw commands.
+    pub(crate) state: Rc<RefCell<SharedState>>,
+    /// Lazily built simplified polygon cache for repeated shape drawing.
+    pub(crate) shape_cache: Option<Vec<ProvinceShapeCacheEntry>>,
+}
+
+/// Registers province-grid Lua methods from the canonical province userdata owner.
+impl LuaUserData for LuaProvinceGrid {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        super::image_api::add_legacy_province_grid_methods(methods);
+    }
+}
+
 /// Resolves a province asset path against the active game directory when the path is relative.
 fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
     let st = state.borrow();
@@ -40,6 +62,29 @@ fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
     } else {
         st.game_dir.join(p).to_string_lossy().into_owned()
     }
+}
+
+/// Decodes a province grid through the active GameFS policy for the canonical province API.
+///
+/// `lurek.image.newProvinceGrid` calls this same helper during its compatibility window, so both
+/// namespaces have identical sandboxing, codec limits, and userdata state.
+pub(crate) fn new_grid_from_gamefs<'lua>(
+    lua: &'lua Lua,
+    state: Rc<RefCell<SharedState>>,
+    filename: &str,
+) -> LuaResult<LuaAnyUserData<'lua>> {
+    let bytes = state
+        .borrow()
+        .fs
+        .read_bytes(filename)
+        .map_err(LuaError::external)?;
+    let image = ImageData::from_encoded_bytes(&bytes, filename).map_err(LuaError::RuntimeError)?;
+    let grid = ProvinceGrid::from_image(&image);
+    lua.create_userdata(LuaProvinceGrid {
+        inner: grid,
+        state,
+        shape_cache: None,
+    })
 }
 
 fn extend_province_render_commands(st: &mut SharedState, commands: Vec<RenderCommand>) {
@@ -2362,6 +2407,18 @@ impl LuaUserData for LuaProvinceRegistry {
 /// Registers the `lurek.province` module table and all its functions into the Lua state.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    let s = state.clone();
+    // -- newGrid --
+    /// Loads a province id grid from a GameFS-authorized encoded image.
+    /// `lurek.image.newProvinceGrid` is a deprecated compatibility alias for this canonical API.
+    /// @param | filename | string | Province map image filename relative to the game directory.
+    /// @return | LProvinceGrid | New province grid handle.
+    tbl.set(
+        "newGrid",
+        lua.create_function(move |lua, filename: String| {
+            new_grid_from_gamefs(lua, s.clone(), &filename)
+        })?,
+    )?;
     let s = state.clone();
     // -- newFromPng --
     /// Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.

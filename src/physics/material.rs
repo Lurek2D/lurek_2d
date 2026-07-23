@@ -7,10 +7,26 @@
 use super::error::PhysicsError;
 use super::limits::{validate_finite, validate_positive, validate_range};
 
+/// Rule used by the solver to combine two collider coefficients at contact.
+/// # Variants
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum MaterialCombineRule {
+    /// Average both authored coefficients.
+    #[default]
+    Average,
+    /// Use the smaller coefficient.
+    Min,
+    /// Multiply both coefficients.
+    Multiply,
+    /// Use the larger coefficient.
+    Max,
+}
+
 /// Reusable physics material properties shared by bodies and fixtures.
 ///
 /// Solver-backed fields map onto Rapier body or collider settings, while gameplay fields remain metadata until
 /// higher-level systems consume them.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct PhysicsMaterial {
     /// Optional authored material name.
@@ -21,6 +37,10 @@ pub struct PhysicsMaterial {
     pub friction: f32,
     /// Collider restitution coefficient in `0.0..=1.0`.
     pub restitution: f32,
+    /// Solver combine rule for friction contacts.
+    pub friction_combine_rule: MaterialCombineRule,
+    /// Solver combine rule for restitution contacts.
+    pub restitution_combine_rule: MaterialCombineRule,
     /// Optional linear damping override applied on bodies.
     pub linear_damping: Option<f32>,
     /// Optional angular damping override applied on bodies.
@@ -52,6 +72,8 @@ impl Default for PhysicsMaterial {
             density: 1.0,
             friction: 0.5,
             restitution: 0.3,
+            friction_combine_rule: MaterialCombineRule::Average,
+            restitution_combine_rule: MaterialCombineRule::Average,
             linear_damping: None,
             angular_damping: None,
             gravity_scale: None,

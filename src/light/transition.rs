@@ -4,6 +4,7 @@
 //! Open this file when light tween semantics change; flicker behavior and scene ownership live in sibling modules.
 
 /// Time-based linear tween that interpolates a light's color, intensity, and radius.
+/// # Fields
 #[derive(Clone)]
 pub struct LightTransition {
     /// Starting RGBA color for the interpolation.

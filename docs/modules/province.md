@@ -357,6 +357,45 @@ end
 
 ---
 
+### `lurek.province.newGrid`
+
+Loads a province id grid from a GameFS-authorized encoded image.
+
+```lua
+lurek.province.newGrid(filename)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `filename` | string | Province map image filename relative to the game directory. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LProvinceGrid](image.md#lprovincegrid) | New province grid handle. |
+
+**Example**
+
+```lua
+do
+    -- Province topology is owned by the province namespace; the image alias is for migration only.
+    local grid = lurek.province.newGrid("content/examples/assets/textures/province_map.png")
+    local width = grid:getWidth()
+    local height = grid:getHeight()
+    local provinces = grid:provinceCount()
+    local first_id = grid:getAt(0, 0)
+    local borders = grid:borderSegments()
+    lurek.log.info("province grid size=" .. tostring(width) .. "x" .. tostring(height)
+        .. " provinces=" .. tostring(provinces) .. " first=" .. tostring(first_id)
+        .. " borders=" .. tostring(#borders))
+end
+```
+
+---
+
 ### `lurek.province.remove`
 
 Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.

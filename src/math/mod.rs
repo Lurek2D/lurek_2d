@@ -51,6 +51,10 @@ pub use facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep};
 pub use geometry::*;
 pub use mat3::Mat3;
 
+/// Compatibility facade for image-owned generic rectangle packing.
+///
+/// New packing algorithms belong in `image::rect_packing`; `math` retains this re-export so the
+/// established `lurek.math.newRectPacker` Lua surface remains source-compatible.
 pub use crate::image::rect_packing::{PackedRect, RectPacker};
 pub use loot_table::{sample_with_pity, LootEntry, LootTable, PityTracker};
 pub use random::RandomGenerator;

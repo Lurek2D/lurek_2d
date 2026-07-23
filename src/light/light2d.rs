@@ -14,11 +14,13 @@ use crate::light::falloff::FalloffMode;
 use crate::light::flicker::FlickerConfig;
 use crate::light::light_type::LightType;
 use crate::light::shadow::ShadowFilter;
+use crate::light::transition::LightTransition;
 use crate::log_msg;
 use crate::runtime::log_messages::{LT01, LT02, LT03};
 use crate::runtime::resource_keys::ShaderKey;
 
 /// Optional attenuation coefficient updates for a light option patch.
+/// # Fields
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Light2DAttenuationPatch {
     /// Constant attenuation term.
@@ -30,6 +32,7 @@ pub struct Light2DAttenuationPatch {
 }
 
 /// Optional field updates applied to an existing `Light2D`.
+/// # Fields
 #[derive(Clone, Debug, Default)]
 pub struct Light2DOptionsPatch {
     /// RGBA tint color applied to the light contribution.
@@ -83,6 +86,7 @@ pub struct Light2DOptionsPatch {
 }
 
 /// Complete 2D light definition: position, color, radius, type, shadow, masks, flicker, and attenuation.
+/// # Fields
 pub struct Light2D {
     /// World-space X position of the light source.
     pub x: f32,
@@ -134,6 +138,12 @@ pub struct Light2D {
     pub volumetric: bool,
     /// Optional path to a normal map texture used for surface-lighting.
     pub normal_map_path: Option<String>,
+    /// Optional validated cookie resource reference. Rendering support is renderer-owned.
+    pub cookie_path: Option<String>,
+    /// Optional authoritative transition state shared by every handle for this light.
+    pub transition: Option<LightTransition>,
+    /// Monotonic scene insertion sequence assigned by `LightWorld` for stable renderer selection.
+    pub(crate) insertion_order: u64,
     /// Scale applied to the normal map contribution; range [0.0, 1.0].
     pub normal_strength: f32,
     /// Optional custom light-contribution shader.
@@ -169,6 +179,9 @@ impl Light2D {
             group_id: 0,
             volumetric: false,
             normal_map_path: None,
+            cookie_path: None,
+            transition: None,
+            insertion_order: 0,
             normal_strength: 1.0,
             shader: None,
         }
@@ -371,6 +384,58 @@ impl Light2D {
     /// Return the normal map texture path if set.
     pub fn get_normal_map_path(&self) -> Option<&str> {
         self.normal_map_path.as_deref()
+    }
+    /// Set the renderer-resolved cookie resource reference.
+    pub fn set_cookie_path(&mut self, path: String) {
+        self.cookie_path = Some(path);
+    }
+    /// Clear the renderer-resolved cookie resource reference.
+    pub fn clear_cookie_path(&mut self) {
+        self.cookie_path = None;
+    }
+    /// Return the cookie resource reference, if configured.
+    pub fn get_cookie_path(&self) -> Option<&str> {
+        self.cookie_path.as_deref()
+    }
+    /// Start an authoritative transition from this light's current state.
+    pub fn start_transition(
+        &mut self,
+        to_color: [f32; 4],
+        to_intensity: f32,
+        to_radius: f32,
+        duration: f32,
+    ) {
+        self.transition = Some(LightTransition::new(
+            [self.color.r, self.color.g, self.color.b, self.color.a],
+            to_color,
+            self.intensity,
+            to_intensity,
+            self.radius,
+            to_radius,
+            duration,
+        ));
+    }
+    /// Advance the authoritative transition and return whether it applied a new value.
+    pub fn advance_transition(&mut self, dt: f32) -> bool {
+        let Some((color, intensity, radius)) =
+            self.transition.as_mut().and_then(|value| value.update(dt))
+        else {
+            return false;
+        };
+        self.color = Color::new(color[0], color[1], color[2], color[3]);
+        self.intensity = intensity;
+        self.radius = radius;
+        true
+    }
+    /// Clear the authoritative transition.
+    pub fn clear_transition(&mut self) {
+        self.transition = None;
+    }
+    /// Return transition progress, or 1.0 when no transition is active.
+    pub fn transition_progress(&self) -> f32 {
+        self.transition
+            .as_ref()
+            .map_or(1.0, LightTransition::progress)
     }
     /// Set the normal map contribution strength; range [0.0, 1.0].
     pub fn set_normal_strength(&mut self, strength: f32) {

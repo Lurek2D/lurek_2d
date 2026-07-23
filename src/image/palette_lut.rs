@@ -7,6 +7,10 @@
 use crate::color::Color;
 use std::collections::HashMap;
 /// Source-to-target color mapping used to remap image pixels.
+///
+/// # Fields
+///
+/// Source and destination color arrays remain index-aligned to define replacement pairs.
 #[derive(Debug, Clone)]
 pub struct PaletteLUT {
     /// Colors to match in the source image.

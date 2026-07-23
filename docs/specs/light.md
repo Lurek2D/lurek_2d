@@ -64,6 +64,11 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - It defines additive, subtractive, and mix-style compositing so light accumulation policy stays explicit in data.
 - Open this file when light compositing semantics change; per-light state and world processing live in siblings.
 
+### debug_image.rs
+
+- Bounded CPU light-map rasterization used only for debug previews and visual evidence.
+- Scene storage, renderer snapshots, and GPU command submission remain outside this module.
+
 ### falloff.rs
 
 - This file owns `FalloffMode`, the enum that shapes radial brightness inside a light's effective radius.
@@ -96,14 +101,14 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 
 ### light_world.rs
 
-- Owns the light world owner for the light subsystem and keeps its rules local to this file.
-- Keeps light data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-- Defines how light world data is validated, transformed, or stored before neighboring systems use it.
-- Owns light behavior with explicit state, validation, and crate-local integration boundaries.
-- Keeps public crate helpers focused on light world behavior while Lua registration stays elsewhere.
-- Documents where light callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
-- Use this file when changing light world defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the light state that can explain them while keeping call sites explicit.
+- Stores the scene's validated light and occluder state plus bounded render-facing snapshots.
+- GPU command submission and texture binding remain in `render`; this module only selects,
+- validates, and exposes data for those consumers. The CPU preview is a bounded debug helper.
+
+### limits.rs
+
+- Defines the fixed resource ceilings shared by light-world storage and debug previews.
+- These limits bound Lua-reachable scene state before insertion and preview work before allocation.
 
 ### mod.rs
 
@@ -161,7 +166,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `lurek.light.setGroupColor(group_id, r, g, b, a?) -> nil`: Sets color for all lights in a group.
 - `lurek.light.setGroupEnabled(group_id, enabled) -> nil`: Enables or disables all lights in a group.
 - `lurek.light.setGroupIntensity(group_id, intensity) -> nil`: Sets intensity for all lights in a group.
-- `lurek.light.setMaxLights(n) -> nil`: Sets the maximum configured light count, clamped to 1 through 256.
+- `lurek.light.setMaxLights(n) -> nil`: Sets the renderer selection count; values must be 1 through 256.
 - `lurek.light.setShader(shader?) -> nil`: Sets or clears the default custom light shader for the light world.
 - `lurek.light.syncAmbient() -> number`: Returns the light world's ambient color hint.
 
@@ -186,12 +191,12 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 ##### Methods
 
 - `LLight:addFlicker(min, max, hz) -> nil`: Adds flicker from min/max intensity range and frequency.
-- `LLight:clearCookie() -> nil`: Clears the cookie texture path stored on this Lua light handle.
+- `LLight:clearCookie() -> nil`: Clears the cookie resource path from the authoritative light state.
 - `LLight:clearNormalMap() -> nil`: Clears the normal map path used by this light.
 - `LLight:getAttenuation() -> number`: Returns this light attenuation coefficients.
 - `LLight:getBlendMode() -> string`: Returns this light blend mode string.
 - `LLight:getColor() -> number`: Returns this light RGBA color. This method is available to Lua scripts.
-- `LLight:getCookie() -> string`: Returns the cookie texture path stored on this Lua light handle.
+- `LLight:getCookie() -> string`: Returns the cookie resource path stored on the authoritative light state.
 - `LLight:getDirection() -> number`: Returns this light direction angle.
 - `LLight:getEnergy() -> number`: Returns this light energy value. This method is available to Lua scripts.
 - `LLight:getFalloff() -> string`: Returns this light falloff mode string.
@@ -221,7 +226,7 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `LLight:setAttenuation(c, l, q) -> nil`: Sets this light attenuation coefficients.
 - `LLight:setBlendMode(mode) -> nil`: Sets this light blend mode. This method is available to Lua scripts.
 - `LLight:setColor(r, g, b, a?) -> nil`: Sets this light RGBA color. This method is available to Lua scripts.
-- `LLight:setCookie(path) -> nil`: Stores a cookie texture path on this Lua light handle.
+- `LLight:setCookie(path) -> nil`: Stores a cookie resource path on the authoritative light state. It is not sampled until a renderer supports cookies.
 - `LLight:setDirection(dir) -> nil`: Sets this light direction angle. This method is available to Lua scripts.
 - `LLight:setEnabled(b) -> nil`: Enables or disables this light. This method is available to Lua scripts.
 - `LLight:setEnergy(e) -> nil`: Sets this light energy value. This method is available to Lua scripts.
@@ -327,3 +332,13 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `lurek.tilefield` owns the tile data consumed by tile lighting: per-tile `"light"` blockers, transmission costs, and multilevel sun occlusion.
 - `lurek.tilelight` owns tile-based environment lighting: grid point lights, ambient light, global top light, and computed RGB/luma layers.
 - Do not use `lurek.light` as the source of truth for tile movement, sight, action, or tile-light gameplay semantics.
+- Light storage is bounded independently of renderer selection: `max_lights` selects at most 1–256 active lights for rendering, while `LightLimits` caps 4,096 registered lights, 4,096 occluders, 512 vertices per occluder, 65,536 total vertices, and 4,096 exported hints before insertion/export.
+- Cookie and normal-map resource keys must be non-empty UTF-8 strings of at most 1,024 bytes. Asset resolution and texture binding remain render/asset responsibilities.
+- Debug previews allow at most 4,194,304 pixels and 100,000,000 conservative work units: one direct sample per selected light plus `relevant edges × PCF taps` for shadowed lights (1, 5, or 13 taps).
+- `drawToImage` rejects previews whose pixels or conservative pixel/light/occluder-edge work exceed `LightLimits`; it never allocates an unbounded debug bitmap.
+- CPU preview rasterization is isolated from `LightWorld` and borrows selected lights and occluder geometry rather than cloning transformed scene polygons. It is debug/evidence-only; GPU rendering remains owned by `render`.
+- Occluders require 3–512 finite vertices. Invalid geometry is rejected and leaves existing occluders unchanged.
+- A new world enables itself on its first light only until `setEnabled` is called. An explicit disable persists across later additions and `clear`; `clear` removes scene objects and resets ambient without changing that enable decision.
+- Cookie paths are authoritative per-light resource references shared by every handle. They are configuration only until renderer cookie sampling is implemented.
+- `transitionTo` stores state on the authoritative light and is advanced by `LLight:updateTransition(dt)`; all aliases observe the same progress, but it is not a world-frame animation.
+- When eligible lights exceed `max_lights`, renderer and preview selection uses stable insertion order. Removing and re-adding a light gives it a new order at the end of the selection queue.

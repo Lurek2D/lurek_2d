@@ -661,6 +661,18 @@ describe("spine physics binding", function()
         expect_equal(1, image_binding.bodyCount)
         expect_equal(0, image_binding.jointCount)
         expect_type("userdata", image_binding.bodies[1])
+
+        local rejected_world = lurek.physics.newWorld(0, 0)
+        local ok, err = pcall(function()
+            sk:bindPhysics(rejected_world, {
+                { bone = "root", width = 12, height = 18, joint = "none" },
+                { bone = head, radius = 5, joint = "not-a-joint" },
+            })
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "bindPhysics", 1, true) ~= nil)
+        expect_equal(0, rejected_world:getBodyCount())
+        expect_equal(0, rejected_world:jointCount())
     end)
 end)
 

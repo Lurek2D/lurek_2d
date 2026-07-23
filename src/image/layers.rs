@@ -6,6 +6,10 @@
 
 use super::image_data::ImageData;
 /// A single named image layer with opacity, visibility, and pixel data.
+///
+/// # Fields
+///
+/// Name, finite opacity, visibility, and same-sized image data define one compositing input.
 #[derive(Debug, Clone)]
 pub struct ImageLayer {
     /// Layer display name.
@@ -29,6 +33,10 @@ impl ImageLayer {
     }
 }
 /// A same-sized stack of image layers that can be merged into one image.
+///
+/// # Fields
+///
+/// Canvas dimensions and ordered back-to-front layers define the compositing state.
 #[derive(Debug, Clone)]
 pub struct LayeredImage {
     /// Canvas width in pixels.
@@ -83,6 +91,9 @@ impl LayeredImage {
     }
     /// Set a layer opacity and clamp it to the valid range.
     pub fn set_opacity(&mut self, index: usize, opacity: f32) -> bool {
+        if !opacity.is_finite() {
+            return false;
+        }
         if let Some(layer) = self.layers.get_mut(index) {
             layer.opacity = opacity.clamp(0.0, 1.0);
             true
@@ -159,7 +170,12 @@ impl LayeredImage {
                 let sr = src[si] as f32;
                 let sg = src[si + 1] as f32;
                 let sb = src[si + 2] as f32;
-                let sa = src[si + 3] as f32 / 255.0 * layer.opacity;
+                let opacity = if layer.opacity.is_finite() {
+                    layer.opacity.clamp(0.0, 1.0)
+                } else {
+                    0.0
+                };
+                let sa = src[si + 3] as f32 / 255.0 * opacity;
                 if sa <= 0.0 {
                     continue;
                 }

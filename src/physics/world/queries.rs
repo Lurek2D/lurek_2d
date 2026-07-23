@@ -375,13 +375,25 @@ impl World {
         max_dist: f32,
         filter: PhysicsQueryFilter,
     ) -> Vec<RaycastHit> {
+        let qp = self.query_pipeline(filter);
+        self.collect_raycast_hits_sorted_with_pipeline(&qp, x1, y1, dx, dy, max_dist)
+    }
+
+    fn collect_raycast_hits_sorted_with_pipeline(
+        &self,
+        qp: &QueryPipeline<'_>,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+    ) -> Vec<RaycastHit> {
         let dir_len = (dx * dx + dy * dy).sqrt();
         if dir_len < 1e-6 {
             return Vec::new();
         }
         let unit_dir = Vector::new(dx / dir_len, dy / dir_len);
         let ray = Ray::new(Vector::new(x1, y1), unit_dir);
-        let qp = self.query_pipeline(filter);
         let mut best_by_body: HashMap<usize, RaycastHit> = HashMap::new();
         for (col_handle, _co, ri) in qp.intersect_ray(ray, max_dist, true) {
             if let Some(body_id) = self.body_for_collider(col_handle) {
@@ -433,19 +445,22 @@ impl World {
                 value: f64::from(options.thickness),
             });
         }
-        if options.thickness > 0.0 {
+        if options.thickness > 0.0
+            && (options.reflect || !matches!(options.hit_mode, BeamHitMode::Closest))
+        {
             return Err(PhysicsError::InvalidMode {
-                context: "physics beam thickness",
-                value: options.thickness.to_string(),
-                expected: "0 until thick-beam shape casting support lands",
+                context: "physics thick beam",
+                value: format!("reflect={} mode={:?}", options.reflect, options.hit_mode),
+                expected:
+                    "closest non-reflective mode until multi-hit capsule tracing is available",
             });
         }
         if let BeamHitMode::Pierce { max_hits } = options.hit_mode {
-            if max_hits == 0 || max_hits > self.limits.max_bodies {
+            if max_hits == 0 || max_hits > self.limits.max_query_hits {
                 return Err(PhysicsError::ValueOutOfRange {
                     field: "max_hits",
                     min: 1.0,
-                    max: self.limits.max_bodies as f64,
+                    max: self.limits.max_query_hits as f64,
                     value: max_hits as f64,
                 });
             }
@@ -458,11 +473,11 @@ impl World {
                     expected: "closest beam mode when reflect = true",
                 });
             }
-            if options.max_bounces > self.limits.max_bodies {
+            if options.max_bounces > self.limits.max_beam_bounces {
                 return Err(PhysicsError::ValueOutOfRange {
                     field: "max_bounces",
                     min: 0.0,
-                    max: self.limits.max_bodies as f64,
+                    max: self.limits.max_beam_bounces as f64,
                     value: options.max_bounces as f64,
                 });
             }
@@ -522,6 +537,9 @@ impl World {
         options: BeamOptions,
     ) -> Result<BeamTrace, PhysicsError> {
         let unit_dir = self.validate_beam_options(x1, y1, dx, dy, options)?;
+        if options.thickness > 0.0 {
+            return self.try_cast_thick_beam(x1, y1, dx, dy, unit_dir, options);
+        }
         if options.reflect {
             return self.try_cast_reflective_beam(x1, y1, unit_dir, options);
         }
@@ -585,6 +603,49 @@ impl World {
                 }
             }
         }
+    }
+
+    fn try_cast_thick_beam(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        unit_dir: Vector,
+        options: BeamOptions,
+    ) -> Result<BeamTrace, PhysicsError> {
+        let end_point = Self::beam_endpoint(x1, y1, unit_dir, options.max_distance);
+        let Some(hit) = self.try_cast_circle_filtered(
+            x1,
+            y1,
+            options.thickness,
+            dx,
+            dy,
+            options.max_distance,
+            options.filter,
+        )?
+        else {
+            return Ok(Self::beam_trace_to_max_range(x1, y1, end_point, Vec::new()));
+        };
+        Ok(BeamTrace {
+            hits: vec![BeamHit {
+                body_id: hit.body_id,
+                point: hit.point,
+                normal: hit.normal,
+                distance: hit.toi,
+                segment_index: 1,
+                reflected: false,
+                incoming_dir: (unit_dir.x, unit_dir.y),
+                outgoing_dir: None,
+                reflectivity: 0.0,
+            }],
+            segments: vec![BeamSegment {
+                from: (x1, y1),
+                to: hit.point,
+                blocked_by: Some(hit.body_id),
+            }],
+            reached_max_range: false,
+        })
     }
 
     fn try_cast_reflective_beam(
@@ -883,7 +944,34 @@ impl World {
         max_dist: f32,
         filter: PhysicsQueryFilter,
     ) -> Vec<RaycastHit> {
-        self.collect_raycast_hits_sorted(x1, y1, dx, dy, max_dist, filter)
+        let mut hits = self.collect_raycast_hits_sorted(x1, y1, dx, dy, max_dist, filter);
+        hits.truncate(self.limits.max_query_hits);
+        hits
+    }
+
+    /// Run many same-filter all-hit rays through one shared query-pipeline view.
+    /// Each result keeps the deterministic all-hit ordering and per-query output cap.
+    pub fn raycast_all_batch(
+        &self,
+        queries: &[RaycastQuery],
+        filter: PhysicsQueryFilter,
+    ) -> Vec<Vec<RaycastHit>> {
+        let qp = self.query_pipeline(filter);
+        queries
+            .iter()
+            .map(|query| {
+                let mut hits = self.collect_raycast_hits_sorted_with_pipeline(
+                    &qp,
+                    query.x,
+                    query.y,
+                    query.dx,
+                    query.dy,
+                    query.max_dist,
+                );
+                hits.truncate(self.limits.max_query_hits);
+                hits
+            })
+            .collect()
     }
     /// Return all body ids whose AABB overlaps the query rectangle.
     pub fn query_aabb(&self, x: f32, y: f32, w: f32, h: f32) -> Vec<usize> {
@@ -913,6 +1001,7 @@ impl World {
             }
         }
         results.sort_unstable();
+        results.truncate(self.limits.max_query_hits);
         results
     }
     /// Return the first body id whose AABB contains point `(x, y)`, or `None`.
@@ -932,13 +1021,15 @@ impl World {
             maxs: Vector::new(x + epsilon, y + epsilon),
         };
         let qp = self.query_pipeline(filter);
+        let mut closest_id = None;
         for (col_handle, _co) in qp.intersect_aabb_conservative(aabb) {
             if let Some(body_id) = self.body_for_collider(col_handle) {
                 if self.has_body(body_id) {
-                    return Some(body_id);
+                    closest_id =
+                        Some(closest_id.map_or(body_id, |current: usize| current.min(body_id)));
                 }
             }
         }
-        None
+        closest_id
     }
 }

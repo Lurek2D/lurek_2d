@@ -6,7 +6,8 @@
 //! Open this file when LIMG compatibility, compression, or layered-image round trips fail or drift in shape.
 
 use super::image_data::ImageData;
-use super::layers::LayeredImage;
+use super::layers::{ImageLayer, LayeredImage};
+use super::limits::ImageLimits;
 use flate2::read::ZlibDecoder;
 use flate2::write::ZlibEncoder;
 use flate2::Compression;
@@ -78,11 +79,26 @@ fn compress(raw: &[u8]) -> Result<Vec<u8>, String> {
         .map_err(|e| format!("zlib finish error: {}", e))
 }
 /// Decompress zlib-compressed bytes and return the raw payload.
-fn decompress(compressed: &[u8]) -> Result<Vec<u8>, String> {
-    let mut dec = ZlibDecoder::new(compressed);
+fn decompress_bounded(
+    compressed: &[u8],
+    expected: usize,
+    context: &str,
+) -> Result<Vec<u8>, String> {
+    let dec = ZlibDecoder::new(compressed);
     let mut out = Vec::new();
-    dec.read_to_end(&mut out)
-        .map_err(|e| format!("zlib decompress error: {}", e))?;
+    out.try_reserve_exact(expected)
+        .map_err(|e| format!("{} allocation failed: {}", context, e))?;
+    dec.take(
+        u64::try_from(expected).map_err(|_| format!("{} size is not addressable", context))? + 1,
+    )
+    .read_to_end(&mut out)
+    .map_err(|e| format!("zlib decompress error: {}", e))?;
+    if out.len() > expected {
+        return Err(format!(
+            "{} expands beyond its declared {} byte limit",
+            context, expected
+        ));
+    }
     Ok(out)
 }
 /// Append a little-endian `u16` to a byte buffer.
@@ -122,6 +138,7 @@ pub fn encode_flat(img: &ImageData) -> Result<Vec<u8>, String> {
     push_u32(&mut buf, img.height);
     let compressed = compress(&img.pixels)?;
     buf.extend_from_slice(&compressed);
+    ImageLimits::default().encoded_bytes(buf.len(), "LIMG flat output")?;
     Ok(buf)
 }
 /// Decode a flat image from a LIMG payload.
@@ -131,16 +148,10 @@ pub fn decode_flat(payload: &[u8]) -> Result<ImageData, String> {
     }
     let width = read_u32(payload, 0)?;
     let height = read_u32(payload, 4)?;
-    let pixels = decompress(&payload[8..])?;
-    let expected = width
-        .checked_mul(height)
-        .and_then(|v| v.checked_mul(4))
-        .ok_or_else(|| {
-            format!(
-                "LIMG flat: dimensions overflow byte size calculation ({}x{})",
-                width, height
-            )
-        })? as usize;
+    let limits = ImageLimits::default();
+    limits.encoded_bytes(payload.len(), "LIMG flat input")?;
+    let expected = limits.rgba_bytes(width, height)?;
+    let pixels = decompress_bounded(&payload[8..], expected, "LIMG flat")?;
     if pixels.len() != expected {
         return Err(format!(
             "LIMG flat: decompressed {} bytes, expected {} for {}x{}",
@@ -150,10 +161,20 @@ pub fn decode_flat(payload: &[u8]) -> Result<ImageData, String> {
             height
         ));
     }
-    ImageData::from_bytes(width, height, pixels).map_err(|e| format!("LIMG flat: {}", e))
+    ImageData::from_bytes_with_limits(width, height, pixels, limits)
+        .map_err(|e| format!("LIMG flat: {}", e))
 }
 /// Encode a layered image into a LIMG byte vector.
-fn encode_layered(stack: &LayeredImage) -> Result<Vec<u8>, String> {
+/// Encode a layered image into bounded LIMG bytes without performing filesystem I/O.
+pub fn encode_layered(stack: &LayeredImage) -> Result<Vec<u8>, String> {
+    let limits = ImageLimits::default();
+    if stack.layers.len() > limits.max_frames_or_layers {
+        return Err(format!(
+            "LIMG has {} layers, limit is {}",
+            stack.layers.len(),
+            limits.max_frames_or_layers
+        ));
+    }
     let mut buf = write_header(TYPE_LAYERED);
     push_u32(&mut buf, stack.width);
     push_u32(&mut buf, stack.height);
@@ -174,6 +195,7 @@ fn encode_layered(stack: &LayeredImage) -> Result<Vec<u8>, String> {
         push_u32(&mut buf, compressed.len() as u32);
         buf.extend_from_slice(&compressed);
     }
+    limits.encoded_bytes(buf.len(), "LIMG layered output")?;
     Ok(buf)
 }
 /// Decode a layered image from a LIMG payload.
@@ -181,13 +203,41 @@ fn decode_layered(payload: &[u8]) -> Result<LayeredImage, String> {
     if payload.len() < 12 {
         return Err("LIMG layered payload too short".into());
     }
+    let limits = ImageLimits::default();
+    limits.encoded_bytes(payload.len(), "LIMG layered input")?;
     let canvas_w = read_u32(payload, 0)?;
     let canvas_h = read_u32(payload, 4)?;
     let layer_count = read_u32(payload, 8)? as usize;
+    if layer_count > limits.max_frames_or_layers {
+        return Err(format!(
+            "LIMG layered has {} layers, limit is {}",
+            layer_count, limits.max_frames_or_layers
+        ));
+    }
+    let expected = limits.rgba_bytes(canvas_w, canvas_h)?;
+    let aggregate = expected
+        .checked_mul(layer_count)
+        .ok_or_else(|| "LIMG layered aggregate byte count overflow".to_string())?;
+    if aggregate > limits.max_aggregate_bytes {
+        return Err(format!(
+            "LIMG layered decoded bytes {} exceed limit {}",
+            aggregate, limits.max_aggregate_bytes
+        ));
+    }
     let mut stack = LayeredImage::new(canvas_w, canvas_h);
     let mut pos = 12usize;
+    let mut total_name_bytes = 0usize;
     for i in 0..layer_count {
         let name_len = read_u16(payload, pos)? as usize;
+        total_name_bytes = total_name_bytes
+            .checked_add(name_len)
+            .ok_or_else(|| "LIMG layered name bytes overflow".to_string())?;
+        if total_name_bytes > limits.max_layer_name_bytes {
+            return Err(format!(
+                "LIMG layered names exceed {} bytes",
+                limits.max_layer_name_bytes
+            ));
+        }
         pos += 2;
         let name_end = pos
             .checked_add(name_len)
@@ -220,17 +270,12 @@ fn decode_layered(payload: &[u8]) -> Result<LayeredImage, String> {
                 i
             ));
         }
-        let pixels = decompress(&payload[pos..comp_end])?;
+        let pixels = decompress_bounded(
+            &payload[pos..comp_end],
+            expected,
+            &format!("LIMG layered layer {}", i),
+        )?;
         pos = comp_end;
-        let expected = canvas_w
-            .checked_mul(canvas_h)
-            .and_then(|v| v.checked_mul(4))
-            .ok_or_else(|| {
-                format!(
-                    "LIMG layered: dimensions overflow byte size calculation ({}x{})",
-                    canvas_w, canvas_h
-                )
-            })? as usize;
         if pixels.len() != expected {
             return Err(format!(
                 "LIMG layered: layer {} decompressed {} bytes, expected {}",
@@ -239,14 +284,20 @@ fn decode_layered(payload: &[u8]) -> Result<LayeredImage, String> {
                 expected
             ));
         }
-        let img = ImageData::from_bytes(canvas_w, canvas_h, pixels)
+        let img = ImageData::from_bytes_with_limits(canvas_w, canvas_h, pixels, limits)
             .map_err(|e| format!("LIMG layered layer {}: {}", i, e))?;
-        let idx = stack.add_layer(&name);
-        if let Some(layer) = stack.get_layer_mut(idx) {
-            layer.data = img;
-            layer.opacity = opacity.clamp(0.0, 1.0);
-            layer.visible = visible;
+        if !opacity.is_finite() {
+            return Err(format!("LIMG layered: layer {} opacity must be finite", i));
         }
+        stack.layers.push(ImageLayer {
+            name,
+            opacity: opacity.clamp(0.0, 1.0),
+            visible,
+            data: img,
+        });
+    }
+    if pos != payload.len() {
+        return Err("LIMG layered has trailing bytes".into());
     }
     Ok(stack)
 }

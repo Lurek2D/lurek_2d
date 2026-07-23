@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-07-22",
+  "generated": "2026-07-23",
   "modules": [
     {
       "name": "agent",
@@ -14970,7 +14970,7 @@
           "name": "setMaxLights",
           "fullPath": "lurek.light.setMaxLights",
           "signature": "(n)",
-          "description": "Sets the maximum configured light count, clamped to 1 through 256.",
+          "description": "Sets the renderer selection count; values must be 1 through 256.",
           "parameters": [
             {
               "name": "n",
@@ -24963,6 +24963,24 @@
       "name": "province",
       "description": "Registers the `lurek.province` Lua API for province maps, markers, tints, borders, and province registries.",
       "functions": [
+        {
+          "name": "newGrid",
+          "fullPath": "lurek.province.newGrid",
+          "signature": "(filename)",
+          "description": "Loads a province id grid from a GameFS-authorized encoded image.",
+          "parameters": [
+            {
+              "name": "filename",
+              "type": "string",
+              "description": "Province map image filename relative to the game directory.",
+              "optional": false
+            }
+          ],
+          "returns": "LProvinceGrid",
+          "returnType": "LProvinceGrid",
+          "isMethod": false,
+          "objectType": null
+        },
         {
           "name": "newFromPng",
           "fullPath": "lurek.province.newFromPng",
@@ -102966,7 +102984,7 @@
           "name": "setCookie",
           "fullPath": "LLight:setCookie",
           "signature": "(path)",
-          "description": "Stores a cookie texture path on this Lua light handle.",
+          "description": "Stores a cookie resource path on the authoritative light state. It is not sampled until a renderer supports cookies.",
           "parameters": [
             {
               "name": "path",
@@ -102984,7 +103002,7 @@
           "name": "getCookie",
           "fullPath": "LLight:getCookie",
           "signature": "()",
-          "description": "Returns the cookie texture path stored on this Lua light handle.",
+          "description": "Returns the cookie resource path stored on the authoritative light state.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -102995,7 +103013,7 @@
           "name": "clearCookie",
           "fullPath": "LLight:clearCookie",
           "signature": "()",
-          "description": "Clears the cookie texture path stored on this Lua light handle.",
+          "description": "Clears the cookie resource path from the authoritative light state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",

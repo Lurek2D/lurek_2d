@@ -12,6 +12,10 @@ use crate::runtime::resource_keys::TextureKey;
 use slotmap::SlotMap;
 use std::path::Path;
 /// Texture color space stored alongside decoded pixels.
+///
+/// # Variants
+///
+/// `Srgb` stores display-referred texture bytes; `Linear` stores linear-light bytes.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TextureColorSpace {
     /// Standard sRGB texture data.
@@ -20,6 +24,10 @@ pub enum TextureColorSpace {
     Linear,
 }
 /// CPU-side texture handle and its uploaded dimensions.
+///
+/// # Fields
+///
+/// The texture key identifies renderer storage while width and height describe the checked source extent.
 pub struct Texture {
     /// Slot-map key for the backing texture data.
     pub key: TextureKey,
@@ -59,17 +67,16 @@ impl Texture {
         textures: &mut SlotMap<TextureKey, TextureData>,
         color_space: TextureColorSpace,
     ) -> EngineResult<Self> {
-        let img = ::image::open(&path).map_err(|e| {
-            let path_str = path.as_ref().display().to_string();
-            if path_str.contains("No such file") || matches!(e, ::image::ImageError::IoError(_)) {
+        let path_str = path.as_ref().display().to_string();
+        let img = crate::image::ImageData::from_file(&path_str).map_err(|e| {
+            if !path.as_ref().exists() {
                 EngineError::ResourceNotFound(format!("{}: {}", path_str, e))
             } else {
                 EngineError::RenderError(format!("Failed to decode image '{}': {}", path_str, e))
             }
         })?;
-        let rgba = img.to_rgba8();
-        let (width, height) = rgba.dimensions();
-        let mut pixels = rgba.into_raw();
+        let (width, height) = img.dimensions();
+        let mut pixels = img.as_bytes().to_vec();
         premultiply_alpha_rgba8_in_place(&mut pixels);
         let key = textures.insert(TextureData::new(pixels, width, height, color_space));
         log_msg!(debug, TX01_TEX_DECODED, "{}x{}", width, height);

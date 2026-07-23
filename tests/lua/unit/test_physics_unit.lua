@@ -72,6 +72,9 @@ describe("lurek.physics module", function()
         end)
         expect_false(ok)
         expect_true(string.find(tostring(err), "step", 1, true) ~= nil)
+        expect_error(function()
+            lurek.physics.step(world, 0.5)
+        end)
     end)
 
     -- @covers lurek.physics.newBody
@@ -107,18 +110,27 @@ describe("lurek.physics module", function()
             density = 1.2,
             friction = 0.9,
             restitution = 0.8,
+            frictionCombineRule = "multiply",
+            restitutionCombineRule = "max",
             beamReflectivity = 0.6,
             surfaceType = "bounce_pad",
         })
         expect_type("table", material)
         expect_equal("rubber", material.name)
         expect_near(0.9, material.friction, 0.001)
+        expect_equal("multiply", material.frictionCombineRule)
+        expect_equal("max", material.restitutionCombineRule)
         expect_equal("bounce_pad", material.surfaceType)
         local ok, err = pcall(function()
             lurek.physics.newMaterial({ density = 0 })
         end)
         expect_false(ok)
         expect_true(string.find(tostring(err), "newMaterial", 1, true) ~= nil)
+        local invalid_rule, rule_err = pcall(function()
+            lurek.physics.newMaterial({ frictionCombineRule = "invalid" })
+        end)
+        expect_false(invalid_rule)
+        expect_true(string.find(tostring(rule_err), "newMaterial", 1, true) ~= nil)
     end)
 
     -- @covers lurek.physics.getBody
@@ -1784,12 +1796,14 @@ describe("world userdata methods", function()
     end)
 
     -- @covers LWorld:setCcdSubsteps
-    it("setCcdSubsteps persists positive values and clamps zero", function()
+    it("setCcdSubsteps persists positive values and rejects zero", function()
         local world = new_world(0, 0)
         world:setCcdSubsteps(4)
         expect_equal(4, world:getCcdSubsteps())
-        world:setCcdSubsteps(0)
-        expect_equal(1, world:getCcdSubsteps())
+        expect_error(function()
+            world:setCcdSubsteps(0)
+        end)
+        expect_equal(4, world:getCcdSubsteps())
     end)
 
     -- @covers LWorld:getCcdSubsteps
@@ -1913,7 +1927,7 @@ describe("world userdata methods", function()
     end)
 
     -- @covers LWorld:castBeam
-    it("castBeam covers reflective tracing, pierce ordering, and thick-beam fail-fast behavior", function()
+    it("castBeam covers reflective tracing, pierce ordering, and closest thick-beam sweeps", function()
         local world = new_world(0, 0)
         local blocker = world:newBody(10, 0, 6, 40, "static")
         local mirror = world:newBody(80, 0, 6, 40, "static")
@@ -2002,17 +2016,10 @@ describe("world userdata methods", function()
         expect_equal(ids[2], trace.segments[1].blockedBy)
         expect_false(trace.reachedMaxRange)
 
-        local err = expect_error(function()
-            new_world(0, 0):castBeam(0, 0, 1, 0, 20, { thickness = 2 })
-        end)
-        expect_true(
-            string.find(
-                tostring(err),
-                "thickness > 0 is not implemented yet; thick beams require shape casting",
-                1,
-                true
-            ) ~= nil
-        )
+        local thick_trace = world:castBeam(0, 0, 1, 0, 20, { thickness = 2 })
+        expect_equal(1, #thick_trace.hits)
+        expect_equal(blocker:getId(), thick_trace.hits[1].bodyId)
+        expect_equal(1, #thick_trace.segments)
     end)
 
     -- @covers LWorld:reflectBodyVelocity
@@ -2232,6 +2239,17 @@ describe("world userdata methods", function()
         local remainder = world:stepFixed(0.025, 1 / 60, 4)
         expect_type("number", remainder)
         expect_true(remainder >= 0)
+
+        local contacts = 0
+        world = new_world(0, 0)
+        world:newCircleBody(0, 0, 8, "dynamic")
+        world:newCircleBody(0, 0, 8, "static")
+        world:setBeginContact(function()
+            contacts = contacts + 1
+        end)
+        world:stepFixed(2 / 60, 1 / 60, 2)
+        expect_true(#world:getBeginContactEvents() > 0)
+        expect_true(contacts > 0)
     end)
 
     -- @covers LWorld:type
@@ -2516,6 +2534,18 @@ describe("destructible terrain", function()
         expect_false(terrain:isDirty())
     end)
 
+    -- @covers LTerrain:setColliderStrategy
+    -- @covers LTerrain:getColliderStrategy
+    it("terrain collider strategy can use boundary contours without internal rectangle seams", function()
+        local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
+        expect_equal("rowRuns", terrain:getColliderStrategy())
+        terrain:setColliderStrategy("contourEdges")
+        expect_equal("contourEdges", terrain:getColliderStrategy())
+        terrain:setCell(1, 1, true)
+        terrain:flush()
+        expect_error(function() terrain:setColliderStrategy("invalid") end, "lurek.physics.setColliderStrategy")
+    end)
+
     -- @covers LTerrain:isDirty
     it("isDirty reports whether terrain edits are pending", function()
         local terrain = new_terrain(new_world(0, 0), 16, 16, 4)
@@ -2588,6 +2618,13 @@ describe("destructible terrain", function()
         local terrain = new_terrain(world, 16, 16, 4)
         local ids = terrain:spawnDebris({ { x = 8, y = 8 }, { x = 16, y = 8 } }, 1.0, 0.2)
         expect_type("table", ids)
+        expect_equal(2, #ids)
+        local ok, err = pcall(function()
+            terrain:spawnDebris({ { x = 24, y = 8 } }, 0, 0.2)
+        end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "spawnDebris", 1, true) ~= nil)
+        expect_equal(2, world:getStats().bodies)
     end)
 
     -- @covers LTerrain:toBytes

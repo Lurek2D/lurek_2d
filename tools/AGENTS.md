@@ -19,4 +19,5 @@
 
 ## Workflow
 - Run the matching generator, audit, or validator before broad checks.
+- Invoke module audits positionally (for example, `tools/python.cmd tools/audit/audit_module.py image`), matching the parser contract.
 - If shared contracts, generators, or CAG metadata change, run `tools/python.cmd tools/validate/cag_validate.py`.

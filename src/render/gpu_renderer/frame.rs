@@ -596,13 +596,10 @@ impl GpuRenderer {
             let mut shadow_row = 0usize;
             let occluder_list: Vec<&crate::light::occluder::Occluder> =
                 light_world.occluders.values().collect();
+            let selected_lights = light_world.selected_render_lights();
             let mut light_shadow_rows: Vec<Option<usize>> = Vec::new();
             let mut shadow_edge_cache = ShadowEdgeCache::default();
-            for (_, light) in light_world.lights.iter() {
-                if !light.enabled || light.radius * light.energy <= 0.0 {
-                    light_shadow_rows.push(None);
-                    continue;
-                }
+            for (_, light) in &selected_lights {
                 if light.shadow_enabled && shadow_row < MAX_SHADOW_LIGHTS {
                     self.dispatch_shadow_map_gpu(
                         &mut encoder,
@@ -633,11 +630,7 @@ impl GpuRenderer {
                 light_world.ambient.b,
                 light_world.ambient.a,
             ];
-            for ((_, light), shadow_opt) in light_world.lights.iter().zip(light_shadow_rows.iter())
-            {
-                if !light.enabled {
-                    continue;
-                }
+            for ((_, light), shadow_opt) in selected_lights.iter().zip(light_shadow_rows.iter()) {
                 if light_count >= MAX_LIGHT_QUADS {
                     break;
                 }

@@ -2874,12 +2874,13 @@ do
     local dp = lurek.ui.newDockPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
-    dp:dock(0, "left")
+    dp:addChild(child)
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
     lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
-    dp:undock(0)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 
@@ -2889,12 +2890,13 @@ do
     local dp = lurek.ui.newDockPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
-    dp:dock(0, "left")
+    dp:addChild(child)
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
     lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
-    dp:undock(0)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 
@@ -2904,12 +2906,13 @@ do
     local dp = lurek.ui.newDockPanel()
     lurek.log.info(tostring("type=" .. dp:type()))
     local child = lurek.ui.newPanel()
-    dp:dock(0, "left")
+    dp:addChild(child)
+    dp:dock(child, "left")
     lurek.log.info(tostring("docked=" .. dp:getDockedCount()))
     local sz = dp:getSplitSize("left")
     lurek.log.info(tostring("split_size=" .. tostring(sz)))
     dp:setSplitSize("left", 150)
-    dp:undock(0)
+    dp:undock(child)
     lurek.log.info(tostring("docked_after=" .. dp:getDockedCount()))
 end
 
@@ -4613,30 +4616,36 @@ end
 do
 
     local dp = lurek.ui.newDockPanel()
+    local child = lurek.ui.newPanel()
+    dp:addChild(child)
+    dp:dock(child, "left")
     local dockedCount = dp:getDockedCount()
-    dp:undock(0)
-    local tbl = lurek.ui.newTable()
-    lurek.log.info(tostring("undock ok (dockedCount was:") .. " " .. tostring(dockedCount) .. " " .. tostring("); newTable ok"))
+    dp:undock(child)
+    lurek.log.info("undock ok (dockedCount was: " .. tostring(dockedCount) .. ")")
 end
 
 --@api: LDockPanel:undock.3
 do
 
     local dp = lurek.ui.newDockPanel()
+    local child = lurek.ui.newPanel()
+    dp:addChild(child)
+    dp:dock(child, "left")
     local dockedCount = dp:getDockedCount()
-    dp:undock(0)
-    local tbl = lurek.ui.newTable()
-    lurek.log.info(tostring("undock ok (dockedCount was:") .. " " .. tostring(dockedCount) .. " " .. tostring("); newTable ok"))
+    dp:undock(child)
+    lurek.log.info("undock ok (dockedCount was: " .. tostring(dockedCount) .. ")")
 end
 
 --@api: LDockPanel:undock.4
 do
 
     local dp = lurek.ui.newDockPanel()
+    local child = lurek.ui.newPanel()
+    dp:addChild(child)
+    dp:dock(child, "left")
     local dockedCount = dp:getDockedCount()
-    dp:undock(0)
-    local tbl = lurek.ui.newTable()
-    lurek.log.info(tostring("undock ok (dockedCount was:") .. " " .. tostring(dockedCount) .. " " .. tostring("); newTable ok"))
+    dp:undock(child)
+    lurek.log.info("undock ok (dockedCount was: " .. tostring(dockedCount) .. ")")
 end
 
 --@api: LTable:addColumn
@@ -5153,7 +5162,7 @@ do
     mb:addMenu(mi2)
     local cnt = mb:getMenuCount()
     local menus = mb:getMenus()
-    mb:removeMenu(1)
+    mb:removeMenu(mi1)
     lurek.log.info(tostring("menuCount:") .. " " .. tostring(cnt) .. " " .. tostring("getMenus ok; removeMenu ok"))
 end
 
@@ -5167,7 +5176,7 @@ do
     mb:addMenu(mi2)
     local cnt = mb:getMenuCount()
     local menus = mb:getMenus()
-    mb:removeMenu(1)
+    mb:removeMenu(mi1)
     lurek.log.info(tostring("menuCount:") .. " " .. tostring(cnt) .. " " .. tostring("getMenus ok; removeMenu ok"))
 end
 
@@ -5181,7 +5190,7 @@ do
     mb:addMenu(mi2)
     local cnt = mb:getMenuCount()
     local menus = mb:getMenus()
-    mb:removeMenu(1)
+    mb:removeMenu(mi1)
     lurek.log.info(tostring("menuCount:") .. " " .. tostring(cnt) .. " " .. tostring("getMenus ok; removeMenu ok"))
 end
 
@@ -6521,7 +6530,7 @@ do
     tp:setDelay(0.5)
     local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
-    tp:setTarget(btn:getId() and 1 or 1)
+    tp:setTarget(btn)
     lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("delay:") .. " " .. tostring(d))
 end
 
@@ -6533,7 +6542,7 @@ do
     tp:setDelay(0.5)
     local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
-    tp:setTarget(btn:getId() and 1 or 1)
+    tp:setTarget(btn)
     lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("delay:") .. " " .. tostring(d))
 end
 
@@ -6545,7 +6554,7 @@ do
     tp:setDelay(0.5)
     local d = tp:getDelay()
     local btn = lurek.ui.newButton("hover me")
-    tp:setTarget(btn:getId() and 1 or 1)
+    tp:setTarget(btn)
     lurek.log.info(tostring("text:") .. " " .. tostring(txt) .. " " .. tostring("delay:") .. " " .. tostring(d))
 end
 
@@ -8721,19 +8730,29 @@ end
 --@api: LUiWidget:isValid
 do
     local widget = lurek.ui.newButton("Lifecycle")
-    lurek.log.info(tostring("live=" .. tostring(widget:isValid())))
+    local before = widget:isValid()
+    widget:setText("Lifecycle check")
+    local after = widget:isValid()
+    lurek.log.info(tostring("live before=" .. tostring(before)))
+    lurek.log.info(tostring("live after=" .. tostring(after)))
 end
 
 --@api: LUiWidget:destroy
 do
     local widget = lurek.ui.newButton("Destroy me")
+    local before = widget:isValid()
     widget:destroy()
+    local after = widget:isValid()
+    lurek.log.info(tostring("destroyed " .. tostring(before) .. " -> " .. tostring(after)))
 end
 
 --@api: lurek.ui.destroy
 do
     local widget = lurek.ui.newButton("Destroy me")
+    local before = widget:isValid()
     lurek.ui.destroy(widget)
+    local after = widget:isValid()
+    lurek.log.info(tostring("destroyed " .. tostring(before) .. " -> " .. tostring(after)))
 end
 
 --@api: LUiWidget:setOnDragEnd

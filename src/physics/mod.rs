@@ -59,17 +59,18 @@ pub use liquid::{
     LiquidBodyForceOptions, LiquidBodyForceStats, LiquidCell, LiquidKind, LiquidMap,
     LiquidStepOptions, LiquidStepStats,
 };
-pub use material::PhysicsMaterial;
+pub use material::{MaterialCombineRule, PhysicsMaterial};
 pub use projectile::reflect_velocity;
 pub use shape::{AlphaShapeOptions, Shape, StandaloneShape};
 pub use terrain::{
-    TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult, TerrainComponent,
-    TerrainFlushStats, TerrainMap, TerrainRegion, TerrainSupportRule,
+    TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult, TerrainColliderStrategy,
+    TerrainComponent, TerrainFlushStats, TerrainMap, TerrainRegion, TerrainSupportRule,
 };
 pub use world::BodyContact as CollisionEvent;
 pub use world::{
     BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, ContactInfo, GravityVector,
-    PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats, RaycastHit, ShapeSweepHit, World,
+    PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsSnapshot, PhysicsSnapshotDiff,
+    PhysicsWorldStats, RaycastHit, RaycastQuery, ShapeSweepHit, World,
 };
 pub use zone::{
     PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityFalloff, ZoneGravityMode,

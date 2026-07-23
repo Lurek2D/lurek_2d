@@ -11,8 +11,43 @@
 use super::*;
 
 impl World {
+    /// Insert a strictly validated body without exceeding the active-body ceiling.
+    pub fn try_add_body(&mut self, body: Body) -> Result<BodyId, PhysicsError> {
+        body.validate(&self.limits)?;
+        let count = self.body_count().saturating_add(1);
+        if count > self.limits.max_bodies {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics bodies",
+                count,
+                max: self.limits.max_bodies,
+            });
+        }
+        let slots = self.bodies.len().saturating_add(1);
+        if slots > self.limits.max_body_slots {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics body slots",
+                count: slots,
+                max: self.limits.max_body_slots,
+            });
+        }
+        Ok(self.add_body_unchecked(body))
+    }
+
     /// Insert a body into the world and return its id.
+    ///
+    /// This compatibility helper records a rejected insertion. Lua-facing and bulk
+    /// construction must use [`World::try_add_body`] so callers receive the error.
     pub fn add_body(&mut self, body: Body) -> BodyId {
+        match self.try_add_body(body) {
+            Ok(id) => id,
+            Err(_) => {
+                self.record_invalid_operation();
+                BodyId(usize::MAX)
+            }
+        }
+    }
+
+    pub(crate) fn add_body_unchecked(&mut self, body: Body) -> BodyId {
         let id = self.bodies.len();
         let material = Self::default_body_material_for(&body);
         let rb = RigidBodyBuilder::new(Self::rapier_body_type(body.body_type))
@@ -21,7 +56,7 @@ impl World {
             .ccd_enabled(body.bullet)
             .build();
         let body_handle = self.rbodies.insert(rb);
-        let collider = self.make_collider(&body, material.density);
+        let collider = self.make_collider(&body, &material);
         let collider_handle =
             self.rcolliders
                 .insert_with_parent(collider, body_handle, &mut self.rbodies);
@@ -335,6 +370,11 @@ impl World {
         collider.set_density(material.density);
         collider.set_friction(material.friction);
         collider.set_restitution(material.restitution);
+        collider
+            .set_friction_combine_rule(Self::material_combine_rule(material.friction_combine_rule));
+        collider.set_restitution_combine_rule(Self::material_combine_rule(
+            material.restitution_combine_rule,
+        ));
         if let Some(scale) = material.gravity_scale {
             self.set_gravity_scale(id, scale);
         }
@@ -414,11 +454,19 @@ impl World {
             collider.set_density(material.density);
             collider.set_friction(material.friction);
             collider.set_restitution(material.restitution);
+            collider.set_friction_combine_rule(Self::material_combine_rule(
+                material.friction_combine_rule,
+            ));
+            collider.set_restitution_combine_rule(Self::material_combine_rule(
+                material.restitution_combine_rule,
+            ));
             if let Some(slot) = self.body_materials.get_mut(body_id) {
                 slot.name = material.name;
                 slot.density = material.density;
                 slot.friction = material.friction;
                 slot.restitution = material.restitution;
+                slot.friction_combine_rule = material.friction_combine_rule;
+                slot.restitution_combine_rule = material.restitution_combine_rule;
                 slot.stickiness = material.stickiness;
                 slot.adhesion = material.adhesion;
                 slot.beam_reflectivity = material.beam_reflectivity;
@@ -450,6 +498,11 @@ impl World {
         collider.set_density(material.density);
         collider.set_friction(material.friction);
         collider.set_restitution(material.restitution);
+        collider
+            .set_friction_combine_rule(Self::material_combine_rule(material.friction_combine_rule));
+        collider.set_restitution_combine_rule(Self::material_combine_rule(
+            material.restitution_combine_rule,
+        ));
         self.fixture_materials
             .insert((body_id, fixture_idx), material);
         Ok(())

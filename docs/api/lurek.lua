@@ -17268,7 +17268,7 @@ lurek.learning.wrap = function(model) end
 ---@param hz number Flicker frequency in hertz.
 function LLight:addFlicker(min, max, hz) end
 
---- Clears the cookie texture path stored on this Lua light handle.
+--- Clears the cookie resource path from the authoritative light state.
 function LLight:clearCookie() end
 
 --- Clears the normal map path used by this light.
@@ -17291,7 +17291,7 @@ function LLight:getBlendMode() end
 ---@return number Alpha channel.
 function LLight:getColor() end
 
---- Returns the cookie texture path stored on this Lua light handle.
+--- Returns the cookie resource path stored on the authoritative light state.
 ---@return string Cookie texture path, or nil when absent.
 function LLight:getCookie() end
 
@@ -17420,7 +17420,7 @@ function LLight:setBlendMode(mode) end
 ---@param a? number Alpha channel, defaulting to 1.0.
 function LLight:setColor(r, g, b, a) end
 
---- Stores a cookie texture path on this Lua light handle.
+--- Stores a cookie resource path on the authoritative light state. It is not sampled until a renderer supports cookies.
 ---@param path string Cookie texture path.
 function LLight:setCookie(path) end
 
@@ -17713,7 +17713,7 @@ lurek.light.setGroupEnabled = function(group_id, enabled) end
 ---@param intensity number New intensity value.
 lurek.light.setGroupIntensity = function(group_id, intensity) end
 
---- Sets the maximum configured light count, clamped to 1 through 256.
+--- Sets the renderer selection count; values must be 1 through 256.
 ---@param n number Requested maximum light count.
 lurek.light.setMaxLights = function(n) end
 
@@ -28982,6 +28982,11 @@ lurek.province.hasFlag = function(id, bit) end
 ---@param png_path string Path to the province map PNG (relative to game directory or absolute).
 ---@return LProvinceRegistry The newly created registry handle.
 lurek.province.newFromPng = function(name, png_path) end
+
+--- Loads a province id grid from a GameFS-authorized encoded image.
+---@param filename string Province map image filename relative to the game directory.
+---@return LProvinceGrid New province grid handle.
+lurek.province.newGrid = function(filename) end
 
 --- Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.
 ---@param name string Registry name to remove.

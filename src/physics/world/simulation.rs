@@ -11,8 +11,21 @@
 //! Works with neighboring physics owners while keeping main physics world simulation responsibility anchored in one file.
 
 use super::*;
+use crate::physics::limits::validate_range;
 
 impl World {
+    /// Strict public step: reject invalid or oversized deltas instead of discarding time.
+    pub fn try_step(&mut self, dt: f32) -> Result<(), PhysicsError> {
+        validate_range(
+            "step dt",
+            f64::from(dt),
+            f64::from(self.limits.min_step_dt),
+            f64::from(self.limits.max_step_dt),
+        )?;
+        self.step(dt);
+        Ok(())
+    }
+
     /// Step the simulation by `dt` seconds; synchronises body state with rapier.
     pub fn step(&mut self, dt: f32) {
         self.collision_events.clear();
@@ -157,17 +170,30 @@ impl World {
             let id_a = self.body_for_collider(ca);
             let id_b = self.body_for_collider(cb);
             if let (Some(a), Some(b)) = (id_a, id_b) {
+                let pair = (a.min(b), a.max(b));
                 if event.started() {
-                    self.collision_events.push(BodyContact {
-                        body_a: BodyId(a),
-                        body_b: BodyId(b),
-                    });
-                    self.begin_contact_events.push((a, b));
+                    if self.collision_events.len() < self.limits.max_contact_events {
+                        self.collision_events.push(BodyContact {
+                            body_a: BodyId(pair.0),
+                            body_b: BodyId(pair.1),
+                        });
+                    }
+                    if self.begin_contact_events.len() < self.limits.max_contact_events {
+                        self.begin_contact_events.push(pair);
+                    }
                 } else {
-                    self.end_contact_events.push((a, b));
+                    if self.end_contact_events.len() < self.limits.max_contact_events {
+                        self.end_contact_events.push(pair);
+                    }
                 }
             }
         }
+        self.collision_events.sort_unstable();
+        self.collision_events.dedup();
+        self.begin_contact_events.sort_unstable();
+        self.begin_contact_events.dedup();
+        self.end_contact_events.sort_unstable();
+        self.end_contact_events.dedup();
         if !self.joint_break_forces.is_empty() {
             let breakable: Vec<(usize, ImpulseJointHandle, f32)> = self
                 .joint_handles
@@ -316,6 +342,14 @@ impl World {
     ) -> Result<usize, PhysicsError> {
         validate_finite("gravity_vector.gx", f64::from(gx))?;
         validate_finite("gravity_vector.gy", f64::from(gy))?;
+        let count = self.gravity_vectors.len().saturating_add(1);
+        if count > self.limits.max_gravity_vectors {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics gravity vectors",
+                count,
+                max: self.limits.max_gravity_vectors,
+            });
+        }
         let id = self.gravity_vector_id_counter;
         self.gravity_vector_id_counter += 1;
         self.gravity_vectors.push(GravityVector {
@@ -402,6 +436,14 @@ impl World {
         mut field: FlowField,
     ) -> Result<FlowFieldId, PhysicsError> {
         field.validate()?;
+        let count = self.flow_fields.len().saturating_add(1);
+        if count > self.limits.max_flow_fields {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics flow fields",
+                count,
+                max: self.limits.max_flow_fields,
+            });
+        }
         let id = self.flow_field_id_counter;
         self.flow_field_id_counter += 1;
         field.id = id;
@@ -712,19 +754,82 @@ impl World {
     }
 
     /// Run up to `max_steps` fixed substeps using `step_dt`; return steps taken and leftover dt.
-    pub fn step_fixed(&mut self, accumulated_dt: f32, step_dt: f32, max_steps: u32) -> (u32, f32) {
-        if !accumulated_dt.is_finite() || accumulated_dt <= 0.0 {
-            return (0, 0.0);
+    pub fn try_step_fixed(
+        &mut self,
+        accumulated_dt: f32,
+        step_dt: f32,
+        max_steps: u32,
+    ) -> Result<(u32, f32), PhysicsError> {
+        validate_finite("accumulated dt", f64::from(accumulated_dt))?;
+        if accumulated_dt < 0.0 {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "accumulated dt",
+                min: 0.0,
+                max: f64::MAX,
+                value: f64::from(accumulated_dt),
+            });
         }
-        if !step_dt.is_finite() || step_dt <= 0.0 {
-            return (0, accumulated_dt);
+        validate_range(
+            "fixed step dt",
+            f64::from(step_dt),
+            f64::from(self.limits.min_step_dt),
+            f64::from(self.limits.max_step_dt),
+        )?;
+        if max_steps == 0 || max_steps > self.limits.max_fixed_steps {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "fixed max steps",
+                min: 1.0,
+                max: f64::from(self.limits.max_fixed_steps),
+                value: f64::from(max_steps),
+            });
         }
-        let steps = ((accumulated_dt / step_dt) as u32).min(max_steps);
+        let available_steps = (accumulated_dt / step_dt).floor();
+        let steps = available_steps.min(max_steps as f32).max(0.0) as u32;
+        self.collision_events.clear();
+        self.begin_contact_events.clear();
+        self.end_contact_events.clear();
+        let mut collision_events = Vec::new();
+        let mut begin_events = Vec::new();
+        let mut end_events = Vec::new();
         for _ in 0..steps {
             self.step(step_dt);
+            for event in self.collision_events.iter().copied() {
+                if collision_events.len() < self.limits.max_contact_events {
+                    collision_events.push(event);
+                }
+            }
+            for event in self.begin_contact_events.iter().copied() {
+                if begin_events.len() < self.limits.max_contact_events {
+                    begin_events.push(event);
+                }
+            }
+            for event in self.end_contact_events.iter().copied() {
+                if end_events.len() < self.limits.max_contact_events {
+                    end_events.push(event);
+                }
+            }
         }
+        collision_events.sort_unstable();
+        collision_events.dedup();
+        begin_events.sort_unstable();
+        begin_events.dedup();
+        end_events.sort_unstable();
+        end_events.dedup();
+        self.collision_events = collision_events;
+        self.begin_contact_events = begin_events;
+        self.end_contact_events = end_events;
         let remainder = accumulated_dt - steps as f32 * step_dt;
-        (steps, remainder.max(0.0))
+        Ok((steps, remainder.max(0.0)))
+    }
+    /// Compatibility fixed step that records rejected input and preserves its accumulator.
+    pub fn step_fixed(&mut self, accumulated_dt: f32, step_dt: f32, max_steps: u32) -> (u32, f32) {
+        match self.try_step_fixed(accumulated_dt, step_dt, max_steps) {
+            Ok(result) => result,
+            Err(_) => {
+                self.record_invalid_operation();
+                (0, accumulated_dt.max(0.0))
+            }
+        }
     }
     /// Teleport body `id` to world position `(x, y)`.
     pub fn set_body_position(&mut self, id: usize, x: f32, y: f32) {
@@ -928,9 +1033,24 @@ impl World {
         }
         self.bodies.get(id).map(|body| body.bullet).unwrap_or(false)
     }
-    /// Set the maximum number of CCD substeps used by the solver. Minimum value is `1`.
+    /// Set the maximum number of CCD substeps within the configured work ceiling.
+    pub fn try_set_ccd_substeps(&mut self, max_substeps: usize) -> Result<(), PhysicsError> {
+        if max_substeps == 0 || max_substeps > self.limits.max_ccd_substeps {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "CCD substeps",
+                min: 1.0,
+                max: self.limits.max_ccd_substeps as f64,
+                value: max_substeps as f64,
+            });
+        }
+        self.params.max_ccd_substeps = max_substeps;
+        Ok(())
+    }
+    /// Compatibility setter that records rejected values.
     pub fn set_ccd_substeps(&mut self, max_substeps: usize) {
-        self.params.max_ccd_substeps = max_substeps.max(1);
+        if self.try_set_ccd_substeps(max_substeps).is_err() {
+            self.record_invalid_operation();
+        }
     }
     /// Return the configured maximum number of CCD substeps.
     pub fn get_ccd_substeps(&self) -> usize {

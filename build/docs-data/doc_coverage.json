@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-22T20:33:14.835993+00:00",
+  "generated_at": "2026-07-23T13:37:48.170059+00:00",
   "summary": {
     "rust": {
-      "total": 9987,
-      "covered": 9983,
+      "total": 9966,
+      "covered": 9962,
       "missing": 4,
       "pct": 100.0
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 10239,
-      "covered": 10235,
+      "total": 10218,
+      "covered": 10214,
       "missing": 4,
       "pct": 100.0
     }
@@ -29691,7 +29691,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/animated_gif.rs",
-      "line": 14,
+      "line": 19,
       "kind": "enum",
       "name": "AnimatedGifRepeat",
       "has_doc": true
@@ -29700,7 +29700,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/animated_gif.rs",
-      "line": 25,
+      "line": 34,
       "kind": "struct",
       "name": "AnimatedGifOptions",
       "has_doc": true
@@ -29709,7 +29709,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/animated_gif.rs",
-      "line": 36,
+      "line": 49,
       "kind": "struct",
       "name": "AnimatedGifFrame",
       "has_doc": true
@@ -29718,7 +29718,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/animated_gif.rs",
-      "line": 108,
+      "line": 139,
       "kind": "fn",
       "name": "encode_gif",
       "has_doc": true
@@ -29727,7 +29727,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/animated_gif.rs",
-      "line": 140,
+      "line": 172,
       "kind": "fn",
       "name": "decode_gif",
       "has_doc": true
@@ -29736,7 +29736,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/animated_gif.rs",
-      "line": 186,
+      "line": 245,
       "kind": "fn",
       "name": "load_gif",
       "has_doc": true
@@ -29745,7 +29745,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/animated_gif.rs",
-      "line": 193,
+      "line": 252,
       "kind": "fn",
       "name": "save_gif",
       "has_doc": true
@@ -29754,7 +29754,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 9,
+      "line": 16,
       "kind": "enum",
       "name": "CompressedFormat",
       "has_doc": true
@@ -29763,7 +29763,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 29,
+      "line": 36,
       "kind": "fn",
       "name": "as_str",
       "has_doc": true
@@ -29772,7 +29772,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 44,
+      "line": 55,
       "kind": "struct",
       "name": "CompressedImageData",
       "has_doc": true
@@ -29781,7 +29781,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 56,
+      "line": 67,
       "kind": "fn",
       "name": "from_dds",
       "has_doc": true
@@ -29790,7 +29790,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 62,
+      "line": 76,
       "kind": "fn",
       "name": "get_dimensions",
       "has_doc": true
@@ -29799,7 +29799,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 66,
+      "line": 80,
       "kind": "fn",
       "name": "get_mipmap_count",
       "has_doc": true
@@ -29808,7 +29808,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 70,
+      "line": 84,
       "kind": "fn",
       "name": "get_format",
       "has_doc": true
@@ -29817,7 +29817,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 74,
+      "line": 88,
       "kind": "fn",
       "name": "is_dds_magic",
       "has_doc": true
@@ -29826,7 +29826,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 78,
+      "line": 95,
       "kind": "fn",
       "name": "from_file",
       "has_doc": true
@@ -29835,7 +29835,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/compressed.rs",
-      "line": 84,
+      "line": 110,
       "kind": "fn",
       "name": "is_dds_file",
       "has_doc": true
@@ -29844,7 +29844,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 16,
+      "line": 20,
       "kind": "enum",
       "name": "ResizeFilter",
       "has_doc": true
@@ -29853,7 +29853,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 24,
+      "line": 32,
       "kind": "struct",
       "name": "ImageEffectOptions",
       "has_doc": true
@@ -29862,7 +29862,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 61,
+      "line": 69,
       "kind": "fn",
       "name": "parse",
       "has_doc": true
@@ -29871,7 +29871,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 95,
+      "line": 103,
       "kind": "fn",
       "name": "apply_effect_named",
       "has_doc": true
@@ -29880,7 +29880,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 141,
+      "line": 149,
       "kind": "fn",
       "name": "apply_mask_image",
       "has_doc": true
@@ -29889,7 +29889,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 160,
+      "line": 168,
       "kind": "fn",
       "name": "transform_image",
       "has_doc": true
@@ -29898,7 +29898,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 168,
+      "line": 176,
       "kind": "fn",
       "name": "brightness",
       "has_doc": true
@@ -29907,7 +29907,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 177,
+      "line": 185,
       "kind": "fn",
       "name": "contrast",
       "has_doc": true
@@ -29916,7 +29916,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 184,
+      "line": 192,
       "kind": "fn",
       "name": "saturation",
       "has_doc": true
@@ -29925,7 +29925,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 192,
+      "line": 200,
       "kind": "fn",
       "name": "gamma",
       "has_doc": true
@@ -29934,7 +29934,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 203,
+      "line": 211,
       "kind": "fn",
       "name": "tint",
       "has_doc": true
@@ -29943,7 +29943,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 212,
+      "line": 220,
       "kind": "fn",
       "name": "grayscale",
       "has_doc": true
@@ -29952,7 +29952,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 219,
+      "line": 227,
       "kind": "fn",
       "name": "sepia",
       "has_doc": true
@@ -29961,7 +29961,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 231,
+      "line": 239,
       "kind": "fn",
       "name": "invert",
       "has_doc": true
@@ -29970,7 +29970,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 235,
+      "line": 243,
       "kind": "fn",
       "name": "threshold",
       "has_doc": true
@@ -29979,7 +29979,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 243,
+      "line": 251,
       "kind": "fn",
       "name": "posterize",
       "has_doc": true
@@ -29988,7 +29988,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 252,
+      "line": 260,
       "kind": "fn",
       "name": "fill",
       "has_doc": true
@@ -29997,7 +29997,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 256,
+      "line": 264,
       "kind": "fn",
       "name": "noise",
       "has_doc": true
@@ -30006,7 +30006,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 281,
+      "line": 289,
       "kind": "fn",
       "name": "alpha_mask",
       "has_doc": true
@@ -30015,7 +30015,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 288,
+      "line": 296,
       "kind": "fn",
       "name": "invert_alpha",
       "has_doc": true
@@ -30024,7 +30024,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 292,
+      "line": 300,
       "kind": "fn",
       "name": "auto_level",
       "has_doc": true
@@ -30033,7 +30033,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 307,
+      "line": 315,
       "kind": "fn",
       "name": "levels",
       "has_doc": true
@@ -30042,7 +30042,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 322,
+      "line": 330,
       "kind": "fn",
       "name": "flip_horizontal",
       "has_doc": true
@@ -30051,7 +30051,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 338,
+      "line": 346,
       "kind": "fn",
       "name": "flip_vertical",
       "has_doc": true
@@ -30060,7 +30060,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 350,
+      "line": 358,
       "kind": "fn",
       "name": "rotate_90_cw",
       "has_doc": true
@@ -30069,7 +30069,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 368,
+      "line": 376,
       "kind": "fn",
       "name": "crop",
       "has_doc": true
@@ -30078,7 +30078,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 382,
+      "line": 390,
       "kind": "fn",
       "name": "resize_nearest",
       "has_doc": true
@@ -30087,7 +30087,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 400,
+      "line": 408,
       "kind": "fn",
       "name": "blur",
       "has_doc": true
@@ -30096,7 +30096,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 448,
+      "line": 456,
       "kind": "fn",
       "name": "median",
       "has_doc": true
@@ -30105,7 +30105,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 479,
+      "line": 487,
       "kind": "fn",
       "name": "motion_blur",
       "has_doc": true
@@ -30114,7 +30114,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 505,
+      "line": 513,
       "kind": "fn",
       "name": "normal_map",
       "has_doc": true
@@ -30123,7 +30123,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 528,
+      "line": 536,
       "kind": "fn",
       "name": "drop_shadow",
       "has_doc": true
@@ -30132,7 +30132,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 545,
+      "line": 553,
       "kind": "fn",
       "name": "outline",
       "has_doc": true
@@ -30141,7 +30141,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 576,
+      "line": 584,
       "kind": "fn",
       "name": "glow",
       "has_doc": true
@@ -30150,7 +30150,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 594,
+      "line": 602,
       "kind": "fn",
       "name": "dither",
       "has_doc": true
@@ -30159,7 +30159,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 609,
+      "line": 617,
       "kind": "fn",
       "name": "sharpen",
       "has_doc": true
@@ -30168,7 +30168,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 637,
+      "line": 645,
       "kind": "fn",
       "name": "resize",
       "has_doc": true
@@ -30177,7 +30177,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 641,
+      "line": 649,
       "kind": "fn",
       "name": "resize_with_filter",
       "has_doc": true
@@ -30186,7 +30186,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 741,
+      "line": 749,
       "kind": "fn",
       "name": "blit",
       "has_doc": true
@@ -30195,7 +30195,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 803,
+      "line": 811,
       "kind": "fn",
       "name": "draw_nine_slice",
       "has_doc": true
@@ -30204,7 +30204,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 942,
+      "line": 950,
       "kind": "fn",
       "name": "get_region",
       "has_doc": true
@@ -30213,7 +30213,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 957,
+      "line": 965,
       "kind": "fn",
       "name": "diff",
       "has_doc": true
@@ -30222,7 +30222,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/effects.rs",
-      "line": 986,
+      "line": 994,
       "kind": "fn",
       "name": "convolve",
       "has_doc": true
@@ -30231,7 +30231,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 15,
+      "line": 21,
       "kind": "struct",
       "name": "ImageData",
       "has_doc": true
@@ -30240,7 +30240,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 26,
+      "line": 32,
       "kind": "fn",
       "name": "rgba_byte_len",
       "has_doc": true
@@ -30249,7 +30249,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 44,
+      "line": 36,
       "kind": "fn",
       "name": "try_new",
       "has_doc": true
@@ -30258,7 +30258,16 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 53,
+      "line": 40,
+      "kind": "fn",
+      "name": "try_new_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 61,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -30267,7 +30276,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 57,
+      "line": 65,
       "kind": "fn",
       "name": "from_file",
       "has_doc": true
@@ -30276,7 +30285,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 70,
+      "line": 77,
       "kind": "fn",
       "name": "from_encoded_bytes",
       "has_doc": true
@@ -30285,7 +30294,16 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 83,
+      "line": 81,
+      "kind": "fn",
+      "name": "from_encoded_bytes_with_limits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 111,
       "kind": "fn",
       "name": "from_bytes",
       "has_doc": true
@@ -30294,45 +30312,9 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 108,
+      "line": 115,
       "kind": "fn",
-      "name": "width",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/image_data.rs",
-      "line": 112,
-      "kind": "fn",
-      "name": "height",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/image_data.rs",
-      "line": 116,
-      "kind": "fn",
-      "name": "dimensions",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/image_data.rs",
-      "line": 120,
-      "kind": "fn",
-      "name": "get_pixel",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/image_data.rs",
-      "line": 133,
-      "kind": "fn",
-      "name": "set_pixel",
+      "name": "from_bytes_with_limits",
       "has_doc": true
     },
     {
@@ -30341,6 +30323,51 @@
       "file": "src/image/image_data.rs",
       "line": 145,
       "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 149,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 153,
+      "kind": "fn",
+      "name": "dimensions",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 157,
+      "kind": "fn",
+      "name": "get_pixel",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 172,
+      "kind": "fn",
+      "name": "set_pixel",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 184,
+      "kind": "fn",
       "name": "paste",
       "has_doc": true
     },
@@ -30348,7 +30375,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 159,
+      "line": 198,
       "kind": "fn",
       "name": "map_pixel",
       "has_doc": true
@@ -30357,7 +30384,16 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 180,
+      "line": 218,
+      "kind": "fn",
+      "name": "map_pixel_transactional",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/image_data.rs",
+      "line": 241,
       "kind": "fn",
       "name": "draw_rect",
       "has_doc": true
@@ -30366,7 +30402,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 193,
+      "line": 254,
       "kind": "fn",
       "name": "draw_circle",
       "has_doc": true
@@ -30375,7 +30411,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 212,
+      "line": 273,
       "kind": "fn",
       "name": "draw_line",
       "has_doc": true
@@ -30384,7 +30420,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 239,
+      "line": 306,
       "kind": "fn",
       "name": "draw_label",
       "has_doc": true
@@ -30393,7 +30429,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 466,
+      "line": 533,
       "kind": "fn",
       "name": "draw_text_with_font",
       "has_doc": true
@@ -30402,7 +30438,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 542,
+      "line": 609,
       "kind": "fn",
       "name": "encode_png",
       "has_doc": true
@@ -30411,7 +30447,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 555,
+      "line": 623,
       "kind": "fn",
       "name": "as_bytes",
       "has_doc": true
@@ -30420,7 +30456,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 559,
+      "line": 627,
       "kind": "fn",
       "name": "as_mut_bytes",
       "has_doc": true
@@ -30429,7 +30465,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 563,
+      "line": 631,
       "kind": "fn",
       "name": "get_string",
       "has_doc": true
@@ -30438,7 +30474,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 567,
+      "line": 635,
       "kind": "fn",
       "name": "set_raw_data",
       "has_doc": true
@@ -30447,7 +30483,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/image_data.rs",
-      "line": 583,
+      "line": 651,
       "kind": "fn",
       "name": "map_pixel_par",
       "has_doc": true
@@ -30456,7 +30492,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 10,
+      "line": 14,
       "kind": "struct",
       "name": "ImageLayer",
       "has_doc": true
@@ -30465,7 +30501,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 22,
+      "line": 26,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -30474,7 +30510,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 33,
+      "line": 41,
       "kind": "struct",
       "name": "LayeredImage",
       "has_doc": true
@@ -30483,7 +30519,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 43,
+      "line": 51,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -30492,7 +30528,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 51,
+      "line": 59,
       "kind": "fn",
       "name": "width",
       "has_doc": true
@@ -30501,7 +30537,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 55,
+      "line": 63,
       "kind": "fn",
       "name": "height",
       "has_doc": true
@@ -30510,7 +30546,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 59,
+      "line": 67,
       "kind": "fn",
       "name": "layer_count",
       "has_doc": true
@@ -30519,7 +30555,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 63,
+      "line": 71,
       "kind": "fn",
       "name": "add_layer",
       "has_doc": true
@@ -30528,7 +30564,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 69,
+      "line": 77,
       "kind": "fn",
       "name": "remove_layer",
       "has_doc": true
@@ -30537,7 +30573,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 77,
+      "line": 85,
       "kind": "fn",
       "name": "get_layer",
       "has_doc": true
@@ -30546,7 +30582,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 81,
+      "line": 89,
       "kind": "fn",
       "name": "get_layer_mut",
       "has_doc": true
@@ -30555,7 +30591,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 85,
+      "line": 93,
       "kind": "fn",
       "name": "set_opacity",
       "has_doc": true
@@ -30564,7 +30600,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 94,
+      "line": 105,
       "kind": "fn",
       "name": "set_visible",
       "has_doc": true
@@ -30573,7 +30609,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 103,
+      "line": 114,
       "kind": "fn",
       "name": "set_name",
       "has_doc": true
@@ -30582,7 +30618,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 112,
+      "line": 123,
       "kind": "fn",
       "name": "set_layer_image",
       "has_doc": true
@@ -30591,7 +30627,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 127,
+      "line": 138,
       "kind": "fn",
       "name": "swap_layers",
       "has_doc": true
@@ -30600,7 +30636,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 136,
+      "line": 147,
       "kind": "fn",
       "name": "move_layer",
       "has_doc": true
@@ -30609,7 +30645,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/layers.rs",
-      "line": 146,
+      "line": 157,
       "kind": "fn",
       "name": "merge",
       "has_doc": true
@@ -30617,8 +30653,44 @@
     {
       "source": "rust",
       "module": "image",
+      "file": "src/image/limits.rs",
+      "line": 10,
+      "kind": "struct",
+      "name": "ImageLimits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/limits.rs",
+      "line": 61,
+      "kind": "fn",
+      "name": "rgba_bytes",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/limits.rs",
+      "line": 99,
+      "kind": "fn",
+      "name": "work",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/limits.rs",
+      "line": 113,
+      "kind": "fn",
+      "name": "encoded_bytes",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
       "file": "src/image/palette_lut.rs",
-      "line": 11,
+      "line": 15,
       "kind": "struct",
       "name": "PaletteLUT",
       "has_doc": true
@@ -30627,18 +30699,9 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/palette_lut.rs",
-      "line": 19,
+      "line": 23,
       "kind": "fn",
       "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/palette_lut.rs",
-      "line": 26,
-      "kind": "fn",
-      "name": "get_color_count",
       "has_doc": true
     },
     {
@@ -30647,16 +30710,16 @@
       "file": "src/image/palette_lut.rs",
       "line": 30,
       "kind": "fn",
-      "name": "set_color",
+      "name": "get_color_count",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "image",
       "file": "src/image/palette_lut.rs",
-      "line": 39,
+      "line": 34,
       "kind": "fn",
-      "name": "get_from_color",
+      "name": "set_color",
       "has_doc": true
     },
     {
@@ -30665,7 +30728,7 @@
       "file": "src/image/palette_lut.rs",
       "line": 43,
       "kind": "fn",
-      "name": "get_to_color",
+      "name": "get_from_color",
       "has_doc": true
     },
     {
@@ -30674,6 +30737,15 @@
       "file": "src/image/palette_lut.rs",
       "line": 47,
       "kind": "fn",
+      "name": "get_to_color",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/palette_lut.rs",
+      "line": 51,
+      "kind": "fn",
       "name": "clear",
       "has_doc": true
     },
@@ -30681,7 +30753,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/palette_lut.rs",
-      "line": 52,
+      "line": 56,
       "kind": "fn",
       "name": "cycle_to_colors",
       "has_doc": true
@@ -30690,7 +30762,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/palette_lut.rs",
-      "line": 64,
+      "line": 68,
       "kind": "fn",
       "name": "apply",
       "has_doc": true
@@ -30699,7 +30771,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 9,
+      "line": 13,
       "kind": "struct",
       "name": "PackedRect",
       "has_doc": true
@@ -30708,7 +30780,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 35,
+      "line": 43,
       "kind": "struct",
       "name": "RectPacker",
       "has_doc": true
@@ -30717,7 +30789,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 49,
+      "line": 57,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -30726,7 +30798,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 59,
+      "line": 67,
       "kind": "fn",
       "name": "pack",
       "has_doc": true
@@ -30735,7 +30807,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 108,
+      "line": 119,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -30744,7 +30816,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 113,
+      "line": 124,
       "kind": "fn",
       "name": "packed_rects",
       "has_doc": true
@@ -30753,7 +30825,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 117,
+      "line": 128,
       "kind": "fn",
       "name": "occupancy",
       "has_doc": true
@@ -30762,7 +30834,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 130,
+      "line": 141,
       "kind": "fn",
       "name": "size",
       "has_doc": true
@@ -30771,7 +30843,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/rect_packing.rs",
-      "line": 134,
+      "line": 145,
       "kind": "fn",
       "name": "padding",
       "has_doc": true
@@ -30798,7 +30870,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 23,
+      "line": 24,
       "kind": "fn",
       "name": "save_image",
       "has_doc": true
@@ -30807,7 +30879,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 28,
+      "line": 29,
       "kind": "fn",
       "name": "load_image",
       "has_doc": true
@@ -30816,7 +30888,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 33,
+      "line": 34,
       "kind": "fn",
       "name": "load_image_from_bytes",
       "has_doc": true
@@ -30825,7 +30897,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 44,
+      "line": 45,
       "kind": "fn",
       "name": "save_layered",
       "has_doc": true
@@ -30834,7 +30906,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 49,
+      "line": 50,
       "kind": "fn",
       "name": "load_layered",
       "has_doc": true
@@ -30843,7 +30915,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 54,
+      "line": 55,
       "kind": "fn",
       "name": "load_layered_from_bytes",
       "has_doc": true
@@ -30852,7 +30924,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 119,
+      "line": 135,
       "kind": "fn",
       "name": "encode_flat",
       "has_doc": true
@@ -30861,7 +30933,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 128,
+      "line": 145,
       "kind": "fn",
       "name": "decode_flat",
       "has_doc": true
@@ -30870,7 +30942,16 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/serial.rs",
-      "line": 254,
+      "line": 169,
+      "kind": "fn",
+      "name": "encode_layered",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "image",
+      "file": "src/image/serial.rs",
+      "line": 305,
       "kind": "fn",
       "name": "parse_header",
       "has_doc": true
@@ -30879,7 +30960,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 16,
+      "line": 20,
       "kind": "enum",
       "name": "TextureColorSpace",
       "has_doc": true
@@ -30888,7 +30969,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 23,
+      "line": 31,
       "kind": "struct",
       "name": "Texture",
       "has_doc": true
@@ -30897,7 +30978,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 32,
+      "line": 40,
       "kind": "fn",
       "name": "premultiply_alpha_rgba8_in_place",
       "has_doc": true
@@ -30906,7 +30987,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 42,
+      "line": 50,
       "kind": "fn",
       "name": "parse_color_space",
       "has_doc": true
@@ -30915,7 +30996,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 50,
+      "line": 58,
       "kind": "fn",
       "name": "load",
       "has_doc": true
@@ -30924,7 +31005,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 57,
+      "line": 65,
       "kind": "fn",
       "name": "load_with_color_space",
       "has_doc": true
@@ -30933,7 +31014,7 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 79,
+      "line": 86,
       "kind": "fn",
       "name": "from_rgba",
       "has_doc": true
@@ -30942,450 +31023,9 @@
       "source": "rust",
       "module": "image",
       "file": "src/image/texture.rs",
-      "line": 88,
+      "line": 95,
       "kind": "fn",
       "name": "from_rgba_with_color_space",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/animation.rs",
-      "line": 10,
-      "kind": "fn",
-      "name": "draw_animation_frame_grid_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/animation.rs",
-      "line": 50,
-      "kind": "fn",
-      "name": "draw_animation_playback_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/animation.rs",
-      "line": 86,
-      "kind": "fn",
-      "name": "animation_playback_control_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/animation.rs",
-      "line": 147,
-      "kind": "fn",
-      "name": "draw_animation_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/audio.rs",
-      "line": 10,
-      "kind": "fn",
-      "name": "waveform_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/audio.rs",
-      "line": 76,
-      "kind": "fn",
-      "name": "waveform_stereo_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/audio.rs",
-      "line": 138,
-      "kind": "fn",
-      "name": "waveform_zoomed_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/audio.rs",
-      "line": 214,
-      "kind": "fn",
-      "name": "draw_sound_waveform_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 14,
-      "kind": "fn",
-      "name": "draw_camera_debug_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 61,
-      "kind": "fn",
-      "name": "draw_camera_zoom_comparison_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 101,
-      "kind": "fn",
-      "name": "camera_rotation_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 163,
-      "kind": "fn",
-      "name": "camera_bounds_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 190,
-      "kind": "fn",
-      "name": "camera_follow_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 240,
-      "kind": "fn",
-      "name": "camera_shake_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 287,
-      "kind": "fn",
-      "name": "draw_camera_rotation_grid_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 348,
-      "kind": "fn",
-      "name": "draw_camera_bounds_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 375,
-      "kind": "fn",
-      "name": "draw_camera_follow_trail_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 422,
-      "kind": "fn",
-      "name": "draw_camera_shake_trail_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/camera.rs",
-      "line": 472,
-      "kind": "fn",
-      "name": "draw_camera_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/easing.rs",
-      "line": 10,
-      "kind": "fn",
-      "name": "easing_gallery_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/easing.rs",
-      "line": 48,
-      "kind": "fn",
-      "name": "easing_comparison_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/easing.rs",
-      "line": 77,
-      "kind": "fn",
-      "name": "bezier_curves_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/easing.rs",
-      "line": 123,
-      "kind": "fn",
-      "name": "draw_bezier_advanced_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/facade.rs",
-      "line": 6,
-      "kind": "fn",
-      "name": "hsv_to_rgb_viz",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/geometry.rs",
-      "line": 12,
-      "kind": "fn",
-      "name": "polygon_gallery_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/geometry.rs",
-      "line": 73,
-      "kind": "fn",
-      "name": "spiral_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/geometry.rs",
-      "line": 94,
-      "kind": "fn",
-      "name": "filled_primitives_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/geometry.rs",
-      "line": 124,
-      "kind": "fn",
-      "name": "draw_geometry_shapes_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/geometry.rs",
-      "line": 211,
-      "kind": "fn",
-      "name": "draw_geometry_intersections_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/graph.rs",
-      "line": 10,
-      "kind": "fn",
-      "name": "draw_graph_operations_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/graph.rs",
-      "line": 56,
-      "kind": "fn",
-      "name": "draw_graph_item_flow_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/image_ops.rs",
-      "line": 10,
-      "kind": "fn",
-      "name": "draw_image_comparison_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/image_ops.rs",
-      "line": 46,
-      "kind": "fn",
-      "name": "draw_pixel_transform_grid_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/image_ops.rs",
-      "line": 96,
-      "kind": "fn",
-      "name": "draw_color_wheel_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/noise.rs",
-      "line": 9,
-      "kind": "fn",
-      "name": "noise_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/noise.rs",
-      "line": 26,
-      "kind": "fn",
-      "name": "noise_raw_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/noise.rs",
-      "line": 43,
-      "kind": "fn",
-      "name": "noise_terrain_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/noise.rs",
-      "line": 73,
-      "kind": "fn",
-      "name": "heightmap_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/noise.rs",
-      "line": 114,
-      "kind": "fn",
-      "name": "terrain_elevation_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/noise.rs",
-      "line": 141,
-      "kind": "fn",
-      "name": "noise_map_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/noise.rs",
-      "line": 153,
-      "kind": "fn",
-      "name": "noise_comparison_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/procgen.rs",
-      "line": 10,
-      "kind": "fn",
-      "name": "cellular_grid_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/procgen.rs",
-      "line": 33,
-      "kind": "fn",
-      "name": "voronoi_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/procgen.rs",
-      "line": 50,
-      "kind": "fn",
-      "name": "points_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/procgen.rs",
-      "line": 67,
-      "kind": "fn",
-      "name": "dungeon_grid_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/procgen.rs",
-      "line": 92,
-      "kind": "fn",
-      "name": "colored_points_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/procgen.rs",
-      "line": 106,
-      "kind": "fn",
-      "name": "draw_delaunay_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/ui.rs",
-      "line": 9,
-      "kind": "fn",
-      "name": "panel_layout_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "image",
-      "file": "src/image/visualization/ui.rs",
-      "line": 102,
-      "kind": "fn",
-      "name": "hud_bars_to_image",
       "has_doc": true
     },
     {
@@ -34542,7 +34182,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/attenuation.rs",
-      "line": 8,
+      "line": 9,
       "kind": "struct",
       "name": "Attenuation",
       "has_doc": true
@@ -34551,60 +34191,6 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/attenuation.rs",
-      "line": 19,
-      "kind": "fn",
-      "name": "new",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/attenuation.rs",
-      "line": 27,
-      "kind": "fn",
-      "name": "factor",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/attenuation.rs",
-      "line": 36,
-      "kind": "fn",
-      "name": "draw_attenuation_curves_to_image",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/blend_mode.rs",
-      "line": 7,
-      "kind": "enum",
-      "name": "LightBlendMode",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/falloff.rs",
-      "line": 7,
-      "kind": "enum",
-      "name": "FalloffMode",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/flicker.rs",
-      "line": 8,
-      "kind": "struct",
-      "name": "FlickerConfig",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/flicker.rs",
       "line": 20,
       "kind": "fn",
       "name": "new",
@@ -34613,8 +34199,71 @@
     {
       "source": "rust",
       "module": "light",
+      "file": "src/light/attenuation.rs",
+      "line": 28,
+      "kind": "fn",
+      "name": "factor",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/attenuation.rs",
+      "line": 37,
+      "kind": "fn",
+      "name": "draw_attenuation_curves_to_image",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/blend_mode.rs",
+      "line": 8,
+      "kind": "enum",
+      "name": "LightBlendMode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/debug_image.rs",
+      "line": 17,
+      "kind": "fn",
+      "name": "draw",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/falloff.rs",
+      "line": 8,
+      "kind": "enum",
+      "name": "FalloffMode",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
       "file": "src/light/flicker.rs",
-      "line": 29,
+      "line": 9,
+      "kind": "struct",
+      "name": "FlickerConfig",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/flicker.rs",
+      "line": 21,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/flicker.rs",
+      "line": 30,
       "kind": "fn",
       "name": "multiplier",
       "has_doc": true
@@ -34623,7 +34272,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/flicker.rs",
-      "line": 37,
+      "line": 38,
       "kind": "fn",
       "name": "advance",
       "has_doc": true
@@ -34632,7 +34281,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 23,
+      "line": 25,
       "kind": "struct",
       "name": "Light2DAttenuationPatch",
       "has_doc": true
@@ -34641,7 +34290,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 34,
+      "line": 37,
       "kind": "struct",
       "name": "Light2DOptionsPatch",
       "has_doc": true
@@ -34650,7 +34299,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 86,
+      "line": 90,
       "kind": "struct",
       "name": "Light2D",
       "has_doc": true
@@ -34659,7 +34308,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 144,
+      "line": 154,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -34668,36 +34317,9 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 177,
+      "line": 190,
       "kind": "fn",
       "name": "set_position",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/light2d.rs",
-      "line": 183,
-      "kind": "fn",
-      "name": "get_position",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/light2d.rs",
-      "line": 187,
-      "kind": "fn",
-      "name": "set_radius",
-      "has_doc": true
-    },
-    {
-      "source": "rust",
-      "module": "light",
-      "file": "src/light/light2d.rs",
-      "line": 192,
-      "kind": "fn",
-      "name": "get_radius",
       "has_doc": true
     },
     {
@@ -34706,7 +34328,7 @@
       "file": "src/light/light2d.rs",
       "line": 196,
       "kind": "fn",
-      "name": "set_color",
+      "name": "get_position",
       "has_doc": true
     },
     {
@@ -34715,6 +34337,33 @@
       "file": "src/light/light2d.rs",
       "line": 200,
       "kind": "fn",
+      "name": "set_radius",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 205,
+      "kind": "fn",
+      "name": "get_radius",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 209,
+      "kind": "fn",
+      "name": "set_color",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 213,
+      "kind": "fn",
       "name": "get_color",
       "has_doc": true
     },
@@ -34722,7 +34371,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 204,
+      "line": 217,
       "kind": "fn",
       "name": "set_intensity",
       "has_doc": true
@@ -34731,7 +34380,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 208,
+      "line": 221,
       "kind": "fn",
       "name": "get_intensity",
       "has_doc": true
@@ -34740,7 +34389,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 212,
+      "line": 225,
       "kind": "fn",
       "name": "set_enabled",
       "has_doc": true
@@ -34749,7 +34398,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 216,
+      "line": 229,
       "kind": "fn",
       "name": "is_enabled",
       "has_doc": true
@@ -34758,7 +34407,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 220,
+      "line": 233,
       "kind": "fn",
       "name": "set_energy",
       "has_doc": true
@@ -34767,7 +34416,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 224,
+      "line": 237,
       "kind": "fn",
       "name": "get_energy",
       "has_doc": true
@@ -34776,7 +34425,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 228,
+      "line": 241,
       "kind": "fn",
       "name": "set_blend_mode",
       "has_doc": true
@@ -34785,7 +34434,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 232,
+      "line": 245,
       "kind": "fn",
       "name": "get_blend_mode",
       "has_doc": true
@@ -34794,7 +34443,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 236,
+      "line": 249,
       "kind": "fn",
       "name": "set_falloff",
       "has_doc": true
@@ -34803,7 +34452,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 240,
+      "line": 253,
       "kind": "fn",
       "name": "get_falloff",
       "has_doc": true
@@ -34812,7 +34461,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 244,
+      "line": 257,
       "kind": "fn",
       "name": "set_shadow_enabled",
       "has_doc": true
@@ -34821,7 +34470,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 248,
+      "line": 261,
       "kind": "fn",
       "name": "is_shadow_enabled",
       "has_doc": true
@@ -34830,7 +34479,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 252,
+      "line": 265,
       "kind": "fn",
       "name": "set_shadow_color",
       "has_doc": true
@@ -34839,7 +34488,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 256,
+      "line": 269,
       "kind": "fn",
       "name": "get_shadow_color",
       "has_doc": true
@@ -34848,7 +34497,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 260,
+      "line": 273,
       "kind": "fn",
       "name": "set_shadow_filter",
       "has_doc": true
@@ -34857,7 +34506,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 264,
+      "line": 277,
       "kind": "fn",
       "name": "get_shadow_filter",
       "has_doc": true
@@ -34866,7 +34515,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 268,
+      "line": 281,
       "kind": "fn",
       "name": "set_shadow_smooth",
       "has_doc": true
@@ -34875,7 +34524,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 272,
+      "line": 285,
       "kind": "fn",
       "name": "get_shadow_smooth",
       "has_doc": true
@@ -34884,7 +34533,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 276,
+      "line": 289,
       "kind": "fn",
       "name": "set_shadow_softness",
       "has_doc": true
@@ -34893,7 +34542,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 280,
+      "line": 293,
       "kind": "fn",
       "name": "get_shadow_softness",
       "has_doc": true
@@ -34902,7 +34551,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 284,
+      "line": 297,
       "kind": "fn",
       "name": "set_light_mask",
       "has_doc": true
@@ -34911,7 +34560,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 288,
+      "line": 301,
       "kind": "fn",
       "name": "get_light_mask",
       "has_doc": true
@@ -34920,7 +34569,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 292,
+      "line": 305,
       "kind": "fn",
       "name": "set_shadow_mask",
       "has_doc": true
@@ -34929,7 +34578,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 296,
+      "line": 309,
       "kind": "fn",
       "name": "get_shadow_mask",
       "has_doc": true
@@ -34938,7 +34587,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 300,
+      "line": 313,
       "kind": "fn",
       "name": "set_light_type",
       "has_doc": true
@@ -34947,7 +34596,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 304,
+      "line": 317,
       "kind": "fn",
       "name": "get_light_type",
       "has_doc": true
@@ -34956,7 +34605,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 308,
+      "line": 321,
       "kind": "fn",
       "name": "set_direction",
       "has_doc": true
@@ -34965,7 +34614,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 312,
+      "line": 325,
       "kind": "fn",
       "name": "get_direction",
       "has_doc": true
@@ -34974,7 +34623,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 316,
+      "line": 329,
       "kind": "fn",
       "name": "set_inner_angle",
       "has_doc": true
@@ -34983,7 +34632,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 320,
+      "line": 333,
       "kind": "fn",
       "name": "get_inner_angle",
       "has_doc": true
@@ -34992,7 +34641,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 324,
+      "line": 337,
       "kind": "fn",
       "name": "set_outer_angle",
       "has_doc": true
@@ -35001,7 +34650,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 328,
+      "line": 341,
       "kind": "fn",
       "name": "get_outer_angle",
       "has_doc": true
@@ -35010,7 +34659,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 332,
+      "line": 345,
       "kind": "fn",
       "name": "set_attenuation",
       "has_doc": true
@@ -35019,7 +34668,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 336,
+      "line": 349,
       "kind": "fn",
       "name": "get_attenuation",
       "has_doc": true
@@ -35028,7 +34677,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 340,
+      "line": 353,
       "kind": "fn",
       "name": "flicker_mut",
       "has_doc": true
@@ -35037,7 +34686,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 344,
+      "line": 357,
       "kind": "fn",
       "name": "flicker",
       "has_doc": true
@@ -35046,7 +34695,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 348,
+      "line": 361,
       "kind": "fn",
       "name": "set_group_id",
       "has_doc": true
@@ -35055,7 +34704,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 352,
+      "line": 365,
       "kind": "fn",
       "name": "get_group_id",
       "has_doc": true
@@ -35064,7 +34713,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 356,
+      "line": 369,
       "kind": "fn",
       "name": "set_volumetric",
       "has_doc": true
@@ -35073,7 +34722,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 360,
+      "line": 373,
       "kind": "fn",
       "name": "is_volumetric",
       "has_doc": true
@@ -35082,7 +34731,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 364,
+      "line": 377,
       "kind": "fn",
       "name": "set_normal_map_path",
       "has_doc": true
@@ -35091,7 +34740,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 368,
+      "line": 381,
       "kind": "fn",
       "name": "clear_normal_map_path",
       "has_doc": true
@@ -35100,7 +34749,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 372,
+      "line": 385,
       "kind": "fn",
       "name": "get_normal_map_path",
       "has_doc": true
@@ -35109,7 +34758,70 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 376,
+      "line": 389,
+      "kind": "fn",
+      "name": "set_cookie_path",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 393,
+      "kind": "fn",
+      "name": "clear_cookie_path",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 397,
+      "kind": "fn",
+      "name": "get_cookie_path",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 401,
+      "kind": "fn",
+      "name": "start_transition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 419,
+      "kind": "fn",
+      "name": "advance_transition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 431,
+      "kind": "fn",
+      "name": "clear_transition",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 435,
+      "kind": "fn",
+      "name": "transition_progress",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light2d.rs",
+      "line": 441,
       "kind": "fn",
       "name": "set_normal_strength",
       "has_doc": true
@@ -35118,7 +34830,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 380,
+      "line": 445,
       "kind": "fn",
       "name": "get_normal_strength",
       "has_doc": true
@@ -35127,7 +34839,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 385,
+      "line": 450,
       "kind": "fn",
       "name": "apply_options_patch",
       "has_doc": true
@@ -35136,7 +34848,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light2d.rs",
-      "line": 473,
+      "line": 538,
       "kind": "fn",
       "name": "draw_falloff_comparison_to_image",
       "has_doc": true
@@ -35145,7 +34857,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_type.rs",
-      "line": 7,
+      "line": 8,
       "kind": "enum",
       "name": "LightType",
       "has_doc": true
@@ -35154,7 +34866,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 25,
+      "line": 17,
       "kind": "struct",
       "name": "LightWorld",
       "has_doc": true
@@ -35163,7 +34875,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 46,
+      "line": 45,
       "kind": "struct",
       "name": "NormalMapLightHint",
       "has_doc": true
@@ -35172,7 +34884,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 92,
+      "line": 64,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -35181,7 +34893,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 106,
+      "line": 81,
       "kind": "fn",
       "name": "add_light",
       "has_doc": true
@@ -35190,7 +34902,16 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 116,
+      "line": 107,
+      "kind": "fn",
+      "name": "try_add_light",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light_world.rs",
+      "line": 111,
       "kind": "fn",
       "name": "add_occluder",
       "has_doc": true
@@ -35199,7 +34920,16 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 120,
+      "line": 141,
+      "kind": "fn",
+      "name": "try_add_occluder",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light_world.rs",
+      "line": 145,
       "kind": "fn",
       "name": "remove_light",
       "has_doc": true
@@ -35208,7 +34938,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 125,
+      "line": 150,
       "kind": "fn",
       "name": "remove_occluder",
       "has_doc": true
@@ -35217,7 +34947,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 129,
+      "line": 154,
       "kind": "fn",
       "name": "get_light",
       "has_doc": true
@@ -35226,7 +34956,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 133,
+      "line": 158,
       "kind": "fn",
       "name": "get_light_mut",
       "has_doc": true
@@ -35235,7 +34965,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 138,
+      "line": 163,
       "kind": "fn",
       "name": "get_occluder",
       "has_doc": true
@@ -35244,7 +34974,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 142,
+      "line": 167,
       "kind": "fn",
       "name": "get_occluder_mut",
       "has_doc": true
@@ -35253,7 +34983,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 146,
+      "line": 171,
       "kind": "fn",
       "name": "light_count",
       "has_doc": true
@@ -35262,7 +34992,16 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 150,
+      "line": 175,
+      "kind": "fn",
+      "name": "set_enabled",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light_world.rs",
+      "line": 180,
       "kind": "fn",
       "name": "occluder_count",
       "has_doc": true
@@ -35271,7 +35010,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 154,
+      "line": 184,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -35280,7 +35019,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 162,
+      "line": 193,
       "kind": "fn",
       "name": "has_active_lights",
       "has_doc": true
@@ -35289,7 +35028,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 166,
+      "line": 197,
       "kind": "fn",
       "name": "set_group_enabled",
       "has_doc": true
@@ -35298,7 +35037,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 174,
+      "line": 205,
       "kind": "fn",
       "name": "set_group_intensity",
       "has_doc": true
@@ -35307,7 +35046,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 182,
+      "line": 213,
       "kind": "fn",
       "name": "set_group_color",
       "has_doc": true
@@ -35316,7 +35055,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 190,
+      "line": 221,
       "kind": "fn",
       "name": "group_count",
       "has_doc": true
@@ -35325,7 +35064,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 197,
+      "line": 228,
       "kind": "fn",
       "name": "advance_flickers",
       "has_doc": true
@@ -35334,7 +35073,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 216,
+      "line": 247,
       "kind": "fn",
       "name": "reindex_flickers",
       "has_doc": true
@@ -35343,7 +35082,16 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 226,
+      "line": 257,
+      "kind": "fn",
+      "name": "selected_render_lights",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light_world.rs",
+      "line": 268,
       "kind": "fn",
       "name": "draw_to_image",
       "has_doc": true
@@ -35352,7 +35100,16 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 323,
+      "line": 282,
+      "kind": "fn",
+      "name": "try_draw_to_image",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light_world.rs",
+      "line": 306,
       "kind": "fn",
       "name": "ambient_color_hint",
       "has_doc": true
@@ -35361,7 +35118,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 332,
+      "line": 315,
       "kind": "fn",
       "name": "directional_light_hints",
       "has_doc": true
@@ -35370,7 +35127,16 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/light_world.rs",
-      "line": 340,
+      "line": 321,
+      "kind": "fn",
+      "name": "write_directional_light_hints",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/light_world.rs",
+      "line": 333,
       "kind": "fn",
       "name": "normal_map_light_hints",
       "has_doc": true
@@ -35378,8 +35144,35 @@
     {
       "source": "rust",
       "module": "light",
+      "file": "src/light/light_world.rs",
+      "line": 339,
+      "kind": "fn",
+      "name": "write_normal_map_light_hints",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/limits.rs",
+      "line": 7,
+      "kind": "struct",
+      "name": "LightLimits",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
+      "file": "src/light/limits.rs",
+      "line": 43,
+      "kind": "fn",
+      "name": "check_preview",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 10,
+      "line": 11,
       "kind": "struct",
       "name": "Occluder",
       "has_doc": true
@@ -35388,25 +35181,25 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 26,
+      "line": 27,
       "kind": "fn",
-      "name": "new",
+      "name": "try_new",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 42,
+      "line": 39,
       "kind": "fn",
-      "name": "set_vertices",
+      "name": "try_set_vertices",
       "has_doc": true
     },
     {
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 54,
+      "line": 48,
       "kind": "fn",
       "name": "from_flat_coords",
       "has_doc": true
@@ -35415,7 +35208,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 65,
+      "line": 59,
       "kind": "fn",
       "name": "get_vertices",
       "has_doc": true
@@ -35424,7 +35217,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 69,
+      "line": 63,
       "kind": "fn",
       "name": "set_position",
       "has_doc": true
@@ -35433,7 +35226,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 76,
+      "line": 70,
       "kind": "fn",
       "name": "get_position",
       "has_doc": true
@@ -35442,7 +35235,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 80,
+      "line": 74,
       "kind": "fn",
       "name": "set_opacity",
       "has_doc": true
@@ -35451,7 +35244,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 84,
+      "line": 78,
       "kind": "fn",
       "name": "get_opacity",
       "has_doc": true
@@ -35460,7 +35253,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 88,
+      "line": 82,
       "kind": "fn",
       "name": "set_light_mask",
       "has_doc": true
@@ -35469,7 +35262,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 92,
+      "line": 86,
       "kind": "fn",
       "name": "get_light_mask",
       "has_doc": true
@@ -35478,7 +35271,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 96,
+      "line": 90,
       "kind": "fn",
       "name": "set_enabled",
       "has_doc": true
@@ -35487,7 +35280,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 100,
+      "line": 94,
       "kind": "fn",
       "name": "is_enabled",
       "has_doc": true
@@ -35496,7 +35289,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/occluder.rs",
-      "line": 105,
+      "line": 99,
       "kind": "fn",
       "name": "edge_generation",
       "has_doc": true
@@ -35505,7 +35298,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/shadow.rs",
-      "line": 7,
+      "line": 8,
       "kind": "enum",
       "name": "ShadowFilter",
       "has_doc": true
@@ -35514,7 +35307,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/transition.rs",
-      "line": 8,
+      "line": 9,
       "kind": "struct",
       "name": "LightTransition",
       "has_doc": true
@@ -35523,7 +35316,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/transition.rs",
-      "line": 30,
+      "line": 31,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -35532,7 +35325,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/transition.rs",
-      "line": 52,
+      "line": 53,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -35541,7 +35334,7 @@
       "source": "rust",
       "module": "light",
       "file": "src/light/transition.rs",
-      "line": 77,
+      "line": 78,
       "kind": "fn",
       "name": "progress",
       "has_doc": true
@@ -37458,7 +37251,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/image_api.rs",
-      "line": 181,
+      "line": 209,
       "kind": "struct",
       "name": "LuaProvinceGrid",
       "has_doc": true
@@ -37467,7 +37260,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/image_api.rs",
-      "line": 495,
+      "line": 523,
       "kind": "struct",
       "name": "LuaAnimatedImage",
       "has_doc": true
@@ -37476,7 +37269,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/image_api.rs",
-      "line": 568,
+      "line": 596,
       "kind": "struct",
       "name": "LuaLayeredImage",
       "has_doc": true
@@ -37485,7 +37278,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/image_api.rs",
-      "line": 759,
+      "line": 814,
       "kind": "struct",
       "name": "LuaCompressedImageData",
       "has_doc": true
@@ -37494,7 +37287,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/image_api.rs",
-      "line": 807,
+      "line": 862,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -37503,7 +37296,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/image_api.rs",
-      "line": 1749,
+      "line": 1860,
       "kind": "struct",
       "name": "LuaPaletteLUT",
       "has_doc": true
@@ -37710,7 +37503,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/light_api.rs",
-      "line": 409,
+      "line": 510,
       "kind": "struct",
       "name": "LuaLight",
       "has_doc": true
@@ -37719,7 +37512,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/light_api.rs",
-      "line": 421,
+      "line": 518,
       "kind": "fn",
       "name": "lua_light_from_light",
       "has_doc": true
@@ -37728,7 +37521,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/light_api.rs",
-      "line": 1344,
+      "line": 1460,
       "kind": "struct",
       "name": "LuaOccluder",
       "has_doc": true
@@ -37737,7 +37530,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/light_api.rs",
-      "line": 1352,
+      "line": 1468,
       "kind": "fn",
       "name": "lua_occluder_from_occluder",
       "has_doc": true
@@ -37746,7 +37539,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/light_api.rs",
-      "line": 1529,
+      "line": 1652,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -38853,7 +38646,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/province_api.rs",
-      "line": 595,
+      "line": 51,
+      "kind": "fn",
+      "name": "new_grid_from_gamefs",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/province_api.rs",
+      "line": 620,
       "kind": "struct",
       "name": "LuaProvinceRegistry",
       "has_doc": true
@@ -38862,7 +38664,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/province_api.rs",
-      "line": 601,
+      "line": 626,
       "kind": "fn",
       "name": "with_registry",
       "has_doc": true
@@ -38871,7 +38673,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/province_api.rs",
-      "line": 2363,
+      "line": 2388,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -39357,7 +39159,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/tilefield_api.rs",
-      "line": 3695,
+      "line": 1369,
+      "kind": "fn",
+      "name": "create_lights_from_tileset",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/tilefield_api.rs",
+      "line": 3796,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -76968,7 +76779,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 10,
+      "line": 11,
       "kind": "struct",
       "name": "NineSliceInsets",
       "has_doc": true
@@ -76977,7 +76788,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 22,
+      "line": 23,
       "kind": "struct",
       "name": "AtlasRegion",
       "has_doc": true
@@ -76986,7 +76797,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 46,
+      "line": 38,
       "kind": "struct",
       "name": "TextureAtlas",
       "has_doc": true
@@ -76995,7 +76806,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 60,
+      "line": 52,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -77004,7 +76815,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 70,
+      "line": 66,
       "kind": "fn",
       "name": "pack",
       "has_doc": true
@@ -77013,7 +76824,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 74,
+      "line": 70,
       "kind": "fn",
       "name": "pack_with_nine_slice",
       "has_doc": true
@@ -77022,7 +76833,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 131,
+      "line": 102,
       "kind": "fn",
       "name": "set_nine_slice",
       "has_doc": true
@@ -77031,7 +76842,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 144,
+      "line": 117,
       "kind": "fn",
       "name": "get_region",
       "has_doc": true
@@ -77040,7 +76851,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 148,
+      "line": 121,
       "kind": "fn",
       "name": "get_region_count",
       "has_doc": true
@@ -77049,7 +76860,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 152,
+      "line": 125,
       "kind": "fn",
       "name": "get_dimensions",
       "has_doc": true
@@ -77058,7 +76869,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 156,
+      "line": 129,
       "kind": "fn",
       "name": "get_regions",
       "has_doc": true
@@ -77067,7 +76878,7 @@
       "source": "rust",
       "module": "sprite",
       "file": "src/sprite/texture_atlas.rs",
-      "line": 160,
+      "line": 133,
       "kind": "fn",
       "name": "clear",
       "has_doc": true

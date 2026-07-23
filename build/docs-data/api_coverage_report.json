@@ -1,6 +1,6 @@
 {
-  "total_apis": 7076,
-  "covered": 7076,
+  "total_apis": 7077,
+  "covered": 7077,
   "missing": 0,
   "missing_apis": [],
   "duplicate": 0,
@@ -6949,6 +6949,7 @@
     "lurek.province.getProperty": 1,
     "lurek.province.hasFlag": 1,
     "lurek.province.newFromPng": 1,
+    "lurek.province.newGrid": 1,
     "lurek.province.remove": 1,
     "lurek.province.sanitizeMarkedPng": 1,
     "lurek.province.setActive": 1,

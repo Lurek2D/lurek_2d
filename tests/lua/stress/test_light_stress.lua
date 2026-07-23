@@ -27,6 +27,42 @@ local function build_light_pool(count)
     return lights
 end
 
+local function reset_light_world()
+    lurek.light.clear()
+    lurek.light.setEnabled(true)
+end
+
+local function make_directional_hints(count)
+    for i = 1, count do
+        local light = lurek.light.newLight(i, i, 16)
+        light:setLightType("directional")
+        light:setDirection(i * 0.01)
+    end
+end
+
+local function make_normal_map_hints(count)
+    for i = 1, count do
+        local light = lurek.light.newLight(i, i, 16)
+        light:setNormalMap("assets/normals/stress.png")
+        light:setNormalStrength(0.75)
+    end
+end
+
+local function make_shadow_preview_scene()
+    for i = 1, 4 do
+        local light = lurek.light.newLight(8 + i * 3, 32, 96)
+        light:setShadowEnabled(true)
+        light:setShadowFilter("pcf13")
+    end
+    for i = 1, 3 do
+        lurek.light.newOccluder({ i * 6, 40, i * 6 + 4, 40, i * 6 + 2, 48 })
+    end
+end
+
+local function expect_preview_width(image, width)
+    expect_equal(width, image:getWidth())
+end
+
 local function run_light_position_updates(light_count, update_count)
     local lights = build_light_pool(light_count)
     local start = os.clock()
@@ -65,6 +101,45 @@ describe("stress: light creation throughput", function()
 
         expect_true(elapsed < 5.0, "light creation budget: " .. elapsed .. "s")
         expect_equal(COUNT, #lights, "all lights created")
+    end)
+end)
+
+-- @describe stress: bounded light hint exports
+describe("stress: bounded light hint exports", function()
+    -- @stress lurek.light.getGodRayHints
+    it("exports 512 directional hints within a bounded frame budget", function()
+        reset_light_world()
+        make_directional_hints(512)
+        local elapsed = measure("light god ray hints x512", 512, function()
+            local hints = lurek.light.getGodRayHints()
+            expect_equal(512, #hints)
+        end)
+        expect_true(elapsed < 2.0, "directional hint export budget: " .. elapsed .. "s")
+    end)
+
+    -- @stress lurek.light.getNormalMapHints
+    it("exports 512 normal-map hints within a bounded frame budget", function()
+        reset_light_world()
+        make_normal_map_hints(512)
+        local elapsed = measure("light normal map hints x512", 512, function()
+            local hints = lurek.light.getNormalMapHints()
+            expect_equal(512, #hints)
+        end)
+        expect_true(elapsed < 2.0, "normal-map hint export budget: " .. elapsed .. "s")
+    end)
+end)
+
+-- @describe stress: bounded shadow preview
+describe("stress: bounded shadow preview", function()
+    -- @stress lurek.light.drawToImage
+    it("renders a dense PCF13 preview within the documented work budget", function()
+        reset_light_world()
+        make_shadow_preview_scene()
+        local elapsed = measure("light preview pcf13 32x32", 1024, function()
+            local image = lurek.light.drawToImage(32, 32)
+            expect_preview_width(image, 32)
+        end)
+        expect_true(elapsed < 30.0, "dense PCF13 preview budget: " .. elapsed .. "s")
     end)
 end)
 

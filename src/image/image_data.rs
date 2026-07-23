@@ -8,9 +8,15 @@
 //! Logs image-load and byte-mismatch diagnostics here, making this the owner for CPU-side buffer integrity.
 //! Open this file when image bytes, dimensions, drawing, or in-memory mutation semantics behave incorrectly.
 
+use super::limits::ImageLimits;
 use crate::log_msg;
 use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};
+use std::io::Cursor;
 /// Mutable RGBA image buffer used across rendering, serialization, and analysis.
+///
+/// # Fields
+///
+/// Width and height describe the checked pixel extent; `pixels` is packed row-major RGBA8 storage.
 #[derive(Debug, Clone)]
 pub struct ImageData {
     /// Image width in pixels.
@@ -24,29 +30,31 @@ pub struct ImageData {
 impl ImageData {
     /// Return the exact RGBA byte length for a width/height pair, or an error when it overflows `usize`.
     pub(crate) fn rgba_byte_len(width: u32, height: u32) -> Result<usize, String> {
-        let pixels = u64::from(width)
-            .checked_mul(u64::from(height))
-            .ok_or_else(|| format!("image dimensions {}x{} overflow pixel count", width, height))?;
-        let bytes = pixels.checked_mul(4).ok_or_else(|| {
-            format!(
-                "image dimensions {}x{} overflow RGBA byte count",
-                width, height
-            )
-        })?;
-        usize::try_from(bytes).map_err(|_| {
-            format!(
-                "image dimensions {}x{} exceed addressable RGBA buffer size",
-                width, height
-            )
-        })
+        ImageLimits::default().rgba_bytes(width, height)
     }
     /// Create a zero-filled RGBA image buffer of the given size, or return an error when allocation sizing overflows.
     pub fn try_new(width: u32, height: u32) -> Result<Self, String> {
-        let len = Self::rgba_byte_len(width, height)?;
+        Self::try_new_with_limits(width, height, ImageLimits::default())
+    }
+    /// Create a zero-filled RGBA image after validating dimensions and reserving allocation fallibly.
+    pub fn try_new_with_limits(
+        width: u32,
+        height: u32,
+        limits: ImageLimits,
+    ) -> Result<Self, String> {
+        let len = limits.rgba_bytes(width, height)?;
+        let mut pixels = Vec::new();
+        pixels.try_reserve_exact(len).map_err(|e| {
+            format!(
+                "image allocation for {}x{} ({} bytes) failed: {}",
+                width, height, len, e
+            )
+        })?;
+        pixels.resize(len, 0);
         Ok(Self {
             width,
             height,
-            pixels: vec![0; len],
+            pixels,
         })
     }
     /// Create a zero-filled RGBA image buffer of the given size.
@@ -55,23 +63,43 @@ impl ImageData {
     }
     /// Load an image from disk and return decoded RGBA bytes, or an error on failure.
     pub fn from_file(path: &str) -> Result<Self, String> {
-        let img =
-            ::image::open(path).map_err(|e| format!("Failed to load image '{}': {}", path, e))?;
-        let rgba = img.to_rgba8();
-        let (w, h) = rgba.dimensions();
-        log_msg!(debug, IM01_IMAGE_LOADED, "{}x{}", w, h);
-        Ok(Self {
-            width: w,
-            height: h,
-            pixels: rgba.into_raw(),
-        })
+        let limits = ImageLimits::default();
+        let metadata = std::fs::metadata(path)
+            .map_err(|e| format!("Failed to inspect image '{}': {}", path, e))?;
+        let encoded_len = usize::try_from(metadata.len())
+            .map_err(|_| format!("image '{}' has an unaddressable file size", path))?;
+        limits.encoded_bytes(encoded_len, &format!("image '{}'", path))?;
+        let bytes =
+            std::fs::read(path).map_err(|e| format!("Failed to load image '{}': {}", path, e))?;
+        Self::from_encoded_bytes_with_limits(&bytes, path, limits)
     }
     /// Decode an image from memory and return RGBA bytes, or an error on failure.
     pub fn from_encoded_bytes(bytes: &[u8], label: &str) -> Result<Self, String> {
+        Self::from_encoded_bytes_with_limits(bytes, label, ImageLimits::default())
+    }
+    /// Decode an image only after bounding the encoded input and inspected output dimensions.
+    pub fn from_encoded_bytes_with_limits(
+        bytes: &[u8],
+        label: &str,
+        limits: ImageLimits,
+    ) -> Result<Self, String> {
+        limits.encoded_bytes(bytes.len(), &format!("image '{}'", label))?;
+        let reader = ::image::io::Reader::new(Cursor::new(bytes))
+            .with_guessed_format()
+            .map_err(|e| format!("Failed to inspect image '{}': {}", label, e))?;
+        let (w, h) = reader
+            .into_dimensions()
+            .map_err(|e| format!("Failed to inspect image '{}': {}", label, e))?;
+        let expected = limits.rgba_bytes(w, h)?;
         let img = ::image::load_from_memory(bytes)
             .map_err(|e| format!("Failed to decode image '{}': {}", label, e))?;
         let rgba = img.to_rgba8();
-        let (w, h) = rgba.dimensions();
+        if rgba.dimensions() != (w, h) || rgba.as_raw().len() != expected {
+            return Err(format!(
+                "decoded image '{}' has invalid RGBA byte length",
+                label
+            ));
+        }
         log_msg!(debug, IM01_IMAGE_LOADED, "{}x{}", w, h);
         Ok(Self {
             width: w,
@@ -81,7 +109,16 @@ impl ImageData {
     }
     /// Build an image from exact RGBA bytes, or return an error on length mismatch.
     pub fn from_bytes(width: u32, height: u32, bytes: Vec<u8>) -> Result<Self, String> {
-        let expected = Self::rgba_byte_len(width, height)?;
+        Self::from_bytes_with_limits(width, height, bytes, ImageLimits::default())
+    }
+    /// Build an image from exact RGBA bytes after applying a resource policy.
+    pub fn from_bytes_with_limits(
+        width: u32,
+        height: u32,
+        bytes: Vec<u8>,
+        limits: ImageLimits,
+    ) -> Result<Self, String> {
+        let expected = limits.rgba_bytes(width, height)?;
         if bytes.len() != expected {
             log_msg!(
                 error,
@@ -121,7 +158,9 @@ impl ImageData {
         if x >= self.width || y >= self.height {
             return None;
         }
-        let idx = ((y * self.width + x) * 4) as usize;
+        let idx = (usize::try_from(y).ok()? * usize::try_from(self.width).ok()?
+            + usize::try_from(x).ok()?)
+            * 4;
         Some((
             self.pixels[idx],
             self.pixels[idx + 1],
@@ -134,7 +173,7 @@ impl ImageData {
         if x >= self.width || y >= self.height {
             return false;
         }
-        let idx = ((y * self.width + x) * 4) as usize;
+        let idx = (y as usize * self.width as usize + x as usize) * 4;
         self.pixels[idx] = r;
         self.pixels[idx + 1] = g;
         self.pixels[idx + 2] = b;
@@ -175,6 +214,28 @@ impl ImageData {
             }
         }
     }
+    /// Apply a fallible pixel callback transactionally, preserving this image when any callback fails.
+    pub fn map_pixel_transactional<F, E>(&mut self, mut f: F) -> Result<(), E>
+    where
+        F: FnMut(u32, u32, u8, u8, u8, u8) -> Result<(u8, u8, u8, u8), E>,
+    {
+        let mut next = self.clone();
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let idx = (y as usize * self.width as usize + x as usize) * 4;
+                let (r, g, b, a) = (
+                    self.pixels[idx],
+                    self.pixels[idx + 1],
+                    self.pixels[idx + 2],
+                    self.pixels[idx + 3],
+                );
+                let (nr, ng, nb, na) = f(x, y, r, g, b, a)?;
+                next.pixels[idx..idx + 4].copy_from_slice(&[nr, ng, nb, na]);
+            }
+        }
+        *self = next;
+        Ok(())
+    }
     #[allow(clippy::too_many_arguments)]
     /// Fill an axis-aligned rectangle with a solid color and alpha.
     pub fn draw_rect(&mut self, x: i32, y: i32, w: u32, h: u32, r: u8, g: u8, b: u8, a: u8) {
@@ -191,17 +252,17 @@ impl ImageData {
     #[allow(clippy::too_many_arguments)]
     /// Fill a circle with a solid color and alpha.
     pub fn draw_circle(&mut self, cx: i32, cy: i32, radius: u32, r: u8, g: u8, b: u8, a: u8) {
-        let rad = radius as i32;
-        let y0 = (cy - rad).max(0) as u32;
-        let y1 = ((cy + rad + 1).min(self.height as i32).max(0)) as u32;
-        let x0_bound = (cx - rad).max(0) as u32;
-        let x1_bound = ((cx + rad + 1).min(self.width as i32).max(0)) as u32;
-        let r2 = (radius * radius) as i64;
+        let rad = i64::from(radius);
+        let y0 = (i64::from(cy) - rad).max(0) as u32;
+        let y1 = (i64::from(cy) + rad + 1).min(i64::from(self.height)).max(0) as u32;
+        let x0_bound = (i64::from(cx) - rad).max(0) as u32;
+        let x1_bound = (i64::from(cx) + rad + 1).min(i64::from(self.width)).max(0) as u32;
+        let r2 = rad * rad;
         for py in y0..y1 {
-            let dy = py as i32 - cy;
+            let dy = i64::from(py) - i64::from(cy);
             for px in x0_bound..x1_bound {
-                let dx = px as i32 - cx;
-                if (dx as i64 * dx as i64 + dy as i64 * dy as i64) <= r2 {
+                let dx = i64::from(px) - i64::from(cx);
+                if (dx * dx + dy * dy) <= r2 {
                     self.set_pixel(px, py, r, g, b, a);
                 }
             }
@@ -210,15 +271,21 @@ impl ImageData {
     #[allow(clippy::too_many_arguments)]
     /// Draw a line with Bresenham's algorithm using a solid color and alpha.
     pub fn draw_line(&mut self, x0: i32, y0: i32, x1: i32, y1: i32, r: u8, g: u8, b: u8, a: u8) {
-        let mut cx = x0;
-        let mut cy = y0;
-        let dx = (x1 - x0).abs();
-        let dy = -(y1 - y0).abs();
-        let sx = if x0 < x1 { 1 } else { -1 };
-        let sy = if y0 < y1 { 1 } else { -1 };
+        let mut cx = i64::from(x0);
+        let mut cy = i64::from(y0);
+        let x1 = i64::from(x1);
+        let y1 = i64::from(y1);
+        let dx = (x1 - cx).abs();
+        let dy = -(y1 - cy).abs();
+        let sx = if cx < x1 { 1 } else { -1 };
+        let sy = if cy < y1 { 1 } else { -1 };
         let mut err = dx + dy;
         loop {
-            if cx >= 0 && cy >= 0 && (cx as u32) < self.width && (cy as u32) < self.height {
+            if cx >= 0
+                && cy >= 0
+                && (cx as u64) < u64::from(self.width)
+                && (cy as u64) < u64::from(self.height)
+            {
                 self.set_pixel(cx as u32, cy as u32, r, g, b, a);
             }
             if cx == x1 && cy == y1 {
@@ -549,6 +616,7 @@ impl ImageData {
         dynamic
             .write_to(&mut cursor, ::image::ImageOutputFormat::Png)
             .map_err(|e| format!("PNG encode error: {}", e))?;
+        ImageLimits::default().encoded_bytes(buf.len(), "PNG output")?;
         Ok(buf)
     }
     /// Return a slice of the raw RGBA pixel bytes.

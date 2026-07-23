@@ -4,6 +4,7 @@
 //! Exposes region counts, atlas size, and immutable region views for tools that inspect generated sprite maps.
 //! Open this file when atlas packing, region lookup, or nine-slice metadata does not match authored assets.
 
+use crate::image::RectPacker;
 use std::collections::HashMap;
 /// Nine-slice border distances used to preserve corners and edges.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -33,15 +34,6 @@ pub struct AtlasRegion {
     /// Optional nine-slice border metadata.
     pub nine_slice: Option<NineSliceInsets>,
 }
-/// Single packing shelf tracked by the atlas allocator.
-struct Shelf {
-    /// Shelf top coordinate.
-    y: u32,
-    /// Shelf height including padding.
-    height: u32,
-    /// Horizontal pixels consumed on this shelf.
-    x_used: u32,
-}
 /// Shelf-based texture atlas for packing named regions into a fixed canvas.
 pub struct TextureAtlas {
     /// Atlas width in pixels.
@@ -52,8 +44,8 @@ pub struct TextureAtlas {
     pub padding: u32,
     /// Packed regions keyed by name.
     regions: HashMap<String, AtlasRegion>,
-    /// Active shelf list used by the packer.
-    shelves: Vec<Shelf>,
+    /// Canonical generic rectangle packer; sprite retains only region metadata.
+    packer: RectPacker,
 }
 impl TextureAtlas {
     /// Create an empty atlas with the given dimensions and padding.
@@ -63,7 +55,11 @@ impl TextureAtlas {
             height,
             padding,
             regions: HashMap::new(),
-            shelves: Vec::new(),
+            packer: RectPacker::new(
+                width.saturating_sub(padding),
+                height.saturating_sub(padding),
+                padding,
+            ),
         }
     }
     /// Pack a region without nine-slice metadata and return whether it fit.
@@ -79,51 +75,26 @@ impl TextureAtlas {
         nine_slice: Option<NineSliceInsets>,
     ) -> bool {
         if let Some(insets) = nine_slice {
-            if insets.left + insets.right > w || insets.top + insets.bottom > h {
+            if insets.left.saturating_add(insets.right) > w
+                || insets.top.saturating_add(insets.bottom) > h
+            {
                 return false;
             }
         }
-        let padded_w = w + self.padding;
-        let padded_h = h + self.padding;
-        for shelf in &mut self.shelves {
-            if shelf.height >= padded_h && shelf.x_used + padded_w <= self.width {
-                let region = AtlasRegion {
-                    name: name.to_string(),
-                    x: shelf.x_used + self.padding,
-                    y: shelf.y + self.padding,
-                    w,
-                    h,
-                    nine_slice,
-                };
-                shelf.x_used += padded_w;
-                self.regions.insert(name.to_string(), region);
-                return true;
-            }
+        if self.regions.contains_key(name) {
+            return false;
         }
-        let shelf_y = if let Some(last) = self.shelves.last() {
-            last.y + last.height
-        } else {
-            0
+        let Some(packed) = self.packer.pack(w, h, Some(name.to_string())) else {
+            return false;
         };
-        if shelf_y + padded_h > self.height {
-            return false;
-        }
-        if padded_w > self.width {
-            return false;
-        }
         let region = AtlasRegion {
             name: name.to_string(),
-            x: self.padding,
-            y: shelf_y + self.padding,
+            x: packed.x.saturating_add(self.padding),
+            y: packed.y.saturating_add(self.padding),
             w,
             h,
             nine_slice,
         };
-        self.shelves.push(Shelf {
-            y: shelf_y,
-            height: padded_h,
-            x_used: padded_w,
-        });
         self.regions.insert(name.to_string(), region);
         true
     }
@@ -133,7 +104,9 @@ impl TextureAtlas {
             return false;
         };
         if let Some(insets) = nine_slice {
-            if insets.left + insets.right > region.w || insets.top + insets.bottom > region.h {
+            if insets.left.saturating_add(insets.right) > region.w
+                || insets.top.saturating_add(insets.bottom) > region.h
+            {
                 return false;
             }
         }
@@ -159,6 +132,6 @@ impl TextureAtlas {
     /// Remove all packed regions and shelves.
     pub fn clear(&mut self) {
         self.regions.clear();
-        self.shelves.clear();
+        self.packer.clear();
     }
 }

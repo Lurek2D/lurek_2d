@@ -15,6 +15,7 @@ use crate::math::Vec2;
 pub type FlowFieldId = usize;
 
 /// Medium classification used by per-body response scaling.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FlowMedium {
     /// Air or wind style stream.
@@ -30,6 +31,7 @@ pub enum FlowMedium {
 }
 
 /// How overlapping fields should be combined.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FlowCombineMode {
     /// Sum all contributions directly.
@@ -39,6 +41,7 @@ pub enum FlowCombineMode {
 }
 
 /// How the sampled flow vector should influence bodies.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FlowApplicationMode {
     /// Apply a direct acceleration independent of body mass.
@@ -48,6 +51,7 @@ pub enum FlowApplicationMode {
 }
 
 /// Distance-to-edge falloff curve for one flow field.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FlowFalloff {
     /// Full strength across the whole shape.
@@ -59,6 +63,7 @@ pub enum FlowFalloff {
 }
 
 /// Direction-selection strategy for one authored field.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum FlowDirectionMode {
     /// Use an explicit unit or non-unit vector.
@@ -78,6 +83,7 @@ pub enum FlowDirectionMode {
 }
 
 /// Geometry variants supported by the flow-field sampler.
+/// # Variants
 #[derive(Debug, Clone, PartialEq)]
 pub enum FlowGeometry {
     /// Uniform rectangular region.
@@ -103,6 +109,7 @@ pub enum FlowGeometry {
 }
 
 /// One field-level contribution inside a sampled overlap result.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct FlowContribution {
     /// Source field id.
@@ -120,6 +127,7 @@ pub struct FlowContribution {
 }
 
 /// Sample result returned by `World::sample_flow`.
+/// # Fields
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct FlowSample {
     /// Combined vector x component.
@@ -135,6 +143,7 @@ pub struct FlowSample {
 }
 
 /// One authored flow field stored by the physics world.
+/// # Fields
 #[derive(Debug, Clone, PartialEq)]
 pub struct FlowField {
     /// Stable field id.

@@ -30,6 +30,17 @@ describe("lurek.province.newFromPng", function()
     end)
 end)
 
+-- @describe lurek.province.newGrid
+describe("lurek.province.newGrid", function()
+    -- @covers lurek.province.newGrid
+    it("loads a bounded province grid through the canonical namespace", function()
+        local grid = lurek.province.newGrid("content/games/eu2/map.png")
+        expect_type("userdata", grid)
+        expect_equal(1000, grid:getWidth())
+        expect_equal(450, grid:getHeight())
+    end)
+end)
+
 -- @describe registry queries
 describe("registry queries", function()
     -- @covers LProvinceRegistry:getWidth

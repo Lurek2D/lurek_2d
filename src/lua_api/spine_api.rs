@@ -1,7 +1,7 @@
 //! Registers the `lurek.spine` Lua API for Spine animation userdata, bone options, and validated playback.
 
 use super::ecs_api::LuaLoadout;
-use super::physics_api::{lua_body_from_body, LuaPhysicsShape, LuaWorld};
+use super::physics_api::{try_lua_bodies_from_bodies, LuaPhysicsShape, LuaWorld};
 use super::render_api::LuaCanvas;
 use super::sprite_api::LuaSpriteAtlas;
 use super::SharedState;
@@ -758,13 +758,7 @@ impl LuaUserData for LuaSkeleton {
                     .and_then(|t| t.get::<_, Option<String>>("bodyType").ok().flatten());
 
                 this.inner.update_world_transforms();
-                let mut body_by_bone = vec![None; this.inner.bone_count()];
-                let mut created: Vec<(usize, usize, f32, f32, String)> = Vec::new();
-                let bodies_tbl = lua.create_table()?;
-                let body_ids_tbl = lua.create_table()?;
-                let parts_tbl = lua.create_table()?;
-
-                let mut body_row = 1usize;
+                let mut pending = Vec::new();
                 for part in parts.sequence_values::<LuaTable>() {
                     let part = part?;
                     let bone_value = match part.get::<_, Option<LuaValue>>("bone")? {
@@ -806,29 +800,97 @@ impl LuaUserData for LuaSkeleton {
                         restitution,
                         part.get::<_, Option<f32>>("mass")?,
                     );
-                    let body_handle = lua_body_from_body(world_handle.clone(), body);
+                    let joint_type = part
+                        .get::<_, Option<String>>("joint")?
+                        .unwrap_or_else(|| default_joint.clone());
+                    pending.push((
+                        bone_idx,
+                        body,
+                        wx,
+                        wy,
+                        joint_type,
+                        part.get::<_, Option<String>>("slot")?,
+                        part.get::<_, Option<String>>("attachment")?,
+                    ));
+                }
+
+                let mut pending_by_bone = vec![false; this.inner.bone_count()];
+                for (bone_idx, ..) in &pending {
+                    pending_by_bone[*bone_idx] = true;
+                }
+                let mut requested_joints = 0usize;
+                for (bone_idx, _, _, _, joint_type, _, _) in &pending {
+                    if !matches!(
+                        joint_type.as_str(),
+                        "none"
+                            | "weld"
+                            | "rigid"
+                            | "distance"
+                            | "rope"
+                            | "motor"
+                            | "spring"
+                            | "revolute"
+                            | "hinge"
+                    ) {
+                        return Err(LuaError::RuntimeError(format!(
+                            "LSkeleton:bindPhysics: unknown joint '{}'",
+                            joint_type
+                        )));
+                    }
+                    if joint_type != "none"
+                        && this.inner.bones[*bone_idx]
+                            .parent_index
+                            .is_some_and(|parent| pending_by_bone[parent])
+                    {
+                        requested_joints += 1;
+                    }
+                }
+                {
+                    let current = world_handle.borrow();
+                    let stats = current.get_stats();
+                    if stats.joint_slots.saturating_add(requested_joints) > current.limits().max_joints {
+                        return Err(LuaError::RuntimeError(format!(
+                            "LSkeleton:bindPhysics: physics joints count {} exceeds configured limit {}",
+                            stats.joint_slots.saturating_add(requested_joints),
+                            current.limits().max_joints
+                        )));
+                    }
+                }
+
+                let mut metadata = Vec::with_capacity(pending.len());
+                let authored_bodies = pending
+                    .into_iter()
+                    .map(|(bone_idx, body, wx, wy, joint_type, slot, attachment)| {
+                        metadata.push((bone_idx, wx, wy, joint_type, slot, attachment));
+                        body
+                    })
+                    .collect();
+                let body_handles = try_lua_bodies_from_bodies(world_handle.clone(), authored_bodies)
+                    .map_err(|err| LuaError::RuntimeError(format!("LSkeleton:bindPhysics: {err}")))?;
+                let mut body_by_bone = vec![None; this.inner.bone_count()];
+                let mut created: Vec<(usize, usize, f32, f32, String)> = Vec::new();
+                let bodies_tbl = lua.create_table()?;
+                let body_ids_tbl = lua.create_table()?;
+                let parts_tbl = lua.create_table()?;
+                for (row, ((bone_idx, wx, wy, joint_type, slot, attachment), body_handle)) in
+                    metadata.into_iter().zip(body_handles).enumerate()
+                {
                     let body_id = body_handle.body_id();
                     body_by_bone[bone_idx] = Some(body_id);
-                    bodies_tbl.set(body_row, lua.create_userdata(body_handle)?)?;
-                    body_ids_tbl.set(body_row, body_id)?;
-
+                    bodies_tbl.set(row + 1, lua.create_userdata(body_handle)?)?;
+                    body_ids_tbl.set(row + 1, body_id)?;
                     let part_info = lua.create_table()?;
                     part_info.set("bone", this.inner.bones[bone_idx].name.clone())?;
                     part_info.set("bone_idx", bone_idx)?;
                     part_info.set("bodyId", body_id)?;
-                    if let Some(slot) = part.get::<_, Option<String>>("slot")? {
+                    if let Some(slot) = slot {
                         part_info.set("slot", slot)?;
                     }
-                    if let Some(attachment) = part.get::<_, Option<String>>("attachment")? {
+                    if let Some(attachment) = attachment {
                         part_info.set("attachment", attachment)?;
                     }
-                    parts_tbl.set(body_row, part_info)?;
-
-                    let joint_type = part
-                        .get::<_, Option<String>>("joint")?
-                        .unwrap_or_else(|| default_joint.clone());
+                    parts_tbl.set(row + 1, part_info)?;
                     created.push((bone_idx, body_id, wx, wy, joint_type));
-                    body_row += 1;
                 }
 
                 let joints_tbl = lua.create_table()?;
@@ -900,13 +962,14 @@ impl LuaUserData for LuaSkeleton {
                     joint_row += 1;
                 }
 
+                let body_count = body_ids_tbl.raw_len();
                 let result = lua.create_table()?;
                 result.set("bodies", bodies_tbl)?;
                 result.set("bodyIds", body_ids_tbl)?;
                 result.set("joints", joints_tbl)?;
                 result.set("jointIds", joint_ids_tbl)?;
                 result.set("parts", parts_tbl)?;
-                result.set("bodyCount", body_row - 1)?;
+                result.set("bodyCount", body_count)?;
                 result.set("jointCount", joint_row - 1)?;
                 Ok(result)
             },

@@ -75,6 +75,211 @@ mod collision_helpers_tests {
     }
 }
 
+mod p0_limit_tests {
+    use super::*;
+
+    #[test]
+    fn body_capacity_and_batches_are_strict_and_atomic() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_bodies = 2;
+        world.set_limits(limits).expect("limits");
+
+        world
+            .try_add_body(Body::try_new(0.0, 0.0, 1.0, 1.0, BodyType::Dynamic).unwrap())
+            .unwrap();
+        let before = world.body_count();
+        let result = world.try_add_bodies(vec![
+            (1.0, 0.0, 1.0, 1.0, BodyType::Dynamic),
+            (2.0, 0.0, 1.0, 1.0, BodyType::Dynamic),
+        ]);
+        assert!(matches!(
+            result,
+            Err(PhysicsError::CountLimitExceeded { .. })
+        ));
+        assert_eq!(world.body_count(), before);
+    }
+
+    #[test]
+    fn body_slot_ceiling_bounds_tombstone_growth_without_reusing_ids() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_bodies = 2;
+        limits.max_body_slots = 3;
+        world.set_limits(limits).expect("limits");
+
+        for expected_id in 0..3 {
+            let id = world
+                .try_add_body(
+                    Body::try_new(expected_id as f32, 0.0, 1.0, 1.0, BodyType::Dynamic).unwrap(),
+                )
+                .expect("slot available");
+            assert_eq!(id.0, expected_id);
+            world.destroy_body(id.0);
+        }
+        assert_eq!(world.get_stats().body_slots, 3);
+        assert!(matches!(
+            world.try_add_body(Body::try_new(4.0, 0.0, 1.0, 1.0, BodyType::Dynamic).unwrap()),
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics body slots",
+                ..
+            })
+        ));
+        assert_eq!(world.body_count(), 0);
+    }
+
+    #[test]
+    fn batch_creation_preflights_lifetime_slots() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_bodies = 4;
+        limits.max_body_slots = 2;
+        world.set_limits(limits).expect("limits");
+        let first = world
+            .try_add_body(Body::try_new(0.0, 0.0, 1.0, 1.0, BodyType::Dynamic).unwrap())
+            .expect("first body");
+        world.destroy_body(first.0);
+
+        let result = world.try_add_bodies(vec![
+            (1.0, 0.0, 1.0, 1.0, BodyType::Dynamic),
+            (2.0, 0.0, 1.0, 1.0, BodyType::Dynamic),
+        ]);
+        assert!(matches!(
+            result,
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics body slots",
+                ..
+            })
+        ));
+        assert_eq!(world.body_count(), 0);
+        assert_eq!(world.get_stats().body_slots, 1);
+    }
+
+    #[test]
+    fn fixed_step_and_solver_controls_obey_declared_bounds() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_fixed_steps = 2;
+        limits.max_solver_iterations = 5;
+        limits.max_ccd_substeps = 4;
+        world.set_limits(limits).expect("limits");
+
+        assert!(world.try_step_fixed(1.0, 1.0 / 60.0, 3).is_err());
+        assert!(world
+            .try_step_fixed(1.0, limits.min_step_dt / 2.0, 1)
+            .is_err());
+        assert!(world.try_set_solver_iterations(6).is_err());
+        assert!(world.try_set_ccd_substeps(5).is_err());
+        let (steps, remainder) = world.try_step_fixed(0.05, 0.025, 2).unwrap();
+        assert_eq!(steps, 2);
+        assert!(remainder.abs() < 1.0e-6);
+    }
+
+    #[test]
+    fn meter_scale_rejects_non_finite_and_non_positive_values() {
+        let mut world = World::new(0.0, 0.0);
+        assert!(world.try_set_meter(0.0).is_err());
+        assert!(world.try_set_meter(-1.0).is_err());
+        assert!(world.try_set_meter(f32::NAN).is_err());
+        assert!(world.try_set_meter(f32::INFINITY).is_err());
+        world.try_set_meter(64.0).expect("valid meter scale");
+        assert!((world.get_meter() - 64.0).abs() < 1.0e-6);
+    }
+
+    #[test]
+    fn limits_reject_zero_or_invalid_work_budgets() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_terrain_component_results = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+        limits = *world.limits();
+        limits.max_body_slots = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+        limits = *world.limits();
+        limits.max_contact_events = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+        limits = *world.limits();
+        limits.max_ballistic_samples = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+        limits = *world.limits();
+        limits.max_query_hits = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+        limits = *world.limits();
+        limits.max_beam_bounces = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+        limits = *world.limits();
+        limits.max_ballistic_projectile_slots = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+        limits = *world.limits();
+        limits.max_debug_shapes = 0;
+        assert!(matches!(
+            world.set_limits(limits),
+            Err(PhysicsError::ConfigMismatch { .. })
+        ));
+    }
+
+    #[test]
+    fn gravity_vectors_and_flow_fields_obey_lifetime_slot_ceilings() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_gravity_vectors = 1;
+        limits.max_flow_fields = 1;
+        world.set_limits(limits).expect("limits");
+
+        world
+            .try_add_gravity_vector(0.0, 9.8, u32::MAX)
+            .expect("first gravity vector");
+        assert!(matches!(
+            world.try_add_gravity_vector(0.0, 9.8, u32::MAX),
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics gravity vectors",
+                ..
+            })
+        ));
+
+        let field = FlowField::new(
+            0,
+            FlowGeometry::UniformRect {
+                x: 0.0,
+                y: 0.0,
+                w: 10.0,
+                h: 10.0,
+            },
+        );
+        world
+            .try_add_flow_field(field.clone())
+            .expect("first flow field");
+        assert!(matches!(
+            world.try_add_flow_field(field),
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics flow fields",
+                ..
+            })
+        ));
+    }
+}
+
 // â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
@@ -101,6 +306,16 @@ mod altitude_tests {
 
     fn default_limits() -> PhysicsLimits {
         PhysicsLimits::default()
+    }
+
+    fn assert_option_near(actual: Option<f32>, expected: f32) {
+        assert!((actual.expect("expected altitude value") - expected).abs() < 1.0e-6);
+    }
+
+    fn assert_range_near(actual: Option<(f32, f32)>, expected: (f32, f32)) {
+        let actual = actual.expect("expected altitude range");
+        assert!((actual.0 - expected.0).abs() < 1.0e-6);
+        assert!((actual.1 - expected.1).abs() < 1.0e-6);
     }
 
     #[test]
@@ -162,14 +377,14 @@ mod altitude_tests {
         let mut world = World::new(0.0, 0.0);
         let body = world.add_body(Body::new(12.0, 18.0, 20.0, 8.0, BodyType::Dynamic));
 
-        assert_eq!(world.get_body_altitude(body.0), Some(0.0));
-        assert_eq!(world.get_body_vertical_velocity(body.0), Some(0.0));
+        assert_option_near(world.get_body_altitude(body.0), 0.0);
+        assert_option_near(world.get_body_vertical_velocity(body.0), 0.0);
         assert_eq!(
             world.get_body_altitude_mode(body.0),
             Some(AltitudeMode::Ground)
         );
-        assert_eq!(world.get_body_height_extent(body.0), Some(20.0));
-        assert_eq!(world.get_body_world_z_range(body.0), Some((0.0, 20.0)));
+        assert_option_near(world.get_body_height_extent(body.0), 20.0);
+        assert_range_near(world.get_body_world_z_range(body.0), (0.0, 20.0));
 
         world.try_set_body_altitude(body.0, 7.0).unwrap();
         world.try_set_body_vertical_velocity(body.0, 3.0).unwrap();
@@ -177,7 +392,7 @@ mod altitude_tests {
         world
             .set_body_altitude_mode(body.0, AltitudeMode::Fixed)
             .unwrap();
-        assert_eq!(world.get_body_world_z_range(body.0), Some((7.0, 13.0)));
+        assert_range_near(world.get_body_world_z_range(body.0), (7.0, 13.0));
 
         world.destroy_body(body.0);
         assert_eq!(world.body_altitude_state(body.0), None);
@@ -211,8 +426,8 @@ mod altitude_tests {
         world.try_set_body_altitude(body.0, 3.0).unwrap();
         world.try_set_body_height_extent(body.0, 2.0).unwrap();
 
-        assert_eq!(world.get_body_ground_height(body.0), Some(16.0));
-        assert_eq!(world.get_body_world_z_range(body.0), Some((19.0, 21.0)));
+        assert_option_near(world.get_body_ground_height(body.0), 16.0);
+        assert_range_near(world.get_body_world_z_range(body.0), (19.0, 21.0));
     }
 
     #[test]
@@ -229,14 +444,14 @@ mod altitude_tests {
         for _ in 0..4 {
             world.step(0.25);
         }
-        assert_eq!(world.get_body_altitude(body.0), Some(4.75));
-        assert_eq!(world.get_body_vertical_velocity(body.0), Some(-6.0));
+        assert_option_near(world.get_body_altitude(body.0), 4.75);
+        assert_option_near(world.get_body_vertical_velocity(body.0), -6.0);
 
         for _ in 0..4 {
             world.step(0.25);
         }
-        assert_eq!(world.get_body_altitude(body.0), Some(0.0));
-        assert_eq!(world.get_body_vertical_velocity(body.0), Some(0.0));
+        assert_option_near(world.get_body_altitude(body.0), 0.0);
+        assert_option_near(world.get_body_vertical_velocity(body.0), 0.0);
     }
 
     #[test]
@@ -253,14 +468,14 @@ mod altitude_tests {
         for _ in 0..4 {
             world.step(0.25);
         }
-        assert_eq!(world.get_body_altitude(body.0), Some(1.375));
-        assert_eq!(world.get_body_vertical_velocity(body.0), Some(-4.0));
+        assert_option_near(world.get_body_altitude(body.0), 1.375);
+        assert_option_near(world.get_body_vertical_velocity(body.0), -4.0);
 
         for _ in 0..4 {
             world.step(0.25);
         }
-        assert_eq!(world.get_body_altitude(body.0), Some(-3.25));
-        assert_eq!(world.get_body_world_z_range(body.0), Some((-3.25, 0.75)));
+        assert_option_near(world.get_body_altitude(body.0), -3.25);
+        assert_range_near(world.get_body_world_z_range(body.0), (-3.25, 0.75));
     }
 
     #[test]
@@ -398,6 +613,54 @@ mod altitude_tests {
     }
 
     #[test]
+    fn ballistic_arc_enforces_sampling_budget_and_strict_interval() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_ballistic_samples = 2;
+        world.set_limits(limits).expect("limits");
+
+        let options = BallisticArcOptions {
+            from: (0.0, 0.0, 0.0),
+            to: (10.0, 0.0, 0.0),
+            speed: 10.0,
+            gravity: 0.0,
+            radius: 1.0,
+            height: 1.0,
+            max_time: 1.0,
+            sample_dt: 0.1,
+        };
+        assert!(matches!(
+            world.try_cast_ballistic_arc(&options, PhysicsQueryFilter::default()),
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics ballistic samples",
+                ..
+            })
+        ));
+
+        assert!(matches!(
+            world.spawn_ballistic_projectile(BallisticProjectileOptions {
+                owner: None,
+                from: (0.0, 0.0, 0.0),
+                to: (10.0, 0.0, 0.0),
+                speed: 10.0,
+                gravity: 0.0,
+                radius: 1.0,
+                height: 1.0,
+                max_time: 1.0,
+                sample_dt: 0.0,
+                homing_target: None,
+                faction_mask: 0,
+                pierce_count: 0,
+                impact_metadata: None,
+            }),
+            Err(PhysicsError::NonPositiveValue {
+                field: "sample_dt",
+                ..
+            })
+        ));
+    }
+
+    #[test]
     fn spawned_ballistic_projectile_emits_hit_and_removes_slot() {
         let mut world = World::new(0.0, 0.0);
         let target = world.add_body(Body::new(16.0, 0.0, 6.0, 6.0, BodyType::Static));
@@ -434,6 +697,41 @@ mod altitude_tests {
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].body_id, Some(target));
         assert!(world.get_ballistic_projectile(projectile_id).is_none());
+    }
+
+    #[test]
+    fn ballistic_projectile_slots_are_lifetime_bounded() {
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_ballistic_projectile_slots = 1;
+        world.set_limits(limits).expect("limits");
+        let options = BallisticProjectileOptions {
+            owner: None,
+            from: (0.0, 0.0, 0.0),
+            to: (10.0, 0.0, 0.0),
+            speed: 10.0,
+            gravity: 0.0,
+            radius: 1.0,
+            height: 1.0,
+            max_time: 1.0,
+            sample_dt: 0.25,
+            homing_target: None,
+            faction_mask: 0,
+            pierce_count: 0,
+            impact_metadata: None,
+        };
+        let id = world
+            .spawn_ballistic_projectile(options.clone())
+            .expect("first projectile");
+        assert!(world.remove_ballistic_projectile(id));
+        assert!(matches!(
+            world.spawn_ballistic_projectile(options),
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics ballistic projectile slots",
+                count: 2,
+                max: 1,
+            })
+        ));
     }
 }
 
@@ -572,6 +870,166 @@ mod world_tests {
         let hit = w.raycast(-20.0, 0.0, 20.0, 0.0).expect("body hit");
         assert_eq!(hit.body_id, body);
         assert_eq!(w.query_aabb(-6.0, -6.0, 12.0, 12.0), vec![body.0]);
+    }
+
+    #[test]
+    fn query_and_beam_work_budgets_are_independent_from_body_capacity() {
+        let mut w = World::new(0.0, 0.0);
+        let mut limits = *w.limits();
+        limits.max_query_hits = 2;
+        limits.max_beam_bounces = 1;
+        w.set_limits(limits).expect("limits");
+        let ids: Vec<_> = (0..3)
+            .map(|index| {
+                w.add_body(Body::new(
+                    index as f32 * 10.0,
+                    0.0,
+                    2.0,
+                    2.0,
+                    BodyType::Static,
+                ))
+            })
+            .collect();
+        w.step(1.0 / 60.0);
+
+        let ray_hits = w.raycast_all(-10.0, 0.0, 1.0, 0.0, 50.0);
+        assert_eq!(ray_hits.len(), 2);
+        assert_eq!(ray_hits[0].body_id, ids[0]);
+        assert_eq!(ray_hits[1].body_id, ids[1]);
+        assert_eq!(
+            w.query_aabb(-2.0, -2.0, 30.0, 4.0),
+            vec![ids[0].0, ids[1].0]
+        );
+
+        let beam = BeamOptions {
+            max_distance: 50.0,
+            thickness: 0.0,
+            hit_mode: BeamHitMode::Pierce { max_hits: 3 },
+            reflect: false,
+            max_bounces: 0,
+            energy: 1.0,
+            min_energy: 0.0,
+            filter: PhysicsQueryFilter::default(),
+        };
+        assert!(matches!(
+            w.try_cast_beam(-10.0, 0.0, 1.0, 0.0, beam),
+            Err(PhysicsError::ValueOutOfRange {
+                field: "max_hits",
+                ..
+            })
+        ));
+
+        assert!(matches!(
+            w.try_cast_beam(
+                -10.0,
+                0.0,
+                1.0,
+                0.0,
+                BeamOptions {
+                    hit_mode: BeamHitMode::Closest,
+                    reflect: true,
+                    max_bounces: 2,
+                    ..beam
+                },
+            ),
+            Err(PhysicsError::ValueOutOfRange {
+                field: "max_bounces",
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn batched_raycast_queries_match_individual_deterministic_hits() {
+        let mut world = World::new(0.0, 0.0);
+        let first = world.add_body(Body::new(10.0, 0.0, 2.0, 2.0, BodyType::Static));
+        let second = world.add_body(Body::new(20.0, 0.0, 2.0, 2.0, BodyType::Static));
+        world.step(1.0 / 60.0);
+
+        let batch = world.raycast_all_batch(
+            &[
+                RaycastQuery {
+                    x: 0.0,
+                    y: 0.0,
+                    dx: 1.0,
+                    dy: 0.0,
+                    max_dist: 30.0,
+                },
+                RaycastQuery {
+                    x: 30.0,
+                    y: 0.0,
+                    dx: -1.0,
+                    dy: 0.0,
+                    max_dist: 30.0,
+                },
+            ],
+            PhysicsQueryFilter::default(),
+        );
+        assert_eq!(batch.len(), 2);
+        assert_eq!(
+            batch[0].iter().map(|hit| hit.body_id).collect::<Vec<_>>(),
+            vec![first, second]
+        );
+        assert_eq!(
+            batch[1].iter().map(|hit| hit.body_id).collect::<Vec<_>>(),
+            vec![second, first]
+        );
+    }
+
+    #[test]
+    fn immutable_physics_snapshots_report_stable_diffs() {
+        let mut world = World::new(0.0, 0.0);
+        let empty = world.physics_snapshot();
+        let first = world.add_body(Body::new(2.0, 3.0, 2.0, 2.0, BodyType::Static));
+        let added = world.physics_snapshot();
+        let add_diff = World::diff_physics_snapshots(&empty, &added);
+        assert_ne!(add_diff.from_generation, add_diff.to_generation);
+        assert_eq!(
+            add_diff
+                .added
+                .iter()
+                .map(|shape| shape.body_id)
+                .collect::<Vec<_>>(),
+            vec![first]
+        );
+        assert!(add_diff.removed.is_empty());
+        assert!(add_diff.changed.is_empty());
+
+        world.set_body_position(first.0, 5.0, 3.0);
+        let moved = world.physics_snapshot();
+        let move_diff = World::diff_physics_snapshots(&added, &moved);
+        assert_eq!(move_diff.changed.len(), 1);
+        assert_eq!(move_diff.changed[0].body_id, first);
+        assert_eq!(move_diff.changed[0].x, 5.0);
+
+        world.destroy_body(first.0);
+        let removed = world.physics_snapshot();
+        let remove_diff = World::diff_physics_snapshots(&moved, &removed);
+        assert_eq!(remove_diff.removed, vec![first]);
+    }
+
+    #[test]
+    fn point_query_tie_breaks_by_stable_body_id() {
+        let mut w = World::new(0.0, 0.0);
+        let first = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static));
+        w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Static));
+        w.step(1.0 / 60.0);
+        for _ in 0..4 {
+            assert_eq!(w.get_body_at_point(0.0, 0.0), Some(first.0));
+        }
+    }
+
+    #[test]
+    fn debug_shape_snapshots_obey_their_output_budget() {
+        let mut w = World::new(0.0, 0.0);
+        let mut limits = *w.limits();
+        limits.max_debug_shapes = 1;
+        w.set_limits(limits).expect("limits");
+        let first = w.add_body(Body::new(0.0, 0.0, 2.0, 2.0, BodyType::Static));
+        w.add_body(Body::new(10.0, 0.0, 2.0, 2.0, BodyType::Static));
+        let snapshots = w.extract_shape_snapshots();
+        assert_eq!(snapshots.len(), 1);
+        assert!((snapshots[0].x - w.get_body(first.0).unwrap().position.x).abs() < 1e-6);
     }
 
     #[test]
@@ -837,6 +1295,13 @@ mod world_tests {
     }
 
     #[test]
+    fn strict_step_rejects_oversized_dt_without_clamping() {
+        let mut w = World::new(0.0, 10.0);
+        assert!(w.try_step(0.5).is_err());
+        assert_eq!(w.get_stats().clamped_steps, 0);
+    }
+
+    #[test]
     fn dynamic_body_not_resynced_without_dirty_flag() {
         let mut w = World::new(0.0, 0.0);
         let id = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
@@ -884,7 +1349,7 @@ mod world_tests {
             .unwrap();
         w.zone_mut(zone_id).unwrap().set_gravity_zero();
         w.step(1.0 / 60.0);
-        assert_eq!(w.get_gravity_scale(id.0), 0.0);
+        assert!(w.get_gravity_scale(id.0).abs() < 1e-6);
         w.set_body_position(id.0, 100.0, 100.0);
         w.step(1.0 / 60.0);
         assert!((w.get_gravity_scale(id.0) - 0.25).abs() < 1e-6);
@@ -893,6 +1358,10 @@ mod world_tests {
     #[test]
     fn clear_preserves_world_settings_but_removes_runtime_state() {
         let mut w = World::new(0.0, 9.8);
+        let mut limits = *w.limits();
+        limits.max_bodies = 17;
+        limits.max_body_slots = 23;
+        w.set_limits(limits).unwrap();
         let id = w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
         w.set_gravity(-3.0, 4.0);
         w.set_meter(96.0);
@@ -907,15 +1376,23 @@ mod world_tests {
         assert!(!w.has_body(id.0));
         assert_eq!(w.joint_count(), 0);
         assert_eq!(w.get_stats().zones, 0);
-        assert_eq!(w.get_gravity(), (-3.0, 4.0));
+        let gravity = w.get_gravity();
+        assert!((gravity.0 + 3.0).abs() < 1e-6);
+        assert!((gravity.1 - 4.0).abs() < 1e-6);
         assert!((w.get_meter() - 96.0).abs() < 1e-6);
         assert_eq!(w.get_solver_iterations(), 12);
         assert_eq!(w.get_ccd_substeps(), 4);
+        assert_eq!(w.limits().max_bodies, 17);
+        assert_eq!(w.limits().max_body_slots, 23);
     }
 
     #[test]
     fn reset_world_restores_constructor_settings() {
         let mut w = World::new(0.0, 9.8);
+        let mut limits = *w.limits();
+        limits.max_bodies = 17;
+        limits.max_body_slots = 23;
+        w.set_limits(limits).unwrap();
         w.add_body(Body::new(0.0, 0.0, 10.0, 10.0, BodyType::Dynamic));
         w.set_gravity(-3.0, 4.0);
         w.set_meter(96.0);
@@ -929,10 +1406,13 @@ mod world_tests {
         assert_eq!(w.body_count(), 0);
         assert_eq!(w.joint_count(), 0);
         assert_eq!(w.get_stats().zones, 0);
-        assert_eq!(w.get_gravity(), (0.0, 9.8));
+        let gravity = w.get_gravity();
+        assert!(gravity.0.abs() < 1e-6);
+        assert!((gravity.1 - 9.8).abs() < 1e-6);
         assert!((w.get_meter() - 1.0).abs() < 1e-6);
         assert_eq!(w.get_solver_iterations(), 4);
         assert_eq!(w.get_ccd_substeps(), 1);
+        assert_eq!(*w.limits(), PhysicsLimits::default());
     }
 
     #[test]
@@ -1346,6 +1826,40 @@ mod terrain_tests {
     }
 
     #[test]
+    fn collapse_spawn_preflights_body_capacity_before_removing_terrain() {
+        let mut terrain = TerrainMap::new(4, 4, 1.0);
+        terrain.set_cell(1, 1, true);
+        terrain.set_cell(2, 1, true);
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_bodies = 1;
+        limits.max_body_slots = 1;
+        world.set_limits(limits).expect("limits");
+
+        let result = terrain.collapse_unsupported_in_world(
+            &mut world,
+            &TerrainCollapseOptions {
+                support_rule: TerrainSupportRule::Bottom,
+                mode: TerrainCollapseMode::SpawnDebris,
+                max_debris: 2,
+                ..TerrainCollapseOptions::default()
+            },
+        );
+        assert!(matches!(
+            result,
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics terrain debris",
+                count: 2,
+                max: 1,
+            })
+        ));
+        assert!(terrain.get_cell(1, 1));
+        assert!(terrain.get_cell(2, 1));
+        assert_eq!(world.body_count(), 0);
+        assert_eq!(world.get_stats().body_slots, 0);
+    }
+
+    #[test]
     fn flush_with_limit_reports_chunk_diagnostics() {
         let mut terrain = TerrainMap::new(64, 16, 1.0);
         terrain.fill_all(true);
@@ -1362,6 +1876,66 @@ mod terrain_tests {
         assert_eq!(final_stats.dirty_chunks_rebuilt, 2);
         assert_eq!(final_stats.dirty_chunks_remaining, 0);
         assert!(!terrain.is_dirty());
+    }
+
+    #[test]
+    fn contour_terrain_strategy_rebuilds_exposed_cell_edges() {
+        let mut terrain = TerrainMap::new(2, 1, 1.0);
+        terrain.set_cell(0, 0, true);
+        terrain.set_cell(1, 0, true);
+        terrain.set_collider_strategy(TerrainColliderStrategy::ContourEdges);
+        let mut world = World::new(0.0, 0.0);
+        let stats = terrain
+            .try_flush_with_limit(&mut world, None)
+            .expect("contour flush");
+        // A two-cell rectangle has six exposed grid edges: the shared edge is absent.
+        assert_eq!(stats.bodies_created, 6);
+        assert_eq!(world.body_count(), 6);
+        assert_eq!(
+            terrain.collider_strategy(),
+            TerrainColliderStrategy::ContourEdges
+        );
+    }
+
+    #[test]
+    fn partial_flush_rebuilds_dirty_chunks_in_row_major_order() {
+        let mut terrain = TerrainMap::new(48, 32, 1.0);
+        terrain.set_cell(33, 17, true);
+        terrain.set_cell(1, 1, true);
+        terrain.set_cell(17, 1, true);
+        let mut world = World::new(0.0, 0.0);
+
+        let stats = terrain.flush_with_limit(&mut world, Some(1));
+        assert_eq!(stats.dirty_chunks_rebuilt, 1);
+        // The first row-major dirty chunk is (0, 0), so only its cell has a body.
+        assert_eq!(world.body_count(), 1);
+        assert_eq!(terrain.dirty_chunks(), vec![(1, 0), (2, 1)]);
+    }
+
+    #[test]
+    fn strict_flush_preflights_capacity_without_mutating_world_or_dirty_queue() {
+        let mut terrain = TerrainMap::new(4, 1, 1.0);
+        terrain.set_cell(0, 0, true);
+        terrain.set_cell(2, 0, true);
+        let mut world = World::new(0.0, 0.0);
+        let mut limits = *world.limits();
+        limits.max_bodies = 1;
+        limits.max_body_slots = 1;
+        world.set_limits(limits).expect("limits");
+
+        let result = terrain.try_flush_with_limit(&mut world, None);
+        assert!(matches!(
+            result,
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics terrain bodies",
+                count: 2,
+                max: 1,
+            })
+        ));
+        assert_eq!(world.body_count(), 0);
+        assert_eq!(world.get_stats().body_slots, 0);
+        assert_eq!(terrain.dirty_chunks(), vec![(0, 0)]);
+        assert_eq!(terrain.last_flush_stats(), TerrainFlushStats::default());
     }
 
     #[test]
@@ -1383,6 +1957,37 @@ mod terrain_tests {
             .find_components_with_limits(None, &limits)
             .expect_err("scan should hit limit");
         assert!(err.to_string().contains("terrain component scan"));
+    }
+
+    #[test]
+    fn component_scan_bounds_result_count_and_retained_cells() {
+        let mut terrain = TerrainMap::new(8, 8, 1.0);
+        terrain.set_cell(0, 0, true);
+        terrain.set_cell(2, 0, true);
+        let result_limit = PhysicsLimits {
+            max_terrain_component_results: 1,
+            ..PhysicsLimits::default()
+        };
+        assert!(matches!(
+            terrain.find_components_with_limits(None, &result_limit),
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics terrain component results",
+                ..
+            })
+        ));
+
+        terrain.set_cell(1, 0, true);
+        let cell_limit = PhysicsLimits {
+            max_terrain_component_cells: 2,
+            ..PhysicsLimits::default()
+        };
+        assert!(matches!(
+            terrain.find_components_with_limits(None, &cell_limit),
+            Err(PhysicsError::CountLimitExceeded {
+                context: "physics terrain component cells",
+                ..
+            })
+        ));
     }
 
     #[test]
@@ -1423,6 +2028,19 @@ mod liquid_tests {
         assert_eq!(restored.get_cell(0, 0).kind, LiquidKind::Water);
         assert_eq!(restored.get_cell(3, 2).kind, LiquidKind::Lava);
         assert!((restored.get_cell(3, 2).amount - 0.5).abs() < 1e-6);
+    }
+
+    #[test]
+    fn liquid_bytes_reject_non_finite_amounts_before_constructing_a_map() {
+        let mut bytes = LiquidMap::new(1, 1, 1.0).to_bytes();
+        bytes[16..20].copy_from_slice(&f32::NAN.to_bits().to_le_bytes());
+        assert!(matches!(
+            LiquidMap::from_bytes_with_limits(&bytes, &PhysicsLimits::default()),
+            Err(PhysicsError::InvalidFloat {
+                field: "liquid amount",
+                ..
+            })
+        ));
     }
 
     #[test]
@@ -1725,6 +2343,8 @@ mod material_tests {
             density: 2.0,
             friction: 0.9,
             restitution: 0.4,
+            friction_combine_rule: MaterialCombineRule::Multiply,
+            restitution_combine_rule: MaterialCombineRule::Max,
             linear_damping: Some(0.2),
             angular_damping: Some(0.7),
             gravity_scale: Some(-0.5),
@@ -1773,6 +2393,8 @@ mod material_tests {
             density: 0.6,
             friction: 0.05,
             restitution: 0.85,
+            friction_combine_rule: MaterialCombineRule::Min,
+            restitution_combine_rule: MaterialCombineRule::Average,
             linear_damping: None,
             angular_damping: None,
             gravity_scale: None,

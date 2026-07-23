@@ -812,8 +812,8 @@ do
     local b = lurek.image.newImageData(2, 2)
     a:fill(255, 0, 0, 255)
     b:fill(0, 255, 0, 255)
-    lurek.image.saveGIF({ a, b }, "work/example_animation_from_gif.gif", { delayMs = 40 })
-    local decoded = lurek.image.loadAnimated("work/example_animation_from_gif.gif")
+    lurek.image.saveGIF({ a, b }, "save/example_animation_from_gif.gif", { delayMs = 40 })
+    local decoded = lurek.image.loadAnimated("save/example_animation_from_gif.gif")
     local anim = lurek.animation.fromAnimatedImage(decoded, { name = "gif", loop = true })
     lurek.log.info("[animation] fromAnimatedImage frames=" .. tostring(anim:getFrameCount()))
 end

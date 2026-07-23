@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated": "2026-07-22T20:32:39.139001+00:00",
+    "generated": "2026-07-23T13:37:27.509088+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "1.1.0",
     "stats": {
-      "lua_functions": 7103,
+      "lua_functions": 7104,
       "lua_modules": 72,
       "engine_callbacks": 29
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 7103,
-      "documented": 6993,
+      "total_functions": 7104,
+      "documented": 6994,
       "coverage_pct": 98.5,
       "modules": 72
     },
@@ -58413,7 +58413,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "New image data handle.",
-            "line": 815,
+            "line": 871,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58448,7 +58448,7 @@
             ],
             "inferred_return": "LImageShaderJob",
             "return_description": "Offline shader job handle.",
-            "line": 854,
+            "line": 910,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58483,7 +58483,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "New image data handle.",
-            "line": 884,
+            "line": 940,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58506,7 +58506,7 @@
             ],
             "inferred_return": "LCompressedImageData",
             "return_description": "New compressed image data handle when DDS support is enabled.",
-            "line": 900,
+            "line": 958,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58529,7 +58529,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True when the file appears to be DDS compressed data.",
-            "line": 920,
+            "line": 978,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58558,7 +58558,7 @@
             ],
             "inferred_return": "LLayeredImage",
             "return_description": "New layered image handle.",
-            "line": 935,
+            "line": 994,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58587,7 +58587,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 951,
+            "line": 1011,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58616,7 +58616,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 969,
+            "line": 1029,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58651,7 +58651,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 989,
+            "line": 1048,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58674,7 +58674,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "Loaded image data handle.",
-            "line": 1016,
+            "line": 1078,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58697,7 +58697,7 @@
             ],
             "inferred_return": "LAnimatedImage",
             "return_description": "Decoded frames and durations.",
-            "line": 1034,
+            "line": 1096,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58720,7 +58720,7 @@
             ],
             "inferred_return": "LLayeredImage",
             "return_description": "Loaded layered image handle.",
-            "line": 1065,
+            "line": 1127,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58736,7 +58736,7 @@
             "typed_params": [],
             "inferred_return": "LPaletteLUT",
             "return_description": "New palette lookup table handle.",
-            "line": 1081,
+            "line": 1146,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58759,7 +58759,7 @@
             ],
             "inferred_return": "LProvinceGrid",
             "return_description": "New province grid handle.",
-            "line": 1094,
+            "line": 1159,
             "file": "src/lua_api/image_api.rs"
           },
           {
@@ -58775,7 +58775,7 @@
             "typed_params": [],
             "inferred_return": "LImageData|nil",
             "return_description": "`LImageData` when capture data is ready, or nil after requesting capture.",
-            "line": 1113,
+            "line": 1169,
             "file": "src/lua_api/image_api.rs"
           }
         ],
@@ -58858,7 +58858,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width in pixels.",
-                "line": 195,
+                "line": 223,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58874,7 +58874,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid height in pixels.",
-                "line": 199,
+                "line": 227,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58903,7 +58903,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province id at the pixel.",
-                "line": 205,
+                "line": 233,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58919,7 +58919,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Province count.",
-                "line": 211,
+                "line": 239,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58935,7 +58935,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table with `province_a`, `province_b`, and `border_pixels` fields.",
-                "line": 220,
+                "line": 248,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58951,7 +58951,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table with `province_id`, `y`, `x0`, and `x1` fields.",
-                "line": 241,
+                "line": 269,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58967,7 +58967,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table with province ids and segment coordinates.",
-                "line": 266,
+                "line": 294,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58983,7 +58983,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table of province polygon records with `province_id` and `rings` fields.",
-                "line": 292,
+                "line": 320,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -58999,7 +58999,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array table of simplified province polygon records with `province_id` and `rings` fields.",
-                "line": 323,
+                "line": 351,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59040,7 +59040,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of polygons emitted to the render command queue.",
-                "line": 357,
+                "line": 385,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59056,7 +59056,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LProvinceGrid`.",
-                "line": 430,
+                "line": 458,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59079,7 +59079,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 435,
+                "line": 463,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59095,7 +59095,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Serialized shape data bytes.",
-                "line": 441,
+                "line": 469,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59118,7 +59118,7 @@
                 ],
                 "inferred_return": "LuaValue",
                 "return_description": "Table with `spans` and `segments`, or nil when decoding fails.",
-                "line": 449,
+                "line": 477,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -59140,7 +59140,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Frame count.",
-                "line": 507,
+                "line": 535,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59163,7 +59163,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Decoded frame image.",
-                "line": 512,
+                "line": 540,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59186,7 +59186,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Duration in milliseconds.",
-                "line": 525,
+                "line": 553,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59202,7 +59202,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of `LImageData` values.",
-                "line": 537,
+                "line": 565,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59218,7 +59218,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of integer durations.",
-                "line": 547,
+                "line": 575,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59234,7 +59234,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LAnimatedImage`.",
-                "line": 557,
+                "line": 585,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59257,7 +59257,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches.",
-                "line": 562,
+                "line": 590,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -59279,7 +59279,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 578,
+                "line": 608,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59295,7 +59295,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height in pixels.",
-                "line": 582,
+                "line": 612,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59311,7 +59311,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Layer count.",
-                "line": 586,
+                "line": 616,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59334,7 +59334,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "One-based index of the new layer.",
-                "line": 591,
+                "line": 621,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59357,7 +59357,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a layer was removed.",
-                "line": 600,
+                "line": 643,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59380,7 +59380,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Layer image data handle.",
-                "line": 610,
+                "line": 653,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59409,7 +59409,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer was replaced.",
-                "line": 624,
+                "line": 667,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59432,7 +59432,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Layer opacity.",
-                "line": 640,
+                "line": 683,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59461,7 +59461,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 654,
+                "line": 697,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59484,7 +59484,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer is visible.",
-                "line": 664,
+                "line": 708,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59513,7 +59513,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 678,
+                "line": 722,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59536,7 +59536,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Layer name.",
-                "line": 688,
+                "line": 732,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59565,7 +59565,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the layer exists.",
-                "line": 702,
+                "line": 746,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59594,7 +59594,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when both layers exist.",
-                "line": 713,
+                "line": 763,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59623,7 +59623,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the move succeeds.",
-                "line": 724,
+                "line": 774,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59639,7 +59639,7 @@
                 "typed_params": [],
                 "inferred_return": "LImageData",
                 "return_description": "Merged image data handle.",
-                "line": 736,
+                "line": 786,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59662,7 +59662,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 742,
+                "line": 792,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59678,7 +59678,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LLayeredImage`.",
-                "line": 748,
+                "line": 803,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59701,7 +59701,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 753,
+                "line": 808,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -59723,7 +59723,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 769,
+                "line": 824,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59739,7 +59739,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height in pixels.",
-                "line": 773,
+                "line": 828,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59755,7 +59755,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 778,
+                "line": 833,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59771,7 +59771,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Mipmap level count.",
-                "line": 784,
+                "line": 839,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59787,7 +59787,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Format name.",
-                "line": 790,
+                "line": 845,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59803,7 +59803,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LCompressedImageData`.",
-                "line": 796,
+                "line": 851,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59826,7 +59826,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 801,
+                "line": 856,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -59848,7 +59848,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 1135,
+                "line": 1191,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59864,7 +59864,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Height in pixels.",
-                "line": 1139,
+                "line": 1195,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59880,7 +59880,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Width in pixels.",
-                "line": 1144,
+                "line": 1200,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59896,7 +59896,7 @@
                 "typed_params": [],
                 "inferred_return": "LImageData",
                 "return_description": "Copied image data.",
-                "line": 1151,
+                "line": 1207,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59937,7 +59937,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Copied region.",
-                "line": 1159,
+                "line": 1215,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59966,7 +59966,7 @@
                 ],
                 "inferred_return": "LImageData|nil",
                 "return_description": "New image for size-changing effects, otherwise nil.",
-                "line": 1173,
+                "line": 1229,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -59995,7 +59995,7 @@
                 ],
                 "inferred_return": "LImageData|nil",
                 "return_description": "Last new image returned by a size-changing effect, otherwise nil.",
-                "line": 1206,
+                "line": 1262,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60024,7 +60024,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Processed image.",
-                "line": 1255,
+                "line": 1332,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60047,7 +60047,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1284,
+                "line": 1361,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60070,7 +60070,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Transformed image.",
-                "line": 1292,
+                "line": 1369,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60099,7 +60099,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Red channel.",
-                "line": 1307,
+                "line": 1384,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60152,7 +60152,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1326,
+                "line": 1403,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60175,7 +60175,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Encoded image bytes.",
-                "line": 1346,
+                "line": 1423,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60191,7 +60191,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Raw image byte string.",
-                "line": 1356,
+                "line": 1433,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60214,7 +60214,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1360,
+                "line": 1440,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60237,7 +60237,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1379,
+                "line": 1459,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60260,7 +60260,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1386,
+                "line": 1466,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60283,7 +60283,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1393,
+                "line": 1473,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60306,7 +60306,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1400,
+                "line": 1480,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60347,7 +60347,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1410,
+                "line": 1490,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60363,7 +60363,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1419,
+                "line": 1504,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60379,7 +60379,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1425,
+                "line": 1510,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60395,7 +60395,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1431,
+                "line": 1516,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60418,7 +60418,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1438,
+                "line": 1523,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60441,7 +60441,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1445,
+                "line": 1530,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60482,7 +60482,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1455,
+                "line": 1540,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60505,7 +60505,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1462,
+                "line": 1547,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60528,7 +60528,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1469,
+                "line": 1554,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60544,7 +60544,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1475,
+                "line": 1560,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60560,7 +60560,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1481,
+                "line": 1566,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60576,7 +60576,7 @@
                 "typed_params": [],
                 "inferred_return": "LImageData",
                 "return_description": "Rotated image data handle.",
-                "line": 1488,
+                "line": 1573,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60617,7 +60617,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Cropped image data handle.",
-                "line": 1498,
+                "line": 1583,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60646,7 +60646,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Resized image data handle.",
-                "line": 1518,
+                "line": 1603,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60669,7 +60669,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Blurred image data handle.",
-                "line": 1525,
+                "line": 1610,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60685,7 +60685,7 @@
                 "typed_params": [],
                 "inferred_return": "LImageData",
                 "return_description": "Sharpened image data handle.",
-                "line": 1531,
+                "line": 1616,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60750,7 +60750,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1544,
+                "line": 1629,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60809,7 +60809,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1560,
+                "line": 1645,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60874,7 +60874,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1577,
+                "line": 1662,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60909,7 +60909,7 @@
                 ],
                 "inferred_return": "LImageData|nil",
                 "return_description": "Resized `LImageData` handle, or nil when resizing fails.",
-                "line": 1590,
+                "line": 1676,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60944,7 +60944,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1636,
+                "line": 1722,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -60985,7 +60985,7 @@
                 ],
                 "inferred_return": "LImageData|nil",
                 "return_description": "`LImageData` handle, or nil when the region is out of bounds.",
-                "line": 1651,
+                "line": 1737,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61001,7 +61001,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Raw image byte string.",
-                "line": 1661,
+                "line": 1747,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61024,7 +61024,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Difference score.",
-                "line": 1668,
+                "line": 1755,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61047,7 +61047,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1675,
+                "line": 1762,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61076,7 +61076,7 @@
                 ],
                 "inferred_return": "LImageData",
                 "return_description": "Convolved image data handle.",
-                "line": 1693,
+                "line": 1780,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61099,7 +61099,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1710,
+                "line": 1821,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61122,7 +61122,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1718,
+                "line": 1829,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61157,7 +61157,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1727,
+                "line": 1838,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61173,7 +61173,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LImageData`.",
-                "line": 1738,
+                "line": 1849,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61196,7 +61196,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches.",
-                "line": 1743,
+                "line": 1854,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -61267,7 +61267,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1766,
+                "line": 1877,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61283,7 +61283,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Color mapping count.",
-                "line": 1790,
+                "line": 1908,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61299,7 +61299,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1795,
+                "line": 1913,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61322,7 +61322,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1802,
+                "line": 1920,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61338,7 +61338,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LPaletteLUT`.",
-                "line": 1809,
+                "line": 1927,
                 "file": "src/lua_api/image_api.rs"
               },
               {
@@ -61361,7 +61361,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1814,
+                "line": 1932,
                 "file": "src/lua_api/image_api.rs"
               }
             ]
@@ -67502,7 +67502,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1535,
+            "line": 1659,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67518,7 +67518,7 @@
             "typed_params": [],
             "inferred_return": "LShader",
             "return_description": "Bound shader or nil.",
-            "line": 1555,
+            "line": 1679,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67559,7 +67559,7 @@
             ],
             "inferred_return": "LLight",
             "return_description": "New light handle.",
-            "line": 1573,
+            "line": 1697,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67588,7 +67588,7 @@
             ],
             "inferred_return": "LOccluder",
             "return_description": "New occluder handle.",
-            "line": 1602,
+            "line": 1727,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67629,7 +67629,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1624,
+            "line": 1753,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67645,7 +67645,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Red channel.",
-            "line": 1643,
+            "line": 1772,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67668,7 +67668,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1654,
+            "line": 1783,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67684,7 +67684,7 @@
             "typed_params": [],
             "inferred_return": "boolean",
             "return_description": "True when lighting is enabled.",
-            "line": 1665,
+            "line": 1794,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67700,7 +67700,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Light count.",
-            "line": 1673,
+            "line": 1802,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67716,7 +67716,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Occluder count.",
-            "line": 1681,
+            "line": 1810,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67732,7 +67732,7 @@
             "typed_params": [],
             "inferred_return": "integer",
             "return_description": "Maximum light count.",
-            "line": 1689,
+            "line": 1818,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67740,8 +67740,8 @@
             "lua_name": "lurek.light.setMaxLights",
             "kind": "function",
             "owner_type": "",
-            "description": "Sets the maximum configured light count, clamped to 1 through 256.",
-            "full_doc": "Sets the maximum configured light count, clamped to 1 through 256.\n@param | n | integer | Requested maximum light count.",
+            "description": "Sets the renderer selection count; values must be 1 through 256.",
+            "full_doc": "Sets the renderer selection count; values must be 1 through 256.\n@param | n | integer | Requested maximum light count.",
             "params_doc": "- `n` â€” `integer`: Requested maximum light count.",
             "returns_doc": "",
             "inferred_sig": "(n)",
@@ -67755,7 +67755,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1697,
+            "line": 1826,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67771,7 +67771,7 @@
             "typed_params": [],
             "inferred_return": "",
             "return_description": "",
-            "line": 1707,
+            "line": 1841,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67800,7 +67800,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1719,
+            "line": 1853,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67829,7 +67829,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1733,
+            "line": 1867,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67876,7 +67876,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1752,
+            "line": 1886,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67899,7 +67899,7 @@
             ],
             "inferred_return": "integer",
             "return_description": "Number of lights in the group.",
-            "line": 1774,
+            "line": 1908,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67922,7 +67922,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 1784,
+            "line": 1918,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67938,7 +67938,7 @@
             "typed_params": [],
             "inferred_return": "number",
             "return_description": "Red channel.",
-            "line": 1799,
+            "line": 1933,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67954,7 +67954,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array table of hint records with `x`, `y`, and `angle` fields.",
-            "line": 1813,
+            "line": 1947,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67970,7 +67970,7 @@
             "typed_params": [],
             "inferred_return": "table",
             "return_description": "Array table of normal-map light hint records.",
-            "line": 1842,
+            "line": 1976,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -67999,7 +67999,7 @@
             ],
             "inferred_return": "LImageData",
             "return_description": "Rendered light map.",
-            "line": 1874,
+            "line": 2008,
             "file": "src/lua_api/light_api.rs"
           },
           {
@@ -68040,7 +68040,7 @@
             ],
             "inferred_return": "table",
             "return_description": "`{lights=Llight[], occluders=LOccluder[]}`.",
-            "line": 1893,
+            "line": 2031,
             "file": "src/lua_api/light_api.rs"
           }
         ],
@@ -68075,7 +68075,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 441,
+                "line": 539,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68091,7 +68091,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Light x coordinate.",
-                "line": 454,
+                "line": 554,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68114,7 +68114,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 465,
+                "line": 565,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68130,7 +68130,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Radius value.",
-                "line": 478,
+                "line": 578,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68171,7 +68171,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 492,
+                "line": 592,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68187,7 +68187,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Red channel.",
-                "line": 514,
+                "line": 614,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68210,7 +68210,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 526,
+                "line": 626,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68226,7 +68226,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Intensity value.",
-                "line": 539,
+                "line": 639,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68249,7 +68249,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 550,
+                "line": 650,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68265,7 +68265,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Energy value.",
-                "line": 562,
+                "line": 662,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68288,7 +68288,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 573,
+                "line": 673,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68304,7 +68304,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Blend mode `add`, `sub`, or `mix`.",
-                "line": 586,
+                "line": 686,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68327,7 +68327,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 597,
+                "line": 697,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68343,7 +68343,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Falloff mode `linear`, `smooth`, or `constant`.",
-                "line": 610,
+                "line": 710,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68366,7 +68366,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 621,
+                "line": 721,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68382,7 +68382,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when shadows are enabled.",
-                "line": 633,
+                "line": 733,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68423,7 +68423,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 647,
+                "line": 747,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68439,7 +68439,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Red channel.",
-                "line": 665,
+                "line": 765,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68462,7 +68462,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 677,
+                "line": 777,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68478,7 +68478,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Shadow filter `none`, `pcf5`, or `pcf13`.",
-                "line": 690,
+                "line": 790,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68501,7 +68501,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 701,
+                "line": 801,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68517,7 +68517,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Shadow smoothing value.",
-                "line": 713,
+                "line": 814,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68540,7 +68540,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 724,
+                "line": 825,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68556,7 +68556,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Shadow softness value.",
-                "line": 737,
+                "line": 838,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68579,7 +68579,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 748,
+                "line": 849,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68595,7 +68595,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Light mask bits.",
-                "line": 760,
+                "line": 861,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68618,7 +68618,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 771,
+                "line": 872,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68634,7 +68634,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Shadow mask bits.",
-                "line": 783,
+                "line": 884,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68657,7 +68657,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 794,
+                "line": 895,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68673,7 +68673,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the light is enabled.",
-                "line": 806,
+                "line": 907,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68696,7 +68696,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 817,
+                "line": 918,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68712,7 +68712,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Light type `point`, `directional`, or `spot`.",
-                "line": 830,
+                "line": 931,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68735,7 +68735,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 841,
+                "line": 942,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68751,7 +68751,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Direction angle.",
-                "line": 853,
+                "line": 955,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68774,7 +68774,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 864,
+                "line": 966,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68790,7 +68790,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Inner angle.",
-                "line": 876,
+                "line": 980,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68813,7 +68813,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 887,
+                "line": 991,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68829,7 +68829,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Outer angle.",
-                "line": 899,
+                "line": 1005,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68864,7 +68864,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 912,
+                "line": 1018,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68880,7 +68880,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Constant coefficient.",
-                "line": 926,
+                "line": 1035,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68909,7 +68909,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 939,
+                "line": 1048,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68925,7 +68925,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Flicker speed.",
-                "line": 957,
+                "line": 1066,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68948,7 +68948,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 969,
+                "line": 1078,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68964,7 +68964,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when flicker is enabled.",
-                "line": 984,
+                "line": 1093,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -68987,7 +68987,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 995,
+                "line": 1104,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69003,7 +69003,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Group id.",
-                "line": 1007,
+                "line": 1116,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69026,7 +69026,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1018,
+                "line": 1127,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69042,7 +69042,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when volumetric behavior is enabled.",
-                "line": 1030,
+                "line": 1139,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69058,7 +69058,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1040,
+                "line": 1149,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69074,7 +69074,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the light still exists.",
-                "line": 1047,
+                "line": 1156,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69109,7 +69109,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1067,
+                "line": 1176,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69138,7 +69138,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1088,
+                "line": 1197,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69161,7 +69161,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when a transition value was applied.",
-                "line": 1180,
+                "line": 1286,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69177,7 +69177,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1203,
+                "line": 1297,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69193,7 +69193,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Transition progress.",
-                "line": 1210,
+                "line": 1309,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69201,8 +69201,8 @@
                 "lua_name": "LLight:setCookie",
                 "kind": "method",
                 "owner_type": "LLight",
-                "description": "Stores a cookie texture path on this Lua light handle.",
-                "full_doc": "Stores a cookie texture path on this Lua light handle.\n@param | path | string | Cookie texture path.",
+                "description": "Stores a cookie resource path on the authoritative light state. It is not sampled until a renderer supports cookies.",
+                "full_doc": "Stores a cookie resource path on the authoritative light state. It is not sampled until a renderer supports cookies.\n@param | path | string | Cookie texture path.",
                 "params_doc": "- `path` â€” `string`: Cookie texture path.",
                 "returns_doc": "",
                 "inferred_sig": "(path)",
@@ -69216,7 +69216,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1221,
+                "line": 1320,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69224,15 +69224,15 @@
                 "lua_name": "LLight:getCookie",
                 "kind": "method",
                 "owner_type": "LLight",
-                "description": "Returns the cookie texture path stored on this Lua light handle.",
-                "full_doc": "Returns the cookie texture path stored on this Lua light handle.\n@return | string | Cookie texture path, or nil when absent.",
+                "description": "Returns the cookie resource path stored on the authoritative light state.",
+                "full_doc": "Returns the cookie resource path stored on the authoritative light state.\n@return | string | Cookie texture path, or nil when absent.",
                 "params_doc": "",
                 "returns_doc": "string",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Cookie texture path, or nil when absent.",
-                "line": 1228,
+                "line": 1333,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69240,15 +69240,15 @@
                 "lua_name": "LLight:clearCookie",
                 "kind": "method",
                 "owner_type": "LLight",
-                "description": "Clears the cookie texture path stored on this Lua light handle.",
-                "full_doc": "Clears the cookie texture path stored on this Lua light handle.",
+                "description": "Clears the cookie resource path from the authoritative light state.",
+                "full_doc": "Clears the cookie resource path from the authoritative light state.",
                 "params_doc": "",
                 "returns_doc": "",
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1233,
+                "line": 1343,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69271,7 +69271,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1240,
+                "line": 1355,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69287,7 +69287,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Normal map path, or nil when absent.",
-                "line": 1252,
+                "line": 1368,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69303,7 +69303,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1262,
+                "line": 1378,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69326,7 +69326,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1274,
+                "line": 1390,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69342,7 +69342,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Normal map strength.",
-                "line": 1287,
+                "line": 1403,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69365,7 +69365,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1298,
+                "line": 1414,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69381,7 +69381,7 @@
                 "typed_params": [],
                 "inferred_return": "LShader",
                 "return_description": "Bound shader or nil.",
-                "line": 1318,
+                "line": 1434,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69397,7 +69397,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LLight`.",
-                "line": 1332,
+                "line": 1448,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69420,7 +69420,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1337,
+                "line": 1453,
                 "file": "src/lua_api/light_api.rs"
               }
             ]
@@ -69449,7 +69449,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1366,
+                "line": 1486,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69465,7 +69465,7 @@
                 "typed_params": [],
                 "inferred_return": "number[]",
                 "return_description": "Flat numeric array `[x1, y1, x2, y2, ...]`.",
-                "line": 1380,
+                "line": 1501,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69494,7 +69494,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1397,
+                "line": 1518,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69510,7 +69510,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "X coordinate.",
-                "line": 1410,
+                "line": 1533,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69533,7 +69533,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1422,
+                "line": 1545,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69549,7 +69549,7 @@
                 "typed_params": [],
                 "inferred_return": "number",
                 "return_description": "Opacity value.",
-                "line": 1434,
+                "line": 1557,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69572,7 +69572,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1445,
+                "line": 1568,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69588,7 +69588,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Light mask bits.",
-                "line": 1457,
+                "line": 1580,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69611,7 +69611,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1468,
+                "line": 1591,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69627,7 +69627,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when enabled.",
-                "line": 1480,
+                "line": 1603,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69643,7 +69643,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1490,
+                "line": 1613,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69659,7 +69659,7 @@
                 "typed_params": [],
                 "inferred_return": "boolean",
                 "return_description": "True when the occluder still exists.",
-                "line": 1500,
+                "line": 1623,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69675,7 +69675,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LOccluder`.",
-                "line": 1518,
+                "line": 1641,
                 "file": "src/lua_api/light_api.rs"
               },
               {
@@ -69698,7 +69698,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the supplied type name matches this handle.",
-                "line": 1523,
+                "line": 1646,
                 "file": "src/lua_api/light_api.rs"
               }
             ]
@@ -124796,6 +124796,29 @@
         "source_file": "src/lua_api/province_api.rs",
         "functions": [
           {
+            "name": "newGrid",
+            "lua_name": "lurek.province.newGrid",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Loads a province id grid from a GameFS-authorized encoded image.",
+            "full_doc": "Loads a province id grid from a GameFS-authorized encoded image.\n`lurek.image.newProvinceGrid` is a deprecated compatibility alias for this canonical API.\n@param | filename | string | Province map image filename relative to the game directory.\n@return | LProvinceGrid | New province grid handle.",
+            "params_doc": "- `filename` â€” `string`: Province map image filename relative to the game directory.",
+            "returns_doc": "LProvinceGrid",
+            "inferred_sig": "(filename)",
+            "typed_params": [
+              [
+                "filename",
+                "string",
+                false,
+                "Province map image filename relative to the game directory."
+              ]
+            ],
+            "inferred_return": "LProvinceGrid",
+            "return_description": "New province grid handle.",
+            "line": 2396,
+            "file": "src/lua_api/province_api.rs"
+          },
+          {
             "name": "newFromPng",
             "lua_name": "lurek.province.newFromPng",
             "kind": "function",
@@ -124821,7 +124844,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The newly created registry handle.",
-            "line": 2371,
+            "line": 2408,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -124856,7 +124879,7 @@
             ],
             "inferred_return": "table",
             "return_description": "Summary with fields: replaced_pixels (number), unresolved_pixels (number).",
-            "line": 2397,
+            "line": 2434,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -124879,7 +124902,7 @@
             ],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The registry handle, or nil if not found.",
-            "line": 2421,
+            "line": 2458,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -124902,7 +124925,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry exists.",
-            "line": 2440,
+            "line": 2477,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -124925,7 +124948,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry existed and was removed.",
-            "line": 2451,
+            "line": 2488,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -124948,7 +124971,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the registry was found and activated.",
-            "line": 2467,
+            "line": 2504,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -124964,7 +124987,7 @@
             "typed_params": [],
             "inferred_return": "LProvinceRegistry",
             "return_description": "The active registry handle, or nil.",
-            "line": 2483,
+            "line": 2520,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125017,7 +125040,7 @@
             ],
             "inferred_return": "number, number",
             "return_description": "New camera x and y after zoom adjustment.",
-            "line": 2502,
+            "line": 2539,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125052,7 +125075,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2526,
+            "line": 2563,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125081,7 +125104,7 @@
             ],
             "inferred_return": "number",
             "return_description": "The stored value, or nil.",
-            "line": 2541,
+            "line": 2578,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125116,7 +125139,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2553,
+            "line": 2590,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125145,7 +125168,7 @@
             ],
             "inferred_return": "string",
             "return_description": "The stored value, or nil.",
-            "line": 2568,
+            "line": 2605,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125180,7 +125203,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2583,
+            "line": 2620,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125209,7 +125232,7 @@
             ],
             "inferred_return": "boolean",
             "return_description": "True if the flag bit is set.",
-            "line": 2596,
+            "line": 2633,
             "file": "src/lua_api/province_api.rs"
           },
           {
@@ -125232,7 +125255,7 @@
             ],
             "inferred_return": "",
             "return_description": "",
-            "line": 2606,
+            "line": 2643,
             "file": "src/lua_api/province_api.rs"
           }
         ],
@@ -125254,7 +125277,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The registry name passed to `newFromPng`.",
-                "line": 811,
+                "line": 836,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125270,7 +125293,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid width in cells.",
-                "line": 815,
+                "line": 840,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125286,7 +125309,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Grid height in cells.",
-                "line": 819,
+                "line": 844,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125309,7 +125332,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 825,
+                "line": 850,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125325,7 +125348,7 @@
                 "typed_params": [],
                 "inferred_return": "LShader",
                 "return_description": "Bound shader handle.",
-                "line": 853,
+                "line": 878,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125354,7 +125377,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province ID at (x, y), or 0 for unowned cells.",
-                "line": 865,
+                "line": 890,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125389,7 +125412,7 @@
                 ],
                 "inferred_return": "number, number, number",
                 "return_description": "Camera x, camera y, and zoom factor.",
-                "line": 874,
+                "line": 899,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125442,7 +125465,7 @@
                 ],
                 "inferred_return": "number, number",
                 "return_description": "Map-space x and y.",
-                "line": 897,
+                "line": 922,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125495,7 +125518,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Province ID under the cursor, or nil if none.",
-                "line": 929,
+                "line": 954,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125518,7 +125541,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Viewport table with x, y, w, h, left, top, right, and bottom fields in province map pixels.",
-                "line": 965,
+                "line": 990,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125534,7 +125557,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Count of provinces.",
-                "line": 1004,
+                "line": 1029,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125550,7 +125573,7 @@
                 "typed_params": [],
                 "inferred_return": "integer[]",
                 "return_description": "Province ID numbers.",
-                "line": 1010,
+                "line": 1035,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125566,7 +125589,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_a (number), province_b (number).",
-                "line": 1023,
+                "line": 1048,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125582,7 +125605,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_id (number), y (number), x0 (number), x1 (number).",
-                "line": 1043,
+                "line": 1068,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125598,7 +125621,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).",
-                "line": 1069,
+                "line": 1094,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125621,7 +125644,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of border segment tables.",
-                "line": 1094,
+                "line": 1119,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125637,7 +125660,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Current revision number.",
-                "line": 1156,
+                "line": 1181,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125660,7 +125683,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Province snapshot table, or nil if the ID does not exist.",
-                "line": 1169,
+                "line": 1194,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125683,7 +125706,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of neighboring province IDs.",
-                "line": 1242,
+                "line": 1267,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125718,7 +125741,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of province ids from start to target; nil when unreachable.",
-                "line": 1256,
+                "line": 1281,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125747,7 +125770,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of route hop primitives queued.",
-                "line": 1313,
+                "line": 1338,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125776,7 +125799,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of route arrays (or nil for unreachable entries).",
-                "line": 1379,
+                "line": 1404,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125792,7 +125815,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of arrays of province ids.",
-                "line": 1441,
+                "line": 1466,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125815,7 +125838,7 @@
                 ],
                 "inferred_return": "integer[]",
                 "return_description": "Array of isolated province ids.",
-                "line": 1467,
+                "line": 1492,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125844,7 +125867,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when connected.",
-                "line": 1504,
+                "line": 1529,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125879,7 +125902,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Total numeric sum.",
-                "line": 1526,
+                "line": 1551,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125908,7 +125931,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 1563,
+                "line": 1588,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125943,7 +125966,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1572,
+                "line": 1597,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -125972,7 +125995,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Border type ID, or nil.",
-                "line": 1586,
+                "line": 1611,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126007,7 +126030,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1595,
+                "line": 1620,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126036,7 +126059,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1608,
+                "line": 1633,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126071,7 +126094,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when style was applied.",
-                "line": 1639,
+                "line": 1664,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126100,7 +126123,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Style table or nil.",
-                "line": 1654,
+                "line": 1679,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126147,7 +126170,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1685,
+                "line": 1710,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126176,7 +126199,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1698,
+                "line": 1723,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126205,7 +126228,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1709,
+                "line": 1734,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126234,7 +126257,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1720,
+                "line": 1745,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126263,7 +126286,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1728,
+                "line": 1753,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126292,7 +126315,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1741,
+                "line": 1766,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126327,7 +126350,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1751,
+                "line": 1776,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126362,7 +126385,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1763,
+                "line": 1788,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126409,7 +126432,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1774,
+                "line": 1799,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126438,7 +126461,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the province ID exists.",
-                "line": 1785,
+                "line": 1810,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126461,7 +126484,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).",
-                "line": 1796,
+                "line": 1821,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126484,7 +126507,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1871,
+                "line": 1896,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126507,7 +126530,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).",
-                "line": 2099,
+                "line": 2124,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126536,7 +126559,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2237,
+                "line": 2262,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126559,7 +126582,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if mode exists and was activated.",
-                "line": 2282,
+                "line": 2307,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126575,7 +126598,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Active mode name.",
-                "line": 2289,
+                "line": 2314,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126604,7 +126627,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Table keyed by province id with `{r,g,b,a}` color arrays.",
-                "line": 2298,
+                "line": 2323,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126620,7 +126643,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "Always \"LProvinceRegistry\".",
-                "line": 2352,
+                "line": 2377,
                 "file": "src/lua_api/province_api.rs"
               },
               {
@@ -126643,7 +126666,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True if the name matches.",
-                "line": 2357,
+                "line": 2382,
                 "file": "src/lua_api/province_api.rs"
               }
             ]
@@ -148416,7 +148439,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield handle.",
-            "line": 3704,
+            "line": 3805,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148439,7 +148462,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield copied from the provider.",
-            "line": 3731,
+            "line": 3832,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148462,7 +148485,7 @@
             ],
             "inferred_return": "LTileFieldMap",
             "return_description": "New tilefield map handle.",
-            "line": 3745,
+            "line": 3846,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148491,7 +148514,7 @@
             ],
             "inferred_return": "LTileField",
             "return_description": "New tilefield copied from the tilemap layer.",
-            "line": 3793,
+            "line": 3894,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148538,7 +148561,7 @@
             ],
             "inferred_return": "LBody[]",
             "return_description": "Created physics body handles in row-major order.",
-            "line": 3928,
+            "line": 4029,
             "file": "src/lua_api/tilefield_api.rs"
           },
           {
@@ -148579,7 +148602,7 @@
             ],
             "inferred_return": "table",
             "return_description": "`{lights=Llight[], occluders=LOccluder[]}`.",
-            "line": 3994,
+            "line": 4095,
             "file": "src/lua_api/tilefield_api.rs"
           }
         ],
@@ -148601,7 +148624,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Field width in cells.",
-                "line": 1612,
+                "line": 1713,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148617,7 +148640,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`square`, `square4`, `square8`, `iso_square`, or `hex`.",
-                "line": 1617,
+                "line": 1718,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148652,7 +148675,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when coordinates are in bounds.",
-                "line": 1627,
+                "line": 1728,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148693,7 +148716,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1639,
+                "line": 1740,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148728,7 +148751,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when an occupant was removed.",
-                "line": 1653,
+                "line": 1754,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148763,7 +148786,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Occupant id, or nil.",
-                "line": 1670,
+                "line": 1771,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148804,7 +148827,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1684,
+                "line": 1785,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148839,7 +148862,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Resource label, or nil.",
-                "line": 1701,
+                "line": 1802,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148880,7 +148903,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1715,
+                "line": 1816,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148915,7 +148938,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when build placement is allowed.",
-                "line": 1732,
+                "line": 1833,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -148950,7 +148973,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of one-based coordinate tables.",
-                "line": 1746,
+                "line": 1847,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149003,7 +149026,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1774,
+                "line": 1875,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149032,7 +149055,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1796,
+                "line": 1897,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149055,7 +149078,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region existed.",
-                "line": 1817,
+                "line": 1918,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149096,7 +149119,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the region contains the cell.",
-                "line": 1828,
+                "line": 1929,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149119,7 +149142,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{ x, y, z }` cells.",
-                "line": 1840,
+                "line": 1941,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149135,7 +149158,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Array of region names.",
-                "line": 1851,
+                "line": 1952,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149170,7 +149193,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1864,
+                "line": 1965,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149199,7 +149222,7 @@
                 ],
                 "inferred_return": "string",
                 "return_description": "Stored property value, or nil.",
-                "line": 1884,
+                "line": 1985,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149222,7 +149245,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Key-value table of string properties, or nil.",
-                "line": 1899,
+                "line": 2000,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149257,7 +149280,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of region names in stable order.",
-                "line": 1920,
+                "line": 2021,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149273,7 +149296,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1940,
+                "line": 2041,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149308,7 +149331,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1952,
+                "line": 2053,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149343,7 +149366,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Cell state table.",
-                "line": 1969,
+                "line": 2070,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149384,7 +149407,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 1987,
+                "line": 2088,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149431,7 +149454,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2105,
+                "line": 2206,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149472,7 +149495,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the addressed cell blocks the channel.",
-                "line": 2124,
+                "line": 2225,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149519,7 +149542,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2140,
+                "line": 2241,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149560,7 +149583,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Movement or traversal cost value.",
-                "line": 2159,
+                "line": 2260,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149589,7 +149612,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2172,
+                "line": 2273,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149612,7 +149635,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Category table with name, kind, and active.",
-                "line": 2197,
+                "line": 2298,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149628,7 +149651,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Sorted category names.",
-                "line": 2212,
+                "line": 2313,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149651,7 +149674,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the category existed.",
-                "line": 2225,
+                "line": 2326,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149698,7 +149721,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2239,
+                "line": 2340,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149739,7 +149762,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the addressed cell blocks the selected category.",
-                "line": 2257,
+                "line": 2358,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149786,7 +149809,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2272,
+                "line": 2373,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149827,7 +149850,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Effective movement cost for that category on the addressed cell.",
-                "line": 2290,
+                "line": 2391,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149874,7 +149897,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2305,
+                "line": 2406,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149915,7 +149938,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Effective transmission multiplier for that category on the addressed cell.",
-                "line": 2323,
+                "line": 2424,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -149962,7 +149985,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2338,
+                "line": 2439,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150003,7 +150026,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "RGB multiplier table for that category on the addressed cell.",
-                "line": 2361,
+                "line": 2462,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150056,7 +150079,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the footprint can be placed at the addressed anchor cell.",
-                "line": 2383,
+                "line": 2484,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150072,7 +150095,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Monotonic field version incremented by data mutations.",
-                "line": 2397,
+                "line": 2498,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150088,7 +150111,7 @@
                 "typed_params": [],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2403,
+                "line": 2504,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150111,7 +150134,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
-                "line": 2412,
+                "line": 2513,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150134,7 +150157,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
-                "line": 2421,
+                "line": 2522,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150157,7 +150180,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Array of `{x, y, z, w, h, cx?, cy?}` one-based dirty rectangles.",
-                "line": 2430,
+                "line": 2531,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150173,7 +150196,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Slot names: foreground, wall, platform, ore, furniture, liquid, spawn, biome.",
-                "line": 2438,
+                "line": 2539,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150189,7 +150212,7 @@
                 "typed_params": [],
                 "inferred_return": "table",
                 "return_description": "Snapshot table suitable for `restore`.",
-                "line": 2457,
+                "line": 2558,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150212,7 +150235,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2581,
+                "line": 2682,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150253,7 +150276,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2792,
+                "line": 2893,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150288,7 +150311,7 @@
                 ],
                 "inferred_return": "number",
                 "return_description": "Top-light occlusion value in the inclusive range 0..1.",
-                "line": 2809,
+                "line": 2910,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150317,7 +150340,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2821,
+                "line": 2922,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150340,7 +150363,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Modifier table.",
-                "line": 2836,
+                "line": 2937,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150369,7 +150392,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2848,
+                "line": 2949,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150392,7 +150415,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Profile table.",
-                "line": 2863,
+                "line": 2964,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150415,7 +150438,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when removed.",
-                "line": 2875,
+                "line": 2976,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150438,7 +150461,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when removed.",
-                "line": 2886,
+                "line": 2987,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150461,7 +150484,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2896,
+                "line": 2997,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150484,7 +150507,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the slot existed.",
-                "line": 2907,
+                "line": 3008,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150507,7 +150530,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when declared.",
-                "line": 2918,
+                "line": 3019,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150554,7 +150577,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2929,
+                "line": 3030,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150595,7 +150618,7 @@
                 ],
                 "inferred_return": "integer|table|nil",
                 "return_description": "Stored legacy id, typed ref table, or nil when unset.",
-                "line": 2969,
+                "line": 3070,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150636,7 +150659,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 2990,
+                "line": 3091,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150677,7 +150700,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3007,
+                "line": 3108,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150718,7 +150741,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the cell had the modifier.",
-                "line": 3025,
+                "line": 3126,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150753,7 +150776,7 @@
                 ],
                 "inferred_return": "string[]",
                 "return_description": "Active modifier names.",
-                "line": 3042,
+                "line": 3143,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150806,7 +150829,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when the tileset object was found and applied.",
-                "line": 3064,
+                "line": 3165,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150841,7 +150864,7 @@
                 ],
                 "inferred_return": "integer",
                 "return_description": "Number of cells that received object defaults.",
-                "line": 3112,
+                "line": 3213,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150900,7 +150923,7 @@
                 ],
                 "inferred_return": "string|nil",
                 "return_description": "Property value, or nil when missing.",
-                "line": 3173,
+                "line": 3274,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -150959,7 +150982,7 @@
                 ],
                 "inferred_return": "number|nil",
                 "return_description": "Numeric property value, or nil when missing/not numeric.",
-                "line": 3224,
+                "line": 3325,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151018,7 +151041,7 @@
                 ],
                 "inferred_return": "boolean|nil",
                 "return_description": "Boolean property value, or nil when missing/not boolean.",
-                "line": 3274,
+                "line": 3375,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151071,7 +151094,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "Property name/value table, or nil when the ref is missing/outside the tileset.",
-                "line": 3323,
+                "line": 3424,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151112,7 +151135,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3376,
+                "line": 3477,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151128,7 +151151,7 @@
                 "typed_params": [],
                 "inferred_return": "string[]",
                 "return_description": "Ref slot names.",
-                "line": 3393,
+                "line": 3494,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151151,7 +151174,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3405,
+                "line": 3506,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151192,7 +151215,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when no blocker exists between the two cells.",
-                "line": 3426,
+                "line": 3527,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151233,7 +151256,7 @@
                 ],
                 "inferred_return": "table|nil",
                 "return_description": "First blocking cell table, or nil when the line is clear.",
-                "line": 3446,
+                "line": 3547,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151262,7 +151285,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Row-major boolean array for the requested channel and level.",
-                "line": 3475,
+                "line": 3576,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151291,7 +151314,7 @@
                 ],
                 "inferred_return": "table",
                 "return_description": "Row-major number array for the requested channel and level.",
-                "line": 3490,
+                "line": 3591,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151326,7 +151349,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3505,
+                "line": 3606,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151361,7 +151384,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3527,
+                "line": 3628,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151390,7 +151413,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3548,
+                "line": 3649,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151425,7 +151448,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3562,
+                "line": 3663,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151441,7 +151464,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LTileField`.",
-                "line": 3581,
+                "line": 3682,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151464,7 +151487,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileField` or `LObject`.",
-                "line": 3587,
+                "line": 3688,
                 "file": "src/lua_api/tilefield_api.rs"
               }
             ]
@@ -151486,7 +151509,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Field-map width in field slots.",
-                "line": 3600,
+                "line": 3701,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151502,7 +151525,7 @@
                 "typed_params": [],
                 "inferred_return": "integer",
                 "return_description": "Contained field width in cells.",
-                "line": 3609,
+                "line": 3710,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151518,7 +151541,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "`square`, `square4`, `square8`, `iso_square`, or `hex`.",
-                "line": 3616,
+                "line": 3717,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151553,7 +151576,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True when coordinates are in bounds.",
-                "line": 3626,
+                "line": 3727,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151588,7 +151611,7 @@
                 ],
                 "inferred_return": "LTileField",
                 "return_description": "Shared tilefield handle.",
-                "line": 3645,
+                "line": 3746,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151629,7 +151652,7 @@
                 ],
                 "inferred_return": "",
                 "return_description": "",
-                "line": 3665,
+                "line": 3766,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151645,7 +151668,7 @@
                 "typed_params": [],
                 "inferred_return": "string",
                 "return_description": "The string `LTileFieldMap`.",
-                "line": 3682,
+                "line": 3783,
                 "file": "src/lua_api/tilefield_api.rs"
               },
               {
@@ -151668,7 +151691,7 @@
                 ],
                 "inferred_return": "boolean",
                 "return_description": "True for `LTileFieldMap` or `LObject`.",
-                "line": 3688,
+                "line": 3789,
                 "file": "src/lua_api/tilefield_api.rs"
               }
             ]

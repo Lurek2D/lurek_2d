@@ -17,12 +17,32 @@ use super::limits::{
     validate_finite, validate_positive, validate_range, PhysicsLimits,
 };
 use super::world::World;
+use crate::math::Vec2;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::time::Instant;
 
 /// Chunk dimension in cells per axis.
 const CHUNK_SIZE: u32 = 16;
 const TERRAIN_BYTES_VERSION: u32 = 1;
+
+fn read_u32(bytes: &[u8], offset: usize, context: &'static str) -> Result<u32, PhysicsError> {
+    let end = offset.checked_add(4).ok_or(PhysicsError::InvalidLength {
+        context,
+        expected: usize::MAX,
+        actual: bytes.len(),
+    })?;
+    let slice = bytes.get(offset..end).ok_or(PhysicsError::InvalidLength {
+        context,
+        expected: end,
+        actual: bytes.len(),
+    })?;
+    let array: [u8; 4] = slice.try_into().map_err(|_| PhysicsError::InvalidLength {
+        context,
+        expected: end,
+        actual: bytes.len(),
+    })?;
+    Ok(u32::from_le_bytes(array))
+}
 
 /// Key identifying a chunk by its chunk-grid coordinates.
 /// # Fields
@@ -97,6 +117,7 @@ pub struct TerrainComponent {
 }
 
 /// Support policy used when deciding whether a terrain component should collapse.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TerrainSupportRule {
     /// Components remain supported only when connected to the bottom border.
@@ -106,6 +127,7 @@ pub enum TerrainSupportRule {
 }
 
 /// Action applied to unsupported terrain components.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TerrainCollapseMode {
     /// Remove unsupported cells from the terrain grid.
@@ -210,6 +232,17 @@ pub struct TerrainFlushStats {
     pub elapsed_micros: u128,
 }
 
+/// Static-collider representation selected for dirty terrain chunks.
+/// # Variants
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum TerrainColliderStrategy {
+    /// Fast filled row rectangles; the deterministic default for dense terrain.
+    #[default]
+    RowRuns,
+    /// Boundary-only edges with no internal seams between adjacent solid cells.
+    ContourEdges,
+}
+
 /// Tile-based terrain map that synchronises static physics bodies with a `World`.
 /// # Fields
 /// - `width`: Grid width in cells.
@@ -234,6 +267,8 @@ pub struct TerrainMap {
     chunk_body_ids: HashMap<ChunkId, Vec<usize>>,
     /// Chunks that need their bodies rebuilt on the next `flush`.
     dirty_chunks: HashSet<ChunkId>,
+    /// Collider representation used for future chunk rebuilds.
+    collider_strategy: TerrainColliderStrategy,
     /// Diagnostics captured by the most recent collider rebuild pass.
     last_flush_stats: TerrainFlushStats,
 }
@@ -291,35 +326,29 @@ impl TerrainMap {
         }
     }
 
-    fn spawn_dynamic_chunk_for_component(
+    fn dynamic_chunk_body_for_component(
         &self,
-        world: &mut World,
         component: &TerrainComponent,
         cell_mass: f32,
         restitution: f32,
-    ) -> Option<usize> {
+    ) -> Result<Body, PhysicsError> {
         let width_cells = component.bounds.x1.saturating_sub(component.bounds.x0);
         let height_cells = component.bounds.y1.saturating_sub(component.bounds.y0);
         if width_cells == 0 || height_cells == 0 {
-            return None;
+            return Err(PhysicsError::DegenerateGeometry {
+                context: "physics terrain dynamic chunk",
+                detail: "component bounds must have positive area",
+            });
         }
         let width = width_cells as f32 * self.cell_size;
         let height = height_cells as f32 * self.cell_size;
         let center_x = self.offset_x + component.bounds.x0 as f32 * self.cell_size + width * 0.5;
         let center_y = self.offset_y + component.bounds.y0 as f32 * self.cell_size + height * 0.5;
-        let mut body = Body::try_new(center_x, center_y, width, height, BodyType::Dynamic).ok()?;
-        body.mass = if cell_mass.is_finite() {
-            (cell_mass.max(0.000_1) * component.cells.len() as f32).max(0.000_1)
-        } else {
-            component.cells.len().max(1) as f32
-        };
+        let mut body = Body::try_new(center_x, center_y, width, height, BodyType::Dynamic)?;
+        body.mass = (cell_mass * component.cells.len() as f32).max(0.000_1);
         body.friction = 0.8;
-        body.restitution = if restitution.is_finite() {
-            restitution.clamp(0.0, 1.0)
-        } else {
-            0.0
-        };
-        Some(world.add_body(body).0)
+        body.restitution = restitution;
+        Ok(body)
     }
 
     fn collapse_unsupported_internal(
@@ -343,19 +372,53 @@ impl TerrainMap {
             return Ok(result);
         }
 
-        let mut debris_positions = Vec::new();
-        let max_debris = options.max_debris as usize;
-        for component in &components {
-            if matches!(options.mode, TerrainCollapseMode::SpawnDebris)
-                && debris_positions.len() < max_debris
-            {
-                let remaining = max_debris - debris_positions.len();
-                self.collect_sampled_component_positions(
-                    component,
-                    remaining,
-                    &mut debris_positions,
-                );
+        let mut spawned_bodies = Vec::new();
+        match options.mode {
+            TerrainCollapseMode::SpawnDebris => {
+                let mut debris_positions = Vec::new();
+                let max_debris = options.max_debris as usize;
+                for component in &components {
+                    if debris_positions.len() >= max_debris {
+                        break;
+                    }
+                    let remaining = max_debris - debris_positions.len();
+                    self.collect_sampled_component_positions(
+                        component,
+                        remaining,
+                        &mut debris_positions,
+                    );
+                }
+                spawned_bodies = self.debris_bodies_for_positions(
+                    &debris_positions,
+                    options.debris_mass,
+                    options.debris_restitution,
+                )?;
             }
+            TerrainCollapseMode::SpawnDynamicChunks => {
+                for component in &components {
+                    spawned_bodies.push(self.dynamic_chunk_body_for_component(
+                        component,
+                        options.debris_mass,
+                        options.debris_restitution,
+                    )?);
+                }
+            }
+            _ => {}
+        }
+        if !spawned_bodies.is_empty() {
+            let spawn_world = world.as_deref().ok_or_else(|| PhysicsError::InvalidMode {
+                context: "physics terrain collapse",
+                value: "spawn mode".to_string(),
+                expected: "remove, keepStatic, or provide a world for spawn modes",
+            })?;
+            Self::preflight_body_insertions(
+                spawn_world,
+                &spawned_bodies,
+                "physics terrain debris",
+            )?;
+        }
+
+        for component in &components {
             for &(cx, cy) in &component.cells {
                 if self.get_cell(cx, cy) {
                     self.set_cell(cx, cy, false);
@@ -364,38 +427,12 @@ impl TerrainMap {
             }
         }
 
-        match options.mode {
-            TerrainCollapseMode::SpawnDebris if !debris_positions.is_empty() => {
-                let world = world.ok_or_else(|| PhysicsError::InvalidMode {
-                    context: "physics terrain collapse",
-                    value: "spawnDebris".to_string(),
-                    expected: "remove, keepStatic, or provide a world for spawn modes",
-                })?;
-                result.debris_body_ids = self.spawn_debris_at(
-                    world,
-                    &debris_positions,
-                    options.debris_mass,
-                    options.debris_restitution,
-                );
-            }
-            TerrainCollapseMode::SpawnDynamicChunks => {
-                let world = world.ok_or_else(|| PhysicsError::InvalidMode {
-                    context: "physics terrain collapse",
-                    value: "spawnDynamicChunks".to_string(),
-                    expected: "remove, keepStatic, or provide a world for spawn modes",
-                })?;
-                for component in &components {
-                    if let Some(body_id) = self.spawn_dynamic_chunk_for_component(
-                        world,
-                        component,
-                        options.debris_mass,
-                        options.debris_restitution,
-                    ) {
-                        result.debris_body_ids.push(body_id);
-                    }
-                }
-            }
-            _ => {}
+        if !spawned_bodies.is_empty() {
+            let world = world.expect("spawn bodies require a preflighted world");
+            result.debris_body_ids = spawned_bodies
+                .into_iter()
+                .map(|body| world.add_body_unchecked(body).0)
+                .collect();
         }
 
         Ok(result)
@@ -435,6 +472,7 @@ impl TerrainMap {
             cells: vec![false; total],
             chunk_body_ids: HashMap::new(),
             dirty_chunks: HashSet::new(),
+            collider_strategy: TerrainColliderStrategy::default(),
             last_flush_stats: TerrainFlushStats::default(),
         })
     }
@@ -454,6 +492,7 @@ impl TerrainMap {
             cells: vec![false; usize::try_from(width.max(1) * height.max(1)).unwrap_or(1)],
             chunk_body_ids: HashMap::new(),
             dirty_chunks: HashSet::new(),
+            collider_strategy: TerrainColliderStrategy::default(),
             last_flush_stats: TerrainFlushStats::default(),
         })
     }
@@ -615,6 +654,19 @@ impl TerrainMap {
         chunks
     }
 
+    /// Return the static collider representation used by future terrain flushes.
+    pub fn collider_strategy(&self) -> TerrainColliderStrategy {
+        self.collider_strategy
+    }
+
+    /// Select a static collider representation and mark all chunks for deterministic rebuild.
+    pub fn set_collider_strategy(&mut self, strategy: TerrainColliderStrategy) {
+        if self.collider_strategy != strategy {
+            self.collider_strategy = strategy;
+            self.dirty_chunks = Self::full_dirty_set(self.width, self.height);
+        }
+    }
+
     /// Mark the chunk containing `(cx, cy)` as dirty.
     fn mark_dirty(&mut self, cx: u32, cy: u32) {
         self.dirty_chunks.insert(ChunkId {
@@ -629,20 +681,89 @@ impl TerrainMap {
     }
 
     /// Rebuild up to `max_dirty_chunks` dirty chunks and return collider rebuild diagnostics.
+    ///
+    /// This compatibility entry point leaves the terrain dirty when the strict rebuild
+    /// cannot fit in the world's configured body limits. Use
+    /// [`TerrainMap::try_flush_with_limit`] when the caller must receive that error.
     pub fn flush_with_limit(
         &mut self,
         world: &mut World,
         max_dirty_chunks: Option<usize>,
     ) -> TerrainFlushStats {
-        let started = Instant::now();
-        let dirty: Vec<ChunkId> = self.dirty_chunks.drain().collect();
-        let chunk_budget = max_dirty_chunks.unwrap_or(dirty.len()).min(dirty.len());
-        let mut stats = TerrainFlushStats::default();
-        for (index, chunk) in dirty.into_iter().enumerate() {
-            if index >= chunk_budget {
-                self.dirty_chunks.insert(chunk);
-                continue;
+        match self.try_flush_with_limit(world, max_dirty_chunks) {
+            Ok(stats) => stats,
+            Err(_) => {
+                let stats = TerrainFlushStats {
+                    dirty_chunks_remaining: self.dirty_chunks.len(),
+                    ..TerrainFlushStats::default()
+                };
+                self.last_flush_stats = stats;
+                stats
             }
+        }
+    }
+
+    /// Strictly rebuild up to `max_dirty_chunks` dirty chunks.
+    ///
+    /// All selected chunks are preflighted before their previous bodies are destroyed,
+    /// so quota failures leave both the world and the terrain dirty queue unchanged.
+    pub fn try_flush_with_limit(
+        &mut self,
+        world: &mut World,
+        max_dirty_chunks: Option<usize>,
+    ) -> Result<TerrainFlushStats, PhysicsError> {
+        let started = Instant::now();
+        // A HashSet has intentionally unspecified iteration order. Sort before applying
+        // a partial budget so the same edits rebuild the same chunks first every run.
+        let mut dirty: Vec<ChunkId> = self.dirty_chunks.iter().copied().collect();
+        dirty.sort_unstable_by_key(|chunk| (chunk.cy, chunk.cx));
+        let chunk_budget = max_dirty_chunks.unwrap_or(dirty.len()).min(dirty.len());
+        dirty.truncate(chunk_budget);
+
+        // Build every replacement before mutating the world. Besides validating the
+        // generated geometry, this makes the capacity calculation exact for the commit.
+        let mut replacements = Vec::with_capacity(dirty.len());
+        let mut replacement_count = 0usize;
+        let mut old_active_count = 0usize;
+        for chunk in dirty.iter().copied() {
+            let bodies = self.bodies_for_chunk(chunk)?;
+            replacement_count = replacement_count.saturating_add(bodies.len());
+            old_active_count = old_active_count.saturating_add(
+                self.chunk_body_ids
+                    .get(&chunk)
+                    .into_iter()
+                    .flatten()
+                    .filter(|&&id| world.has_body(id))
+                    .count(),
+            );
+            replacements.push((chunk, bodies));
+        }
+        let resulting_bodies = world
+            .body_count()
+            .saturating_sub(old_active_count)
+            .saturating_add(replacement_count);
+        if resulting_bodies > world.limits().max_bodies {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics terrain bodies",
+                count: resulting_bodies,
+                max: world.limits().max_bodies,
+            });
+        }
+        let resulting_slots = world
+            .get_stats()
+            .body_slots
+            .saturating_add(replacement_count);
+        if resulting_slots > world.limits().max_body_slots {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics terrain body slots",
+                count: resulting_slots,
+                max: world.limits().max_body_slots,
+            });
+        }
+
+        let mut stats = TerrainFlushStats::default();
+        for (chunk, bodies) in replacements {
+            self.dirty_chunks.remove(&chunk);
             stats.dirty_chunks_rebuilt += 1;
             if let Some(old_ids) = self.chunk_body_ids.remove(&chunk) {
                 stats.bodies_destroyed += old_ids.len();
@@ -650,39 +771,13 @@ impl TerrainMap {
                     world.destroy_body(id);
                 }
             }
-            let cell_x0 = chunk.cx * CHUNK_SIZE;
-            let cell_y0 = chunk.cy * CHUNK_SIZE;
-            let cell_x1 = (cell_x0 + CHUNK_SIZE).min(self.width);
-            let cell_y1 = (cell_y0 + CHUNK_SIZE).min(self.height);
             let mut new_ids = Vec::new();
-            for cy in cell_y0..cell_y1 {
-                let mut run_start: Option<u32> = None;
-                for cx in cell_x0..=cell_x1 {
-                    let solid = if cx < cell_x1 {
-                        self.cells[self.cell_index(cx, cy)]
-                    } else {
-                        false
-                    };
-                    match (solid, run_start) {
-                        (true, None) => run_start = Some(cx),
-                        (false, Some(start)) => {
-                            let run_len = cx - start;
-                            let bx = self.offset_x
-                                + (start as f32 + run_len as f32 * 0.5) * self.cell_size;
-                            let by = self.offset_y + (cy as f32 + 0.5) * self.cell_size;
-                            let bw = run_len as f32 * self.cell_size;
-                            let bh = self.cell_size;
-                            if let Ok(mut body) = Body::try_new(bx, by, bw, bh, BodyType::Static) {
-                                body.restitution = 0.0;
-                                body.friction = 0.8;
-                                new_ids.push(world.add_body(body).0);
-                                stats.bodies_created += 1;
-                            }
-                            run_start = None;
-                        }
-                        _ => {}
-                    }
-                }
+            for body in bodies {
+                // The complete replacement set and its active/slot ceilings were
+                // validated above, so commit cannot fail midway through a chunk.
+                let id = world.add_body_unchecked(body);
+                new_ids.push(id.0);
+                stats.bodies_created += 1;
             }
             if !new_ids.is_empty() {
                 self.chunk_body_ids.insert(chunk, new_ids);
@@ -691,7 +786,98 @@ impl TerrainMap {
         stats.dirty_chunks_remaining = self.dirty_chunks.len();
         stats.elapsed_micros = started.elapsed().as_micros();
         self.last_flush_stats = stats;
-        stats
+        Ok(stats)
+    }
+
+    fn bodies_for_chunk(&self, chunk: ChunkId) -> Result<Vec<Body>, PhysicsError> {
+        match self.collider_strategy {
+            TerrainColliderStrategy::RowRuns => self.row_run_bodies_for_chunk(chunk),
+            TerrainColliderStrategy::ContourEdges => self.contour_bodies_for_chunk(chunk),
+        }
+    }
+
+    fn row_run_bodies_for_chunk(&self, chunk: ChunkId) -> Result<Vec<Body>, PhysicsError> {
+        let cell_x0 = chunk.cx * CHUNK_SIZE;
+        let cell_y0 = chunk.cy * CHUNK_SIZE;
+        let cell_x1 = (cell_x0 + CHUNK_SIZE).min(self.width);
+        let cell_y1 = (cell_y0 + CHUNK_SIZE).min(self.height);
+        let mut bodies = Vec::new();
+        for cy in cell_y0..cell_y1 {
+            let mut run_start: Option<u32> = None;
+            for cx in cell_x0..=cell_x1 {
+                let solid = if cx < cell_x1 {
+                    self.cells[self.cell_index(cx, cy)]
+                } else {
+                    false
+                };
+                match (solid, run_start) {
+                    (true, None) => run_start = Some(cx),
+                    (false, Some(start)) => {
+                        let run_len = cx - start;
+                        let bx =
+                            self.offset_x + (start as f32 + run_len as f32 * 0.5) * self.cell_size;
+                        let by = self.offset_y + (cy as f32 + 0.5) * self.cell_size;
+                        let bw = run_len as f32 * self.cell_size;
+                        let mut body = Body::try_new(bx, by, bw, self.cell_size, BodyType::Static)?;
+                        body.restitution = 0.0;
+                        body.friction = 0.8;
+                        bodies.push(body);
+                        run_start = None;
+                    }
+                    _ => {}
+                }
+            }
+        }
+        Ok(bodies)
+    }
+
+    fn contour_bodies_for_chunk(&self, chunk: ChunkId) -> Result<Vec<Body>, PhysicsError> {
+        let cell_x0 = chunk.cx * CHUNK_SIZE;
+        let cell_y0 = chunk.cy * CHUNK_SIZE;
+        let cell_x1 = (cell_x0 + CHUNK_SIZE).min(self.width);
+        let cell_y1 = (cell_y0 + CHUNK_SIZE).min(self.height);
+        let solid = |x: u32, y: u32| x < self.width && y < self.height && self.get_cell(x, y);
+        let mut bodies = Vec::new();
+        for y in cell_y0..cell_y1 {
+            for x in cell_x0..cell_x1 {
+                if !solid(x, y) {
+                    continue;
+                }
+                let mut add_edge =
+                    |x1: u32, y1: u32, x2: u32, y2: u32| -> Result<(), PhysicsError> {
+                        let to_world = |x: u32, y: u32| {
+                            Vec2::new(
+                                self.offset_x + x as f32 * self.cell_size,
+                                self.offset_y + y as f32 * self.cell_size,
+                            )
+                        };
+                        let mut body = Body::try_new_edge(
+                            0.0,
+                            0.0,
+                            to_world(x1, y1),
+                            to_world(x2, y2),
+                            BodyType::Static,
+                        )?;
+                        body.restitution = 0.0;
+                        body.friction = 0.8;
+                        bodies.push(body);
+                        Ok(())
+                    };
+                if y == 0 || !solid(x, y - 1) {
+                    add_edge(x, y, x + 1, y)?;
+                }
+                if x + 1 >= self.width || !solid(x + 1, y) {
+                    add_edge(x + 1, y, x + 1, y + 1)?;
+                }
+                if y + 1 >= self.height || !solid(x, y + 1) {
+                    add_edge(x + 1, y + 1, x, y + 1)?;
+                }
+                if x == 0 || !solid(x - 1, y) {
+                    add_edge(x, y + 1, x, y)?;
+                }
+            }
+        }
+        Ok(bodies)
     }
 
     /// Return diagnostics from the most recent terrain collider rebuild pass.
@@ -754,12 +940,20 @@ impl TerrainMap {
         let mut visited = vec![false; total];
         let mut queue = VecDeque::new();
         let mut components = Vec::new();
+        let mut result_cells = 0usize;
 
         for cy in seed_region.y0..seed_region.y1 {
             for cx in seed_region.x0..seed_region.x1 {
                 let start_idx = self.cell_index(cx, cy);
                 if visited[start_idx] || !self.cells[start_idx] {
                     continue;
+                }
+                if components.len() >= limits.max_terrain_component_results {
+                    return Err(PhysicsError::CountLimitExceeded {
+                        context: "physics terrain component results",
+                        count: components.len().saturating_add(1),
+                        max: limits.max_terrain_component_results,
+                    });
                 }
                 visited[start_idx] = true;
                 queue.push_back((cx, cy));
@@ -773,7 +967,15 @@ impl TerrainMap {
                 let mut touches_border = false;
 
                 while let Some((cell_x, cell_y)) = queue.pop_front() {
+                    if result_cells >= limits.max_terrain_component_cells {
+                        return Err(PhysicsError::CountLimitExceeded {
+                            context: "physics terrain component cells",
+                            count: result_cells.saturating_add(1),
+                            max: limits.max_terrain_component_cells,
+                        });
+                    }
                     cells.push((cell_x, cell_y));
+                    result_cells += 1;
                     min_x = min_x.min(cell_x);
                     min_y = min_y.min(cell_y);
                     max_x = max_x.max(cell_x + 1);
@@ -904,25 +1106,71 @@ impl TerrainMap {
         cell_mass: f32,
         restitution: f32,
     ) -> Vec<usize> {
+        self.try_spawn_debris_at(world, positions, cell_mass, restitution)
+            .unwrap_or_default()
+    }
+
+    /// Strictly spawn one dynamic debris body for each position, atomically enforcing world limits.
+    pub fn try_spawn_debris_at(
+        &self,
+        world: &mut World,
+        positions: &[(f32, f32)],
+        cell_mass: f32,
+        restitution: f32,
+    ) -> Result<Vec<usize>, PhysicsError> {
+        let bodies = self.debris_bodies_for_positions(positions, cell_mass, restitution)?;
+        Self::preflight_body_insertions(world, &bodies, "physics terrain debris")?;
+        Ok(bodies
+            .into_iter()
+            .map(|body| world.add_body_unchecked(body).0)
+            .collect())
+    }
+
+    fn debris_bodies_for_positions(
+        &self,
+        positions: &[(f32, f32)],
+        cell_mass: f32,
+        restitution: f32,
+    ) -> Result<Vec<Body>, PhysicsError> {
+        validate_positive("debris_mass", f64::from(cell_mass))?;
+        validate_range("debris_restitution", f64::from(restitution), 0.0, 1.0)?;
         positions
             .iter()
-            .filter_map(|&(wx, wy)| {
+            .map(|&(wx, wy)| {
                 let mut body =
-                    Body::try_new(wx, wy, self.cell_size, self.cell_size, BodyType::Dynamic)
-                        .ok()?;
-                body.mass = if cell_mass.is_finite() {
-                    cell_mass.max(0.000_1)
-                } else {
-                    1.0
-                };
-                body.restitution = if restitution.is_finite() {
-                    restitution.clamp(0.0, 1.0)
-                } else {
-                    0.0
-                };
-                Some(world.add_body(body).0)
+                    Body::try_new(wx, wy, self.cell_size, self.cell_size, BodyType::Dynamic)?;
+                body.mass = cell_mass;
+                body.restitution = restitution;
+                Ok(body)
             })
             .collect()
+    }
+
+    fn preflight_body_insertions(
+        world: &World,
+        bodies: &[Body],
+        context: &'static str,
+    ) -> Result<(), PhysicsError> {
+        for body in bodies {
+            body.validate(world.limits())?;
+        }
+        let count = world.body_count().saturating_add(bodies.len());
+        if count > world.limits().max_bodies {
+            return Err(PhysicsError::CountLimitExceeded {
+                context,
+                count,
+                max: world.limits().max_bodies,
+            });
+        }
+        let slots = world.get_stats().body_slots.saturating_add(bodies.len());
+        if slots > world.limits().max_body_slots {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics terrain body slots",
+                count: slots,
+                max: world.limits().max_body_slots,
+            });
+        }
+        Ok(())
     }
 
     /// Encode the terrain as RGBA pixel data using `solid_rgba` and `empty_rgba` with strict bounds checking.
@@ -984,16 +1232,16 @@ impl TerrainMap {
                 actual: bytes.len(),
             });
         }
-        let version = u32::from_le_bytes(bytes[0..4].try_into().unwrap());
+        let version = read_u32(bytes, 0, "physics terrain bytes")?;
         if version != TERRAIN_BYTES_VERSION {
             return Err(PhysicsError::UnsupportedVersion {
                 context: "physics terrain bytes",
                 version,
             });
         }
-        let width = u32::from_le_bytes(bytes[4..8].try_into().unwrap());
-        let height = u32::from_le_bytes(bytes[8..12].try_into().unwrap());
-        let cell_size = f32::from_bits(u32::from_le_bytes(bytes[12..16].try_into().unwrap()));
+        let width = read_u32(bytes, 4, "physics terrain bytes")?;
+        let height = read_u32(bytes, 8, "physics terrain bytes")?;
+        let cell_size = f32::from_bits(read_u32(bytes, 12, "physics terrain bytes")?);
         let mut terrain = Self::try_new_with_limits(width, height, cell_size, limits)?;
         let total = checked_terrain_cells(width, height, limits)?;
         let bit_bytes = total.div_ceil(8);

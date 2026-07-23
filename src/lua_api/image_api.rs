@@ -6,8 +6,8 @@ use crate::image::effects::{ImageEffectOptions, ResizeFilter};
 use crate::image::serial;
 use crate::image::{
     AnimatedGifOptions, AnimatedGifRepeat, CompressedImageData, ImageData, LayeredImage,
-    ProvinceGrid, ProvinceShapeCacheEntry,
 };
+use crate::province::ProvinceGrid;
 use crate::render::offline_image_shader::apply_image_shader_blocking;
 use crate::render::{DrawMode, RenderCommand, ShaderTarget};
 use mlua::prelude::*;
@@ -95,6 +95,31 @@ fn validate_image_dimensions(api: &str, width: u32, height: u32) -> LuaResult<()
         .map_err(|err| LuaError::RuntimeError(format!("{}: {}", api, err)))
 }
 
+fn validate_image_bytes(api: &str, len: usize) -> LuaResult<()> {
+    crate::image::ImageLimits::default()
+        .encoded_bytes(len, api)
+        .map_err(|err| LuaError::RuntimeError(format!("{}: {}", api, err)))
+}
+
+fn validate_finite(api: &str, name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{}: {} must be finite",
+            api, name
+        )))
+    }
+}
+
+fn validate_line_work(api: &str, x0: i32, y0: i32, x1: i32, y1: i32) -> LuaResult<()> {
+    let dx = (i64::from(x1) - i64::from(x0)).unsigned_abs();
+    let dy = (i64::from(y1) - i64::from(y0)).unsigned_abs();
+    crate::image::ImageLimits::default()
+        .work(dx.max(dy).saturating_add(1), 1, api)
+        .map_err(LuaError::RuntimeError)
+}
+
 fn parse_save_gif_options(opts: Option<LuaTable>) -> LuaResult<AnimatedGifOptions> {
     let mut out = AnimatedGifOptions::default();
     let Some(opts) = opts else {
@@ -127,7 +152,7 @@ fn parse_effect_options(opts: Option<LuaTable>, api: &str) -> LuaResult<ImageEff
         return Ok(out);
     };
     if let Some(factor) = opts.get::<_, Option<f32>>("factor")? {
-        out.factor = factor;
+        out.factor = validate_finite(api, "opts.factor", factor)?;
     }
     if let Some(amount) = opts.get::<_, Option<u32>>("amount")? {
         out.amount = amount;
@@ -146,6 +171,9 @@ fn parse_effect_options(opts: Option<LuaTable>, api: &str) -> LuaResult<ImageEff
     }
     if let Some(height) = opts.get::<_, Option<u32>>("height")? {
         out.height = Some(height);
+    }
+    if let (Some(width), Some(height)) = (out.width, out.height) {
+        validate_image_dimensions(api, width, height)?;
     }
     if let Some(filter) = opts.get::<_, Option<String>>("filter")? {
         out.filter = ResizeFilter::parse(&filter).ok_or_else(|| {
@@ -177,70 +205,277 @@ fn parse_region(opts: Option<&LuaTable>) -> LuaResult<Option<(u32, u32, u32, u32
     )))
 }
 
-/// Lua-side compatibility handle for a province id grid decoded by the province subsystem.
-pub struct LuaProvinceGrid {
-    /// Province grid, color mapping, adjacency, spans, and polygon extraction data.
-    inner: ProvinceGrid,
-    /// Shared runtime state receiving province shape draw commands.
-    state: Rc<RefCell<SharedState>>,
-    /// Lazily built simplified polygon cache for repeated shape drawing.
-    shape_cache: Option<Vec<ProvinceShapeCacheEntry>>,
-}
-/// Provides Lua methods for province-grid inspection, geometry export, and drawing.
-impl LuaUserData for LuaProvinceGrid {
-    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // -- getWidth --
-        /// Returns the province grid width. This method is available to Lua scripts.
-        /// @return | integer | Grid width in pixels.
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.width()));
-        // -- getHeight --
-        /// Returns the province grid height. This method is available to Lua scripts.
-        /// @return | integer | Grid height in pixels.
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.height()));
-        // -- getAt --
-        /// Returns the province id stored at grid coordinates.
-        /// @param | x | integer | X coordinate.
-        /// @param | y | integer | Y coordinate.
-        /// @return | integer | Province id at the pixel.
-        methods.add_method("getAt", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.get_at(x, y))
-        });
-        // -- provinceCount --
-        /// Returns the number of distinct provinces in the grid.
-        /// @return | integer | Province count.
-        methods.add_method("provinceCount", |_, this, ()| {
-            Ok(this.inner.province_count())
-        });
-        // -- adjacencies --
-        /// Returns province adjacency records and shared border pixel counts.
-        /// @return | table | Array table with `province_a`, `province_b`, and `border_pixels` fields.
-        /// @field | province_a | integer | First province id.
-        /// @field | province_b | integer | Second province id.
-        /// @field | border_pixels | integer | Number of shared border pixels.
-        methods.add_method("adjacencies", |lua, this, ()| {
-            let t = lua.create_table()?;
-            for (i, &(a, b, bp)) in this.inner.adjacencies().iter().enumerate() {
-                let entry = lua.create_table()?;
-                /// Performs the 'province_a' operation.
-                entry.set("province_a", a)?;
-                /// Performs the 'province_b' operation.
-                entry.set("province_b", b)?;
-                /// Performs the 'border_pixels' operation.
-                entry.set("border_pixels", bp)?;
-                t.set(i + 1, entry)?;
+/// Compatibility re-export; province owns the province-grid userdata state.
+pub use super::province_api::LuaProvinceGrid;
+/// Registers legacy province-grid methods until their bodies are fully relocated to province.
+pub(crate) fn add_legacy_province_grid_methods<
+    'lua,
+    M: LuaUserDataMethods<'lua, LuaProvinceGrid>,
+>(
+    methods: &mut M,
+) {
+    // -- getWidth --
+    /// Returns the province grid width. This method is available to Lua scripts.
+    /// @return | integer | Grid width in pixels.
+    methods.add_method("getWidth", |_, this, ()| Ok(this.inner.width()));
+    // -- getHeight --
+    /// Returns the province grid height. This method is available to Lua scripts.
+    /// @return | integer | Grid height in pixels.
+    methods.add_method("getHeight", |_, this, ()| Ok(this.inner.height()));
+    // -- getAt --
+    /// Returns the province id stored at grid coordinates.
+    /// @param | x | integer | X coordinate.
+    /// @param | y | integer | Y coordinate.
+    /// @return | integer | Province id at the pixel.
+    methods.add_method("getAt", |_, this, (x, y): (u32, u32)| {
+        Ok(this.inner.get_at(x, y))
+    });
+    // -- provinceCount --
+    /// Returns the number of distinct provinces in the grid.
+    /// @return | integer | Province count.
+    methods.add_method("provinceCount", |_, this, ()| {
+        Ok(this.inner.province_count())
+    });
+    // -- adjacencies --
+    /// Returns province adjacency records and shared border pixel counts.
+    /// @return | table | Array table with `province_a`, `province_b`, and `border_pixels` fields.
+    /// @field | province_a | integer | First province id.
+    /// @field | province_b | integer | Second province id.
+    /// @field | border_pixels | integer | Number of shared border pixels.
+    methods.add_method("adjacencies", |lua, this, ()| {
+        let t = lua.create_table()?;
+        for (i, &(a, b, bp)) in this.inner.adjacencies().iter().enumerate() {
+            let entry = lua.create_table()?;
+            /// Performs the 'province_a' operation.
+            entry.set("province_a", a)?;
+            /// Performs the 'province_b' operation.
+            entry.set("province_b", b)?;
+            /// Performs the 'border_pixels' operation.
+            entry.set("border_pixels", bp)?;
+            t.set(i + 1, entry)?;
+        }
+        Ok(t)
+    });
+    // -- provinceSpans --
+    /// Returns horizontal province spans by row.
+    /// @return | table | Array table with `province_id`, `y`, `x0`, and `x1` fields.
+    /// @field | province_id | integer | Province id.
+    /// @field | y | integer | Scanline y coordinate.
+    /// @field | x0 | integer | Start x coordinate.
+    /// @field | x1 | integer | End x coordinate.
+    methods.add_method("provinceSpans", |lua, this, ()| {
+        let t = lua.create_table()?;
+        for (i, (id, y, x0, x1)) in this.inner.province_spans().into_iter().enumerate() {
+            let row = lua.create_table()?;
+            /// Performs the 'province_id' operation.
+            row.set("province_id", id)?;
+            /// The 'y' field value exposed to Lua scripts.
+            row.set("y", y)?;
+            /// The 'x0' field value exposed to Lua scripts.
+            row.set("x0", x0)?;
+            /// The 'x1' field value exposed to Lua scripts.
+            row.set("x1", x1)?;
+            t.set(i + 1, row)?;
+        }
+        Ok(t)
+    });
+    // -- borderSegments --
+    /// Returns border line segments between neighboring provinces.
+    /// @return | table | Array table with province ids and segment coordinates.
+    /// @field | province_a | integer | First province id.
+    /// @field | province_b | integer | Second province id.
+    /// @field | x0 | number | Segment start x.
+    /// @field | y0 | number | Segment start y.
+    /// @field | x1 | number | Segment end x.
+    /// @field | y1 | number | Segment end y.
+    methods.add_method("borderSegments", |lua, this, ()| {
+        let t = lua.create_table()?;
+        for (i, (a, b, x0, y0, x1, y1)) in this.inner.border_segments().into_iter().enumerate() {
+            let seg = lua.create_table()?;
+            /// Performs the 'province_a' operation.
+            seg.set("province_a", a)?;
+            /// Performs the 'province_b' operation.
+            seg.set("province_b", b)?;
+            /// The 'x0' field value exposed to Lua scripts.
+            seg.set("x0", x0)?;
+            /// The 'y0' field value exposed to Lua scripts.
+            seg.set("y0", y0)?;
+            /// The 'x1' field value exposed to Lua scripts.
+            seg.set("x1", x1)?;
+            /// The 'y1' field value exposed to Lua scripts.
+            seg.set("y1", y1)?;
+            t.set(i + 1, seg)?;
+        }
+        Ok(t)
+    });
+    // -- getPolygons --
+    /// Returns polygon rings for every province.
+    /// @return | table | Array table of province polygon records with `province_id` and `rings` fields.
+    /// @field | province_id | integer | Province id.
+    /// @field | rings | table | Array of rings; each ring is an array of [x, y] pairs.
+    methods.add_method("getPolygons", |lua, this, ()| {
+        let map = this.inner.province_polygons();
+        let out = lua.create_table()?;
+        let mut idx = 1usize;
+        for (id, rings) in &map {
+            let entry = lua.create_table()?;
+            /// Performs the 'province_id' operation.
+            entry.set("province_id", *id)?;
+            let rings_tbl = lua.create_table()?;
+            for (ri, ring) in rings.iter().enumerate() {
+                let pts = lua.create_table()?;
+                for (pi, &(x, y)) in ring.iter().enumerate() {
+                    let pt = lua.create_table()?;
+                    pt.set(1, x)?;
+                    pt.set(2, y)?;
+                    pts.set(pi + 1, pt)?;
+                }
+                rings_tbl.set(ri + 1, pts)?;
             }
-            Ok(t)
-        });
-        // -- provinceSpans --
-        /// Returns horizontal province spans by row.
-        /// @return | table | Array table with `province_id`, `y`, `x0`, and `x1` fields.
-        /// @field | province_id | integer | Province id.
-        /// @field | y | integer | Scanline y coordinate.
-        /// @field | x0 | integer | Start x coordinate.
-        /// @field | x1 | integer | End x coordinate.
-        methods.add_method("provinceSpans", |lua, this, ()| {
-            let t = lua.create_table()?;
-            for (i, (id, y, x0, x1)) in this.inner.province_spans().into_iter().enumerate() {
+            /// Performs the 'rings' operation.
+            entry.set("rings", rings_tbl)?;
+            out.set(idx, entry)?;
+            idx += 1;
+        }
+        Ok(out)
+    });
+    // -- getPolygonsSimplified --
+    /// Returns simplified polygon rings for every province.
+    /// @return | table | Array table of simplified province polygon records with `province_id` and `rings` fields.
+    /// @field | province_id | integer | Province id.
+    /// @field | rings | table | Array of simplified rings; each ring is an array of [x, y] pairs.
+    methods.add_method("getPolygonsSimplified", |lua, this, ()| {
+        let map = this.inner.province_polygons_simplified();
+        let out = lua.create_table()?;
+        let mut idx = 1usize;
+        for (id, rings) in &map {
+            let entry = lua.create_table()?;
+            /// Performs the 'province_id' operation.
+            entry.set("province_id", *id)?;
+            let rings_tbl = lua.create_table()?;
+            for (ri, ring) in rings.iter().enumerate() {
+                let pts = lua.create_table()?;
+                for (pi, &(x, y)) in ring.iter().enumerate() {
+                    let pt = lua.create_table()?;
+                    pt.set(1, x)?;
+                    pt.set(2, y)?;
+                    pts.set(pi + 1, pt)?;
+                }
+                rings_tbl.set(ri + 1, pts)?;
+            }
+            /// Performs the 'rings' operation.
+            entry.set("rings", rings_tbl)?;
+            out.set(idx, entry)?;
+            idx += 1;
+        }
+        Ok(out)
+    });
+    // -- drawShapes --
+    /// Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+    /// Pass no arguments to draw all shapes, or pass `x, y, w, h` to cull to a rectangle.
+    /// @param | x | number? | Viewport left edge (required if providing a viewport).
+    /// @param | y | number? | Viewport top edge (required if providing a viewport).
+    /// @param | w | number? | Viewport width (required if providing a viewport).
+    /// @param | h | number? | Viewport height (required if providing a viewport).
+    /// @return | integer | Number of polygons emitted to the render command queue.
+    methods.add_method_mut("drawShapes", |_, this, args: LuaMultiValue| {
+        let viewport = if args.is_empty() {
+            None
+        } else {
+            let mut it = args.into_iter();
+            let next_f32 = |v: Option<LuaValue>| -> Result<f32, LuaError> {
+                match v {
+                    Some(LuaValue::Integer(n)) => Ok(n as f32),
+                    Some(LuaValue::Number(n)) => Ok(n as f32),
+                    Some(other) => Err(LuaError::RuntimeError(format!(
+                        "drawShapes expected numeric viewport argument, got {:?}",
+                        other.type_name()
+                    ))),
+                    None => Err(LuaError::RuntimeError(
+                        "drawShapes expected four viewport numbers".into(),
+                    )),
+                }
+            };
+            let x = next_f32(it.next())?;
+            let y = next_f32(it.next())?;
+            let w = next_f32(it.next())?;
+            let h = next_f32(it.next())?;
+            if it.next().is_some() {
+                return Err(LuaError::RuntimeError(
+                    "drawShapes accepts either no args or four viewport numbers".into(),
+                ));
+            }
+            Some((x, y, w, h))
+        };
+        if this.shape_cache.is_none() {
+            this.shape_cache = Some(this.inner.build_shape_cache());
+        }
+        let (view_x, view_y, view_w, view_h) = viewport.unwrap_or((
+            f32::NEG_INFINITY,
+            f32::NEG_INFINITY,
+            f32::INFINITY,
+            f32::INFINITY,
+        ));
+        let view_x2 = view_x + view_w;
+        let view_y2 = view_y + view_h;
+        let saved_color = this.state.borrow().current_color;
+        let mut emitted = 0usize;
+        {
+            let mut st = this.state.borrow_mut();
+            for entry in this.shape_cache.as_ref().unwrap() {
+                if entry.max_x < view_x
+                    || entry.min_x > view_x2
+                    || entry.max_y < view_y
+                    || entry.min_y > view_y2
+                {
+                    continue;
+                }
+                st.render_commands
+                    .push(RenderCommand::SetColor(entry.r, entry.g, entry.b, 1.0));
+                st.render_commands.push(RenderCommand::Polygon {
+                    mode: DrawMode::Fill,
+                    vertices: entry.vertices.clone(),
+                });
+                emitted += 1;
+            }
+            st.render_commands.push(RenderCommand::SetColor(
+                saved_color[0],
+                saved_color[1],
+                saved_color[2],
+                saved_color[3],
+            ));
+            st.current_color = saved_color;
+        }
+        Ok(emitted as u32)
+    });
+    // -- type --
+    /// Returns the Lua-visible type name for this province grid handle.
+    /// @return | string | The string `LProvinceGrid`.
+    methods.add_method("type", |_, _, ()| Ok("LProvinceGrid"));
+    // -- typeOf --
+    /// Returns whether this province grid handle matches a supported type name.
+    /// @param | name | string | Type name to compare against `LProvinceGrid` and `Object`.
+    /// @return | boolean | True when the supplied type name matches this handle.
+    methods.add_method("typeOf", |_, _, name: String| {
+        Ok(name == "LProvinceGrid" || name == "LObject")
+    });
+    // -- serializeShapeData --
+    /// Serializes province span and border shape data into a binary Lua string.
+    /// @return | string | Serialized shape data bytes.
+    methods.add_method("serializeShapeData", |lua, this, ()| {
+        let data = this.inner.serialize_shape_data();
+        lua.create_string(&data)
+    });
+    // -- deserializeShapeData --
+    /// Decodes serialized province shape data into span and segment tables.
+    /// @param | bytes | string | Serialized shape data bytes.
+    /// @return | LuaValue | Table with `spans` and `segments`, or nil when decoding fails.
+    methods.add_method("deserializeShapeData", |lua, _, bytes: LuaString| {
+        let data = bytes.as_bytes();
+        if let Some((spans, segs)) = ProvinceGrid::deserialize_shape_data(data) {
+            let result = lua.create_table()?;
+            let spans_tbl = lua.create_table()?;
+            for (i, (id, y, x0, x1)) in spans.into_iter().enumerate() {
                 let row = lua.create_table()?;
                 /// Performs the 'province_id' operation.
                 row.set("province_id", id)?;
@@ -250,23 +485,12 @@ impl LuaUserData for LuaProvinceGrid {
                 row.set("x0", x0)?;
                 /// The 'x1' field value exposed to Lua scripts.
                 row.set("x1", x1)?;
-                t.set(i + 1, row)?;
+                spans_tbl.set(i + 1, row)?;
             }
-            Ok(t)
-        });
-        // -- borderSegments --
-        /// Returns border line segments between neighboring provinces.
-        /// @return | table | Array table with province ids and segment coordinates.
-        /// @field | province_a | integer | First province id.
-        /// @field | province_b | integer | Second province id.
-        /// @field | x0 | number | Segment start x.
-        /// @field | y0 | number | Segment start y.
-        /// @field | x1 | number | Segment end x.
-        /// @field | y1 | number | Segment end y.
-        methods.add_method("borderSegments", |lua, this, ()| {
-            let t = lua.create_table()?;
-            for (i, (a, b, x0, y0, x1, y1)) in this.inner.border_segments().into_iter().enumerate()
-            {
+            /// Performs the 'spans' operation.
+            result.set("spans", spans_tbl)?;
+            let segs_tbl = lua.create_table()?;
+            for (i, (a, b, x0, y0, x1, y1)) in segs.into_iter().enumerate() {
                 let seg = lua.create_table()?;
                 /// Performs the 'province_a' operation.
                 seg.set("province_a", a)?;
@@ -280,216 +504,15 @@ impl LuaUserData for LuaProvinceGrid {
                 seg.set("x1", x1)?;
                 /// The 'y1' field value exposed to Lua scripts.
                 seg.set("y1", y1)?;
-                t.set(i + 1, seg)?;
+                segs_tbl.set(i + 1, seg)?;
             }
-            Ok(t)
-        });
-        // -- getPolygons --
-        /// Returns polygon rings for every province.
-        /// @return | table | Array table of province polygon records with `province_id` and `rings` fields.
-        /// @field | province_id | integer | Province id.
-        /// @field | rings | table | Array of rings; each ring is an array of [x, y] pairs.
-        methods.add_method("getPolygons", |lua, this, ()| {
-            let map = this.inner.province_polygons();
-            let out = lua.create_table()?;
-            let mut idx = 1usize;
-            for (id, rings) in &map {
-                let entry = lua.create_table()?;
-                /// Performs the 'province_id' operation.
-                entry.set("province_id", *id)?;
-                let rings_tbl = lua.create_table()?;
-                for (ri, ring) in rings.iter().enumerate() {
-                    let pts = lua.create_table()?;
-                    for (pi, &(x, y)) in ring.iter().enumerate() {
-                        let pt = lua.create_table()?;
-                        pt.set(1, x)?;
-                        pt.set(2, y)?;
-                        pts.set(pi + 1, pt)?;
-                    }
-                    rings_tbl.set(ri + 1, pts)?;
-                }
-                /// Performs the 'rings' operation.
-                entry.set("rings", rings_tbl)?;
-                out.set(idx, entry)?;
-                idx += 1;
-            }
-            Ok(out)
-        });
-        // -- getPolygonsSimplified --
-        /// Returns simplified polygon rings for every province.
-        /// @return | table | Array table of simplified province polygon records with `province_id` and `rings` fields.
-        /// @field | province_id | integer | Province id.
-        /// @field | rings | table | Array of simplified rings; each ring is an array of [x, y] pairs.
-        methods.add_method("getPolygonsSimplified", |lua, this, ()| {
-            let map = this.inner.province_polygons_simplified();
-            let out = lua.create_table()?;
-            let mut idx = 1usize;
-            for (id, rings) in &map {
-                let entry = lua.create_table()?;
-                /// Performs the 'province_id' operation.
-                entry.set("province_id", *id)?;
-                let rings_tbl = lua.create_table()?;
-                for (ri, ring) in rings.iter().enumerate() {
-                    let pts = lua.create_table()?;
-                    for (pi, &(x, y)) in ring.iter().enumerate() {
-                        let pt = lua.create_table()?;
-                        pt.set(1, x)?;
-                        pt.set(2, y)?;
-                        pts.set(pi + 1, pt)?;
-                    }
-                    rings_tbl.set(ri + 1, pts)?;
-                }
-                /// Performs the 'rings' operation.
-                entry.set("rings", rings_tbl)?;
-                out.set(idx, entry)?;
-                idx += 1;
-            }
-            Ok(out)
-        });
-        // -- drawShapes --
-        /// Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
-        /// Pass no arguments to draw all shapes, or pass `x, y, w, h` to cull to a rectangle.
-        /// @param | x | number? | Viewport left edge (required if providing a viewport).
-        /// @param | y | number? | Viewport top edge (required if providing a viewport).
-        /// @param | w | number? | Viewport width (required if providing a viewport).
-        /// @param | h | number? | Viewport height (required if providing a viewport).
-        /// @return | integer | Number of polygons emitted to the render command queue.
-        methods.add_method_mut("drawShapes", |_, this, args: LuaMultiValue| {
-            let viewport = if args.is_empty() {
-                None
-            } else {
-                let mut it = args.into_iter();
-                let next_f32 = |v: Option<LuaValue>| -> Result<f32, LuaError> {
-                    match v {
-                        Some(LuaValue::Integer(n)) => Ok(n as f32),
-                        Some(LuaValue::Number(n)) => Ok(n as f32),
-                        Some(other) => Err(LuaError::RuntimeError(format!(
-                            "drawShapes expected numeric viewport argument, got {:?}",
-                            other.type_name()
-                        ))),
-                        None => Err(LuaError::RuntimeError(
-                            "drawShapes expected four viewport numbers".into(),
-                        )),
-                    }
-                };
-                let x = next_f32(it.next())?;
-                let y = next_f32(it.next())?;
-                let w = next_f32(it.next())?;
-                let h = next_f32(it.next())?;
-                if it.next().is_some() {
-                    return Err(LuaError::RuntimeError(
-                        "drawShapes accepts either no args or four viewport numbers".into(),
-                    ));
-                }
-                Some((x, y, w, h))
-            };
-            if this.shape_cache.is_none() {
-                this.shape_cache = Some(this.inner.build_shape_cache());
-            }
-            let (view_x, view_y, view_w, view_h) = viewport.unwrap_or((
-                f32::NEG_INFINITY,
-                f32::NEG_INFINITY,
-                f32::INFINITY,
-                f32::INFINITY,
-            ));
-            let view_x2 = view_x + view_w;
-            let view_y2 = view_y + view_h;
-            let saved_color = this.state.borrow().current_color;
-            let mut emitted = 0usize;
-            {
-                let mut st = this.state.borrow_mut();
-                for entry in this.shape_cache.as_ref().unwrap() {
-                    if entry.max_x < view_x
-                        || entry.min_x > view_x2
-                        || entry.max_y < view_y
-                        || entry.min_y > view_y2
-                    {
-                        continue;
-                    }
-                    st.render_commands
-                        .push(RenderCommand::SetColor(entry.r, entry.g, entry.b, 1.0));
-                    st.render_commands.push(RenderCommand::Polygon {
-                        mode: DrawMode::Fill,
-                        vertices: entry.vertices.clone(),
-                    });
-                    emitted += 1;
-                }
-                st.render_commands.push(RenderCommand::SetColor(
-                    saved_color[0],
-                    saved_color[1],
-                    saved_color[2],
-                    saved_color[3],
-                ));
-                st.current_color = saved_color;
-            }
-            Ok(emitted as u32)
-        });
-        // -- type --
-        /// Returns the Lua-visible type name for this province grid handle.
-        /// @return | string | The string `LProvinceGrid`.
-        methods.add_method("type", |_, _, ()| Ok("LProvinceGrid"));
-        // -- typeOf --
-        /// Returns whether this province grid handle matches a supported type name.
-        /// @param | name | string | Type name to compare against `LProvinceGrid` and `Object`.
-        /// @return | boolean | True when the supplied type name matches this handle.
-        methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LProvinceGrid" || name == "LObject")
-        });
-        // -- serializeShapeData --
-        /// Serializes province span and border shape data into a binary Lua string.
-        /// @return | string | Serialized shape data bytes.
-        methods.add_method("serializeShapeData", |lua, this, ()| {
-            let data = this.inner.serialize_shape_data();
-            lua.create_string(&data)
-        });
-        // -- deserializeShapeData --
-        /// Decodes serialized province shape data into span and segment tables.
-        /// @param | bytes | string | Serialized shape data bytes.
-        /// @return | LuaValue | Table with `spans` and `segments`, or nil when decoding fails.
-        methods.add_method("deserializeShapeData", |lua, _, bytes: LuaString| {
-            let data = bytes.as_bytes();
-            if let Some((spans, segs)) = ProvinceGrid::deserialize_shape_data(data) {
-                let result = lua.create_table()?;
-                let spans_tbl = lua.create_table()?;
-                for (i, (id, y, x0, x1)) in spans.into_iter().enumerate() {
-                    let row = lua.create_table()?;
-                    /// Performs the 'province_id' operation.
-                    row.set("province_id", id)?;
-                    /// The 'y' field value exposed to Lua scripts.
-                    row.set("y", y)?;
-                    /// The 'x0' field value exposed to Lua scripts.
-                    row.set("x0", x0)?;
-                    /// The 'x1' field value exposed to Lua scripts.
-                    row.set("x1", x1)?;
-                    spans_tbl.set(i + 1, row)?;
-                }
-                /// Performs the 'spans' operation.
-                result.set("spans", spans_tbl)?;
-                let segs_tbl = lua.create_table()?;
-                for (i, (a, b, x0, y0, x1, y1)) in segs.into_iter().enumerate() {
-                    let seg = lua.create_table()?;
-                    /// Performs the 'province_a' operation.
-                    seg.set("province_a", a)?;
-                    /// Performs the 'province_b' operation.
-                    seg.set("province_b", b)?;
-                    /// The 'x0' field value exposed to Lua scripts.
-                    seg.set("x0", x0)?;
-                    /// The 'y0' field value exposed to Lua scripts.
-                    seg.set("y0", y0)?;
-                    /// The 'x1' field value exposed to Lua scripts.
-                    seg.set("x1", x1)?;
-                    /// The 'y1' field value exposed to Lua scripts.
-                    seg.set("y1", y1)?;
-                    segs_tbl.set(i + 1, seg)?;
-                }
-                /// Performs the 'segments' operation.
-                result.set("segments", segs_tbl)?;
-                Ok(LuaValue::Table(result))
-            } else {
-                Ok(LuaValue::Nil)
-            }
-        });
-    }
+            /// Performs the 'segments' operation.
+            result.set("segments", segs_tbl)?;
+            Ok(LuaValue::Table(result))
+        } else {
+            Ok(LuaValue::Nil)
+        }
+    });
 }
 /// Lua-side decoded animated image containing frame images and durations.
 pub struct LuaAnimatedImage {
@@ -568,6 +591,8 @@ impl LuaUserData for LuaAnimatedImage {
 pub struct LuaLayeredImage {
     /// Layer stack and per-layer metadata.
     inner: LayeredImage,
+    /// Runtime state used only for GameFS-authorized save operations.
+    state: Rc<RefCell<SharedState>>,
 }
 /// Provides Lua methods for editing and merging layered images.
 impl LuaUserData for LuaLayeredImage {
@@ -590,6 +615,19 @@ impl LuaUserData for LuaLayeredImage {
         /// @return | integer | One-based index of the new layer.
         methods.add_method_mut("addLayer", |_, this, name: Option<String>| {
             let label = name.unwrap_or_else(|| format!("Layer {}", this.inner.layer_count() + 1));
+            let limits = crate::image::ImageLimits::default();
+            if this.inner.layer_count() >= limits.max_frames_or_layers {
+                return Err(LuaError::RuntimeError(format!(
+                    "LLayeredImage:addLayer: layer limit is {}",
+                    limits.max_frames_or_layers
+                )));
+            }
+            if label.len() > limits.max_layer_name_bytes {
+                return Err(LuaError::RuntimeError(format!(
+                    "LLayeredImage:addLayer: name exceeds {} bytes",
+                    limits.max_layer_name_bytes
+                )));
+            }
             let idx = this.inner.add_layer(label);
             Ok(idx + 1)
         });
@@ -655,6 +693,7 @@ impl LuaUserData for LuaLayeredImage {
             if index == 0 {
                 return Err(LuaError::RuntimeError("layer index must be >= 1".into()));
             }
+            validate_finite("LLayeredImage:setOpacity", "opacity", opacity)?;
             Ok(this.inner.set_opacity(index - 1, opacity))
         });
         // -- isVisible --
@@ -703,6 +742,12 @@ impl LuaUserData for LuaLayeredImage {
             if index == 0 {
                 return Err(LuaError::RuntimeError("layer index must be >= 1".into()));
             }
+            if name.len() > crate::image::ImageLimits::default().max_layer_name_bytes {
+                return Err(LuaError::RuntimeError(format!(
+                    "LLayeredImage:setName: name exceeds {} bytes",
+                    crate::image::ImageLimits::default().max_layer_name_bytes
+                )));
+            }
             Ok(this.inner.set_name(index - 1, name))
         });
         // -- swapLayers --
@@ -740,7 +785,12 @@ impl LuaUserData for LuaLayeredImage {
         /// Saves the layered image stack to a file.
         /// @param | path | string | Output path.
         methods.add_method("save", |_, this, path: String| {
-            serial::save_layered(&this.inner, &path).map_err(LuaError::external)
+            let bytes = serial::encode_layered(&this.inner).map_err(LuaError::external)?;
+            this.state
+                .borrow()
+                .fs
+                .write_output_bytes_atomic(&path, &bytes)
+                .map_err(LuaError::external)
         });
         // -- type --
         /// Returns the Lua-visible type name for this layered image handle.
@@ -805,6 +855,7 @@ impl LuaUserData for LuaCompressedImageData {
 }
 /// Registers `lurek.image` image creation, load/save, province grid, palette, and capture helpers.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    // --- Image construction, codecs, and GameFS adapters ---
     let tbl = lua.create_table()?;
     let s = state.clone();
     // -- newImageData --
@@ -884,6 +935,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newImageDataFromBytes",
         lua.create_function(move |lua, (w, h, bytes): (u32, u32, LuaString)| {
+            validate_image_dimensions("newImageDataFromBytes", w, h)?;
+            validate_image_bytes("newImageDataFromBytes", bytes.as_bytes().len())?;
             let raw = bytes.as_bytes().to_vec();
             let img = ImageData::from_bytes(w, h, raw).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(img)
@@ -927,6 +980,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(CompressedImageData::is_dds_magic(&bytes))
         })?,
     )?;
+    let s = state.clone();
     // -- newLayeredImage --
     /// Creates a layered image stack with one or more blank layers.
     /// @param | width | integer | Width in pixels.
@@ -940,6 +994,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             validate_image_dimensions("newLayeredImage", width, height)?;
             lua.create_userdata(LuaLayeredImage {
                 inner: LayeredImage::new(width, height),
+                state: s.clone(),
             })
         })?,
     )?;
@@ -951,14 +1006,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "saveImage",
         lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
-            let path = s.borrow().game_dir.join(&filename);
-            let path_str = path
-                .to_str()
-                .ok_or_else(|| LuaError::RuntimeError("Invalid path".into()))?;
             let img = img_ud
                 .borrow::<ImageData>()
                 .map_err(|_| LuaError::RuntimeError("argument must be an ImageData".into()))?;
-            serial::save_image(&img, path_str).map_err(LuaError::external)
+            let bytes = serial::encode_flat(&img).map_err(LuaError::external)?;
+            s.borrow()
+                .fs
+                .write_output_bytes_atomic(&filename, &bytes)
+                .map_err(LuaError::external)
         })?,
     )?;
     let s = state.clone();
@@ -969,15 +1024,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "savePNG",
         lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
-            let path = s.borrow().game_dir.join(&filename);
             let raw = img_ud
                 .borrow::<ImageData>()
                 .map_err(|_| LuaError::RuntimeError("argument must be an ImageData".into()))?;
             let bytes = raw.encode_png().map_err(LuaError::RuntimeError)?;
-            if let Some(parent) = path.parent() {
-                std::fs::create_dir_all(parent).map_err(LuaError::external)?;
-            }
-            std::fs::write(&path, &bytes).map_err(LuaError::external)
+            s.borrow()
+                .fs
+                .write_output_bytes_atomic(&filename, &bytes)
+                .map_err(LuaError::external)
         })?,
     )?;
     let s = state.clone();
@@ -1002,9 +1056,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     collected.push(frame.clone());
                 }
 
-                let path = s.borrow().game_dir.join(&filename);
-                crate::image::animated_gif::save_gif(&collected, &path, options)
-                    .map_err(LuaError::RuntimeError)
+                let bytes = crate::image::animated_gif::encode_gif(&collected, options)
+                    .map_err(LuaError::RuntimeError)?;
+                s.borrow()
+                    .fs
+                    .write_output_bytes_atomic(&filename, &bytes)
+                    .map_err(LuaError::external)
             },
         )?,
     )?;
@@ -1072,7 +1129,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 .map_err(LuaError::external)?;
             let stack =
                 serial::load_layered_from_bytes(&bytes, &filename).map_err(LuaError::external)?;
-            lua.create_userdata(LuaLayeredImage { inner: stack })
+            lua.create_userdata(LuaLayeredImage {
+                inner: stack,
+                state: s.clone(),
+            })
         })?,
     )?;
     // -- newPaletteLut --
@@ -1094,16 +1154,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newProvinceGrid",
         lua.create_function(move |lua, filename: String| {
-            let path = s.borrow().game_dir.join(&filename);
-            let path_str = path
-                .to_str()
-                .ok_or_else(|| LuaError::RuntimeError("Invalid path".into()))?;
-            let grid = ProvinceGrid::from_file(path_str).map_err(LuaError::RuntimeError)?;
-            lua.create_userdata(LuaProvinceGrid {
-                inner: grid,
-                state: s.clone(),
-                shape_cache: None,
-            })
+            crate::lua_api::province_api::new_grid_from_gamefs(lua, s.clone(), &filename)
         })?,
     )?;
     let s = state.clone();
@@ -1206,13 +1257,13 @@ impl mlua::UserData for ImageData {
         methods.add_method_mut(
             "applyEffects",
             |_lua, this, (effects, default_opts): (LuaTable, Option<LuaTable>)| {
+                let mut parsed = Vec::new();
                 for value in effects.sequence_values::<LuaValue>() {
-                    let result = match value? {
+                    let (name, opts) = match value? {
                         LuaValue::String(name) => {
                             let name = name.to_str()?.to_string();
                             let opts = parse_effect_options(default_opts.clone(), "applyEffects")?;
-                            this.apply_effect_named(&name, &opts)
-                                .map_err(LuaError::RuntimeError)?
+                            (name, opts)
                         }
                         LuaValue::Table(entry) => {
                             let name: String = entry
@@ -1227,8 +1278,7 @@ impl mlua::UserData for ImageData {
                                 .get::<_, Option<LuaTable>>("opts")?
                                 .or_else(|| default_opts.clone());
                             let opts = parse_effect_options(opts_table, "applyEffects")?;
-                            this.apply_effect_named(&name, &opts)
-                                .map_err(LuaError::RuntimeError)?
+                            (name, opts)
                         }
                         other => {
                             return Err(LuaError::RuntimeError(format!(
@@ -1237,10 +1287,32 @@ impl mlua::UserData for ImageData {
                             )));
                         }
                     };
+                    parsed.push((name, opts));
+                }
+                let limits = crate::image::ImageLimits::default();
+                if parsed.len() > limits.max_effect_chain_length {
+                    return Err(LuaError::RuntimeError(format!(
+                        "applyEffects: effect chain limit is {}",
+                        limits.max_effect_chain_length
+                    )));
+                }
+                limits
+                    .work(
+                        u64::from(this.width()) * u64::from(this.height()),
+                        u64::try_from(parsed.len()).unwrap_or(u64::MAX),
+                        "applyEffects",
+                    )
+                    .map_err(LuaError::RuntimeError)?;
+                let mut working = this.clone();
+                for (name, opts) in parsed {
+                    let result = working
+                        .apply_effect_named(&name, &opts)
+                        .map_err(LuaError::RuntimeError)?;
                     if let Some(image) = result {
-                        *this = image;
+                        working = image;
                     }
                 }
+                *this = working;
                 Ok(LuaValue::Nil)
             },
         );
@@ -1353,52 +1425,55 @@ impl mlua::UserData for ImageData {
         // -- getString --
         /// Returns raw image bytes as a Lua string.
         /// @return | string | Raw image byte string.
-        methods.add_method("getString", |_, this, ()| Ok(this.get_string()));
+        methods.add_method("getString", |lua, this, ()| {
+            validate_image_bytes("LImageData:getString", this.as_bytes().len())?;
+            lua.create_string(this.as_bytes())
+        });
         // -- mapPixel --
         /// Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
         /// @param | func | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
         methods.add_method_mut("mapPixel", |_, this, func: LuaFunction| {
-            let w = this.width();
-            let h = this.height();
-            for y in 0..h {
-                for x in 0..w {
-                    if let Some((r, g, b, a)) = this.get_pixel(x, y) {
-                        let result: (u8, u8, u8, u8) =
-                            func.call((x, y, r, g, b, a)).map_err(|e| {
-                                LuaError::RuntimeError(format!("mapPixel callback: {}", e))
-                            })?;
-                        this.set_pixel(x, y, result.0, result.1, result.2, result.3);
-                    }
-                }
+            let limits = crate::image::ImageLimits::default();
+            let pixels = u64::from(this.width()) * u64::from(this.height());
+            if pixels > limits.max_callback_pixels {
+                return Err(LuaError::RuntimeError(
+                    "mapPixel exceeds callback pixel limit".into(),
+                ));
             }
-            Ok(())
+            limits
+                .work(pixels, 1, "mapPixel")
+                .map_err(LuaError::RuntimeError)?;
+            this.map_pixel_transactional(|x, y, r, g, b, a| {
+                func.call((x, y, r, g, b, a))
+                    .map_err(|e| LuaError::RuntimeError(format!("mapPixel callback: {}", e)))
+            })
         });
         // -- brightness --
         /// Applies a brightness factor to this image in place.
         /// @param | factor | number | Brightness multiplier or adjustment factor.
         methods.add_method_mut("brightness", |_, this, factor: f32| {
-            this.brightness(factor);
+            this.brightness(validate_finite("LImageData:brightness", "factor", factor)?);
             Ok(())
         });
         // -- contrast --
         /// Applies a contrast factor to this image in place.
         /// @param | factor | number | Contrast factor.
         methods.add_method_mut("contrast", |_, this, factor: f32| {
-            this.contrast(factor);
+            this.contrast(validate_finite("LImageData:contrast", "factor", factor)?);
             Ok(())
         });
         // -- saturation --
         /// Applies a saturation factor to this image in place.
         /// @param | factor | number | Saturation factor.
         methods.add_method_mut("saturation", |_, this, factor: f32| {
-            this.saturation(factor);
+            this.saturation(validate_finite("LImageData:saturation", "factor", factor)?);
             Ok(())
         });
         // -- gamma --
         /// Applies gamma correction to this image in place.
         /// @param | gamma | number | Gamma value.
         methods.add_method_mut("gamma", |_, this, gamma: f32| {
-            this.gamma(gamma);
+            this.gamma(validate_finite("LImageData:gamma", "gamma", gamma)?);
             Ok(())
         });
         // -- tint --
@@ -1410,7 +1485,12 @@ impl mlua::UserData for ImageData {
         methods.add_method_mut(
             "tint",
             |_, this, (tr, tg, tb, factor): (u8, u8, u8, f32)| {
-                this.tint(tr, tg, tb, factor);
+                this.tint(
+                    tr,
+                    tg,
+                    tb,
+                    validate_finite("LImageData:tint", "factor", factor)?,
+                );
                 Ok(())
             },
         );
@@ -1467,7 +1547,7 @@ impl mlua::UserData for ImageData {
         /// Multiplies this image alpha channel by a factor in place.
         /// @param | factor | number | Alpha multiplier.
         methods.add_method_mut("alphaMask", |_, this, factor: f32| {
-            this.alpha_mask(factor);
+            this.alpha_mask(validate_finite("LImageData:alphaMask", "factor", factor)?);
             Ok(())
         });
         // -- flipHorizontal --
@@ -1577,6 +1657,7 @@ impl mlua::UserData for ImageData {
         methods.add_method_mut(
             "drawLine",
             |_, this, (x0, y0, x1, y1, r, g, b, a): (i32, i32, i32, i32, u8, u8, u8, u8)| {
+                validate_line_work("drawLine", x0, y0, x1, y1)?;
                 this.draw_line(x0, y0, x1, y1, r, g, b, a);
                 Ok(())
             },
@@ -1659,6 +1740,7 @@ impl mlua::UserData for ImageData {
         /// Returns raw image bytes as a Lua string.
         /// @return | string | Raw image byte string.
         methods.add_method("getRawBytes", |lua, this, ()| {
+            validate_image_bytes("LImageData:getRawBytes", this.as_bytes().len())?;
             lua.create_string(this.as_bytes())
         });
         // -- diff --
@@ -1673,17 +1755,17 @@ impl mlua::UserData for ImageData {
         /// Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
         /// @param | func | function | Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
         methods.add_method_mut("mapPixels", |_, this, func: LuaFunction| {
-            let w = this.width();
-            let h = this.height();
-            for y in 0..h {
-                for x in 0..w {
-                    if let Some((r, g, b, a)) = this.get_pixel(x, y) {
-                        let result: (u8, u8, u8, u8) = func.call((x, y, r, g, b, a))?;
-                        this.set_pixel(x, y, result.0, result.1, result.2, result.3);
-                    }
-                }
+            let limits = crate::image::ImageLimits::default();
+            let pixels = u64::from(this.width()) * u64::from(this.height());
+            if pixels > limits.max_callback_pixels {
+                return Err(LuaError::RuntimeError(
+                    "mapPixels exceeds callback pixel limit".into(),
+                ));
             }
-            Ok(())
+            limits
+                .work(pixels, 1, "mapPixels")
+                .map_err(LuaError::RuntimeError)?;
+            this.map_pixel_transactional(|x, y, r, g, b, a| func.call((x, y, r, g, b, a)))
         });
         // -- convolve --
         /// Applies a convolution kernel and returns the filtered image.
@@ -1697,8 +1779,32 @@ impl mlua::UserData for ImageData {
                     LuaError::RuntimeError("convolve: kernel length exceeds supported size".into())
                 })?;
                 let mut kernel: Vec<f64> = Vec::with_capacity(len);
+                let kernel_elements = ksize.checked_mul(ksize).ok_or_else(|| {
+                    LuaError::RuntimeError("convolve: kernel size overflows".into())
+                })?;
+                if kernel_elements != len
+                    || kernel_elements > crate::image::ImageLimits::default().max_kernel_elements
+                {
+                    return Err(LuaError::RuntimeError(
+                        "convolve: kernel must be square and fit the image kernel limit".into(),
+                    ));
+                }
+                crate::image::ImageLimits::default()
+                    .work(
+                        u64::from(this.width()) * u64::from(this.height()),
+                        u64::try_from(kernel_elements).unwrap_or(u64::MAX),
+                        "convolve",
+                    )
+                    .map_err(LuaError::RuntimeError)?;
                 for i in 1..=len {
-                    kernel.push(kernel_t.get::<_, f64>(i)?);
+                    let value = kernel_t.get::<_, f64>(i)?;
+                    if !value.is_finite() {
+                        return Err(LuaError::RuntimeError(format!(
+                            "convolve: kernel value {} must be finite",
+                            i
+                        )));
+                    }
+                    kernel.push(value);
                 }
                 let result = this.convolve(&kernel, ksize).map_err(LuaError::external)?;
                 lua.create_userdata(result)
@@ -1767,6 +1873,13 @@ impl LuaUserData for LuaPaletteLUT {
             "setColor",
             |_, this, (fr, fg, fb, fa, tr, tg, tb, ta): (u8, u8, u8, u8, u8, u8, u8, u8)| {
                 use crate::color::Color;
+                let limit = crate::image::ImageLimits::default().max_palette_entries;
+                if this.inner.get_color_count() >= limit {
+                    return Err(LuaError::RuntimeError(format!(
+                        "LPaletteLUT:setColor: palette limit is {}",
+                        limit
+                    )));
+                }
                 let from = Color {
                     r: fr as f32 / 255.0,
                     g: fg as f32 / 255.0,

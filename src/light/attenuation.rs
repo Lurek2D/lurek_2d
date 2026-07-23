@@ -4,6 +4,7 @@
 //! Open this file when distance-decay semantics change; full light objects and world ownership live in siblings.
 
 /// Quadratic attenuation coefficients for distance-based light intensity falloff.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Attenuation {
     /// Constant term added to the denominator; prevents infinite brightness at zero distance.

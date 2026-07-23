@@ -237,6 +237,22 @@ impl World {
         options: &BallisticArcOptions,
         filter: PhysicsQueryFilter,
     ) -> Result<BallisticTrace, PhysicsError> {
+        validate_positive("max_time", f64::from(options.max_time))?;
+        validate_positive("sample_dt", f64::from(options.sample_dt))?;
+        // The trace always retains its starting point in addition to one point
+        // per simulated interval.
+        let sample_count = (options.max_time / options.sample_dt).ceil() + 1.0;
+        if !sample_count.is_finite() || sample_count > self.limits.max_ballistic_samples as f32 {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics ballistic samples",
+                count: if sample_count.is_finite() {
+                    sample_count.min(usize::MAX as f32) as usize
+                } else {
+                    usize::MAX
+                },
+                max: self.limits.max_ballistic_samples,
+            });
+        }
         let velocity = self.solve_ballistic_velocity(
             options.from,
             options.to,
@@ -306,6 +322,14 @@ impl World {
         &mut self,
         options: BallisticProjectileOptions,
     ) -> Result<usize, PhysicsError> {
+        validate_positive("sample_dt", f64::from(options.sample_dt))?;
+        if self.ballistic_projectiles.len() >= self.limits.max_ballistic_projectile_slots {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics ballistic projectile slots",
+                count: self.ballistic_projectiles.len() + 1,
+                max: self.limits.max_ballistic_projectile_slots,
+            });
+        }
         let velocity = self.solve_ballistic_velocity(
             options.from,
             options.to,
@@ -327,7 +351,7 @@ impl World {
             height: options.height,
             gravity: options.gravity,
             time_remaining: options.max_time,
-            sample_dt: options.sample_dt.max(1.0e-4),
+            sample_dt: options.sample_dt,
         }));
         Ok(id)
     }

@@ -20,7 +20,7 @@ use super::flow::{
     FlowMedium, FlowSample,
 };
 use super::limits::{validate_finite, validate_positive, PhysicsLimits};
-use super::material::PhysicsMaterial;
+use super::material::{MaterialCombineRule, PhysicsMaterial};
 use super::shape::Shape;
 use super::types::BodyId;
 use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityFalloff, ZoneGravityMode, ZoneTracker};
@@ -94,6 +94,7 @@ impl EventHandler for LocalEventCollector {
 /// # Fields
 /// - `body_a`: first body id.
 /// - `body_b`: second body id.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct BodyContact {
     /// First body id.
     pub body_a: BodyId,
@@ -117,6 +118,21 @@ pub struct RaycastHit {
     /// Parametric distance along the ray.
     pub toi: f32,
 }
+/// One directional ray request for [`World::raycast_all_batch`].
+/// # Fields
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct RaycastQuery {
+    /// Ray origin X in world units.
+    pub x: f32,
+    /// Ray origin Y in world units.
+    pub y: f32,
+    /// Ray direction X component.
+    pub dx: f32,
+    /// Ray direction Y component.
+    pub dy: f32,
+    /// Maximum travel distance in world units.
+    pub max_dist: f32,
+}
 /// The closest swept-shape intersection result.
 /// # Fields
 /// - `body_id`: body hit by the sweep.
@@ -138,6 +154,7 @@ pub struct ShapeSweepHit {
     pub safe_fraction: f32,
 }
 /// Beam hit collection mode for instant gameplay beams.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BeamHitMode {
     /// Stop at the first hit and return one blocking segment.
@@ -261,6 +278,7 @@ pub struct ContactInfo {
 }
 /// Snapshot of a physics shape used for debug rendering.
 /// # Fields
+/// - `body_id`: stable source body id.
 /// - `x`: world-space x center.
 /// - `y`: world-space y center.
 /// - `half_w`: half-width for box-like shapes.
@@ -271,7 +289,10 @@ pub struct ContactInfo {
 /// - `is_sensor`: whether the source collider is a sensor.
 /// - `is_circle`: whether the shape should be rendered as a circle.
 /// - `hull_verts`: polygon hull vertices for non-rectangular shapes.
+#[derive(Debug, Clone, PartialEq)]
 pub struct PhysicsShapeSnapshot {
+    /// Stable id of the source body.
+    pub body_id: BodyId,
     /// World-space x centre.
     pub x: f32,
     /// World-space y centre.
@@ -292,6 +313,31 @@ pub struct PhysicsShapeSnapshot {
     pub is_circle: bool,
     /// Convex hull vertices for polygon shapes.
     pub hull_verts: Vec<[f32; 2]>,
+}
+/// Immutable debug/tooling snapshot of the current physics shapes.
+/// # Fields
+#[derive(Debug, Clone, PartialEq)]
+pub struct PhysicsSnapshot {
+    /// Deterministic content-derived generation id.
+    pub generation: u64,
+    /// Stable-id shape records in ascending body-id order.
+    pub shapes: Vec<PhysicsShapeSnapshot>,
+}
+
+/// Difference between two immutable physics snapshots.
+/// # Fields
+#[derive(Debug, Clone, PartialEq)]
+pub struct PhysicsSnapshotDiff {
+    /// Generation id of the source snapshot.
+    pub from_generation: u64,
+    /// Generation id of the target snapshot.
+    pub to_generation: u64,
+    /// Shapes introduced by the target snapshot.
+    pub added: Vec<PhysicsShapeSnapshot>,
+    /// Stable ids removed by the target snapshot.
+    pub removed: Vec<BodyId>,
+    /// Shapes whose record changed between snapshots.
+    pub changed: Vec<PhysicsShapeSnapshot>,
 }
 /// Optional filters applied to physics spatial queries.
 /// # Fields
@@ -629,8 +675,94 @@ pub struct World {
 /// Physics world operations: body management, stepping, joints, queries, zones, and debug rendering.
 impl World {
     /// Return the shared strict-physics limits currently attached to this world.
-    pub(crate) fn limits(&self) -> &PhysicsLimits {
+    pub fn limits(&self) -> &PhysicsLimits {
         &self.limits
+    }
+
+    /// Replace limits after ensuring they still accommodate live world state.
+    pub fn set_limits(&mut self, limits: PhysicsLimits) -> Result<(), PhysicsError> {
+        if limits.min_step_dt <= 0.0
+            || !limits.min_step_dt.is_finite()
+            || limits.max_step_dt < limits.min_step_dt
+            || !limits.max_step_dt.is_finite()
+            || limits.max_fixed_steps == 0
+            || limits.max_solver_iterations == 0
+            || limits.max_ccd_substeps == 0
+            || limits.max_contact_events == 0
+            || limits.max_query_hits == 0
+            || limits.max_beam_bounces == 0
+            || limits.max_ballistic_projectile_slots == 0
+            || limits.max_debug_shapes == 0
+            || limits.max_ballistic_samples == 0
+            || limits.max_bodies == 0
+            || limits.max_body_slots == 0
+            || limits.max_colliders_per_body == 0
+            || limits.max_joints == 0
+            || limits.max_zones == 0
+            || limits.max_gravity_vectors == 0
+            || limits.max_flow_fields == 0
+            || limits.max_terrain_cells == 0
+            || limits.max_liquid_cells == 0
+            || limits.max_terrain_component_scan_cells == 0
+            || limits.max_terrain_component_results == 0
+            || limits.max_terrain_component_cells == 0
+            || limits.max_active_liquid_cells == 0
+            || limits.max_output_bytes == 0
+            || limits.max_polygon_vertices < 3
+            || limits.max_chain_vertices < 2
+        {
+            return Err(PhysicsError::ConfigMismatch {
+                context: "physics limits",
+                detail:
+                    "step and solver limits must be finite, positive, and internally consistent"
+                        .into(),
+            });
+        }
+        if self.body_count() > limits.max_bodies {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics bodies",
+                count: self.body_count(),
+                max: limits.max_bodies,
+            });
+        }
+        if self.bodies.len() > limits.max_body_slots {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics body slots",
+                count: self.bodies.len(),
+                max: limits.max_body_slots,
+            });
+        }
+        if self.ballistic_projectiles.len() > limits.max_ballistic_projectile_slots {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics ballistic projectile slots",
+                count: self.ballistic_projectiles.len(),
+                max: limits.max_ballistic_projectile_slots,
+            });
+        }
+        if self.gravity_vectors.len() > limits.max_gravity_vectors {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics gravity vectors",
+                count: self.gravity_vectors.len(),
+                max: limits.max_gravity_vectors,
+            });
+        }
+        if self.flow_fields.len() > limits.max_flow_fields {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics flow fields",
+                count: self.flow_fields.len(),
+                max: limits.max_flow_fields,
+            });
+        }
+        if self.params.num_solver_iterations > limits.max_solver_iterations
+            || self.params.max_ccd_substeps > limits.max_ccd_substeps
+        {
+            return Err(PhysicsError::ConfigMismatch {
+                context: "physics limits",
+                detail: "new solver ceilings are below the current world configuration".into(),
+            });
+        }
+        self.limits = limits;
+        Ok(())
     }
 
     /// Draw all body outlines onto an RGBA `ImageData` using the given colour.
@@ -1169,7 +1301,7 @@ impl World {
     }
     /// Return a snapshot of all body shapes suitable for debug rendering.
     pub fn extract_shape_snapshots(&self) -> Vec<PhysicsShapeSnapshot> {
-        let mut out = Vec::with_capacity(self.bodies.len());
+        let mut out = Vec::with_capacity(self.bodies.len().min(self.limits.max_debug_shapes));
         for (idx, body) in self.bodies.iter().enumerate() {
             if !self.has_body(idx) {
                 continue;
@@ -1225,6 +1357,7 @@ impl World {
                 }
             };
             out.push(PhysicsShapeSnapshot {
+                body_id: BodyId(idx),
                 x: body.position.x,
                 y: body.position.y,
                 half_w,
@@ -1236,8 +1369,75 @@ impl World {
                 is_circle,
                 hull_verts,
             });
+            if out.len() == self.limits.max_debug_shapes {
+                break;
+            }
         }
         out
+    }
+
+    /// Return an immutable, stable-id snapshot for render, pathfinding, or tooling consumers.
+    pub fn physics_snapshot(&self) -> PhysicsSnapshot {
+        let shapes = self.extract_shape_snapshots();
+        let mut generation = 0xcbf2_9ce4_8422_2325_u64;
+        for shape in &shapes {
+            generation ^= shape.body_id.0 as u64;
+            generation = generation.wrapping_mul(0x100_0000_01b3);
+            for value in [shape.x, shape.y, shape.half_w, shape.half_h, shape.angle] {
+                generation ^= u64::from(value.to_bits());
+                generation = generation.wrapping_mul(0x100_0000_01b3);
+            }
+        }
+        PhysicsSnapshot { generation, shapes }
+    }
+
+    /// Compare two immutable snapshots without exposing mutable world state.
+    pub fn diff_physics_snapshots(
+        previous: &PhysicsSnapshot,
+        current: &PhysicsSnapshot,
+    ) -> PhysicsSnapshotDiff {
+        let before: HashMap<usize, &PhysicsShapeSnapshot> = previous
+            .shapes
+            .iter()
+            .map(|shape| (shape.body_id.0, shape))
+            .collect();
+        let after: HashMap<usize, &PhysicsShapeSnapshot> = current
+            .shapes
+            .iter()
+            .map(|shape| (shape.body_id.0, shape))
+            .collect();
+        let mut added = current
+            .shapes
+            .iter()
+            .filter(|shape| !before.contains_key(&shape.body_id.0))
+            .cloned()
+            .collect::<Vec<_>>();
+        let mut removed = previous
+            .shapes
+            .iter()
+            .filter(|shape| !after.contains_key(&shape.body_id.0))
+            .map(|shape| shape.body_id)
+            .collect::<Vec<_>>();
+        let mut changed = current
+            .shapes
+            .iter()
+            .filter(|shape| {
+                before
+                    .get(&shape.body_id.0)
+                    .is_some_and(|old| *old != *shape)
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        added.sort_by_key(|shape| shape.body_id.0);
+        removed.sort_by_key(|id| id.0);
+        changed.sort_by_key(|shape| shape.body_id.0);
+        PhysicsSnapshotDiff {
+            from_generation: previous.generation,
+            to_generation: current.generation,
+            added,
+            removed,
+            changed,
+        }
     }
     /// Create a world with gravity `(gx, gy)` in pixels/s².
     pub fn new(gx: f32, gy: f32) -> Self {
@@ -1544,7 +1744,16 @@ impl World {
         self.sync_body_material_snapshot(id);
     }
     /// Build a rapier `Collider` from a body's shape and filter settings.
-    fn make_collider(&self, body: &Body, density: f32) -> Collider {
+    fn material_combine_rule(rule: MaterialCombineRule) -> CoefficientCombineRule {
+        match rule {
+            MaterialCombineRule::Average => CoefficientCombineRule::Average,
+            MaterialCombineRule::Min => CoefficientCombineRule::Min,
+            MaterialCombineRule::Multiply => CoefficientCombineRule::Multiply,
+            MaterialCombineRule::Max => CoefficientCombineRule::Max,
+        }
+    }
+
+    fn make_collider(&self, body: &Body, material: &PhysicsMaterial) -> Collider {
         let is_sensor = body.body_type == BodyType::Sensor;
         let groups = self.collision_groups(body.layer, body.mask);
         let builder = if let Some(ref shape_ext) = body.shape_ext {
@@ -1565,10 +1774,14 @@ impl World {
             }
         };
         builder
-            .density(density)
+            .density(material.density)
             .sensor(is_sensor)
             .restitution(body.restitution)
             .friction(body.friction)
+            .friction_combine_rule(Self::material_combine_rule(material.friction_combine_rule))
+            .restitution_combine_rule(Self::material_combine_rule(
+                material.restitution_combine_rule,
+            ))
             .collision_groups(groups)
             .active_events(ActiveEvents::COLLISION_EVENTS)
             .build()
@@ -1577,10 +1790,7 @@ impl World {
     fn rebuild_collider(&mut self, id: usize) {
         let old_handle = self.collider_handles[id];
         let body_handle = self.body_handles[id];
-        let density = self
-            .body_materials
-            .get(id)
-            .map_or(1.0, |material| material.density);
+        let material = self.body_materials.get(id).cloned().unwrap_or_default();
         let (shape, shape_ext, restitution, friction, layer, mask, is_sensor) = {
             let b = &self.bodies[id];
             (
@@ -1612,10 +1822,14 @@ impl World {
             }
         };
         let collider = builder
-            .density(density)
+            .density(material.density)
             .sensor(is_sensor)
             .restitution(restitution)
             .friction(friction)
+            .friction_combine_rule(Self::material_combine_rule(material.friction_combine_rule))
+            .restitution_combine_rule(Self::material_combine_rule(
+                material.restitution_combine_rule,
+            ))
             .collision_groups(groups)
             .active_events(ActiveEvents::COLLISION_EVENTS)
             .build();
@@ -1711,9 +1925,17 @@ impl World {
             0.0
         }
     }
-    /// Set the pixels-per-meter conversion ratio.
-    pub fn set_meter(&mut self, ppm: f32) {
+    /// Set the pixels-per-meter conversion ratio after strict finite validation.
+    pub fn try_set_meter(&mut self, ppm: f32) -> Result<(), PhysicsError> {
+        validate_positive("pixels per meter", f64::from(ppm))?;
         self.pixels_per_meter = ppm;
+        Ok(())
+    }
+    /// Compatibility setter that records rejected input without corrupting conversions.
+    pub fn set_meter(&mut self, ppm: f32) {
+        if self.try_set_meter(ppm).is_err() {
+            self.record_invalid_operation();
+        }
     }
     /// Return the current pixels-per-meter ratio.
     pub fn get_meter(&self) -> f32 {
@@ -1830,9 +2052,24 @@ impl World {
             }
         }
     }
-    /// Set the number of solver iterations (minimum 1).
+    /// Set the number of solver iterations within the configured work ceiling.
+    pub fn try_set_solver_iterations(&mut self, n: usize) -> Result<(), PhysicsError> {
+        if n == 0 || n > self.limits.max_solver_iterations {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "solver iterations",
+                min: 1.0,
+                max: self.limits.max_solver_iterations as f64,
+                value: n as f64,
+            });
+        }
+        self.params.num_solver_iterations = n;
+        Ok(())
+    }
+    /// Compatibility setter that records rejected values.
     pub fn set_solver_iterations(&mut self, n: usize) {
-        self.params.num_solver_iterations = n.max(1);
+        if self.try_set_solver_iterations(n).is_err() {
+            self.record_invalid_operation();
+        }
     }
     /// Return the current number of solver iterations.
     pub fn get_solver_iterations(&self) -> usize {
@@ -1872,11 +2109,57 @@ impl World {
         }
     }
     /// Batch-create bodies from a list of `(x, y, w, h, BodyType)` tuples; return their ids.
-    pub fn add_bodies(&mut self, specs: Vec<(f32, f32, f32, f32, BodyType)>) -> Vec<usize> {
-        specs
+    pub fn try_add_bodies(
+        &mut self,
+        specs: Vec<(f32, f32, f32, f32, BodyType)>,
+    ) -> Result<Vec<usize>, PhysicsError> {
+        let bodies = specs
             .into_iter()
-            .map(|(x, y, w, h, bt)| self.add_body(Body::new(x, y, w, h, bt)).0)
-            .collect()
+            .map(|(x, y, w, h, bt)| Body::try_new(x, y, w, h, bt))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(self
+            .try_add_body_objects(bodies)?
+            .into_iter()
+            .map(|id| id.0)
+            .collect())
+    }
+
+    /// Batch-insert already authored bodies after validating every body and both body ceilings.
+    pub fn try_add_body_objects(&mut self, bodies: Vec<Body>) -> Result<Vec<BodyId>, PhysicsError> {
+        let requested = bodies.len();
+        let count = self.body_count().saturating_add(requested);
+        if count > self.limits.max_bodies {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics bodies",
+                count,
+                max: self.limits.max_bodies,
+            });
+        }
+        let slots = self.bodies.len().saturating_add(requested);
+        if slots > self.limits.max_body_slots {
+            return Err(PhysicsError::CountLimitExceeded {
+                context: "physics body slots",
+                count: slots,
+                max: self.limits.max_body_slots,
+            });
+        }
+        for body in &bodies {
+            body.validate(&self.limits)?;
+        }
+        Ok(bodies
+            .into_iter()
+            .map(|body| self.add_body_unchecked(body))
+            .collect())
+    }
+    /// Compatibility batch constructor that records rejected batches atomically.
+    pub fn add_bodies(&mut self, specs: Vec<(f32, f32, f32, f32, BodyType)>) -> Vec<usize> {
+        match self.try_add_bodies(specs) {
+            Ok(ids) => ids,
+            Err(_) => {
+                self.record_invalid_operation();
+                Vec::new()
+            }
+        }
     }
 }
 

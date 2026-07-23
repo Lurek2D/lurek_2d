@@ -8,6 +8,71 @@ use slotmap::KeyData;
 // These tests stay in Rust because they cover render-only helpers and atlas
 // internals that are not exposed as equivalent lurek.image.* assertions.
 
+mod limits_tests {
+    use super::*;
+
+    #[test]
+    fn strict_constructor_rejects_dimension_and_pixel_budget_excesses() {
+        let limits = ImageLimits {
+            max_dimension: 8,
+            max_pixels: 32,
+            max_rgba_bytes: 128,
+            ..ImageLimits::default()
+        };
+        assert!(ImageData::try_new_with_limits(9, 1, limits).is_err());
+        assert!(ImageData::try_new_with_limits(8, 8, limits).is_err());
+        assert!(ImageData::try_new_with_limits(8, 4, limits).is_ok());
+    }
+
+    #[test]
+    fn image_limits_reject_multiplied_work_before_iteration() {
+        let limits = ImageLimits {
+            max_work_units: 10,
+            ..ImageLimits::default()
+        };
+        assert!(limits.work(5, 2, "test").is_ok());
+        assert!(limits.work(6, 2, "test").is_err());
+        assert!(limits.work(u64::MAX, 2, "test").is_err());
+    }
+
+    #[test]
+    fn limg_rejects_oversized_header_before_decompression() {
+        let mut payload = Vec::new();
+        payload.extend_from_slice(b"LIMG");
+        payload.push(1);
+        payload.push(0);
+        payload.extend_from_slice(&u32::MAX.to_le_bytes());
+        payload.extend_from_slice(&u32::MAX.to_le_bytes());
+        assert!(serial::load_image_from_bytes(&payload, "hostile").is_err());
+    }
+
+    #[test]
+    fn transactional_map_preserves_pixels_when_callback_fails() {
+        let mut image = ImageData::try_new(2, 1).unwrap();
+        image.set_pixel(0, 0, 1, 2, 3, 4);
+        let before = image.as_bytes().to_vec();
+        let result = image.map_pixel_transactional(|x, _, r, g, b, a| {
+            if x == 1 {
+                Err("stop")
+            } else {
+                Ok((r + 1, g, b, a))
+            }
+        });
+        assert!(result.is_err());
+        assert_eq!(image.as_bytes(), before.as_slice());
+    }
+
+    #[test]
+    fn layered_images_reject_non_finite_opacity() {
+        let mut layered = LayeredImage::new(1, 1);
+        layered.add_layer("base");
+        assert!(!layered.set_opacity(0, f32::NAN));
+        assert!(!layered.set_opacity(0, f32::INFINITY));
+        assert!(layered.set_opacity(0, 0.5));
+        assert!((layered.get_layer(0).unwrap().opacity - 0.5).abs() < f32::EPSILON);
+    }
+}
+
 mod render_tests {
     use super::*;
 
@@ -359,36 +424,6 @@ mod effects_and_lut_tests {
     }
 }
 
-mod visualization_tests {
-    use lurek2d::animation::Animation;
-    use lurek2d::image::visualization::draw_animation_frame_grid_to_image;
-    use lurek2d::math::Rect;
-
-    fn make_anim_with_frames(count: usize) -> Animation {
-        let mut anim = Animation::new();
-        for _ in 0..count {
-            anim.add_frame(Rect::new(0.0, 0.0, 16.0, 16.0));
-        }
-        anim
-    }
-
-    #[test]
-    fn draw_animation_frame_grid_produces_correct_dimensions() {
-        let anim = make_anim_with_frames(3);
-        let img = draw_animation_frame_grid_to_image(&anim, 4, 4);
-        assert_eq!(img.width(), 12);
-        assert_eq!(img.height(), 4);
-    }
-
-    #[test]
-    fn draw_animation_frame_grid_zero_frames_uses_one_cell() {
-        let anim = make_anim_with_frames(0);
-        let img = draw_animation_frame_grid_to_image(&anim, 8, 8);
-        assert_eq!(img.width(), 8);
-        assert_eq!(img.height(), 8);
-    }
-}
-
 mod coverage_symbol_tests {
     #[test]
     #[allow(clippy::const_is_empty)]
@@ -424,9 +459,6 @@ mod coverage_symbol_tests {
             "set_layer_image",
             "swap_layers",
             "move_layer",
-            "province_spans",
-            "serialize_shape_data",
-            "deserialize_shape_data",
             "save_image",
             "save_layered",
             "encode_flat",
@@ -436,54 +468,6 @@ mod coverage_symbol_tests {
             "load_with_color_space",
             "from_rgba",
             "from_rgba_with_color_space",
-            "draw_animation_playback_to_image",
-            "animation_playback_control_to_image",
-            "draw_animation_to_image",
-            "waveform_to_image",
-            "waveform_stereo_to_image",
-            "waveform_zoomed_to_image",
-            "draw_sound_waveform_to_image",
-            "draw_camera_debug_to_image",
-            "draw_camera_zoom_comparison_to_image",
-            "camera_rotation_to_image",
-            "camera_bounds_to_image",
-            "camera_follow_to_image",
-            "camera_shake_to_image",
-            "draw_camera_rotation_grid_to_image",
-            "draw_camera_bounds_to_image",
-            "draw_camera_follow_trail_to_image",
-            "draw_camera_shake_trail_to_image",
-            "draw_camera_to_image",
-            "easing_gallery_to_image",
-            "easing_comparison_to_image",
-            "bezier_curves_to_image",
-            "draw_bezier_advanced_to_image",
-            "hsv_to_rgb_viz",
-            "polygon_gallery_to_image",
-            "spiral_to_image",
-            "filled_primitives_to_image",
-            "draw_geometry_shapes_to_image",
-            "draw_geometry_intersections_to_image",
-            "draw_graph_operations_to_image",
-            "draw_graph_item_flow_to_image",
-            "draw_image_comparison_to_image",
-            "draw_pixel_transform_grid_to_image",
-            "draw_color_wheel_to_image",
-            "noise_to_image",
-            "noise_raw_to_image",
-            "noise_terrain_to_image",
-            "heightmap_to_image",
-            "terrain_elevation_to_image",
-            "noise_map_to_image",
-            "noise_comparison_to_image",
-            "cellular_grid_to_image",
-            "voronoi_to_image",
-            "points_to_image",
-            "dungeon_grid_to_image",
-            "colored_points_to_image",
-            "draw_delaunay_to_image",
-            "panel_layout_to_image",
-            "hud_bars_to_image",
         ];
         assert!(!symbols.is_empty());
     }

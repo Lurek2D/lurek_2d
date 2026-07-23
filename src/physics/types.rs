@@ -47,11 +47,36 @@ impl mlua::IntoLua<'_> for BodyId {
 }
 
 impl mlua::FromLua<'_> for BodyId {
-    fn from_lua(val: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
-        let n = i64::from_lua(val, lua)?;
-        let raw = usize::try_from(n).map_err(|_| {
-            mlua::Error::RuntimeError(PhysicsError::InvalidBodyIdValue { value: n }.to_string())
-        })?;
+    fn from_lua(val: mlua::Value, _lua: &mlua::Lua) -> mlua::Result<Self> {
+        let raw = match val {
+            mlua::Value::Integer(value) if value >= 0 => usize::try_from(value).map_err(|_| {
+                mlua::Error::RuntimeError(PhysicsError::InvalidBodyIdValue { value }.to_string())
+            })?,
+            mlua::Value::Number(value)
+                if value.is_finite()
+                    && value >= 0.0
+                    && value.fract() == 0.0
+                    && value <= usize::MAX as f64 =>
+            {
+                value as usize
+            }
+            mlua::Value::Integer(value) => {
+                return Err(mlua::Error::RuntimeError(
+                    PhysicsError::InvalidBodyIdValue { value }.to_string(),
+                ));
+            }
+            mlua::Value::Number(value) => {
+                return Err(mlua::Error::RuntimeError(format!(
+                    "physics body id must be a finite non-negative integer, got {}",
+                    value
+                )));
+            }
+            _ => {
+                return Err(mlua::Error::RuntimeError(
+                    "physics body id must be a finite non-negative integer".to_string(),
+                ))
+            }
+        };
         Ok(BodyId(raw))
     }
 }

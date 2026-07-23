@@ -7,8 +7,12 @@
 
 /// Core RGBA image storage and drawing helpers.
 pub mod image_data;
+/// Shared CPU image resource ceilings.
+pub mod limits;
 /// Core RGBA image buffer type.
 pub use image_data::ImageData;
+/// Image resource limit configuration.
+pub use limits::ImageLimits;
 /// Compressed image file decoding helpers.
 pub mod compressed;
 /// Image-space effects and resampling filters.
@@ -33,10 +37,6 @@ pub mod render;
 pub mod serial;
 /// Texture loading and CPU-side texture metadata.
 pub mod texture;
-/// Image visualizations for debugging and analysis.
-pub mod visualization;
-/// Backward-compat re-export: province_grid moved to `crate::province::province_grid`.
-pub use crate::province::province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};
 /// Animated GIF export types.
 pub use animated_gif::{AnimatedGifFrame, AnimatedGifOptions, AnimatedGifRepeat};
 /// Rectangle packing types.

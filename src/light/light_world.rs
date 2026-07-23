@@ -1,27 +1,19 @@
-//! Owns the light world owner for the light subsystem and keeps its rules local to this file.
-//! Keeps light data ownership and helper behavior clear for future engine maintenance. with focused crate-local behavior.
-//! Defines how light world data is validated, transformed, or stored before neighboring systems use it.
-//! Owns light behavior with explicit state, validation, and crate-local integration boundaries.
-//! Keeps public crate helpers focused on light world behavior while Lua registration stays elsewhere.
-//! Documents where light callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
-//! Use this file when changing light world defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the light state that can explain them while keeping call sites explicit.
+//! Stores the scene's validated light and occluder state plus bounded render-facing snapshots.
+//! GPU command submission and texture binding remain in `render`; this module only selects,
+//! validates, and exposes data for those consumers. The CPU preview is a bounded debug helper.
 
 use crate::color::Color;
-use crate::light::attenuation::Attenuation;
-use crate::light::blend_mode::LightBlendMode;
-use crate::light::falloff::FalloffMode;
 use crate::light::light2d::Light2D;
 use crate::light::light_type::LightType;
+use crate::light::limits::LightLimits;
 use crate::light::occluder::Occluder;
-use crate::light::shadow::ShadowFilter;
 use crate::log_msg;
-use crate::math::Vec2;
 use crate::runtime::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
 use crate::runtime::resource_keys::{LightKey, OccluderKey, ShaderKey};
 use slotmap::SlotMap;
 
 /// Scene-level container for all `Light2D` instances and `Occluder` shapes.
+/// # Fields
 pub struct LightWorld {
     /// Slotmap of all registered lights, keyed by `LightKey`.
     pub lights: SlotMap<LightKey, Light2D>,
@@ -29,19 +21,26 @@ pub struct LightWorld {
     pub occluders: SlotMap<OccluderKey, Occluder>,
     /// Scene ambient base color added to all illuminated pixels.
     pub ambient: Color,
-    /// Whether any light processing should run; set to `true` on first `add_light`.
+    /// Whether any light processing should run; a first insertion enables it only before an explicit choice.
     pub enabled: bool,
+    /// Records an explicit world enable choice so future insertion cannot override user intent.
+    enabled_explicit: bool,
     /// Maximum number of active lights evaluated per frame by the renderer.
     pub max_lights: u16,
+    /// Hard storage and preview ceilings for this world.
+    pub limits: LightLimits,
     /// Optional default custom light shader used when a light has no per-light shader.
     pub shader: Option<ShaderKey>,
     /// Cached list of keys for lights that have flicker enabled; rebuilt when `flicker_index_dirty`.
     flicker_keys: Vec<LightKey>,
     /// True when the flicker index is stale and must be rebuilt before next advance.
     flicker_index_dirty: bool,
+    /// Next monotonic insertion sequence for deterministic renderer selection.
+    next_light_order: u64,
 }
 
 /// Snapshot of a single light's normal-map binding used by the renderer for surface shading.
+/// # Fields
 #[derive(Debug, Clone)]
 pub struct NormalMapLightHint {
     /// World-space X of the contributing light.
@@ -60,33 +59,6 @@ pub struct NormalMapLightHint {
     pub strength: f32,
 }
 
-#[derive(Clone, Copy)]
-struct RenderLight {
-    x: f32,
-    y: f32,
-    radius: f32,
-    color: Color,
-    brightness: f32,
-    blend_mode: LightBlendMode,
-    falloff: FalloffMode,
-    light_type: LightType,
-    direction: f32,
-    inner_angle: f32,
-    outer_angle: f32,
-    attenuation: Attenuation,
-    shadow_enabled: bool,
-    shadow_filter: ShadowFilter,
-    shadow_smooth: f32,
-    shadow_softness: f32,
-    shadow_mask: u16,
-}
-
-struct RenderOccluder {
-    vertices: Vec<Vec2>,
-    opacity: f32,
-    light_mask: u16,
-}
-
 impl LightWorld {
     /// Create an empty world with ambient=0.1, disabled, and max_lights=64.
     pub fn new() -> Self {
@@ -96,25 +68,78 @@ impl LightWorld {
             occluders: SlotMap::with_key(),
             ambient: Color::new(0.1, 0.1, 0.1, 1.0),
             enabled: false,
+            enabled_explicit: false,
             max_lights: 64,
+            limits: LightLimits::default(),
             shader: None,
             flicker_keys: Vec::new(),
             flicker_index_dirty: true,
+            next_light_order: 0,
         }
     }
-    /// Insert a light, enable the world if it was disabled, and return its key.
-    pub fn add_light(&mut self, light: Light2D) -> LightKey {
+    /// Insert a light when the registered-light ceiling permits it.
+    pub fn add_light(&mut self, mut light: Light2D) -> Result<LightKey, String> {
+        if !light.x.is_finite() || !light.y.is_finite() {
+            return Err("lurek.light.newLight: position must be finite".to_string());
+        }
+        if !light.radius.is_finite() || light.radius <= 0.0 {
+            return Err(
+                "lurek.light.newLight: radius must be finite and greater than zero".to_string(),
+            );
+        }
+        if self.lights.len() >= self.limits.max_registered_lights {
+            return Err(format!(
+                "lurek.light.newLight: registered light limit {} reached",
+                self.limits.max_registered_lights
+            ));
+        }
         log_msg!(debug, LW02_LIGHT_ADD);
-        if !self.enabled {
+        if !self.enabled && !self.enabled_explicit {
             self.enabled = true;
         }
+        light.insertion_order = self.next_light_order;
+        self.next_light_order = self.next_light_order.saturating_add(1);
         let key = self.lights.insert(light);
         self.flicker_index_dirty = true;
-        key
+        Ok(key)
     }
-    /// Insert an occluder and return its key.
-    pub fn add_occluder(&mut self, occluder: Occluder) -> OccluderKey {
-        self.occluders.insert(occluder)
+    /// Insert a light only when the registered-light ceiling permits it.
+    pub fn try_add_light(&mut self, light: Light2D) -> Result<LightKey, String> {
+        self.add_light(light)
+    }
+    /// Insert an occluder when all storage ceilings permit it.
+    pub fn add_occluder(&mut self, occluder: Occluder) -> Result<OccluderKey, String> {
+        if !occluder.position.x.is_finite() || !occluder.position.y.is_finite() {
+            return Err("lurek.light.newOccluder: position must be finite".to_string());
+        }
+        if self.occluders.len() >= self.limits.max_registered_occluders {
+            return Err(format!(
+                "lurek.light.newOccluder: registered occluder limit {} reached",
+                self.limits.max_registered_occluders
+            ));
+        }
+        if occluder.vertices.len() > self.limits.max_vertices_per_occluder {
+            return Err(format!(
+                "lurek.light.newOccluder: vertex limit {} exceeded",
+                self.limits.max_vertices_per_occluder
+            ));
+        }
+        let total = self
+            .occluders
+            .values()
+            .map(|item| item.vertices.len())
+            .sum::<usize>();
+        if total.saturating_add(occluder.vertices.len()) > self.limits.max_total_occluder_vertices {
+            return Err(format!(
+                "lurek.light.newOccluder: total occluder vertex limit {} reached",
+                self.limits.max_total_occluder_vertices
+            ));
+        }
+        Ok(self.occluders.insert(occluder))
+    }
+    /// Insert an occluder only when count and aggregate-vertex ceilings permit it.
+    pub fn try_add_occluder(&mut self, occluder: Occluder) -> Result<OccluderKey, String> {
+        self.add_occluder(occluder)
     }
     /// Remove a light by key and evict it from the flicker index; returns the removed light or `None`.
     pub fn remove_light(&mut self, key: LightKey) -> Option<Light2D> {
@@ -146,6 +171,11 @@ impl LightWorld {
     pub fn light_count(&self) -> usize {
         self.lights.len()
     }
+    /// Set world processing state explicitly; later insertions preserve this choice.
+    pub fn set_enabled(&mut self, enabled: bool) {
+        self.enabled = enabled;
+        self.enabled_explicit = true;
+    }
     /// Return the number of registered occluders.
     pub fn occluder_count(&self) -> usize {
         self.occluders.len()
@@ -157,6 +187,7 @@ impl LightWorld {
         self.ambient = Color::new(0.1, 0.1, 0.1, 1.0);
         self.flicker_keys.clear();
         self.flicker_index_dirty = false;
+        self.next_light_order = 0;
     }
     /// Return `true` if any registered light has `enabled = true`.
     pub fn has_active_lights(&self) -> bool {
@@ -222,102 +253,74 @@ impl LightWorld {
         }
         self.flicker_index_dirty = false;
     }
-    /// Render an approximate light-map preview of this world into an `ImageData` debug image.
-    pub fn draw_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
-        let mut img = crate::image::ImageData::new(width, height);
-        let ambient = [
-            (self.ambient.r.clamp(0.0, 1.0) * 255.0).round(),
-            (self.ambient.g.clamp(0.0, 1.0) * 255.0).round(),
-            (self.ambient.b.clamp(0.0, 1.0) * 255.0).round(),
-        ];
-        img.fill(ambient[0] as u8, ambient[1] as u8, ambient[2] as u8, 255);
-        if !self.enabled {
-            return img;
-        }
-
-        let lights: Vec<RenderLight> = self
+    /// Return eligible render lights in stable insertion order, capped by `max_lights`.
+    pub fn selected_render_lights(&self) -> Vec<(LightKey, &Light2D)> {
+        let mut selected: Vec<_> = self
             .lights
-            .values()
-            .filter(|l| l.enabled && l.radius > 0.0 && l.intensity > 0.0 && l.energy > 0.0)
-            .take(self.max_lights as usize)
-            .map(|l| RenderLight {
-                x: l.x,
-                y: l.y,
-                radius: l.radius,
-                color: l.color,
-                brightness: l.intensity * l.energy * l.flicker.multiplier(),
-                blend_mode: l.blend_mode,
-                falloff: l.falloff,
-                light_type: l.light_type,
-                direction: l.direction,
-                inner_angle: l.inner_angle,
-                outer_angle: l.outer_angle,
-                attenuation: l.attenuation,
-                shadow_enabled: l.shadow_enabled,
-                shadow_filter: l.shadow_filter,
-                shadow_smooth: l.shadow_smooth,
-                shadow_softness: l.shadow_softness,
-                shadow_mask: l.shadow_mask,
+            .iter()
+            .filter(|(_, light)| {
+                light.enabled
+                    && light.x.is_finite()
+                    && light.y.is_finite()
+                    && light.radius.is_finite()
+                    && light.radius > 0.0
+                    && light.intensity.is_finite()
+                    && light.energy.is_finite()
+                    && light.energy > 0.0
             })
             .collect();
+        selected.sort_by_key(|(_, light)| light.insertion_order);
+        selected.truncate(self.max_lights as usize);
+        selected
+    }
+    /// Render an approximate light-map preview after validating bounded preview cost.
+    pub fn draw_to_image(
+        &self,
+        width: u32,
+        height: u32,
+    ) -> Result<crate::image::ImageData, String> {
+        self.validate_preview_cost(width, height)?;
+        Ok(self.draw_to_image_unchecked(width, height))
+    }
 
-        let occluders: Vec<RenderOccluder> = self
+    /// Render the already-validated preview. Kept private so all public callers enforce limits.
+    fn draw_to_image_unchecked(&self, width: u32, height: u32) -> crate::image::ImageData {
+        crate::light::debug_image::draw(self, width, height)
+    }
+    /// Validate all debug-preview costs before allocating its image buffer.
+    pub fn try_draw_to_image(
+        &self,
+        width: u32,
+        height: u32,
+    ) -> Result<crate::image::ImageData, String> {
+        self.draw_to_image(width, height)
+    }
+
+    fn validate_preview_cost(&self, width: u32, height: u32) -> Result<(), String> {
+        let selected = self.selected_render_lights();
+        let direct_light_samples = selected.len();
+        let shadow_edge_samples = selected
+            .iter()
+            .filter(|(_, light)| light.shadow_enabled)
+            .map(|(_, light)| match light.shadow_filter {
+                crate::light::ShadowFilter::None => 1,
+                crate::light::ShadowFilter::Pcf5 => 5,
+                crate::light::ShadowFilter::Pcf13 => 13,
+            })
+            .sum();
+        let edges = self
             .occluders
             .values()
-            .filter(|occ| occ.enabled && occ.opacity > 0.0 && occ.vertices.len() >= 3)
-            .map(|occ| RenderOccluder {
-                vertices: occ
-                    .vertices
-                    .iter()
-                    .map(|v| Vec2::new(v.x + occ.position.x, v.y + occ.position.y))
-                    .collect(),
-                opacity: occ.opacity.clamp(0.0, 1.0),
-                light_mask: occ.light_mask,
-            })
-            .collect();
-
-        if lights.is_empty() && occluders.is_empty() {
-            return img;
-        }
-        for y in 0..height {
-            for x in 0..width {
-                let mut fr = ambient[0];
-                let mut fg = ambient[1];
-                let mut fb = ambient[2];
-                let point = Vec2::new(x as f32 + 0.5, y as f32 + 0.5);
-                for light in &lights {
-                    let mut amount = light_intensity_at(light, point);
-                    if amount <= 0.0 {
-                        continue;
-                    }
-                    amount *= shadow_visibility(light, point, &occluders);
-                    if amount <= 0.0 {
-                        continue;
-                    }
-                    blend_light(&mut fr, &mut fg, &mut fb, light, amount);
-                }
-                img.set_pixel(
-                    x,
-                    y,
-                    fr.clamp(0.0, 255.0) as u8,
-                    fg.clamp(0.0, 255.0) as u8,
-                    fb.clamp(0.0, 255.0) as u8,
-                    255,
-                );
-            }
-        }
-        for occ in &occluders {
-            for edge in occ.vertices.windows(2) {
-                draw_occluder_edge(&mut img, edge[0], edge[1]);
-            }
-            if let (Some(first), Some(last)) = (occ.vertices.first(), occ.vertices.last()) {
-                draw_occluder_edge(&mut img, *last, *first);
-            }
-        }
-        for light in &lights {
-            img.draw_circle(light.x as i32, light.y as i32, 4, 255, 240, 100, 255);
-        }
-        img
+            .filter(|o| o.enabled)
+            .map(|o| o.vertices.len())
+            .sum();
+        self.limits.check_preview(
+            width,
+            height,
+            direct_light_samples,
+            edges,
+            shadow_edge_samples,
+        )
     }
     /// Return ambient color as an RGBA `[f32; 4]` array for shader upload.
     pub fn ambient_color_hint(&self) -> [f32; 4] {
@@ -330,29 +333,49 @@ impl LightWorld {
     }
     /// Return `(x, y, direction)` tuples for all enabled directional lights.
     pub fn directional_light_hints(&self) -> Vec<(f32, f32, f32)> {
-        self.lights
-            .values()
-            .filter(|l| l.enabled && l.light_type == LightType::Directional)
-            .map(|l| (l.x, l.y, l.direction))
-            .collect()
+        let mut hints = Vec::with_capacity(self.limits.max_hint_exports.min(self.lights.len()));
+        self.write_directional_light_hints(&mut hints);
+        hints
+    }
+    /// Write at most the configured storage ceiling of directional hints into caller-owned storage.
+    pub fn write_directional_light_hints(&self, output: &mut Vec<(f32, f32, f32)>) {
+        output.clear();
+        output.reserve(self.limits.max_hint_exports.min(self.lights.len()));
+        output.extend(
+            self.lights
+                .values()
+                .filter(|light| light.enabled && light.light_type == LightType::Directional)
+                .take(self.limits.max_hint_exports)
+                .map(|light| (light.x, light.y, light.direction)),
+        );
     }
     /// Return `NormalMapLightHint` snapshots for all enabled lights that have a normal map path.
     pub fn normal_map_light_hints(&self) -> Vec<NormalMapLightHint> {
-        self.lights
-            .values()
-            .filter(|l| l.enabled)
-            .filter_map(|l| {
-                l.get_normal_map_path().map(|path| NormalMapLightHint {
-                    x: l.x,
-                    y: l.y,
-                    radius: l.radius,
-                    intensity: l.intensity,
-                    direction: l.direction,
-                    path: path.to_string(),
-                    strength: l.normal_strength,
+        let mut hints = Vec::with_capacity(self.limits.max_hint_exports.min(self.lights.len()));
+        self.write_normal_map_light_hints(&mut hints);
+        hints
+    }
+    /// Write bounded normal-map hint snapshots into caller-owned storage.
+    pub fn write_normal_map_light_hints(&self, output: &mut Vec<NormalMapLightHint>) {
+        output.clear();
+        output.reserve(self.limits.max_hint_exports.min(self.lights.len()));
+        output.extend(
+            self.lights
+                .values()
+                .filter(|light| light.enabled)
+                .filter_map(|l| {
+                    l.get_normal_map_path().map(|path| NormalMapLightHint {
+                        x: l.x,
+                        y: l.y,
+                        radius: l.radius,
+                        intensity: l.intensity,
+                        direction: l.direction,
+                        path: path.to_string(),
+                        strength: l.normal_strength,
+                    })
                 })
-            })
-            .collect()
+                .take(self.limits.max_hint_exports),
+        );
     }
 }
 
@@ -361,207 +384,4 @@ impl Default for LightWorld {
     fn default() -> Self {
         Self::new()
     }
-}
-
-fn light_intensity_at(light: &RenderLight, point: Vec2) -> f32 {
-    let dx = point.x - light.x;
-    let dy = point.y - light.y;
-    let distance = (dx * dx + dy * dy).sqrt();
-    let radial = match light.light_type {
-        LightType::Directional => 1.0,
-        LightType::Point | LightType::Spot => {
-            if distance > light.radius {
-                return 0.0;
-            }
-            radial_falloff(light.falloff, distance / light.radius)
-        }
-    };
-    let angular = match light.light_type {
-        LightType::Spot => spot_factor(
-            light.direction,
-            light.inner_angle,
-            light.outer_angle,
-            dx,
-            dy,
-        ),
-        LightType::Point | LightType::Directional => 1.0,
-    };
-    radial * angular * light.attenuation.factor(distance) * light.brightness
-}
-
-fn radial_falloff(mode: FalloffMode, t: f32) -> f32 {
-    let t = t.clamp(0.0, 1.0);
-    match mode {
-        FalloffMode::Linear => 1.0 - t,
-        FalloffMode::Smooth => 1.0 - (t * t * (3.0 - 2.0 * t)),
-        FalloffMode::Constant => 1.0,
-    }
-}
-
-fn spot_factor(direction: f32, inner_angle: f32, outer_angle: f32, dx: f32, dy: f32) -> f32 {
-    let angle = dy.atan2(dx);
-    let diff = angle_delta(angle, direction).abs();
-    let inner = inner_angle.max(0.0);
-    let outer = outer_angle.max(inner + f32::EPSILON);
-    if diff <= inner {
-        1.0
-    } else if diff >= outer {
-        0.0
-    } else {
-        1.0 - ((diff - inner) / (outer - inner))
-    }
-}
-
-fn angle_delta(a: f32, b: f32) -> f32 {
-    let mut d = a - b;
-    while d > std::f32::consts::PI {
-        d -= std::f32::consts::TAU;
-    }
-    while d < -std::f32::consts::PI {
-        d += std::f32::consts::TAU;
-    }
-    d
-}
-
-fn shadow_visibility(light: &RenderLight, point: Vec2, occluders: &[RenderOccluder]) -> f32 {
-    if !light.shadow_enabled || occluders.is_empty() {
-        return 1.0;
-    }
-    let offsets = shadow_sample_offsets(light.shadow_filter);
-    let radius = match light.shadow_filter {
-        ShadowFilter::None => 0.0,
-        ShadowFilter::Pcf5 | ShadowFilter::Pcf13 => {
-            (light.shadow_smooth * light.shadow_softness).max(0.0)
-        }
-    };
-    let mut total = 0.0;
-    for &(ox, oy) in offsets {
-        let sample = Vec2::new(point.x + ox * radius, point.y + oy * radius);
-        total += hard_shadow_visibility(light, sample, occluders);
-    }
-    total / offsets.len() as f32
-}
-
-fn shadow_sample_offsets(filter: ShadowFilter) -> &'static [(f32, f32)] {
-    match filter {
-        ShadowFilter::None => &[(0.0, 0.0)],
-        ShadowFilter::Pcf5 => &[(0.0, 0.0), (1.0, 0.0), (-1.0, 0.0), (0.0, 1.0), (0.0, -1.0)],
-        ShadowFilter::Pcf13 => &[
-            (0.0, 0.0),
-            (1.0, 0.0),
-            (-1.0, 0.0),
-            (0.0, 1.0),
-            (0.0, -1.0),
-            (0.7, 0.7),
-            (-0.7, 0.7),
-            (0.7, -0.7),
-            (-0.7, -0.7),
-            (2.0, 0.0),
-            (-2.0, 0.0),
-            (0.0, 2.0),
-            (0.0, -2.0),
-        ],
-    }
-}
-
-fn hard_shadow_visibility(light: &RenderLight, point: Vec2, occluders: &[RenderOccluder]) -> f32 {
-    let origin = Vec2::new(light.x, light.y);
-    let mut blocked = 0.0f32;
-    for occ in occluders {
-        if light.shadow_mask & occ.light_mask == 0 {
-            continue;
-        }
-        if point_in_polygon(origin, &occ.vertices) {
-            continue;
-        }
-        if point_in_polygon(point, &occ.vertices)
-            || segment_hits_polygon(origin, point, &occ.vertices)
-        {
-            blocked = blocked.max(occ.opacity);
-        }
-    }
-    1.0 - blocked.clamp(0.0, 1.0)
-}
-
-fn point_in_polygon(point: Vec2, vertices: &[Vec2]) -> bool {
-    let mut inside = false;
-    let mut j = vertices.len() - 1;
-    for i in 0..vertices.len() {
-        let vi = vertices[i];
-        let vj = vertices[j];
-        let crosses = (vi.y > point.y) != (vj.y > point.y);
-        if crosses {
-            let x_at_y = (vj.x - vi.x) * (point.y - vi.y) / (vj.y - vi.y) + vi.x;
-            if point.x < x_at_y {
-                inside = !inside;
-            }
-        }
-        j = i;
-    }
-    inside
-}
-
-fn segment_hits_polygon(origin: Vec2, point: Vec2, vertices: &[Vec2]) -> bool {
-    for i in 0..vertices.len() {
-        let a = vertices[i];
-        let b = vertices[(i + 1) % vertices.len()];
-        if segments_intersect(origin, point, a, b) {
-            return true;
-        }
-    }
-    false
-}
-
-fn segments_intersect(a: Vec2, b: Vec2, c: Vec2, d: Vec2) -> bool {
-    let r = Vec2::new(b.x - a.x, b.y - a.y);
-    let s = Vec2::new(d.x - c.x, d.y - c.y);
-    let denom = cross(r, s);
-    if denom.abs() < 1e-5 {
-        return false;
-    }
-    let cma = Vec2::new(c.x - a.x, c.y - a.y);
-    let t = cross(cma, s) / denom;
-    let u = cross(cma, r) / denom;
-    t > 1e-4 && t < 1.0 - 1e-4 && (0.0..=1.0).contains(&u)
-}
-
-fn cross(a: Vec2, b: Vec2) -> f32 {
-    a.x * b.y - a.y * b.x
-}
-
-fn blend_light(fr: &mut f32, fg: &mut f32, fb: &mut f32, light: &RenderLight, amount: f32) {
-    let r = light.color.r.clamp(0.0, 1.0) * amount * 255.0;
-    let g = light.color.g.clamp(0.0, 1.0) * amount * 255.0;
-    let b = light.color.b.clamp(0.0, 1.0) * amount * 255.0;
-    match light.blend_mode {
-        LightBlendMode::Add => {
-            *fr += r;
-            *fg += g;
-            *fb += b;
-        }
-        LightBlendMode::Sub => {
-            *fr -= r;
-            *fg -= g;
-            *fb -= b;
-        }
-        LightBlendMode::Mix => {
-            let alpha = amount.clamp(0.0, 1.0);
-            *fr = *fr * (1.0 - alpha) + r * alpha;
-            *fg = *fg * (1.0 - alpha) + g * alpha;
-            *fb = *fb * (1.0 - alpha) + b * alpha;
-        }
-    }
-}
-
-fn draw_occluder_edge(img: &mut crate::image::ImageData, a: Vec2, b: Vec2) {
-    img.draw_line(
-        a.x.round() as i32,
-        a.y.round() as i32,
-        b.x.round() as i32,
-        b.y.round() as i32,
-        36,
-        38,
-        46,
-        255,
-    );
 }

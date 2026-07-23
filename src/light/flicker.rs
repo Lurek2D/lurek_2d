@@ -4,6 +4,7 @@
 //! Open this file when flicker behavior changes; full light ownership and batch stepping live in sibling modules.
 
 /// Sine-based flicker config that modulates a light's intensity by a small oscillating factor.
+/// # Fields
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct FlickerConfig {
     /// Whether flicker is active; when false, `multiplier()` always returns 1.0.

@@ -3,6 +3,7 @@
 //! Open this file when radial falloff semantics change; attenuation math and full light state live in sibling files.
 
 /// Radial intensity falloff shape applied on top of attenuation distance decay.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum FalloffMode {
     /// Linearly decreases intensity from center to radius boundary (default).

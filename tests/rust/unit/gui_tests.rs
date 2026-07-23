@@ -1715,9 +1715,11 @@ fn ui_limits_reject_oversized_image_dimensions() {
 #[test]
 fn ui_limits_bound_widget_and_child_growth() {
     let mut ctx = GuiContext::new();
-    let mut limits = lurek2d::ui::UiLimits::default();
-    limits.max_live_widgets = 4;
-    limits.max_children_per_widget = 1;
+    let limits = lurek2d::ui::UiLimits {
+        max_live_widgets: 4,
+        max_children_per_widget: 1,
+        ..Default::default()
+    };
     ctx.set_limits(limits);
 
     let parent = ctx.add_panel();

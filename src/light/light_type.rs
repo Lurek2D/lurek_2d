@@ -3,6 +3,7 @@
 //! Open this file when supported light geometries change; shadow, falloff, and world behavior live in siblings.
 
 /// Discriminant for the geometric illumination model used by a `Light2D`.
+/// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum LightType {
     /// Omnidirectional point light; illuminates equally in all directions (default).

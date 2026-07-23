@@ -1236,12 +1236,13 @@ mod gpu_shadow_tests {
     };
 
     fn square_at(x: f32, y: f32) -> Occluder {
-        let mut occluder = Occluder::new(vec![
+        let mut occluder = Occluder::try_new(vec![
             Vec2::new(-1.0, -1.0),
             Vec2::new(1.0, -1.0),
             Vec2::new(1.0, 1.0),
             Vec2::new(-1.0, 1.0),
-        ]);
+        ])
+        .unwrap();
         occluder.set_position(Vec2::new(x, y));
         occluder
     }

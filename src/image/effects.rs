@@ -12,6 +12,10 @@
 
 use super::image_data::ImageData;
 /// Resize kernels supported by the image resampler.
+///
+/// # Variants
+///
+/// `Bilinear` is the default smooth filter; `Lanczos3` uses a wider high-quality window.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ResizeFilter {
     /// Bilinear interpolation.
@@ -20,6 +24,10 @@ pub enum ResizeFilter {
     Lanczos3,
 }
 /// Parsed options for named image effects.
+///
+/// # Fields
+///
+/// Scalar, integer, dimensions, optional color, and filter values describe one validated effect request.
 #[derive(Clone, Debug)]
 pub struct ImageEffectOptions {
     /// Generic scalar factor used by color adjustments.

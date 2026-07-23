@@ -7,6 +7,7 @@
 use crate::math::Vec2;
 
 /// Convex polygon shape that blocks light and casts shadows in `LightWorld`.
+/// # Fields
 pub struct Occluder {
     /// Polygon vertices in local space; must be 3..=512 elements.
     pub vertices: Vec<Vec2>,
@@ -22,33 +23,26 @@ pub struct Occluder {
     edge_generation: u64,
 }
 impl Occluder {
-    /// Create an occluder from vertices; panics if count is outside 3..=512.
-    pub fn new(vertices: Vec<Vec2>) -> Self {
-        assert!(
-            vertices.len() >= 3 && vertices.len() <= 512,
-            "Occluder vertex count must be 3..=512, got {}",
-            vertices.len()
-        );
-        Self {
+    /// Create an occluder after validating finite convex-polygon vertices.
+    pub fn try_new(vertices: Vec<Vec2>) -> Result<Self, String> {
+        Self::validate_vertices(&vertices)?;
+        Ok(Self {
             vertices,
             position: Vec2::ZERO,
             opacity: 1.0,
             light_mask: 0xFFFF,
             enabled: true,
             edge_generation: 0,
-        }
+        })
     }
-    /// Replace vertices; panics if new count is outside 3..=512.
-    pub fn set_vertices(&mut self, vertices: Vec<Vec2>) {
-        assert!(
-            vertices.len() >= 3 && vertices.len() <= 512,
-            "Occluder vertex count must be 3..=512, got {}",
-            vertices.len()
-        );
+    /// Replace vertices after validation, leaving this occluder unchanged on error.
+    pub fn try_set_vertices(&mut self, vertices: Vec<Vec2>) -> Result<(), String> {
+        Self::validate_vertices(&vertices)?;
         if self.vertices != vertices {
             self.vertices = vertices;
             self.bump_edge_generation();
         }
+        Ok(())
     }
     /// Build an occluder from a flat `[x, y, x, y, ...]` coordinate slice; returns error on invalid length.
     pub fn from_flat_coords(flat: &[f32]) -> Result<Self, String> {
@@ -59,7 +53,7 @@ impl Occluder {
             ));
         }
         let verts: Vec<Vec2> = flat.chunks(2).map(|c| Vec2::new(c[0], c[1])).collect();
-        Ok(Self::new(verts))
+        Self::try_new(verts)
     }
     /// Return the vertex slice. This function is part of the public API.
     pub fn get_vertices(&self) -> &[Vec2] {
@@ -106,7 +100,41 @@ impl Occluder {
         self.edge_generation
     }
 
+    fn validate_vertices(vertices: &[Vec2]) -> Result<(), String> {
+        if !(3..=512).contains(&vertices.len()) {
+            return Err(format!(
+                "vertex count must be 3..=512, got {}",
+                vertices.len()
+            ));
+        }
+        if vertices
+            .iter()
+            .any(|v| !v.x.is_finite() || !v.y.is_finite())
+        {
+            return Err("vertex coordinates must be finite".to_string());
+        }
+        let mut winding = 0.0_f32;
+        for index in 0..vertices.len() {
+            let a = vertices[index];
+            let b = vertices[(index + 1) % vertices.len()];
+            let c = vertices[(index + 2) % vertices.len()];
+            let ab_x = b.x - a.x;
+            let ab_y = b.y - a.y;
+            let bc_x = c.x - b.x;
+            let bc_y = c.y - b.y;
+            let cross = ab_x * bc_y - ab_y * bc_x;
+            if cross.abs() <= f32::EPSILON {
+                return Err("polygon must not contain repeated or collinear vertices".to_string());
+            }
+            if winding != 0.0 && cross.signum() != winding.signum() {
+                return Err("polygon must be convex with one winding direction".to_string());
+            }
+            winding = cross;
+        }
+        Ok(())
+    }
+
     fn bump_edge_generation(&mut self) {
-        self.edge_generation = self.edge_generation.wrapping_add(1);
+        self.edge_generation = self.edge_generation.checked_add(1).unwrap_or(0);
     }
 }
