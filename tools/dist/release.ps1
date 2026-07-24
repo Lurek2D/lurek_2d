@@ -59,6 +59,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $WorkspaceRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$ExtensionRoot = Join-Path (Split-Path $WorkspaceRoot -Parent) "$(Split-Path $WorkspaceRoot -Leaf)_extension"
 if (-not $OutDir) { $OutDir = Join-Path $WorkspaceRoot 'dist' }
 
 $CargoToml = Join-Path $WorkspaceRoot 'Cargo.toml'
@@ -137,13 +138,13 @@ try {
         Write-Warn "Skipping NSIS installer (-SkipInstaller)"
     }
 
-    $ExtVersionRaw = (Get-Content (Join-Path $WorkspaceRoot 'extension/vscode/package.json') | ConvertFrom-Json).version
+    $ExtVersionRaw = (Get-Content (Join-Path $ExtensionRoot 'vscode/package.json') | ConvertFrom-Json).version
     $VsixName = "lurek2d-toolkit-$ExtVersionRaw.vsix"
-    $VsixPath = Join-Path $WorkspaceRoot "extension/vscode/$VsixName"
+    $VsixPath = Join-Path $ExtensionRoot "vscode/$VsixName"
     if (-not $SkipExtension) {
         Write-Step "VS Code extension"
         if (Get-Command npm -ErrorAction SilentlyContinue) {
-            Push-Location (Join-Path $WorkspaceRoot 'extension/vscode')
+            Push-Location (Join-Path $ExtensionRoot 'vscode')
             try {
                 Write-Host "  Installing npm dependencies..."
                 Invoke-Checked npm @('install', '--prefer-offline')

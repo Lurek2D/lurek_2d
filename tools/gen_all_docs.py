@@ -46,10 +46,10 @@ PHASES: list[tuple[str, list[tuple[str, list[str], str]]]] = [
         ("docs/gen_module_specs.py", [], "Generated module specs (docs/specs/<module>.md)"),
     ]),
     ("api", [
-        ("docs/gen_extension_api.py", [], "VS Code extension API (extension/vscode/data/lurek-api.json)"),
+        ("docs/gen_extension_api.py", [], "VS Code extension API (../lurek_2D_extension/vscode/data/lurek-api.json)"),
         ("docs/gen_luadoc.py", [], "LuaCATS stubs (docs/api/lurek.lua)"),
         ("docs/gen_docs_lua.py", [], "Lua API reference (docs/api/lurek.md)"),
-        ("docs/gen_docs_lua_html.py", [], "Lua API HTML browser (pages/lua-docs)"),
+        ("docs/gen_docs_lua_html.py", [], "Lua API HTML browser (../lurek_2D_pages/lua-docs)"),
         ("docs/gen_docs_rust.py", [], "Rust API reference (docs/api/rust.md)"),
         ("docs/gen_lib_docs.py", [], "Library API (docs/api/lureksome.md + docs/api/lureksome.lua)"),
     ]),

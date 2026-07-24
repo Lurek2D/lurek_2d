@@ -71,7 +71,7 @@ nickname_candidates = ["architecture", "boundaries", "design"]
 
 # Docs and generated docs surfaces: specs, docstrings, pages, snippets, API-facing written material.
 [agents.doc_writer]
-description = "Documentation writer for docs/, pages/, specs, docstrings, snippets, and generated docs content."
+description = "Documentation writer for docs/, the sibling lurek_2D_pages repo, specs, docstrings, snippets, and generated docs content."
 config_file = "agents/doc_writer.toml"
 nickname_candidates = ["docs", "specs", "writer"]
 
@@ -83,7 +83,7 @@ nickname_candidates = ["content", "gameplay", "examples"]
 
 # VS Code extension and editor workflow only.
 [agents.extension]
-description = "Extension engineer for extension/ features, editor UX, snippets integration, and VS Code workflows."
+description = "Extension engineer for the sibling lurek_2D_extension repo, editor UX, snippets integration, and VS Code workflows."
 config_file = "agents/extension.toml"
 nickname_candidates = ["vscode", "extension", "editor"]
 

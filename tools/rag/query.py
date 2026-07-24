@@ -373,7 +373,7 @@ def _profile_filter_sql(profile: str) -> str:
     if profile == "engine":
         return (
             " AND (d.path = 'AGENTS.md' OR d.path LIKE '.agents/%' OR d.path LIKE '.codex/%' "
-            "OR d.path LIKE '.github/%' OR d.path LIKE 'docs/%' OR d.path LIKE 'extension/%' "
+            "OR d.path LIKE '.github/%' OR d.path LIKE 'docs/%' "
             "OR d.path LIKE 'src/%' OR d.path LIKE 'tests/%' OR d.path LIKE 'tools/%') "
         )
     return ""
@@ -714,8 +714,6 @@ def _adjusted_rank(row: dict[str, Any], safe_query: str, intent: dict[str, Any])
             score -= 28.0
         if path == "docs/templates/agents.md":
             score -= 24.0
-        if path.startswith("pages/"):
-            score -= 18.0
     if "context" in tokens and "bundle" in tokens:
         if path == "tools/rag/context.py":
             score -= 120.0
@@ -1126,7 +1124,7 @@ def read_api_usage_chunks(
                     {" + ".join(score_parts)}
                     + CASE WHEN d.path LIKE 'content/examples/%' THEN 140 ELSE 0 END
                     + CASE WHEN d.source_kind = 'example' THEN 60 ELSE 0 END
-                    + CASE WHEN d.path LIKE 'docs/%' OR d.path LIKE 'pages/%' THEN 20 ELSE 0 END
+                    + CASE WHEN d.path LIKE 'docs/%' THEN 20 ELSE 0 END
                     + coalesce(d.priority, 0)
                 ) AS retrieval_score
             FROM documents d
@@ -1135,7 +1133,6 @@ def read_api_usage_chunks(
               AND (
                   d.path LIKE 'content/examples/%'
                   OR d.path LIKE 'docs/%'
-                  OR d.path LIKE 'pages/%'
                   OR d.path LIKE 'src/%'
               )
             ORDER BY retrieval_score DESC, d.path ASC, d.line_start ASC

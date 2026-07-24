@@ -9,6 +9,11 @@ use crate::render::gpu_types::{
     ColorVertex, InstanceData, ParticleVertex, PreparedDraw, TexVertex,
 };
 use crate::runtime::resource_keys::{InstanceBufferKey, StaticGeometryKey};
+use std::sync::mpsc::Receiver;
+use std::time::Instant;
+
+/// Largest retained capacity for any reusable CPU frame vector after an exceptional frame.
+const MAX_RETAINED_FRAME_BUFFER_BYTES: usize = 8 * 1024 * 1024;
 
 /// GPU texture with its bind group; held in slot-maps keyed by `TextureKey` / `CanvasKey` / `FontKey`.
 ///
@@ -53,6 +58,27 @@ pub struct PendingSurfaceReadback {
     pub(crate) width: u32,
     /// Image height in pixels.
     pub(crate) height: u32,
+    /// Completion receiver installed after the command buffer has been submitted.
+    pub(crate) completion: Option<Receiver<Result<(), String>>>,
+    /// Monotonic start time used to bound the interactive request lifetime.
+    pub(crate) started_at: Instant,
+}
+
+/// Observable lifecycle state for the renderer's bounded surface readback request.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SurfaceReadbackStatus {
+    /// No request is active.
+    Idle,
+    /// GPU copy/map is in progress and advances through normal frame polling.
+    Pending,
+    /// The most recent request completed and its bytes were returned.
+    Ready,
+    /// The GPU map callback failed.
+    Failed,
+    /// The request exceeded the interactive timeout.
+    TimedOut,
+    /// The request was cancelled for resize, recovery, or teardown.
+    Cancelled,
 }
 /// Per-frame GPU draw statistics exposed to the Lua profiler API.
 ///
@@ -147,6 +173,25 @@ impl FrameRenderBuffers {
         self.scratch_tex_verts.clear();
         self.scratch_tex_idxs.clear();
         self.merged_draws.clear();
+        self.reclaim_exceptional_capacity();
+    }
+
+    /// Release capacity above the normal retained ceiling after a previous exceptional frame.
+    /// This runs only at a frame boundary, after all references to the vector contents end.
+    pub fn reclaim_exceptional_capacity(&mut self) {
+        shrink_vec_to_byte_ceiling(&mut self.color_verts, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.color_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.tex_verts, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.tex_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.particle_verts, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.particle_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.draws, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.instances, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.scratch_color_verts, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.scratch_color_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.scratch_tex_verts, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.scratch_tex_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(&mut self.merged_draws, MAX_RETAINED_FRAME_BUFFER_BYTES);
     }
 
     /// Reserve enough capacity for a known frame size without changing current lengths.
@@ -198,6 +243,15 @@ impl FrameRenderBuffers {
             self.scratch_tex_idxs.capacity(),
             self.merged_draws.capacity(),
         ]
+    }
+}
+
+/// Shrink a cleared vector only when its retained allocation is above the byte ceiling.
+fn shrink_vec_to_byte_ceiling<T>(values: &mut Vec<T>, max_bytes: usize) {
+    let element_size = std::mem::size_of::<T>().max(1);
+    let max_elements = max_bytes / element_size;
+    if values.capacity() > max_elements {
+        values.shrink_to(max_elements);
     }
 }
 

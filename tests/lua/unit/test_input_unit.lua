@@ -1106,4 +1106,122 @@ describe("input action batch helpers", function()
     end)
 end)
 
+-- @describe input expanded edge and controller API
+describe("input expanded edge and controller API", function()
+    -- @covers lurek.input.keyboard.wasPressed
+    it("keyboard wasPressed returns a boolean", function()
+        expect_equal("boolean", type(lurek.input.keyboard.wasPressed("q")))
+    end)
+
+    -- @covers lurek.input.keyboard.wasReleased
+    it("keyboard wasReleased returns a boolean", function()
+        expect_equal("boolean", type(lurek.input.keyboard.wasReleased("q")))
+    end)
+
+    -- @covers lurek.input.keyboard.wasScancodePressed
+    it("keyboard wasScancodePressed returns a boolean", function()
+        expect_equal("boolean", type(lurek.input.keyboard.wasScancodePressed("q")))
+    end)
+
+    -- @covers lurek.input.keyboard.wasScancodeReleased
+    it("keyboard wasScancodeReleased returns a boolean", function()
+        expect_equal("boolean", type(lurek.input.keyboard.wasScancodeReleased("q")))
+    end)
+
+    -- @covers lurek.input.keyboard.getTextInput
+    it("keyboard getTextInput returns a table", function()
+        expect_equal("table", type(lurek.input.keyboard.getTextInput()))
+    end)
+
+    -- @covers lurek.input.mouse.wasPressed
+    it("mouse wasPressed returns a boolean for extra buttons", function()
+        expect_equal("boolean", type(lurek.input.mouse.wasPressed(8)))
+    end)
+
+    -- @covers lurek.input.mouse.wasReleased
+    it("mouse wasReleased returns a boolean for extra buttons", function()
+        expect_equal("boolean", type(lurek.input.mouse.wasReleased(8)))
+    end)
+
+    -- @covers lurek.input.mouse.getDelta
+    it("mouse getDelta returns numeric raw deltas", function()
+        local x, y = lurek.input.mouse.getDelta()
+        expect_equal("number", type(x))
+        expect_equal("number", type(y))
+    end)
+
+    -- @covers lurek.input.gamepad.getStandardButton
+    it("gamepad getStandardButton accepts Xbox names", function()
+        expect_false(lurek.input.gamepad.getStandardButton(0, "a"))
+    end)
+
+    -- @covers lurek.input.gamepad.getStandardAxis
+    it("gamepad getStandardAxis defaults to zero", function()
+        expect_equal(0, lurek.input.gamepad.getStandardAxis(0, "leftx"))
+    end)
+
+    -- @covers lurek.input.gamepad.setDeadzone
+    it("gamepad setDeadzone accepts a finite value", function()
+        lurek.input.gamepad.setDeadzone(0, "leftstick", 0.2)
+        expect_true(math.abs(0.2 - lurek.input.gamepad.getDeadzone(0, "leftstick")) < 0.0001)
+    end)
+
+    -- @covers lurek.input.gamepad.getDeadzone
+    it("gamepad getDeadzone returns a number", function()
+        expect_equal("number", type(lurek.input.gamepad.getDeadzone(0, "rightstick")))
+    end)
+
+    -- @covers lurek.input.assignPlayer
+    it("assignPlayer stores a player gamepad slot", function()
+        lurek.input.assignPlayer(1, 0)
+        expect_equal(0, lurek.input.getPlayerGamepad(1))
+    end)
+
+    -- @covers lurek.input.getPlayerGamepad
+    it("getPlayerGamepad returns nil for unknown players", function()
+        expect_equal(nil, lurek.input.getPlayerGamepad(99))
+    end)
+
+    -- @covers lurek.input.gamepad.getAssignedPlayer
+    it("gamepad getAssignedPlayer resolves assignments", function()
+        lurek.input.assignPlayer(2, 1)
+        expect_equal(2, lurek.input.gamepad.getAssignedPlayer(1))
+    end)
+
+    -- @covers lurek.input.setContextEnabled
+    it("setContextEnabled toggles an action context", function()
+        lurek.input.setContextEnabled("combat", false)
+        expect_false(lurek.input.isContextEnabled("combat"))
+    end)
+
+    -- @covers lurek.input.isContextEnabled
+    it("isContextEnabled defaults unknown contexts to true", function()
+        expect_true(lurek.input.isContextEnabled("unknown_context"))
+    end)
+
+    -- @covers LCombo:update
+    it("automatic combo update returns a boolean", function()
+        local combo = lurek.input.newCombo({"a", "b"})
+        expect_equal("boolean", type(combo:update()))
+    end)
+
+    -- @covers LCombo:wasCompleted
+    it("automatic combo exposes pending completion state", function()
+        local combo = lurek.input.newCombo({"a", "b"})
+        expect_equal("boolean", type(combo:wasCompleted()))
+    end)
+
+    -- @covers LCombo:completedWithin
+    it("automatic combo checks completion time", function()
+        local combo = lurek.input.newCombo({"a", "b"})
+        expect_equal("boolean", type(combo:completedWithin(100)))
+    end)
+
+    -- @covers LCombo:consume
+    it("automatic combo consumption returns a boolean", function()
+        local combo = lurek.input.newCombo({"a", "b"})
+        expect_equal("boolean", type(combo:consume()))
+    end)
+end)
+
 test_summary()

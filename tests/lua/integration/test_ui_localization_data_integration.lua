@@ -33,7 +33,7 @@ describe("integration: ui + i18n + data", function()
         expect_equal("Hello", localized, "localized text should resolve")
 
         local before = lurek.ui.getWidgetCount()
-        local root_id = lurek.ui.loadLayout({
+        local layout_root = lurek.ui.loadLayout({
             type = "panel",
             id = "serialized_ui_root",
             children = {
@@ -44,7 +44,7 @@ describe("integration: ui + i18n + data", function()
         local root = lurek.ui.getRoot()
         local label = root:findById("serialized_ui_title")
 
-        expect_type("number", root_id, "ui layout should return root id")
+        expect_true(layout_root:isValid(), "ui layout returns a live typed root handle")
         expect_true(lurek.ui.getWidgetCount() > before, "layout adds widgets to the UI tree")
         expect_not_nil(label, "loaded layout exposes the localized label by id")
         expect_equal("Hello", label:getText(), "label text matches localized serialized value")

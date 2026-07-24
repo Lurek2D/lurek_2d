@@ -44,6 +44,49 @@ pub struct RenderDiagnostics {
 }
 
 impl RenderDiagnostics {
+    /// Add another frame snapshot into this saturating cumulative snapshot.
+    pub fn accumulate(&mut self, frame: &Self) {
+        self.dropped_commands = self.dropped_commands.saturating_add(frame.dropped_commands);
+        self.missing_textures = self.missing_textures.saturating_add(frame.missing_textures);
+        self.missing_canvases = self.missing_canvases.saturating_add(frame.missing_canvases);
+        self.missing_meshes = self.missing_meshes.saturating_add(frame.missing_meshes);
+        self.missing_shapes = self.missing_shapes.saturating_add(frame.missing_shapes);
+        self.missing_static_geometry = self
+            .missing_static_geometry
+            .saturating_add(frame.missing_static_geometry);
+        self.missing_instance_buffers = self
+            .missing_instance_buffers
+            .saturating_add(frame.missing_instance_buffers);
+        self.unsupported_instanced_sprite_batches = self
+            .unsupported_instanced_sprite_batches
+            .saturating_add(frame.unsupported_instanced_sprite_batches);
+        self.invalid_texture_uploads = self
+            .invalid_texture_uploads
+            .saturating_add(frame.invalid_texture_uploads);
+        self.invalid_canvas_allocations = self
+            .invalid_canvas_allocations
+            .saturating_add(frame.invalid_canvas_allocations);
+        self.invalid_meshes = self.invalid_meshes.saturating_add(frame.invalid_meshes);
+        self.invalid_render_inputs = self
+            .invalid_render_inputs
+            .saturating_add(frame.invalid_render_inputs);
+        self.shader_pipeline_failures = self
+            .shader_pipeline_failures
+            .saturating_add(frame.shader_pipeline_failures);
+        self.buffer_growth_events = self
+            .buffer_growth_events
+            .saturating_add(frame.buffer_growth_events);
+        self.shadow_lights_rendered = self
+            .shadow_lights_rendered
+            .saturating_add(frame.shadow_lights_rendered);
+        self.shadow_edges_collected = self
+            .shadow_edges_collected
+            .saturating_add(frame.shadow_edges_collected);
+        self.shadow_edges_culled = self
+            .shadow_edges_culled
+            .saturating_add(frame.shadow_edges_culled);
+    }
+
     /// Reset all counters before starting a new frame.
     pub fn reset(&mut self) {
         *self = Self::default();
@@ -130,38 +173,44 @@ impl RenderDiagnostics {
 
     /// Record one shadow light dispatch and the edge filtering result used for that dispatch.
     pub fn record_shadow_dispatch(&mut self, collected_edges: usize, culled_edges: usize) {
+        let collected_edges = u32::try_from(collected_edges).unwrap_or(u32::MAX);
+        let culled_edges = u32::try_from(culled_edges).unwrap_or(u32::MAX);
         self.shadow_lights_rendered = self.shadow_lights_rendered.saturating_add(1);
         self.shadow_edges_collected = self
             .shadow_edges_collected
-            .saturating_add(collected_edges.min(u32::MAX as usize) as u32);
+            .saturating_add(collected_edges);
         self.shadow_edges_culled = self
             .shadow_edges_culled
-            .saturating_add(culled_edges.min(u32::MAX as usize) as u32);
+            .saturating_add(culled_edges);
     }
 
-    /// Return the total number of findings tracked by this diagnostics snapshot.
-    pub fn finding_total(&self) -> u32 {
+    /// Return the number of actual render faults in this snapshot.
+    ///
+    /// Drop-reason counters annotate `dropped_commands` and are therefore not added a
+    /// second time.  Allocation growth and shadow work are activity metrics, not
+    /// faults, so healthy frames that use them remain fault-free.
+    pub fn fault_total(&self) -> u32 {
         self.dropped_commands
-            .saturating_add(self.missing_textures)
-            .saturating_add(self.missing_canvases)
-            .saturating_add(self.missing_meshes)
-            .saturating_add(self.missing_shapes)
-            .saturating_add(self.missing_static_geometry)
-            .saturating_add(self.missing_instance_buffers)
-            .saturating_add(self.unsupported_instanced_sprite_batches)
             .saturating_add(self.invalid_texture_uploads)
             .saturating_add(self.invalid_canvas_allocations)
             .saturating_add(self.invalid_meshes)
-            .saturating_add(self.invalid_render_inputs)
             .saturating_add(self.shader_pipeline_failures)
-            .saturating_add(self.buffer_growth_events)
-            .saturating_add(self.shadow_lights_rendered)
-            .saturating_add(self.shadow_edges_collected)
-            .saturating_add(self.shadow_edges_culled)
     }
 
-    /// Return whether any non-fatal renderer issue was recorded this frame.
+    /// Return whether an actual non-fatal renderer fault was recorded this frame.
+    pub fn has_faults(&self) -> bool {
+        self.fault_total() > 0
+    }
+
+    /// Return the legacy fault total name.
+    #[deprecated(note = "use fault_total; activity metrics are not faults")]
+    pub fn finding_total(&self) -> u32 {
+        self.fault_total()
+    }
+
+    /// Return the legacy fault-presence name.
+    #[deprecated(note = "use has_faults; activity metrics are not faults")]
     pub fn has_findings(&self) -> bool {
-        self.finding_total() > 0
+        self.has_faults()
     }
 }

@@ -10,6 +10,11 @@ use crate::runtime::log_messages::MS01;
 use crate::runtime::resource_keys::TextureKey;
 use std::fmt;
 
+/// Trusted maximum mesh vertices accepted from a game-owned command stream.
+pub const MAX_MESH_VERTICES: usize = 1_000_000;
+/// Trusted maximum indices after fan/strip expansion before GPU upload.
+pub const MAX_MESH_TRIANGULATED_INDICES: usize = 1_000_000;
+
 /// Triangle topology when submitting a `Mesh` to the GPU.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MeshDrawMode {
@@ -59,6 +64,15 @@ impl Default for MeshVertex {
 /// Validation error for malformed mesh topology or vertex data.
 #[derive(Debug, Clone, PartialEq)]
 pub enum MeshError {
+    /// Source or generated topology exceeds the trusted renderer allocation cap.
+    TooLarge {
+        /// Which mesh quantity exceeded its cap.
+        field: &'static str,
+        /// Requested count.
+        count: usize,
+        /// Trusted maximum count.
+        max: usize,
+    },
     /// A vertex field contains NaN or infinity.
     NonFiniteVertex {
         /// Zero-based vertex position.
@@ -85,6 +99,9 @@ pub enum MeshError {
 impl fmt::Display for MeshError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::TooLarge { field, count, max } => {
+                write!(f, "mesh {field} has {count} entries, maximum is {max}")
+            }
             Self::NonFiniteVertex {
                 vertex_index,
                 field,
@@ -190,6 +207,13 @@ impl Mesh {
     }
     /// Validate vertex finiteness, index bounds, and triangle-list grouping.
     pub fn validate(&self) -> Result<(), MeshError> {
+        if self.vertices.len() > MAX_MESH_VERTICES {
+            return Err(MeshError::TooLarge {
+                field: "vertices",
+                count: self.vertices.len(),
+                max: MAX_MESH_VERTICES,
+            });
+        }
         for (vertex_index, vertex) in self.vertices.iter().enumerate() {
             validate_finite(vertex.x, vertex_index, "x")?;
             validate_finite(vertex.y, vertex_index, "y")?;
@@ -205,6 +229,21 @@ impl Mesh {
             .indices
             .as_ref()
             .map_or(self.vertices.len(), std::vec::Vec::len);
+        let triangulated_len = match self.draw_mode {
+            MeshDrawMode::Triangles => source_len,
+            MeshDrawMode::Fan | MeshDrawMode::Strip if source_len < 3 => 0,
+            MeshDrawMode::Fan | MeshDrawMode::Strip => source_len
+                .checked_sub(2)
+                .and_then(|triangles| triangles.checked_mul(3))
+                .unwrap_or(usize::MAX),
+        };
+        if triangulated_len > MAX_MESH_TRIANGULATED_INDICES {
+            return Err(MeshError::TooLarge {
+                field: "triangulated indices",
+                count: triangulated_len,
+                max: MAX_MESH_TRIANGULATED_INDICES,
+            });
+        }
         if self.draw_mode == MeshDrawMode::Triangles && !source_len.is_multiple_of(3) {
             return Err(MeshError::InvalidTriangleIndexCount {
                 index_count: source_len,

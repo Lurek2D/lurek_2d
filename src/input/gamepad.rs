@@ -14,6 +14,40 @@ use std::collections::{HashMap, HashSet};
 use std::io::{BufRead, Write};
 use std::path::Path;
 
+/// Returns the XInput-compatible button code for a standard button name.
+pub fn standard_button_code(name: &str) -> Option<u32> {
+    match name.trim().to_ascii_lowercase().as_str() {
+        "a" => Some(0),
+        "b" => Some(1),
+        "x" => Some(2),
+        "y" => Some(3),
+        "leftshoulder" | "left_shoulder" => Some(4),
+        "rightshoulder" | "right_shoulder" => Some(5),
+        "back" | "select" => Some(6),
+        "start" => Some(7),
+        "leftstick" | "left_stick" => Some(8),
+        "rightstick" | "right_stick" => Some(9),
+        "dpad_up" | "dpup" => Some(10),
+        "dpad_down" | "dpdown" => Some(11),
+        "dpad_left" | "dpleft" => Some(12),
+        "dpad_right" | "dpright" => Some(13),
+        _ => None,
+    }
+}
+
+/// Returns the XInput-compatible axis code for a standard axis name.
+pub fn standard_axis_code(name: &str) -> Option<u32> {
+    match name.trim().to_ascii_lowercase().as_str() {
+        "leftx" | "left_x" => Some(0),
+        "lefty" | "left_y" => Some(1),
+        "rightx" | "right_x" => Some(2),
+        "righty" | "right_y" => Some(3),
+        "lefttrigger" | "left_trigger" => Some(4),
+        "righttrigger" | "right_trigger" => Some(5),
+        _ => None,
+    }
+}
+
 /// Pending vibration command for one gamepad, queued for delivery to the OS driver.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct GamepadVibrationRequest {
@@ -117,6 +151,16 @@ impl GamepadState {
     /// Return the current value for `axis`, or 0.0 when the axis has never been seen.
     pub fn get_axis_value(&self, axis: u32) -> f32 {
         *self.axes.get(&axis).unwrap_or(&0.0)
+    }
+
+    /// Returns whether a standard named button is currently held.
+    pub fn is_standard_button_pressed(&self, name: &str) -> bool {
+        standard_button_code(name).is_some_and(|button| self.is_button_pressed(button))
+    }
+
+    /// Returns the value of a standard named axis, or zero for an unknown name.
+    pub fn get_standard_axis_value(&self, name: &str) -> f32 {
+        standard_axis_code(name).map_or(0.0, |axis| self.get_axis_value(axis))
     }
 
     /// Return the OS-reported controller name.
@@ -283,6 +327,33 @@ impl GamepadMappings {
     pub fn get_mapping_string(&self, guid: &str) -> Option<&str> {
         let guid = canonicalize_guid(guid).ok()?;
         self.map.get(&guid).map(|s| s.as_str())
+    }
+
+    /// Resolve a standard button name to the physical `bN` index declared by an SDL mapping.
+    /// Returns `None` when no mapping (or no compatible button token) exists, allowing the
+    /// backend's native Xbox layout to remain the fallback.
+    pub fn standard_button_index(&self, guid: &str, standard_name: &str) -> Option<u32> {
+        self.standard_control_index(guid, standard_name, 'b')
+    }
+
+    /// Resolve a standard axis name to the physical `aN` index declared by an SDL mapping.
+    pub fn standard_axis_index(&self, guid: &str, standard_name: &str) -> Option<u32> {
+        self.standard_control_index(guid, standard_name, 'a')
+    }
+
+    fn standard_control_index(&self, guid: &str, standard_name: &str, prefix: char) -> Option<u32> {
+        let mapping = self.get_mapping_string(guid)?;
+        let wanted = standard_name.trim().to_ascii_lowercase();
+        mapping.split(',').skip(2).find_map(|token| {
+            let (name, raw_value) = token.split_once(':')?;
+            if name.trim().to_ascii_lowercase() != wanted {
+                return None;
+            }
+            let value = raw_value.trim().trim_start_matches(['+', '-']);
+            value
+                .strip_prefix(prefix)
+                .and_then(|number| number.parse::<u32>().ok())
+        })
     }
 
     /// Load mappings from a file at `path`; return entry count or `EngineError` on I/O failure.

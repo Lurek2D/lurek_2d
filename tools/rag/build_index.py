@@ -54,7 +54,7 @@ MAX_FILE_BYTES = int(INDEXING.get("max_file_bytes", 2_000_000))
 SOURCE_PRIORITIES = RANKING.get("source_priorities", {})
 GENERATED_PATH_PATTERNS = RANKING.get(
     "generated_path_patterns",
-    [".github/prompts/", "pages/", "docs/api/lurek.lua", "docs/api/lurek.md", "docs/wiki/API-Reference.md"],
+    [".github/prompts/", "docs/api/lurek.lua", "docs/api/lurek.md", "docs/wiki/API-Reference.md"],
 )
 VENDOR_PATH_PATTERNS = RANKING.get("vendor_path_patterns", ["node_modules/", "/vendor/"])
 DOCUMENT_COLUMNS = (
@@ -819,8 +819,6 @@ def source_kind(rel_path: str, file_type: str) -> str:
         return "test"
     if rel_path.startswith("content/examples/") or rel_path.startswith("content/snippets/"):
         return "example"
-    if rel_path.startswith("pages/"):
-        return "page"
     if rel_path.startswith("tools/"):
         return "tool"
     return file_type

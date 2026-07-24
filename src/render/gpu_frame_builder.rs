@@ -16,8 +16,10 @@ pub fn merge_adjacent_prepared_draws(
 ) -> usize {
     let before = draws.len();
     scratch.clear();
-    if scratch.capacity() < before {
-        scratch.reserve(before - scratch.capacity());
+    if scratch.capacity() < before && scratch.try_reserve(before - scratch.capacity()).is_err() {
+        // Preserve `draws` untouched rather than allowing a fallible growth to
+        // turn a malformed/oversized command stream into a process panic.
+        return 0;
     }
 
     for draw in draws.drain(..) {

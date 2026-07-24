@@ -24,7 +24,10 @@ use crate::runtime::resource_keys::{
 use slotmap::{Key, SlotMap, SparseSecondaryMap};
 use std::collections::{HashMap, HashSet};
 use std::f32::consts::PI;
-use std::sync::OnceLock;
+use std::sync::{
+    atomic::{AtomicU8, Ordering},
+    Arc, OnceLock,
+};
 use std::time::Instant;
 
 use crate::render::gpu_light::{MAX_SHADOW_LIGHTS, SHADOW_MAP_RES};
@@ -39,8 +42,10 @@ use crate::render::gpu_types::{
     MAX_PARTICLE_IDXS, MAX_PARTICLE_VERTS, MAX_TEX_IDXS, MAX_TEX_VERTS,
 };
 use crate::render::input_validation::{
-    validate_compound_shape, validate_render_command_with_category, RenderInputLimits,
+    validate_compound_shape, validate_render_command_with_category, validate_render_frame_state,
+    RenderInputLimits,
 };
+use crate::render::{RenderBudget, RenderBudgetLimits};
 use crate::render::province_map_pipeline::{
     ProvinceMapDataBindings, ProvinceMapPipeline, ProvinceMapUniforms,
 };
@@ -615,6 +620,8 @@ pub struct GpuRenderer {
     pub render_stats: crate::render::gpu_state::RenderStats,
     /// Per-frame diagnostics for skipped commands and invalid render resources.
     pub render_diagnostics: crate::render::RenderDiagnostics,
+    /// Saturating diagnostics accumulated from completed prior frames.
+    pub render_diagnostics_total: crate::render::RenderDiagnostics,
     /// Optional light accumulation and shadow-atlas GPU state.
     pub(crate) light_gpu: Option<crate::render::gpu_light::LightGpuState>,
     /// Optional post-processing pipeline chain applied after the main pass.
@@ -633,6 +640,12 @@ pub struct GpuRenderer {
     pub(crate) instance_capacity: u64,
     /// CPU-side frame buffers reused across `render_frame` calls.
     pub(crate) frame_buffers: FrameRenderBuffers,
+    /// One non-blocking surface readback retained across frame polls.
+    pub(crate) pending_surface_readback: Option<crate::render::gpu_state::PendingSurfaceReadback>,
+    /// State of the current or most recently completed bounded readback request.
+    pub surface_readback_status: crate::render::gpu_state::SurfaceReadbackStatus,
+    /// Shared uncaptured GPU failure signal written by wgpu's callback and consumed by the app loop.
+    uncaptured_gpu_failure: Arc<AtomicU8>,
 }
 
 impl GpuRenderer {
@@ -644,6 +657,18 @@ impl GpuRenderer {
         width: u32,
         height: u32,
     ) -> Self {
+        let uncaptured_gpu_failure = Arc::new(AtomicU8::new(0));
+        let callback_failure = Arc::clone(&uncaptured_gpu_failure);
+        device.on_uncaptured_error(Box::new(move |error| {
+            // Keep driver-originated descriptions out of game-visible diagnostics.
+            let (category, signal) = match error {
+                wgpu::Error::OutOfMemory { .. } => ("out of memory", 1),
+                wgpu::Error::Validation { .. } => ("validation error", 2),
+                wgpu::Error::Internal { .. } => ("internal error", 2),
+            };
+            callback_failure.fetch_max(signal, Ordering::Release);
+            log::error!("Uncaptured GPU {category}");
+        }));
         let viewport_data = ViewportUniform {
             size: [width as f32, height as f32],
             time: 0.0,
@@ -869,6 +894,7 @@ impl GpuRenderer {
             height,
             render_stats: RenderStats::default(),
             render_diagnostics: RenderDiagnostics::default(),
+            render_diagnostics_total: RenderDiagnostics::default(),
             light_gpu: None,
             postfx_pipeline: None,
             province_map_pipeline,
@@ -876,10 +902,30 @@ impl GpuRenderer {
             postfx_capture: HashMap::new(),
             mesh_cache,
             frame_buffers: FrameRenderBuffers::default(),
+            pending_surface_readback: None,
+            surface_readback_status: crate::render::gpu_state::SurfaceReadbackStatus::Idle,
+            uncaptured_gpu_failure,
+        }
+    }
+
+    /// Consume an uncaptured-device failure recorded by wgpu without exposing driver text.
+    ///
+    /// Device recreation is not available from this renderer owner; validation/internal failures
+    /// therefore request the app's documented controlled recovery path, while OOM requests stop.
+    pub fn take_uncaptured_recovery_action(
+        &self,
+    ) -> Option<crate::render::RenderRecoveryAction> {
+        match self.uncaptured_gpu_failure.swap(0, Ordering::AcqRel) {
+            0 => None,
+            1 => Some(crate::render::RenderRecoveryAction::Shutdown),
+            _ => Some(crate::render::RenderRecoveryAction::RecoverDevice),
         }
     }
     /// Update viewport dimensions after a window resize; recreates stencil targets and clears light GPU state.
     pub fn resize(&mut self, width: u32, height: u32) {
+        self.cancel_surface_readback();
+        // Fullscreen capture textures are extent-dependent and must not be reused after resize.
+        self.postfx_capture.clear();
         self.width = width;
         self.height = height;
         let data = ViewportUniform {
@@ -1093,7 +1139,11 @@ impl GpuRenderer {
                     },
                 ));
                 transient_province_buffer = Some(province_buffer);
-                transient_bind_group.as_ref().unwrap()
+                let Some(bind_group) = transient_bind_group.as_ref() else {
+                    self.render_diagnostics.record_shader_pipeline_failure();
+                    continue;
+                };
+                bind_group
             } else {
                 &cache.data_bind_group
             };

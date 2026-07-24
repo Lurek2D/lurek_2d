@@ -11,6 +11,8 @@ pub mod action_def;
 pub mod combo;
 /// Gamepad device state, axis/button mapping, and vibration requests.
 pub mod gamepad;
+/// Bounded normalized input event history shared by action, combo, and replay flows.
+pub mod history;
 /// Keyboard scan-code state and winit key translation.
 pub mod keyboard;
 /// Mouse position, button state, cursor kind, and cursor handle management.
@@ -22,10 +24,11 @@ pub mod touch;
 
 pub use action_def::{ActionDef, ActionMap};
 pub use combo::{ComboDetector, ComboProgress, ComboStep};
-pub use gamepad::virtual_dpad;
+pub use gamepad::{standard_axis_code, standard_button_code, virtual_dpad};
 pub use gamepad::GamepadMappings;
 pub use gamepad::GamepadState;
 pub use gamepad::GamepadVibrationRequest;
+pub use history::{InputDevice, InputEventKind, InputHistory, InputHistoryEvent};
 pub use keyboard::winit_scancode_to_string;
 pub use keyboard::KeyboardState;
 pub use mouse::MouseState;

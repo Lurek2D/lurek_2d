@@ -404,8 +404,7 @@ fn builtin_font_key_by_point_size(
 }
 
 fn load_font_from_path(st: &mut SharedState, path: &str, size: f32) -> LuaResult<FontKey> {
-    let full_path = st.game_dir.join(path);
-    let data = std::fs::read(&full_path).map_err(|e| {
+    let data = st.fs.read_bytes(path).map_err(|e| {
         LuaError::RuntimeError(format!(
             "lurek.render.newFont: failed to read '{}': {}",
             path, e
@@ -1189,7 +1188,9 @@ fn resolve_new_font(
             LuaError::RuntimeError("lurek.render.newFont: built-in fonts not loaded".into())
         });
     }
-    let path = path.expect("path is present when numeric_size is None");
+    let path = path.ok_or_else(|| {
+        LuaError::RuntimeError("lurek.render.newFont: missing font path".into())
+    })?;
     if path == "default" {
         if let Some(key) = builtin_font_key_by_point_size(st, size.max(1.0) as u32, None) {
             return Ok(key);
@@ -3173,7 +3174,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     LuaError::RuntimeError(format!("lurek.render.newImage: invalid path: {}", e))
                 })?;
                 let mut st = s.borrow_mut();
-                let full_path = st.game_dir.join(path);
+                let full_path = st.fs.resolve_read_path(path).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.render.newImage: {error}"))
+                })?;
                 match Texture::load_with_color_space(&full_path, &mut st.textures, color_space) {
                     Ok(tex) => {
                         st.clear_released_texture_handle(tex.key.data().as_ffi());
@@ -3446,6 +3449,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let img_key = img.key;
             drop(img);
             let max_entries = max.unwrap_or(1000);
+            if max_entries > crate::sprite::limits::SpriteLimits::MAX_BATCH_ENTRIES {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.render.newSpriteBatch: max entries {max_entries} exceeds maximum of {}",
+                    crate::sprite::limits::SpriteLimits::MAX_BATCH_ENTRIES
+                )));
+            }
             let mut st = s.borrow_mut();
             if !st.textures.contains_key(img_key) {
                 return Err(LuaError::RuntimeError(
@@ -3469,6 +3478,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "newMesh",
         lua.create_function(move |_, (verts, mode): (LuaTable, Option<String>)| {
+            let vertex_count = verts.raw_len();
+            if vertex_count > crate::render::mesh::MAX_MESH_VERTICES {
+                return Err(LuaError::RuntimeError(format!(
+                    "lurek.render.newMesh: mesh vertices has {vertex_count} entries, maximum is {}",
+                    crate::render::mesh::MAX_MESH_VERTICES
+                )));
+            }
             let draw_mode = match mode.as_deref() {
                 Some("fan") => MeshDrawMode::Fan,
                 Some("strip") => MeshDrawMode::Strip,
@@ -4974,11 +4990,27 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "loadObj",
         lua.create_function(move |_, path: String| {
-            let full_path = {
+            let model = {
                 let st = state_for_obj.borrow();
-                st.game_dir.join(&path)
+                let source = st.fs.read_string(&path).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.render.loadObj: {error}"))
+                })?;
+                let base = Path::new(&path)
+                    .parent()
+                    .map(Path::to_path_buf)
+                    .unwrap_or_default();
+                let mut resolver = |reference: &str| {
+                    st.fs
+                        .read_string(&base.join(reference).to_string_lossy())
+                        .map_err(|error| crate::render::obj_loader::ObjError::Parse(error.to_string()))
+                };
+                crate::render::obj_loader::ObjLoader::parse_obj_with_resolver(
+                    &source,
+                    crate::render::obj_loader::ObjLimits::default(),
+                    &mut resolver,
+                )
             };
-            let model = crate::render::obj_loader::ObjLoader::load_file(&full_path)
+            let model = model
                 .map_err(|e| LuaError::RuntimeError(format!("loadObj '{}': {}", path, e)))?;
             Ok(LuaObjModel {
                 state: state_for_obj.clone(),
@@ -4998,12 +5030,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "loadVoxel",
         lua.create_function(move |_, (path, voxel_size): (String, Option<f32>)| {
-            let full_path = {
+            let bytes = {
                 let st = state_for_voxel.borrow();
-                st.game_dir.join(&path)
+                st.fs.read_bytes(&path).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.render.loadVoxel: {error}"))
+                })?
             };
-            let model = crate::render::voxel_loader::VoxelModel::load_file(
-                &full_path,
+            let model = crate::render::voxel_loader::VoxelModel::load_bytes(
+                &bytes,
                 voxel_size.unwrap_or(1.0),
             )
             .map_err(|e| LuaError::RuntimeError(format!("loadVoxel '{}': {}", path, e)))?;
@@ -5020,11 +5054,27 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "loadModel",
         lua.create_function(move |_, path: String| {
-            let full_path = {
+            let model = {
                 let st = state_for_model.borrow();
-                st.game_dir.join(&path)
+                let source = st.fs.read_string(&path).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.render.loadModel: {error}"))
+                })?;
+                let base = Path::new(&path)
+                    .parent()
+                    .map(Path::to_path_buf)
+                    .unwrap_or_default();
+                let mut resolver = |reference: &str| {
+                    st.fs
+                        .read_string(&base.join(reference).to_string_lossy())
+                        .map_err(|error| crate::render::obj_loader::ObjError::Parse(error.to_string()))
+                };
+                crate::render::obj_loader::ObjLoader::parse_obj_with_resolver(
+                    &source,
+                    crate::render::obj_loader::ObjLimits::default(),
+                    &mut resolver,
+                )
             };
-            let model = crate::render::obj_loader::ObjLoader::load_file(&full_path)
+            let model = model
                 .map_err(|e| LuaError::RuntimeError(format!("loadModel '{}': {}", path, e)))?;
             Ok(LuaObjModel {
                 state: state_for_model.clone(),

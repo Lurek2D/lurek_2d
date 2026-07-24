@@ -287,8 +287,7 @@ fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResult<Lu
             lua.create_function(move |_, (path, size): (String, f32)| {
                 let key = {
                     let mut st = s.borrow_mut();
-                    let full_path = st.game_dir.join(&path);
-                    let data = std::fs::read(&full_path).map_err(|e| {
+                    let data = st.fs.read_bytes(&path).map_err(|e| {
                         LuaError::RuntimeError(format!(
                             "lurek.font.load: failed to read '{}': {}",
                             path, e
@@ -360,8 +359,7 @@ fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResult<Lu
                 move |_, (path, cell_width, cell_height): (String, u32, u32)| {
                     let key = {
                         let mut st = s.borrow_mut();
-                        let full_path = st.game_dir.join(&path);
-                        let data = std::fs::read(&full_path).map_err(|e| {
+                        let data = st.fs.read_bytes(&path).map_err(|e| {
                             LuaError::RuntimeError(format!(
                                 "lurek.font.loadBitmap: failed to read '{}': {}",
                                 path, e

@@ -9,7 +9,7 @@ description: "Load this skill when creating or modifying Lua snippets and genera
 - Create or modify snippets that reflect idiomatic public API usage and generated editor output.
 
 ## Domain Knowledge
-- `content/snippets/<module>.lua` is the source catalog; `tools/snippets/gen_vscode_snippets.py` parses marker blocks into `extension/vscode/data/snippets.json`, so emitted JSON is never the editing surface.
+- `content/snippets/<module>.lua` is the source catalog; `tools/snippets/gen_vscode_snippets.py` parses marker blocks into `../lurek_2D_extension/vscode/data/snippets.json`, so emitted JSON is never the editing surface.
 - A snippet is a compositional recipe rather than a one-call API example: it should connect at least two `lurek.*` calls into a useful editor insertion while remaining small enough to adapt.
 - Prefixes are user-facing identifiers and must remain unique and discoverable; module names drive catalog grouping and must match the source filename used by the parser.
 - `SNIP_<index>_<name>` placeholders encode edit order before generation into editor tab stops. Duplicate indices, missing primary placeholders, or unstable names degrade insertion even if JSON validates.
@@ -27,7 +27,7 @@ description: "Load this skill when creating or modifying Lua snippets and genera
 - Execute or smoke the inserted Lua after replacing placeholders with representative values, catching missing locals, invalid callback placement, asset assumptions, and generated escaping that static snippet validation cannot see.
 
 ## References
-- `contracts: content/snippets/AGENTS.md, docs/AGENTS.md, extension/vscode/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10, tools/python.cmd tools/audit/snippet_coverage.py, tools/python.cmd tools/snippets/gen_vscode_snippets.py, tools/python.cmd tools/validate/validate_snippets.py --vscode-snippets extension/vscode/data/snippets.json`
+- `contracts: content/snippets/AGENTS.md, docs/AGENTS.md, ../lurek_2D_extension/vscode/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10, tools/python.cmd tools/audit/snippet_coverage.py, tools/python.cmd tools/snippets/gen_vscode_snippets.py, tools/python.cmd tools/validate/validate_snippets.py --vscode-snippets ../lurek_2D_extension/vscode/data/snippets.json`
 - `agent: doc_writer`
-- RAG: Use when locating snippet sources and generated output; `content snippets API usage`; `snippets json generated extension`; `template placeholder trigger description`; `extension/`; snippet source files in `tools/` or `docs/`; generated snippet output; user-facing examples
+- RAG: Use when locating snippet sources and generated output; `content snippets API usage`; `snippets json generated extension`; `template placeholder trigger description`; `../lurek_2D_extension/`; snippet source files in `tools/` or `docs/`; generated snippet output; user-facing examples

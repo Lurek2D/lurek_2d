@@ -4,6 +4,7 @@
 //! Open this file when grouped submission shape changes; sprite state, atlas parsing, and animation live in siblings.
 
 use crate::runtime::resource_keys::TextureKey;
+use crate::sprite::limits::SpriteLimits;
 
 /// # Fields
 ///
@@ -13,7 +14,7 @@ pub struct SpriteBatch {
     texture_key: TextureKey,
     /// Accumulated draw entries for this frame.
     entries: Vec<BatchEntry>,
-    /// Upper bound on entries; 0 means unlimited, otherwise add() returns None when full.
+    /// Trusted upper bound on entries; add() returns `None` when full or allocation fails.
     max_entries: usize,
 }
 /// # Fields
@@ -45,18 +46,18 @@ pub struct BatchEntry {
 }
 /// Construction and entry management for SpriteBatch.
 impl SpriteBatch {
-    /// Create a batch for texture_key with the given max_entries cap; 0 uses a default capacity of 256.
+    /// Create a bounded batch; 0 uses a default capacity of 256.
     pub fn new(texture_key: TextureKey, max_entries: usize) -> Self {
-        let cap = if max_entries > 0 { max_entries } else { 256 };
+        let cap = if max_entries > 0 { max_entries } else { 256 }.min(SpriteLimits::MAX_BATCH_ENTRIES);
         SpriteBatch {
             texture_key,
-            entries: Vec::with_capacity(cap),
-            max_entries,
+            entries: Vec::new(),
+            max_entries: cap,
         }
     }
-    /// Append a BatchEntry and return its index; returns None when the max_entries limit is reached.
+    /// Append a BatchEntry; returns `None` when the limit or allocator rejects the entry.
     pub fn add(&mut self, entry: BatchEntry) -> Option<usize> {
-        if self.max_entries > 0 && self.entries.len() >= self.max_entries {
+        if self.entries.len() >= self.max_entries || self.entries.try_reserve(1).is_err() {
             return None;
         }
         let idx = self.entries.len();
@@ -83,7 +84,7 @@ impl SpriteBatch {
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }
-    /// Return the configured max_entries cap; 0 means unlimited.
+    /// Return the trusted effective entry cap.
     pub fn buffer_size(&self) -> usize {
         self.max_entries
     }

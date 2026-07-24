@@ -1,4 +1,4 @@
-﻿-- Reorganized unit test file.
+-- Reorganized unit test file.
 -- Source files are isolated in do-end blocks to preserve local helper scope.
 
 -- BEGIN test_sprite_core_unit.lua

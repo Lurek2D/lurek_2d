@@ -709,6 +709,12 @@ mod mesh_tests {
     }
 
     #[test]
+    fn validate_allows_empty_fan_and_strip_meshes() {
+        assert!(Mesh::new(0, MeshDrawMode::Fan).validate().is_ok());
+        assert!(Mesh::new(0, MeshDrawMode::Strip).validate().is_ok());
+    }
+
+    #[test]
     fn triangulate_with_index_buffer() {
         let mut m = Mesh::new(4, MeshDrawMode::Triangles);
         m.set_vertex_map(vec![3, 2, 1]);
@@ -759,6 +765,20 @@ mod mesh_tests {
             MeshError::InvalidTriangleIndexCount { index_count: 4 }
         );
         assert!(m.try_triangulate().is_err());
+    }
+
+    #[test]
+    fn validate_rejects_fan_expansion_above_trusted_gpu_budget() {
+        let mut m = Mesh::new(3, MeshDrawMode::Fan);
+        m.set_vertex_map(vec![0; 333_336]);
+        assert_eq!(
+            m.validate().unwrap_err(),
+            MeshError::TooLarge {
+                field: "triangulated indices",
+                count: 1_000_002,
+                max: 1_000_000,
+            }
+        );
     }
 
     #[test]
@@ -1122,7 +1142,7 @@ mod postfx_pipeline_tests {
 }
 
 mod obj_loader_tests {
-    use lurek2d::render::obj_loader::ObjLoader;
+    use lurek2d::render::obj_loader::{ObjError, ObjLimits, ObjLoader, ObjResolver};
     use std::path::{Path, PathBuf};
 
     fn parse_obj_error_contains(src: &str, expected: &str) {
@@ -1197,6 +1217,70 @@ mod obj_loader_tests {
             "expected float",
         );
     }
+
+    #[test]
+    fn obj_limits_reject_oversized_lines_elements_and_nonfinite_values() {
+        let limits = ObjLimits {
+            max_bytes: 128,
+            max_lines: 4,
+            max_line_bytes: 12,
+            max_elements: 3,
+        };
+        assert!(ObjLoader::parse_obj_with_limits("v 0 0 0\nv 1 0 0\n", Path::new("."), limits)
+            .is_ok());
+        assert!(ObjLoader::parse_obj_with_limits("v 0 0 0\nv 1 0 0\nv 0 1 0\nv 2 2 2\n", Path::new("."), limits)
+            .unwrap_err()
+            .to_string()
+            .contains("maximum"));
+        assert!(ObjLoader::parse_obj_with_limits("v nan 0 0\n", Path::new("."), ObjLimits::default())
+            .unwrap_err()
+            .to_string()
+            .contains("finite"));
+    }
+
+    #[test]
+    fn obj_parser_fuzzes_deterministic_malformed_text_without_panicking() {
+        let mut seed = 0x0B1EC7_u64;
+        for length in 0..512usize {
+            let mut bytes = Vec::with_capacity(length);
+            for _ in 0..length {
+                seed = seed.wrapping_mul(1_103_515_245).wrapping_add(12_345);
+                bytes.push((seed >> 24) as u8);
+            }
+            let source = String::from_utf8_lossy(&bytes);
+            let _ = ObjLoader::parse_obj_with_limits(
+                &source,
+                Path::new("."),
+                ObjLimits {
+                    max_bytes: 1_024,
+                    max_lines: 64,
+                    max_line_bytes: 128,
+                    max_elements: 64,
+                },
+            );
+        }
+    }
+
+    #[test]
+    fn obj_parser_uses_caller_owned_material_resolver() {
+        struct InMemoryResolver;
+        impl ObjResolver for InMemoryResolver {
+            fn read_material_library(&mut self, reference: &str) -> Result<String, ObjError> {
+                assert_eq!(reference, "material.mtl");
+                Ok("newmtl red\nKd 1 0 0\n".to_string())
+            }
+        }
+
+        let mut resolver = InMemoryResolver;
+        let model = ObjLoader::parse_obj_with_resolver(
+            "mtllib material.mtl\nv 0 0 0\nv 1 0 0\nv 0 1 0\nusemtl red\nf 1 2 3\n",
+            ObjLimits::default(),
+            &mut resolver,
+        )
+        .expect("in-memory material resolver should avoid filesystem access");
+        assert_eq!(model.materials.len(), 1);
+        assert_eq!(model.faces.len(), 1);
+    }
 }
 
 mod render_diagnostics_tests {
@@ -1239,7 +1323,7 @@ mod render_diagnostics_tests {
         diagnostics.record_buffer_growth_event();
         diagnostics.record_shadow_dispatch(4, 8);
 
-        assert!(diagnostics.has_findings());
+        assert!(diagnostics.has_faults());
         assert_eq!(diagnostics.dropped_commands, 8);
         assert_eq!(diagnostics.missing_textures, 1);
         assert_eq!(diagnostics.missing_canvases, 1);
@@ -1257,7 +1341,7 @@ mod render_diagnostics_tests {
         assert_eq!(diagnostics.shadow_lights_rendered, 1);
         assert_eq!(diagnostics.shadow_edges_collected, 4);
         assert_eq!(diagnostics.shadow_edges_culled, 8);
-        assert_eq!(diagnostics.finding_total(), 34);
+        assert_eq!(diagnostics.fault_total(), 12);
     }
 
     #[test]
@@ -1270,11 +1354,42 @@ mod render_diagnostics_tests {
         diagnostics.record_missing_texture();
         assert_eq!(diagnostics.dropped_commands, u32::MAX);
         assert_eq!(diagnostics.missing_textures, 1);
-        assert_eq!(diagnostics.finding_total(), u32::MAX);
+        assert_eq!(diagnostics.fault_total(), u32::MAX);
 
         diagnostics.reset();
         assert_eq!(diagnostics, RenderDiagnostics::default());
-        assert!(!diagnostics.has_findings());
+        assert!(!diagnostics.has_faults());
+    }
+
+    #[test]
+    fn healthy_shadow_activity_is_not_a_fault() {
+        let mut diagnostics = RenderDiagnostics::default();
+        diagnostics.record_shadow_dispatch(4, 8);
+        diagnostics.record_buffer_growth_event();
+
+        assert_eq!(diagnostics.fault_total(), 0);
+        assert!(!diagnostics.has_faults());
+        assert_eq!(diagnostics.shadow_lights_rendered, 1);
+    }
+
+    #[test]
+    fn cumulative_diagnostics_survive_last_frame_reset_and_saturate() {
+        let mut total = RenderDiagnostics::default();
+        let mut frame = RenderDiagnostics::default();
+        frame.record_missing_texture();
+        total.accumulate(&frame);
+        frame.reset();
+
+        assert_eq!(total.dropped_commands, 1);
+        assert_eq!(total.missing_textures, 1);
+        assert_eq!(frame, RenderDiagnostics::default());
+
+        total.dropped_commands = u32::MAX;
+        total.accumulate(&RenderDiagnostics {
+            dropped_commands: 1,
+            ..RenderDiagnostics::default()
+        });
+        assert_eq!(total.dropped_commands, u32::MAX);
     }
 
     #[test]
@@ -1369,6 +1484,124 @@ mod render_diagnostics_tests {
         assert!(renderer_section.contains("replay_compound_shape"));
         assert!(replay_source.contains("ShapeCommand::Rectangle"));
         assert!(replay_source.contains("ShapeCommand::Arc"));
+    }
+}
+
+mod render_budget_tests {
+    use lurek2d::render::{RenderBudget, RenderBudgetError, RenderBudgetLimits, RenderCommand};
+    use lurek2d::runtime::resource_keys::FontKey;
+    use slotmap::SlotMap;
+
+    fn dummy_font_key() -> FontKey {
+        SlotMap::<FontKey, ()>::with_key().insert(())
+    }
+
+    #[test]
+    fn frame_budget_rejects_atomically_when_command_ceiling_is_reached() {
+        let mut budget = RenderBudget::default();
+        let limits = RenderBudgetLimits {
+            max_commands: 1,
+            ..RenderBudgetLimits::default()
+        };
+        let command = RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0);
+
+        assert!(budget.try_accept(&command, &limits).is_ok());
+        assert_eq!(
+            budget.try_accept(&command, &limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "commands",
+                attempted: 2,
+                max: 1,
+            })
+        );
+        budget.reset();
+        assert!(budget.try_accept(&command, &limits).is_ok());
+    }
+
+    #[test]
+    fn frame_budget_counts_text_bytes_across_commands() {
+        let mut budget = RenderBudget::default();
+        let limits = RenderBudgetLimits {
+            max_text_bytes: 3,
+            ..RenderBudgetLimits::default()
+        };
+        let first = RenderCommand::Print {
+            font_key: dummy_font_key(),
+            text: "ab".into(),
+            x: 0.0,
+            y: 0.0,
+            scale: 1.0,
+        };
+        let second = RenderCommand::Print {
+            font_key: dummy_font_key(),
+            text: "cd".into(),
+            x: 0.0,
+            y: 0.0,
+            scale: 1.0,
+        };
+
+        assert!(budget.try_accept(&first, &limits).is_ok());
+        assert!(matches!(
+            budget.try_accept(&second, &limits),
+            Err(RenderBudgetError::Exceeded { field: "text bytes", .. })
+        ));
+    }
+
+    #[test]
+    fn frame_budget_counts_resolved_sprite_batch_items_atomically() {
+        let mut budget = RenderBudget::default();
+        let limits = RenderBudgetLimits {
+            max_sprite_batch_items: 3,
+            ..RenderBudgetLimits::default()
+        };
+        let command = RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0);
+        assert!(budget
+            .try_accept_with_batch_items(&command, 2, &limits)
+            .is_ok());
+        assert!(matches!(
+            budget.try_accept_with_batch_items(&command, 2, &limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "sprite batch items",
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn frame_budget_clamps_geometry_and_batch_work_to_device_limits() {
+        let limits = wgpu::Limits {
+            max_buffer_size: 1,
+            ..wgpu::Limits::default()
+        };
+        let effective = RenderBudgetLimits::for_device(&limits);
+        assert_eq!(effective.max_geometry_vertices, 0);
+        assert_eq!(effective.max_sprite_batch_items, 0);
+    }
+}
+
+mod render_recovery_tests {
+    use lurek2d::render::{RenderRecoveryAction, RenderRecoveryEvent, RenderRecoveryState};
+
+    #[test]
+    fn recovery_state_machine_has_controlled_surface_device_and_oom_paths() {
+        let (state, action) = RenderRecoveryState::Ready
+            .transition(RenderRecoveryEvent::SurfaceLostOrOutdated);
+        assert_eq!(state, RenderRecoveryState::SurfaceReconfigurePending);
+        assert_eq!(action, RenderRecoveryAction::ReconfigureSurface);
+        let (state, action) = state.transition(RenderRecoveryEvent::Reconfigured);
+        assert_eq!(state, RenderRecoveryState::Ready);
+        assert_eq!(action, RenderRecoveryAction::Submit);
+
+        let (state, action) = state.transition(RenderRecoveryEvent::DeviceLostOrValidationError);
+        assert_eq!(state, RenderRecoveryState::DeviceRecoveryPending);
+        assert_eq!(action, RenderRecoveryAction::RecoverDevice);
+        let (state, action) = state.transition(RenderRecoveryEvent::OutOfMemory);
+        assert_eq!(state, RenderRecoveryState::OutOfMemory);
+        assert_eq!(action, RenderRecoveryAction::Shutdown);
+        assert_eq!(
+            state.transition(RenderRecoveryEvent::Resumed),
+            (RenderRecoveryState::OutOfMemory, RenderRecoveryAction::Shutdown)
+        );
     }
 }
 
@@ -1486,15 +1719,100 @@ mod frame_buffer_tests {
     }
 }
 
+mod readback_layout_tests {
+    use lurek2d::render::gpu_screenshot_readback::surface_readback_layout;
+
+    #[test]
+    fn readback_layout_checks_alignment_and_overflow_without_allocating() {
+        assert_eq!(surface_readback_layout(1, 1), Ok((256, 256)));
+        assert_eq!(surface_readback_layout(64, 2), Ok((256, 512)));
+        assert!(surface_readback_layout(0, 1).is_err());
+        assert!(surface_readback_layout(u32::MAX, u32::MAX).is_err());
+    }
+}
+
 mod render_input_validation_tests {
     use lurek2d::math::Vec2;
     use lurek2d::render::input_validation::{
         validate_compound_shape, validate_render_command, validate_render_command_with_category,
-        RenderInputError, RenderInputLimits,
+        validate_render_frame_state, RenderFrameStateError, RenderInputError, RenderInputLimits,
     };
-    use lurek2d::render::renderer::PostFxPass;
+    use lurek2d::render::renderer::{ParticleInstance, ParticleRenderShape, PostFxPass};
     use lurek2d::render::shape::{CompoundShape, ShapeCommand};
-    use lurek2d::render::{DrawMode, RenderCommand, RenderCommandCategory};
+    use lurek2d::render::{DrawMode, RenderCommand, RenderCommandCategory, StencilAction};
+
+    #[test]
+    fn frame_scope_validator_rejects_unbalanced_and_mismatched_scopes() {
+        assert_eq!(
+            validate_render_frame_state(&[RenderCommand::PopTransform]),
+            Err(RenderFrameStateError::UnexpectedClose { scope: "transform" })
+        );
+        assert_eq!(
+            validate_render_frame_state(&[
+                RenderCommand::BeginPostFx { stack_id: 1 },
+                RenderCommand::EndPostFx { stack_id: 2 },
+            ]),
+            Err(RenderFrameStateError::MismatchedClose { scope: "postfx" })
+        );
+        assert_eq!(
+            validate_render_frame_state(&[RenderCommand::PushTransform]),
+            Err(RenderFrameStateError::Unclosed {
+                scope: "transform",
+                depth: 1,
+            })
+        );
+        assert!(validate_render_frame_state(&[
+            RenderCommand::PushTransform,
+            RenderCommand::PopTransform,
+            RenderCommand::BeginSortGroup { group_id: 7 },
+            RenderCommand::FlushSortGroup { group_id: 7 },
+        ])
+        .is_ok());
+    }
+
+    #[test]
+    fn frame_scope_validator_bounds_nesting_memory() {
+        let commands = vec![RenderCommand::PushTransform; 1_025];
+        assert_eq!(
+            validate_render_frame_state(&commands),
+            Err(RenderFrameStateError::TooDeep {
+                scope: "transform",
+                max: 1_024,
+            })
+        );
+    }
+
+    #[test]
+    fn frame_scope_validator_is_deterministic_for_generated_command_sequences() {
+        let mut seed = 0x5EED_u64;
+        for _case in 0..256 {
+            let mut commands = Vec::new();
+            for _step in 0..64 {
+                seed = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
+                let id = seed >> 32;
+                commands.push(match id % 8 {
+                    0 => RenderCommand::PushTransform,
+                    1 => RenderCommand::PopTransform,
+                    2 => RenderCommand::StencilBegin {
+                        action: StencilAction::Replace,
+                        value: 1,
+                    },
+                    3 => RenderCommand::StencilEnd,
+                    4 => RenderCommand::BeginPostFx { stack_id: id },
+                    5 => RenderCommand::EndPostFx { stack_id: id },
+                    6 => RenderCommand::PushLayer {
+                        id,
+                        alpha: 1.0,
+                        blend: lurek2d::render::BlendMode::Alpha,
+                    },
+                    _ => RenderCommand::PopLayer { id },
+                });
+            }
+            let first = validate_render_frame_state(&commands);
+            let second = validate_render_frame_state(&commands);
+            assert_eq!(first, second);
+        }
+    }
     use lurek2d::runtime::resource_keys::{CanvasKey, FontKey};
     use slotmap::SlotMap;
 
@@ -1698,6 +2016,7 @@ mod render_input_validation_tests {
             max_vertices_per_command: 2,
             max_segments_per_command: 4,
             max_postfx_passes: 1,
+            max_particles_per_command: 2,
         };
 
         assert_eq!(
@@ -1730,6 +2049,47 @@ mod render_input_validation_tests {
             .unwrap_err(),
             RenderInputError::TooMany {
                 field: "points",
+                len: 3,
+                max: 2,
+            }
+        );
+    }
+
+    #[test]
+    fn rejects_particle_commands_above_their_pre_tessellation_limit() {
+        let particle = ParticleInstance {
+            x: 0.0,
+            y: 0.0,
+            r: 1.0,
+            g: 1.0,
+            b: 1.0,
+            a: 1.0,
+            rotation: 0.0,
+            size: 1.0,
+            shape: ParticleRenderShape::Ring { thickness: 0.5 },
+            texture_key: None,
+            quad: None,
+            quad_tex_dims: None,
+            local_x: 0.0,
+            local_y: 0.0,
+            velocity_x: 0.0,
+            velocity_y: 0.0,
+            normalized_age: 0.0,
+            lifetime: 1.0,
+            seed: 0,
+        };
+        let limits = RenderInputLimits {
+            max_particles_per_command: 2,
+            ..RenderInputLimits::default()
+        };
+        let command = RenderCommand::DrawParticleSystem {
+            particles: vec![particle.clone(), particle.clone(), particle],
+            shader: None,
+        };
+        assert_eq!(
+            validate_render_command(&command, &limits).unwrap_err(),
+            RenderInputError::TooMany {
+                field: "particles",
                 len: 3,
                 max: 2,
             }
@@ -1802,7 +2162,7 @@ mod gpu_renderer_tests {
     };
     use lurek2d::render::gpu_resources::{
         canvas_texture_needs_recreate, is_builtin_static_geometry_key, texture_needs_upload,
-        validate_canvas_size, validate_rgba_texture_upload,
+        validate_canvas_size, validate_dynamic_buffer_bytes, validate_rgba_texture_upload,
     };
     use lurek2d::render::gpu_shaders::ShaderUniformKind;
     use lurek2d::render::gpu_tess::{
@@ -1811,7 +2171,9 @@ mod gpu_renderer_tests {
     };
     use lurek2d::render::gpu_types::{PreparedDraw, RenderTargetId};
     use lurek2d::render::renderer::{CompareMode, StencilAction};
-    use lurek2d::render::shader::validate_uniform_name;
+    use lurek2d::render::shader::{
+        validate_uniform_name, MAX_SHADER_SOURCE_BYTES, MAX_SHADER_SOURCE_TOKENS,
+    };
     use lurek2d::render::{BlendMode, Shader, ShaderTarget, TextureData, UniformValue};
     use lurek2d::runtime::resource_keys::StaticGeometryKey;
 
@@ -2023,6 +2385,17 @@ mod gpu_renderer_tests {
     }
 
     #[test]
+    fn dynamic_buffer_validation_rejects_device_limit_and_arithmetic_overflow() {
+        let limits = wgpu::Limits {
+            max_buffer_size: 64,
+            ..Default::default()
+        };
+        assert!(validate_dynamic_buffer_bytes(&[(8, 8)], &limits).is_ok());
+        assert!(validate_dynamic_buffer_bytes(&[(9, 8)], &limits).is_err());
+        assert!(validate_dynamic_buffer_bytes(&[(usize::MAX, 2)], &limits).is_err());
+    }
+
+    #[test]
     fn texture_upload_freshness_tracks_dimensions_and_revision() {
         let mut texture =
             TextureData::new(vec![255; 16], 2, 2, lurek2d::image::TextureColorSpace::Srgb);
@@ -2100,6 +2473,47 @@ mod gpu_renderer_tests {
             .is_err());
         assert!(shader.has_uniform("tint_color"));
         assert!(!shader.has_uniform("bad;name"));
+    }
+
+    #[test]
+    fn shader_limits_reject_source_bombs_bindings_and_nonfinite_uniforms() {
+        assert!(Shader::new("x".repeat(MAX_SHADER_SOURCE_BYTES + 1))
+            .unwrap_err()
+            .contains("maximum"));
+        assert!(Shader::new(format!(
+            "{} {}",
+            "x ".repeat(MAX_SHADER_SOURCE_TOKENS),
+            VALID_WGSL_FRAGMENT_SHADER
+        ))
+        .unwrap_err()
+        .contains("tokens"));
+        assert!(Shader::new(
+            "@group(0) @binding(0) var t: texture_2d<f32>;\n@fragment fn fs_main(@location(0) c: vec4<f32>, @location(1) uv: vec2<f32>) -> @location(0) vec4<f32> { return c; }".into()
+        )
+        .unwrap_err()
+        .contains("may not declare"));
+        let mut shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string()).unwrap();
+        assert!(shader
+            .send("gain".into(), UniformValue::Float(f32::NAN))
+            .unwrap_err()
+            .contains("finite"));
+    }
+
+    #[test]
+    fn shader_prevalidation_is_deterministic_for_hostile_text() {
+        let mut seed = 0x5A4D_3E21_u64;
+        for length in 0..512usize {
+            let mut bytes = Vec::new();
+            bytes
+                .try_reserve_exact(length)
+                .expect("small deterministic fuzz input must reserve");
+            for _ in 0..length {
+                seed = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
+                bytes.push((seed >> 32) as u8);
+            }
+            let source = String::from_utf8_lossy(&bytes).into_owned();
+            assert_eq!(Shader::new(source.clone()).is_ok(), Shader::new(source).is_ok());
+        }
     }
 
     #[test]

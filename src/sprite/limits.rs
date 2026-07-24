@@ -30,4 +30,6 @@ impl SpriteLimits {
     pub const MAX_FPS: f32 = 1_000.0;
     /// Maximum events emitted by one animator update.
     pub const MAX_ANIMATOR_EVENTS: usize = 256;
+    /// Maximum retained sprite entries in one render-owned batch.
+    pub const MAX_BATCH_ENTRIES: usize = 65_536;
 }

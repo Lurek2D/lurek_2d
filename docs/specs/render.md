@@ -50,14 +50,19 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Texture uploads require non-zero width and height, exact RGBA8 byte length, checked pixel arithmetic, and dimensions no larger than the active wgpu device limit.
 - Canvas GPU allocations require non-zero width and height within the same 2D texture dimension limit; changing a canvas size under the same key recreates its GPU backing texture.
 - Dynamic font creation clamps very small point sizes upward and rejects non-finite, oversized, zero-dimension, or oversized atlas allocations before CPU buffer growth.
-- Mesh upload and Lua-facing mesh construction reject non-finite vertex fields, out-of-range indices, and incomplete triangle-list topology before static geometry is synchronized.
-- OBJ face indices are bounded after 1-based or negative-index normalization, index zero is invalid, and material-library paths must stay under the supplied base directory.
+- Mesh upload and Lua-facing mesh construction reject non-finite vertex fields, out-of-range indices, incomplete triangle-list topology, more than 1,000,000 source vertices, or more than 1,000,000 generated triangle indices before static geometry is synchronized. At most 4,096 static GPU mesh entries are retained; their buffers use checked, device-limited byte calculations and fallible CPU reservations.
+- OBJ parsing accepts bounded text plus a caller-owned material resolver. Lua model loading supplies that resolver through GameFS; face indices are bounded after 1-based or negative-index normalization, index zero is invalid, and material-library references must be relative `.mtl` paths without traversal. MagicaVoxel loading likewise reads GameFS-authorized bytes before bounded in-memory parsing.
 - Shader uniform names must be valid, non-reserved WGSL identifiers before they can participate in wrapper-source generation.
 - Render commands and registered compound shapes pass through a central input sanitizer before backend work; non-finite floats, invalid sizes, out-of-range colors, excessive segments, and malformed point arrays are rejected and counted.
+- A trusted engine-owned cumulative frame budget caps command families, source geometry, resolved sprite-batch instances, text bytes/spans, and post-fx passes before tessellation or encoding. Geometry and batch ceilings are additionally clamped to the active device's buffer limit; Lua can observe effective behavior but cannot raise those limits.
+- Sprite batches are independently bounded to 65,536 retained entries; Lua cannot request a higher cap, and each insertion uses fallible reservation before accepting the entry.
+- Transform, stencil, post-fx, sort-group, and layer scopes are validated as balanced at the frame boundary. An invalid stream is rejected as a frame rather than leaking state into the next frame.
 - Arc tessellation clamps zero segment counts to a safe minimum before vertex generation.
 - Draw-layer ordering uses total floating-point ordering and callback ID tie-breaks, so NaN and equal depths flush deterministically.
-- `RenderDiagnostics` records skipped render commands, missing GPU or shape resources, invalid uploads, invalid meshes, GPU buffer growth, and shader or pipeline cache fallback events without turning the frame into a hard error.
-- Frame-local color, texture, draw, instance, merge, and command scratch buffers clear between frames without shrinking; hot flat-color primitives tessellate directly into shared frame buffers and textured paths reuse scratch buffers instead of allocating per command.
+- `RenderDiagnostics` separates faults from activity: dropped/rejected work and resource failures are faults, while shadow work and buffer growth remain normal telemetry and cannot double-count a dropped command. The renderer keeps independent last-frame and saturating cumulative snapshots, so resetting a new frame never erases aggregate observability.
+- Frame-local color, texture, draw, instance, merge, and command scratch buffers clear between frames; normal capacity is retained for steady-state work, while exceptional retained capacity is reclaimed at the next frame boundary.
+- Surface screenshot readback uses a bounded staging layout and asynchronous device polling. Requests expose `idle`, `pending`, `ready`, `failed`, `timed_out`, or `cancelled` internal lifecycle states; capture requests remain pending only while a map is active, then complete or fail/cancel deterministically without blocking the interactive loop.
+- Surface loss/outdating requests reconfiguration, surface OOM requests controlled shutdown, and uncaptured wgpu OOM/validation/internal callbacks are propagated to the app loop without driver text. The current app does not own device recreation, so an uncaptured validation/internal failure follows the documented controlled-stop path rather than submitting more work to an invalid device.
 - Shadow edge collection filters disabled, masked-out, and out-of-radius occluders before GPU upload, reuses per-occluder world-space edge caches for shadow lights in the same frame, and records rendered shadow rows plus collected and culled edge counts.
 - `SoftwareCaptureDiagnostics` records unsupported capture commands and bounded polygon fill behavior; software capture is evidence-oriented and does not promise pixel parity for GPU-only texture, shader, post-fx, layer, batch, or registered-resource commands.
 
@@ -411,6 +416,12 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Use this file when changing render province map pipeline defaults, lifecycle handling, validation, or data rules.
 - Keeps failure paths and edge cases near render province map pipeline state that explains them instead of outward.
 
+### render_budget.rs
+
+- Owns cumulative, backend-independent limits for one accepted render frame.
+- It is deliberately checked before tessellation, allocation, or command encoding so
+- Lua command streams cannot turn individually valid requests into unbounded work.
+
 ### render_diagnostics.rs
 
 - Owns the render diagnostics owner for the render subsystem and keeps its rules local to this file.
@@ -418,6 +429,12 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Defines how render diagnostics data is validated, transformed, or stored before neighboring systems use it.
 - Owns render behavior with explicit state, validation, and crate-local integration boundaries.
 - Keeps public crate helpers focused on render diagnostics behavior while Lua registration stays elsewhere.
+
+### render_recovery.rs
+
+- Defines the deterministic render surface/device failure state machine.
+- App orchestration owns window lifecycle, while this owner classifies renderer failures
+- into safe submission, reconfiguration, recovery, or controlled shutdown actions.
 
 ### renderer.rs
 
@@ -910,6 +927,8 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Renderer reliability changes should prefer recoverable errors or skipped invalid draws over panics in frame submission.
 - Shader API:
   `lurek.render.newShader(code, opts?)` is the canonical public constructor for WGSL fragment shaders. `opts.target` defaults to `draw` and may be `draw`, `postfx`, `image`, `overlay`, `particle`, `light`, `sprite`, `tilemap`, `mapviz`, `text`, `ui`, or `debugviz`. There is no public `lurek.shader` module; shaders are render resources bound by other modules through `LShader` handles.
+- Shader trust and limits:
+  Runtime shader text is trusted, project-authored fragment code. Source bytes/lines/tokens, uniform names/counts, device binding limits, and finite uniform values are bounded; runtime code cannot declare its own `@group`/`@binding` resources because render owns layouts and bindings. General WGSL is not assumed termination-safe, so untrusted remote shader text is not a supported input mode.
 - Shader target contracts:
   Fullscreen targets (`postfx`, `image`, `overlay`) share source color, uv, pixel position, resolution, and texel-size inputs; this is the intended contract for palette/LUT grading, heat haze and water distortion, CRT/retro passes, screen transitions such as wipe/dissolve/fade masks, and offline bitmap filters. `image` executes off-screen over RGBA8 `ImageData` and reads back a new `ImageData`. `particle` forwards color, uv, local/world position, velocity, normalized age, lifetime, seed, and sampled texture color. `light` forwards world/light position, normal-map contribution hint, normalized distance, radius, intensity, shadow factor, ambient color, and direction/spot data. `sprite` is a textured material target for sprite recolor, palette swap, team color, damage flash, and dissolve-style fragment effects. `tilemap` is a tile-visual material target for biome tinting, animated water/lava color, fog overlays, and atlas-tile recolor; its current contract exposes tile draw color and uv, with uv set to zero for debug-color primitives. `mapviz` is a command-render visualization target for province and minimap maps; it accepts color, uv, local/pixel position, screen resolution, and texel-size inputs, but province-id or minimap-cell semantic data is still module-owned and not yet forwarded as shader inputs. `text` is a font-atlas target for glyph color/alpha effects, gradient text, glow, outline-like tinting, scanline text, terminal CRT text, and SDF-like experiments; it is activated through `lurek.render.setTextShader` and affects render text commands without changing generic image/sprite draws. `ui` is a terminal/widget surface target for command groups such as `LTerminal:render` and retained widgets emitted by `lurek.ui.draw`; it accepts color, uv, local/pixel position, screen resolution, and texel-size inputs and is intended for CRT terminals, hover/highlight panels, masked UI surfaces, and full-surface UI tinting. `debugviz` is a diagnostic render-command target for non-gameplay overlays such as pathfinding cost fields, physics heatmaps, AI influence maps, flow fields, and runtime inspection layers; it uses the same color/uv/pixel/resolution/texel contract and is activated through `lurek.render.setDebugShader`. Runtime custom shaders are fragment-only; arbitrary user vertex and compute shaders are outside this API.
 - Canvas shader passes:

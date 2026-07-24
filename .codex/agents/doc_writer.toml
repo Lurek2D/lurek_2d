@@ -4,7 +4,7 @@
 # Preferred tools: docs generators, link checks, shell, repo MCP.
 # Do not use for architecture decisions or engine implementation unless the docs change depends on them.
 name = "doc_writer"
-description = "Documentation writer for docs/, pages/, specs, docstrings, snippets, and generated docs content."
+description = "Documentation writer for docs/, the sibling lurek_2D_pages repo, specs, docstrings, snippets, and generated docs content."
 model = "gpt-5.4"
 model_reasoning_effort = "medium"
 model_reasoning_summary = "auto"

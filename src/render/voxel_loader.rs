@@ -12,6 +12,8 @@ pub const MAX_VOXEL_CELLS: usize = 16_777_216;
 pub const MAX_OCCUPIED_VOXELS: usize = 2_000_000;
 /// Maximum triangles emitted by one voxel asset.
 pub const MAX_VOXEL_TRIANGLES: usize = 200_000;
+/// Maximum compressed MagicaVoxel source accepted before parser allocation.
+pub const MAX_VOXEL_SOURCE_BYTES: usize = 64 * 1024 * 1024;
 
 /// One colour-bearing vertex in a cached voxel surface triangle.
 #[derive(Debug, Clone, Copy)]
@@ -164,10 +166,23 @@ fn collect_scene_voxels(
 impl VoxelModel {
     /// Load and mesh a static MagicaVoxel scene, including its node transforms.
     pub fn load_file(path: &std::path::Path, voxel_size: f32) -> Result<Self, String> {
+        let bytes = std::fs::read(path)
+            .map_err(|error| format!("failed to read MagicaVoxel file: {error}"))?;
+        Self::load_bytes(&bytes, voxel_size)
+    }
+
+    /// Parse a caller-owned, policy-authorized MagicaVoxel byte stream.
+    pub fn load_bytes(bytes: &[u8], voxel_size: f32) -> Result<Self, String> {
         if !voxel_size.is_finite() || voxel_size <= 0.0 {
             return Err("voxel_size must be finite and > 0".to_string());
         }
-        let data = dot_vox::load(path.to_string_lossy().as_ref())
+        if bytes.len() > MAX_VOXEL_SOURCE_BYTES {
+            return Err(format!(
+                "MagicaVoxel source has {} bytes; limit is {MAX_VOXEL_SOURCE_BYTES}",
+                bytes.len()
+            ));
+        }
+        let data = dot_vox::load_bytes(bytes)
             .map_err(|error| format!("failed to parse MagicaVoxel file: {error}"))?;
         Self::from_data(&data, voxel_size)
     }
@@ -229,12 +244,22 @@ impl VoxelModel {
                 voxels.len()
             ));
         }
-        let min_x = voxels.iter().map(|v| v.0).min().unwrap();
-        let min_y = voxels.iter().map(|v| v.1).min().unwrap();
-        let min_z = voxels.iter().map(|v| v.2).min().unwrap();
-        let max_x = voxels.iter().map(|v| v.0).max().unwrap();
-        let max_y = voxels.iter().map(|v| v.1).max().unwrap();
-        let max_z = voxels.iter().map(|v| v.2).max().unwrap();
+        let &(first_x, first_y, first_z, _) = voxels
+            .first()
+            .ok_or_else(|| "MagicaVoxel scene contains no visible voxels".to_string())?;
+        let (min_x, min_y, min_z, max_x, max_y, max_z) = voxels.iter().skip(1).fold(
+            (first_x, first_y, first_z, first_x, first_y, first_z),
+            |(min_x, min_y, min_z, max_x, max_y, max_z), &(x, y, z, _)| {
+                (
+                    min_x.min(x),
+                    min_y.min(y),
+                    min_z.min(z),
+                    max_x.max(x),
+                    max_y.max(y),
+                    max_z.max(z),
+                )
+            },
+        );
         let sx = usize::try_from(i64::from(max_x) - i64::from(min_x) + 1)
             .map_err(|_| "voxel scene width is too large")?;
         let sy = usize::try_from(i64::from(max_y) - i64::from(min_y) + 1)

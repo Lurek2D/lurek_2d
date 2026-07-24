@@ -5,7 +5,7 @@
 ## TL;DR
 
 - Unifies keyboard, mouse, gamepad slotting, and touch events into stable inputs.
-- Supports custom action-bindings, gesture combo timing, and JSON input replays.
+- Supports custom action bindings, chord expressions, timed combo history, and JSON input replay.
 
 ## General Info
 
@@ -13,7 +13,7 @@
 - Source path: `src/input`
 - Binding: `src/lua_api/input_api.rs`
 - Namespace: `lurek.input`
-- Lua API surface: `90` functions, `8` types, `18` methods
+- Lua API surface: `107` functions, `8` types, `22` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -28,6 +28,9 @@
 - Replay payloads also carry schema and provenance metadata so tools can reason about compatibility, timing assumptions, and keyboard-layout risk before treating a recording as deterministic.
 - That normalization layer protects higher-level systems from platform detail churn. Gameplay and UI code can ask for stable actions instead of reinventing per-device handling every time a new device family or interaction surface appears.
 - Rebinding is especially important because modern projects often need several physical inputs to express the same logical action under explicit precedence, accessibility, or user-preference rules.
+- Action bindings can target named Xbox controls, an assigned player, or any connected controller while preserving legacy numeric slot bindings.
+- Keyboard and mouse expose held and edge-triggered polling. Physical key mapping includes punctuation, F13–F24, international, browser, and media keys; mouse input retains raw movement, buttons beyond the standard five, and a trailing click-count callback argument.
+- Combo handles consume the normalized history automatically and support press, release, directional, neutral, chord, and charge/hold steps; the original `feed()` / `tick()` mode remains available.
 - Input capture and replay also make the module one of the cleanest sources of truth for what happened during a failing run, a scripted demonstration, or a tool-driven automation pass.
 - The result is a surface that serves players, tools, and tests at the same time: it turns noisy device events into deterministic, serializable, reusable intent.
 - Other systems consume the result, but `input` owns normalization, mapping, serialization, and replay semantics for device-originated intent.
@@ -80,6 +83,11 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - The mappings store parses SDL2-style controller database lines, keeps them by GUID, and can read or write files.
 - The file is the owner for device state and mapping schema, while app-side polling and rumble dispatch live higher.
 - Open it when gamepad semantics change; combo logic, recording, and window-event orchestration live in siblings.
+
+### history.rs
+
+- Owns the bounded, device-neutral input event history used by actions, combos, recordings, and diagnostics.
+- It records normalized platform events once at the runtime boundary and retains only a short rolling window.
 
 ### keyboard.rs
 
@@ -134,22 +142,27 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 ### Functions
 
 - `lurek.input.advancePlayback() -> table`: Advances playback by one frame and returns events for that frame.
+- `lurek.input.assignPlayer(player, gamepad_id) -> nil`: Assigns a gamepad slot to a positive player number.
 - `lurek.input.bind(action, keys) -> nil`: Adds one or more keyboard/gamepad bindings to an action.
 - `lurek.input.clearBindings() -> nil`: Removes all action bindings from the map.
-- `lurek.input.define(name, bindings, category?) -> nil`: Defines an action with a full set of bindings and an optional category, replacing any prior definition.
+- `lurek.input.define(name, bindings, category?, context?) -> nil`: Defines an action with a full set of bindings and an optional category, replacing any prior definition.
 - `lurek.input.defineActions(defs, defaultCategory?) -> integer`: Defines multiple named actions at once, replacing prior definitions.
 - `lurek.input.deserializeBindings(json) -> boolean`: Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
+- `lurek.input.gamepad.getAssignedPlayer(id) -> integer`: Returns the player assigned to a gamepad, or nil when unassigned.
 - `lurek.input.gamepad.getAxis(id, axis) -> number`: Returns a gamepad axis value by index.
 - `lurek.input.gamepad.getAxisCount(id) -> integer`: Returns the axis count for a gamepad.
 - `lurek.input.gamepad.getBackgroundEvents() -> boolean`: Returns whether background gamepad event processing is enabled.
 - `lurek.input.gamepad.getButtonCount(id) -> integer`: Returns the button count for a gamepad.
 - `lurek.input.gamepad.getCount() -> integer`: Returns the number of gamepad slots tracked by the runtime.
+- `lurek.input.gamepad.getDeadzone(id, stick) -> number`: Returns a configured per-gamepad deadzone, defaulting to 0.0.
 - `lurek.input.gamepad.getGUID(id) -> string`: Returns the GUID string for a gamepad.
 - `lurek.input.gamepad.getGamepadMappingString(guid) -> string`: Returns a stored mapping string for a gamepad GUID.
 - `lurek.input.gamepad.getHat(id, hat) -> string`: Returns hat direction for a gamepad hat index.
 - `lurek.input.gamepad.getJoystickCount() -> integer`: Returns the number of joystick slots tracked by the runtime.
 - `lurek.input.gamepad.getJoysticks() -> integer[]`: Returns ids for currently connected gamepads.
 - `lurek.input.gamepad.getName(id) -> string`: Returns a gamepad display name by its id.
+- `lurek.input.gamepad.getStandardAxis(id, name) -> number`: Returns a standard named Xbox axis value.
+- `lurek.input.gamepad.getStandardButton(id, name) -> boolean`: Returns whether a standard named Xbox button is currently down.
 - `lurek.input.gamepad.isConnected(id) -> boolean`: Returns whether a gamepad id is currently connected.
 - `lurek.input.gamepad.isDown(id, button) -> boolean`: Returns whether a gamepad button is currently down.
 - `lurek.input.gamepad.isGamepad(id) -> boolean`: Returns whether a connected gamepad exists at an id.
@@ -157,6 +170,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `lurek.input.gamepad.loadGamepadMappings(path) -> nil`: Loads gamepad mapping strings from a file.
 - `lurek.input.gamepad.saveGamepadMappings(path) -> nil`: Saves gamepad mapping strings to a file.
 - `lurek.input.gamepad.setBackgroundEvents(enable) -> nil`: Enables or disables background gamepad event processing.
+- `lurek.input.gamepad.setDeadzone(id, stick, value) -> nil`: Sets a per-gamepad deadzone for a named stick or axis group.
 - `lurek.input.gamepad.setGamepadMapping(guid, mapping) -> nil`: Stores a controller mapping string for a gamepad GUID.
 - `lurek.input.gamepad.setVibration(id, low_freq, high_freq, duration_ms) -> boolean`: Requests gamepad vibration with low and high frequency motor strengths.
 - `lurek.input.gamepad.vibrate(id, low_freq, high_freq, duration_ms) -> boolean`: Requests gamepad vibration with low and high frequency motor strengths.
@@ -170,13 +184,16 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `lurek.input.getByCategory(category) -> string[]`: Returns action names belonging to the given category.
 - `lurek.input.getConflicts() -> table`: Returns a table mapping each binding key to the action names that share it; only keys with two or more actions are included.
 - `lurek.input.getPlaybackFrame() -> integer`: Returns the current playback frame index.
+- `lurek.input.getPlayerGamepad(player) -> integer`: Returns the gamepad assigned to a player, or nil.
 - `lurek.input.getVector(hname, vname) -> number`: Returns a 2D axis vector from two named actions.
 - `lurek.input.isActionDown(action) -> boolean`: Returns whether any binding for an action is currently down.
+- `lurek.input.isContextEnabled(name) -> boolean`: Returns whether an action input context is enabled.
 - `lurek.input.isDown() -> boolean`: Returns whether any bound key for this mapping is currently down.
 - `lurek.input.isPlayingBack() -> boolean`: Returns whether the module recorder is currently playing back.
 - `lurek.input.isRecording() -> boolean`: Returns whether the module recorder is currently recording.
 - `lurek.input.keyboard.getKeyFromScancode(scancode) -> string`: Converts a scancode name to its key name when known.
 - `lurek.input.keyboard.getScancodeFromKey(key) -> string`: Converts a key name to its scancode name when known.
+- `lurek.input.keyboard.getTextInput() -> string[]`: Returns committed text segments received during the current frame.
 - `lurek.input.keyboard.hasKeyRepeat() -> boolean`: Returns whether key repeat tracking is enabled.
 - `lurek.input.keyboard.hasTextInput() -> boolean`: Returns whether text input tracking is enabled.
 - `lurek.input.keyboard.isDown(...) -> boolean`: Returns whether any of the supplied key names are currently held down.
@@ -184,8 +201,13 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `lurek.input.keyboard.isScancodeDown(scancode) -> boolean`: Returns whether a scancode is currently down.
 - `lurek.input.keyboard.setKeyRepeat(enabled) -> nil`: Enables or disables key repeat tracking.
 - `lurek.input.keyboard.setTextInput(enabled) -> nil`: Enables or disables text input tracking.
+- `lurek.input.keyboard.wasPressed(key) -> boolean`: Returns whether a logical key transitioned to pressed this frame.
+- `lurek.input.keyboard.wasReleased(key) -> boolean`: Returns whether a logical key transitioned to released this frame.
+- `lurek.input.keyboard.wasScancodePressed(scancode) -> boolean`: Returns whether a physical keyboard scancode transitioned to pressed this frame.
+- `lurek.input.keyboard.wasScancodeReleased(scancode) -> boolean`: Returns whether a physical keyboard scancode transitioned to released this frame.
 - `lurek.input.loadRecording(json) -> nil`: Loads recording JSON into the module recorder.
 - `lurek.input.mouse.getCursor() -> string`: Returns the current system cursor name.
+- `lurek.input.mouse.getDelta() -> number`: Returns raw pointer movement accumulated during the current frame.
 - `lurek.input.mouse.getPosition() -> number`: Returns the current mouse position.
 - `lurek.input.mouse.getRelativeMode() -> boolean`: Returns whether relative mouse mode is enabled.
 - `lurek.input.mouse.getSystemCursor(name) -> LCursor`: Creates a system cursor handle from a cursor name.
@@ -202,12 +224,15 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `lurek.input.mouse.setPosition(x, y) -> nil`: Requests a mouse cursor position change.
 - `lurek.input.mouse.setRelativeMode(relative) -> nil`: Sets the relative mouse input mode state.
 - `lurek.input.mouse.setVisible(visible) -> nil`: Sets the mouse cursor visibility state.
+- `lurek.input.mouse.wasPressed(button) -> boolean`: Returns whether a one-based mouse button index transitioned to pressed this frame.
+- `lurek.input.mouse.wasReleased(button) -> boolean`: Returns whether a one-based mouse button index transitioned to released this frame.
 - `lurek.input.newCombo(steps, opts?) -> LCombo`: Creates a combo detector from string steps or step tables with optional timing.
 - `lurek.input.newMapping(name, keys) -> table`: Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
 - `lurek.input.onRebind(callback) -> nil`: Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.
 - `lurek.input.reset(name?) -> nil`: Removes bindings for one action by name, or all actions when name is nil.
 - `lurek.input.serializeBindings() -> string`: Serialises all action definitions to a JSON string.
-- `lurek.input.startPlayback() -> nil`: Starts playback of the loaded recording.
+- `lurek.input.setContextEnabled(name, enabled) -> nil`: Enables or disables an action input context.
+- `lurek.input.startPlayback(opts?) -> nil`: Starts playback of the loaded recording. `opts.mode` may be `frame`, `fixed`, or `realtime`.
 - `lurek.input.startRecording() -> nil`: Starts recording input events into the module recorder.
 - `lurek.input.stopPlayback() -> nil`: Stops playback of the loaded recording.
 - `lurek.input.stopRecording() -> LInputRecording`: Stops input recording and returns the captured recording when one is active.
@@ -244,6 +269,8 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 
 ##### Methods
 
+- `LCombo:completedWithin(ms) -> boolean`: Returns whether the combo completed within a recent millisecond window.
+- `LCombo:consume() -> nil`: Marks the latest combo completion as consumed.
 - `LCombo:feed(key) -> string`: Feeds one key into the combo detector and returns progress status.
 - `LCombo:getStep(index) -> table`: Returns step data by one-based index.
 - `LCombo:isInProgress() -> boolean`: Returns whether the combo sequence is partially matched.
@@ -253,6 +280,8 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `LCombo:totalSteps() -> integer`: Returns the number of steps in this combo sequence.
 - `LCombo:type() -> string`: Returns the Lua-visible type name for this combo handle.
 - `LCombo:typeOf(name) -> boolean`: Returns whether this combo handle matches a supported type name.
+- `LCombo:update() -> boolean`: Updates an automatic combo from normalized runtime input history.
+- `LCombo:wasCompleted() -> boolean`: Returns whether the combo completed and has not been consumed.
 
 #### LComboGetStepResult Type
 
@@ -368,8 +397,14 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 
 ## Notes
 
-- Action bindings are canonicalized at the API boundary. Alias key names collapse to one stored spelling, malformed structured bindings are rejected, and reserved binding families stay unavailable to action queries until the engine supports them end to end.
+- Action bindings are canonicalized at the API boundary. The JSON payload is `schema_version = 2`, while the previous bare-map payload remains readable. Bindings may be simple controls, `{ all = {...}, within_ms = N }` chords, or named gamepad axis thresholds.
+- Action definitions have a context (default `gameplay`). `setContextEnabled` disables polling for one context without removing its bindings.
+- The bounded normalized history stores up to 4,096 events and two seconds of keyboard, mouse, gamepad, touch, motion, wheel, text, and connection transitions. It is the shared source for action timing, combos, and recording.
+- Mouse buttons above the standard five are stable one-based numbers (`MouseButton::Other(n)` becomes `n + 6`); raw motion is available through `mouse.getDelta()` even while the cursor is locked.
+- Xbox/XInput buttons and axes can be addressed with standard names such as `gamepad:any:a`, `gamepad:p1:dpad_up`, and `righttrigger`. SDL mapping entries are applied during XInput normalization (`bN` and `aN` tokens); player slots survive a disconnect so a reconnect can resume the same assignment.
+- Rumble requests are centralized per gamepad: a new request replaces the previous effect, a zero duration stops it, and elapsed effects are stopped on the polling path rather than through one thread per request.
 - Custom cursor creation validates image dimensions, RGBA byte length, and hotspot bounds before the request becomes a runtime cursor handle.
 - Gamepad mapping import and export use sandboxed `GameFS` path resolution instead of arbitrary host filesystem paths, and mapping lines must pass GUID and token validation before they are stored.
 - Losing window focus clears held keyboard keys and modifier state so stale `ctrl`, `alt`, `shift`, `meta`, and `altgr` flags do not leak across blur events.
-- Replay playback preserves sparse mouse coordinates, and recording JSON loading enforces byte, frame-count, event-count, and metadata-length limits before accepting untrusted payloads.
+- Replay records normalized event kind, device, optional analog value, pointer data, and monotonic capture timestamps in addition to sparse mouse coordinates. Playback accepts `frame`, `fixed`, and `realtime` scheduling; all recorded device state is reinjected through the same normalized history path. Recording JSON loading enforces byte, frame-count, event-count, and metadata-length limits before accepting untrusted payloads.
+- Hardware gamepad polling is intentionally Windows/XInput-only in this release; other platforms expose no live hardware gamepads without adding a backend dependency.

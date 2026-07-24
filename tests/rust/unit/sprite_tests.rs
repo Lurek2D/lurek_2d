@@ -187,12 +187,22 @@ mod sprite_batch_tests {
     }
 
     #[test]
-    fn buffer_size_zero_means_unlimited() {
+    fn zero_capacity_uses_the_bounded_default() {
         let mut batch = SpriteBatch::new(dummy_key(), 0);
-        for _ in 0..300 {
+        for _ in 0..256 {
             assert!(batch.add(make_entry(0.0, 0.0)).is_some());
         }
-        assert_eq!(batch.buffer_size(), 0);
+        assert!(batch.add(make_entry(0.0, 0.0)).is_none());
+        assert_eq!(batch.buffer_size(), 256);
+    }
+
+    #[test]
+    fn batch_capacity_is_capped_at_the_trusted_maximum() {
+        let batch = SpriteBatch::new(dummy_key(), usize::MAX);
+        assert_eq!(
+            batch.buffer_size(),
+            lurek2d::sprite::limits::SpriteLimits::MAX_BATCH_ENTRIES
+        );
     }
 }
 

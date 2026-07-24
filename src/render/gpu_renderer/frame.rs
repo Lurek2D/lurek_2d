@@ -82,6 +82,8 @@ impl GpuRenderer {
         capture_screenshot: bool,
     ) -> Result<Option<(u32, u32, Vec<u8>)>, wgpu::SurfaceError> {
         let frame_start = Instant::now();
+        let completed_screenshot = self.poll_surface_readback();
+        self.render_diagnostics_total.accumulate(&self.render_diagnostics);
         self.render_diagnostics.reset();
         self.prune_released_resources(textures, fonts, canvases, shaders, meshes);
         for (key, tex_data) in textures.iter() {
@@ -129,6 +131,8 @@ impl GpuRenderer {
         let mut active_shader: Option<ShaderKey> = None;
         let mut active_text_shader: Option<ShaderKey> = None;
         let render_input_limits = RenderInputLimits::default();
+        let render_budget_limits = RenderBudgetLimits::for_device(&self.device.limits());
+        let mut render_budget = RenderBudget::default();
         let mut pending_postfx: Vec<(u64, Vec<crate::render::renderer::PostFxPass>, u32, u32)> =
             Vec::new();
         let mut pending_canvas_postfx: Vec<(CanvasKey, Vec<crate::render::renderer::PostFxPass>)> =
@@ -179,10 +183,34 @@ impl GpuRenderer {
             scratch_tex_verts,
             scratch_tex_idxs,
         };
+        let commands = match validate_render_frame_state(commands) {
+            Ok(()) => commands,
+            Err(error) => {
+                self.render_diagnostics.record_invalid_render_input();
+                log::warn!("Rejecting frame with invalid render scope state: {error}");
+                &[]
+            }
+        };
         for cmd in commands {
             if let Err(err) = validate_render_command_with_category(cmd, &render_input_limits) {
                 self.render_diagnostics.record_invalid_render_input();
                 log::warn!("Skipping invalid render command: {}", err);
+                continue;
+            }
+            let batch_items = match cmd {
+                RenderCommand::DrawBatch { batch_key } => command_context
+                    .sprite_batches
+                    .get(*batch_key)
+                    .map_or(0, crate::sprite::SpriteBatch::len),
+                _ => 0,
+            };
+            if let Err(err) = render_budget.try_accept_with_batch_items(
+                cmd,
+                batch_items,
+                &render_budget_limits,
+            ) {
+                self.render_diagnostics.record_invalid_render_input();
+                log::warn!("Skipping render command that exceeds the frame budget: {}", err);
                 continue;
             }
             if command_context.handle_basic_render_command(self, cmd)
@@ -197,14 +225,14 @@ impl GpuRenderer {
             pending_canvas_postfx,
             pending_canvas_effects,
             pending_province_maps,
-            all_color_verts,
-            all_color_idxs,
-            all_tex_verts,
-            all_tex_idxs,
-            all_particle_verts,
-            all_particle_idxs,
+            mut all_color_verts,
+            mut all_color_idxs,
+            mut all_tex_verts,
+            mut all_tex_idxs,
+            mut all_particle_verts,
+            mut all_particle_idxs,
             mut draws,
-            frame_instances,
+            mut frame_instances,
             scratch_color_verts,
             scratch_color_idxs,
             scratch_tex_verts,
@@ -243,14 +271,52 @@ impl GpuRenderer {
                 );
             }
         }
-        self.ensure_geometry_buffer_capacity(
+        let geometry_limits = self.device.limits();
+        if let Err(error) = crate::render::gpu_resources::validate_dynamic_buffer_bytes(
+            &[
+                (all_color_verts.len(), std::mem::size_of::<ColorVertex>()),
+                (all_color_idxs.len(), std::mem::size_of::<u32>()),
+                (all_tex_verts.len(), std::mem::size_of::<TexVertex>()),
+                (all_tex_idxs.len(), std::mem::size_of::<u32>()),
+                (all_particle_verts.len(), std::mem::size_of::<ParticleVertex>()),
+                (all_particle_idxs.len(), std::mem::size_of::<u32>()),
+                (
+                    frame_instances.len(),
+                    std::mem::size_of::<crate::render::gpu_types::InstanceData>(),
+                ),
+            ],
+            &geometry_limits,
+        ) {
+            self.render_diagnostics.record_invalid_render_input();
+            log::warn!("Skipping frame geometry that exceeds the device buffer budget: {error}");
+            all_color_verts.clear();
+            all_color_idxs.clear();
+            all_tex_verts.clear();
+            all_tex_idxs.clear();
+            all_particle_verts.clear();
+            all_particle_idxs.clear();
+            draws.clear();
+            frame_instances.clear();
+        }
+        if let Err(error) = self.ensure_geometry_buffer_capacity(
             all_color_verts.len(),
             all_color_idxs.len(),
             all_tex_verts.len(),
             all_tex_idxs.len(),
             all_particle_verts.len(),
             all_particle_idxs.len(),
-        );
+        ) {
+            self.render_diagnostics.record_invalid_render_input();
+            log::warn!("Skipping frame because geometry buffer growth was rejected: {error}");
+            all_color_verts.clear();
+            all_color_idxs.clear();
+            all_tex_verts.clear();
+            all_tex_idxs.clear();
+            all_particle_verts.clear();
+            all_particle_idxs.clear();
+            draws.clear();
+            frame_instances.clear();
+        }
         if !all_color_verts.is_empty() {
             self.queue.write_buffer(
                 &self.color_vertex_buffer,
@@ -288,7 +354,13 @@ impl GpuRenderer {
             );
         }
         if !frame_instances.is_empty() {
-            self.ensure_instance_buffer_capacity(frame_instances.len());
+            if let Err(error) = self.ensure_instance_buffer_capacity(frame_instances.len()) {
+                self.render_diagnostics.record_invalid_render_input();
+                log::warn!("Skipping instances because instance buffer growth was rejected: {error}");
+                frame_instances.clear();
+            }
+        }
+        if !frame_instances.is_empty() {
             self.queue.write_buffer(
                 &self.instance_buffer,
                 0,
@@ -917,7 +989,10 @@ impl GpuRenderer {
             }
             self.update_viewport_uniform(self.width, self.height, camera_matrix, frame_time);
         }
-        let pending_readback = if capture_screenshot {
+        let pending_readback = if capture_screenshot
+            && completed_screenshot.is_none()
+            && self.pending_surface_readback.is_none()
+        {
             self.begin_surface_readback(&mut encoder, &output.texture, self.width, self.height)
         } else {
             None
@@ -963,9 +1038,11 @@ impl GpuRenderer {
         }
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
+        if let Some(mut readback) = pending_readback {
+            self.start_surface_readback(&mut readback);
+            self.pending_surface_readback = Some(readback);
+        }
         self.render_stats.cpu_render_ms = frame_start.elapsed().as_secs_f32() * 1000.0;
-        let screenshot =
-            pending_readback.and_then(|readback| self.complete_surface_readback(readback));
         self.frame_buffers = FrameRenderBuffers {
             color_verts: all_color_verts,
             color_idxs: all_color_idxs,
@@ -981,6 +1058,6 @@ impl GpuRenderer {
             scratch_tex_idxs,
             merged_draws,
         };
-        Ok(screenshot)
+        Ok(completed_screenshot)
     }
 }

@@ -102,7 +102,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `docs/gen_lib_docs.py` - gen_lib_docs.py — Generate API docs from Lurek2D library Lua files. [durable; mcp:no]
 - `docs/gen_lua_api.py` - gen_lua_api.py â€” Lurek2D Lua API parser library. [durable; mcp:no]
 - `docs/gen_lua_api_data.py` - gen_lua_api_data.py — Generate Lurek2D master API data file. [durable; mcp:no]
-- `docs/gen_lua_api_html_wrapper.py` - gen_lua_api_html_wrapper.py — Generate HTML index wrapper for Lua API docs-general in pages/lua-docs/. [durable; mcp:no]
+- `docs/gen_lua_api_html_wrapper.py` - Generate HTML redirects in ../lurek_2D_pages/lua-docs/. [durable; mcp:no]
 - `docs/gen_lua_binding_reports.py` - Generate source-derived Lua binding snapshots from src/lua_api/*.rs. [durable; mcp:no]
 - `docs/gen_lua_dev_docs.py` - gen_lua_dev_docs.py — Generate Lua developer docs-general from lua_api *.rs files. [durable; mcp:no]
 - `docs/gen_lua_docstring_skeletons.py` - gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only. [durable; mcp:no]
@@ -161,7 +161,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `gen_all_docs.py` - Regenerate the full Lurek2D documentation pipeline in one command. [durable; mcp:no]
 
 ## /snippets
-- `snippets/gen_vscode_snippets.py` - Build extension/vscode/data/snippets.json from content/snippets/*.lua. [durable; mcp:no]
+- `snippets/gen_vscode_snippets.py` - Build ../lurek_2D_extension/vscode/data/snippets.json from content/snippets/*.lua. [durable; mcp:no]
 - `snippets/snippet_catalog.py` - Shared parser for content/snippets/*.lua marker blocks. [internal; mcp:no]
 
 ## /ui
@@ -186,4 +186,3 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `validate/validate_rust_file_docs.py` - Validate Rust file-level //! docs with the repository docstring coverage policy. [durable; mcp:no]
 - `validate/validate_rust_source_docs.py` - Validate file-level and public-item Rust docs-general under src/. [durable; mcp:no]
 - `validate/validate_snippets.py` - Validate content/snippets marker structure and VS Code snippet output freshness. [durable; mcp:candidate]
-

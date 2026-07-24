@@ -16,6 +16,15 @@ use std::str::FromStr;
 use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
 
 const MAX_SHADER_UNIFORM_NAME_LEN: usize = 64;
+/// Runtime WGSL is trusted project-authored fragment code only; arbitrary resource
+/// declarations are rejected because the renderer owns all bindings and layouts.
+pub const MAX_SHADER_SOURCE_BYTES: usize = 256 * 1024;
+/// A line ceiling prevents pathological diagnostics and parser work from generated source.
+pub const MAX_SHADER_SOURCE_LINES: usize = 8_192;
+/// Token-like whitespace fragments are bounded before invoking the WGSL parser.
+pub const MAX_SHADER_SOURCE_TOKENS: usize = 65_536;
+/// Bound the number of independently allocated uniform bindings in the current layout.
+pub const MAX_SHADER_UNIFORMS: usize = 64;
 
 const RESERVED_SHADER_UNIFORM_NAMES: &[&str] = &[
     "lurek",
@@ -238,6 +247,12 @@ impl Shader {
     /// Set or replace the named uniform value used on subsequent frames.
     pub fn send(&mut self, name: String, value: UniformValue) -> Result<(), String> {
         validate_uniform_name(&name)?;
+        validate_uniform_value(&value)?;
+        if !self.uniforms.contains_key(&name) && self.uniforms.len() >= MAX_SHADER_UNIFORMS {
+            return Err(format!(
+                "shader accepts at most {MAX_SHADER_UNIFORMS} runtime uniforms"
+            ));
+        }
         self.uniforms.insert(name, value);
         Ok(())
     }
@@ -307,6 +322,22 @@ fn fs_main(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {{
     }
 }
 
+/// Reject values that would encode NaN or infinity into GPU uniform buffers.
+pub fn validate_uniform_value(value: &UniformValue) -> Result<(), String> {
+    let finite = match value {
+        UniformValue::Float(value) => value.is_finite(),
+        UniformValue::Vec2(values) => values.iter().all(|value| value.is_finite()),
+        UniformValue::Vec3(values) => values.iter().all(|value| value.is_finite()),
+        UniformValue::Vec4(values) => values.iter().all(|value| value.is_finite()),
+        UniformValue::Int(_) | UniformValue::Bool(_) => true,
+    };
+    if finite {
+        Ok(())
+    } else {
+        Err("shader uniform values must be finite".to_string())
+    }
+}
+
 fn fullscreen_fragment_call_args(inputs: &[ShaderFragmentInput]) -> String {
     inputs
         .iter()
@@ -364,6 +395,30 @@ pub fn validate_uniform_name(name: &str) -> Result<(), String> {
 }
 /// Parse `source` and confirm it contains a valid fragment entry point; return error on failure.
 fn validate_wgsl(source: &str, target: ShaderTarget) -> Result<(), String> {
+    if source.len() > MAX_SHADER_SOURCE_BYTES {
+        return Err(format!(
+            "shader source has {} bytes, maximum is {MAX_SHADER_SOURCE_BYTES}",
+            source.len()
+        ));
+    }
+    let line_count = source.lines().count();
+    if line_count > MAX_SHADER_SOURCE_LINES {
+        return Err(format!(
+            "shader source has {line_count} lines, maximum is {MAX_SHADER_SOURCE_LINES}"
+        ));
+    }
+    let token_count = source.split_whitespace().count();
+    if token_count > MAX_SHADER_SOURCE_TOKENS {
+        return Err(format!(
+            "shader source has {token_count} tokens, maximum is {MAX_SHADER_SOURCE_TOKENS}"
+        ));
+    }
+    if source.contains("@group") || source.contains("@binding") {
+        return Err(
+            "runtime shaders may not declare @group or @binding resources; the renderer owns bindings"
+                .to_string(),
+        );
+    }
     let module = wgpu::naga::front::wgsl::parse_str(source).map_err(|err| err.to_string())?;
     fragment_entry_signature(&module, target)?;
     Ok(())

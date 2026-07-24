@@ -6,6 +6,8 @@
 //! Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
 //! Use this file when changing mouse defaults, lifecycle handling, validation, or data ownership.
 
+use std::collections::HashMap;
+
 /// Limits enforced for custom cursor image validation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CursorImageLimits {
@@ -104,6 +106,18 @@ pub struct MouseState {
     pub buttons_pressed: [bool; 5],
     /// True for each button index that transitioned to released this frame.
     pub buttons_released: [bool; 5],
+    /// Held state for additional mouse buttons, keyed by zero-based button index.
+    extra_buttons: HashMap<usize, bool>,
+    /// Extra buttons that transitioned to pressed this frame.
+    extra_buttons_pressed: HashMap<usize, bool>,
+    /// Extra buttons that transitioned to released this frame.
+    extra_buttons_released: HashMap<usize, bool>,
+    /// Click count and last timestamp per button for callback double-click information.
+    click_state: HashMap<usize, (u64, u32)>,
+    /// Raw pointer delta accumulated during the current frame.
+    pub delta_x: f32,
+    /// Raw pointer delta accumulated during the current frame.
+    pub delta_y: f32,
     /// True when the OS cursor is visible.
     pub visible: bool,
     /// True when the cursor is grabbed (confined to window).
@@ -136,6 +150,12 @@ impl MouseState {
             buttons: [false; 5],
             buttons_pressed: [false; 5],
             buttons_released: [false; 5],
+            extra_buttons: HashMap::new(),
+            extra_buttons_pressed: HashMap::new(),
+            extra_buttons_released: HashMap::new(),
+            click_state: HashMap::new(),
+            delta_x: 0.0,
+            delta_y: 0.0,
             visible: true,
             grabbed: false,
             relative_mode: false,
@@ -150,6 +170,10 @@ impl MouseState {
     pub fn begin_frame(&mut self) {
         self.buttons_pressed = [false; 5];
         self.buttons_released = [false; 5];
+        self.extra_buttons_pressed.clear();
+        self.extra_buttons_released.clear();
+        self.delta_x = 0.0;
+        self.delta_y = 0.0;
         self.scroll_x = 0.0;
         self.scroll_y = 0.0;
     }
@@ -158,6 +182,12 @@ impl MouseState {
     pub fn update_position(&mut self, x: f32, y: f32) {
         self.x = x;
         self.y = y;
+    }
+
+    /// Adds raw device movement to the delta accumulated for this frame.
+    pub fn accumulate_delta(&mut self, dx: f32, dy: f32) {
+        self.delta_x += dx;
+        self.delta_y += dy;
     }
 
     /// Set position and queue a warp request for the OS to move the hardware cursor.
@@ -176,17 +206,78 @@ impl MouseState {
             } else if !pressed && was_pressed {
                 self.buttons_released[button] = true;
             }
+        } else {
+            let was_pressed = self.extra_buttons.get(&button).copied().unwrap_or(false);
+            self.extra_buttons.insert(button, pressed);
+            if pressed && !was_pressed {
+                self.extra_buttons_pressed.insert(button, true);
+            } else if !pressed && was_pressed {
+                self.extra_buttons_released.insert(button, true);
+            }
         }
     }
 
     /// Return true when `button` (0–4) is currently held down.
     pub fn is_down(&self, button: usize) -> bool {
-        button < 5 && self.buttons[button]
+        if button < 5 {
+            self.buttons[button]
+        } else {
+            self.extra_buttons.get(&button).copied().unwrap_or(false)
+        }
+    }
+
+    /// Register a press and return its click count using a 500 ms multi-click window.
+    pub fn register_click(&mut self, button: usize, time_ms: u64) -> u32 {
+        let (previous_time, previous_count) = self.click_state.get(&button).copied().unwrap_or((0, 0));
+        let count = if time_ms.saturating_sub(previous_time) <= 500 { previous_count.saturating_add(1) } else { 1 };
+        self.click_state.insert(button, (time_ms, count));
+        count
+    }
+
+    /// Return the most recent click count for a button, or zero when never pressed.
+    pub fn click_count(&self, button: usize) -> u32 {
+        self.click_state.get(&button).map_or(0, |(_, count)| *count)
+    }
+
+    /// Return true when a zero-based button index transitioned to pressed this frame.
+    pub fn was_pressed(&self, button: usize) -> bool {
+        if button < 5 {
+            self.buttons_pressed[button]
+        } else {
+            self.extra_buttons_pressed.contains_key(&button)
+        }
+    }
+
+    /// Return true when a zero-based button index transitioned to released this frame.
+    pub fn was_released(&self, button: usize) -> bool {
+        if button < 5 {
+            self.buttons_released[button]
+        } else {
+            self.extra_buttons_released.contains_key(&button)
+        }
     }
 
     /// Return the current cursor position as (x, y) in window pixels.
     pub fn get_position(&self) -> (f32, f32) {
         (self.x, self.y)
+    }
+
+    /// Returns raw device movement accumulated during the current frame.
+    pub fn get_delta(&self) -> (f32, f32) {
+        (self.delta_x, self.delta_y)
+    }
+
+    /// Clears held and transient mouse state after focus loss without callbacks.
+    pub fn clear_all(&mut self) {
+        self.buttons = [false; 5];
+        self.buttons_pressed = [false; 5];
+        self.buttons_released = [false; 5];
+        self.extra_buttons.clear();
+        self.extra_buttons_pressed.clear();
+        self.extra_buttons_released.clear();
+        self.click_state.clear();
+        self.delta_x = 0.0;
+        self.delta_y = 0.0;
     }
 
     /// Show or hide the OS cursor. This function is part of the public API.

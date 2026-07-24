@@ -6,7 +6,8 @@
 //! Use this file when changing render offline image shader defaults, lifecycle handling, validation, or data rules.
 //! Keeps failure paths and edge cases near render offline image shader state that explains them instead of outward.
 
-use std::sync::mpsc;
+use std::sync::mpsc::{self, TryRecvError};
+use std::time::{Duration, Instant};
 
 use crate::image::ImageData;
 use crate::render::shader::{Shader, ShaderTarget};
@@ -26,6 +27,9 @@ fn vs_main(@builtin(vertex_index) vi: u32) -> VertexOutput {
     return out;
 }
 "#;
+
+/// Offline tools may wait for readback, but always have a finite bound.
+const OFFLINE_READBACK_TIMEOUT: Duration = Duration::from_secs(5);
 
 fn padded_bytes_per_row(width: u32) -> u32 {
     let unpadded = width.saturating_mul(4);
@@ -288,11 +292,23 @@ pub fn apply_image_shader_blocking(
     slice.map_async(wgpu::MapMode::Read, move |result| {
         let _ = sender.send(result.map_err(|error| error.to_string()));
     });
-    let _ = device.poll(wgpu::Maintain::Wait);
-    receiver
-        .recv()
-        .map_err(|error| format!("offline image shader readback channel failed: {error}"))?
-        .map_err(|error| format!("offline image shader readback map failed: {error}"))?;
+    let deadline = Instant::now() + OFFLINE_READBACK_TIMEOUT;
+    loop {
+        let _ = device.poll(wgpu::Maintain::Poll);
+        match receiver.try_recv() {
+            Ok(result) => {
+                result.map_err(|error| format!("offline image shader readback map failed: {error}"))?;
+                break;
+            }
+            Err(TryRecvError::Disconnected) => {
+                return Err("offline image shader readback channel disconnected".to_string());
+            }
+            Err(TryRecvError::Empty) if Instant::now() >= deadline => {
+                return Err("offline image shader readback timed out after 5 seconds".to_string());
+            }
+            Err(TryRecvError::Empty) => std::thread::sleep(Duration::from_millis(1)),
+        }
+    }
 
     let mut pixels = vec![0_u8; (width * height * 4) as usize];
     {

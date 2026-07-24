@@ -21,6 +21,14 @@ use slotmap::{Key, SlotMap};
 
 use super::GpuRenderer;
 
+/// Trusted process-wide ceilings for renderer-owned persistent texture resources.
+const MAX_LIVE_TEXTURES: usize = 4_096;
+const MAX_LIVE_CANVASES: usize = 256;
+const MAX_LIVE_TEXTURE_BYTES: u64 = 512 * 1024 * 1024;
+const MAX_LIVE_STATIC_MESHES: usize = 4_096;
+const MAX_LIVE_FONT_ATLASES: usize = 256;
+const MAX_LIVE_FONT_ATLAS_BYTES: u64 = 256 * 1024 * 1024;
+
 /// Validate an RGBA8 texture upload before touching the GPU backend.
 pub fn validate_rgba_texture_upload(
     width: u32,
@@ -68,6 +76,26 @@ pub fn validate_canvas_size(width: u32, height: u32, limits: &wgpu::Limits) -> R
     Ok(())
 }
 
+/// Validate dynamic geometry buffer byte sizes before a capacity growth can allocate.
+pub fn validate_dynamic_buffer_bytes(
+    counts_and_strides: &[(usize, usize)],
+    limits: &wgpu::Limits,
+) -> Result<(), String> {
+    for (count, stride) in counts_and_strides {
+        let bytes = u64::try_from(*count)
+            .map_err(|_| "geometry item count exceeds u64".to_string())?
+            .checked_mul(u64::try_from(*stride).map_err(|_| "vertex stride exceeds u64".to_string())?)
+            .ok_or_else(|| "geometry buffer byte count overflow".to_string())?;
+        if bytes > limits.max_buffer_size {
+            return Err(format!(
+                "geometry buffer needs {bytes} bytes, device maximum is {}",
+                limits.max_buffer_size
+            ));
+        }
+    }
+    Ok(())
+}
+
 /// Return whether an existing GPU canvas texture is absent or no longer matches logical dimensions.
 pub fn canvas_texture_needs_recreate(
     existing_size: Option<(u32, u32)>,
@@ -98,16 +126,98 @@ pub fn is_builtin_static_geometry_key(key: StaticGeometryKey) -> bool {
 }
 
 impl GpuRenderer {
-    /// Returns the next power-of-two-style capacity large enough for `needed`.
-    pub(crate) fn grow_capacity(current: u64, needed: u64) -> u64 {
+    /// Verify that a replacement or insertion stays within retained texture limits.
+    fn validate_texture_resource_budget(
+        &self,
+        replacing: Option<TextureKey>,
+        width: u32,
+        height: u32,
+    ) -> Result<(), String> {
+        let requested = u64::from(width)
+            .checked_mul(u64::from(height))
+            .and_then(|pixels| pixels.checked_mul(4))
+            .ok_or_else(|| "texture resource byte count overflow".to_string())?;
+        let mut count = 0usize;
+        let mut bytes = 0u64;
+        for (key, texture) in self.gpu_textures.iter() {
+            if Some(key) == replacing {
+                continue;
+            }
+            count = count.saturating_add(1);
+            let size = u64::from(texture.width)
+                .checked_mul(u64::from(texture.height))
+                .and_then(|pixels| pixels.checked_mul(4))
+                .ok_or_else(|| "tracked texture resource byte count overflow".to_string())?;
+            bytes = bytes
+                .checked_add(size)
+                .ok_or_else(|| "tracked texture resource total overflow".to_string())?;
+        }
+        if count >= MAX_LIVE_TEXTURES {
+            return Err(format!("live texture count exceeds maximum of {MAX_LIVE_TEXTURES}"));
+        }
+        if bytes.saturating_add(requested) > MAX_LIVE_TEXTURE_BYTES {
+            return Err(format!(
+                "live texture bytes exceed maximum of {MAX_LIVE_TEXTURE_BYTES}"
+            ));
+        }
+        Ok(())
+    }
+
+    /// Verify that a font-atlas insertion stays inside the separate persistent atlas budget.
+    fn validate_font_atlas_resource_budget(
+        &self,
+        replacing: Option<FontKey>,
+        width: u32,
+        height: u32,
+    ) -> Result<(), String> {
+        let requested = u64::from(width)
+            .checked_mul(u64::from(height))
+            .and_then(|pixels| pixels.checked_mul(4))
+            .ok_or_else(|| "font atlas byte count overflow".to_string())?;
+        let mut count = 0usize;
+        let mut bytes = 0u64;
+        for (key, texture) in self.font_atlas_textures.iter() {
+            if Some(key) == replacing {
+                continue;
+            }
+            count = count.saturating_add(1);
+            let size = u64::from(texture.width)
+                .checked_mul(u64::from(texture.height))
+                .and_then(|pixels| pixels.checked_mul(4))
+                .ok_or_else(|| "tracked font atlas byte count overflow".to_string())?;
+            bytes = bytes
+                .checked_add(size)
+                .ok_or_else(|| "tracked font atlas total overflow".to_string())?;
+        }
+        if count >= MAX_LIVE_FONT_ATLASES {
+            return Err(format!("live font atlas count exceeds maximum of {MAX_LIVE_FONT_ATLASES}"));
+        }
+        if bytes.saturating_add(requested) > MAX_LIVE_FONT_ATLAS_BYTES {
+            return Err(format!(
+                "live font atlas bytes exceed maximum of {MAX_LIVE_FONT_ATLAS_BYTES}"
+            ));
+        }
+        Ok(())
+    }
+
+    /// Returns a bounded next capacity and never silently overflows device limits.
+    pub(crate) fn grow_capacity(current: u64, needed: u64, maximum: u64) -> Result<u64, String> {
+        if needed > maximum {
+            return Err(format!(
+                "buffer needs {needed} elements, but its device-aware limit is {maximum}"
+            ));
+        }
         let mut cap = current.max(1);
         while cap < needed {
-            cap = cap.saturating_mul(2);
-            if cap == u64::MAX {
-                break;
-            }
+            cap = cap.saturating_mul(2).min(maximum);
         }
-        cap.max(needed)
+        Ok(cap.max(needed))
+    }
+
+    fn buffer_byte_size(capacity: u64, stride: usize) -> Result<u64, String> {
+        capacity
+            .checked_mul(u64::try_from(stride).map_err(|_| "buffer stride exceeds u64")?)
+            .ok_or_else(|| "geometry buffer byte count overflow".to_string())
     }
 
     /// Recreates shared geometry buffers when the current capacities are too small.
@@ -119,37 +229,65 @@ impl GpuRenderer {
         tex_idxs_needed: usize,
         particle_verts_needed: usize,
         particle_idxs_needed: usize,
-    ) {
-        let color_v_needed = color_verts_needed as u64;
+    ) -> Result<(), String> {
+        let limits = self.device.limits();
+        let color_vertex_stride = std::mem::size_of::<ColorVertex>();
+        let color_index_stride = std::mem::size_of::<u32>();
+        let tex_vertex_stride = std::mem::size_of::<TexVertex>();
+        let particle_vertex_stride = std::mem::size_of::<ParticleVertex>();
+        let color_vertex_stride_u64 =
+            u64::try_from(color_vertex_stride).map_err(|_| "color vertex stride exceeds u64")?;
+        let color_index_stride_u64 =
+            u64::try_from(color_index_stride).map_err(|_| "color index stride exceeds u64")?;
+        let tex_vertex_stride_u64 =
+            u64::try_from(tex_vertex_stride).map_err(|_| "texture vertex stride exceeds u64")?;
+        let particle_vertex_stride_u64 = u64::try_from(particle_vertex_stride)
+            .map_err(|_| "particle vertex stride exceeds u64")?;
+        let color_v_needed = u64::try_from(color_verts_needed)
+            .map_err(|_| "color vertex count exceeds u64")?;
         if color_v_needed > self.color_vertex_capacity {
-            let new_cap = Self::grow_capacity(self.color_vertex_capacity, color_v_needed);
+            let new_cap = Self::grow_capacity(
+                self.color_vertex_capacity,
+                color_v_needed,
+                limits.max_buffer_size / color_vertex_stride_u64,
+            )?;
             self.color_vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("color_vbo"),
-                size: new_cap * std::mem::size_of::<ColorVertex>() as u64,
+                size: Self::buffer_byte_size(new_cap, color_vertex_stride)?,
                 usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
             self.color_vertex_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
-        let color_i_needed = color_idxs_needed as u64;
+        let color_i_needed = u64::try_from(color_idxs_needed)
+            .map_err(|_| "color index count exceeds u64")?;
         if color_i_needed > self.color_index_capacity {
-            let new_cap = Self::grow_capacity(self.color_index_capacity, color_i_needed);
+            let new_cap = Self::grow_capacity(
+                self.color_index_capacity,
+                color_i_needed,
+                limits.max_buffer_size / color_index_stride_u64,
+            )?;
             self.color_index_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("color_ibo"),
-                size: new_cap * std::mem::size_of::<u32>() as u64,
+                size: Self::buffer_byte_size(new_cap, color_index_stride)?,
                 usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
             self.color_index_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
-        let tex_v_needed = tex_verts_needed as u64;
+        let tex_v_needed = u64::try_from(tex_verts_needed)
+            .map_err(|_| "texture vertex count exceeds u64")?;
         if tex_v_needed > self.tex_vertex_capacity {
-            let new_cap = Self::grow_capacity(self.tex_vertex_capacity, tex_v_needed);
+            let new_cap = Self::grow_capacity(
+                self.tex_vertex_capacity,
+                tex_v_needed,
+                limits.max_buffer_size / tex_vertex_stride_u64,
+            )?;
             self.tex_vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("tex_vbo"),
-                size: new_cap * std::mem::size_of::<TexVertex>() as u64,
+                size: Self::buffer_byte_size(new_cap, tex_vertex_stride)?,
                 usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
@@ -160,12 +298,17 @@ impl GpuRenderer {
                 self.tex_vertex_capacity
             );
         }
-        let tex_i_needed = tex_idxs_needed as u64;
+        let tex_i_needed = u64::try_from(tex_idxs_needed)
+            .map_err(|_| "texture index count exceeds u64")?;
         if tex_i_needed > self.tex_index_capacity {
-            let new_cap = Self::grow_capacity(self.tex_index_capacity, tex_i_needed);
+            let new_cap = Self::grow_capacity(
+                self.tex_index_capacity,
+                tex_i_needed,
+                limits.max_buffer_size / color_index_stride_u64,
+            )?;
             self.tex_index_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("tex_ibo"),
-                size: new_cap * std::mem::size_of::<u32>() as u64,
+                size: Self::buffer_byte_size(new_cap, color_index_stride)?,
                 usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
@@ -176,47 +319,64 @@ impl GpuRenderer {
                 self.tex_index_capacity
             );
         }
-        let particle_v_needed = particle_verts_needed as u64;
+        let particle_v_needed = u64::try_from(particle_verts_needed)
+            .map_err(|_| "particle vertex count exceeds u64")?;
         if particle_v_needed > self.particle_vertex_capacity {
-            let new_cap = Self::grow_capacity(self.particle_vertex_capacity, particle_v_needed);
+            let new_cap = Self::grow_capacity(
+                self.particle_vertex_capacity,
+                particle_v_needed,
+                limits.max_buffer_size / particle_vertex_stride_u64,
+            )?;
             self.particle_vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("particle_vbo"),
-                size: new_cap * std::mem::size_of::<ParticleVertex>() as u64,
+                size: Self::buffer_byte_size(new_cap, particle_vertex_stride)?,
                 usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
             self.particle_vertex_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
-        let particle_i_needed = particle_idxs_needed as u64;
+        let particle_i_needed = u64::try_from(particle_idxs_needed)
+            .map_err(|_| "particle index count exceeds u64")?;
         if particle_i_needed > self.particle_index_capacity {
-            let new_cap = Self::grow_capacity(self.particle_index_capacity, particle_i_needed);
+            let new_cap = Self::grow_capacity(
+                self.particle_index_capacity,
+                particle_i_needed,
+                limits.max_buffer_size / color_index_stride_u64,
+            )?;
             self.particle_index_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("particle_ibo"),
-                size: new_cap * std::mem::size_of::<u32>() as u64,
+                size: Self::buffer_byte_size(new_cap, color_index_stride)?,
                 usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
             self.particle_index_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
+        Ok(())
     }
 
     /// Recreates the instance buffer when the current capacity cannot hold `needed` instances.
-    pub(crate) fn ensure_instance_buffer_capacity(&mut self, needed: usize) {
-        let needed_inst = needed as u64;
+    pub(crate) fn ensure_instance_buffer_capacity(&mut self, needed: usize) -> Result<(), String> {
+        let needed_inst = u64::try_from(needed).map_err(|_| "instance count exceeds u64")?;
         if needed_inst > self.instance_capacity {
-            let new_cap = Self::grow_capacity(self.instance_capacity, needed_inst);
+            let stride = std::mem::size_of::<crate::render::gpu_types::InstanceData>();
+            let stride_u64 = u64::try_from(stride).map_err(|_| "instance stride exceeds u64")?;
+            let new_cap = Self::grow_capacity(
+                self.instance_capacity,
+                needed_inst,
+                self.device.limits().max_buffer_size / stride_u64,
+            )?;
             self.instance_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("instance_vbo"),
-                size: new_cap
-                    * std::mem::size_of::<crate::render::gpu_types::InstanceData>() as u64,
+                size: Self::buffer_byte_size(new_cap, stride)?,
                 usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
             self.instance_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
+        Ok(())
     }
 
     /// Creates a sampler from the renderer's default min/mag filter and anisotropy tuple.
@@ -327,6 +487,13 @@ impl GpuRenderer {
         source: &TextureData,
         default_filter: &(String, String, u32),
     ) -> Result<(), String> {
+        self.validate_texture_resource_budget(
+            // Build before publishing so a failed upload leaves the old texture intact;
+            // account for that old allocation during the transient replacement.
+            None,
+            source.width,
+            source.height,
+        )?;
         let gt = self.create_gpu_texture_raw(
             &source.pixels,
             source.width,
@@ -348,6 +515,18 @@ impl GpuRenderer {
     ) -> bool {
         let (data, w, h) = font.atlas_data();
         if font.is_dirty() || !self.font_atlas_textures.contains_key(font_key) {
+            if self
+                .validate_font_atlas_resource_budget(
+                    // The old atlas remains alive until the new upload succeeds, so account
+                    // for both during publication rather than allowing a transient overage.
+                    None,
+                    w,
+                    h,
+                )
+                .is_err()
+            {
+                return false;
+            }
             let Ok(gt) = self.create_gpu_texture_raw(
                 data,
                 w,
@@ -373,6 +552,11 @@ impl GpuRenderer {
         default_filter: &(String, String, u32),
     ) -> Result<(), String> {
         validate_canvas_size(width, height, &self.device.limits())?;
+        if !self.canvas_gpu_textures.contains_key(key)
+            && self.canvas_gpu_textures.len() >= MAX_LIVE_CANVASES
+        {
+            return Err(format!("live canvas count exceeds maximum of {MAX_LIVE_CANVASES}"));
+        }
         let texture = self.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("canvas_texture"),
             size: wgpu::Extent3d {
@@ -541,6 +725,15 @@ impl GpuRenderer {
         use wgpu::util::DeviceExt;
 
         let static_key = StaticGeometryKey::from(mesh_key.data());
+        if !self.mesh_cache.static_geometry.contains_key(&static_key)
+            && self.mesh_cache.static_geometry.len() >= MAX_LIVE_STATIC_MESHES
+        {
+            return Err(crate::render::mesh::MeshError::TooLarge {
+                field: "live GPU meshes",
+                count: self.mesh_cache.static_geometry.len().saturating_add(1),
+                max: MAX_LIVE_STATIC_MESHES,
+            });
+        }
         let tri_indices = match mesh.try_triangulate() {
             Ok(indices) => indices,
             Err(err) => {
@@ -550,8 +743,18 @@ impl GpuRenderer {
         };
 
         let entry = if mesh.texture.is_some() {
-            let mut verts = Vec::with_capacity(tri_indices.len());
-            let mut idxs = Vec::with_capacity(tri_indices.len());
+            let mut verts = Vec::new();
+            let mut idxs = Vec::new();
+            verts.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                field: "GPU vertex allocation",
+                count: tri_indices.len(),
+                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            })?;
+            idxs.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                field: "GPU index allocation",
+                count: tri_indices.len(),
+                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            })?;
             for (i, &vi) in tri_indices.iter().enumerate() {
                 if let Some(mv) = mesh.vertices.get(vi) {
                     verts.push(TexVertex {
@@ -561,9 +764,25 @@ impl GpuRenderer {
                         w_depth: 1.0,
                         _pad: [0.0; 3],
                     });
-                    idxs.push(i as u32);
+                    idxs.push(u32::try_from(i).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                        field: "GPU indices",
+                        count: i,
+                        max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                    })?);
                 }
             }
+            validate_dynamic_buffer_bytes(
+                &[
+                    (verts.len(), std::mem::size_of::<TexVertex>()),
+                    (idxs.len(), std::mem::size_of::<u32>()),
+                ],
+                &self.device.limits(),
+            )
+            .map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                field: "GPU buffer bytes",
+                count: tri_indices.len(),
+                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            })?;
 
             let v_buf = self
                 .device
@@ -582,22 +801,52 @@ impl GpuRenderer {
             crate::render::gpu_state::StaticGeometryCacheEntry {
                 vertex_buffer: v_buf,
                 index_buffer: i_buf,
-                index_count: idxs.len() as u32,
+                index_count: u32::try_from(idxs.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                    field: "GPU indices",
+                    count: idxs.len(),
+                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                })?,
                 geometry_kind: crate::render::gpu_pipeline::GeometryKind::TextureInstanced,
                 texture: mesh.texture,
             }
         } else {
-            let mut verts = Vec::with_capacity(tri_indices.len());
-            let mut idxs = Vec::with_capacity(tri_indices.len());
+            let mut verts = Vec::new();
+            let mut idxs = Vec::new();
+            verts.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                field: "GPU vertex allocation",
+                count: tri_indices.len(),
+                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            })?;
+            idxs.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                field: "GPU index allocation",
+                count: tri_indices.len(),
+                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            })?;
             for (i, &vi) in tri_indices.iter().enumerate() {
                 if let Some(mv) = mesh.vertices.get(vi) {
                     verts.push(ColorVertex {
                         position: [mv.x, mv.y],
                         color: [mv.r, mv.g, mv.b, mv.a],
                     });
-                    idxs.push(i as u32);
+                    idxs.push(u32::try_from(i).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                        field: "GPU indices",
+                        count: i,
+                        max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                    })?);
                 }
             }
+            validate_dynamic_buffer_bytes(
+                &[
+                    (verts.len(), std::mem::size_of::<ColorVertex>()),
+                    (idxs.len(), std::mem::size_of::<u32>()),
+                ],
+                &self.device.limits(),
+            )
+            .map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                field: "GPU buffer bytes",
+                count: tri_indices.len(),
+                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            })?;
 
             let v_buf = self
                 .device
@@ -616,7 +865,11 @@ impl GpuRenderer {
             crate::render::gpu_state::StaticGeometryCacheEntry {
                 vertex_buffer: v_buf,
                 index_buffer: i_buf,
-                index_count: idxs.len() as u32,
+                index_count: u32::try_from(idxs.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
+                    field: "GPU indices",
+                    count: idxs.len(),
+                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                })?,
                 geometry_kind: crate::render::gpu_pipeline::GeometryKind::ColorInstanced,
                 texture: None,
             }

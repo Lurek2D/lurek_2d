@@ -21,6 +21,21 @@ use crate::render::gpu_tess::{uniform_bytes, uniform_kind};
 use crate::render::shader::{Shader, ShaderTarget};
 use crate::runtime::resource_keys::ShaderKey;
 
+/// Hard ceiling for live user pipeline cache entries retained by one renderer.
+const MAX_CACHED_USER_SHADERS: usize = 256;
+/// Total specialized render pipelines retained by one user shader cache entry.
+const MAX_PIPELINES_PER_USER_SHADER: usize = 64;
+
+fn cached_pipeline_count(cache: &GpuShader) -> usize {
+    cache
+        .color_pipelines
+        .len()
+        .saturating_add(cache.texture_pipelines.len())
+        .saturating_add(cache.particle_pipelines.len())
+        .saturating_add(cache.textured_particle_pipelines.len())
+        .saturating_add(cache.light_pipelines.len())
+}
+
 impl GpuRenderer {
     /// Compile and cache a user shader if its source or uniform signature changed.
     fn ensure_shader_cache(&mut self, shader_key: ShaderKey, shader: &Shader) {
@@ -37,6 +52,26 @@ impl GpuRenderer {
             })
             .unwrap_or(true);
         if needs_rebuild {
+            let device_limits = self.device.limits();
+            if uniform_signature.len() > device_limits.max_bindings_per_bind_group as usize {
+                self.render_diagnostics.record_shader_pipeline_failure();
+                log::warn!(
+                    "Skipping user shader whose {} uniforms exceed the device binding limit {}",
+                    uniform_signature.len(),
+                    device_limits.max_bindings_per_bind_group
+                );
+                return;
+            }
+            if self.shader_cache.get(shader_key).is_none()
+                && self.shader_cache.len() >= MAX_CACHED_USER_SHADERS
+            {
+                self.render_diagnostics.record_shader_pipeline_failure();
+                log::warn!(
+                    "Skipping user shader cache entry because the {}-entry budget is exhausted",
+                    MAX_CACHED_USER_SHADERS
+                );
+                return;
+            }
             let uniform_bind_group_layout = if uniform_signature.is_empty() {
                 None
             } else {
@@ -317,6 +352,17 @@ impl GpuRenderer {
             }
         };
         if missing {
+            let Some(cache) = self.shader_cache.get(shader_key) else {
+                return None;
+            };
+            if cached_pipeline_count(cache) >= MAX_PIPELINES_PER_USER_SHADER {
+                self.render_diagnostics.record_shader_pipeline_failure();
+                log::warn!(
+                    "Skipping user shader pipeline because the {}-pipeline budget is exhausted",
+                    MAX_PIPELINES_PER_USER_SHADER
+                );
+                return None;
+            }
             let pipeline = {
                 let Some(cache) = self.shader_cache.get(shader_key) else {
                     debug_assert!(false, "shader cache missing during pipeline build");

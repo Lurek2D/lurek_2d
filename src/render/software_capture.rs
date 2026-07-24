@@ -771,6 +771,25 @@ fn replay_command(
                 }
             }
         }
+        RenderCommand::Print { text, x, y, scale, .. } => {
+            // RenderCommand deliberately carries a font key rather than an image-owned font.
+            // Headless capture therefore replays its documented bitmap fallback here, preserving
+            // the same deterministic output used when no resolved font is available.
+            let (tx, ty) = state.transform.transform_point(*x, *y);
+            if tx.is_finite() && ty.is_finite() && *scale > 0.0 {
+                img.draw_label(
+                    text,
+                    tx.round() as i32,
+                    ty.round() as i32,
+                    state.color[0],
+                    state.color[1],
+                    state.color[2],
+                );
+            } else {
+                diagnostics.invalid_geometry_inputs =
+                    diagnostics.invalid_geometry_inputs.saturating_add(1);
+            }
+        }
         _ => {
             diagnostics.unsupported_capture_commands =
                 diagnostics.unsupported_capture_commands.saturating_add(1);

@@ -1630,6 +1630,9 @@ describe("render strict: batch text and OBJ APIs", function()
     it("newSpriteBatch creates a sprite-batch userdata", function()
         local sb = lurek.render.newSpriteBatch(icon_image(), 8)
         expect_type("userdata", sb)
+        expect_error(function()
+            lurek.render.newSpriteBatch(icon_image(), 65537)
+        end)
     end)
 
     -- @covers lurek.render.drawBatch
@@ -1750,8 +1753,6 @@ describe("render strict: batch text and OBJ APIs", function()
     end)
 
     -- @covers lurek.render.loadVoxel
-    -- @covers LVoxelModel:getVoxelCount
-    -- @covers LVoxelModel:getBounds
     it("loadVoxel parses a palette-coloured MagicaVoxel prop", function()
         local function le32(value)
             return string.char(

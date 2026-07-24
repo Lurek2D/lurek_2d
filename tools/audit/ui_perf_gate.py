@@ -9,7 +9,9 @@ DEFAULT_BASELINE = ROOT / "tests" / "artifacts" / "baselines" / "ui_perf_baselin
 RECORD = re.compile(r"^UI_PERF:(\{.*\})$", re.MULTILINE)
 
 def measure() -> dict[str, dict]:
-    run = subprocess.run(["cargo", "test", "--release", "--test", "ui_perf_tests", "--", "--nocapture"], cwd=ROOT, text=True, capture_output=True)
+    binaries = sorted((ROOT / "build" / "release" / "deps").glob("ui_perf_tests-*.exe"))
+    command = [str(binaries[-1]), "--nocapture"] if binaries else ["cargo", "test", "--release", "--test", "ui_perf_tests", "--", "--nocapture"]
+    run = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)
     output = run.stdout + "\n" + run.stderr
     if run.returncode:
         print(output, file=sys.stderr); raise RuntimeError("UI release performance scenarios failed")

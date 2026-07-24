@@ -18,8 +18,6 @@ def is_generated_output(path: str) -> bool:
         return True
     if path.startswith("logs/data/") or path.startswith("logs/reports/"):
         return True
-    if path.startswith("pages/"):
-        return True
     if path.startswith("docs/modules/"):
         return path.endswith(".md")
     if path.startswith("docs/wiki/"):

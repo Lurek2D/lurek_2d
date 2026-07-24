@@ -14,6 +14,30 @@ use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::runtime::resource_keys::TextureKey;
 use std::collections::HashMap;
 use std::path::{Component, Path, PathBuf};
+
+/// Hard limits for untrusted Wavefront text before it can allocate parser state.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ObjLimits {
+    /// Maximum UTF-8 bytes in one OBJ or MTL document.
+    pub max_bytes: usize,
+    /// Maximum lines in one document.
+    pub max_lines: usize,
+    /// Maximum bytes in a single line.
+    pub max_line_bytes: usize,
+    /// Maximum positions, UVs, normals, and triangulated faces respectively.
+    pub max_elements: usize,
+}
+
+impl Default for ObjLimits {
+    fn default() -> Self {
+        Self {
+            max_bytes: 64 * 1024 * 1024,
+            max_lines: 1_000_000,
+            max_line_bytes: 16 * 1024,
+            max_elements: 1_000_000,
+        }
+    }
+}
 /// Error returned from OBJ loading or parsing.
 #[derive(Debug)]
 pub enum ObjError {
@@ -21,6 +45,33 @@ pub enum ObjError {
     Io(std::io::Error),
     /// Structural parse error with a human-readable message.
     Parse(String),
+}
+
+/// Supplies material-library text for an OBJ parser without exposing host filesystem policy.
+pub trait ObjResolver {
+    /// Return bounded UTF-8 MTL source for the requested relative material reference.
+    fn read_material_library(&mut self, reference: &str) -> Result<String, ObjError>;
+}
+
+impl<F> ObjResolver for F
+where
+    F: FnMut(&str) -> Result<String, ObjError>,
+{
+    fn read_material_library(&mut self, reference: &str) -> Result<String, ObjError> {
+        self(reference)
+    }
+}
+
+/// Legacy filesystem resolver used only by file-based compatibility entry points.
+struct FileObjResolver<'a> {
+    base_dir: &'a Path,
+}
+
+impl ObjResolver for FileObjResolver<'_> {
+    fn read_material_library(&mut self, reference: &str) -> Result<String, ObjError> {
+        let path = ObjLoader::resolve_mtllib_path(reference, self.base_dir)?;
+        std::fs::read_to_string(path).map_err(ObjError::from)
+    }
 }
 /// Implement `Display` for `ObjError`.
 impl std::fmt::Display for ObjError {
@@ -321,7 +372,12 @@ impl ObjModel {
         let aspect = screen_w / screen_h;
         let tan_half_fov = (fov_y * 0.5).tan();
         let light_dir = Vec3::new(0.5, 1.0, 0.7).normalise();
-        let mut projected_tris: Vec<(f32, [MeshVertex; 3])> = Vec::with_capacity(self.faces.len());
+        let mut projected_tris: Vec<(f32, [MeshVertex; 3])> = Vec::new();
+        if projected_tris.try_reserve_exact(self.faces.len()).is_err() {
+            let mut mesh = Mesh::from_vertices(Vec::new(), MeshDrawMode::Triangles);
+            mesh.texture = texture_key;
+            return mesh;
+        }
         let near_z = 0.05_f32;
         for face in &self.faces {
             let wp: [Vec3; 3] = [
@@ -392,7 +448,17 @@ impl ObjModel {
             projected_tris.push((tri_depth, tri));
         }
         projected_tris.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
-        let mut vertices: Vec<MeshVertex> = Vec::with_capacity(projected_tris.len() * 3);
+        let Some(vertex_count) = projected_tris.len().checked_mul(3) else {
+            let mut mesh = Mesh::from_vertices(Vec::new(), MeshDrawMode::Triangles);
+            mesh.texture = texture_key;
+            return mesh;
+        };
+        let mut vertices: Vec<MeshVertex> = Vec::new();
+        if vertices.try_reserve_exact(vertex_count).is_err() {
+            let mut mesh = Mesh::from_vertices(Vec::new(), MeshDrawMode::Triangles);
+            mesh.texture = texture_key;
+            return mesh;
+        }
         for (_, tri) in projected_tris {
             vertices.push(tri[0]);
             vertices.push(tri[1]);
@@ -430,8 +496,14 @@ impl ObjModel {
         let near_z = 0.05_f32;
         let c = yaw_radians.cos();
         let s = yaw_radians.sin();
-        let mut projected_tris: Vec<(f32, f32, [MeshVertex; 3])> =
-            Vec::with_capacity(self.faces.len());
+        let mut projected_tris: Vec<(f32, f32, [MeshVertex; 3])> = Vec::new();
+        if projected_tris.try_reserve_exact(self.faces.len()).is_err() {
+            return (
+                Mesh::from_vertices(Vec::new(), MeshDrawMode::Triangles),
+                f32::INFINITY,
+                Vec::new(),
+            );
+        }
         let mut min_x = f32::INFINITY;
         let mut max_x = f32::NEG_INFINITY;
         let mut min_y = f32::INFINITY;
@@ -523,8 +595,24 @@ impl ObjModel {
             projected_tris.push((tri_depth, pick_depth, tri));
         }
         projected_tris.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
-        let mut vertices: Vec<MeshVertex> = Vec::with_capacity(projected_tris.len() * 3);
-        let mut triangle_depths: Vec<f32> = Vec::with_capacity(projected_tris.len());
+        let Some(vertex_count) = projected_tris.len().checked_mul(3) else {
+            return (
+                Mesh::from_vertices(Vec::new(), MeshDrawMode::Triangles),
+                f32::INFINITY,
+                Vec::new(),
+            );
+        };
+        let mut vertices: Vec<MeshVertex> = Vec::new();
+        let mut triangle_depths: Vec<f32> = Vec::new();
+        if vertices.try_reserve_exact(vertex_count).is_err()
+            || triangle_depths.try_reserve_exact(projected_tris.len()).is_err()
+        {
+            return (
+                Mesh::from_vertices(Vec::new(), MeshDrawMode::Triangles),
+                f32::INFINITY,
+                Vec::new(),
+            );
+        }
         for (_, pick_depth, tri) in projected_tris {
             vertices.push(tri[0]);
             vertices.push(tri[1]);
@@ -551,6 +639,27 @@ impl ObjLoader {
     }
     /// Parse OBJ + MTL text in memory, resolving `mtllib` paths relative to `base_dir`.
     pub fn parse_obj(src: &str, base_dir: &Path) -> Result<ObjModel, ObjError> {
+        Self::parse_obj_with_limits(src, base_dir, ObjLimits::default())
+    }
+    /// Parse bounded OBJ text, rejecting oversized documents before parser allocation.
+    pub fn parse_obj_with_limits(
+        src: &str,
+        base_dir: &Path,
+        limits: ObjLimits,
+    ) -> Result<ObjModel, ObjError> {
+        let mut resolver = FileObjResolver { base_dir };
+        Self::parse_obj_with_resolver(src, limits, &mut resolver)
+    }
+    /// Parse bounded OBJ text using a caller-owned material resolver.
+    ///
+    /// This is the parser boundary for GameFS, archive, or in-memory callers; it never
+    /// chooses a host filesystem path itself.
+    pub fn parse_obj_with_resolver(
+        src: &str,
+        limits: ObjLimits,
+        resolver: &mut dyn ObjResolver,
+    ) -> Result<ObjModel, ObjError> {
+        Self::validate_document_limits(src, limits, "OBJ")?;
         let mut positions: Vec<Vec3> = Vec::new();
         let mut uvs: Vec<Vec2> = Vec::new();
         let mut normals: Vec<Vec3> = Vec::new();
@@ -568,10 +677,12 @@ impl ObjLoader {
             let rest = tokens.next().unwrap_or("").trim();
             match keyword {
                 "v" => {
+                    Self::ensure_limit(positions.len(), limits.max_elements, "OBJ positions")?;
                     let p = Self::parse_vec3(rest)?;
                     positions.push(p);
                 }
                 "vt" => {
+                    Self::ensure_limit(uvs.len(), limits.max_elements, "OBJ texture coordinates")?;
                     let parts = Self::split_floats(rest, 2)?;
                     uvs.push(Vec2 {
                         u: parts[0],
@@ -579,14 +690,14 @@ impl ObjLoader {
                     });
                 }
                 "vn" => {
+                    Self::ensure_limit(normals.len(), limits.max_elements, "OBJ normals")?;
                     let p = Self::parse_vec3(rest)?;
                     normals.push(p);
                 }
                 "mtllib" => {
-                    let mtl_path = Self::resolve_mtllib_path(rest, base_dir)?;
-                    let mtl_src = std::fs::read_to_string(&mtl_path)?;
-                    let material_base = mtl_path.parent().unwrap_or(base_dir);
-                    let loaded = Self::parse_mtl(&mtl_src, material_base)?;
+                    Self::validate_mtllib_reference(rest)?;
+                    let mtl_src = resolver.read_material_library(rest)?;
+                    let loaded = Self::parse_mtl_with_limits(&mtl_src, Path::new("."), limits)?;
                     for m in loaded {
                         if !mat_index.contains_key(&m.name) {
                             mat_index.insert(m.name.clone(), materials.len());
@@ -601,6 +712,7 @@ impl ObjLoader {
                     let verts =
                         Self::parse_face_verts(rest, positions.len(), uvs.len(), normals.len())?;
                     for i in 1..(verts.len() - 1) {
+                        Self::ensure_limit(faces.len(), limits.max_elements, "OBJ triangulated faces")?;
                         faces.push(ObjFace {
                             verts: [verts[0], verts[i], verts[i + 1]],
                             material: current_mat,
@@ -620,6 +732,20 @@ impl ObjLoader {
     }
     /// Resolve a material-library path without allowing absolute paths or parent traversal.
     fn resolve_mtllib_path(rest: &str, base_dir: &Path) -> Result<PathBuf, ObjError> {
+        Self::validate_mtllib_reference(rest)?;
+        let requested = Path::new(rest);
+        let base = base_dir.canonicalize()?;
+        let target = base.join(requested).canonicalize()?;
+        if !target.starts_with(&base) {
+            return Err(ObjError::Parse(format!(
+                "mtllib path '{}' escapes the OBJ base directory",
+                rest
+            )));
+        }
+        Ok(target)
+    }
+    /// Reject material references that are not a relative `.mtl` file path.
+    fn validate_mtllib_reference(rest: &str) -> Result<(), ObjError> {
         if rest.is_empty() {
             return Err(ObjError::Parse("mtllib path is empty".to_string()));
         }
@@ -652,18 +778,15 @@ impl ObjLoader {
                 rest
             )));
         }
-        let base = base_dir.canonicalize()?;
-        let target = base.join(requested).canonicalize()?;
-        if !target.starts_with(&base) {
-            return Err(ObjError::Parse(format!(
-                "mtllib path '{}' escapes the OBJ base directory",
-                rest
-            )));
-        }
-        Ok(target)
+        Ok(())
     }
     /// Parse MTL text; extract `newmtl`, `Kd`, and `map_Kd` entries into `ObjMaterial` list.
-    fn parse_mtl(src: &str, _base_dir: &Path) -> Result<Vec<ObjMaterial>, ObjError> {
+    fn parse_mtl_with_limits(
+        src: &str,
+        _base_dir: &Path,
+        limits: ObjLimits,
+    ) -> Result<Vec<ObjMaterial>, ObjError> {
+        Self::validate_document_limits(src, limits, "MTL")?;
         let mut out: Vec<ObjMaterial> = Vec::new();
         let mut current: Option<ObjMaterial> = None;
         for line in src.lines() {
@@ -682,6 +805,7 @@ impl ObjLoader {
                         ));
                     }
                     if let Some(m) = current.take() {
+                        Self::ensure_limit(out.len(), limits.max_elements, "MTL materials")?;
                         out.push(m);
                     }
                     current = Some(ObjMaterial {
@@ -710,6 +834,7 @@ impl ObjLoader {
             }
         }
         if let Some(m) = current {
+            Self::ensure_limit(out.len(), limits.max_elements, "MTL materials")?;
             out.push(m);
         }
         Ok(out)
@@ -717,7 +842,34 @@ impl ObjLoader {
     /// Parse `s` as three whitespace-separated floats into a `Vec3`; return error on bad input.
     fn parse_vec3(s: &str) -> Result<Vec3, ObjError> {
         let parts = Self::split_floats(s, 3)?;
+        if !parts.iter().all(|value| value.is_finite()) {
+            return Err(ObjError::Parse("OBJ vector values must be finite".to_string()));
+        }
         Ok(Vec3::new(parts[0], parts[1], parts[2]))
+    }
+    /// Reject source documents that would consume excessive parser memory or scan time.
+    fn validate_document_limits(src: &str, limits: ObjLimits, kind: &str) -> Result<(), ObjError> {
+        if src.len() > limits.max_bytes {
+            return Err(ObjError::Parse(format!("{kind} source exceeds {} bytes", limits.max_bytes)));
+        }
+        let mut lines = 0usize;
+        for line in src.lines() {
+            lines = lines.checked_add(1).ok_or_else(|| ObjError::Parse(format!("{kind} line count overflow")))?;
+            if lines > limits.max_lines {
+                return Err(ObjError::Parse(format!("{kind} source exceeds {} lines", limits.max_lines)));
+            }
+            if line.len() > limits.max_line_bytes {
+                return Err(ObjError::Parse(format!("{kind} line exceeds {} bytes", limits.max_line_bytes)));
+            }
+        }
+        Ok(())
+    }
+    /// Check a collection before pushing an additional parsed element.
+    fn ensure_limit(current: usize, max: usize, name: &str) -> Result<(), ObjError> {
+        if current >= max {
+            return Err(ObjError::Parse(format!("{name} exceed maximum of {max}")));
+        }
+        Ok(())
     }
     /// Split `s` into at least `expected` floats; return error when fewer are found.
     fn split_floats(s: &str, expected: usize) -> Result<Vec<f32>, ObjError> {
@@ -736,6 +888,9 @@ impl ObjLoader {
                 v.len(),
                 s
             )));
+        }
+        if !v.iter().all(|value| value.is_finite()) {
+            return Err(ObjError::Parse("OBJ numeric values must be finite".to_string()));
         }
         Ok(v)
     }

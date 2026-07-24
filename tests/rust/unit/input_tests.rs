@@ -5,7 +5,7 @@
 use lurek2d::input::action_def::{canonicalize_action_bindings, InputBinding};
 use lurek2d::input::mouse::{validate_cursor_image, CursorImageLimits};
 use lurek2d::input::recorder::{
-    InputEvent, InputRecorder, InputRecording, InputRecordingLimits, RecordedFrame,
+    InputEvent, InputRecorder, InputRecording, InputRecordingLimits, PlaybackMode, RecordedFrame,
 };
 use lurek2d::input::*;
 
@@ -81,6 +81,9 @@ mod recorder_tests {
             vec![InputEvent {
                 kind: "down".into(),
                 name: "space".into(),
+                device: String::new(),
+                value: None,
+                position: None,
             }],
             Some(100.0),
             Some(200.0),
@@ -90,6 +93,9 @@ mod recorder_tests {
             vec![InputEvent {
                 kind: "up".into(),
                 name: "space".into(),
+                device: String::new(),
+                value: None,
+                position: None,
             }],
             None,
             None,
@@ -102,13 +108,57 @@ mod recorder_tests {
     }
 
     #[test]
+    fn realtime_playback_waits_for_captured_timestamp() {
+        let mut recorder = InputRecorder::new();
+        recorder.start_recording();
+        recorder.record_frame_at(
+            vec![InputEvent {
+                kind: "press".into(),
+                name: "a".into(),
+                device: "keyboard".into(),
+                value: None,
+                position: None,
+            }],
+            None,
+            None,
+            Some(100),
+        );
+        let recording = recorder.stop_recording().unwrap();
+        recorder.load(recording);
+        recorder.set_playback_mode(PlaybackMode::Realtime);
+        recorder.start_playback();
+        assert!(recorder.playback_frame_timed(99).key_events.is_empty());
+        assert_eq!(recorder.playback_frame_timed(1).key_events.len(), 1);
+    }
+
+    #[test]
+    fn fixed_playback_waits_for_fixed_step() {
+        let mut recorder = InputRecorder::new();
+        recorder.start_recording();
+        recorder.record_frame(vec![InputEvent {
+            kind: "press".into(), name: "a".into(), device: "keyboard".into(), value: None, position: None,
+        }], None, None);
+        let recording = recorder.stop_recording().unwrap();
+        recorder.load(recording);
+        recorder.set_playback_mode(PlaybackMode::Fixed);
+        recorder.set_playback_fixed_step_ms(20);
+        recorder.start_playback();
+        assert!(recorder.playback_frame_timed(19).key_events.is_empty());
+        assert_eq!(recorder.playback_frame_timed(1).key_events.len(), 1);
+    }
+
+    #[test]
     fn json_serialization() {
         let recording = InputRecording {
             frames: vec![RecordedFrame {
                 frame: 0,
+                time_ms: None,
                 key_events: vec![InputEvent {
                     kind: "down".into(),
                     name: "a".into(),
+                    device: String::new(),
+                    value: None,
+                    position: None,
                 }],
                 mouse_x: None,
                 mouse_y: None,
@@ -229,10 +279,18 @@ mod mouse_tests {
     }
 
     #[test]
-    fn out_of_range_button_ignored() {
+    fn extra_mouse_buttons_are_retained() {
         let mut ms = MouseState::new();
-        ms.set_button(5, true); // index 5 is out of range
-        assert!(!ms.is_down(5));
+        ms.set_button(5, true); // first dynamic button, exposed to Lua as mouse6
+        assert!(ms.is_down(5));
+    }
+
+    #[test]
+    fn click_count_increments_inside_multi_click_window() {
+        let mut mouse = MouseState::new();
+        assert_eq!(mouse.register_click(0, 100), 1);
+        assert_eq!(mouse.register_click(0, 500), 2);
+        assert_eq!(mouse.register_click(0, 1_100), 1);
     }
 
     #[test]
@@ -272,6 +330,14 @@ mod keyboard_tests {
         assert!(!kb.is_down("a"));
         assert!(kb.get_pressed().is_empty());
         assert!(kb.get_released().is_empty());
+    }
+
+    #[test]
+    fn scancode_mapping_covers_punctuation_function_and_media_keys() {
+        use winit::keyboard::KeyCode;
+        assert_eq!(winit_scancode_to_string(KeyCode::F24), Some("f24"));
+        assert_eq!(winit_scancode_to_string(KeyCode::Semicolon), Some(";"));
+        assert_eq!(winit_scancode_to_string(KeyCode::MediaPlayPause), Some("mediaplaypause"));
     }
 
     // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ Key down / up Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
@@ -515,6 +581,18 @@ mod gamepad_tests {
     }
 
     #[test]
+    fn mappings_resolve_standard_controls_to_physical_indices() {
+        let guid = "00000000000000000000000000000000";
+        let mut mappings = GamepadMappings::new();
+        mappings
+            .set_mapping(guid, &format!("{guid},Test Pad,a:b3,leftx:a2"))
+            .unwrap();
+        assert_eq!(mappings.standard_button_index(guid, "a"), Some(3));
+        assert_eq!(mappings.standard_axis_index(guid, "leftx"), Some(2));
+        assert_eq!(mappings.standard_button_index(guid, "start"), None);
+    }
+
+    #[test]
     fn mappings_load_from_string_skips_comments() {
         let mut m = GamepadMappings::new();
         let count = m.load_from_string(
@@ -685,7 +763,7 @@ mod action_binding_tests {
         assert!(InputBinding::parse("").is_err());
         assert!(InputBinding::parse("mouse0").is_err());
         assert!(InputBinding::parse("gamepad:1").is_err());
-        assert!(InputBinding::parse("gamepad:1:x").is_err());
+        assert!(InputBinding::parse("gamepad:1:not_a_button").is_err());
         assert!(InputBinding::parse("gamepadaxis:0:").is_err());
         assert!(InputBinding::parse("touch:").is_err());
     }
@@ -700,5 +778,67 @@ mod action_binding_tests {
         ])
         .unwrap();
         assert_eq!(bindings, vec!["return".to_string(), "mouse1".to_string()]);
+    }
+}
+
+mod input_history_tests {
+    use super::*;
+
+    #[test]
+    fn history_keeps_recent_events_within_bounds() {
+        let mut history = InputHistory::new(2, 20);
+        for time_ms in [0, 10, 30] {
+            history.push(InputHistoryEvent {
+                frame: time_ms / 10,
+                time_ms,
+                device: InputDevice::Keyboard,
+                kind: InputEventKind::Press,
+                control: "a".to_string(),
+                value: None,
+                position: None,
+            });
+        }
+        let snapshot = history.snapshot();
+        assert_eq!(snapshot.len(), 2);
+        assert_eq!(snapshot[0].time_ms, 10);
+        assert!(history.newest_within_frames(3, 1, |event| event.control == "a"));
+    }
+
+    #[test]
+    fn mouse_accepts_extra_button_indices() {
+        let mut mouse = MouseState::new();
+        mouse.set_button(7, true);
+        assert!(mouse.is_down(7));
+        assert!(mouse.was_pressed(7));
+        mouse.begin_frame();
+        mouse.set_button(7, false);
+        assert!(mouse.was_released(7));
+    }
+
+    #[test]
+    fn named_gamepad_bindings_parse_without_losing_legacy_numbers() {
+        assert!(matches!(
+            InputBinding::parse("gamepad:any:a"),
+            Ok(InputBinding::GamepadNamed { gamepad_id: None, player: None, .. })
+        ));
+        assert!(matches!(
+            InputBinding::parse("gamepad:p1:dpad_up"),
+            Ok(InputBinding::GamepadNamed { player: Some(1), .. })
+        ));
+        assert!(matches!(
+            InputBinding::parse("gamepad:0:1"),
+            Ok(InputBinding::GamepadButton { gamepad_id: 0, button: 1 })
+        ));
+    }
+
+    #[test]
+    fn structured_binding_expressions_survive_canonicalization() {
+        let bindings = canonicalize_action_bindings(vec![
+            "chord|60|lctrl|k".to_string(),
+            "axis|gamepad:p1:righttrigger|0.5|positive".to_string(),
+        ])
+        .unwrap();
+        assert_eq!(bindings[0], "chord|60|lctrl|k");
+        assert_eq!(bindings[1], "axis|gamepad:p1:righttrigger|0.5|positive");
     }
 }

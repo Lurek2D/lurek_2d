@@ -95,6 +95,17 @@ impl<'a> FrameCommandContext<'a> {
             };
         }
 
+        macro_rules! reserve_or_skip {
+            ($values:expr, $additional:expr) => {
+                if ($values).try_reserve($additional).is_err() {
+                    renderer.render_diagnostics.record_invalid_render_input();
+                    log::warn!("Skipping render command because frame buffer reservation failed");
+                    restore_state!();
+                    return true;
+                }
+            };
+        }
+
         match cmd {
             RenderCommand::DrawImage {
                 texture_key,
@@ -358,8 +369,8 @@ impl<'a> FrameCommandContext<'a> {
                     let t = transform_stack_last(&transform_stack);
                     scratch_tex_verts.clear();
                     scratch_tex_idxs.clear();
-                    scratch_tex_verts.reserve(batch.len() * 4);
-                    scratch_tex_idxs.reserve(batch.len() * 6);
+                    reserve_or_skip!(scratch_tex_verts, batch.len().saturating_mul(4));
+                    reserve_or_skip!(scratch_tex_idxs, batch.len().saturating_mul(6));
                     for entry in batch.entries() {
                         let qw = if entry.quad_w > 0.0 {
                             entry.quad_w
@@ -616,8 +627,8 @@ impl<'a> FrameCommandContext<'a> {
                         if renderer.gpu_textures.contains_key(tex_key) {
                             scratch_tex_verts.clear();
                             scratch_tex_idxs.clear();
-                            scratch_tex_verts.reserve(tri_indices.len());
-                            scratch_tex_idxs.reserve(tri_indices.len());
+                            reserve_or_skip!(scratch_tex_verts, tri_indices.len());
+                            reserve_or_skip!(scratch_tex_idxs, tri_indices.len());
                             let base_idx = 0u32;
                             for (i, &vi) in tri_indices.iter().enumerate() {
                                 if let Some(mv) = mesh.vertices.get(vi) {
@@ -661,8 +672,8 @@ impl<'a> FrameCommandContext<'a> {
                         }
                     } else {
                         let idx_start = all_color_idxs.len();
-                        all_color_verts.reserve(tri_indices.len());
-                        all_color_idxs.reserve(tri_indices.len());
+                        reserve_or_skip!(all_color_verts, tri_indices.len());
+                        reserve_or_skip!(all_color_idxs, tri_indices.len());
                         for &vi in &tri_indices {
                             if let Some(mv) = mesh.vertices.get(vi) {
                                 let lx = (mv.x - ox) * sx;
@@ -719,8 +730,8 @@ impl<'a> FrameCommandContext<'a> {
                     if renderer.gpu_textures.contains_key(tex_key) {
                         scratch_tex_verts.clear();
                         scratch_tex_idxs.clear();
-                        scratch_tex_verts.reserve(tri_indices.len());
-                        scratch_tex_idxs.reserve(tri_indices.len());
+                        reserve_or_skip!(scratch_tex_verts, tri_indices.len());
+                        reserve_or_skip!(scratch_tex_idxs, tri_indices.len());
                         let base_idx = 0u32;
                         for (i, &vi) in tri_indices.iter().enumerate() {
                             if let Some(mv) = mesh.vertices.get(vi) {
@@ -764,8 +775,8 @@ impl<'a> FrameCommandContext<'a> {
                     }
                 } else {
                     let idx_start = all_color_idxs.len();
-                    all_color_verts.reserve(tri_indices.len());
-                    all_color_idxs.reserve(tri_indices.len());
+                    reserve_or_skip!(all_color_verts, tri_indices.len());
+                    reserve_or_skip!(all_color_idxs, tri_indices.len());
                     for &vi in &tri_indices {
                         if let Some(mv) = mesh.vertices.get(vi) {
                             let lx = (mv.x - ox) * sx;
@@ -839,8 +850,8 @@ impl<'a> FrameCommandContext<'a> {
                 let patches = ns.patches(*x, *y, *w, *h);
                 scratch_tex_verts.clear();
                 scratch_tex_idxs.clear();
-                scratch_tex_verts.reserve(4 * 9);
-                scratch_tex_idxs.reserve(6 * 9);
+                reserve_or_skip!(scratch_tex_verts, 4 * 9);
+                reserve_or_skip!(scratch_tex_idxs, 6 * 9);
                 for &(sx, sy, sw, sh, dx, dy, dw, dh) in &patches {
                     if sw <= 0.0 || sh <= 0.0 || dw <= 0.0 || dh <= 0.0 {
                         continue;
@@ -950,11 +961,16 @@ impl<'a> FrameCommandContext<'a> {
                 let (target_width, target_height) =
                     renderer.target_dimensions(current_target, canvases);
                 let scissor = normalize_scissor(current_scissor, target_width, target_height);
-                let mut pverts: Vec<ColorVertex> = Vec::with_capacity(particles.len() * 6);
-                let mut pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
-                let mut shader_pverts: Vec<ParticleVertex> =
-                    Vec::with_capacity(particles.len() * 6);
-                let mut shader_pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
+                let max_particle_vertices = particles.len().saturating_mul(40);
+                let max_particle_indices = particles.len().saturating_mul(120);
+                let mut pverts: Vec<ColorVertex> = Vec::new();
+                let mut pidxs: Vec<u32> = Vec::new();
+                let mut shader_pverts: Vec<ParticleVertex> = Vec::new();
+                let mut shader_pidxs: Vec<u32> = Vec::new();
+                reserve_or_skip!(pverts, max_particle_vertices);
+                reserve_or_skip!(pidxs, max_particle_indices);
+                reserve_or_skip!(shader_pverts, max_particle_vertices);
+                reserve_or_skip!(shader_pidxs, max_particle_indices);
                 let mut shader_textured_batches: Vec<(TextureKey, Vec<ParticleVertex>, Vec<u32>)> =
                     Vec::new();
                 use std::f32::consts::PI;
@@ -1221,8 +1237,10 @@ impl<'a> FrameCommandContext<'a> {
                         }
                     }
                     if shader.is_some() {
-                        let mut particle_vertices = Vec::with_capacity(pverts.len() - vertex_start);
-                        let mut particle_indices = Vec::with_capacity(pidxs.len() - index_start);
+                        let mut particle_vertices = Vec::new();
+                        let mut particle_indices = Vec::new();
+                        reserve_or_skip!(particle_vertices, pverts.len().saturating_sub(vertex_start));
+                        reserve_or_skip!(particle_indices, pidxs.len().saturating_sub(index_start));
                         let (center_x, center_y) = apply(t, inst.x, inst.y);
                         let inv_size = if inst.size.abs() > f32::EPSILON {
                             1.0 / inst.size.abs()
@@ -1274,7 +1292,12 @@ impl<'a> FrameCommandContext<'a> {
                                         Vec::new(),
                                         Vec::new(),
                                     ));
-                                    shader_textured_batches.last_mut().expect("just pushed")
+                                    let Some(batch) = shader_textured_batches.last_mut() else {
+                                        renderer.render_diagnostics.record_invalid_render_input();
+                                        restore_state!();
+                                        return true;
+                                    };
+                                    batch
                                 }
                             };
                             let particle_base = batch.1.len() as u32;

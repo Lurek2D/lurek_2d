@@ -848,7 +848,7 @@ do
     local rec = lurek.input.stopRecording()
     if rec then
         lurek.input.loadRecording(rec:toJson())
-        lurek.input.startPlayback()
+        lurek.input.startPlayback({ mode = "fixed", fixed_step_ms = 16 })
     end
     local playing = lurek.input.isPlayingBack()
     local frame = lurek.input.getPlaybackFrame()
@@ -1210,4 +1210,56 @@ do
     lurek.log.info("defineActions count=" .. tostring(count))
     lurek.log.info("combat actions=" .. tostring(#lurek.input.getByCategory("combat")))
     lurek.input.reset()
+end
+
+--- Fighting-game and multi-device input patterns.
+
+--@api: lurek.input.setContextEnabled
+--@api: lurek.input.isContextEnabled
+--@api: lurek.input.mouse.wasPressed
+--@api: lurek.input.mouse.getDelta
+--@api: lurek.input.keyboard.wasPressed
+--@api: lurek.input.gamepad.assignPlayer
+--@api: lurek.input.gamepad.setDeadzone
+--@api: lurek.input.gamepad.getStandardAxis
+do
+    lurek.input.define("debug_palette", {
+        { all = { "lctrl", "k" }, within_ms = 60 },
+        "gamepad:any:start",
+    }, "system", "system")
+    lurek.input.setContextEnabled("gameplay", true)
+    local ctrl_k = lurek.input.isActionDown("debug_palette")
+    local extra_mouse = lurek.input.mouse.wasPressed(6)
+    local dx, dy = lurek.input.mouse.getDelta()
+    local q_pressed = lurek.input.keyboard.wasPressed("q")
+    lurek.input.assignPlayer(1, 0)
+    lurek.input.gamepad.setDeadzone(0, "leftstick", 0.18)
+    local stick_x = lurek.input.gamepad.getStandardAxis(0, "leftx")
+    lurek.log.info("input chord=" .. tostring(ctrl_k) .. " extra_mouse=" .. tostring(extra_mouse))
+    lurek.log.info("input delta=" .. tostring(dx) .. "," .. tostring(dy) .. " q=" .. tostring(q_pressed) .. " stick=" .. tostring(stick_x))
+    lurek.input.reset()
+end
+
+--@api: lurek.input.newCombo
+--@api: LCombo:wasCompleted
+--@api: LCombo:completedWithin
+--@api: LCombo:consume
+do
+    local fireball = lurek.input.newCombo({
+        { direction = "down" },
+        { direction = "down_right", leniency_ms = 70 },
+        { direction = "right" },
+        { press = "punch" },
+    }, { source = "player1", total_ms = 550, input_buffer_ms = 100 })
+    local charge = lurek.input.newCombo({
+        { hold = "left", min_hold_ms = 600 },
+        { press = "punch" },
+    })
+    local chord = lurek.input.newCombo({ { chord = { "punch_light", "kick_light" }, within_ms = 50 } })
+    fireball:update()
+    charge:update()
+    chord:update()
+    if fireball:wasCompleted() and fireball:completedWithin(100) then
+        fireball:consume()
+    end
 end

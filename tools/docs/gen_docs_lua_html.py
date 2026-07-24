@@ -8,7 +8,7 @@ working by emitting tiny redirect pages to the new location.
 Usage:
     python tools/docs/gen_docs_lua_html.py
     python tools/docs/gen_docs_lua_html.py --input logs/data/lua_api_data.json
-    python tools/docs/gen_docs_lua_html.py --output pages/lua-docs
+    python tools/docs/gen_docs_lua_html.py --output ../lurek_2D_pages/lua-docs
 """
 
 from __future__ import annotations
@@ -24,14 +24,15 @@ from pathlib import Path
 from typing import Any
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
+PAGES_ROOT = WORKSPACE_ROOT.parent / f"{WORKSPACE_ROOT.name}_pages"
 sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
 import module_registry
 
 INPUT_FILE = module_registry.lua_api_json_path()
-OUTPUT_DIR = WORKSPACE_ROOT / "pages" / "lua-docs"
+OUTPUT_DIR = PAGES_ROOT / "lua-docs"
 EXAMPLES_DIR = WORKSPACE_ROOT / "content" / "examples"
 ICON_CANDIDATES = [
-    WORKSPACE_ROOT / "extension" / "vscode" / "media" / "lurek-logo.png",
+    WORKSPACE_ROOT.parent / f"{WORKSPACE_ROOT.name}_extension" / "vscode" / "media" / "lurek-logo.png",
     WORKSPACE_ROOT / "assets" / "icon-large.png",
     WORKSPACE_ROOT / "assets" / "icon.png",
 ]

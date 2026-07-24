@@ -82,13 +82,15 @@ function lurek.mousemoved(x, y, dx, dy) end
 ---@param x number Pointer x coordinate in game space.
 ---@param y number Pointer y coordinate in game space.
 ---@param button number One-based mouse button index.
-function lurek.mousepressed(x, y, button) end
+---@param clicks number Consecutive click count for this button.
+function lurek.mousepressed(x, y, button, clicks) end
 
 --- Called when a mouse button is released and UI did not consume it.
 ---@param x number Pointer x coordinate in game space.
 ---@param y number Pointer y coordinate in game space.
 ---@param button number One-based mouse button index.
-function lurek.mousereleased(x, y, button) end
+---@param clicks number Consecutive click count for this button.
+function lurek.mousereleased(x, y, button, clicks) end
 
 --- Called every frame for game logic.
 ---@param dt number Frame delta time in seconds.
@@ -15998,6 +16000,14 @@ lurek.image.savePNG = function(img_ud, filename) end
 ---@param filename string Virtual path inside a writable workspace mount.
 lurek.image.savePNGWorkspace = function(img_ud, filename) end
 
+--- Returns whether the combo completed within a recent millisecond window.
+---@param ms number Inclusive age limit in milliseconds.
+---@return boolean True when an unconsumed completion is recent.
+function LCombo:completedWithin(ms) end
+
+--- Marks the latest combo completion as consumed.
+function LCombo:consume() end
+
 --- Feeds one key into the combo detector and returns progress status.
 ---@param key string Key name to feed into the combo sequence.
 ---@return string `completed`, `advanced`, `broken`, or `idle`.
@@ -16036,6 +16046,14 @@ function LCombo:type() end
 ---@param name string Type name to compare against `LCombo` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LCombo:typeOf(name) end
+
+--- Updates an automatic combo from normalized runtime input history.
+---@return boolean True when the combo completed during this update.
+function LCombo:update() end
+
+--- Returns whether the combo completed and has not been consumed.
+---@return boolean True when a completion is pending.
+function LCombo:wasCompleted() end
 
 --- Returns whether this cursor is a system cursor or custom cursor.
 ---@return string `system` or `custom`.
@@ -16078,6 +16096,11 @@ function LInputRecording:typeOf(name) end
 ---@return LInputAdvancePlaybackResult Array of event records with `kind` and `name` fields.
 lurek.input.advancePlayback = function() end
 
+--- Assigns a gamepad slot to a positive player number.
+---@param player number One-based player number.
+---@param gamepad_id number Gamepad slot id.
+lurek.input.assignPlayer = function(player, gamepad_id) end
+
 --- Adds one or more keyboard/gamepad bindings to an action.
 ---@param action string Action name.
 ---@param keys any Binding string or array table of binding strings.
@@ -16090,7 +16113,8 @@ lurek.input.clearBindings = function() end
 ---@param name string Action name.
 ---@param bindings any Binding string or array of binding strings.
 ---@param category? string Category label for grouping (default empty string).
-lurek.input.define = function(name, bindings, category) end
+---@param context? any
+lurek.input.define = function(name, bindings, category, context) end
 
 --- Defines multiple named actions at once, replacing prior definitions.
 ---@param defs table Map of action name to binding array or { bindings = {...}, category? }.
@@ -16102,6 +16126,11 @@ lurek.input.defineActions = function(defs, defaultCategory) end
 ---@param json string JSON string with action definitions.
 ---@return boolean True on success.
 lurek.input.deserializeBindings = function(json) end
+
+--- Returns the player assigned to a gamepad, or nil when unassigned.
+---@param id number Gamepad id.
+---@return number Assigned player number, or nil.
+lurek.input.gamepad.getAssignedPlayer = function(id) end
 
 --- Returns a gamepad axis value by index.
 ---@param id number Gamepad id.
@@ -16149,6 +16178,17 @@ lurek.input.gamepad.getCount = function() end
 ---@return string Current cursor name.
 lurek.input.mouse.getCursor = function() end
 
+--- Returns a configured per-gamepad deadzone, defaulting to 0.0.
+---@param id number Gamepad id.
+---@param stick string Stick or axis group name.
+---@return number Configured deadzone.
+lurek.input.gamepad.getDeadzone = function(id, stick) end
+
+--- Returns raw pointer movement accumulated during the current frame.
+---@return number Horizontal raw movement.
+---@return number Vertical raw movement.
+lurek.input.mouse.getDelta = function() end
+
 --- Returns the GUID string for a gamepad.
 ---@param id number Gamepad id.
 ---@return string GUID string, or an empty string when missing.
@@ -16187,6 +16227,11 @@ lurek.input.gamepad.getName = function(id) end
 ---@return number Playback frame index.
 lurek.input.getPlaybackFrame = function() end
 
+--- Returns the gamepad assigned to a player, or nil.
+---@param player number One-based player number.
+---@return number Assigned gamepad slot, or nil.
+lurek.input.getPlayerGamepad = function(player) end
+
 --- Returns the current mouse position.
 ---@return number Mouse x coordinate.
 ---@return number Mouse y coordinate.
@@ -16212,10 +16257,26 @@ lurek.input.mouse.getRelativeMode = function() end
 ---@return string Scancode string, or nil when unknown.
 lurek.input.keyboard.getScancodeFromKey = function(key) end
 
+--- Returns a standard named Xbox axis value.
+---@param id number Gamepad id.
+---@param name string Standard axis name such as `leftx`.
+---@return number Axis value, or zero for missing input.
+lurek.input.gamepad.getStandardAxis = function(id, name) end
+
+--- Returns whether a standard named Xbox button is currently down.
+---@param id number Gamepad id.
+---@param name string Standard button name such as `a` or `dpad_up`.
+---@return boolean True when the named button is down.
+lurek.input.gamepad.getStandardButton = function(id, name) end
+
 --- Creates a system cursor handle from a cursor name.
 ---@param name string System cursor name.
 ---@return LCursor System cursor handle.
 lurek.input.mouse.getSystemCursor = function(name) end
+
+--- Returns committed text segments received during the current frame.
+---@return string[] Text segments in arrival order.
+lurek.input.keyboard.getTextInput = function() end
 
 --- Returns the current active touch count.
 ---@return number Active touch count.
@@ -16262,6 +16323,11 @@ lurek.input.isActionDown = function(action) end
 ---@param id number Gamepad id.
 ---@return boolean True when the gamepad is connected.
 lurek.input.gamepad.isConnected = function(id) end
+
+--- Returns whether an action input context is enabled.
+---@param name string Context name.
+---@return boolean True when the context is enabled or has no explicit override.
+lurek.input.isContextEnabled = function(name) end
 
 --- Returns whether the current platform supports cursor changes.
 ---@return boolean True when cursor changes are supported.
@@ -16372,9 +16438,20 @@ lurek.input.serializeBindings = function() end
 ---@param enable boolean New background event flag.
 lurek.input.gamepad.setBackgroundEvents = function(enable) end
 
+--- Enables or disables an action input context.
+---@param name string Context name.
+---@param enabled boolean Whether actions in the context can be queried.
+lurek.input.setContextEnabled = function(name, enabled) end
+
 --- Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.
 ---@param cursor any `LCursor`, system cursor string, or nil.
 lurek.input.mouse.setCursor = function(cursor) end
+
+--- Sets a per-gamepad deadzone for a named stick or axis group.
+---@param id number Gamepad id.
+---@param stick string Stick or axis group name.
+---@param value number Deadzone clamped to the inclusive range 0.0..=1.0.
+lurek.input.gamepad.setDeadzone = function(id, stick, value) end
 
 --- Stores a controller mapping string for a gamepad GUID.
 ---@param guid string Gamepad GUID.
@@ -16414,8 +16491,9 @@ lurek.input.gamepad.setVibration = function(id, low_freq, high_freq, duration_ms
 ---@param visible boolean New cursor visibility flag.
 lurek.input.mouse.setVisible = function(visible) end
 
---- Starts playback of the loaded recording.
-lurek.input.startPlayback = function() end
+--- Starts playback of the loaded recording. `opts.mode` may be `frame`, `fixed`, or `realtime`.
+---@param opts? any
+lurek.input.startPlayback = function(opts) end
 
 --- Starts recording input events into the module recorder.
 lurek.input.startRecording = function() end
@@ -16473,6 +16551,16 @@ lurek.input.gamepad.wasConnected = function(id) end
 ---@return boolean True when the gamepad disconnected this frame.
 lurek.input.gamepad.wasDisconnected = function(id) end
 
+--- Returns whether a logical key transitioned to pressed this frame.
+---@param key string Logical key name.
+---@return boolean True when the key was pressed this frame.
+lurek.input.keyboard.wasPressed = function(key) end
+
+--- Returns whether a one-based mouse button index transitioned to pressed this frame.
+---@param button number One-based mouse button index.
+---@return boolean True when the button was pressed this frame.
+lurek.input.mouse.wasPressed = function(button) end
+
 --- Returns whether a gamepad button was pressed this frame.
 ---@param id number Gamepad id.
 ---@param button number Button index.
@@ -16488,6 +16576,16 @@ lurek.input.touch.wasPressed = function(id) end
 ---@return boolean True when any bound key was pressed.
 lurek.input.wasPressed = function() end
 
+--- Returns whether a logical key transitioned to released this frame.
+---@param key string Logical key name.
+---@return boolean True when the key was released this frame.
+lurek.input.keyboard.wasReleased = function(key) end
+
+--- Returns whether a one-based mouse button index transitioned to released this frame.
+---@param button number One-based mouse button index.
+---@return boolean True when the button was released this frame.
+lurek.input.mouse.wasReleased = function(button) end
+
 --- Returns whether a gamepad button was released this frame.
 ---@param id number Gamepad id.
 ---@param button number Button index.
@@ -16502,6 +16600,16 @@ lurek.input.touch.wasReleased = function(id) end
 --- Returns whether any bound key for this mapping was released this frame.
 ---@return boolean True when any bound key was released.
 lurek.input.wasReleased = function() end
+
+--- Returns whether a physical keyboard scancode transitioned to pressed this frame.
+---@param scancode string Physical scancode name.
+---@return boolean True when the scancode was pressed this frame.
+lurek.input.keyboard.wasScancodePressed = function(scancode) end
+
+--- Returns whether a physical keyboard scancode transitioned to released this frame.
+---@param scancode string Physical scancode name.
+---@return boolean True when the scancode was released this frame.
+lurek.input.keyboard.wasScancodeReleased = function(scancode) end
 
 --- Centers the layout within a given area.
 ---@param result table A layout result table with nodes array.

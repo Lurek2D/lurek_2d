@@ -13,6 +13,15 @@ pub struct InputEvent {
     pub kind: String,
     /// Key name, button name, or action identifier.
     pub name: String,
+    /// Device source (`keyboard`, `mouse`, `gamepad:N`, or `touch`).
+    #[serde(default)]
+    pub device: String,
+    /// Optional analog value associated with an axis event.
+    #[serde(default)]
+    pub value: Option<f32>,
+    /// Optional pointer or wheel coordinates.
+    #[serde(default)]
+    pub position: Option<(f32, f32)>,
 }
 
 /// All input events and optional mouse position captured for one recorded frame.
@@ -20,12 +29,27 @@ pub struct InputEvent {
 pub struct RecordedFrame {
     /// Absolute frame number within the recording.
     pub frame: u64,
+    /// Monotonic timestamp in milliseconds when this frame was captured.
+    #[serde(default)]
+    pub time_ms: Option<u64>,
     /// Key and button events that occurred during this frame.
     pub key_events: Vec<InputEvent>,
     /// Optional captured mouse X coordinate (only present when the mouse moved).
     pub mouse_x: Option<f64>,
     /// Optional captured mouse Y coordinate (only present when the mouse moved).
     pub mouse_y: Option<f64>,
+}
+
+/// Scheduling policy used while consuming a recording.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum PlaybackMode {
+    /// Consume exactly one recorded frame on each engine frame.
+    #[default]
+    Frame,
+    /// Consume frames at a caller-provided fixed millisecond step.
+    Fixed,
+    /// Consume events according to their captured timestamps.
+    Realtime,
 }
 
 /// Determinism and provenance metadata stored alongside a serialized input recording.
@@ -264,6 +288,14 @@ pub struct InputRecorder {
     recording: bool,
     /// True when playback is in progress.
     playing: bool,
+    /// Selected playback timing policy.
+    playback_mode: PlaybackMode,
+    /// Elapsed playback clock used by realtime mode.
+    playback_elapsed_ms: u64,
+    /// Accumulator used to convert host delta time into fixed replay ticks.
+    playback_fixed_accumulator_ms: u64,
+    /// Fixed replay interval, defaulting to 60 Hz.
+    playback_fixed_step_ms: u64,
 }
 
 /// Recording and playback lifecycle methods.
@@ -288,10 +320,22 @@ impl InputRecorder {
         mouse_x: Option<f64>,
         mouse_y: Option<f64>,
     ) {
+        self.record_frame_at(key_events, mouse_x, mouse_y, None);
+    }
+
+    /// Append a frame with an optional monotonic capture timestamp.
+    pub fn record_frame_at(
+        &mut self,
+        key_events: Vec<InputEvent>,
+        mouse_x: Option<f64>,
+        mouse_y: Option<f64>,
+        time_ms: Option<u64>,
+    ) {
         if let Some(rec) = &mut self.current {
             if !key_events.is_empty() || mouse_x.is_some() || mouse_y.is_some() {
                 rec.frames.push(RecordedFrame {
                     frame: self.frame,
+                    time_ms,
                     key_events,
                     mouse_x,
                     mouse_y,
@@ -329,8 +373,28 @@ impl InputRecorder {
             self.playing = true;
             self.playback_idx = 0;
             self.frame = 0;
+            self.playback_elapsed_ms = 0;
+            self.playback_fixed_accumulator_ms = 0;
             self.recording = false;
         }
+    }
+
+    /// Select the timing policy used by `playback_frame_timed`.
+    pub fn set_playback_mode(&mut self, mode: PlaybackMode) {
+        self.playback_mode = mode;
+        if self.playback_fixed_step_ms == 0 {
+            self.playback_fixed_step_ms = 16;
+        }
+    }
+
+    /// Set the fixed replay interval used when the mode is `Fixed`.
+    pub fn set_playback_fixed_step_ms(&mut self, step_ms: u64) {
+        self.playback_fixed_step_ms = step_ms.max(1);
+    }
+
+    /// Returns the active playback scheduling policy.
+    pub fn playback_mode(&self) -> PlaybackMode {
+        self.playback_mode
     }
 
     /// Stop playback immediately. This function is part of the public API.
@@ -350,13 +414,34 @@ impl InputRecorder {
 
     /// Return all replay data for the current playback frame and advance; stops playback at the end.
     pub fn playback_frame(&mut self) -> PlaybackFrame {
+        self.playback_frame_timed(0)
+    }
+
+    /// Advance playback by one host frame with a measured delta in milliseconds.
+    pub fn playback_frame_timed(&mut self, elapsed_ms: u64) -> PlaybackFrame {
         if !self.playing {
             return PlaybackFrame::default();
         }
+        if self.playback_mode == PlaybackMode::Fixed {
+            self.playback_fixed_accumulator_ms = self
+                .playback_fixed_accumulator_ms
+                .saturating_add(elapsed_ms);
+            if self.playback_fixed_accumulator_ms < self.playback_fixed_step_ms {
+                return PlaybackFrame::default();
+            }
+            self.playback_fixed_accumulator_ms -= self.playback_fixed_step_ms;
+        }
         let mut frame = PlaybackFrame::default();
+        self.playback_elapsed_ms = self.playback_elapsed_ms.saturating_add(elapsed_ms);
         if let Some(rec) = &self.playback {
             while self.playback_idx < rec.frames.len()
-                && rec.frames[self.playback_idx].frame == self.frame
+                && match self.playback_mode {
+                    PlaybackMode::Frame | PlaybackMode::Fixed => rec.frames[self.playback_idx].frame == self.frame,
+                    PlaybackMode::Realtime => rec.frames[self.playback_idx]
+                        .time_ms
+                        .unwrap_or(rec.frames[self.playback_idx].frame)
+                        <= self.playback_elapsed_ms,
+                }
             {
                 let source = &rec.frames[self.playback_idx];
                 frame.key_events.extend(source.key_events.clone());
@@ -368,7 +453,10 @@ impl InputRecorder {
                 }
                 self.playback_idx += 1;
             }
-            if self.frame + 1 >= rec.total_frames {
+            if self.frame + 1 >= rec.total_frames
+                && (self.playback_mode != PlaybackMode::Realtime
+                    || self.playback_idx >= rec.frames.len())
+            {
                 self.playing = false;
             }
         }

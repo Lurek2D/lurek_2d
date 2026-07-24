@@ -1,5 +1,28 @@
 {
-  "required_scenarios": ["clean_frame_100", "clean_frame_1000", "clean_pointer_move_1000"],
+  "required_scenarios": [
+    "clean_frame_100",
+    "clean_frame_1000",
+    "clean_pointer_move_1000"
+  ],
   "max_slowdown_ratio": 1.5,
-  "scenarios": {}
+  "scenarios": {
+    "clean_frame_100": {
+      "elapsed_ns": 39643400,
+      "iterations": 100,
+      "scenario": "clean_frame_100",
+      "widgets": 100
+    },
+    "clean_frame_1000": {
+      "elapsed_ns": 57373800,
+      "iterations": 20,
+      "scenario": "clean_frame_1000",
+      "widgets": 1000
+    },
+    "clean_pointer_move_1000": {
+      "elapsed_ns": 284170200,
+      "iterations": 500,
+      "scenario": "clean_pointer_move_1000",
+      "widgets": 1000
+    }
+  }
 }

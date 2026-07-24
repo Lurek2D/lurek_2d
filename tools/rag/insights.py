@@ -161,7 +161,6 @@ REPORT_SQL: dict[str, str] = {
                   OR lower(trim(edge_value)) LIKE 'content/%'
                   OR lower(trim(edge_value)) LIKE 'library/%'
                   OR lower(trim(edge_value)) LIKE 'docs/%'
-                  OR lower(trim(edge_value)) LIKE 'pages/%'
                   OR lower(trim(edge_value)) LIKE 'src.%'
                   OR lower(trim(edge_value)) LIKE 'tools.%'
                   OR lower(trim(edge_value)) LIKE 'content.%'

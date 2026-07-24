@@ -23,11 +23,7 @@ pub(super) fn cpu_text_height(font: Option<&crate::font::Font>) -> i32 {
 }
 
 /// Return the top-left Y coordinate that vertically centres preview text.
-pub(super) fn cpu_text_center_y(
-    font: Option<&crate::font::Font>,
-    y: i32,
-    height: i32,
-) -> i32 {
+pub(super) fn cpu_text_center_y(font: Option<&crate::font::Font>, y: i32, height: i32) -> i32 {
     y + ((height - cpu_text_height(font)) / 2).max(0)
 }
 

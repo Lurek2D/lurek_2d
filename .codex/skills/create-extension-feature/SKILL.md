@@ -9,7 +9,7 @@ description: "Load this skill when creating or modifying VS Code extension comma
 - Create or modify VS Code extension features while preserving package wiring, generated API usage, and webview safety.
 
 ## Domain Knowledge
-- Extension ownership is divided among `extension/vscode/src/commands`, `providers`, `editors`, `panels`, and `services`; `extension/vscode/package.json` is the declarative counterpart that makes commands, views, menus, settings, and activation reachable.
+- Extension ownership is divided among `../lurek_2D_extension/vscode/src/commands`, `providers`, `editors`, `panels`, and `services`; `../lurek_2D_extension/vscode/package.json` is the declarative counterpart that makes commands, views, menus, settings, and activation reachable.
 - Generated engine/API descriptors under extension data/generated paths originate in repository generators; consumers may change, but parallel handwritten schemas will drift.
 - Webviews cross a trust boundary: the extension host owns filesystem/process access, while pages use typed messages, strict CSP, explicit state restoration, and disposal-aware lifecycle.
 - Providers and completion/hover features run on editor-critical paths, so indexing, engine invocation, and filesystem scans belong in services/background work rather than activation or synchronous UI callbacks.
@@ -22,12 +22,12 @@ description: "Load this skill when creating or modifying VS Code extension comma
 - Map the user journey from manifest contribution to registration, service/provider owner, and webview channel; inspect generated data provenance before deciding whether TypeScript, manifest, generator, or several layers must change.
 - Implement in the smallest owner with lazy activation, disposable registrations, cancellation for long work, URI-safe workspace access, and typed host/webview messages with CSP-compatible assets.
 - Wire exact identifiers through `package.json`, registration, views/menus/settings, and tests; regenerate engine-derived data with `tools/docs/gen_extension_api.py` instead of patching emitted JSON.
-- Build and test from `extension/vscode/`, exercise UI in an Extension Development Host, and verify reload/disposal plus empty-workspace and missing-engine paths before packaging.
+- Build and test from `../lurek_2D_extension/vscode/`, exercise UI in an Extension Development Host, and verify reload/disposal plus empty-workspace and missing-engine paths before packaging.
 - Trace telemetry/logging and output-channel behavior for the new flow, keeping user data and workspace contents out of diagnostics unless explicitly required while still preserving commands and paths needed for reproduction.
 - Verify command enablement and visibility contexts against supported editor/file/workspace states so the feature is neither unreachable in valid Lurek projects nor offered where it can only fail.
 
 ## References
-- `contracts: extension/vscode/AGENTS.md`
+- `contracts: ../lurek_2D_extension/vscode/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "VS Code extension package.json webview commands" --profile engine --limit 10, npm run build, npm run test`
 - `agent: extension`
-- RAG: `VS Code extension package.json webview commands`; `package.json contributes commands views`; `hover completion tree view snippet`; `extension/src/`; `extension/package.json`; `extension/webviews/`; `docs/` extension references
+- RAG: `VS Code extension package.json webview commands`; `package.json contributes commands views`; `hover completion tree view snippet`; `../lurek_2D_extension/vscode/src/`; `../lurek_2D_extension/vscode/package.json`; `../lurek_2D_extension/vscode/webviews/`; `docs/` extension references

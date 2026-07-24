@@ -17,8 +17,10 @@ use crate::cursor::CursorManager;
 use crate::event::EventQueue;
 use crate::filesystem::GameFS;
 use crate::input::{
-    GamepadMappings, GamepadState, GamepadVibrationRequest, KeyboardState, MouseState, TouchState,
+    GamepadMappings, GamepadState, GamepadVibrationRequest, InputHistory, KeyboardState,
+    MouseState, TouchState,
 };
+use crate::input::recorder::InputRecorder;
 use crate::light::LightWorld;
 use crate::log::SinkRegistry;
 use crate::mods::ModSandbox;
@@ -455,6 +457,16 @@ pub struct SharedState {
     pub gamepad_mappings: GamepadMappings,
     /// Stores gamepad_vibration_requests state.
     pub gamepad_vibration_requests: Vec<GamepadVibrationRequest>,
+    /// Centralized active rumble effects keyed by gamepad slot; deadlines use engine milliseconds.
+    pub gamepad_vibration_active: HashMap<usize, (f32, f32, u64)>,
+    /// Player-to-gamepad assignments. A disconnected slot remains assigned until reassigned.
+    pub gamepad_players: HashMap<u32, usize>,
+    /// Per-gamepad named stick deadzones in the inclusive range 0.0..=1.0.
+    pub gamepad_deadzones: HashMap<(usize, String), f32>,
+    /// Bounded normalized event history shared by action, combo, and replay systems.
+    pub input_history: InputHistory,
+    /// Runtime-owned recorder that captures normalized per-frame input snapshots.
+    pub input_recorder: InputRecorder,
     /// Stores camera state.
     pub camera: Camera,
     /// Stores point_size state.
@@ -626,6 +638,11 @@ impl SharedState {
             gamepad_background_events: false,
             gamepad_mappings: GamepadMappings::new(),
             gamepad_vibration_requests: Vec::new(),
+            gamepad_vibration_active: HashMap::new(),
+            gamepad_players: HashMap::new(),
+            gamepad_deadzones: HashMap::new(),
+            input_history: InputHistory::default(),
+            input_recorder: InputRecorder::new(),
             camera: Camera::default(),
             point_size: 1.0,
             transform_stack_depth: 1,

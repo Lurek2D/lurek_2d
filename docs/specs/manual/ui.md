@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Centralized retained-mode UI context with arena storage, automatic layouts, and resolution scaling.
+- Centralized retained-mode UI context with generational widget handles, automatic layouts, and resolution scaling.
 - Rich control catalog featuring standard inputs, multi-line text areas, rich labels, numeric steppers, combo selections, and visual containers.
 - Layout-manager containers cover vertical boxes, horizontal boxes, grids, margin/padding wrappers, centering, scroll regions, split regions, aspect-ratio slots, stacks, and tabbed page containers.
 - Property inspector widget for grouped name/value rows with collapsible sections and predefined value editors.

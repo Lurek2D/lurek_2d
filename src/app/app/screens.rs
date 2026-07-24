@@ -84,7 +84,9 @@ impl LurekApp {
             0u64,
             false,
         ) {
-            if e == wgpu::SurfaceError::Lost || e == wgpu::SurfaceError::Outdated {
+            if crate::render::surface_error_action(&e)
+                == crate::render::RenderRecoveryAction::ReconfigureSurface
+            {
                 self.reconfigure_surface();
             }
         }
@@ -143,7 +145,9 @@ impl LurekApp {
                 );
                 let should_reconfigure = matches!(
                     render_result,
-                    Err(wgpu::SurfaceError::Lost | wgpu::SurfaceError::Outdated)
+                    Err(ref error)
+                        if crate::render::surface_error_action(error)
+                            == crate::render::RenderRecoveryAction::ReconfigureSurface
                 );
                 drop(st);
                 if should_reconfigure {
@@ -211,7 +215,9 @@ impl LurekApp {
             0u64,
             false,
         ) {
-            if e == wgpu::SurfaceError::Lost || e == wgpu::SurfaceError::Outdated {
+            if crate::render::surface_error_action(&e)
+                == crate::render::RenderRecoveryAction::ReconfigureSurface
+            {
                 self.reconfigure_surface();
             }
         }

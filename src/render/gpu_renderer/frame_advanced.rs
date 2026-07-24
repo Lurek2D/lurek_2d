@@ -13,6 +13,9 @@
 use super::frame::FrameCommandContext;
 use super::*;
 
+/// Bound persistent fullscreen capture textures keyed by game-controlled postfx stack IDs.
+const MAX_POSTFX_CAPTURE_TEXTURES: usize = 128;
+
 impl<'a> FrameCommandContext<'a> {
     #[allow(unused_mut, unused_variables)]
     /// Handles advanced render commands that expand complex geometry or multi-step GPU work.
@@ -91,6 +94,22 @@ impl<'a> FrameCommandContext<'a> {
                 self.scratch_color_idxs = scratch_color_idxs;
                 self.scratch_tex_verts = scratch_tex_verts;
                 self.scratch_tex_idxs = scratch_tex_idxs;
+            };
+        }
+
+        // Advanced commands build temporary, Lua-sized geometry before it can be
+        // merged into the frame buffers.  A failed reservation is a normal rejected
+        // command, not a renderer panic or partially published draw.
+        macro_rules! reserve_or_skip {
+            ($values:expr, $additional:expr) => {
+                if ($values).try_reserve($additional).is_err() {
+                    renderer.render_diagnostics.record_invalid_render_input();
+                    log::warn!(
+                        "Skipping render command because temporary geometry reservation failed"
+                    );
+                    restore_state!();
+                    return true;
+                }
             };
         }
 
@@ -357,9 +376,11 @@ impl<'a> FrameCommandContext<'a> {
                 };
                 let t = transform_stack_last(&transform_stack);
                 let corner_pts = [(*x, *y), (*x + w, *y), (*x + w, *y + h), (*x, *y + h)];
-                let mut verts: Vec<ColorVertex> = Vec::with_capacity(4);
-                let mut idxs: Vec<u32> = Vec::with_capacity(6);
-                let base = verts.len() as u32;
+                let mut verts: Vec<ColorVertex> = Vec::new();
+                let mut idxs: Vec<u32> = Vec::new();
+                reserve_or_skip!(verts, 4);
+                reserve_or_skip!(idxs, 6);
+                let base = 0;
                 for (i, (px, py)) in corner_pts.iter().enumerate() {
                     let (sx, sy) = apply(t, *px, *py);
                     verts.push(ColorVertex {
@@ -392,8 +413,22 @@ impl<'a> FrameCommandContext<'a> {
                 let n = vertices.len() / 2;
                 if n >= 3 && colors.len() >= n {
                     let t = transform_stack_last(&transform_stack);
-                    let mut verts: Vec<ColorVertex> = Vec::with_capacity(n);
+                    let Some(max_vertices) = n.checked_mul(4) else {
+                        renderer.render_diagnostics.record_invalid_render_input();
+                        restore_state!();
+                        return true;
+                    };
+                    let Some(max_indices) = n.checked_mul(6) else {
+                        renderer.render_diagnostics.record_invalid_render_input();
+                        restore_state!();
+                        return true;
+                    };
+                    let mut verts: Vec<ColorVertex> = Vec::new();
                     let mut idxs: Vec<u32> = Vec::new();
+                    let mut poly: Vec<Vec2> = Vec::new();
+                    reserve_or_skip!(verts, max_vertices);
+                    reserve_or_skip!(idxs, max_indices);
+                    reserve_or_skip!(poly, n);
                     match mode {
                         DrawMode::Fill => {
                             for i in 0..n {
@@ -403,10 +438,11 @@ impl<'a> FrameCommandContext<'a> {
                                     color: colors[i],
                                 });
                             }
-                            let poly: Vec<Vec2> = vertices
-                                .chunks_exact(2)
-                                .map(|pair| Vec2::new(pair[0], pair[1]))
-                                .collect();
+                            poly.extend(
+                                vertices
+                                    .chunks_exact(2)
+                                    .map(|pair| Vec2::new(pair[0], pair[1])),
+                            );
                             if let Ok(tris) = polygon::triangulate(&poly) {
                                 for tri in tris {
                                     for point in tri {
@@ -579,7 +615,8 @@ impl<'a> FrameCommandContext<'a> {
                     HexOrientation::PointyTop => PI / 6.0,
                     HexOrientation::FlatTop => 0.0,
                 };
-                let mut flat = Vec::with_capacity(12);
+                let mut flat = Vec::new();
+                reserve_or_skip!(flat, 12);
                 for k in 0..6u32 {
                     let a = k as f32 * PI / 3.0 + angle_offset;
                     flat.push(*cx + *size * a.cos());
@@ -871,6 +908,17 @@ impl<'a> FrameCommandContext<'a> {
                             renderer.surface_format,
                         ));
                 }
+                if !renderer.postfx_capture.contains_key(stack_id)
+                    && renderer.postfx_capture.len() >= MAX_POSTFX_CAPTURE_TEXTURES
+                {
+                    renderer.render_diagnostics.record_invalid_render_input();
+                    log::warn!(
+                        "Skipping postfx stack because the {}-capture limit is exhausted",
+                        MAX_POSTFX_CAPTURE_TEXTURES
+                    );
+                    restore_state!();
+                    return true;
+                }
                 let (w, h) = (renderer.width, renderer.height);
                 let fmt = renderer.surface_format;
                 let dev = &renderer.device;
@@ -996,7 +1044,17 @@ impl<'a> FrameCommandContext<'a> {
                     return true;
                 }
                 let t = transform_stack_last(&transform_stack);
-                let mut verts = Vec::with_capacity(vertices.len());
+                let Some(index_capacity) = vertices
+                    .len()
+                    .checked_sub(2)
+                    .and_then(|count| count.checked_mul(3))
+                else {
+                    renderer.render_diagnostics.record_invalid_render_input();
+                    restore_state!();
+                    return true;
+                };
+                let mut verts = Vec::new();
+                reserve_or_skip!(verts, vertices.len());
                 for v in vertices {
                     let (px, py) = apply(t, v.x, v.y);
                     verts.push(ColorVertex {
@@ -1004,7 +1062,8 @@ impl<'a> FrameCommandContext<'a> {
                         color: *tint,
                     });
                 }
-                let mut idxs = Vec::with_capacity((vertices.len() - 2) * 3);
+                let mut idxs = Vec::new();
+                reserve_or_skip!(idxs, index_capacity);
                 for i in 1..(vertices.len() as u32 - 1) {
                     idxs.extend_from_slice(&[0, i, i + 1]);
                 }

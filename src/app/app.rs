@@ -48,14 +48,16 @@
 //! @engine-param | mousemoved | y | number | false | Pointer y coordinate in game space.
 //! @engine-param | mousemoved | dx | number | false | Delta x since the previous pointer event.
 //! @engine-param | mousemoved | dy | number | false | Delta y since the previous pointer event.
-//! @engine-callback | mousepressed | function lurek.mousepressed(x, y, button) | Called when a mouse button is pressed and UI did not consume it.
+//! @engine-callback | mousepressed | function lurek.mousepressed(x, y, button, clicks) | Called when a mouse button is pressed and UI did not consume it.
 //! @engine-param | mousepressed | x | number | false | Pointer x coordinate in game space.
 //! @engine-param | mousepressed | y | number | false | Pointer y coordinate in game space.
 //! @engine-param | mousepressed | button | integer | false | One-based mouse button index.
-//! @engine-callback | mousereleased | function lurek.mousereleased(x, y, button) | Called when a mouse button is released and UI did not consume it.
+//! @engine-param | mousepressed | clicks | integer | false | Consecutive click count for this button.
+//! @engine-callback | mousereleased | function lurek.mousereleased(x, y, button, clicks) | Called when a mouse button is released and UI did not consume it.
 //! @engine-param | mousereleased | x | number | false | Pointer x coordinate in game space.
 //! @engine-param | mousereleased | y | number | false | Pointer y coordinate in game space.
 //! @engine-param | mousereleased | button | integer | false | One-based mouse button index.
+//! @engine-param | mousereleased | clicks | integer | false | Consecutive click count for this button.
 //! @engine-callback | process | function lurek.process(dt) | Called every frame for game logic.
 //! @engine-param | process | dt | number | false | Frame delta time in seconds.
 //! @engine-callback | process_late | function lurek.process_late(dt) | Called every frame after `process` and fixed-step physics callbacks.
@@ -138,7 +140,7 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use winit::application::ApplicationHandler;
-use winit::event::{ElementState, MouseButton, WindowEvent};
+use winit::event::{DeviceEvent, ElementState, MouseButton, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::keyboard::PhysicalKey;
 use winit::window::{CursorGrabMode, CursorIcon, Window, WindowId};

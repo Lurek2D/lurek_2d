@@ -18,6 +18,9 @@ use crate::render::renderer::{
 use crate::render::shape::{CompoundShape, ShapeCommand};
 use std::fmt;
 
+/// Trusted cap preventing deeply nested state scopes from growing frame validation memory.
+const MAX_RENDER_SCOPE_DEPTH: usize = 1_024;
+
 /// Upper bounds and scalar policies used while validating render commands before tessellation.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct RenderInputLimits {
@@ -27,6 +30,8 @@ pub struct RenderInputLimits {
     pub max_segments_per_command: u32,
     /// Maximum number of post-processing passes accepted by one command.
     pub max_postfx_passes: usize,
+    /// Maximum particle snapshots accepted by one draw command before tessellation.
+    pub max_particles_per_command: usize,
 }
 
 impl Default for RenderInputLimits {
@@ -35,6 +40,7 @@ impl Default for RenderInputLimits {
             max_vertices_per_command: 65_536,
             max_segments_per_command: 4_096,
             max_postfx_passes: 64,
+            max_particles_per_command: 16_384,
         }
     }
 }
@@ -64,6 +70,133 @@ pub enum RenderInputError {
         expected: usize,
         actual: usize,
     },
+}
+
+/// Frame-level state-stack validation failure, reported before commands reach the GPU encoder.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum RenderFrameStateError {
+    /// A command stream nested a state scope beyond the trusted frame cap.
+    TooDeep { scope: &'static str, max: usize },
+    /// A pop/end/flush command had no matching active scope.
+    UnexpectedClose { scope: &'static str },
+    /// A close command named a different active scope than the current top.
+    MismatchedClose { scope: &'static str },
+    /// One or more scopes remained open at the frame boundary.
+    Unclosed { scope: &'static str, depth: usize },
+}
+
+impl fmt::Display for RenderFrameStateError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::TooDeep { scope, max } => write!(f, "{scope} scope exceeds maximum depth {max}"),
+            Self::UnexpectedClose { scope } => write!(f, "{scope} close has no active scope"),
+            Self::MismatchedClose { scope } => write!(f, "{scope} close does not match active scope"),
+            Self::Unclosed { scope, depth } => write!(f, "{scope} scope remains open at frame end (depth {depth})"),
+        }
+    }
+}
+
+impl std::error::Error for RenderFrameStateError {}
+
+/// Validate scopes whose imbalance could otherwise make command ordering ambiguous.
+pub fn validate_render_frame_state(commands: &[RenderCommand]) -> Result<(), RenderFrameStateError> {
+    let mut transforms = 0usize;
+    let mut stencils = 0usize;
+    let mut postfx = Vec::new();
+    let mut sort_groups = Vec::new();
+    let mut layers = Vec::new();
+    for command in commands {
+        match command {
+            RenderCommand::PushTransform => {
+                transforms = transforms.checked_add(1).ok_or(RenderFrameStateError::TooDeep {
+                    scope: "transform",
+                    max: MAX_RENDER_SCOPE_DEPTH,
+                })?;
+                if transforms > MAX_RENDER_SCOPE_DEPTH {
+                    return Err(RenderFrameStateError::TooDeep {
+                        scope: "transform",
+                        max: MAX_RENDER_SCOPE_DEPTH,
+                    });
+                }
+            }
+            RenderCommand::PopTransform => {
+                transforms = transforms.checked_sub(1).ok_or(RenderFrameStateError::UnexpectedClose { scope: "transform" })?;
+            }
+            RenderCommand::StencilBegin { .. } => {
+                stencils = stencils.checked_add(1).ok_or(RenderFrameStateError::TooDeep {
+                    scope: "stencil",
+                    max: MAX_RENDER_SCOPE_DEPTH,
+                })?;
+                if stencils > MAX_RENDER_SCOPE_DEPTH {
+                    return Err(RenderFrameStateError::TooDeep {
+                        scope: "stencil",
+                        max: MAX_RENDER_SCOPE_DEPTH,
+                    });
+                }
+            }
+            RenderCommand::StencilEnd => {
+                stencils = stencils.checked_sub(1).ok_or(RenderFrameStateError::UnexpectedClose { scope: "stencil" })?;
+            }
+            RenderCommand::BeginPostFx { stack_id } => {
+                if postfx.len() >= MAX_RENDER_SCOPE_DEPTH {
+                    return Err(RenderFrameStateError::TooDeep {
+                        scope: "postfx",
+                        max: MAX_RENDER_SCOPE_DEPTH,
+                    });
+                }
+                postfx.push(*stack_id);
+            }
+            RenderCommand::EndPostFx { stack_id } => {
+                let Some(active) = postfx.pop() else {
+                    return Err(RenderFrameStateError::UnexpectedClose { scope: "postfx" });
+                };
+                if active != *stack_id {
+                    return Err(RenderFrameStateError::MismatchedClose { scope: "postfx" });
+                }
+            }
+            RenderCommand::BeginSortGroup { group_id } => {
+                if sort_groups.len() >= MAX_RENDER_SCOPE_DEPTH {
+                    return Err(RenderFrameStateError::TooDeep {
+                        scope: "sort group",
+                        max: MAX_RENDER_SCOPE_DEPTH,
+                    });
+                }
+                sort_groups.push(*group_id);
+            }
+            RenderCommand::FlushSortGroup { group_id } => {
+                let Some(active) = sort_groups.pop() else {
+                    return Err(RenderFrameStateError::UnexpectedClose { scope: "sort group" });
+                };
+                if active != *group_id {
+                    return Err(RenderFrameStateError::MismatchedClose { scope: "sort group" });
+                }
+            }
+            RenderCommand::PushLayer { id, .. } => {
+                if layers.len() >= MAX_RENDER_SCOPE_DEPTH {
+                    return Err(RenderFrameStateError::TooDeep {
+                        scope: "layer",
+                        max: MAX_RENDER_SCOPE_DEPTH,
+                    });
+                }
+                layers.push(*id);
+            }
+            RenderCommand::PopLayer { id } => {
+                let Some(active) = layers.pop() else {
+                    return Err(RenderFrameStateError::UnexpectedClose { scope: "layer" });
+                };
+                if active != *id {
+                    return Err(RenderFrameStateError::MismatchedClose { scope: "layer" });
+                }
+            }
+            _ => {}
+        }
+    }
+    if transforms != 0 { return Err(RenderFrameStateError::Unclosed { scope: "transform", depth: transforms }); }
+    if stencils != 0 { return Err(RenderFrameStateError::Unclosed { scope: "stencil", depth: stencils }); }
+    if !postfx.is_empty() { return Err(RenderFrameStateError::Unclosed { scope: "postfx", depth: postfx.len() }); }
+    if !sort_groups.is_empty() { return Err(RenderFrameStateError::Unclosed { scope: "sort group", depth: sort_groups.len() }); }
+    if !layers.is_empty() { return Err(RenderFrameStateError::Unclosed { scope: "layer", depth: layers.len() }); }
+    Ok(())
 }
 
 impl fmt::Display for RenderInputError {
@@ -456,7 +589,7 @@ pub fn validate_render_command(
             validate_count(
                 "particles",
                 particles.len(),
-                limits.max_vertices_per_command,
+                limits.max_particles_per_command,
             )?;
             for particle in particles {
                 validate_finite_many(&[

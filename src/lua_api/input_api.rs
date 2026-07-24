@@ -11,9 +11,28 @@ use crate::input::virtual_dpad;
 use crate::input::ActionDef;
 use mlua::prelude::*;
 use mlua::Variadic;
+use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+
+/// Versioned wire format for persisted action maps.  Version 1 was the bare map and remains
+/// accepted by `deserializeBindings` for compatibility.
+#[derive(Serialize, Deserialize)]
+struct BindingMapEnvelope {
+    schema_version: u32,
+    actions: HashMap<String, ActionDef>,
+}
+
+fn decode_binding_map(json: &str) -> Result<HashMap<String, ActionDef>, String> {
+    if let Ok(envelope) = serde_json::from_str::<BindingMapEnvelope>(json) {
+        if envelope.schema_version != 2 {
+            return Err(format!("unsupported binding schema_version {}", envelope.schema_version));
+        }
+        return Ok(envelope.actions);
+    }
+    serde_json::from_str(json).map_err(|error| error.to_string())
+}
 
 fn parse_binding_list(function_name: &str, value: LuaValue) -> LuaResult<Vec<String>> {
     let mut raw = Vec::new();
@@ -27,8 +46,54 @@ fn parse_binding_list(function_name: &str, value: LuaValue) -> LuaResult<Vec<Str
             );
         }
         LuaValue::Table(values) => {
-            for item in values.sequence_values::<String>() {
-                raw.push(item?);
+            for item in values.sequence_values::<LuaValue>() {
+                match item? {
+                    LuaValue::String(item) => raw.push(
+                        item.to_str()
+                            .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                            .to_string(),
+                    ),
+                    LuaValue::Table(expr) => {
+                        if let Some(all) = expr.get::<_, Option<LuaTable>>("all")? {
+                            let mut keys = Vec::new();
+                            for key in all.sequence_values::<String>() {
+                                keys.push(key?);
+                            }
+                            let keys = canonicalize_action_bindings(keys).map_err(|e| {
+                                LuaError::RuntimeError(format!("input.{function_name}: {e}"))
+                            })?;
+                            if keys.len() < 2 {
+                                return Err(LuaError::RuntimeError(format!(
+                                    "input.{function_name}: chord requires at least two bindings"
+                                )));
+                            }
+                            let within = expr.get::<_, Option<u64>>("within_ms")?.unwrap_or(60);
+                            raw.push(format!("chord|{within}|{}", keys.join("|")));
+                        } else if let Some(axis) = expr.get::<_, Option<String>>("axis")? {
+                            let threshold = expr.get::<_, Option<f32>>("threshold")?.unwrap_or(0.5);
+                            let direction = expr
+                                .get::<_, Option<String>>("direction")?
+                                .unwrap_or_else(|| "positive".to_string());
+                            if !threshold.is_finite() || !(0.0..=1.0).contains(&threshold)
+                                || !matches!(direction.as_str(), "positive" | "negative")
+                            {
+                                return Err(LuaError::RuntimeError(format!(
+                                    "input.{function_name}: axis binding has invalid threshold or direction"
+                                )));
+                            }
+                            raw.push(format!("axis|{axis}|{threshold}|{direction}"));
+                        } else {
+                            return Err(LuaError::RuntimeError(format!(
+                                "input.{function_name}: binding tables require `all` or `axis`"
+                            )));
+                        }
+                    }
+                    _ => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "input.{function_name}: bindings must contain strings or expression tables"
+                        )))
+                    }
+                }
             }
         }
         _ => {
@@ -41,8 +106,85 @@ fn parse_binding_list(function_name: &str, value: LuaValue) -> LuaResult<Vec<Str
         .map_err(|e| LuaError::RuntimeError(format!("input.{function_name}: {e}")))
 }
 
+/// Decodes a serialized chord expression into its components.
+fn chord_parts(binding: &str) -> Option<(u64, Vec<&str>)> {
+    let mut parts = binding.split('|');
+    (parts.next()? == "chord").then_some(())?;
+    let within_ms = parts.next()?.parse::<u64>().ok()?;
+    let keys: Vec<_> = parts.collect();
+    (keys.len() >= 2).then_some((within_ms, keys))
+}
+
+/// Returns an axis value for a named `gamepad:*:*` control.
+fn named_gamepad_axis(st: &SharedState, binding: &str) -> Option<f32> {
+    let rest = binding.strip_prefix("gamepad:")?;
+    let (target, axis) = rest.split_once(':')?;
+    let axis_code = crate::input::standard_axis_code(axis)?;
+    if target == "any" {
+        return st
+            .gamepads
+            .iter()
+            .enumerate()
+            .map(|(id, _)| normalized_gamepad_axis(st, id, axis_code, axis))
+            .max_by(|a, b| a.abs().partial_cmp(&b.abs()).unwrap_or(std::cmp::Ordering::Equal));
+    }
+    if let Some(player) = target.strip_prefix('p').and_then(|player| player.parse::<u32>().ok()) {
+        return st
+            .gamepad_players
+            .get(&player)
+            .map(|id| normalized_gamepad_axis(st, *id, axis_code, axis));
+    }
+    target
+        .parse::<usize>()
+        .ok()
+        .filter(|id| st.gamepads.get(*id).is_some())
+        .map(|id| normalized_gamepad_axis(st, id, axis_code, axis))
+}
+
+/// Apply the same per-device deadzone normalization used by public gamepad polling.
+fn normalized_gamepad_axis(st: &SharedState, id: usize, axis_code: u32, axis_name: &str) -> f32 {
+    let value = st.gamepads.get(id).map_or(0.0, |gamepad| gamepad.get_axis_value(axis_code));
+    let group = match axis_name.to_ascii_lowercase().as_str() {
+        "leftx" | "lefty" | "left_x" | "left_y" => "leftstick",
+        "rightx" | "righty" | "right_x" | "right_y" => "rightstick",
+        "lefttrigger" | "left_trigger" => "lefttrigger",
+        "righttrigger" | "right_trigger" => "righttrigger",
+        _ => return value,
+    };
+    let deadzone = st.gamepad_deadzones.get(&(id, group.to_string())).copied().unwrap_or(0.0);
+    if value.abs() <= deadzone {
+        0.0
+    } else if value.is_sign_positive() {
+        ((value - deadzone) / (1.0 - deadzone).max(f32::EPSILON)).clamp(0.0, 1.0)
+    } else {
+        ((value + deadzone) / (1.0 - deadzone).max(f32::EPSILON)).clamp(-1.0, 0.0)
+    }
+}
+
+/// Evaluates an encoded analog threshold expression.
+fn axis_threshold_is_down(st: &SharedState, binding: &str) -> Option<bool> {
+    let mut parts = binding.split('|');
+    (parts.next()? == "axis").then_some(())?;
+    let axis = parts.next()?;
+    let threshold = parts.next()?.parse::<f32>().ok()?;
+    let direction = parts.next()?;
+    (parts.next().is_none()).then_some(())?;
+    let value = named_gamepad_axis(st, axis)?;
+    Some(if direction == "negative" {
+        value <= -threshold
+    } else {
+        value >= threshold
+    })
+}
+
 /// Returns whether a keyboard, mouse, or gamepad binding is currently down.
 fn binding_is_down(st: &SharedState, binding: &str) -> bool {
+    if let Some((_, keys)) = chord_parts(binding) {
+        return keys.iter().all(|key| binding_is_down(st, key));
+    }
+    if let Some(value) = axis_threshold_is_down(st, binding) {
+        return value;
+    }
     match InputBinding::parse(binding) {
         Ok(InputBinding::KeyboardKey(key)) => st.keyboard.is_down(&key),
         Ok(InputBinding::Scancode(scancode)) => st.keyboard.is_scancode_down(&scancode),
@@ -51,40 +193,89 @@ fn binding_is_down(st: &SharedState, binding: &str) -> bool {
             .gamepads
             .get(gamepad_id)
             .is_some_and(|gp| gp.is_button_pressed(button)),
+        Ok(InputBinding::GamepadNamed {
+            gamepad_id,
+            player,
+            button,
+        }) => st.gamepads.iter().enumerate().any(|(id, gamepad)| {
+            (gamepad_id.is_none_or(|expected| expected == id)
+                && player.is_none_or(|expected| st.gamepad_players.get(&expected) == Some(&id)))
+                && gamepad.is_standard_button_pressed(&button)
+        }),
         Ok(InputBinding::GamepadAxis { .. } | InputBinding::TouchGesture(_)) | Err(_) => false,
     }
 }
 /// Returns whether a keyboard, mouse, or gamepad binding was pressed this frame.
 fn binding_was_pressed(st: &SharedState, binding: &str) -> bool {
+    if let Some((_, keys)) = chord_parts(binding) {
+        return keys.iter().all(|key| binding_is_down(st, key))
+            && keys.iter().any(|key| binding_was_pressed(st, key));
+    }
+    if axis_threshold_is_down(st, binding).unwrap_or(false) {
+        return true;
+    }
     match InputBinding::parse(binding) {
         Ok(InputBinding::KeyboardKey(key)) => st.keyboard.get_pressed().iter().any(|k| k == &key),
         Ok(InputBinding::Scancode(scancode)) => st.keyboard.was_scancode_pressed(&scancode),
-        Ok(InputBinding::MouseButton(button)) => st.mouse.buttons_pressed[(button - 1) as usize],
+        Ok(InputBinding::MouseButton(button)) => st.mouse.was_pressed((button - 1) as usize),
         Ok(InputBinding::GamepadButton { gamepad_id, button }) => st
             .gamepads
             .get(gamepad_id)
             .is_some_and(|gp| gp.was_button_pressed(button)),
+        Ok(InputBinding::GamepadNamed {
+            gamepad_id,
+            player,
+            button,
+        }) => crate::input::standard_button_code(&button).is_some_and(|button_code| {
+            st.gamepads.iter().enumerate().any(|(id, gamepad)| {
+                (gamepad_id.is_none_or(|expected| expected == id)
+                    && player.is_none_or(|expected| st.gamepad_players.get(&expected) == Some(&id)))
+                    && gamepad.was_button_pressed(button_code)
+            })
+        }),
         Ok(InputBinding::GamepadAxis { .. } | InputBinding::TouchGesture(_)) | Err(_) => false,
     }
 }
 /// Returns whether a keyboard, mouse, or gamepad binding was released this frame.
 fn binding_was_released(st: &SharedState, binding: &str) -> bool {
+    if let Some((_, keys)) = chord_parts(binding) {
+        return keys.iter().any(|key| binding_was_released(st, key));
+    }
     match InputBinding::parse(binding) {
         Ok(InputBinding::KeyboardKey(key)) => st.keyboard.get_released().iter().any(|k| k == &key),
         Ok(InputBinding::Scancode(scancode)) => st.keyboard.was_scancode_released(&scancode),
-        Ok(InputBinding::MouseButton(button)) => st.mouse.buttons_released[(button - 1) as usize],
+        Ok(InputBinding::MouseButton(button)) => st.mouse.was_released((button - 1) as usize),
         Ok(InputBinding::GamepadButton { gamepad_id, button }) => st
             .gamepads
             .get(gamepad_id)
             .is_some_and(|gp| gp.was_button_released(button)),
+        Ok(InputBinding::GamepadNamed {
+            gamepad_id,
+            player,
+            button,
+        }) => crate::input::standard_button_code(&button).is_some_and(|button_code| {
+            st.gamepads.iter().enumerate().any(|(id, gamepad)| {
+                (gamepad_id.is_none_or(|expected| expected == id)
+                    && player.is_none_or(|expected| st.gamepad_players.get(&expected) == Some(&id)))
+                    && gamepad.was_button_released(button_code)
+            })
+        }),
         Ok(InputBinding::GamepadAxis { .. } | InputBinding::TouchGesture(_)) | Err(_) => false,
     }
 }
 /// Computes a -1/0/+1 axis value from an action's first two bindings; first binding is positive, second is negative.
-fn compute_axis(map: &HashMap<String, ActionDef>, st: &SharedState, action: &str) -> f32 {
+fn compute_axis(
+    map: &HashMap<String, ActionDef>,
+    contexts: &HashMap<String, bool>,
+    st: &SharedState,
+    action: &str,
+) -> f32 {
     let Some(def) = map.get(action) else {
         return 0.0;
     };
+    if !action_context_enabled(contexts, def) {
+        return 0.0;
+    }
     let pos = def.bindings.first().is_some_and(|k| binding_is_down(st, k));
     let neg = def.bindings.get(1).is_some_and(|k| binding_is_down(st, k));
     match (pos, neg) {
@@ -92,6 +283,73 @@ fn compute_axis(map: &HashMap<String, ActionDef>, st: &SharedState, action: &str
         (false, true) => -1.0,
         _ => 0.0,
     }
+}
+
+/// Returns whether an action's input context is currently enabled.
+fn action_context_enabled(contexts: &HashMap<String, bool>, def: &ActionDef) -> bool {
+    contexts.get(&def.context).copied().unwrap_or(true)
+}
+
+/// Returns whether a normalized history event is a press matching one simple action binding.
+fn history_press_matches_binding(
+    st: &SharedState,
+    event: &crate::input::InputHistoryEvent,
+    binding: &str,
+) -> bool {
+    if event.kind != crate::input::InputEventKind::Press {
+        return false;
+    }
+    match InputBinding::parse(binding) {
+        Ok(InputBinding::KeyboardKey(key) | InputBinding::Scancode(key)) => event.control == key,
+        Ok(InputBinding::MouseButton(button)) => event.control == format!("mouse{button}"),
+        Ok(InputBinding::GamepadButton { gamepad_id, button }) => {
+            event.device == crate::input::InputDevice::Gamepad(gamepad_id)
+                && (event.control == button.to_string()
+                    || crate::input::standard_button_code(&event.control) == Some(button))
+        }
+        Ok(InputBinding::GamepadNamed { gamepad_id, player, button }) => {
+            let device_matches = match event.device {
+                crate::input::InputDevice::Gamepad(id) => {
+                    gamepad_id.is_none_or(|expected| expected == id)
+                        && player.is_none_or(|expected| st.gamepad_players.get(&expected) == Some(&id))
+                }
+                _ => false,
+            };
+            device_matches
+                && crate::input::standard_button_code(&event.control)
+                    == crate::input::standard_button_code(&button)
+        }
+        _ => false,
+    }
+}
+
+/// Evaluates action press history without relying on a previous polling query.
+fn action_was_pressed_within_history(
+    st: &SharedState,
+    def: &ActionDef,
+    frames: u64,
+) -> bool {
+    let current_frame = st.clock.frame_count();
+    let events = st.input_history.snapshot();
+    def.bindings.iter().any(|binding| {
+        if let Some((within_ms, keys)) = chord_parts(binding) {
+            let mut newest = 0_u64;
+            let mut oldest = u64::MAX;
+            for key in keys {
+                let Some(event) = events.iter().rev().find(|event| {
+                    current_frame.saturating_sub(event.frame) <= frames
+                        && history_press_matches_binding(st, event, key)
+                }) else { return false; };
+                newest = newest.max(event.time_ms);
+                oldest = oldest.min(event.time_ms);
+            }
+            newest.saturating_sub(oldest) <= within_ms
+        } else {
+            st.input_history.newest_within_frames(current_frame, frames, |event| {
+                history_press_matches_binding(st, event, binding)
+            })
+        }
+    })
 }
 /// Lua-side cursor handle for system and custom cursor requests.
 pub struct LuaCursor {
@@ -132,6 +390,198 @@ struct LuaCombo {
     detector: ComboDetector,
     /// Total elapsed time since the last feed or reset.
     total_elapsed_ms: u64,
+    /// Shared runtime state used to consume normalized input history in automatic mode.
+    state: Rc<RefCell<SharedState>>,
+    /// True when the caller exclusively drives the detector through `feed` and `tick`.
+    manual: bool,
+    /// Number of retained history events already inspected by this detector.
+    history_seen: usize,
+    /// Timestamp used to calculate elapsed time between automatic input steps.
+    last_input_time_ms: u64,
+    /// Timestamp of the last completed automatic or manual match.
+    completed_at_ms: Option<u64>,
+    /// Whether the latest completion was consumed by game code.
+    consumed: bool,
+    /// Rich automatic steps used by the fighting-game combo API.
+    auto_steps: Vec<AutoComboStep>,
+    /// Index of the next automatic step.
+    auto_progress: usize,
+    /// Timestamp of the first matched automatic step.
+    auto_started_at_ms: Option<u64>,
+    /// Timestamp of the last matched automatic step.
+    auto_last_step_at_ms: Option<u64>,
+    /// Held controls and their original press timestamps.
+    held_since: HashMap<String, u64>,
+    /// Recent press timestamps, used to resolve chord windows.
+    recent_presses: HashMap<String, u64>,
+    /// Current digital directions for direction/neutral steps.
+    directions: std::collections::HashSet<String>,
+    /// Most recent left-stick axes used to quantize eight-way directions.
+    direction_axes: (f32, f32),
+    /// Optional player slot limiting automatic events to one assigned gamepad.
+    source_player: Option<u32>,
+    /// Completion retention window used as the fighting-game input buffer.
+    input_buffer_ms: u64,
+}
+
+/// A normalized fighting-game combo step.  It deliberately lives beside the Lua conversion
+/// layer while legacy `ComboStep` continues to power the original feed/tick API.
+#[derive(Clone, Debug)]
+enum AutoComboStep {
+    Press(String, u64),
+    Release(String, u64),
+    Chord(Vec<String>, u64, u64),
+    Direction(String, u64),
+    Hold(String, u64, u64),
+    Neutral(u64),
+}
+
+impl AutoComboStep {
+    fn gap_ms(&self) -> u64 {
+        match self {
+            Self::Press(_, gap) | Self::Release(_, gap) | Self::Direction(_, gap) | Self::Neutral(gap) => *gap,
+            Self::Chord(_, _, gap) | Self::Hold(_, _, gap) => *gap,
+        }
+    }
+}
+
+impl LuaCombo {
+    fn normalized_direction(&self) -> String {
+        let mut x = self.direction_axes.0;
+        let mut y = self.direction_axes.1;
+        if self.directions.contains("left") { x = -1.0; }
+        if self.directions.contains("right") { x = 1.0; }
+        if self.directions.contains("up") { y = -1.0; }
+        if self.directions.contains("down") { y = 1.0; }
+        let horizontal = if x <= -0.5 { "left" } else if x >= 0.5 { "right" } else { "" };
+        let vertical = if y <= -0.5 { "up" } else if y >= 0.5 { "down" } else { "" };
+        match (vertical, horizontal) {
+            ("", "") => "neutral".to_string(),
+            ("", h) => h.to_string(),
+            (v, "") => v.to_string(),
+            ("down", "right") => "down_right".to_string(),
+            ("down", "left") => "down_left".to_string(),
+            ("up", "right") => "up_right".to_string(),
+            ("up", "left") => "up_left".to_string(),
+            _ => "neutral".to_string(),
+        }
+    }
+
+    fn update_direction(&mut self, event: &crate::input::InputHistoryEvent) {
+        let control = match event.control.as_str() {
+            "dpad_up" | "dpup" => "up",
+            "dpad_down" | "dpdown" => "down",
+            "dpad_left" | "dpleft" => "left",
+            "dpad_right" | "dpright" => "right",
+            other => other,
+        };
+        if matches!(control, "up" | "down" | "left" | "right") {
+            match event.kind {
+                crate::input::InputEventKind::Press => { self.directions.insert(control.to_string()); }
+                crate::input::InputEventKind::Release => { self.directions.remove(control); }
+                _ => {}
+            }
+        }
+        if event.kind == crate::input::InputEventKind::Axis {
+            match event.control.as_str() {
+                "leftx" => self.direction_axes.0 = event.value.unwrap_or(0.0),
+                "lefty" => self.direction_axes.1 = event.value.unwrap_or(0.0),
+                _ => {}
+            }
+        }
+    }
+
+    fn event_matches_step(&self, step: &AutoComboStep, event: &crate::input::InputHistoryEvent) -> bool {
+        match step {
+            AutoComboStep::Press(control, _) => event.kind == crate::input::InputEventKind::Press && &event.control == control,
+            AutoComboStep::Release(control, _) => event.kind == crate::input::InputEventKind::Release && &event.control == control,
+            AutoComboStep::Direction(direction, _) => matches!(event.kind, crate::input::InputEventKind::Press | crate::input::InputEventKind::Axis)
+                && self.normalized_direction() == *direction,
+            AutoComboStep::Neutral(_) => event.kind == crate::input::InputEventKind::Release && self.normalized_direction() == "neutral",
+            AutoComboStep::Hold(control, min_hold_ms, _) => event.kind == crate::input::InputEventKind::Release
+                && &event.control == control
+                && self.held_since.get(control).is_some_and(|started| event.time_ms.saturating_sub(*started) >= *min_hold_ms),
+            AutoComboStep::Chord(controls, within_ms, _) => event.kind == crate::input::InputEventKind::Press
+                && controls.iter().all(|control| self.recent_presses.get(control).is_some_and(|time| event.time_ms.saturating_sub(*time) <= *within_ms)),
+        }
+    }
+
+    fn advance_auto(&mut self, event: &crate::input::InputHistoryEvent) {
+        if self.auto_steps.is_empty() { return; }
+        if let Some(last) = self.auto_last_step_at_ms {
+            let gap = self.auto_steps[self.auto_progress].gap_ms();
+            if event.time_ms.saturating_sub(last) > gap
+                || self.auto_started_at_ms.is_some_and(|started| {
+                    event.time_ms.saturating_sub(started) > self.detector.max_total_gap_ms
+                })
+            {
+                self.auto_progress = 0;
+                self.auto_started_at_ms = None;
+            }
+        }
+        let matches = self.event_matches_step(&self.auto_steps[self.auto_progress], event);
+        if matches {
+            if self.auto_progress == 0 { self.auto_started_at_ms = Some(event.time_ms); }
+            self.auto_last_step_at_ms = Some(event.time_ms);
+            self.auto_progress += 1;
+            if self.auto_progress == self.auto_steps.len() {
+                self.completed_at_ms = Some(event.time_ms);
+                self.consumed = false;
+                self.auto_progress = 0;
+                self.auto_started_at_ms = None;
+            }
+        } else if self.auto_progress > 0 {
+            // Prefix recovery: the mismatching event may itself start the next attempt.
+            self.auto_progress = 0;
+            self.auto_started_at_ms = None;
+            if self.event_matches_step(&self.auto_steps[0], event) {
+                self.auto_progress = 1;
+                self.auto_started_at_ms = Some(event.time_ms);
+                self.auto_last_step_at_ms = Some(event.time_ms);
+            }
+        }
+    }
+
+    fn process_auto_event(&mut self, event: &crate::input::InputHistoryEvent) {
+        self.update_direction(event);
+        match event.kind {
+            crate::input::InputEventKind::Press => {
+                self.held_since.insert(event.control.clone(), event.time_ms);
+                self.recent_presses.insert(event.control.clone(), event.time_ms);
+            }
+            crate::input::InputEventKind::Release => {}
+            _ => {}
+        }
+        self.advance_auto(event);
+        if event.kind == crate::input::InputEventKind::Release {
+            self.held_since.remove(&event.control);
+        }
+    }
+
+    /// Feeds newly received press events from the shared history into an automatic combo.
+    fn poll_history(&mut self) {
+        if self.manual {
+            return;
+        }
+        let events = self.state.borrow().input_history.snapshot();
+        if events.len() < self.history_seen {
+            self.history_seen = 0;
+        }
+        for event in events.iter().skip(self.history_seen) {
+            if let Some(player) = self.source_player {
+                if let crate::input::InputDevice::Gamepad(id) = event.device {
+                    if self.state.borrow().gamepad_players.get(&player) != Some(&id) {
+                        continue;
+                    }
+                }
+            }
+            let elapsed_ms = event.time_ms.saturating_sub(self.last_input_time_ms);
+            self.last_input_time_ms = event.time_ms;
+            self.total_elapsed_ms = self.total_elapsed_ms.saturating_add(elapsed_ms);
+            self.process_auto_event(event);
+        }
+        self.history_seen = events.len();
+    }
 }
 /// Provides Lua methods for feeding and inspecting combo progress.
 impl LuaUserData for LuaCombo {
@@ -141,8 +591,17 @@ impl LuaUserData for LuaCombo {
         /// @param | key | string | Key name to feed into the combo sequence.
         /// @return | string | `completed`, `advanced`, `broken`, or `idle`.
         methods.add_method_mut("feed", |_, this, key: String| {
+            if !this.manual {
+                return Ok("idle");
+            }
             let progress = this.detector.feed(&key, 0);
             this.total_elapsed_ms = 0;
+            if progress == crate::input::combo::ComboProgress::Completed {
+                this.completed_at_ms = Some(
+                    (this.state.borrow().clock.total() * 1000.0).max(0.0) as u64,
+                );
+                this.consumed = false;
+            }
             let result = match progress {
                 crate::input::combo::ComboProgress::Completed => "completed",
                 crate::input::combo::ComboProgress::Advanced { .. } => "advanced",
@@ -171,14 +630,58 @@ impl LuaUserData for LuaCombo {
         methods.add_method_mut("reset", |_, this, ()| {
             this.detector.reset();
             this.total_elapsed_ms = 0;
+            this.auto_progress = 0;
+            this.auto_started_at_ms = None;
+            this.auto_last_step_at_ms = None;
+            this.held_since.clear();
+            this.recent_presses.clear();
+            this.directions.clear();
+            this.direction_axes = (0.0, 0.0);
+            this.completed_at_ms = None;
+            this.consumed = false;
             Ok(())
+        });
+        // -- update --
+        /// Updates an automatic combo from normalized runtime input history.
+        /// @return | boolean | True when the combo completed during this update.
+        methods.add_method_mut("update", |_, this, ()| {
+            let before = this.completed_at_ms;
+            this.poll_history();
+            Ok(this.completed_at_ms != before && !this.consumed)
+        });
+        // -- wasCompleted --
+        /// Returns whether the combo completed and has not been consumed.
+        /// @return | boolean | True when a completion is pending.
+        methods.add_method_mut("wasCompleted", |_, this, ()| {
+            this.poll_history();
+            let now = (this.state.borrow().clock.total() * 1000.0).max(0.0) as u64;
+            Ok(this.completed_at_ms.is_some_and(|time| {
+                this.input_buffer_ms == 0 || now.saturating_sub(time) <= this.input_buffer_ms
+            }) && !this.consumed)
+        });
+        // -- completedWithin --
+        /// Returns whether the combo completed within a recent millisecond window.
+        /// @param | ms | integer | Inclusive age limit in milliseconds.
+        /// @return | boolean | True when an unconsumed completion is recent.
+        methods.add_method_mut("completedWithin", |_, this, ms: u64| {
+            this.poll_history();
+            let now = (this.state.borrow().clock.total() * 1000.0).max(0.0) as u64;
+            Ok(this.completed_at_ms.is_some_and(|time| now.saturating_sub(time) <= ms)
+                && !this.consumed)
+        });
+        // -- consume --
+        /// Marks the latest combo completion as consumed.
+        methods.add_method_mut("consume", |_, this, ()| {
+            let pending = this.completed_at_ms.is_some() && !this.consumed;
+            this.consumed = true;
+            Ok(pending)
         });
         // -- progress --
         /// Returns the current combo step index reached.
         /// @return | integer | Number of completed combo steps.
         methods.add_method(
             "progress",
-            |_, this, ()| Ok(this.detector.progress() as i64),
+            |_, this, ()| Ok(if this.manual { this.detector.progress() as i64 } else { this.auto_progress as i64 }),
         );
         // -- totalSteps --
         /// Returns the number of steps in this combo sequence.
@@ -188,7 +691,7 @@ impl LuaUserData for LuaCombo {
         /// Returns whether the combo sequence is partially matched.
         /// @return | boolean | True when the combo is in progress.
         methods.add_method("isInProgress", |_, this, ()| {
-            Ok(this.detector.is_in_progress())
+            Ok(if this.manual { this.detector.is_in_progress() } else { this.auto_progress > 0 })
         });
         // -- getStep --
         /// Returns step data by one-based index.
@@ -287,6 +790,50 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     let s = state.clone();
+    // -- keyboard.wasPressed --
+    /// Returns whether a logical key transitioned to pressed this frame.
+    /// @param | key | string | Logical key name.
+    /// @return | boolean | True when the key was pressed this frame.
+    keyboard.set(
+        "wasPressed",
+        lua.create_function(move |_, key: String| {
+            Ok(s.borrow().keyboard.get_pressed().iter().any(|pressed| pressed == &key))
+        })?,
+    )?;
+    let s = state.clone();
+    // -- keyboard.wasReleased --
+    /// Returns whether a logical key transitioned to released this frame.
+    /// @param | key | string | Logical key name.
+    /// @return | boolean | True when the key was released this frame.
+    keyboard.set(
+        "wasReleased",
+        lua.create_function(move |_, key: String| {
+            Ok(s.borrow().keyboard.get_released().iter().any(|released| released == &key))
+        })?,
+    )?;
+    let s = state.clone();
+    // -- keyboard.wasScancodePressed --
+    /// Returns whether a physical keyboard scancode transitioned to pressed this frame.
+    /// @param | scancode | string | Physical scancode name.
+    /// @return | boolean | True when the scancode was pressed this frame.
+    keyboard.set(
+        "wasScancodePressed",
+        lua.create_function(move |_, scancode: String| {
+            Ok(s.borrow().keyboard.was_scancode_pressed(&scancode))
+        })?,
+    )?;
+    let s = state.clone();
+    // -- keyboard.wasScancodeReleased --
+    /// Returns whether a physical keyboard scancode transitioned to released this frame.
+    /// @param | scancode | string | Physical scancode name.
+    /// @return | boolean | True when the scancode was released this frame.
+    keyboard.set(
+        "wasScancodeReleased",
+        lua.create_function(move |_, scancode: String| {
+            Ok(s.borrow().keyboard.was_scancode_released(&scancode))
+        })?,
+    )?;
+    let s = state.clone();
     // -- keyboard.setKeyRepeat --
     /// Enables or disables key repeat tracking.
     /// @param | enabled | boolean | New key repeat flag.
@@ -323,6 +870,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     keyboard.set(
         "hasTextInput",
         lua.create_function(move |_, ()| Ok(s.borrow().keyboard.has_text_input()))?,
+    )?;
+    let s = state.clone();
+    // -- keyboard.getTextInput --
+    /// Returns committed text segments received during the current frame.
+    /// @return | string[] | Text segments in arrival order.
+    keyboard.set(
+        "getTextInput",
+        lua.create_function(move |lua, ()| {
+            let table = lua.create_table()?;
+            for (index, text) in s.borrow().keyboard.get_text_input().iter().enumerate() {
+                table.set(index + 1, text.clone())?;
+            }
+            Ok(table)
+        })?,
     )?;
     // -- keyboard.getScancodeFromKey --
     /// Converts a key name to its scancode name when known.
@@ -392,6 +953,37 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, button: usize| {
             Ok(s.borrow().mouse.is_down(button.saturating_sub(1)))
         })?,
+    )?;
+    let s = state.clone();
+    // -- mouse.wasPressed --
+    /// Returns whether a one-based mouse button index transitioned to pressed this frame.
+    /// @param | button | integer | One-based mouse button index.
+    /// @return | boolean | True when the button was pressed this frame.
+    mouse.set(
+        "wasPressed",
+        lua.create_function(move |_, button: usize| {
+            Ok(s.borrow().mouse.was_pressed(button.saturating_sub(1)))
+        })?,
+    )?;
+    let s = state.clone();
+    // -- mouse.wasReleased --
+    /// Returns whether a one-based mouse button index transitioned to released this frame.
+    /// @param | button | integer | One-based mouse button index.
+    /// @return | boolean | True when the button was released this frame.
+    mouse.set(
+        "wasReleased",
+        lua.create_function(move |_, button: usize| {
+            Ok(s.borrow().mouse.was_released(button.saturating_sub(1)))
+        })?,
+    )?;
+    let s = state.clone();
+    // -- mouse.getDelta --
+    /// Returns raw pointer movement accumulated during the current frame.
+    /// @return | number | Horizontal raw movement.
+    /// @return | number | Vertical raw movement.
+    mouse.set(
+        "getDelta",
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.get_delta()))?,
     )?;
     let s = state.clone();
     // -- mouse.setVisible --
@@ -703,6 +1295,106 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 .map_or(0.0, |gp| gp.get_axis_value(axis)))
         })?,
     )?;
+    let s = state.clone();
+    // -- gamepad.getStandardButton --
+    /// Returns whether a standard named Xbox button is currently down.
+    /// @param | id | integer | Gamepad id.
+    /// @param | name | string | Standard button name such as `a` or `dpad_up`.
+    /// @return | boolean | True when the named button is down.
+    gamepad.set(
+        "getStandardButton",
+        lua.create_function(move |_, (id, name): (usize, String)| {
+            Ok(s.borrow()
+                .gamepads
+                .get(id)
+                .is_some_and(|gamepad| gamepad.is_standard_button_pressed(&name)))
+        })?,
+    )?;
+    let s = state.clone();
+    // -- gamepad.getStandardAxis --
+    /// Returns a standard named Xbox axis value.
+    /// @param | id | integer | Gamepad id.
+    /// @param | name | string | Standard axis name such as `leftx`.
+    /// @return | number | Axis value, or zero for missing input.
+    gamepad.set(
+        "getStandardAxis",
+        lua.create_function(move |_, (id, name): (usize, String)| {
+            let st = s.borrow();
+            let value = st
+                .gamepads
+                .get(id)
+                .map_or(0.0, |gamepad| gamepad.get_standard_axis_value(&name));
+            let group = match name.to_ascii_lowercase().as_str() {
+                "leftx" | "lefty" | "left_x" | "left_y" => "leftstick",
+                "rightx" | "righty" | "right_x" | "right_y" => "rightstick",
+                "lefttrigger" | "left_trigger" => "lefttrigger",
+                "righttrigger" | "right_trigger" => "righttrigger",
+                _ => return Ok(value),
+            };
+            let deadzone = st
+                .gamepad_deadzones
+                .get(&(id, group.to_string()))
+                .copied()
+                .unwrap_or(0.0);
+            Ok(if value.abs() <= deadzone {
+                0.0
+            } else if value.is_sign_positive() {
+                ((value - deadzone) / (1.0 - deadzone).max(f32::EPSILON)).clamp(0.0, 1.0)
+            } else {
+                ((value + deadzone) / (1.0 - deadzone).max(f32::EPSILON)).clamp(-1.0, 0.0)
+            })
+        })?,
+    )?;
+    let s = state.clone();
+    // -- gamepad.setDeadzone --
+    /// Sets a per-gamepad deadzone for a named stick or axis group.
+    /// @param | id | integer | Gamepad id.
+    /// @param | stick | string | Stick or axis group name.
+    /// @param | value | number | Deadzone clamped to the inclusive range 0.0..=1.0.
+    gamepad.set(
+        "setDeadzone",
+        lua.create_function(move |_, (id, stick, value): (usize, String, f32)| {
+            if !value.is_finite() {
+                return Err(LuaError::RuntimeError(
+                    "input.gamepad.setDeadzone: value must be finite".to_string(),
+                ));
+            }
+            s.borrow_mut()
+                .gamepad_deadzones
+                .insert((id, stick.to_ascii_lowercase()), value.clamp(0.0, 1.0));
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- gamepad.getDeadzone --
+    /// Returns a configured per-gamepad deadzone, defaulting to 0.0.
+    /// @param | id | integer | Gamepad id.
+    /// @param | stick | string | Stick or axis group name.
+    /// @return | number | Configured deadzone.
+    gamepad.set(
+        "getDeadzone",
+        lua.create_function(move |_, (id, stick): (usize, String)| {
+            Ok(s.borrow()
+                .gamepad_deadzones
+                .get(&(id, stick.to_ascii_lowercase()))
+                .copied()
+                .unwrap_or(0.0))
+        })?,
+    )?;
+    let s = state.clone();
+    // -- gamepad.getAssignedPlayer --
+    /// Returns the player assigned to a gamepad, or nil when unassigned.
+    /// @param | id | integer | Gamepad id.
+    /// @return | integer | Assigned player number, or nil.
+    gamepad.set(
+        "getAssignedPlayer",
+        lua.create_function(move |_, id: usize| {
+            Ok(s.borrow()
+                .gamepad_players
+                .iter()
+                .find_map(|(player, gamepad)| (*gamepad == id).then_some(*player)))
+        })?,
+    )?;
     // -- gamepad.virtualDpad --
     /// Converts analog x and y values into virtual d-pad booleans and direction.
     /// @param | x | number | Horizontal analog value.
@@ -979,6 +1671,34 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(())
         })?,
     )?;
+    let s = state.clone();
+    // -- assignPlayer --
+    /// Assigns a gamepad slot to a positive player number.
+    /// @param | player | integer | One-based player number.
+    /// @param | gamepad_id | integer | Gamepad slot id.
+    input_tbl.set(
+        "assignPlayer",
+        lua.create_function(move |_, (player, gamepad_id): (u32, usize)| {
+            if player == 0 {
+                return Err(LuaError::RuntimeError(
+                    "input.assignPlayer: player must be at least 1".to_string(),
+                ));
+            }
+            let mut st = s.borrow_mut();
+            st.gamepad_players.retain(|_, id| *id != gamepad_id);
+            st.gamepad_players.insert(player, gamepad_id);
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- getPlayerGamepad --
+    /// Returns the gamepad assigned to a player, or nil.
+    /// @param | player | integer | One-based player number.
+    /// @return | integer | Assigned gamepad slot, or nil.
+    input_tbl.set(
+        "getPlayerGamepad",
+        lua.create_function(move |_, player: u32| Ok(s.borrow().gamepad_players.get(&player).copied()))?,
+    )?;
     /// Performs the 'gamepad' operation.
     input_tbl.set("gamepad", gamepad)?;
     let touch = lua.create_table()?;
@@ -1065,9 +1785,35 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Performs the 'touch' operation.
     input_tbl.set("touch", touch)?;
     let action_map: Rc<RefCell<HashMap<String, ActionDef>>> = Rc::new(RefCell::new(HashMap::new()));
+    let action_contexts: Rc<RefCell<HashMap<String, bool>>> = Rc::new(RefCell::new(
+        [("gameplay".to_string(), true), ("global".to_string(), true)]
+            .into_iter()
+            .collect(),
+    ));
     let rebind_callbacks: Rc<RefCell<Vec<LuaRegistryKey>>> = Rc::new(RefCell::new(Vec::new()));
     let last_pressed_frame: Rc<RefCell<HashMap<String, u64>>> =
         Rc::new(RefCell::new(HashMap::new()));
+    let contexts = action_contexts.clone();
+    // -- setContextEnabled --
+    /// Enables or disables an action input context.
+    /// @param | name | string | Context name.
+    /// @param | enabled | boolean | Whether actions in the context can be queried.
+    input_tbl.set(
+        "setContextEnabled",
+        lua.create_function(move |_, (name, enabled): (String, bool)| {
+            contexts.borrow_mut().insert(name, enabled);
+            Ok(())
+        })?,
+    )?;
+    let contexts = action_contexts.clone();
+    // -- isContextEnabled --
+    /// Returns whether an action input context is enabled.
+    /// @param | name | string | Context name.
+    /// @return | boolean | True when the context is enabled or has no explicit override.
+    input_tbl.set(
+        "isContextEnabled",
+        lua.create_function(move |_, name: String| Ok(contexts.borrow().get(&name).copied().unwrap_or(true)))?,
+    )?;
     let am = action_map.clone();
     let rbc = rebind_callbacks.clone();
     // -- bind --
@@ -1245,6 +1991,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let am = action_map.clone();
     let s = state.clone();
+    let contexts = action_contexts.clone();
     // -- isActionDown --
     /// Returns whether any binding for an action is currently down.
     /// @param | action | string | Action name.
@@ -1254,6 +2001,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, action: String| {
             let map = am.borrow();
             if let Some(def) = map.get(&action) {
+                if !action_context_enabled(&contexts.borrow(), def) {
+                    return Ok(false);
+                }
                 let st = s.borrow();
                 return Ok(def.bindings.iter().any(|k| binding_is_down(&st, k)));
             }
@@ -1263,6 +2013,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let am = action_map.clone();
     let lpf = last_pressed_frame.clone();
     let s = state.clone();
+    let contexts = action_contexts.clone();
     // -- wasActionPressed --
     /// Returns whether any binding for an action was pressed this frame and records the frame.
     /// @param | action | string | Action name.
@@ -1272,6 +2023,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, action: String| {
             let map = am.borrow();
             if let Some(def) = map.get(&action) {
+                if !action_context_enabled(&contexts.borrow(), def) {
+                    return Ok(false);
+                }
                 let st = s.borrow();
                 let was_pressed = def.bindings.iter().any(|k| binding_was_pressed(&st, k));
                 if was_pressed {
@@ -1285,6 +2039,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let am = action_map.clone();
     let s = state.clone();
+    let contexts = action_contexts.clone();
     // -- wasActionReleased --
     /// Returns whether any binding for an action was released this frame.
     /// @param | action | string | Action name.
@@ -1294,14 +2049,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, action: String| {
             let map = am.borrow();
             if let Some(def) = map.get(&action) {
+                if !action_context_enabled(&contexts.borrow(), def) {
+                    return Ok(false);
+                }
                 let st = s.borrow();
                 return Ok(def.bindings.iter().any(|k| binding_was_released(&st, k)));
             }
             Ok(false)
         })?,
     )?;
-    let lpf = last_pressed_frame;
+    let _lpf = last_pressed_frame;
     let s = state.clone();
+    let am = action_map.clone();
+    let contexts = action_contexts.clone();
     // -- wasActionPressedWithin --
     /// Returns whether an action was pressed within a recent frame window.
     /// @param | action | string | Action name.
@@ -1310,9 +2070,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     input_tbl.set(
         "wasActionPressedWithin",
         lua.create_function(move |_, (action, frames): (String, u64)| {
-            if let Some(&pressed_at) = lpf.borrow().get(&action) {
-                let current = s.borrow().clock.frame_count();
-                return Ok(current.saturating_sub(pressed_at) <= frames);
+            let st = s.borrow();
+            if let Some(def) = am.borrow().get(&action) {
+                if !action_context_enabled(&contexts.borrow(), def) {
+                    return Ok(false);
+                }
+                return Ok(action_was_pressed_within_history(&st, def, frames));
             }
             Ok(false)
         })?,
@@ -1327,12 +2090,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     input_tbl.set(
         "define",
         lua.create_function(
-            move |lua, (name, keys, cat): (String, LuaValue, Option<String>)| {
+            move |lua, (name, keys, cat, context): (String, LuaValue, Option<String>, Option<String>)| {
                 let category = cat.unwrap_or_default();
+                let context = context.unwrap_or_else(|| "gameplay".to_string());
                 let parsed = parse_binding_list("define", keys)?;
                 {
                     let mut map = am.borrow_mut();
-                    let def = ActionDef::new(parsed, category)
+                    let def = ActionDef::new(parsed, category, context)
                         .map_err(|e| LuaError::RuntimeError(format!("input.define: {e}")))?;
                     map.insert(name.clone(), def);
                 }
@@ -1372,35 +2136,41 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(
             move |lua, (defs, default_category): (LuaTable, Option<String>)| {
                 let default_category = default_category.unwrap_or_default();
-                let mut updates: Vec<(String, Vec<String>, String)> = Vec::new();
+                let mut updates: Vec<(String, Vec<String>, String, String)> = Vec::new();
                 for pair in defs.pairs::<String, LuaValue>() {
                     let (name, value) = pair?;
-                    let (bindings_value, category) = match value {
+                    let (bindings_value, category, context) = match value {
                         LuaValue::Table(tbl) => match tbl.get::<_, Option<LuaValue>>("bindings")? {
                             Some(bindings) => (
                                 bindings,
                                 tbl.get::<_, Option<String>>("category")?
                                     .unwrap_or_else(|| default_category.clone()),
+                                tbl.get::<_, Option<String>>("context")?
+                                    .unwrap_or_else(|| "gameplay".to_string()),
                             ),
-                            None => (LuaValue::Table(tbl), default_category.clone()),
+                            None => (
+                                LuaValue::Table(tbl),
+                                default_category.clone(),
+                                "gameplay".to_string(),
+                            ),
                         },
-                        other => (other, default_category.clone()),
+                        other => (other, default_category.clone(), "gameplay".to_string()),
                     };
                     let parsed = parse_binding_list("defineActions", bindings_value)?;
-                    updates.push((name, parsed, category));
+                    updates.push((name, parsed, category, context));
                 }
                 let count = updates.len();
                 {
                     let mut map = am.borrow_mut();
-                    for (name, bindings, category) in &updates {
+                    for (name, bindings, category, context) in &updates {
                         let def =
-                            ActionDef::new(bindings.clone(), category.clone()).map_err(|e| {
+                            ActionDef::new(bindings.clone(), category.clone(), context.clone()).map_err(|e| {
                                 LuaError::RuntimeError(format!("input.defineActions: {e}"))
                             })?;
                         map.insert(name.clone(), def);
                     }
                 }
-                for (name, _, _) in &updates {
+                for (name, _, _, _) in &updates {
                     let new_keys = am
                         .borrow()
                         .get(name)
@@ -1428,6 +2198,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let am = action_map.clone();
     let s = state.clone();
+    let contexts = action_contexts.clone();
     // -- getAxis --
     /// Returns -1.0, 0.0, or +1.0 for a named action; first binding is positive, second is negative.
     /// @param | name | string | Action name.
@@ -1437,11 +2208,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, name: String| {
             let map = am.borrow();
             let st = s.borrow();
-            Ok(compute_axis(&map, &st, &name))
+            Ok(compute_axis(&map, &contexts.borrow(), &st, &name))
         })?,
     )?;
     let am = action_map.clone();
     let s = state.clone();
+    let contexts = action_contexts.clone();
     // -- getVector --
     /// Returns a 2D axis vector from two named actions.
     /// @param | hname | string | Horizontal action name (positive = right).
@@ -1453,8 +2225,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, (hname, vname): (String, String)| {
             let map = am.borrow();
             let st = s.borrow();
-            let h = compute_axis(&map, &st, &hname);
-            let v = compute_axis(&map, &st, &vname);
+            let h = compute_axis(&map, &contexts.borrow(), &st, &hname);
+            let v = compute_axis(&map, &contexts.borrow(), &st, &vname);
             Ok((h, v))
         })?,
     )?;
@@ -1514,7 +2286,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "serializeBindings",
         lua.create_function(move |_, ()| {
             let map = am.borrow();
-            serde_json::to_string(&*map).map_err(|e| LuaError::RuntimeError(e.to_string()))
+            serde_json::to_string(&BindingMapEnvelope {
+                schema_version: 2,
+                actions: map.clone(),
+            })
+            .map_err(|e| LuaError::RuntimeError(e.to_string()))
         })?,
     )?;
     let am = action_map.clone();
@@ -1526,7 +2302,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     input_tbl.set(
         "deserializeBindings",
         lua.create_function(move |lua, json: String| {
-            let raw_map: HashMap<String, ActionDef> = serde_json::from_str(&json)
+            let raw_map = decode_binding_map(&json)
                 .map_err(|e| LuaError::RuntimeError(format!("input.deserializeBindings: {e}")))?;
             let mut new_map = HashMap::with_capacity(raw_map.len());
             for (action, def) in raw_map {
@@ -1604,14 +2380,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | steps | table | Array table of key strings or `{key, gap}` step tables.
     /// @param | opts | table? | Options table with `total_gap` in milliseconds.
     /// @return | LCombo | New combo detector handle.
+    let combo_state = state.clone();
     input_tbl.set(
         "newCombo",
-        lua.create_function(|_lua, (steps_val, opts): (LuaTable, Option<LuaTable>)| {
+        lua.create_function(move |_lua, (steps_val, opts): (LuaTable, Option<LuaTable>)| {
             let total_gap_ms: u64 = opts
                 .as_ref()
-                .and_then(|t| t.get::<_, Option<u64>>("total_gap").ok().flatten())
+                .and_then(|t| t.get::<_, Option<u64>>("total_ms").ok().flatten()
+                    .or_else(|| t.get::<_, Option<u64>>("total_gap").ok().flatten()))
                 .unwrap_or(2000);
             let mut steps: Vec<ComboStep> = Vec::new();
+            let mut auto_steps: Vec<AutoComboStep> = Vec::new();
+            let mut has_rich_steps = false;
             for pair in steps_val.sequence_values::<LuaValue>() {
                 let val = pair?;
                 match val {
@@ -1621,21 +2401,49 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                             .map_err(|e| LuaError::RuntimeError(e.to_string()))?
                             .to_string();
                         steps.push(ComboStep {
-                            key,
+                            key: key.clone(),
                             max_gap_ms: 500,
                         });
+                        auto_steps.push(AutoComboStep::Press(key, 500));
                     }
                     LuaValue::Table(t) => {
-                        let key: String = t.get("key").map_err(|_| {
-                            LuaError::RuntimeError(
-                                "input.newCombo: each step table must have a 'key' field".into(),
-                            )
-                        })?;
-                        let gap: u64 = t.get::<_, Option<u64>>("gap")?.unwrap_or(500);
+                        let gap: u64 = t.get::<_, Option<u64>>("leniency_ms")?
+                            .or(t.get::<_, Option<u64>>("gap")?)
+                            .unwrap_or(500);
+                        let (key, auto_step) = if let Some(key) = t.get::<_, Option<String>>("press")? {
+                            has_rich_steps = true;
+                            (key.clone(), AutoComboStep::Press(key, gap))
+                        } else if let Some(key) = t.get::<_, Option<String>>("release")? {
+                            has_rich_steps = true;
+                            (key.clone(), AutoComboStep::Release(key, gap))
+                        } else if let Some(direction) = t.get::<_, Option<String>>("direction")? {
+                            has_rich_steps = true;
+                            (direction.clone(), AutoComboStep::Direction(direction, gap))
+                        } else if let Some(hold) = t.get::<_, Option<String>>("hold")? {
+                            has_rich_steps = true;
+                            let min_hold_ms = t.get::<_, Option<u64>>("min_hold_ms")?.unwrap_or(1);
+                            (hold.clone(), AutoComboStep::Hold(hold, min_hold_ms, gap))
+                        } else if t.get::<_, Option<bool>>("neutral")?.unwrap_or(false) {
+                            has_rich_steps = true;
+                            ("neutral".to_string(), AutoComboStep::Neutral(gap))
+                        } else if let Some(chord) = t.get::<_, Option<LuaTable>>("chord")? {
+                            has_rich_steps = true;
+                            let controls = chord.sequence_values::<String>().collect::<LuaResult<Vec<_>>>()?;
+                            if controls.len() < 2 {
+                                return Err(LuaError::RuntimeError("input.newCombo: chord requires at least two controls".into()));
+                            }
+                            let within = t.get::<_, Option<u64>>("within_ms")?.unwrap_or(50);
+                            (controls.join("+"), AutoComboStep::Chord(controls, within, gap))
+                        } else if let Some(key) = t.get::<_, Option<String>>("key")? {
+                            (key.clone(), AutoComboStep::Press(key, gap))
+                        } else {
+                            return Err(LuaError::RuntimeError("input.newCombo: each step requires press, release, direction, hold, neutral, chord, or key".into()));
+                        };
                         steps.push(ComboStep {
                             key,
                             max_gap_ms: gap,
                         });
+                        auto_steps.push(auto_step);
                     }
                     _ => {
                         return Err(LuaError::RuntimeError(
@@ -1652,34 +2460,64 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(LuaCombo {
                 detector: ComboDetector::new(steps, total_gap_ms),
                 total_elapsed_ms: 0,
+                history_seen: combo_state.borrow().input_history.snapshot().len(),
+                last_input_time_ms: combo_state
+                    .borrow()
+                    .input_history
+                    .snapshot()
+                    .last()
+                    .map_or(0, |event| event.time_ms),
+                state: combo_state.clone(),
+                manual: opts
+                    .as_ref()
+                    .and_then(|table| table.get::<_, Option<bool>>("manual").ok().flatten())
+                    .unwrap_or(!has_rich_steps),
+                completed_at_ms: None,
+                consumed: false,
+                auto_steps,
+                auto_progress: 0,
+                auto_started_at_ms: None,
+                auto_last_step_at_ms: None,
+                held_since: HashMap::new(),
+                recent_presses: HashMap::new(),
+                directions: std::collections::HashSet::new(),
+                direction_axes: (0.0, 0.0),
+                source_player: opts
+                    .as_ref()
+                    .and_then(|table| table.get::<_, Option<String>>("source").ok().flatten())
+                    .and_then(|source| source.strip_prefix("player").or_else(|| source.strip_prefix('p')).and_then(|n| n.parse().ok())),
+                input_buffer_ms: opts
+                    .as_ref()
+                    .and_then(|table| table.get::<_, Option<u64>>("input_buffer_ms").ok().flatten())
+                    .unwrap_or(0),
             })
         })?,
     )?;
-    let rec_rc = Rc::new(RefCell::new(crate::input::recorder::InputRecorder::new()));
-    let rc = rec_rc.clone();
+    let rec_state = state.clone();
+    let rc = rec_state.clone();
     // -- startRecording --
     /// Starts recording input events into the module recorder.
     input_tbl.set(
         "startRecording",
         lua.create_function(move |_, ()| {
-            rc.borrow_mut().start_recording();
+            rc.borrow_mut().input_recorder.start_recording();
             Ok(())
         })?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- stopRecording --
     /// Stops input recording and returns the captured recording when one is active.
     /// @return | LInputRecording | Recording handle, or nil when recording was not active.
     input_tbl.set(
         "stopRecording",
-        lua.create_function(move |lua, ()| match rc.borrow_mut().stop_recording() {
+        lua.create_function(move |lua, ()| match rc.borrow_mut().input_recorder.stop_recording() {
             Some(rec) => Ok(LuaValue::UserData(
                 lua.create_userdata(LuaInputRecording { inner: rec })?,
             )),
             None => Ok(LuaValue::Nil),
         })?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- loadRecording --
     /// Loads recording JSON into the module recorder.
     /// @param | json | string | Recording JSON.
@@ -1688,55 +2526,72 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, json: String| {
             let rec = crate::input::recorder::InputRecording::from_json(&json)
                 .map_err(LuaError::RuntimeError)?;
-            rc.borrow_mut().load(rec);
+            rc.borrow_mut().input_recorder.load(rec);
             Ok(())
         })?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- startPlayback --
-    /// Starts playback of the loaded recording.
+    /// Starts playback of the loaded recording. `opts.mode` may be `frame`, `fixed`, or `realtime`.
     input_tbl.set(
         "startPlayback",
-        lua.create_function(move |_, ()| {
-            rc.borrow_mut().start_playback();
+        lua.create_function(move |_, opts: Option<LuaTable>| {
+            let mode = opts
+                .as_ref()
+                .and_then(|table| table.get::<_, Option<String>>("mode").ok().flatten())
+                .unwrap_or_else(|| "frame".to_string());
+            let mode = match mode.as_str() {
+                "frame" => crate::input::recorder::PlaybackMode::Frame,
+                "fixed" => crate::input::recorder::PlaybackMode::Fixed,
+                "realtime" => crate::input::recorder::PlaybackMode::Realtime,
+                _ => return Err(LuaError::RuntimeError("input.startPlayback: mode must be frame, fixed, or realtime".to_string())),
+            };
+            let fixed_step_ms = opts
+                .as_ref()
+                .and_then(|table| table.get::<_, Option<u64>>("fixed_step_ms").ok().flatten())
+                .unwrap_or(16);
+            let mut recorder = rc.borrow_mut();
+            recorder.input_recorder.set_playback_mode(mode);
+            recorder.input_recorder.set_playback_fixed_step_ms(fixed_step_ms);
+            recorder.input_recorder.start_playback();
             Ok(())
         })?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- stopPlayback --
     /// Stops playback of the loaded recording.
     input_tbl.set(
         "stopPlayback",
         lua.create_function(move |_, ()| {
-            rc.borrow_mut().stop_playback();
+            rc.borrow_mut().input_recorder.stop_playback();
             Ok(())
         })?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- isRecording --
     /// Returns whether the module recorder is currently recording.
     /// @return | boolean | True when recording is active.
     input_tbl.set(
         "isRecording",
-        lua.create_function(move |_, ()| Ok(rc.borrow().is_recording()))?,
+        lua.create_function(move |_, ()| Ok(rc.borrow().input_recorder.is_recording()))?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- isPlayingBack --
     /// Returns whether the module recorder is currently playing back.
     /// @return | boolean | True when playback is active.
     input_tbl.set(
         "isPlayingBack",
-        lua.create_function(move |_, ()| Ok(rc.borrow().is_playing_back()))?,
+        lua.create_function(move |_, ()| Ok(rc.borrow().input_recorder.is_playing_back()))?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- getPlaybackFrame --
     /// Returns the current playback frame index.
     /// @return | integer | Playback frame index.
     input_tbl.set(
         "getPlaybackFrame",
-        lua.create_function(move |_, ()| Ok(rc.borrow().playback_frame_index() as i64))?,
+        lua.create_function(move |_, ()| Ok(rc.borrow().input_recorder.playback_frame_index() as i64))?,
     )?;
-    let rc = rec_rc.clone();
+    let rc = rec_state.clone();
     // -- advancePlayback --
     /// Advances playback by one frame and returns events for that frame.
     /// @return | table | Array of event records with `kind` and `name` fields.
@@ -1747,7 +2602,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     input_tbl.set(
         "advancePlayback",
         lua.create_function(move |lua, ()| {
-            let frame = rc.borrow_mut().playback_frame();
+            let frame = rc.borrow_mut().input_recorder.playback_frame();
             let tbl = lua.create_table()?;
             for (i, ev) in frame.key_events.iter().enumerate() {
                 let etbl = lua.create_table()?;

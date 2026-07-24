@@ -112,7 +112,7 @@ Single registry for all durable tooling under `tools/`.
 - `docs/gen_lib_docs.py` [generator; durable; mcp:no] - gen_lib_docs.py — Generate API docs from Lurek2D library Lua files.
 - `docs/gen_lua_api.py` [generator; durable; mcp:no] - gen_lua_api.py â€” Lurek2D Lua API parser library.
 - `docs/gen_lua_api_data.py` [generator; durable; mcp:no] - gen_lua_api_data.py — Generate Lurek2D master API data file.
-- `docs/gen_lua_api_html_wrapper.py` [generator; durable; mcp:no] - gen_lua_api_html_wrapper.py — Generate HTML index wrapper for Lua API docs-general in pages/lua-docs/.
+- `docs/gen_lua_api_html_wrapper.py` [generator; durable; mcp:no] - Generate HTML redirects in ../lurek_2D_pages/lua-docs/.
 - `docs/gen_lua_binding_reports.py` [generator; durable; mcp:no] - Generate source-derived Lua binding snapshots from src/lua_api/*.rs.
 - `docs/gen_lua_dev_docs.py` [generator; durable; mcp:no] - gen_lua_dev_docs.py — Generate Lua developer docs-general from lua_api *.rs files.
 - `docs/gen_lua_docstring_skeletons.py` [generator; durable; mcp:no] - gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only.
@@ -178,7 +178,7 @@ Single registry for all durable tooling under `tools/`.
 
 ## snippets
 
-- `snippets/gen_vscode_snippets.py` [generator; durable; mcp:no] - Build extension/vscode/data/snippets.json from content/snippets/*.lua.
+- `snippets/gen_vscode_snippets.py` [generator; durable; mcp:no] - Build ../lurek_2D_extension/vscode/data/snippets.json from content/snippets/*.lua.
 - `snippets/snippet_catalog.py` [internal-helper; internal; mcp:no] - Shared parser for content/snippets/*.lua marker blocks.
 
 ## ui
@@ -205,4 +205,3 @@ Single registry for all durable tooling under `tools/`.
 - `validate/validate_rust_file_docs.py` [validate; durable; mcp:no] - Validate Rust file-level //! docs with the repository docstring coverage policy.
 - `validate/validate_rust_source_docs.py` [validate; durable; mcp:no] - Validate file-level and public-item Rust docs-general under src/.
 - `validate/validate_snippets.py` [validate; durable; mcp:candidate] - Validate content/snippets marker structure and VS Code snippet output freshness.
-

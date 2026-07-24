@@ -17,7 +17,7 @@
   {
     "query": "pages generated docs site template",
     "profile": "all",
-    "must_match_any": [".codex/skills/create-pages/SKILL.md", "pages/"]
+    "must_match_any": [".codex/skills/create-pages/SKILL.md"]
   },
   {
     "query": "keyboard input lua API examples tests",
@@ -38,7 +38,7 @@
   {
     "query": "VS Code extension package json webview commands",
     "profile": "engine",
-    "must_match_any": [".codex/skills/create-extension-feature/SKILL.md", "extension/"]
+    "must_match_any": [".codex/skills/create-extension-feature/SKILL.md"]
   },
   {
     "query": "WGSL shader render pipeline",
@@ -134,12 +134,12 @@
   {
     "query": "VS Code extension package webview commands npm build test",
     "profile": "engine",
-    "must_match_any": [".codex/skills/create-extension-feature/SKILL.md", "extension/vscode/", "package.json"]
+    "must_match_any": [".codex/skills/create-extension-feature/SKILL.md", "package.json"]
   },
   {
     "query": "docs templates pages generated site gen_all_docs",
     "profile": "all",
-    "must_match_any": [".codex/skills/create-pages/SKILL.md", "tools/gen_all_docs.py", "pages/AGENTS.md"]
+    "must_match_any": [".codex/skills/create-pages/SKILL.md", "tools/gen_all_docs.py"]
   },
   {
     "query": "codex skills agents routing manager",
@@ -194,7 +194,7 @@
   {
     "query": "docs site generated pages output",
     "profile": "all",
-    "must_match_any": [".codex/skills/create-pages/SKILL.md", "docs/templates/AGENTS.md", "pages/"]
+    "must_match_any": [".codex/skills/create-pages/SKILL.md", "docs/templates/AGENTS.md"]
   },
   {
     "query": "RAG recall tests ranking chunking source priorities",
@@ -265,7 +265,7 @@
   {
     "query": "extension vscode AGENTS commands providers webview",
     "profile": "engine",
-    "must_match_any": ["extension/vscode/AGENTS.md", ".codex/skills/create-extension-feature/SKILL.md", "extension/vscode/README.md"]
+    "must_match_any": [".codex/skills/create-extension-feature/SKILL.md"]
   },
   {
     "query": "library AGENTS reusable Lua gameplay systems",
