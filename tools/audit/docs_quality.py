@@ -16,6 +16,7 @@ import module_registry
 
 SPECS = ROOT / "docs" / "specs"
 MANUAL = SPECS / "manual"
+PAGES_INPUT = ROOT / "lurek_2d_pages" / ".source"
 GENERATED_HEADER = "<!-- GENERATED FILE."
 
 
@@ -88,7 +89,7 @@ def check_coverage(errors: list[str]) -> None:
 
 def check_module_pages_indexed(errors: list[str]) -> None:
     mkdocs_text = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
-    guide_text = (ROOT / "docs" / "module-guides.md").read_text(encoding="utf-8")
+    guide_text = (PAGES_INPUT / "module-guides.md").read_text(encoding="utf-8")
     page_only_excluded = [
         "getting-started.md",
         "first-game.md",
@@ -122,7 +123,7 @@ def check_module_pages_indexed(errors: list[str]) -> None:
         for module in module_registry.user_facing_modules()
     }
     nav_module_refs = set(re.findall(r"^\s*-\s+[^:\n]+:\s+(modules/[^\s#]+\.md)\s*$", mkdocs_text, re.MULTILINE))
-    for module_page in (ROOT / "docs" / "modules").glob("*.md"):
+    for module_page in (PAGES_INPUT / "modules").glob("*.md"):
         module_ref = f"modules/{module_page.name}"
         if module_ref not in expected_refs:
             errors.append(f"FORBIDDEN_NON_API_MODULE_PAGE docs/{module_ref}")
@@ -133,7 +134,7 @@ def check_module_pages_indexed(errors: list[str]) -> None:
 
     for module in module_registry.user_facing_modules():
         api_module = api_module_name(module)
-        module_path = ROOT / "docs" / "modules" / f"{api_module}.md"
+        module_path = PAGES_INPUT / "modules" / f"{api_module}.md"
         module_ref = f"modules/{api_module}.md"
         if not module_path.exists():
             errors.append(f"MISSING_MODULE_PAGE docs/modules/{api_module}.md")
@@ -173,7 +174,7 @@ def check_dead_architecture_links(errors: list[str]) -> None:
     target = ROOT / "docs" / "architecture" / "test-framework.md"
     if target.exists():
         return
-    roots = [ROOT / "README.md", ROOT / "tests" / "README.md", ROOT / "docs", ROOT / ".github", ROOT / ".codex"]
+    roots = [ROOT / "README.md", ROOT / "tests" / "README.md", ROOT / "docs", ROOT / ".codex"]
     for root in roots:
         paths = [root] if root.is_file() else sorted(root.rglob("*.md"))
         for path in paths:

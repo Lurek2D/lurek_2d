@@ -9,25 +9,52 @@ description: "Load this skill when creating or modifying Rust engine modules in 
 - Create or modify Rust engine modules while keeping public Lua API, specs, examples, and tests aligned.
 
 ## Domain Knowledge
-- A top-level `src/<module>/` is an ownership boundary for state and algorithms, not merely a namespace. New modules incur catalog, lifecycle, documentation, binding, example, and test obligations that an extension to an existing owner avoids.
-- `docs/meta/modules.toml` is the join table that connects Rust source, Lua binding path and namespace, generated spec, example file, Lua unit owner, visibility, tier, and plugin metadata.
-- `mod.rs` should expose the module shape while implementation files separate state, algorithms, serialization, and runtime integration; cyclic calls through unrelated modules signal a misplaced owner.
-- Public Lua naming must be settled before generating docs and coverage markers because examples and unit tests consume generated names rather than inventing their own aliases.
-- Registration in `src/lib.rs`/runtime and `src/lua_api/mod.rs` are separate concerns: engine availability does not automatically make a module callable from Lua.
-- Module initialization order must follow dependency direction and runtime ownership. A new owner that reaches into an already-initialized peer through global state creates hidden boot ordering that will surface during reload, tests, or headless execution.
-- Resource-owning modules need explicit teardown and reset semantics, especially when handles are exposed as Lua userdata or derived state is cached by rendering, physics, audio, or runtime orchestration.
-- Public module granularity should match a coherent scripting concept. A namespace that merely forwards unrelated peer operations is usually a catalog/ownership smell rather than a useful top-level module.
+- Rust engine modules live under `src/`.
+- A new top-level module uses `src/<module>/`.
+- A module owns one coherent state and algorithm boundary.
+- `mod.rs` is export-only.
+- Implementation files separate state, algorithms, serialization, and runtime code.
+- `docs/meta/modules.toml` registers source, binding, namespace, spec, example, and test owners.
+- Engine registration and Lua registration are separate steps.
+- Engine registration uses the crate and runtime owners.
+- Lua registration uses `src/lua_api/mod.rs`.
+- Public Lua names are fixed before examples and test markers are written.
+- Generated Lua API data is the source for public callable names.
+- Initialization order follows dependency direction.
+- Modules do not depend on peer global state.
+- Resource-owning modules define reset and teardown.
+- Lua handles use userdata.
+- New public modules need a spec, example, and Lua unit owner.
+- Internal modules need an explicit metadata exclusion when tools require it.
+- `src/lib.rs` is the engine subsystem entry point; `src/main.rs` is the standalone app boot path.
+- Every module source file has `//!` docs that state purpose, state ownership, and its boundary.
+- Public structs, enums, fields, methods, and Lua-facing helpers have `///` docs.
+- Rust source modules do not contain inline test modules or fixtures.
+- Private seams are exposed narrowly with documented `pub(crate)` items.
+- New unsafe code is invalid without a nearby `// SAFETY:` invariant.
 
 ## Workflow
-- Prove a new owner is necessary by mapping requested state, dependencies, lifecycle, and public namespace against existing `src/` modules; define the module boundary and dependency direction before creating files.
-- Build the Rust owner first with export-only `mod.rs`, explicit lifecycle integration, documented invariants, contextual error behavior, and private seam tests; wire a thin Lua module only after the domain API is stable.
-- Add the complete `docs/meta/modules.toml` record, binding registration, and source docstrings, generate Lua API/spec data, then create exact example and Lua unit owners from generated names rather than guessed signatures.
-- Run the module-specific Rust target, generated coverage/spec validators, example and Lua tests, then cargo/clippy and CAG/link checks; verify the new namespace boots in a minimal Lua script before declaring catalog integration complete.
-- Test initialization and teardown in dependency order, including a second creation cycle and failure during partial setup; confirm registration does not leave a half-visible Lua namespace or retain resources after an error.
-- Run the module coverage tools against the new metadata record and inspect every derived path they report, correcting the metadata/source owner rather than patching missing generated files one by one.
+1. Read source, Lua API, specs, examples, and tests contracts.
+2. Query RAG for existing owners of the requested state.
+3. Prove that no current module can own the behavior.
+4. Define module state, dependencies, lifecycle, and public namespace.
+5. Create `src/<module>/` with export-only `mod.rs`.
+6. Implement Rust state and algorithms.
+7. Add file docs and public Rust docs.
+8. Add private Rust tests.
+9. Register the module in engine lifecycle code.
+10. Add a thin Lua binding and Lua registration.
+11. Add the complete `docs/meta/modules.toml` record.
+12. Regenerate Lua API data and specs.
+13. Create exact example owners from generated names.
+14. Create exact Lua unit owners from generated names.
+15. Test init, use, teardown, second init, and partial failure.
+16. Run module coverage validation.
+17. Run focused tests, full Cargo tests, and clippy.
+18. Boot the namespace from a minimal Lua script.
 
 ## References
 - `contracts: src/AGENTS.md, src/lua_api/AGENTS.md, docs/architecture/AGENTS.md, docs/specs/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "Rust engine module lua_api docs specs" --profile engine --limit 10, tools/python.cmd tools/gen_all_docs.py, cargo test, cargo clippy -- -D warnings, tools/python.cmd tools/validate/cag_validate.py`
+- `tools: tools/python.cmd tools/rag/query.py "Rust engine module lua_api docs specs" --profile engine --limit 10, tools/python.cmd tools/gen_all_docs.py, tools/python.cmd tools/validate/validate_module_coverage.py, cargo test, cargo clippy -- -D warnings`
 - `agent: developer`
-- RAG: Start with: `Rust engine module lua_api docs specs`, `engine feature src lua_api specs tests`, `input module spec keyboard mouse gamepad touch`; Focus areas first: `src/`, `src/lua_api/`, `docs/specs/`, `docs/modules/`, `tests/`; If the task is module-specific, append the module name or public API path such as `render`, `input`, `lurek.render`, `lurek.input`
+- RAG: `Rust engine module <name> lua_api docs specs`; inspect existing `src/` owners, `docs/meta/modules.toml`, binding registration, and derived example/test paths.

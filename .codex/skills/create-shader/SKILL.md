@@ -9,25 +9,52 @@ description: "Load this skill when creating or modifying WGSL shaders or rendere
 - Create or modify WGSL shader code and integrate it with the existing renderer pipeline.
 
 ## Domain Knowledge
-- Engine-owned WGSL lives under `src/render/shaders/`; demonstration shaders live under `content/examples/assets/shaders/`. A reusable renderer pass and an API example therefore have different ownership and wiring.
-- WGSL bind-group indices, binding types, vertex attributes, uniform alignment, texture formats, and blend/depth state form a joint contract with wgpu pipeline creation in `src/render/`.
-- Uniform structs must respect WGSL/Rust layout and padding rules; a shader that compiles can still read corrupted values when host layout, dynamic offsets, or color-space assumptions disagree.
-- Full-screen/post-processing shaders must define sampling coordinates, alpha semantics, and render-target format intentionally; sprite or mesh shaders must preserve batching-compatible attributes unless the feature explicitly creates a new pipeline.
-- Shader validation requires an exercised pipeline and visible effect. `cargo check` alone may not instantiate the exact bind layout, format, or draw path.
-- Coordinate and color conventions cross the shader boundary: clip-space orientation, texture UV origin, premultiplied versus straight alpha, linear versus display color, and pixel-size uniforms must agree with the renderer pass that supplies them.
-- Pipeline cache identity must include every state dimension that changes shader compatibility. Reusing a pipeline across incompatible formats, layouts, sample counts, or entry points can produce device validation errors far from shader creation.
-- Shader hot reload or asset failure needs a defined fallback path so an invalid example shader does not corrupt shared renderer state or conceal the previous valid resource behind a partial update.
+- Engine WGSL files live under `src/render/shaders/`.
+- Example WGSL files live under `content/examples/assets/shaders/`.
+- Rust pipeline code lives under `src/render/`.
+- WGSL entry points must match pipeline descriptors.
+- Bind-group index and binding type must match Rust code.
+- Vertex locations and formats must match Rust vertex structs.
+- Uniform layout and padding must match on both sides.
+- Texture format, sample count, depth state, and blend state are pipeline inputs.
+- Pipeline cache keys include every compatibility input.
+- Clip-space direction and UV origin are explicit conventions.
+- Alpha mode is straight or premultiplied.
+- Color calculations identify linear and display color space.
+- Full-screen shaders define sampling coordinates and target format.
+- Existing sprite and mesh shaders preserve batching attributes.
+- `cargo check` does not prove runtime pipeline creation.
+- A valid shader needs a visible exercised effect and clean wgpu logs.
+- Failed reload keeps a known valid fallback.
+- Built-in render pipelines use `vs_main` as the vertex entry point.
+- Engine viewport data occupies `@group(0) @binding(0)` in generated custom shader wrappers.
+- Custom uniform buffers are declared after engine-owned bindings and follow the ordered uniform signature.
+- Color, textured, particle, textured-particle, and light shaders have different fragment-input contracts.
+- CPU tessellation must be bounds-checked before vertex or index upload.
+- Surface loss, resize, and device errors are normal recovery paths, not panic paths.
+- The focused Rust target for renderer behavior is `cargo test --test render_tests`.
 
 ## Workflow
-- Classify the shader as engine pipeline code or example asset, then trace the current WGSL entry points through pipeline descriptors, vertex/uniform structs, bind-group creation, target formats, and the Lua/API path that supplies parameters.
-- Define host/WGSL layouts side by side before editing, including byte alignment, defaults, finite/range handling, texture/sampler pairing, alpha/blend mode, and fallback behavior when a resource is absent.
-- Modify the owning shader and Rust loader together, keep existing batching/pipeline reuse unless a new pass is intentional, and create a focused example or evidence path that drives non-default parameters and makes the effect visually distinguishable.
-- Run Rust/WGSL compilation and render tests, launch the exercising content, capture visual evidence, and inspect edge cases such as resize, transparent pixels, empty textures, extreme uniforms, and device validation errors.
-- Compare the result on representative render targets and sampling conditions—opaque and transparent backgrounds, nearest and filtered textures, target resize, and repeated pipeline creation—to expose hidden format or cache assumptions.
-- Inspect validation logs and the captured frame together: a visually plausible result with wgpu errors is not acceptable, and a clean device log with no distinguishable effect does not prove parameter wiring.
+1. Read the source contract.
+2. Classify the shader as engine-owned or example-owned.
+3. Trace WGSL entry points to pipeline creation.
+4. List vertex, uniform, bind-group, texture, blend, depth, and sample contracts.
+5. Write host and WGSL layouts side by side.
+6. Define alpha, UV, coordinate, and color-space rules.
+7. Update WGSL and Rust loader code together.
+8. Update the pipeline cache key when compatibility inputs change.
+9. Keep existing batching unless a new pass is required.
+10. Add a focused example or evidence path.
+11. Drive at least one non-default parameter.
+12. Run Rust and WGSL compilation.
+13. Launch the exercising content.
+14. Test resize, transparent pixels, empty textures, and extreme uniforms.
+15. Test repeated pipeline creation.
+16. Inspect wgpu validation logs.
+17. Capture visual evidence with a clear effect.
 
 ## References
 - `contracts: src/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "WGSL shader src render pipeline" --profile engine --limit 10, cargo check, cargo test`
 - `agent: developer`
-- RAG: `WGSL shader src render pipeline`; `wgsl vertex fragment uniform texture`; `renderer shader loader pipeline layout`; `src/render/`; `src/render/shaders/`; `content/examples/assets/shaders/`; related specs in `docs/`
+- RAG: `WGSL shader render pipeline <pass>`; inspect the WGSL owner, host structs, bind/pipeline descriptors, target format, and exercising example/evidence path.

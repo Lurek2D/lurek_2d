@@ -779,19 +779,15 @@ Editor-specific tests verify:
 
 ---
 
-## CAG Layer Doctrine (WHY / HOW / WHAT)
+## CAG Layer Doctrine
 
 | File type | Layer | Core question |
 |-----------|-------|--------------|
-| Agent `.agent.md` | **WHY** | *Why does this role exist? What is it responsible for?* |
-| Skill `SKILL.md` | **HOW** | *How do you do the work? What domain knowledge is needed?* |
-| Prompt `.prompt.md` | **WHAT** | *What exact steps produce the outcome?* |
+| `AGENTS.md` | Path contract | *Which durable rules govern this surface?* |
+| Role TOML | Runtime role | *Which registered profile owns this work?* |
+| Skill `SKILL.md` | Workflow | *How is the recurring work performed?* |
 
-**Rules:**
-- A prompt must not duplicate a skill's HOW-TO. Steps should invoke skills by name, not restate their content.
-- A skill must not contain agent ownership language â€” that belongs in agents.
-- An agent must not contain step-by-step instructions â€” those belong in prompts or skills.
-- If a concept appears in two file types, one is wrong. Move to the canonical layer and link.
+The canonical operational contract is [cag-system.md](cag-system.md); it replaces the retired Copilot prompt, agent, and prompt-catalog model.
 
 ---
 
@@ -799,32 +795,18 @@ Editor-specific tests verify:
 
 ```
 User request
-     â”‚
-     â–Ľ
-.github/copilot-instructions.md          (always loaded)
-     â”‚
-     â”śâ”€â”€ Engine Identity + Binding Constraints
-     â”śâ”€â”€ Cross-Artifact Sync table
-     â””â”€â”€ Discovery Directives
-           â”‚
-           â”śâ”€â”€ Domain question / pattern?
-           â”‚     â†’ match intent against SKILL.md `description`
-           â”‚     â†’ load matched skill(s) + Companion File Index
-           â”‚
-           â”śâ”€â”€ Multi-step workflow / role?
-           â”‚     â†’ match task to agent `mission`
-           â”‚     â†’ Manager loads `cag-routing` for handoffs
-           â”‚
-           â””â”€â”€ Slash command / user button?
-                 â†’ .github/prompts/<verb>-<noun>.prompt.md
+  -> root AGENTS.md, then the nearest nested AGENTS.md
+  -> match SKILL.md frontmatter to the requested workflow
+  -> choose a registered role from .codex/agents/ when ownership matters
+  -> use RAG for first-pass discovery, then validate the changed contracts
 ```
 
 Three properties hold:
-- **System prompt is the only file always loaded.** Everything else is demand-pulled.
-- **Skills are additive.** A single task may load several (e.g. `lua-api-design` + `lua-rust-bridge` + `testing-ecosystem`).
-- **Agents are roles.** When work spans â‰Ą3 agents or â‰Ą5 files, route to Manager first; Manager engages Planner before implementation.
+- **Contracts are hierarchical.** The root contract applies everywhere; a nested contract adds only path-specific rules.
+- **Skills are additive.** A task may use a workflow skill plus its relevant testing or review skill.
+- **Roles are registered.** `.codex/config.toml` and `.codex/agents/*.toml` are the source of truth for ownership profiles.
 
-**Worked example** â€” "fix a crash in `src/physics/`": load skills `dev-debugging` + `module-architecture` + `error-handling` â†’ route to `Developer` for root-cause and fix â†’ `Tester` for regression test â†’ `Verifier` to gate commit.
+**Worked example** — "fix a crash in `src/physics/`": read the root and `src/` contracts, use RAG with the engine profile, load the relevant engine/test skill, then run the focused validation.
 
 ---
 
@@ -840,8 +822,8 @@ Three properties hold:
 ## Profiles
 
 The RAG system implements semantic profiles to prevent noisy search results. When querying, you can specify a profile to constrain the results:
-* **Game**: Restricts search to `content/`, `library/`, `docs/`, and structured `API` definitions. Ideal for learning how to use Lurek2D.
-* **Engine**: Restricts search to `src/`, `tests/`, `.github/`, and `tools/`. Ideal for internal architecture or bug-fixing queries.
+* **Game**: Restricts search to `content/`, `lurek_2d_content/`, `lurek_2d_workbench/`, docs, and structured API definitions. Ideal for learning how to use Lurek2D.
+* **Engine**: Restricts search to `src/`, `tests/`, `.codex/`, extension/workbench surfaces, and tools. Ideal for internal architecture or bug-fixing queries.
 * **All**: Searches the entire codebase.
 
 ## VS Code Integration
@@ -885,8 +867,8 @@ Instead of forcing a single AI provider, Lurek's ecosystem is built on the Model
 The **Lurek Extension** turns VS Code into an intelligent **MCP Server Host**. The **Workspace CAG** (Context-Aware Generation) defines what the agent knows how to do.
 
 * **Lurek Extension:** Provides rich IntelliSense, Snippets, and Workspace Tasks.
-* **Workspace CAG:** Contains carefully crafted Agents and Skills in the `.github/` folder, dictating the "Lurek Way" of building. It strictly limits what logic an agent applies.
-* **Example:** You tell the Copilot chat: *"Fix my collision response"*. The agent loads the `physics-debugging` skill from the Workspace CAG and generates a proper `lurek.physics` callback structure. It doesn't guess APIs—it reads the exact workspace rules.
+* **Workspace CAG:** Contains path contracts in `AGENTS.md`, registered roles in `.codex/agents/`, and workflow skills in `.codex/skills/`.
+* **Example:** You ask an agent to fix collision response. It reads the physics contract, uses the relevant workflow skill, finds current API usage through RAG, and verifies the focused regression.
 
 ## 3. Lurek CLI — Headless Mode (The Bridge)
 Agents cannot easily test graphical outputs, so the **Lurek CLI** acts as a programmatic bridge between the AI logic and the engine's compilation execution.

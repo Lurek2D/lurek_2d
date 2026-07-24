@@ -1,158 +1,79 @@
 #!/usr/bin/env python3
-"""cag_link_check.py — broken-link checker for the CAG layer.
-
-Walks every ``.github/**/*.md`` file, extracts markdown links and backtick-
-quoted path-like tokens, and reports any target that does not resolve to an
-existing file under the repository root.
-
-Categories: ``cag`` (paths under ``.github/``), ``docs``, ``tools``, ``src``,
-``content``, ``tests``, ``extensions``, ``other``. URLs (http/https/mailto)
-are skipped, as are paths inside fenced code blocks.
-
-Usage::
-
-    python tools/audit/cag_link_check.py
-    python tools/audit/cag_link_check.py --strict
-    python tools/audit/cag_link_check.py --report links.json --format json
-"""
+"""Check links and structured References across active Codex skills and contracts."""
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
-from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "validate"))
-
 from _cag_common import (  # noqa: E402
-    AGENT_SKILLS_DIR,
-    CODEX_DIR,
-    GITHUB_DIR,
-    WORKSPACE_ROOT,
-    extract_links,
-    relpath,
-    safe_read,
+    CODEX_DIR, WORKSPACE_ROOT, discover_repo_agents, discover_skills, optional_missing,
+    parse_references, relpath, safe_read,
 )
 
 
-def _categorise(target: str) -> str:
-    if target.startswith((".agents/", ".codex/", ".github/")):
-        return "cag"
-    if target.startswith("docs/"):
-        return "docs"
-    if target.startswith("tools/"):
-        return "tools"
-    if target.startswith("src/"):
-        return "src"
-    if target.startswith("content/"):
-        return "content"
-    if target.startswith("tests/"):
-        return "tests"
-    if target.startswith("extensions/"):
-        return "extensions"
-    return "other"
+def repo_root(path: Path) -> Path:
+    for candidate in (path.parent, *path.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return WORKSPACE_ROOT
 
 
-def scan() -> dict[str, object]:
-    """Walk active CAG surfaces and return a structured report payload."""
-    roots = (
-        AGENT_SKILLS_DIR,
-        CODEX_DIR,
-        WORKSPACE_ROOT / "extension" / "vscode" / "cag" / "game-dev",
-        GITHUB_DIR,
-    )
-    md_files = sorted({path for root in roots if root.exists() for path in root.rglob("*.md")})
+def resolve(path: Path, token: str) -> Path | None:
+    token = token.strip().split("#", 1)[0]
+    if not token or any(char in token for char in " <>|*") or token.startswith(("http://", "https://", "lurek.")):
+        return None
+    if token.startswith("tools/") or token.startswith(("AGENTS.md", ".codex/", "content/", "docs/", "src/", "tests/", "lurek_2d_")):
+        return WORKSPACE_ROOT / token
+    candidate = repo_root(path) / token
+    return candidate if "/" in token or token.endswith((".md", ".toml", ".py", ".lua", ".json")) else None
+
+
+def scan(require_workspace: bool = False) -> dict[str, object]:
+    files = sorted(set(discover_skills() + discover_repo_agents() + list(CODEX_DIR.glob("*.md"))))
     broken: list[dict[str, object]] = []
-    by_cat: Counter[str] = Counter()
-    broken_by_cat: Counter[str] = Counter()
     total = 0
-
-    for md in md_files:
-        text = safe_read(md)
-        for ref in extract_links(md, text):
-            target = ref.resolved()
-            if target is None:
-                continue
-            total += 1
-            try:
-                rel_target = str(target.relative_to(WORKSPACE_ROOT)).replace("\\", "/")
-            except ValueError:
-                rel_target = str(target).replace("\\", "/")
-            cat = _categorise(rel_target)
-            by_cat[cat] += 1
-            if not target.exists():
-                broken_by_cat[cat] += 1
-                broken.append({
-                    "file": relpath(md),
-                    "line": ref.line,
-                    "kind": ref.kind,
-                    "target": ref.target,
-                    "resolved": rel_target,
-                    "category": cat,
-                })
-
-    return {
-        "files_scanned": len(md_files),
-        "links_total": total,
-        "links_by_category": dict(by_cat),
-        "broken_total": len(broken),
-        "broken_by_category": dict(broken_by_cat),
-        "broken": broken,
-    }
+    for source in files:
+        text = safe_read(source)
+        refs = parse_references(text)
+        contracts = refs.get("contracts")
+        if isinstance(contracts, list):
+            for token in contracts:
+                target = WORKSPACE_ROOT / token
+                total += 1
+                rel = relpath(target)
+                if not target.exists() and (require_workspace or not optional_missing(rel)):
+                    broken.append({"file": relpath(source), "target": token, "resolved": rel})
+        tools = refs.get("tools")
+        if isinstance(tools, list):
+            for token in tools:
+                for script in re.findall(r"(?:^|\s)(tools/[A-Za-z0-9_./-]+\.(?:py|cmd|ps1))", token):
+                    target = WORKSPACE_ROOT / script
+                    total += 1
+                    if not target.exists():
+                        broken.append({"file": relpath(source), "target": script, "resolved": relpath(target)})
+    return {"files_scanned": len(files), "links_total": total, "broken_total": len(broken), "broken": broken}
 
 
-def format_text(report: dict[str, object]) -> str:
-    lines: list[str] = []
-    for b in report["broken"]:  # type: ignore[index]
-        lines.append(f"  BROKEN  {b['file']}:{b['line']}  [{b['category']}]  "  # type: ignore[index]
-                     f"-> {b['target']}")
-    if report["broken"]:
-        lines.append("")
-    lines.append(
-        f"Files scanned: {report['files_scanned']}, "
-        f"links: {report['links_total']}, "
-        f"broken: {report['broken_total']}"
-    )
-    if report["broken_by_category"]:
-        lines.append(
-            "Broken by category: "
-            + ", ".join(f"{k}={v}" for k, v in
-                        sorted(report["broken_by_category"].items()))  # type: ignore[union-attr]
-        )
-    return "\n".join(lines)
-
-
-def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-    p.add_argument("--report", metavar="PATH",
-                   help="Write JSON report to this path")
-    p.add_argument("--format", choices=["text", "json"], default="text")
-    p.add_argument("--strict", action="store_true",
-                   help="Exit non-zero if any broken link is found")
-    return p
-
-
-def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
-    report = scan()
-    if args.report:
-        Path(args.report).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.report).write_text(
-            json.dumps(report, indent=2, sort_keys=True), encoding="utf-8"
-        )
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--require-workspace", action="store_true")
+    parser.add_argument("--format", choices=["text", "json"], default="text")
+    args = parser.parse_args()
+    report = scan(args.require_workspace)
     if args.format == "json":
-        print(json.dumps(report, indent=2, sort_keys=True))
+        print(json.dumps(report, indent=2))
     else:
-        print(format_text(report))
-
-    if args.strict and report["broken_total"]:
-        return 1
-    return 0
+        for item in report["broken"]:
+            print(f"  BROKEN {item['file']} -> {item['target']} ({item['resolved']})")
+        print(f"Files scanned: {report['files_scanned']}, links: {report['links_total']}, broken: {report['broken_total']}")
+    return 1 if args.strict and report["broken_total"] else 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

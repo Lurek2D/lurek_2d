@@ -9,27 +9,59 @@ description: "Load this skill when auditing and fixing module specs, generated s
 - Audit and fix module specs while respecting generated-vs-hand-written section ownership.
 
 ## Domain Knowledge
-- `docs/specs/*.md` is generated; durable human intent belongs in `docs/specs/manual/<module>.md`, while signatures and callable facts originate in bindings/docstrings and module linkage in `docs/meta/modules.toml`.
-- A spec review must distinguish generator freshness from source truth: a stale generated file, incorrect metadata, wrong binding annotation, and outdated manual summary require four different fixes.
-- Manual overlays should capture TL;DR, design intent, invariants, notable limits, and architecture links without restating generated function tables or copying implementation prose.
-- Coverage means every registered user-facing module maps coherently to source, namespace, spec, example, and Lua unit owner; intentionally excluded/internal modules need metadata-backed treatment rather than silent absence.
-- Generated diffs should be deterministic and a second run clean; unexplained reordering or unrelated module churn is a generator-quality finding.
-- Manual intent should explicitly call out authoritative versus derived state, compatibility guarantees, resource ceilings, and cross-module relationships when those facts govern future implementation choices.
-- Signature tables must agree with Lua-observable names and table shapes, not merely Rust function declarations; userdata methods, aliases, defaults, and fallibility can be lost in a naive source scan.
-- Spec index/tiering metadata affects navigation and plugin/module visibility, so a correct standalone module page can still be misclassified or undiscoverable through the repository catalog.
-- Architecture links should point upward only for durable cross-module constraints; linking every implementation detail into architecture creates circular documentation ownership.
-- Consume the canonical generated inventory when judging coverage and flag callable no-ops, aliases without canonical ownership, or documented feature status that conflicts with observable source behavior.
+- Generated module specs live in `docs/specs/*.md`.
+- Durable hand-written intent lives in `docs/specs/manual/<module>.md`.
+- Lua binding names and docstrings provide callable names, signatures, defaults, and errors.
+- `docs/meta/modules.toml` links module metadata, namespace, source, spec, examples, and tests.
+- `gen_module_specs.py` creates generated module pages.
+- Generated spec pages are output, not the normal editing surface.
+- A stale generated page is fixed by regeneration.
+- Wrong module metadata is fixed in `docs/meta/modules.toml`.
+- Wrong callable text is fixed in the binding annotation or docstring.
+- Wrong durable intent is fixed in the manual overlay.
+- A manual overlay contains TL;DR, design intent, invariants, important limits, and architecture links.
+- A manual overlay does not copy generated function tables.
+- Public signatures use Lua-observable names and table shapes.
+- Rust declarations alone do not show Lua aliases, userdata methods, defaults, or fallibility.
+- Every registered user-facing module maps to source, namespace, spec, example, and Lua unit owner.
+- Internal or excluded modules need explicit metadata treatment.
+- `lua_spec_coverage.py` checks Lua API spec ownership.
+- `validate_module_coverage.py` checks module linkage.
+- Spec generation order and content must stay stable for unchanged inputs.
+- An unchanged second generation must create no diff.
+- Unrelated page churn or unstable order is a generator defect.
+- Index and tier metadata control navigation and module visibility.
+- Module metadata also owns the user-facing flag and plugin tier.
+- `lua_spec_coverage.py` reports both missing bound functions and stale names present only in a spec.
+- Its fallback binding scan reads direct `tbl.set("name", ...)` registrations.
+- The spec coverage command does not fail by default; a positive `--threshold` enables the coverage gate.
+- `docs/templates/SPEC_TEMPLATE.md` is the structural source for a new module page.
+- `docs_quality.py` checks the generated spec set after regeneration.
+- Copying generated module prose into Rust docstrings creates a source-output feedback loop.
 
 ## Workflow
-- Run module coverage and generate the selected spec into the working tree, then classify every diff by provenance: binding/docstring, module metadata, manual overlay, template/generator, or stale emitted output.
-- Compare signatures, defaults, errors, limits, examples/tests, and architecture links against their canonical sources; review the manual overlay for intent and invariants, not duplicated generated inventories.
-- Report the module, generated claim, authoritative evidence, true source file to change, downstream consumers, and whether regeneration alone resolves it; flag missing metadata owners separately from prose drift.
-- If editable, update only the canonical source or manual overlay, regenerate and run spec/docs quality coverage, inspect links/anchors, and require a clean second generation; otherwise hand off exact source owners rather than requests to edit generated specs.
-- Compare the regenerated module with its index entry and neighboring tier peers, checking namespace, source/binding path, user-facing flag, example/test links, and manual-overlay placement for coherent catalog behavior.
-- Inspect at least one complex table/options signature and one userdata method in emitted output, because these shapes reveal parser omissions that simple namespace functions may not expose.
+1. Read docs and spec contracts.
+2. Select the target module and inspect its metadata entry.
+3. Run Lua spec coverage and module coverage validation.
+4. Generate the selected module spec.
+5. Classify each diff as stale output, metadata, binding docstring, manual overlay, template, or generator.
+6. Compare public names and signatures with the generated API inventory.
+7. Compare defaults, errors, limits, and table shapes with bindings and tests.
+8. Compare example and unit links with their canonical owners.
+9. Check the manual overlay for intent, invariants, limits, and architecture links.
+10. Flag copied generated tables or implementation prose in the manual overlay.
+11. Check index, tier, namespace, source path, binding path, and user-facing metadata.
+12. Record module, wrong claim, authoritative evidence, true source owner, and consumers.
+13. Fix only the canonical source when fixes are requested.
+14. Regenerate module specs.
+15. Inspect the generated page, links, anchors, and index entry.
+16. Run spec coverage and module coverage again.
+17. Run the generator a second time and require no diff.
+18. Report generator churn separately from source or manual prose drift.
+19. Hand binding facts to the API owner and manual intent to `doc_writer` when ownership differs.
 
 ## References
 - `contracts: AGENTS.md, docs/AGENTS.md, docs/specs/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "module specs generated summary coverage" --profile engine --limit 10, tools/python.cmd tools/docs/gen_module_specs.py, tools/python.cmd tools/audit/lua_spec_coverage.py, tools/python.cmd tools/validate/validate_module_coverage.py`
 - `agent: doc_writer`
-- RAG: Start with: `module specs generated summary coverage`, `review specs generated summary coverage docs`, `architecture docs specs engine boundaries`; Focus areas first: `docs/specs/`, `docs/architecture/`, `src/`, `tools/docs/`; Append the module or subsystem name such as `input`, `render`, `physics`, `ui`
+- RAG: `module specs <module> generated summary coverage`; inspect metadata, binding/docstring sources, manual overlay, generated page, index, example, and unit owner.

@@ -366,15 +366,15 @@ def _profile_filter_sql(profile: str) -> str:
     if profile == "game":
         return (
             " AND (d.type = 'api' OR d.path LIKE '.codex/skills/%' OR d.path LIKE 'content/%' "
-            "OR d.path LIKE 'docs/%' OR d.path LIKE 'library/%' OR d.path LIKE 'tests/lua/%' "
+            "OR d.path LIKE 'docs/%' OR d.path LIKE 'lurek_2d_content/%' OR d.path LIKE 'lurek_2d_workbench/%' OR d.path LIKE 'tests/lua/%' "
             "OR d.path LIKE 'tools/audit/%' OR d.path LIKE 'tools/validate/%' OR d.path LIKE 'tools/ui/%' "
             "OR d.path LIKE 'tools/snippets/%') "
         )
     if profile == "engine":
         return (
-            " AND (d.path = 'AGENTS.md' OR d.path LIKE '.agents/%' OR d.path LIKE '.codex/%' "
-            "OR d.path LIKE '.github/%' OR d.path LIKE 'docs/%' "
-            "OR d.path LIKE 'src/%' OR d.path LIKE 'tests/%' OR d.path LIKE 'tools/%') "
+            " AND (d.path = 'AGENTS.md' OR d.path LIKE '.codex/%' OR d.path LIKE 'docs/%' "
+            "OR d.path LIKE 'src/%' OR d.path LIKE 'tests/%' OR d.path LIKE 'tools/%' "
+            "OR d.path LIKE 'lurek_2d_extension/%' OR d.path LIKE 'lurek_2d_workbench/%') "
         )
     return ""
 

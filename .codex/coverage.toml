@@ -1,0 +1,82 @@
+version = 1
+
+[domains.cag]
+roots = [".codex"]
+contracts = ["AGENTS.md", ".codex/AGENTS.md"]
+skills = ["create-cag-artifact", "create-rag-artifact", "route-prompt"]
+
+[domains.engine]
+roots = ["src"]
+contracts = ["src/AGENTS.md"]
+skills = ["create-module", "create-engine-feature", "create-shader"]
+
+[domains.lua_api]
+roots = ["src/lua_api"]
+contracts = ["src/lua_api/AGENTS.md"]
+skills = ["review-api"]
+
+[domains.tests]
+roots = ["tests"]
+contracts = ["tests/AGENTS.md", "tests/lua/AGENTS.md", "tests/rust/AGENTS.md"]
+skills = ["create-test-rust", "create-test-lua", "create-test-integration", "create-test-stress", "create-test-evidence", "review-tests"]
+
+[domains.content]
+roots = ["content"]
+contracts = ["content/AGENTS.md"]
+skills = ["create-example", "create-layout", "create-snippet", "review-examples"]
+
+[domains.games]
+roots = ["lurek_2d_content/games"]
+contracts = ["lurek_2d_content/AGENTS.md", "lurek_2d_content/games/AGENTS.md"]
+skills = ["create-game", "convert-gemini-game"]
+optional_checkout = true
+
+[domains.libraries]
+roots = ["lurek_2d_content/library"]
+contracts = ["lurek_2d_content/AGENTS.md", "lurek_2d_content/library/AGENTS.md"]
+skills = ["create-library"]
+optional_checkout = true
+
+[domains.design]
+roots = ["lurek_2d_content/design"]
+contracts = ["lurek_2d_content/AGENTS.md", "lurek_2d_content/design/AGENTS.md"]
+skills = ["create-design"]
+optional_checkout = true
+
+[domains.workbench]
+roots = ["lurek_2d_workbench"]
+contracts = ["lurek_2d_workbench/AGENTS.md"]
+skills = ["create-workbench-feature"]
+optional_checkout = true
+
+[domains.docs]
+roots = ["docs"]
+contracts = ["docs/AGENTS.md", "docs/architecture/AGENTS.md"]
+skills = ["review-docstrings", "review-architecture"]
+
+[domains.specs]
+roots = ["docs/specs"]
+contracts = ["docs/specs/AGENTS.md"]
+skills = ["create-spec", "review-specs"]
+
+[domains.pages]
+roots = ["lurek_2d_pages"]
+contracts = ["lurek_2d_pages/AGENTS.md"]
+skills = ["create-pages"]
+optional_checkout = true
+
+[domains.extension]
+roots = ["lurek_2d_extension"]
+contracts = ["lurek_2d_extension/AGENTS.md"]
+skills = ["create-extension-feature"]
+optional_checkout = true
+
+[domains.tooling]
+roots = ["tools"]
+contracts = ["tools/AGENTS.md"]
+skills = ["create-tool", "create-build"]
+
+[domains.quality]
+roots = ["tools/audit"]
+contracts = ["AGENTS.md", "tools/audit/AGENTS.md"]
+skills = ["review-all", "review-quality", "review-performance"]

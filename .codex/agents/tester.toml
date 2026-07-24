@@ -1,6 +1,6 @@
 # Use when the primary artifact is a test or validation proof.
 # Typical work: unit tests, integration tests, stress tests, golden evidence, harness registration, repro cases.
-# Best fit skills: create-test-rust, create-test-lua, create-test-stress, create-test-evidence, create-integration-test, review-tests.
+# Best fit skills: create-test-rust, create-test-lua, create-test-integration, create-test-stress, create-test-evidence, review-tests.
 # Preferred tools: shell, cargo test, coverage audits, golden/evidence tooling.
 # Do not use for feature design unless the user explicitly wants a test-first change.
 name = "tester"

@@ -315,7 +315,7 @@ def main() -> int:
     if total_stubs:
         action = 'would append' if args.dry_run else 'appended'
         print(f'\nDone. {action} {total_stubs} stub(s) across {len(modules)} module(s).')
-        print('Next step: run .github/prompts/flesh-out-example.md to expand stubs.')
+        print('Next step: use the create-example skill to expand stubs.')
     else:
         print('All example files are already 100% covered â€” nothing to add.')
 

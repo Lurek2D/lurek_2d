@@ -30,6 +30,7 @@ use lurek2d::render::software_capture::{
 #[cfg(feature = "voxel-loader")]
 mod voxel_loader_tests {
     use lurek2d::render::voxel_loader::VoxelModel;
+    use std::path::Path;
 
     fn palette() -> Vec<dot_vox::Color> {
         vec![dot_vox::Color {
@@ -81,6 +82,13 @@ mod voxel_loader_tests {
         let voxel = VoxelModel::from_model(&model, &palette(), 1.0, 1).unwrap();
 
         assert_eq!(voxel.triangle_count(), 20);
+    }
+
+    #[test]
+    fn legacy_voxel_host_path_loader_is_disabled() {
+        assert!(VoxelModel::load_file(Path::new("untrusted.vox"), 1.0)
+            .unwrap_err()
+            .contains("host-path voxel loading is disabled"));
     }
 
     #[test]
@@ -1206,7 +1214,11 @@ mod obj_loader_tests {
 
     #[test]
     fn obj_reports_missing_material_library_instead_of_ignoring_it() {
-        parse_obj_error_contains_with_base("mtllib missing.mtl\n", &fixture_base(), "OBJ IO error");
+        parse_obj_error_contains_with_base(
+            "mtllib missing.mtl\n",
+            &fixture_base(),
+            "requires an owner-policy resolver",
+        );
     }
 
     #[test]
@@ -1214,8 +1226,16 @@ mod obj_loader_tests {
         parse_obj_error_contains_with_base(
             "mtllib bad_material.mtl\n",
             &fixture_base(),
-            "expected float",
+            "requires an owner-policy resolver",
         );
+    }
+
+    #[test]
+    fn legacy_obj_host_path_loader_is_disabled() {
+        assert!(ObjLoader::load_file("untrusted.obj")
+            .unwrap_err()
+            .to_string()
+            .contains("host-path OBJ loading is disabled"));
     }
 
     #[test]
@@ -1226,16 +1246,25 @@ mod obj_loader_tests {
             max_line_bytes: 12,
             max_elements: 3,
         };
-        assert!(ObjLoader::parse_obj_with_limits("v 0 0 0\nv 1 0 0\n", Path::new("."), limits)
-            .is_ok());
-        assert!(ObjLoader::parse_obj_with_limits("v 0 0 0\nv 1 0 0\nv 0 1 0\nv 2 2 2\n", Path::new("."), limits)
-            .unwrap_err()
-            .to_string()
-            .contains("maximum"));
-        assert!(ObjLoader::parse_obj_with_limits("v nan 0 0\n", Path::new("."), ObjLimits::default())
-            .unwrap_err()
-            .to_string()
-            .contains("finite"));
+        assert!(
+            ObjLoader::parse_obj_with_limits("v 0 0 0\nv 1 0 0\n", Path::new("."), limits).is_ok()
+        );
+        assert!(ObjLoader::parse_obj_with_limits(
+            "v 0 0 0\nv 1 0 0\nv 0 1 0\nv 2 2 2\n",
+            Path::new("."),
+            limits
+        )
+        .unwrap_err()
+        .to_string()
+        .contains("maximum"));
+        assert!(ObjLoader::parse_obj_with_limits(
+            "v nan 0 0\n",
+            Path::new("."),
+            ObjLimits::default()
+        )
+        .unwrap_err()
+        .to_string()
+        .contains("finite"));
     }
 
     #[test]
@@ -1543,7 +1572,10 @@ mod render_budget_tests {
         assert!(budget.try_accept(&first, &limits).is_ok());
         assert!(matches!(
             budget.try_accept(&second, &limits),
-            Err(RenderBudgetError::Exceeded { field: "text bytes", .. })
+            Err(RenderBudgetError::Exceeded {
+                field: "text bytes",
+                ..
+            })
         ));
     }
 
@@ -1568,6 +1600,33 @@ mod render_budget_tests {
     }
 
     #[test]
+    fn frame_budget_counts_light_and_shadow_work_atomically() {
+        let mut budget = RenderBudget::default();
+        let limits = RenderBudgetLimits {
+            max_light_quads: 2,
+            max_shadow_lights: 1,
+            ..RenderBudgetLimits::default()
+        };
+        assert!(budget.try_accept_light_work(2, 1, &limits).is_ok());
+        assert_eq!(
+            budget.try_accept_light_work(1, 0, &limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "light quads",
+                attempted: 3,
+                max: 2,
+            })
+        );
+        assert_eq!(
+            budget.try_accept_light_work(0, 1, &limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "shadow lights",
+                attempted: 2,
+                max: 1,
+            })
+        );
+    }
+
+    #[test]
     fn frame_budget_clamps_geometry_and_batch_work_to_device_limits() {
         let limits = wgpu::Limits {
             max_buffer_size: 1,
@@ -1584,8 +1643,8 @@ mod render_recovery_tests {
 
     #[test]
     fn recovery_state_machine_has_controlled_surface_device_and_oom_paths() {
-        let (state, action) = RenderRecoveryState::Ready
-            .transition(RenderRecoveryEvent::SurfaceLostOrOutdated);
+        let (state, action) =
+            RenderRecoveryState::Ready.transition(RenderRecoveryEvent::SurfaceLostOrOutdated);
         assert_eq!(state, RenderRecoveryState::SurfaceReconfigurePending);
         assert_eq!(action, RenderRecoveryAction::ReconfigureSurface);
         let (state, action) = state.transition(RenderRecoveryEvent::Reconfigured);
@@ -1600,7 +1659,10 @@ mod render_recovery_tests {
         assert_eq!(action, RenderRecoveryAction::Shutdown);
         assert_eq!(
             state.transition(RenderRecoveryEvent::Resumed),
-            (RenderRecoveryState::OutOfMemory, RenderRecoveryAction::Shutdown)
+            (
+                RenderRecoveryState::OutOfMemory,
+                RenderRecoveryAction::Shutdown
+            )
         );
     }
 }
@@ -1610,7 +1672,7 @@ mod gpu_shadow_tests {
     use lurek2d::math::Vec2;
     use lurek2d::render::gpu_shadows::{
         collect_shadow_edges, collect_shadow_edges_with_cache, collect_shadow_edges_with_stats,
-        ShadowEdgeCache,
+        ShadowEdgeCache, MAX_SHADOW_EDGES_PER_DISPATCH,
     };
 
     fn square_at(x: f32, y: f32) -> Occluder {
@@ -1675,6 +1737,21 @@ mod gpu_shadow_tests {
         assert_eq!(third.cache_hits, 0);
         assert_eq!(third.cache_misses, 1);
     }
+
+    #[test]
+    fn shadow_edge_collection_caps_per_dispatch_work() {
+        let occluder = square_at(0.0, 0.0);
+        let collection = collect_shadow_edges_with_stats(
+            0.0,
+            0.0,
+            f32::INFINITY,
+            0xFFFF,
+            std::iter::repeat(&occluder).take(MAX_SHADOW_EDGES_PER_DISPATCH / 4 + 1),
+        );
+
+        assert_eq!(collection.edges.len(), MAX_SHADOW_EDGES_PER_DISPATCH);
+        assert!(collection.truncated);
+    }
 }
 
 mod frame_buffer_tests {
@@ -1683,7 +1760,7 @@ mod frame_buffer_tests {
     #[test]
     fn frame_render_buffers_clear_without_shrinking_capacity() {
         let mut buffers = FrameRenderBuffers::default();
-        buffers.reserve_for_frame(FrameRenderBufferReservations {
+        assert!(buffers.reserve_for_frame(FrameRenderBufferReservations {
             color_verts: 8,
             color_idxs: 12,
             tex_verts: 16,
@@ -1692,7 +1769,7 @@ mod frame_buffer_tests {
             particle_idxs: 7,
             draws: 4,
             instances: 6,
-        });
+        }));
         buffers.scratch_color_verts.reserve(10);
         buffers.scratch_color_idxs.reserve(14);
         buffers.scratch_tex_verts.reserve(18);
@@ -1726,6 +1803,7 @@ mod readback_layout_tests {
     fn readback_layout_checks_alignment_and_overflow_without_allocating() {
         assert_eq!(surface_readback_layout(1, 1), Ok((256, 256)));
         assert_eq!(surface_readback_layout(64, 2), Ok((256, 512)));
+        assert!(surface_readback_layout(8_192, 8_192).is_err());
         assert!(surface_readback_layout(0, 1).is_err());
         assert!(surface_readback_layout(u32::MAX, u32::MAX).is_err());
     }
@@ -2512,7 +2590,10 @@ mod gpu_renderer_tests {
                 bytes.push((seed >> 32) as u8);
             }
             let source = String::from_utf8_lossy(&bytes).into_owned();
-            assert_eq!(Shader::new(source.clone()).is_ok(), Shader::new(source).is_ok());
+            assert_eq!(
+                Shader::new(source.clone()).is_ok(),
+                Shader::new(source).is_ok()
+            );
         }
     }
 

@@ -13,7 +13,7 @@ use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use crate::runtime::resource_keys::TextureKey;
 use std::collections::HashMap;
-use std::path::{Component, Path, PathBuf};
+use std::path::{Component, Path};
 
 /// Hard limits for untrusted Wavefront text before it can allocate parser state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -62,15 +62,17 @@ where
     }
 }
 
-/// Legacy filesystem resolver used only by file-based compatibility entry points.
-struct FileObjResolver<'a> {
-    base_dir: &'a Path,
-}
+/// Compatibility resolver for legacy in-memory entry points.
+///
+/// Host-path loading is deliberately unavailable from the parser. Runtime callers
+/// must provide GameFS-backed material text through `ObjResolver`.
+struct RejectingObjResolver;
 
-impl ObjResolver for FileObjResolver<'_> {
+impl ObjResolver for RejectingObjResolver {
     fn read_material_library(&mut self, reference: &str) -> Result<String, ObjError> {
-        let path = ObjLoader::resolve_mtllib_path(reference, self.base_dir)?;
-        std::fs::read_to_string(path).map_err(ObjError::from)
+        Err(ObjError::Parse(format!(
+            "material library {reference:?} requires an owner-policy resolver"
+        )))
     }
 }
 /// Implement `Display` for `ObjError`.
@@ -605,7 +607,9 @@ impl ObjModel {
         let mut vertices: Vec<MeshVertex> = Vec::new();
         let mut triangle_depths: Vec<f32> = Vec::new();
         if vertices.try_reserve_exact(vertex_count).is_err()
-            || triangle_depths.try_reserve_exact(projected_tris.len()).is_err()
+            || triangle_depths
+                .try_reserve_exact(projected_tris.len())
+                .is_err()
         {
             return (
                 Mesh::from_vertices(Vec::new(), MeshDrawMode::Triangles),
@@ -630,24 +634,24 @@ impl ObjModel {
 pub struct ObjLoader;
 /// File-based and in-memory OBJ/MTL parsing entry points.
 impl ObjLoader {
-    /// Load and triangulate an OBJ file from `path`; return error on I/O or parse failure.
-    pub fn load_file(path: impl AsRef<Path>) -> Result<ObjModel, ObjError> {
-        let path = path.as_ref();
-        let src = std::fs::read_to_string(path)?;
-        let base_dir = path.parent().unwrap_or_else(|| Path::new("."));
-        Self::parse_obj(&src, base_dir)
+    /// Legacy host-path loading is disabled so parsing cannot bypass GameFS policy.
+    pub fn load_file(_path: impl AsRef<Path>) -> Result<ObjModel, ObjError> {
+        Err(ObjError::Parse(
+            "host-path OBJ loading is disabled; use GameFS and parse_obj_with_resolver".to_string(),
+        ))
     }
-    /// Parse OBJ + MTL text in memory, resolving `mtllib` paths relative to `base_dir`.
+    /// Parse OBJ text without host-path material resolution.
     pub fn parse_obj(src: &str, base_dir: &Path) -> Result<ObjModel, ObjError> {
         Self::parse_obj_with_limits(src, base_dir, ObjLimits::default())
     }
-    /// Parse bounded OBJ text, rejecting oversized documents before parser allocation.
+    /// Parse bounded OBJ text without host-path material resolution.
     pub fn parse_obj_with_limits(
         src: &str,
         base_dir: &Path,
         limits: ObjLimits,
     ) -> Result<ObjModel, ObjError> {
-        let mut resolver = FileObjResolver { base_dir };
+        let _ = base_dir;
+        let mut resolver = RejectingObjResolver;
         Self::parse_obj_with_resolver(src, limits, &mut resolver)
     }
     /// Parse bounded OBJ text using a caller-owned material resolver.
@@ -712,7 +716,11 @@ impl ObjLoader {
                     let verts =
                         Self::parse_face_verts(rest, positions.len(), uvs.len(), normals.len())?;
                     for i in 1..(verts.len() - 1) {
-                        Self::ensure_limit(faces.len(), limits.max_elements, "OBJ triangulated faces")?;
+                        Self::ensure_limit(
+                            faces.len(),
+                            limits.max_elements,
+                            "OBJ triangulated faces",
+                        )?;
                         faces.push(ObjFace {
                             verts: [verts[0], verts[i], verts[i + 1]],
                             material: current_mat,
@@ -729,20 +737,6 @@ impl ObjLoader {
             faces,
             materials,
         })
-    }
-    /// Resolve a material-library path without allowing absolute paths or parent traversal.
-    fn resolve_mtllib_path(rest: &str, base_dir: &Path) -> Result<PathBuf, ObjError> {
-        Self::validate_mtllib_reference(rest)?;
-        let requested = Path::new(rest);
-        let base = base_dir.canonicalize()?;
-        let target = base.join(requested).canonicalize()?;
-        if !target.starts_with(&base) {
-            return Err(ObjError::Parse(format!(
-                "mtllib path '{}' escapes the OBJ base directory",
-                rest
-            )));
-        }
-        Ok(target)
     }
     /// Reject material references that are not a relative `.mtl` file path.
     fn validate_mtllib_reference(rest: &str) -> Result<(), ObjError> {
@@ -843,23 +837,36 @@ impl ObjLoader {
     fn parse_vec3(s: &str) -> Result<Vec3, ObjError> {
         let parts = Self::split_floats(s, 3)?;
         if !parts.iter().all(|value| value.is_finite()) {
-            return Err(ObjError::Parse("OBJ vector values must be finite".to_string()));
+            return Err(ObjError::Parse(
+                "OBJ vector values must be finite".to_string(),
+            ));
         }
         Ok(Vec3::new(parts[0], parts[1], parts[2]))
     }
     /// Reject source documents that would consume excessive parser memory or scan time.
     fn validate_document_limits(src: &str, limits: ObjLimits, kind: &str) -> Result<(), ObjError> {
         if src.len() > limits.max_bytes {
-            return Err(ObjError::Parse(format!("{kind} source exceeds {} bytes", limits.max_bytes)));
+            return Err(ObjError::Parse(format!(
+                "{kind} source exceeds {} bytes",
+                limits.max_bytes
+            )));
         }
         let mut lines = 0usize;
         for line in src.lines() {
-            lines = lines.checked_add(1).ok_or_else(|| ObjError::Parse(format!("{kind} line count overflow")))?;
+            lines = lines
+                .checked_add(1)
+                .ok_or_else(|| ObjError::Parse(format!("{kind} line count overflow")))?;
             if lines > limits.max_lines {
-                return Err(ObjError::Parse(format!("{kind} source exceeds {} lines", limits.max_lines)));
+                return Err(ObjError::Parse(format!(
+                    "{kind} source exceeds {} lines",
+                    limits.max_lines
+                )));
             }
             if line.len() > limits.max_line_bytes {
-                return Err(ObjError::Parse(format!("{kind} line exceeds {} bytes", limits.max_line_bytes)));
+                return Err(ObjError::Parse(format!(
+                    "{kind} line exceeds {} bytes",
+                    limits.max_line_bytes
+                )));
             }
         }
         Ok(())
@@ -890,7 +897,9 @@ impl ObjLoader {
             )));
         }
         if !v.iter().all(|value| value.is_finite()) {
-            return Err(ObjError::Parse("OBJ numeric values must be finite".to_string()));
+            return Err(ObjError::Parse(
+                "OBJ numeric values must be finite".to_string(),
+            ));
         }
         Ok(v)
     }

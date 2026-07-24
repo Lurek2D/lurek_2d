@@ -17,6 +17,8 @@ use crate::runtime::log_messages::{
 
 /// Main-loop capture requests must resolve or fail instead of remaining pending forever.
 const SURFACE_READBACK_TIMEOUT: Duration = Duration::from_secs(5);
+/// Trusted cap for the one pending interactive screenshot staging allocation.
+pub const MAX_SURFACE_READBACK_BYTES: u64 = 64 * 1024 * 1024;
 
 /// Validate and calculate a GPU readback layout without allocating staging memory.
 pub fn surface_readback_layout(width: u32, height: u32) -> Result<(u32, u64), String> {
@@ -35,6 +37,11 @@ pub fn surface_readback_layout(width: u32, height: u32) -> Result<(u32, u64), St
     let total = padded
         .checked_mul(u64::from(height))
         .ok_or_else(|| "screenshot staging byte count overflow".to_string())?;
+    if total > MAX_SURFACE_READBACK_BYTES {
+        return Err(format!(
+            "screenshot staging byte count {total} exceeds maximum {MAX_SURFACE_READBACK_BYTES}"
+        ));
+    }
     let padded = u32::try_from(padded)
         .map_err(|_| "screenshot padded row bytes exceed wgpu layout range".to_string())?;
     Ok((padded, total))
@@ -134,7 +141,11 @@ impl GpuRenderer {
                 return None;
             }
             Err(TryRecvError::Disconnected) => {
-                log_msg!(error, G004_SCREENSHOT_RECV_FAIL, "readback callback disconnected");
+                log_msg!(
+                    error,
+                    G004_SCREENSHOT_RECV_FAIL,
+                    "readback callback disconnected"
+                );
                 self.surface_readback_status = SurfaceReadbackStatus::Failed;
                 return None;
             }

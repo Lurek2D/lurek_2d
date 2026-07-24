@@ -237,7 +237,7 @@ def module_link(context: Context, module: str, label: str | None = None) -> str:
     display = label if label is not None else module_label(context, module)
     if context.module_pages_enabled:
         return page_link("Module-" + module, display)
-    return f"[{display}](https://lurek2d.github.io/lurek_2d/modules/{module}.html)"
+    return f"[{display}](https://lurek2d.github.io/lurek_2d_pages/modules/{module}.html)"
 
 
 def sec(name: str) -> str:

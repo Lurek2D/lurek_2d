@@ -11,6 +11,7 @@ Owns Codex-only guidance for `lurek_2D`.
 - `config.toml`: Codex workspace defaults and registered agent mappings.
 - `agents/`: Runtime role overlays, not direct task instructions.
 - `skills/`: Reusable task workflows.
+- `coverage.toml`: Domain-to-contract-to-skill coverage matrix.
 
 ## Rules
 - Pick the narrowest owner: contracts for invariants, `agents/` for roles, `skills/` for workflows.
@@ -20,9 +21,11 @@ Owns Codex-only guidance for `lurek_2D`.
 - Keep skill owner labels synced with the registered profile names they target.
 - Skill frontmatter descriptions are the routing source for when to load or skip a skill.
 - Keep active skills compact: retain only mission, unique domain knowledge, workflow, and references.
+- Keep normalized character counts within the repository limits enforced by `cag_validate.py`.
 - Shared CAG process rules belong here; do not repeat them in every skill.
 - Before broad reads, query RAG; prefer existing MCP/repo tools; modify the existing owning artifact.
 - Keep optional local runtimes repo-scoped; use `tools/dev/headroom_runtime.py` instead of hard-wiring Headroom into active `config.toml`.
 
 ## Workflow
 - Run `tools/python.cmd tools/validate/cag_validate.py` after CAG config changes.
+- Run `tools/python.cmd tools/audit/cag_coverage.py --require-workspace` after changing domain ownership or routing.

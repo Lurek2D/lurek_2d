@@ -10,29 +10,60 @@ description: "Load this skill when auditing and fixing Rust-to-Lua API coverage,
 - Flag public namespace closures that perform runtime work owned by another module, even when a generic thin-wrapper heuristic passes.
 
 ## Domain Knowledge
-- API parity is four-dimensional: callable names/signatures, Lua-to-Rust conversion and validation, runtime semantics/errors, and generated documentation/spec/example/test ownership. Equal method counts do not prove parity.
-- Thin wrappers may validate, convert, manage userdata/registry handles, and translate errors; stateful algorithms, cross-module orchestration, caching, and runtime work belong in the Rust domain owner.
-- Lua boundaries require explicit handling of one-based indices, integer narrowing, finite floats, enum strings, option-table depth/size, callback lifetime, and fallible userdata borrowing; defaults must match docs and Rust behavior.
-- Compatibility aliases are public contracts: they need canonical ownership, identical validation/error semantics where promised, and a deprecation or persistence story rather than silent divergence.
-- Generated Lua API names drive docs, exact example markers, and unit-test ownership, so generator omissions and duplicate aliases can fan out as false coverage gaps.
-- For tilemap/tileset specifically, review authoritative map versus renderer snapshot semantics, local/GID conversion, atlas/provider ceilings, importer error tables, fallible quad lookup, animation/archetype numerics, and alias parity together.
-- Return-shape parity includes nil versus empty tables, array versus keyed tables, copied snapshots versus live userdata, stable field names, and deterministic ordering where generated docs or callers rely on it.
-- Wrapper audits must follow every construction path, not only top-level functions: userdata methods, metamethods, callbacks, compatibility namespaces, and imported objects can expose the same domain state with different validation.
-- Error parity should compare type/category, method context, and mutation atomicity across aliases and fallible/legacy pairs rather than requiring incidental Rust wording to match byte for byte.
-- Stateful identity must be opaque and context-bound: flag forgeable/raw IDs, stale-handle reuse, aliases without a canonical owner, and feature-shaped public calls that discard input or return success without observable work.
-- Namespace placement is authoritative: flag runtime/domain work in a Lua wrapper even when its closure is short.
+- Rust engine modules own state and runtime algorithms.
+- `src/lua_api/` owns Lua registration, conversion, validation, userdata access, and error translation.
+- Generated API docs provide the public Lua name and signature inventory.
+- `lua_covers_lurek_api_audit.py` checks public API ownership in Lua tests.
+- `thin_wrapper_audit.py` reports bindings that may contain domain work.
+- A thin wrapper may convert values, validate Lua input, borrow userdata, manage registry handles, and translate errors.
+- A thin wrapper does not own simulation, caching, cross-module orchestration, or stateful algorithms.
+- Lua arrays use one-based indices.
+- Integer conversion must reject values outside the Rust target range.
+- Float validation must define whether NaN and infinity are accepted.
+- Enum strings need an exact accepted set and a useful invalid-value error.
+- Option tables need known fields, defaults, and size or depth limits when nested input is accepted.
+- Callback registration needs lifetime, replacement, removal, and error behavior.
+- Userdata borrowing can fail and must return Lua-visible context.
+- Public aliases are contracts and need a canonical owner.
+- An alias must not silently use different validation or mutation rules.
+- Return shape includes nil versus empty table, array versus keyed table, field names, userdata versus copy, and item order.
+- Top-level functions, userdata methods, metamethods, callbacks, aliases, and imported objects can expose separate API paths.
+- Error parity compares error category, API context, and state after failure.
+- A rejected value or failed callback must not leave partial mutation.
+- Generated docs, specs, examples, and tests are consumers of the binding contract.
+- Intentionally loose Lua values use Rust `any`; a binding must not invent a fake Lua cast.
+- Callbacks stored beyond one call use `lua.create_registry_value(...)`.
+- Engine handles cross the boundary as `UserData`, not copied raw Rust structs.
+- `LuaUserData::add_methods` contains registration, not domain algorithms.
+- `thin_wrapper_audit.py` flags long free functions, collection ownership, loops, iterators, and numeric-update hotspots.
+- A thin-wrapper `SUSPECT` is heuristic evidence; only `VIOLATION` makes the audit exit nonzero.
+- Public binding additions enter generated API data before example or `@covers` ownership is written.
 
 ## Workflow
-- Generate the current API inventory and run coverage/thin-wrapper audits for the module; build a symbol matrix joining Rust owner, Lua registration, generated signature/doc, spec, example owner, and unit owner before judging gaps.
-- Inspect high-risk conversions and methods directly, exercising valid defaults, boundary values, wrong Lua types, non-finite/overflow values, stale userdata, callbacks, aliases, and error names; verify runtime work remains behind the domain module.
-- Rank findings by reachable semantic mismatch first, unsafe or unbounded boundary second, missing callable/coverage third, and documentation-only drift last; attach exact symbol, file, observed behavior, expected contract, and affected generated consumers.
-- If editable, fix the canonical Rust/binding source, regenerate API data, then update specs/examples/tests from emitted names and rerun the same matrix and behavioral probes; otherwise hand off domain fixes to `developer` and binding/parity fixes to `lua_designer`.
-- Diff generated API inventories before and after the review, checking removed/renamed symbols, overload collapse, userdata method ownership, optional/default encoding, and table-field annotations for changes not obvious in Rust signatures.
-- Probe mutation atomicity by inspecting state after rejected values, callback failures, and importer errors; report wrappers that validate only after partially changing the domain object.
-- Verify compatibility aliases through the same success and failure table as the canonical entry point, then confirm examples/tests own only the canonical generated names unless alias coverage is an explicit public requirement.
+1. Read root, `src/lua_api`, and spec contracts.
+2. Generate the current API inventory.
+3. Run Lua coverage and thin-wrapper audits for the target module.
+4. Build a table of public name, Rust owner, binding source, generated signature, spec, example, and test owner.
+5. Inspect every missing or mismatched entry in source.
+6. Check defaults against Rust behavior and generated docs.
+7. Test valid values, boundary values, wrong Lua types, overflow, NaN, and infinity where relevant.
+8. Check one-based index conversion and empty collection behavior.
+9. Check enum strings and option-table validation.
+10. Check stale or wrong userdata access.
+11. Check callback registration, replacement, removal, and failure.
+12. Follow top-level, userdata, alias, metamethod, and import construction paths.
+13. Confirm domain algorithms remain in the Rust owner.
+14. Inspect state after rejected input and callback or importer failure.
+15. Record symbol, file, observed behavior, expected behavior, and affected consumers.
+16. Rank semantic and unsafe boundary defects above coverage or docs drift.
+17. Fix the canonical Rust or binding owner when fixes are requested.
+18. Regenerate API data after source annotations or registrations change.
+19. Update specs, examples, and tests from the emitted public names.
+20. Rerun the same audits and behavioral probes.
+21. Hand Rust domain defects to `developer` and binding defects to `lua_designer` when ownership differs.
 
 ## References
 - `contracts: AGENTS.md, src/lua_api/AGENTS.md, docs/specs/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "Lua API wrapper coverage thin wrapper" --profile engine --limit 10, tools/python.cmd tools/audit/lua_covers_lurek_api_audit.py, tools/python.cmd tools/audit/thin_wrapper_audit.py, tools/python.cmd tools/gen_all_docs.py`
 - `agent: lua_designer`
-- RAG: Start with: `Lua API wrapper coverage thin wrapper`, `Rust engine module lua_api docs specs`, `src lua_api AGENTS thin wrappers registration only`; Focus areas first: `src/lua_api/`, `src/`, `docs/specs/`, `tests/lua/`, `tools/audit/`; Append the API path or module name such as `lurek.input`, `lurek.render`, `math`, `scene`
+- RAG: `Lua API <module> wrapper coverage thin wrapper`; inspect the Rust owner, every binding construction path, generated symbol, spec, example, unit owner, and relevant audits.

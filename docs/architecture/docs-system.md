@@ -16,7 +16,7 @@
 - `README.md` is the first-contact landing page and repository map.
 - GitHub Pages is the official public documentation for users.
 - `docs/api/` contains generated API artifacts for Pages, editors, agents, and tooling.
-- `docs/modules/` contains generated human-readable module guides plus callable details.
+- GitHub Pages contains generated human-readable module guides plus callable details.
 - `docs/specs/` contains contributor-facing generated module contracts.
 - `docs/architecture/` contains contributor-facing design constraints, strategy, positioning, and durable decisions.
 - `docs/wiki/` is a generated cookbook/onboarding layer, not a second full API reference.
@@ -26,7 +26,7 @@
 - `docs/specs/*.md`
 - `docs/api/*.md`
 - `docs/api/*.lua`
-- `docs/modules/*.md`
+- `lurek_2d_pages/.source/modules/*.md` (temporary Pages build input)
 - `docs/wiki/*.md`
 - `pages/**`
 - `build/docs-data/**`

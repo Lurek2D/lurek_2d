@@ -1,0 +1,12 @@
+# Mirror the matching [agents.<name>] description in .codex/config.toml.
+name = "role_name"
+description = "One-sentence ownership and boundary."
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
+model_reasoning_summary = "auto"
+model_verbosity = "medium"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+personality = "pragmatic"
+service_tier = "default"
+web_search = "disabled"

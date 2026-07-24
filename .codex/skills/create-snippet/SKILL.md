@@ -9,25 +9,56 @@ description: "Load this skill when creating or modifying Lua snippets and genera
 - Create or modify snippets that reflect idiomatic public API usage and generated editor output.
 
 ## Domain Knowledge
-- `content/snippets/<module>.lua` is the source catalog; `tools/snippets/gen_vscode_snippets.py` parses marker blocks into `../lurek_2D_extension/vscode/data/snippets.json`, so emitted JSON is never the editing surface.
-- A snippet is a compositional recipe rather than a one-call API example: it should connect at least two `lurek.*` calls into a useful editor insertion while remaining small enough to adapt.
-- Prefixes are user-facing identifiers and must remain unique and discoverable; module names drive catalog grouping and must match the source filename used by the parser.
-- `SNIP_<index>_<name>` placeholders encode edit order before generation into editor tab stops. Duplicate indices, missing primary placeholders, or unstable names degrade insertion even if JSON validates.
-- Snippet bodies target LuaJIT syntax and must make assumptions—callback scope, prerequisite state, asset path, or lifecycle placement—visible in the inserted code rather than hidden in generator context.
-- Placeholder names should describe the user's decision rather than implementation trivia; stable semantic names make repeated tab stops understandable and reduce accidental inconsistent edits across the inserted recipe.
-- Generated JSON escaping can change literal backslashes, quotes, dollar signs, and indentation, so correctness must be judged from an actual insertion rather than only the Lua-like source block.
-- Coverage should prioritize repeated authoring tasks with meaningful setup cost, not mechanically add a snippet for every API that already has a concise example or completion signature.
+- Snippet sources live in `content/snippets/<module>.lua`.
+- `tools/snippets/gen_vscode_snippets.py` currently writes `lurek_2d_extension/vscode/data/snippets.json`.
+- The generated JSON is output. The Lua catalog is the source of truth.
+- The active extension manifest consumes `lurek_2d_extension/data/snippets.json`; it is a separate path from the current generator output.
+- A marker block uses this order: `@snippet`, `@prefix`, `@module`, `@description`, `@body`, `@end`.
+- The `@module` value must match the source file stem.
+- A public prefix uses `lk-<module>-<name>`.
+- Every prefix must be unique across the full catalog.
+- A description explains the inserted result and has at least 20 characters.
+- A useful snippet joins at least two distinct `lurek.*` calls into one small task.
+- Every public API name in a snippet must exist in generated API docs.
+- Snippet code must be valid for LuaJIT. Lua 5.3-only syntax is not allowed.
+- `SNIP_<index>_<name>` becomes an editor tab stop during generation.
+- Placeholder indices define cursor order. The first user decision has the lowest index.
+- Repeated decisions may reuse one placeholder index and name.
+- Placeholder names describe user input, such as `speed` or `texture_path`.
+- A body must show required callback scope, local state, asset path, and setup.
+- Quotes, backslashes, dollar signs, and indentation are escaped in generated JSON.
+- Source validation does not prove editor insertion behavior.
+- Snippets provide reusable insertion, not a complete runnable example.
+- `content/snippets/_template.lua` documents marker syntax and is excluded from catalog parsing.
+- `snippet_catalog.py` reads namespace files in sorted filename order.
+- An incomplete marker block or missing `@end` is a parser error, not a partial snippet.
+- The validator rejects an empty body even when all metadata markers are valid.
+- `SNIP_<index>_<name>` is generated as `${index:name}` in VS Code snippet JSON.
+- Generated snippet titles use `<module>: <prefix>`, so module and prefix wording affects editor discovery.
 
 ## Workflow
-- Use snippet coverage and generated API docs to find a high-value workflow gap, then inspect neighboring prefixes and bodies so the new recipe complements rather than paraphrases an existing snippet or example.
-- Design the insertion from the editor user's cursor path: choose a specific unique prefix, order placeholders by the edits a user makes, include lifecycle context and prerequisites, and combine only verified generated API names.
-- Write the canonical marker block in the matching module source, generate VS Code JSON, and inspect the emitted label, description, escaped body, placeholder/tab-stop order, and module grouping rather than trusting parser success.
-- Run snippet validation and coverage, build the extension consumer, and manually insert the snippet into a Lua file to verify syntax, indentation, placeholder navigation, and that the resulting code can fit a real Lurek callback/module.
-- Test prefix collision and discovery in the extension catalog, confirming the intended snippet appears under the right module and does not shadow a more common recipe with an overly broad prefix.
-- Execute or smoke the inserted Lua after replacing placeholders with representative values, catching missing locals, invalid callback placement, asset assumptions, and generated escaping that static snippet validation cannot see.
+1. Read `content/snippets/AGENTS.md` and the target module catalog.
+2. Run snippet coverage and select one missing user task.
+3. Check generated API docs for every `lurek.*` name used by the task.
+4. Search all snippet sources for the planned prefix and similar bodies.
+5. Choose a unique `lk-<module>-<name>` prefix.
+6. List user decisions in the order they should be edited.
+7. Assign stable `SNIP_<index>_<name>` placeholders to those decisions.
+8. Write a short body with at least two distinct public API calls.
+9. Include required callback, local state, asset path, and setup context.
+10. Add the marker block in the required marker order.
+11. Run `tools/snippets/gen_vscode_snippets.py`.
+12. Inspect the generated entry in `lurek_2d_extension/vscode/data/snippets.json`.
+13. Check its label, prefix, description, module, escaping, indentation, and tab-stop order.
+14. Run snippet validation and snippet coverage.
+15. Build the extension consumer when generated JSON changed.
+16. Insert the snippet into a Lua file through the editor.
+17. Replace every placeholder with a representative value.
+18. Run or smoke the inserted Lua code in its expected callback.
+19. Fix the source catalog and repeat generation if insertion behavior is wrong.
 
 ## References
-- `contracts: content/snippets/AGENTS.md, docs/AGENTS.md, ../lurek_2D_extension/vscode/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10, tools/python.cmd tools/audit/snippet_coverage.py, tools/python.cmd tools/snippets/gen_vscode_snippets.py, tools/python.cmd tools/validate/validate_snippets.py --vscode-snippets ../lurek_2D_extension/vscode/data/snippets.json`
+- `contracts: content/snippets/AGENTS.md, docs/AGENTS.md, lurek_2d_extension/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10, tools/python.cmd tools/audit/snippet_coverage.py, tools/python.cmd tools/snippets/gen_vscode_snippets.py, tools/python.cmd tools/validate/validate_snippets.py --vscode-snippets lurek_2d_extension/data/snippets.json`
 - `agent: doc_writer`
-- RAG: Use when locating snippet sources and generated output; `content snippets API usage`; `snippets json generated extension`; `template placeholder trigger description`; `../lurek_2D_extension/`; snippet source files in `tools/` or `docs/`; generated snippet output; user-facing examples
+- RAG: `content snippets <module> API usage`; inspect the source catalog, generated JSON entry, neighboring prefixes, canonical examples, and extension consumer.

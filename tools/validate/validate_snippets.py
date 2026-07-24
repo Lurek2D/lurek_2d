@@ -15,7 +15,7 @@ if str(ROOT / "tools" / "snippets") not in sys.path:
 from snippet_catalog import PLACEHOLDER_RE, ParseError, parse_dir  # noqa: E402
 
 DEFAULT_SNIPPETS_DIR = ROOT / "content" / "snippets"
-DEFAULT_VSCODE_SNIPPETS = ROOT / "extensions" / "vscode" / "data" / "snippets.json"
+DEFAULT_VSCODE_SNIPPETS = ROOT / "lurek_2d_extension" / "vscode" / "data" / "snippets.json"
 
 
 def validate_blocks(snippets_dir: Path) -> list[str]:

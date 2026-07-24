@@ -21,7 +21,7 @@ from html import escape
 from datetime import datetime
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
-PAGES_ROOT = WORKSPACE_ROOT.parent / f"{WORKSPACE_ROOT.name}_pages"
+PAGES_ROOT = WORKSPACE_ROOT / "lurek_2d_pages"
 sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
 import module_registry
 

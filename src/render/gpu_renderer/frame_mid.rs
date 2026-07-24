@@ -1239,7 +1239,10 @@ impl<'a> FrameCommandContext<'a> {
                     if shader.is_some() {
                         let mut particle_vertices = Vec::new();
                         let mut particle_indices = Vec::new();
-                        reserve_or_skip!(particle_vertices, pverts.len().saturating_sub(vertex_start));
+                        reserve_or_skip!(
+                            particle_vertices,
+                            pverts.len().saturating_sub(vertex_start)
+                        );
                         reserve_or_skip!(particle_indices, pidxs.len().saturating_sub(index_start));
                         let (center_x, center_y) = apply(t, inst.x, inst.y);
                         let inv_size = if inst.size.abs() > f32::EPSILON {

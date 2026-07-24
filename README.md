@@ -37,19 +37,19 @@ Lurek is not mobile-first, web-first, 3D-first, or editor-first. It does not cen
 | Step | Link | Purpose |
 |---|---|---|
 | 1 | [GitHub Pages documentation](https://lurek2d.github.io/lurek_2d_pages/) | Official public docs entry point. |
-| 2 | [Getting Started](https://lurek2d.github.io/lurek_2d/getting-started.html) | First commands and project shape. |
-| 3 | [First Game](https://lurek2d.github.io/lurek_2d/first-game.html) | Minimal `main.lua` with update and draw callbacks. |
-| 4 | [Lua API Overview](https://lurek2d.github.io/lurek_2d/lua-api.html) | How to read and use the generated `lurek.*` API. |
-| 5 | [Full Lua API Reference](https://lurek2d.github.io/lurek_2d/api/lurek.html) | Complete generated public API reference. |
+| 2 | [Getting Started](https://lurek2d.github.io/lurek_2d_pages/getting-started.html) | First commands and project shape. |
+| 3 | [First Game](https://lurek2d.github.io/lurek_2d_pages/first-game.html) | Minimal `main.lua` with update and draw callbacks. |
+| 4 | [Lua API Overview](https://lurek2d.github.io/lurek_2d_pages/lua-api.html) | How to read and use the generated `lurek.*` API. |
+| 5 | [Full Lua API Reference](https://lurek2d.github.io/lurek_2d_pages/api/lurek.html) | Complete generated public API reference. |
 
 ## Documentation Map
 
 | Area | Source | Role |
 |---|---|---|
-| Public docs | [GitHub Pages](https://lurek2d.github.io/lurek_2d/) | Main user documentation for onboarding, API, examples, and module guides. |
+| Public docs | [GitHub Pages](https://lurek2d.github.io/lurek_2d_pages/) | Main user documentation for onboarding, API, examples, and module guides. |
 | Lua API | [docs/api/lurek.md](docs/api/lurek.md) | Generated full reference for `lurek.*`; published through Pages. |
 | Lua stubs | [docs/api/lurek.lua](docs/api/lurek.lua) | Generated LuaCATS/EmmyLua declarations for editor tooling and agents. |
-| Module guides | [docs/modules/](docs/modules/) | Generated module pages combining purpose, examples, and API details. |
+| Module guides | [GitHub Pages modules](https://lurek2d.github.io/lurek_2d_pages/module-guides.html) | Generated module pages combining the module spec, API details, parameters, and examples. |
 | Examples | [content/examples/README.md](content/examples/README.md) | Runnable one-file examples for public API coverage. |
 | Content | [`lurek_2d_content`](lurek_2d_content/README.md) | Games, reusable Lua libraries, and design references in a nested repository. |
 | VS Code extension | [`lurek_2d_extension`](lurek_2d_extension/README.md) | Standalone VS Code extension repository. |
@@ -73,7 +73,7 @@ For VS Code and Lua language servers, point workspace library settings at `docs/
 
 - [Examples guide](content/examples/README.md) explains the one-file examples under `content/examples/`.
 - [Content catalog](lurek_2d_content/README.md) covers complete games, reusable Lua libraries, and game-design references.
-- Pages also includes [Examples](https://lurek2d.github.io/lurek_2d/examples.html) and [Reference Games](https://lurek2d.github.io/lurek_2d/reference-games.html) indexes.
+- Pages also includes [Examples](https://lurek2d.github.io/lurek_2d_pages/examples.html) and [Reference Games](https://lurek2d.github.io/lurek_2d_pages/reference-games.html) indexes.
 
 ## For Contributors
 

@@ -48,9 +48,9 @@ Scope boundary: this file owns only callback inventory and ownership context. De
   - Called when a keyboard key is released.
 - `lurek.mousemoved` - `function lurek.mousemoved(x, y, dx, dy)`
   - Called when the pointer moves in game coordinates and UI did not consume it.
-- `lurek.mousepressed` - `function lurek.mousepressed(x, y, button)`
+- `lurek.mousepressed` - `function lurek.mousepressed(x, y, button, clicks)`
   - Called when a mouse button is pressed and UI did not consume it.
-- `lurek.mousereleased` - `function lurek.mousereleased(x, y, button)`
+- `lurek.mousereleased` - `function lurek.mousereleased(x, y, button, clicks)`
   - Called when a mouse button is released and UI did not consume it.
 - `lurek.process` - `function lurek.process(dt)`
   - Called every frame for game logic.
@@ -308,7 +308,7 @@ function lurek.mousemoved(x, y, dx, dy)
 Called when a mouse button is pressed and UI did not consume it.
 
 ```lua
-function lurek.mousepressed(x, y, button)
+function lurek.mousepressed(x, y, button, clicks)
 ```
 
 #### Parameters
@@ -318,13 +318,14 @@ function lurek.mousepressed(x, y, button)
 | `x` | number | Pointer x coordinate in game space. |
 | `y` | number | Pointer y coordinate in game space. |
 | `button` | integer | One-based mouse button index. |
+| `clicks` | integer | Consecutive click count for this button. |
 
 ### `lurek.mousereleased`
 
 Called when a mouse button is released and UI did not consume it.
 
 ```lua
-function lurek.mousereleased(x, y, button)
+function lurek.mousereleased(x, y, button, clicks)
 ```
 
 #### Parameters
@@ -334,6 +335,7 @@ function lurek.mousereleased(x, y, button)
 | `x` | number | Pointer x coordinate in game space. |
 | `y` | number | Pointer y coordinate in game space. |
 | `button` | integer | One-based mouse button index. |
+| `clicks` | integer | Consecutive click count for this button. |
 
 ### `lurek.process`
 

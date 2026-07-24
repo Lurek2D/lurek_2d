@@ -10,13 +10,14 @@
 
 ## Files
 - `src/`: Rust engine and Lua bindings.
-- `content/`: Lua examples, demos, layouts, snippets.
-- `library/`: Pure Lua packages.
+- `content/`: Lua examples, layouts, and snippet sources.
+- `lurek_2d_content/`: Separate repository for pure Lua libraries, finished games, and game-design references.
 - `tests/`: Lua, Rust, smoke, golden, and evidence tests.
 - `docs/`: Source docs for the engine.
 - `tools/`: Repo scripts, generators, validators.
 - `lurek_2d_extension/`: Separate repository for the VS Code extension; do not create or edit a root-level `extension/` directory.
 - `lurek_2d_pages/`: Separate repository for generated documentation pages; do not create or edit a root-level `pages/` directory.
+- `lurek_2d_workbench/`: Separate repository for the native Lurek Workbench app.
 - `work/`: Temporary notes, repros, and evidence.
 
 ## Rules
@@ -30,6 +31,7 @@
 - Keep captured output under 1000 lines.
 - Keep scope narrow and never revert unrelated user changes.
 - Write temporary files only under `work/`.
+- CAG limits use normalized UTF-8 characters: this root contract is at most 5000, every other `AGENTS.md` at most 3000, and every `SKILL.md` at most 5000.
 
 ## Workflow
 - Keep public API changes synced with specs, examples, and coverage.

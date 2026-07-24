@@ -45,11 +45,11 @@ use crate::render::input_validation::{
     validate_compound_shape, validate_render_command_with_category, validate_render_frame_state,
     RenderInputLimits,
 };
-use crate::render::{RenderBudget, RenderBudgetLimits};
 use crate::render::province_map_pipeline::{
     ProvinceMapDataBindings, ProvinceMapPipeline, ProvinceMapUniforms,
 };
 use crate::render::render_diagnostics::RenderDiagnostics;
+use crate::render::{RenderBudget, RenderBudgetLimits};
 use wgpu::util::DeviceExt;
 
 // Submodule helper imports
@@ -565,6 +565,15 @@ pub struct GpuRenderer {
         HashMap<crate::render::gpu_pipeline::PipelineKey, wgpu::RenderPipeline>,
     /// User-uploaded shader cache keyed by `ShaderKey`.
     pub(crate) shader_cache: SparseSecondaryMap<ShaderKey, crate::render::gpu_shaders::GpuShader>,
+    /// Device-limit shader rejections keyed by source and uniform signature so identical
+    /// invalid input is not prepared again every frame.
+    pub(crate) shader_negative_cache: SparseSecondaryMap<
+        ShaderKey,
+        (
+            String,
+            Vec<(String, crate::render::gpu_shaders::ShaderUniformKind)>,
+        ),
+    >,
     /// GPU buffer holding the current-frame `ViewportUniform`.
     pub(crate) viewport_buffer: wgpu::Buffer,
     /// Bind group binding `viewport_buffer` to binding 0.
@@ -866,6 +875,7 @@ impl GpuRenderer {
             default_color_instanced_pipelines: HashMap::new(),
             default_texture_instanced_pipelines: HashMap::new(),
             shader_cache: SparseSecondaryMap::new(),
+            shader_negative_cache: SparseSecondaryMap::new(),
             viewport_buffer,
             viewport_bind_group: viewport_bg,
             texture_bind_group_layout: texture_bgl,
@@ -912,9 +922,7 @@ impl GpuRenderer {
     ///
     /// Device recreation is not available from this renderer owner; validation/internal failures
     /// therefore request the app's documented controlled recovery path, while OOM requests stop.
-    pub fn take_uncaptured_recovery_action(
-        &self,
-    ) -> Option<crate::render::RenderRecoveryAction> {
+    pub fn take_uncaptured_recovery_action(&self) -> Option<crate::render::RenderRecoveryAction> {
         match self.uncaptured_gpu_failure.swap(0, Ordering::AcqRel) {
             0 => None,
             1 => Some(crate::render::RenderRecoveryAction::Shutdown),

@@ -1,12 +1,12 @@
 """
 gen_extension_api.py -- Convert logs/data/lua_api_data.json to
-the sibling lurek_2D_extension/vscode/data/lurek-api.json for the VS Code IntelliSense extension.
+the sibling lurek_2d_extension/data/lurek-api.json for the VS Code IntelliSense extension.
 
 Input:
     logs/data/lua_api_data.json   (produced by gen_lua_api_data.py, step 2 of gen_all_docs.py)
 
 Output:
-    ../lurek_2D_extension/vscode/data/lurek-api.json
+    ../lurek_2d_extension/data/lurek-api.json
 
 Run this script whenever the Lurek API changes, or let gen_all_docs.py call it automatically:
     python tools/docs/gen_extension_api.py
@@ -28,7 +28,7 @@ from datetime import date
 from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
-EXTENSION_ROOT = WORKSPACE_ROOT.parent / f"{WORKSPACE_ROOT.name}_extension"
+EXTENSION_ROOT = WORKSPACE_ROOT / "lurek_2d_extension"
 sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
 import module_registry
 
@@ -238,12 +238,12 @@ Examples:
   python tools/docs/gen_extension_api.py --help
 """
     parser = argparse.ArgumentParser(
-        description="Convert logs/data/lua_api_data.json -> ../lurek_2D_extension/vscode/data/lurek-api.json.",
+        description="Convert logs/data/lua_api_data.json -> lurek_2d_extension/data/lurek-api.json.",
         epilog=epilog,
         formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--input",   default=str(module_registry.lua_api_json_path()))
-    parser.add_argument("--output",  default=str(EXTENSION_ROOT / "vscode" / "data" / "lurek-api.json"))
+    parser.add_argument("--output",  default=str(EXTENSION_ROOT / "data" / "lurek-api.json"))
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 

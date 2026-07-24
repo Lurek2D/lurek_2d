@@ -50,8 +50,8 @@ Scope boundary: this file owns only callback inventory and ownership context. De
 - `lurek.keypressed(key, scancode, isrepeat) -> nil`: Called when a keyboard key is pressed and UI did not consume it.
 - `lurek.keyreleased(key, scancode) -> nil`: Called when a keyboard key is released.
 - `lurek.mousemoved(x, y, dx, dy) -> nil`: Called when the pointer moves in game coordinates and UI did not consume it.
-- `lurek.mousepressed(x, y, button) -> nil`: Called when a mouse button is pressed and UI did not consume it.
-- `lurek.mousereleased(x, y, button) -> nil`: Called when a mouse button is released and UI did not consume it.
+- `lurek.mousepressed(x, y, button, clicks) -> nil`: Called when a mouse button is pressed and UI did not consume it.
+- `lurek.mousereleased(x, y, button, clicks) -> nil`: Called when a mouse button is released and UI did not consume it.
 - `lurek.process(dt) -> nil`: Called every frame for game logic.
 - `lurek.process_late(dt) -> nil`: Called every frame after `process` and fixed-step physics callbacks.
 - `lurek.process_physics(dt) -> nil`: Called at the fixed timestep zero or more times per rendered frame.

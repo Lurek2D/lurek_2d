@@ -187,24 +187,33 @@ impl FrameRenderBuffers {
         shrink_vec_to_byte_ceiling(&mut self.particle_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
         shrink_vec_to_byte_ceiling(&mut self.draws, MAX_RETAINED_FRAME_BUFFER_BYTES);
         shrink_vec_to_byte_ceiling(&mut self.instances, MAX_RETAINED_FRAME_BUFFER_BYTES);
-        shrink_vec_to_byte_ceiling(&mut self.scratch_color_verts, MAX_RETAINED_FRAME_BUFFER_BYTES);
-        shrink_vec_to_byte_ceiling(&mut self.scratch_color_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
+        shrink_vec_to_byte_ceiling(
+            &mut self.scratch_color_verts,
+            MAX_RETAINED_FRAME_BUFFER_BYTES,
+        );
+        shrink_vec_to_byte_ceiling(
+            &mut self.scratch_color_idxs,
+            MAX_RETAINED_FRAME_BUFFER_BYTES,
+        );
         shrink_vec_to_byte_ceiling(&mut self.scratch_tex_verts, MAX_RETAINED_FRAME_BUFFER_BYTES);
         shrink_vec_to_byte_ceiling(&mut self.scratch_tex_idxs, MAX_RETAINED_FRAME_BUFFER_BYTES);
         shrink_vec_to_byte_ceiling(&mut self.merged_draws, MAX_RETAINED_FRAME_BUFFER_BYTES);
     }
 
-    /// Reserve enough capacity for a known frame size without changing current lengths.
-    pub fn reserve_for_frame(&mut self, reservations: FrameRenderBufferReservations) {
-        reserve_to_capacity(&mut self.color_verts, reservations.color_verts);
-        reserve_to_capacity(&mut self.color_idxs, reservations.color_idxs);
-        reserve_to_capacity(&mut self.tex_verts, reservations.tex_verts);
-        reserve_to_capacity(&mut self.tex_idxs, reservations.tex_idxs);
-        reserve_to_capacity(&mut self.particle_verts, reservations.particle_verts);
-        reserve_to_capacity(&mut self.particle_idxs, reservations.particle_idxs);
-        reserve_to_capacity(&mut self.draws, reservations.draws);
-        reserve_to_capacity(&mut self.instances, reservations.instances);
-        reserve_to_capacity(&mut self.merged_draws, reservations.draws);
+    /// Fallibly reserve enough capacity for a known frame size without changing lengths.
+    ///
+    /// A failure may retain capacity reserved by earlier buffers, but it never adds
+    /// partially prepared frame data or panics; callers can skip that frame safely.
+    pub fn reserve_for_frame(&mut self, reservations: FrameRenderBufferReservations) -> bool {
+        reserve_to_capacity(&mut self.color_verts, reservations.color_verts)
+            && reserve_to_capacity(&mut self.color_idxs, reservations.color_idxs)
+            && reserve_to_capacity(&mut self.tex_verts, reservations.tex_verts)
+            && reserve_to_capacity(&mut self.tex_idxs, reservations.tex_idxs)
+            && reserve_to_capacity(&mut self.particle_verts, reservations.particle_verts)
+            && reserve_to_capacity(&mut self.particle_idxs, reservations.particle_idxs)
+            && reserve_to_capacity(&mut self.draws, reservations.draws)
+            && reserve_to_capacity(&mut self.instances, reservations.instances)
+            && reserve_to_capacity(&mut self.merged_draws, reservations.draws)
     }
 
     /// Return current vector lengths in a stable diagnostic order.
@@ -255,9 +264,13 @@ fn shrink_vec_to_byte_ceiling<T>(values: &mut Vec<T>, max_bytes: usize) {
     }
 }
 
-fn reserve_to_capacity<T>(values: &mut Vec<T>, target_capacity: usize) {
+fn reserve_to_capacity<T>(values: &mut Vec<T>, target_capacity: usize) -> bool {
     if values.capacity() < target_capacity {
-        values.reserve(target_capacity - values.capacity());
+        values
+            .try_reserve(target_capacity - values.capacity())
+            .is_ok()
+    } else {
+        true
     }
 }
 

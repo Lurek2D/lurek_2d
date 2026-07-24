@@ -56,14 +56,14 @@
     "must_match_any": [".codex/skills/review-specs/SKILL.md", "tools/docs/gen_module_specs.py", "docs/specs/"]
   },
   {
-    "query": "content games demo conventions validate_game demo smoke",
+    "query": "finished playable game core loop validate_game smoke",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-demo/SKILL.md", "tools/validate/validate_game.py", "tests/demo_smoke_tests.rs"]
+    "must_match_any": [".codex/skills/create-game/SKILL.md", "tools/validate/validate_game.py", "lurek_2d_content/games/AGENTS.md"]
   },
   {
     "query": "library Lua module conventions validate library",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-library/SKILL.md", "library/", "tools/validate/validate_library.py"]
+    "must_match_any": [".codex/skills/create-library/SKILL.md", "lurek_2d_content/library/AGENTS.md", "tools/validate/validate_library.py"]
   },
   {
     "query": "TOML UI layouts snap to grid",
@@ -109,12 +109,12 @@
   {
     "query": "codex CAG skills agents prompts",
     "profile": "engine",
-    "must_match_any": [".codex/skills/create-cag-artifact/SKILL.md", ".codex/agents/", ".github/prompts/"]
+    "must_match_any": [".codex/skills/create-cag-artifact/SKILL.md", ".codex/agents/", ".codex/coverage.toml"]
   },
   {
     "query": "Lua integration tests module interaction",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-integration-test/SKILL.md", "tests/lua/integration/", "tools/audit/integration_coverage.py"]
+    "must_match_any": [".codex/skills/create-test-integration/SKILL.md", "tests/lua/integration/", "tools/audit/integration_coverage.py"]
   },
   {
     "query": "Rust tests internal module Cargo target",
@@ -179,12 +179,12 @@
   {
     "query": "content games demo conventions",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-demo/SKILL.md", "lurek_2d_content/games/AGENTS.md", "tests/demo_smoke_tests.rs"]
+    "must_match_any": [".codex/skills/create-game/SKILL.md", "lurek_2d_content/games/AGENTS.md", "tests/demo_smoke_tests.rs"]
   },
   {
     "query": "library Lua module conventions",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-library/SKILL.md", "library/AGENTS.md", "tools/validate/validate_library.py"]
+    "must_match_any": [".codex/skills/create-library/SKILL.md", "lurek_2d_content/library/AGENTS.md", "tools/validate/validate_library.py"]
   },
   {
     "query": "content layouts TOML UI primitives",
@@ -270,7 +270,7 @@
   {
     "query": "library AGENTS reusable Lua gameplay systems",
     "profile": "game",
-    "must_match_any": ["library/AGENTS.md", ".codex/skills/create-library/SKILL.md", "library/README.md"]
+    "must_match_any": ["lurek_2d_content/library/AGENTS.md", ".codex/skills/create-library/SKILL.md", "lurek_2d_content/library/README.md"]
   },
   {
     "query": "content examples AGENTS runnable single file teaching examples",
@@ -405,5 +405,20 @@
     "runner": "context",
     "profile": "engine",
     "must_tool_any": ["rag_rebuild_index"]
+  },
+  {
+    "query": "technical game design API map vertical slice",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-design/SKILL.md", "lurek_2d_content/design/AGENTS.md"]
+  },
+  {
+    "query": "author module specification manual overlay",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-spec/SKILL.md", ".codex/skills/review-specs/SKILL.md", "docs/specs/"]
+  },
+  {
+    "query": "Lurek Workbench editor shell project service",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-workbench-feature/SKILL.md", "lurek_2d_workbench/AGENTS.md"]
   }
 ]

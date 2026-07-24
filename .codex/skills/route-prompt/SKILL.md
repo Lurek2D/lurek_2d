@@ -9,25 +9,63 @@ description: "Load this skill when choosing the best active Codex skill and owne
 - Route user requests to the narrowest active Codex skill and an existing owner profile.
 
 ## Domain Knowledge
-- Routing is a three-part decision: artifact surface determines the owning profile, requested operation determines create/review/convert skill family, and proof obligations determine only the supporting skills needed after the primary choice.
-- Frontmatter descriptions are the active load/skip predicates; Mission and Workflow help execute a selected skill but should not override a clear routing boundary in the description.
-- The narrowest owner wins: `create-module` for a new top-level Rust owner, `create-engine-feature` for cross-surface engine evolution, public binding audits for `review-api`, and artifact-specific test/content skills for their canonical folders.
-- Multi-surface requests still need one primary skill anchored to the desired outcome. Supporting skills are sequenced dependencies, not a list of every catalog item whose noun appears in the prompt.
-- Available profiles are exactly the registered `.codex/config.toml` entries backed by `.codex/agents/*.toml`; a plausible role name that is not registered cannot receive a handoff.
-- Negative scope matters: docs-only, content-only, internal Rust, extension, and CAG requests often share terms such as “API,” “module,” or “test,” so skip clauses prevent routing by keywords alone.
-- A request to review and fix still routes first by the evidence surface: use the narrow review skill to establish findings, then its workflow may invoke the matching creation skill for authorized remediation rather than selecting a creation skill prematurely.
-- Explicit user-named skills override inferred routing when available, but supporting skill choice and registered ownership must still respect repository contracts and the named skill's stated exclusions.
+- Skill load and skip rules are in each `SKILL.md` frontmatter description.
+- Mission explains the selected skill's outcome.
+- Domain Knowledge gives repo facts for execution.
+- Workflow gives the normal execution order.
+- The target artifact path determines the canonical owner.
+- The requested operation selects create, convert, or review.
+- Proof requirements add only the supporting skills needed after the primary skill.
+- One request has one primary skill when one workflow owns the final outcome.
+- Supporting skills are ordered dependencies, not every skill that shares a noun with the prompt.
+- `create-module` owns a new top-level Rust module and its complete public surface.
+- `create-engine-feature` owns a feature that changes several engine surfaces.
+- `review-api` owns Rust-to-Lua public binding parity review.
+- Test skills are split by Lua unit, Rust seam, integration, evidence, and stress ownership.
+- Content skills are split by example, game, library, layout, design, and snippet output.
+- Registered profiles are defined in `.codex/config.toml`.
+- Profile definitions are backed by `.codex/agents/*.toml`.
+- An unregistered role name cannot receive a handoff.
+- A review-and-fix request starts with the narrow review skill.
+- The review workflow selects the matching create skill only after a finding is confirmed and fixes are authorized.
+- An explicitly named available skill overrides inferred routing.
+- Explicit exclusions in the user request and skill description still apply.
+- If no active skill owns the outcome, the result is a catalog gap.
+- The workspace registry currently contains 11 profiles and limits agent depth to 1.
+- `manager` scopes, splits, and routes work; it is not the default implementation owner.
+- `reviewer` owns read-only audits and verdicts.
+- `builder` owns `tools/`, packaging, CI, and developer CLI work.
+- `cag_architect` owns `.codex/`, RAG inputs, and retrieval tuning.
+- `content` owns Lua artifacts in `content/`, `lurek_2d_content/`, and `lurek_2d_workbench/`.
+- `extension` owns only `lurek_2d_extension/` and VS Code workflows.
+- `.codex/coverage.toml` maps each domain to roots, contracts, and active skills.
+- Domains marked `optional_checkout = true` may be absent without creating a new owner.
 
 ## Workflow
-- Parse the request into desired outcome, target artifact/path, operation, public-versus-internal boundary, evidence requirement, and explicit exclusions; use RAG/filesystem metadata to resolve ambiguous project terms before comparing skills.
-- Shortlist descriptions whose load clause matches, eliminate each candidate whose skip clause applies, then break ties by the narrowest canonical owner and whether the task creates behavior, creates proof/content, or audits existing work.
-- Resolve the owner through `.codex/config.toml` and its backing agent TOML, add supporting skills only for mandatory downstream surfaces, and order them according to source/generation/validation dependencies without inventing parallel owners.
-- Return one primary skill, one registered owner, concise rationale tied to routing predicates, supporting sequence if required, and concrete existing target paths/tools; identify a catalog gap explicitly when no active skill matches rather than fabricating an invocation.
-- Test the proposed route against one plausible neighboring interpretation of the request and state the discriminator—target path, public boundary, artifact type, or requested operation—that makes the chosen skill narrower.
-- When the prompt spans independent owners, decide whether one end-to-end skill already coordinates them; only recommend manager-style decomposition when no active primary workflow owns the complete outcome.
+1. Read `.codex/AGENTS.md` and the nearest contract for the target path.
+2. Extract the desired outcome from the request.
+3. Identify the target artifact or repository path.
+4. Identify create, convert, review, or routing operation.
+5. Identify public versus internal ownership.
+6. Record required proof and explicit exclusions.
+7. Resolve unclear project terms with RAG and filesystem metadata.
+8. Shortlist skills whose load rule matches the request.
+9. Remove every skill whose skip rule matches.
+10. Prefer the skill with the narrowest canonical artifact owner.
+11. Prefer one end-to-end skill when it owns the full outcome.
+12. Check explicit user-named skills before inferred choices.
+13. Resolve the owner in `.codex/config.toml`.
+14. Confirm its backing file exists under `.codex/agents/`.
+15. Add supporting skills only for mandatory downstream work.
+16. Order support by canonical source, generation, and validation.
+17. Return one primary skill and one registered owner.
+18. Give the load or skip facts that decided the route.
+19. Name existing target paths and tools.
+20. Report a catalog gap when no active skill matches.
+21. Use manager-style decomposition only when independent owners have no single coordinating skill.
 
 ## References
 - `contracts: .codex/AGENTS.md, AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "codex skills agents routing" --profile all --limit 10, filesystem reads of .codex/skills and .codex/agents`
 - `agent: manager`
-- RAG: Start with: `codex skills agents routing`, `Codex AGENTS skills agents routing`, `codex CAG skills agents prompts`; Focus areas first: `.codex/skills/`, `.codex/agents/`, `.codex/AGENTS.md`, root `AGENTS.md`; If the request names a surface, append it directly: `tests`, `pages`, `tool`, `module`, `extension`, `rag`
+- RAG: `codex skills agents routing <surface>`; inspect matching frontmatter descriptions, nearest path contract, registered profile, and the closest excluded neighbor.

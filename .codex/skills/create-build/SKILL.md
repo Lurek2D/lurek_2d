@@ -1,32 +1,58 @@
 ---
 name: create-build
-description: "Load this skill when creating or modifying Cargo profiles, release/debug/dist settings, packaging scripts, or build automation. Skip it for runtime feature work, docs-only changes, or pure test authoring."
+description: "Load this skill when changing Cargo profiles, Windows build scripts, package staging, installers, or game packaging. Skip it for engine runtime behavior, documentation-only work, or test code."
 ---
 
 # create-build
 
 ## Mission
-- Create or modify build, release, debug, dist, and packaging behavior while preserving local Windows-first tooling.
+- Change the build or packaging pipeline and prove that the produced artifact works outside the source tree.
 
 ## Domain Knowledge
-- `Cargo.toml` owns compiler profiles and explicit test targets; `tools/dist/` owns installers and packaging orchestration, while `dist/` is output rather than build policy.
-- Lurek2D ships as one Rust binary with an embedded Lua runtime, so release changes can affect executable size, native runtime expectations, bundled assets, and packaged games together.
-- LTO, codegen units, debug symbols, panic strategy, stripping, and incremental compilation trade build latency against binary size, diagnosability, and runtime speed; measure the dimension the request targets.
-- Packaging must be tested from its staged artifact because a developer-tree launch can conceal missing assets or implicit repository-relative dependencies.
-- Cargo profile inheritance and command selection matter: a flag placed in `[profile.release]` does not affect an explicitly named profile unless it inherits as expected, and packaging scripts must invoke the same profile whose artifact they stage.
-- Native dependency delivery is part of package correctness. LuaJIT, audio, graphics, and Windows runtime requirements must be evaluated from the built artifact and installer layout rather than inferred from a successful developer build.
-- Reproducible packaging requires stable file ordering, explicit inclusion/exclusion rules, and normalized relative paths; timestamps or workspace-absolute paths should not leak into archives when they are not part of the format.
+- `Cargo.toml` defines Cargo profiles and Rust test targets.
+- `tools/dist/` owns release, staging, archive, installer, and game-package scripts.
+- `tools/dev/` owns developer build helpers.
+- `dist/` is generated output. It is not a policy owner.
+- Lurek2D ships as one Rust executable with a Lua runtime.
+- A package may also contain games, assets, Lua files, and native runtime files.
+- `tools/dist/dist.ps1` is the distribution entry point.
+- `tools/dist/pack.ps1` and `tools/dist/pack.py` build package layouts.
+- `tools/dist/package_games.py` packages game content.
+- A named Cargo profile can inherit from another profile.
+- The packaging script must use the same profile whose artifact it stages.
+- LTO, codegen units, stripping, panic mode, and debug symbols change size, speed, build time, or diagnostics.
+- A successful developer-tree launch does not prove package correctness.
+- Package paths must be relative and stable.
+- Archive ordering must be deterministic.
+- A failed package run must not publish a partial final archive.
+- Windows is the primary local automation platform for this repo.
+- A `.lurek` game package is a standard ZIP archive with no top-level directory.
+- A packaged game must contain root-level `main.lua`; `conf.toml`, `README.md`, and `screen.png` are included when present.
+- Recognized package subfolders include `assets`, `fonts`, `sounds`, `music`, `images`, `sprites`, `maps`, `data`, `shaders`, `levels`, `lib`, and `modules`.
+- Release output includes a portable Windows ZIP and may include an NSIS installer and VSIX.
+- `tools/dist/release.ps1` assembles publishable files under `dist/github-release/`.
+- Release artifacts are accompanied by lowercase SHA-256 entries in `checksums-sha256.txt`.
 
 ## Workflow
-- Classify the change as compiler profile, developer build wrapper, distribution staging, installer, or game packaging; trace the active entry point through `Cargo.toml` and `tools/dist/` so one concern is not implemented in several scripts.
-- Capture a reproducible baseline with the exact profile and artifact: command, wall time, executable/package size, staged contents, and launch result. Change only the owning flags or stage list, preserving unrelated debug/release behavior.
-- Validate from a freshly staged artifact: build the selected profile, inspect package contents, launch without repository-relative files, and exercise `package_games.py` or the installer only when that layer changed.
-- Compare the result to the baseline and record the intended trade-off; then run Cargo/clippy checks for shared profile changes and smoke the packaged executable before accepting archive or installer creation as success.
-- Inspect the command graph for duplicated release logic across `dist.ps1`, `pack.ps1`, `release.ps1`, `pack.py`, and installer configuration; keep version, artifact name, and staging-root decisions at the narrowest existing shared owner.
-- Test both a successful package and one representative missing-input failure, confirming non-zero exit status, actionable path diagnostics, and no half-published archive or installer at the final destination.
+1. Read `AGENTS.md` and `tools/AGENTS.md`.
+2. Query RAG for the profile, script, or package type.
+3. Identify the owning entry point in `Cargo.toml`, `tools/dist/`, or `tools/dev/`.
+4. Record the exact current command.
+5. Record build time, executable size, package size, and staged files when relevant.
+6. Change only the owning profile or script.
+7. Build with the exact target profile.
+8. Stage a fresh package from that build.
+9. Check required executable, game, asset, Lua, and runtime files.
+10. Launch the staged executable without repository-relative files.
+11. Run the changed packaging or installer path.
+12. Test one missing-input case.
+13. Confirm that failure is non-zero and names the missing path.
+14. Run the package command again and check deterministic output.
+15. Run `cargo clippy -- -D warnings` when shared Cargo settings changed.
+16. Compare the result with the baseline and record the intended trade-off.
 
 ## References
 - `contracts: AGENTS.md, tools/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "build profiles Cargo.toml dist tools" --profile engine --limit 10, cargo build --profile <profile>, cargo clippy -- -D warnings, tools/python.cmd tools/validate/cag_validate.py`
+- `tools: tools/python.cmd tools/rag/query.py "build profiles Cargo.toml release packaging" --profile engine --limit 10, cargo build --profile <profile>, cargo clippy -- -D warnings`
 - `agent: builder`
-- RAG: Use when finding current build owners before editing; `build profiles Cargo.toml dist tools`; `release profile packaging cargo config`; `python.cmd build audit validate cargo`; `Cargo.toml`; `tools/dist/`; `tools/dev/`; `tools/validate/`
+- RAG: `build profiles Cargo.toml release packaging`; inspect `Cargo.toml`, `tools/dist/`, `tools/dev/`, and staged output.

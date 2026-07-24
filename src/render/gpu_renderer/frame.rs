@@ -83,7 +83,8 @@ impl GpuRenderer {
     ) -> Result<Option<(u32, u32, Vec<u8>)>, wgpu::SurfaceError> {
         let frame_start = Instant::now();
         let completed_screenshot = self.poll_surface_readback();
-        self.render_diagnostics_total.accumulate(&self.render_diagnostics);
+        self.render_diagnostics_total
+            .accumulate(&self.render_diagnostics);
         self.render_diagnostics.reset();
         self.prune_released_resources(textures, fonts, canvases, shaders, meshes);
         for (key, tex_data) in textures.iter() {
@@ -204,13 +205,14 @@ impl GpuRenderer {
                     .map_or(0, crate::sprite::SpriteBatch::len),
                 _ => 0,
             };
-            if let Err(err) = render_budget.try_accept_with_batch_items(
-                cmd,
-                batch_items,
-                &render_budget_limits,
-            ) {
+            if let Err(err) =
+                render_budget.try_accept_with_batch_items(cmd, batch_items, &render_budget_limits)
+            {
                 self.render_diagnostics.record_invalid_render_input();
-                log::warn!("Skipping render command that exceeds the frame budget: {}", err);
+                log::warn!(
+                    "Skipping render command that exceeds the frame budget: {}",
+                    err
+                );
                 continue;
             }
             if command_context.handle_basic_render_command(self, cmd)
@@ -278,7 +280,10 @@ impl GpuRenderer {
                 (all_color_idxs.len(), std::mem::size_of::<u32>()),
                 (all_tex_verts.len(), std::mem::size_of::<TexVertex>()),
                 (all_tex_idxs.len(), std::mem::size_of::<u32>()),
-                (all_particle_verts.len(), std::mem::size_of::<ParticleVertex>()),
+                (
+                    all_particle_verts.len(),
+                    std::mem::size_of::<ParticleVertex>(),
+                ),
                 (all_particle_idxs.len(), std::mem::size_of::<u32>()),
                 (
                     frame_instances.len(),
@@ -356,7 +361,9 @@ impl GpuRenderer {
         if !frame_instances.is_empty() {
             if let Err(error) = self.ensure_instance_buffer_capacity(frame_instances.len()) {
                 self.render_diagnostics.record_invalid_render_input();
-                log::warn!("Skipping instances because instance buffer growth was rejected: {error}");
+                log::warn!(
+                    "Skipping instances because instance buffer growth was rejected: {error}"
+                );
                 frame_instances.clear();
             }
         }
@@ -664,11 +671,25 @@ impl GpuRenderer {
             }
         }
         if light_world.enabled && !light_world.lights.is_empty() {
+            let mut selected_lights = light_world.selected_render_lights();
+            let shadow_lights = selected_lights
+                .iter()
+                .filter(|(_, light)| light.shadow_enabled)
+                .count()
+                .min(MAX_SHADOW_LIGHTS);
+            if let Err(error) = render_budget.try_accept_light_work(
+                selected_lights.len(),
+                shadow_lights,
+                &render_budget_limits,
+            ) {
+                self.render_diagnostics.record_invalid_render_input();
+                log::warn!("Skipping lighting work that exceeds the frame budget: {error}");
+                selected_lights.clear();
+            }
             self.ensure_light_resources();
             let mut shadow_row = 0usize;
             let occluder_list: Vec<&crate::light::occluder::Occluder> =
                 light_world.occluders.values().collect();
-            let selected_lights = light_world.selected_render_lights();
             let mut light_shadow_rows: Vec<Option<usize>> = Vec::new();
             let mut shadow_edge_cache = ShadowEdgeCache::default();
             for (_, light) in &selected_lights {

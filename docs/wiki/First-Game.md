@@ -38,4 +38,4 @@ end
 ## Next Steps
 
 - [Project Structure](Project-Structure)
-- [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [audio](https://lurek2d.github.io/lurek_2d/modules/audio.html)
+- [input](https://lurek2d.github.io/lurek_2d_pages/modules/input.html), [render](https://lurek2d.github.io/lurek_2d_pages/modules/render.html), [audio](https://lurek2d.github.io/lurek_2d_pages/modules/audio.html)

@@ -16,9 +16,8 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/api_occurrence_validator.py` - API Occurrence Validator -- Check that each lurek.* API has examples. [durable; mcp:no]
 - `audit/api_stub_validator.py` - API Stub Validator -- Validate pending --@api-stub: block structure and content. [durable; mcp:no]
 - `audit/audit_module.py` - audit_module.py â€” Lurek2D module quality audit tool. [durable; mcp:no]
-- `audit/cag_coverage.py` - cag_coverage.py — required-section coverage analytics for CAG files. [durable; mcp:no]
-- `audit/cag_link_check.py` - cag_link_check.py — broken-link checker for the CAG layer. [durable; mcp:candidate]
-- `audit/cag_persona_matrix.py` - Report the active registered role matrix from .codex/config.toml. [durable; mcp:no]
+- `audit/cag_coverage.py` - Report active Codex CAG coverage for roles, skills, contracts, and domains. [durable; mcp:no]
+- `audit/cag_link_check.py` - Check links and structured References across active Codex skills and contracts. [durable; mcp:candidate]
 - `audit/count_gaps.py` - count_gaps.py — Count undocumented public API items per lurek.* module. [durable; mcp:no]
 - `audit/doc_audit.py` - doc_audit.py — Lurek2D unified docs-general audit. [durable; mcp:no]
 - `audit/doc_coverage.py` - doc_coverage.py — Lurek2D docs-general coverage analytics. [durable; mcp:no]
@@ -102,13 +101,13 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `docs/gen_lib_docs.py` - gen_lib_docs.py — Generate API docs from Lurek2D library Lua files. [durable; mcp:no]
 - `docs/gen_lua_api.py` - gen_lua_api.py â€” Lurek2D Lua API parser library. [durable; mcp:no]
 - `docs/gen_lua_api_data.py` - gen_lua_api_data.py — Generate Lurek2D master API data file. [durable; mcp:no]
-- `docs/gen_lua_api_html_wrapper.py` - Generate HTML redirects in ../lurek_2D_pages/lua-docs/. [durable; mcp:no]
+- `docs/gen_lua_api_html_wrapper.py` - gen_lua_api_html_wrapper.py — Generate HTML index wrapper for Lua API docs-general in ../lurek_2D_pages/lua-docs/. [durable; mcp:no]
 - `docs/gen_lua_binding_reports.py` - Generate source-derived Lua binding snapshots from src/lua_api/*.rs. [durable; mcp:no]
 - `docs/gen_lua_dev_docs.py` - gen_lua_dev_docs.py — Generate Lua developer docs-general from lua_api *.rs files. [durable; mcp:no]
 - `docs/gen_lua_docstring_skeletons.py` - gen_lua_docstring_skeletons.py -- Rebuild Lua API docstring skeletons from Rust source only. [durable; mcp:no]
 - `docs/gen_lua_library_api.py` - gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files. [durable; mcp:no]
 - `docs/gen_luadoc.py` - gen_luadoc.py â€” Generate LuaCATS type-annotation stubs for the Lurek2D VS Code extension. [durable; mcp:no]
-- `docs/gen_module_pages.py` - Generate per-module MkDocs pages in docs/modules/ from: [durable; mcp:no]
+- `docs/gen_module_pages.py` - Generate temporary MkDocs input for Pages module guides from: [durable; mcp:no]
 - `docs/gen_module_specs.py` - Generate docs/specs/<module>.md from source facts and manual overlays. [durable; mcp:no]
 - `docs/gen_rust_api_data.py` - gen_rust_api_data.py — Generate Lurek2D master API data file. [durable; mcp:no]
 - `docs/gen_rust_docstrings.py` - gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/). [durable; mcp:no]
@@ -136,7 +135,6 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 
 ## /github
 - `github/ideas_to_github_issues.py` - Create GitHub issues from each markdown file in docs/ideas/. [targeted-maintenance; mcp:no]
-- `github/sync_agent_rules.py` - sync_agent_rules.py — Synchronize workspace rules files with Lurek2D system prompt. [targeted-maintenance; mcp:no]
 
 ## /mcp
 - `mcp/lurek_mcp_server.py` - Expose Lurek2D RAG and repo quality audits as a minimal stdio MCP server. [durable; mcp:server]
@@ -161,7 +159,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `gen_all_docs.py` - Regenerate the full Lurek2D documentation pipeline in one command. [durable; mcp:no]
 
 ## /snippets
-- `snippets/gen_vscode_snippets.py` - Build ../lurek_2D_extension/vscode/data/snippets.json from content/snippets/*.lua. [durable; mcp:no]
+- `snippets/gen_vscode_snippets.py` - Build ../lurek_2d_extension/data/snippets.json from content/snippets/*.lua. [durable; mcp:no]
 - `snippets/snippet_catalog.py` - Shared parser for content/snippets/*.lua marker blocks. [internal; mcp:no]
 
 ## /ui
@@ -169,11 +167,9 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `ui/snap_to_grid.py` - Snap every pixel-coordinate field in Lurek2D TOML layout files to a grid. [durable; mcp:no]
 
 ## /validate
-- `validate/_cag_common.py` - Common helpers shared by CAG validator and audit tools. [internal; mcp:no]
-- `validate/cag_validate.py` - cag_validate.py — Lurek2D CAG layer validator. [durable; mcp:candidate]
+- `validate/_cag_common.py` - Shared discovery and parsing helpers for the active Codex CAG layer. [internal; mcp:no]
+- `validate/cag_validate.py` - Validate the active Codex CAG contracts, role registry, skills, and domains. [durable; mcp:candidate]
 - `validate/check_callbacks.py` - check_callbacks.py — Verify that gen_docs_lua.py _callbacks() output has no embedded newlines. [durable; mcp:no]
-- `validate/cleanup_prompt_catalog.py` - Remove deprecated prompts and rename remaining create-oriented prompts. [durable; mcp:no]
-- `validate/prompt_scope_report.py` - Report active prompt scope and flag deprecated analysis-style prompts. [durable; mcp:no]
 - `validate/validate_changelog.py` - Validate docs/CHANGELOG.md structure and content. [durable; mcp:no]
 - `validate/validate_example_coverage.py` - validate_example_coverage.py - Quality gate for example coverage. [durable; mcp:candidate]
 - `validate/validate_game.py` - validate_game.py — Validate Lua game scripts against the Lurek2D API surface. [durable; mcp:candidate]

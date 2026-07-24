@@ -1,12 +1,12 @@
 site_name: Lurek2D
 site_description: Lua-first 2D runtime and toolkit for games, simulations, visual tools, and interactive desktop apps
-site_url: https://lurek2d.github.io/lurek_2d/
+site_url: https://lurek2d.github.io/lurek_2d_pages/
 repo_url: https://github.com/Lurek2D/lurek_2d
 repo_name: Lurek2D/lurek_2d
 edit_uri: ""
 
 docs_dir: docs
-site_dir: pages
+site_dir: lurek_2d_pages
 use_directory_urls: false
 
 exclude_docs: |
@@ -29,7 +29,7 @@ exclude_docs: |
   linux_build.md
   rust-api.md
   howto.md
-  AGENTS.md
+  **/AGENTS.md
   architecture/
 
 theme:

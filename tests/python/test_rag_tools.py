@@ -398,7 +398,7 @@ class RagToolTests(unittest.TestCase):
         self.assertTrue(report["results"])
         for item in report["results"]:
             self.assertTrue(
-                item["path"].startswith(("AGENTS.md", ".codex/", ".github/", "tools/", "tests/")),
+                item["path"].startswith(("AGENTS.md", ".codex/", "tools/", "tests/")),
                 item["path"],
             )
 

@@ -1,10 +1,10 @@
 # Use when the output is playable Lua-side content rather than engine code.
-# Typical work: content/, library/, demos, gameplay scripts, examples, UI layouts used by content.
-# Best fit skills: create-demo, create-library, create-example, create-layout, review-examples.
+# Typical work: content/, lurek_2d_content/, lurek_2d_workbench/, examples, games, and Lua design references.
+# Best fit skills: create-game, create-library, create-design, create-workbench-feature, create-example, create-layout, review-examples.
 # Preferred tools: shell, content validators, screenshots/evidence when needed.
 # Do not use for extension snippets or core engine APIs.
 name = "content"
-description = "Content maker for content/ and library/ gameplay scripts, demos, examples, and layouts."
+description = "Content maker for content/, lurek_2d_content/, and lurek_2d_workbench/ Lua artifacts."
 model = "gpt-5.4"
 model_reasoning_effort = "medium"
 model_reasoning_summary = "auto"

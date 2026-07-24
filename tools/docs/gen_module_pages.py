@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-module MkDocs pages in docs/modules/ from:
+"""Generate temporary MkDocs input for Pages module guides from:
   - docs/specs/<module>.md  -> description (TL;DR + Summary)
   - docs/api/lurek.lua      -> function/method signatures + param/return docs
   - content/examples/<module>.lua -> code examples per symbol
@@ -22,9 +22,10 @@ DOCS_DATA = module_registry.DOCS_DATA
 LEGACY_LOGS_DATA = module_registry.LEGACY_LOGS_DATA
 LUA_API_JSON = module_registry.lua_api_json_path()
 EXAMPLES_DIR = ROOT / "content" / "examples"
-OUT_DIR = ROOT / "docs" / "modules"  # MkDocs input - Lua API module markdown documentation
+PAGES_INPUT = ROOT / "lurek_2d_pages" / ".source"
+OUT_DIR = PAGES_INPUT / "modules"
 CALLBACKS_MD = ROOT / "docs" / "api" / "callbacks.md"
-MODULE_GUIDES_MD = ROOT / "docs" / "module-guides.md"
+MODULE_GUIDES_MD = PAGES_INPUT / "module-guides.md"
 
 
 def api_module_name(module: str) -> str:
@@ -852,7 +853,7 @@ def main():
     print("Updated docs/api/callbacks.md from callbacks spec/json")
 
     MODULE_GUIDES_MD.write_text(build_module_guides_page(targets), encoding="utf-8")
-    print("Updated docs/module-guides.md from public API modules")
+    print(f"Updated {MODULE_GUIDES_MD.relative_to(ROOT)} from public API modules")
 
     return generated
 

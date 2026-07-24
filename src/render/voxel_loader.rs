@@ -164,11 +164,9 @@ fn collect_scene_voxels(
 }
 
 impl VoxelModel {
-    /// Load and mesh a static MagicaVoxel scene, including its node transforms.
-    pub fn load_file(path: &std::path::Path, voxel_size: f32) -> Result<Self, String> {
-        let bytes = std::fs::read(path)
-            .map_err(|error| format!("failed to read MagicaVoxel file: {error}"))?;
-        Self::load_bytes(&bytes, voxel_size)
+    /// Legacy host-path loading is disabled so voxel parsing cannot bypass GameFS policy.
+    pub fn load_file(_path: &std::path::Path, _voxel_size: f32) -> Result<Self, String> {
+        Err("host-path voxel loading is disabled; use GameFS and load_bytes".to_string())
     }
 
     /// Parse a caller-owned, policy-authorized MagicaVoxel byte stream.

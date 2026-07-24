@@ -420,7 +420,7 @@ def check_file_naming(module: str) -> Check:
 # â”€â”€ Phase 2: docs/specs Quality â”€â”€
 
 # Canonical docs/specs sections (must match docs-specs skill and actual src/<module>/docs/specs files).
-# See .github/skills/docs-specs/SKILL.md for the authoritative template.
+# See .codex/skills/create-spec/SKILL.md for the authoritative template.
 REQUIRED_AGENT_SECTIONS = ["Purpose", "Source Files"]
 # "Full Specification" may appear as the short form "Full Spec" in older files.
 REQUIRED_AGENT_SPEC_SECTION_VARIANTS = ["Full Specification", "Full Spec"]

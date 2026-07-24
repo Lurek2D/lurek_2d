@@ -18,6 +18,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -46,15 +47,15 @@ PHASES: list[tuple[str, list[tuple[str, list[str], str]]]] = [
         ("docs/gen_module_specs.py", [], "Generated module specs (docs/specs/<module>.md)"),
     ]),
     ("api", [
-        ("docs/gen_extension_api.py", [], "VS Code extension API (../lurek_2D_extension/vscode/data/lurek-api.json)"),
+        ("docs/gen_extension_api.py", [], "VS Code extension API (lurek_2d_extension/data/lurek-api.json)"),
         ("docs/gen_luadoc.py", [], "LuaCATS stubs (docs/api/lurek.lua)"),
         ("docs/gen_docs_lua.py", [], "Lua API reference (docs/api/lurek.md)"),
-        ("docs/gen_docs_lua_html.py", [], "Lua API HTML browser (../lurek_2D_pages/lua-docs)"),
+        ("docs/gen_docs_lua_html.py", [], "Lua API HTML redirects (lurek_2d_pages/lua-docs)"),
         ("docs/gen_docs_rust.py", [], "Rust API reference (docs/api/rust.md)"),
         ("docs/gen_lib_docs.py", [], "Library API (docs/api/lureksome.md + docs/api/lureksome.lua)"),
     ]),
     ("pages", [
-        ("docs/gen_module_pages.py", [], "Lua module pages (docs/modules/<module>.md)"),
+        ("docs/gen_module_pages.py", [], "Lua module pages (lurek_2d_pages/.source/modules/<module>.md)"),
         ("docs/gen_wiki.py", ["--skip-module-pages"], "User wiki static pages (docs/wiki/*.md)"),
     ]),
     ("reports", [
@@ -118,6 +119,52 @@ def sync_docs_data_cache() -> None:
             shutil.copy2(preferred, legacy)
 
 
+def build_pages_site() -> bool:
+    """Build generated MkDocs input into the nested static Pages repository."""
+    print("  [MkDocs static site (lurek_2d_pages)]")
+    t0 = time.monotonic()
+    pages_input = ROOT / "lurek_2d_pages" / ".source"
+    generated_modules = pages_input / "modules"
+    generated_index = pages_input / "module-guides.md"
+    if not generated_modules.exists() or not generated_index.exists():
+        print("    FAILED: generated module pages are missing")
+        return False
+    with tempfile.TemporaryDirectory(prefix="lurek-pages-") as temp_dir:
+        staging_root = Path(temp_dir)
+        staged_docs = staging_root / "site-input"
+        config_path = staging_root / "mkdocs.yml"
+        shutil.copytree(ROOT / "docs", staged_docs)
+        shutil.copytree(generated_modules, staged_docs / "modules", dirs_exist_ok=True)
+        shutil.copy2(generated_index, staged_docs / "module-guides.md")
+        config_text = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        config_text = config_text.replace("docs_dir: docs", "docs_dir: site-input")
+        config_text = config_text.replace(
+            "site_dir: lurek_2d_pages",
+            f"site_dir: {str(ROOT / 'lurek_2d_pages').replace('\\\\', '/')}",
+        )
+        config_path.write_text(config_text, encoding="utf-8")
+        result = subprocess.run(
+            # The Pages repository also owns deployment metadata and its README.
+            # Keep those files while refreshing generated static artifacts.
+            [sys.executable, "-m", "mkdocs", "build", "--config-file", str(config_path), "--dirty"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        )
+    elapsed = time.monotonic() - t0
+    if result.returncode != 0:
+        print(f"    FAILED ({elapsed:.1f}s)")
+        for stream_name, stream in [("stdout", result.stdout), ("stderr", result.stderr)]:
+            if stream:
+                for line in stream.strip().split("\n")[-8:]:
+                    print(f"    {stream_name}: {line}")
+        return False
+    print(f"    done in {elapsed:.1f}s")
+    return True
+
+
 def main() -> None:
     print("Lurek2D doc pipeline")
     print("=" * 60)
@@ -128,6 +175,9 @@ def main() -> None:
             if not run_script(script_name, extra_args, label):
                 failed.append(f"{script_name} {' '.join(extra_args)}".strip())
             sync_docs_data_cache()
+    print("\nPhase: site")
+    if not build_pages_site():
+        failed.append("mkdocs build --dirty")
     print("=" * 60)
     if failed:
         print(f"FAILED: {', '.join(failed)}")

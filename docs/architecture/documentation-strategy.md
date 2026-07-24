@@ -13,7 +13,7 @@ GitHub Pages is the official public documentation for users. The root README is 
 | `README.md` | First contact and repository map | New visitors, users, contributors | Hand-written root document |
 | GitHub Pages | Main public docs | Lua users building games, simulations, tools, and apps | `docs/` source plus generated API/module pages |
 | `docs/api/` | Generated API artifacts | Users, editors, agents, tooling | Source binding annotations and docs generators |
-| `docs/modules/` | Generated module guides and callable details | Users choosing and applying modules | `docs/specs`, `docs/api/lurek.lua`, and `content/examples` |
+| GitHub Pages module guides | Generated module guides and callable details | Users choosing and applying modules | `docs/specs`, `docs/api/lurek.lua`, and `content/examples` |
 | `docs/specs/` | Technical module contracts | Contributors and AI/tooling workflows | Generated from source facts plus manual overlays |
 | `docs/architecture/` | Design constraints, strategy, and positioning | Contributors and maintainers | Hand-written architecture docs |
 | `docs/wiki/` | Generated cookbook, quick guides, FAQ-style onboarding | Users who prefer Wiki-style navigation | `tools/docs/gen_wiki.py` and generated docs data |

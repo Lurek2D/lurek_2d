@@ -149,7 +149,8 @@ def write_tools_readme(registry: list[dict[str, str]]) -> None:
         handle.write("- Prefer `audit/`, `validate/`, and `rag/query.py` for repeatable review flows.\n")
         handle.write("- Treat `fix/`, `demos/`, and some `dev/` scripts as targeted maintenance, not default MCP tools.\n")
         handle.write("- MCP registration should prefer entries marked `candidate`: stable input, bounded output, and low-surprise side effects.\n\n")
-        for group in sorted(groups):
+        group_names = sorted(groups)
+        for index, group in enumerate(group_names):
             handle.write(f"## {group}\n\n")
             for item in sorted(groups[group], key=lambda row: row["path"]):
                 handle.write(
@@ -157,7 +158,8 @@ def write_tools_readme(registry: list[dict[str, str]]) -> None:
                     f" [{item['surface']}; {item['stability']}; mcp:{item['mcp']}]"
                     f" - {item['summary']}\n"
                 )
-            handle.write("\n")
+            if index + 1 < len(group_names):
+                handle.write("\n")
 
 
 def write_agent_cli_reference(registry: list[dict[str, str]]) -> None:
@@ -171,7 +173,8 @@ def write_agent_cli_reference(registry: list[dict[str, str]]) -> None:
         handle.write("- Use `rag/query.py` before broad file reads.\n")
         handle.write("- Use `audit/` for reports, `validate/` for pass/fail gates, `docs/` for generation, and `fix/` only for controlled rewrites.\n")
         handle.write("- Prefer tools marked `mcp:candidate` when exposing new MCP commands.\n\n")
-        for group in sorted(groups):
+        group_names = sorted(groups)
+        for index, group in enumerate(group_names):
             handle.write(f"## /{group}\n")
             for item in sorted(groups[group], key=lambda row: row["path"]):
                 handle.write(
@@ -179,7 +182,8 @@ def write_agent_cli_reference(registry: list[dict[str, str]]) -> None:
                     f" - {item['summary']}"
                     f" [{item['stability']}; mcp:{item['mcp']}]\n"
                 )
-            handle.write("\n")
+            if index + 1 < len(group_names):
+                handle.write("\n")
 
 
 def generate_registry() -> None:

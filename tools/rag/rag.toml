@@ -3,8 +3,8 @@ max_chunk_size = 1800
 min_chunk_size = 120
 max_file_bytes = 2000000
 allowed_extensions = [".md", ".lua", ".rs", ".py", ".toml", ".json", ".html", ".js", ".ts", ".css", ".wgsl"]
-default_target_dirs = ["AGENTS.md", ".agents", ".codex", ".github", "content", "docs", "ideas", "library", "src", "tests", "tools"]
-ignore_dirs = [".git", ".pytest_cache", "__pycache__", "node_modules", "target", "dist", "build", ".cache"]
+default_target_dirs = ["AGENTS.md", ".codex", "content", "docs", "src", "tests", "tools", "lurek_2d_content", "lurek_2d_extension", "lurek_2d_workbench", "lurek_2d_pages/AGENTS.md"]
+ignore_dirs = [".git", ".pytest_cache", "__pycache__", "node_modules", "target", "dist", "build", ".cache", ".vscode-test"]
 ignore_files = ["rag_index.db", "rag_index.duckdb", "rag_index.duckdb.wal", "recall_baseline.json"]
 ignore_path_patterns = []
 
@@ -15,7 +15,7 @@ bm25_weights = [1.0, 8.0, 1.0]
 snippet_tokens = 96
 
 [ranking]
-generated_path_patterns = [".github/prompts/", "docs/api/lurek.lua", "docs/api/lurek.md", "docs/wiki/API-Reference.md"]
+generated_path_patterns = ["docs/api/lurek.lua", "docs/api/lurek.md", "docs/wiki/API-Reference.md", "lurek_2d_pages/"]
 vendor_path_patterns = ["node_modules/", "/vendor/"]
 
 [ranking.source_priorities]

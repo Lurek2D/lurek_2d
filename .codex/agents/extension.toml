@@ -4,7 +4,7 @@
 # Preferred tools: shell, npm/test flows, repo MCP, extension build/test scripts.
 # Do not use for game content or engine runtime changes.
 name = "extension"
-description = "Extension engineer for the sibling lurek_2D_extension repo, editor UX, snippets integration, and VS Code workflows."
+description = "Extension engineer for lurek_2d_extension/, editor UX, snippets integration, and VS Code workflows."
 model = "gpt-5.4"
 model_reasoning_effort = "medium"
 model_reasoning_summary = "auto"

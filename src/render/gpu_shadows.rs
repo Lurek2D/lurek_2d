@@ -25,6 +25,12 @@ use crate::light::occluder::Occluder;
 use crate::math::Vec2;
 use crate::render::gpu_light::{LightGpuState, SHADOW_COMPUTE_WORKGROUP_SIZE, SHADOW_MAP_RES};
 
+/// Maximum caster edges uploaded for one shadow-light compute dispatch.
+///
+/// This bounds both temporary CPU collection and the dynamic storage buffer even
+/// when a game provides many valid occluders.
+pub const MAX_SHADOW_EDGES_PER_DISPATCH: usize = 65_536;
+
 /// Result of collecting shadow caster edges for one light.
 #[derive(Default, Clone)]
 pub struct ShadowEdgeCollection {
@@ -38,6 +44,8 @@ pub struct ShadowEdgeCollection {
     pub cache_hits: usize,
     /// Number of occluders whose world-space edge list was rebuilt.
     pub cache_misses: usize,
+    /// True when the trusted edge or allocation budget cut collection short.
+    pub truncated: bool,
 }
 
 /// Reusable per-frame cache for shadow occluder edge geometry.
@@ -95,6 +103,7 @@ pub fn collect_shadow_edges_with_cache(
     let mut edges_culled_by_radius = 0usize;
     let mut cache_hits = 0usize;
     let mut cache_misses = 0usize;
+    let mut truncated = false;
     let light_pos = Vec2::new(light_x, light_y);
     for occ_ref in occluders {
         let occ = occ_ref.borrow();
@@ -118,13 +127,27 @@ pub fn collect_shadow_edges_with_cache(
             continue;
         }
         let world_edges = cached.edges.world_edges(occ);
-        for edge in world_edges {
+        let remaining = MAX_SHADOW_EDGES_PER_DISPATCH.saturating_sub(edges.len());
+        if remaining == 0 {
+            truncated = true;
+            break;
+        }
+        let accepted = world_edges.len().min(remaining);
+        if edges.try_reserve(accepted).is_err() {
+            truncated = true;
+            break;
+        }
+        for edge in world_edges.iter().take(accepted) {
             edges.push(ShadowEdgeGpu {
                 ax: edge.ax - light_x,
                 ay: edge.ay - light_y,
                 sx: edge.sx,
                 sy: edge.sy,
             });
+        }
+        if accepted != world_edges.len() {
+            truncated = true;
+            break;
         }
     }
     ShadowEdgeCollection {
@@ -133,6 +156,7 @@ pub fn collect_shadow_edges_with_cache(
         edges_culled_by_radius,
         cache_hits,
         cache_misses,
+        truncated,
     }
 }
 
@@ -200,9 +224,17 @@ impl CachedShadowEdges {
     }
 
     fn world_edges(&mut self, occ: &Occluder) -> &[ShadowEdgeGpu] {
-        self.world_edges.get_or_insert_with(|| {
+        if self.world_edges.is_none() {
             let verts = occ.get_vertices();
-            let mut edges = Vec::with_capacity(verts.len());
+            let mut edges = Vec::new();
+            // Cached occluder geometry can originate in game content.  If a
+            // reservation fails, retain an empty cache entry so the renderer
+            // deterministically skips this occluder instead of panicking and
+            // attempting the allocation again every frame.
+            if edges.try_reserve(verts.len()).is_err() {
+                self.world_edges = Some(edges);
+                return self.world_edges.as_deref().unwrap_or_default();
+            }
             for j in 0..verts.len() {
                 let a = verts[j];
                 let b = verts[(j + 1) % verts.len()];
@@ -217,8 +249,9 @@ impl CachedShadowEdges {
                     sy: by - ay,
                 });
             }
-            edges
-        })
+            self.world_edges = Some(edges);
+        }
+        self.world_edges.as_deref().unwrap_or_default()
     }
 }
 
@@ -571,17 +604,28 @@ impl GpuRenderer {
     }
 
     /// Grows the shadow edge storage buffer to hold the required edge count.
-    pub(crate) fn ensure_shadow_edge_capacity(&mut self, required_edges: usize) {
+    pub(crate) fn ensure_shadow_edge_capacity(&mut self, required_edges: usize) -> bool {
         let Some(lg) = self.light_gpu.as_mut() else {
-            return;
+            return false;
         };
         if required_edges <= lg.shadow_edge_capacity {
-            return;
+            return true;
         }
-        let new_capacity = required_edges.max(1).next_power_of_two();
+        let Some(new_capacity) = required_edges.max(1).checked_next_power_of_two() else {
+            return false;
+        };
+        let Some(byte_size) = new_capacity.checked_mul(std::mem::size_of::<ShadowEdgeGpu>()) else {
+            return false;
+        };
+        let Ok(byte_size) = u64::try_from(byte_size) else {
+            return false;
+        };
+        if byte_size > self.device.limits().max_buffer_size {
+            return false;
+        }
         let shadow_edge_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("shadow_edge_buffer"),
-            size: (new_capacity * std::mem::size_of::<ShadowEdgeGpu>()) as u64,
+            size: byte_size,
             usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST,
             mapped_at_creation: false,
         });
@@ -607,6 +651,7 @@ impl GpuRenderer {
         lg.shadow_edge_capacity = new_capacity;
         lg.shadow_compute_bind_group = shadow_compute_bind_group;
         self.render_diagnostics.record_buffer_growth_event();
+        true
     }
 
     /// Uploads shadow edges and dispatches the compute shader for one light row.
@@ -629,7 +674,10 @@ impl GpuRenderer {
             edge_collection.edges_culled_by_radius,
         );
         let edges = edge_collection.edges;
-        self.ensure_shadow_edge_capacity(edges.len());
+        if edge_collection.truncated || !self.ensure_shadow_edge_capacity(edges.len()) {
+            self.render_diagnostics.record_invalid_render_input();
+            return;
+        }
         let Some(lg) = self.light_gpu.as_ref() else {
             return;
         };

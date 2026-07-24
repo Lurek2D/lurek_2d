@@ -9,8 +9,8 @@
 - `tester.agent.md` -> `tests/AGENTS.md`
 - `doc-writer.agent.md` -> `docs/AGENTS.md`
 - `architect.agent.md` -> `docs/architecture/AGENTS.md`
-- `content-maker.agent.md` -> `content/AGENTS.md` and `library/AGENTS.md`
-- `extension-engineer.agent.md` -> `../lurek_2D_extension/AGENTS.md`
+- `content-maker.agent.md` -> `content/AGENTS.md`, `lurek_2d_content/AGENTS.md`, and `lurek_2d_workbench/AGENTS.md`
+- `extension-engineer.agent.md` -> `lurek_2d_extension/AGENTS.md`
 - `build-engineer.agent.md` -> `tools/AGENTS.md`
 - `cag-architect.agent.md` -> `.codex/AGENTS.md`
 

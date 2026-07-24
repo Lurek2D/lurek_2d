@@ -10,26 +10,60 @@ description: "Load this skill when auditing and fixing example coverage, example
 - Enforce one public API = one example owner block in `content/examples/`.
 
 ## Domain Knowledge
-- Example coverage is exact ownership, not occurrence counting: every generated public API name needs one real marker-owned block, and duplicate mentions outside that block do not repair a missing owner.
-- Parser shape is part of publication because generators extract the immediate `do ... end` block. Top-level helpers, setup between marker and `do`, or hidden dependencies make an example invalid even if the entire file runs.
-- Quality has three independent gates: structural extractability, runtime bootability, and teaching value. A five-line block can pass structural checks while showing no observable outcome or misleading lifecycle placement.
-- Examples are intentionally narrower than tests and games: one representative success path, enough setup to stand alone, no assertion matrix, and no multi-system progression loop.
-- Stateful example files must be reviewed as a whole for leaked callbacks, resources, global state, or duplicate registrations between individually isolated blocks.
-- Generated-page context should remain understandable when a block is extracted without its filename or neighboring API descriptions; local variable names and observable outcomes must carry enough meaning for independent reading.
-- Example assets are shared infrastructure and should be minimal, stable, and referenced by forward-slash paths. An example that relies on a game-local or machine-local asset is structurally covered but not portable.
-- Lifecycle-sensitive examples must create resources at a legal phase and demonstrate the API where its result becomes visible, avoiding accidental patterns such as allocating every draw or mutating simulation only during rendering.
-- Reconcile examples with the canonical generated inventory, including aliases and userdata methods, and flag feature-shaped calls whose example has no visible effect or whose advertised implementation status disagrees with source.
+- Public API examples live under `content/examples/`.
+- One generated public API entry has one marker-owned example block.
+- Coverage counts marker ownership, not plain text mentions.
+- Aliases and userdata methods need separate owners when they are separate generated entries.
+- The example parser extracts the immediate `do ... end` block after the marker.
+- Setup between a marker and its `do` block breaks extraction ownership.
+- Top-level helpers are outside the extracted block.
+- An extracted block must contain enough setup to stand alone.
+- Structural extraction, runtime boot, and teaching value are separate checks.
+- An example shows one representative success path.
+- An example is not an assertion matrix, game loop, demo, or snippet recipe.
+- A useful example has an observable result.
+- Resource creation and mutation must happen in a legal lifecycle phase.
+- Repeated allocation in draw code is usually a wrong teaching pattern.
+- State changes made only during rendering can teach the wrong engine lifecycle.
+- Shared assets use stable workspace paths with forward slashes.
+- Machine-local and game-local assets are not portable example dependencies.
+- A full module file can leak callbacks, resources, globals, or registrations between blocks.
+- `example_coverage.py --module <module>` reports module ownership gaps.
+- `validate_example_coverage.py` validates repository example coverage.
+- Generated API inventory is the canonical list used for coverage.
+- The coverage report classifies blocks as `FULL`, `PART`, `TODO`, or `MISS`.
+- `PART` means the owned body has fewer than five relevant non-comment lines.
+- Structural error `E6` means one API marker appears more than once.
+- Structural errors `E7` and `E8` identify unowned top-level blocks or Lua statements.
+- Error `E9` flags files averaging more than 60 lines per API marker.
+- `--report` gates missing items and lint; `--no-stubs` and `--no-partials` add finished-content gates.
+- Plain API calls discovered outside an owner block do not upgrade marker coverage.
 
 ## Workflow
-- Run module and repository coverage with no stubs/partials, classify missing, duplicate, malformed, TODO/PART, and thin owners, then join each candidate to its generated signature and canonical module file.
-- Inspect blocks in extraction context and full-file runtime context, checking self-contained setup, exact generated name, observable use, correct callback/lifecycle placement, bounded resources, valid assets, and absence of test/game scope creep.
-- Report structural/parser failures separately from runtime failures and teaching defects, with the API name, owner block, emitted-page consequence, and a concrete minimum success case for missing coverage.
-- If editable, repair through the `create-example` workflow, boot the complete module, rerun strict coverage/validation and example smoke, then inspect generated-page extraction; otherwise hand off exact API owners to `content`.
-- Compare each repaired block with its generated docs, unit owner, and snippet inventory so it teaches the canonical success path without duplicating assertion matrices or editor-oriented recipes.
-- Run affected example files in sequence and independently where tooling permits, detecting hidden ordering, shared callback, or asset-cache dependencies that a single full-suite boot can conceal.
+1. Read content, example, and docs contracts.
+2. Generate or inspect the current public API inventory.
+3. Run module example coverage without accepting stubs or partial owners.
+4. Run repository example validation.
+5. Classify missing, duplicate, malformed, TODO, PART, and thin owners.
+6. Map each finding to its generated signature and module file.
+7. Inspect the exact block the parser extracts.
+8. Check that the marker is followed immediately by `do`.
+9. Check that setup and API use are inside the block.
+10. Check that the generated public name is exact.
+11. Check that the result is visible or otherwise observable.
+12. Check callback and lifecycle placement.
+13. Check resource bounds and asset portability.
+14. Boot the full example module to detect leaked shared state.
+15. Separate parser failures, runtime failures, and teaching defects.
+16. Record API name, owner block, failure, generated-page effect, and minimum success case.
+17. Repair the owner through the `create-example` workflow when fixes are requested.
+18. Run the full module, strict coverage, validation, and example smoke.
+19. Inspect the generated page extraction after the fix.
+20. Compare the block with its docs, unit test, and snippet.
+21. Remove test matrices, game scope, or editor-only recipe content from examples.
 
 ## References
 - `contracts: AGENTS.md, content/AGENTS.md, content/examples/AGENTS.md, docs/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "example coverage content examples API" --profile game --limit 10, tools/python.cmd tools/audit/example_coverage.py --module <module>, tools/python.cmd tools/validate/validate_example_coverage.py`
 - `agent: content`
-- RAG: Use when locating example owners and similar samples; `example coverage content examples API`; `content examples lua sample feature`; `docs example usage snippet`; `content/examples/`; `docs/`; `library/`; feature-owning modules in `src/`
+- RAG: `example coverage <module> content examples API`; inspect the generated inventory, marker owner, extracted block, full module runtime, unit owner, and nearest snippet.

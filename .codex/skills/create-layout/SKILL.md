@@ -6,28 +6,52 @@ description: "Load this skill when creating or modifying TOML UI layouts under c
 # create-layout
 
 ## Mission
-- Cr eate or modify layout assets that follow current content rules and visual evidence expectations.
+- Create or modify layout assets that follow current content rules and visual evidence expectations.
 
 ## Domain Knowledge
-- Layout TOML under `content/layouts/apps` and `content/layouts/games` is deserialized by the engine UI system; valid TOML can still fail when keys or hierarchies are unsupported.
-- Responsive relationships belong in parent/child flow, alignment, wrapping, and anchors; fixed coordinates are appropriate for deliberate overlays, not as a substitute for container structure.
-- Stable `snake_case` IDs are the Lua interaction contract used by `lurek.ui`; renaming an ID is behavior change even if the frame looks identical.
-- Visual proof must include content pressure and states—long text, focus, disabled controls, clipping, overlap, z-order, and target dimensions—not only default geometry.
-- Snap/fixer tools normalize layout but cannot judge intended grouping, so their diff requires visual review.
-- Layout IDs and widget types form a binding surface with game/app Lua; a visual refactor that replaces a component or changes nesting can alter event routing, focus order, and lookup behavior even when IDs remain present.
-- Text metrics use the engine's supported bitmap fonts, so line height, wrapping, and intrinsic dimensions must be tested with actual localized or maximum-length content rather than browser/system-font expectations.
-- Overlay order and input capture should follow screen semantics: modal layers must block underlying actions, passive HUD layers must not steal focus, and hidden components should not remain interactive through stale bounds.
+- TOML layouts live under `content/layouts/apps/` and `content/layouts/games/`.
+- The engine UI deserializer defines supported keys and hierarchy.
+- Valid TOML may still contain unsupported UI fields.
+- Component IDs are unique per file.
+- Component IDs use `snake_case`.
+- Lua code uses component IDs as an interaction contract.
+- Renaming an ID is a behavior change.
+- Geometry uses `w` and `h`.
+- `width` and `height` are not valid layout geometry keys.
+- Coordinates snap to an 8-pixel grid.
+- TOML layout text accepts bitmap font sizes 8, 10, 12, 16, 20, 24, and 30.
+- Flex direction, wrapping, and alignment are preferred over fixed offsets.
+- Modal layouts block input to covered content.
+- Hidden components must not keep active hit bounds.
+- Visual evidence covers focus, disabled, clipping, overlap, and z-order states.
+- Long text and dense values are required content-pressure cases.
+- `snap_to_grid.py` changes only `x`, `y`, `w`, and `h`; it leaves gameplay values such as `min`, `max`, and `depth` unchanged.
+- Grid snapping keeps `w` and `h` at least one grid unit, so a widget cannot collapse to zero size.
+- `fix_layouts.py` rejects widget types outside its engine-backed allowlist.
+- The fixer removes `widget_type = "separator"` blocks because separators are not supported layout widgets.
+- Overlap checks compare siblings at the same parent level; full containment is treated as intentional layering.
+- Scroll bounds come from content size minus the computed viewport and clamp to non-negative values.
 
 ## Workflow
-- Identify the runtime screen and Lua code consuming each widget ID, then sketch container hierarchy and state variants; extend the existing app/game layout when it owns that interaction surface.
-- Implement hierarchy before pixel geometry with deserializer-supported fields, preserving consumed IDs and testing representative long labels and dense values instead of placeholders.
-- Run the fixer and 8-pixel snap tool, inspect their diffs, then render the owning app/game at target dimensions and exercise focus, disabled, overlay, and resize states.
-- Iterate from visual evidence until alignment, clipping, hierarchy, and readability stabilize; retain an artifact that demonstrates the changed screen rather than relying on parse success.
-- Trace focus and action order with keyboard/controller-style navigation as well as pointer input, verifying that visual order, tab/focus order, default action, and cancel path agree for menus and dialogs.
-- Compare the layout at minimum, target, and expanded dimensions; document any intentionally fixed viewport and ensure flexible containers absorb extra space without stretching icons, breaking aspect ratios, or obscuring world content.
+1. Read the layout contract.
+2. Find the owning app or game screen.
+3. Find every Lua consumer of changed component IDs.
+4. List required states and target dimensions.
+5. Build the parent and child hierarchy first.
+6. Use only deserializer-supported fields.
+7. Preserve existing consumed IDs unless behavior changes.
+8. Add representative long text and dense values.
+9. Run `fix_layouts.py`.
+10. Run `snap_to_grid.py` with grid 8.
+11. Inspect both tool diffs.
+12. Render minimum, target, and expanded dimensions.
+13. Test pointer and keyboard or controller focus order.
+14. Test disabled, hidden, modal, and overlay states.
+15. Check clipping, overlap, z-order, and readability.
+16. Save visual evidence for the changed screen.
 
 ## References
 - `contracts: content/AGENTS.md, content/layouts/AGENTS.md, content/examples/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10, tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive, tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix, tests/lua/evidence/test_ui_evidence.lua`
 - `agent: content`
-- RAG: `content layouts TOML UI primitives`; `content layouts button label stack`; `hud menu overlay layout`; `content/layouts/`; `content/games/`; `docs/` UI or layout notes; rendering support in `src/`
+- RAG: `content layouts TOML UI primitives <screen>`; inspect the owning layout, Lua ID consumers, deserializer fields, and relevant UI evidence.

@@ -84,7 +84,9 @@ pub fn validate_dynamic_buffer_bytes(
     for (count, stride) in counts_and_strides {
         let bytes = u64::try_from(*count)
             .map_err(|_| "geometry item count exceeds u64".to_string())?
-            .checked_mul(u64::try_from(*stride).map_err(|_| "vertex stride exceeds u64".to_string())?)
+            .checked_mul(
+                u64::try_from(*stride).map_err(|_| "vertex stride exceeds u64".to_string())?,
+            )
             .ok_or_else(|| "geometry buffer byte count overflow".to_string())?;
         if bytes > limits.max_buffer_size {
             return Err(format!(
@@ -153,7 +155,9 @@ impl GpuRenderer {
                 .ok_or_else(|| "tracked texture resource total overflow".to_string())?;
         }
         if count >= MAX_LIVE_TEXTURES {
-            return Err(format!("live texture count exceeds maximum of {MAX_LIVE_TEXTURES}"));
+            return Err(format!(
+                "live texture count exceeds maximum of {MAX_LIVE_TEXTURES}"
+            ));
         }
         if bytes.saturating_add(requested) > MAX_LIVE_TEXTURE_BYTES {
             return Err(format!(
@@ -190,7 +194,9 @@ impl GpuRenderer {
                 .ok_or_else(|| "tracked font atlas total overflow".to_string())?;
         }
         if count >= MAX_LIVE_FONT_ATLASES {
-            return Err(format!("live font atlas count exceeds maximum of {MAX_LIVE_FONT_ATLASES}"));
+            return Err(format!(
+                "live font atlas count exceeds maximum of {MAX_LIVE_FONT_ATLASES}"
+            ));
         }
         if bytes.saturating_add(requested) > MAX_LIVE_FONT_ATLAS_BYTES {
             return Err(format!(
@@ -243,8 +249,8 @@ impl GpuRenderer {
             u64::try_from(tex_vertex_stride).map_err(|_| "texture vertex stride exceeds u64")?;
         let particle_vertex_stride_u64 = u64::try_from(particle_vertex_stride)
             .map_err(|_| "particle vertex stride exceeds u64")?;
-        let color_v_needed = u64::try_from(color_verts_needed)
-            .map_err(|_| "color vertex count exceeds u64")?;
+        let color_v_needed =
+            u64::try_from(color_verts_needed).map_err(|_| "color vertex count exceeds u64")?;
         if color_v_needed > self.color_vertex_capacity {
             let new_cap = Self::grow_capacity(
                 self.color_vertex_capacity,
@@ -260,8 +266,8 @@ impl GpuRenderer {
             self.color_vertex_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
-        let color_i_needed = u64::try_from(color_idxs_needed)
-            .map_err(|_| "color index count exceeds u64")?;
+        let color_i_needed =
+            u64::try_from(color_idxs_needed).map_err(|_| "color index count exceeds u64")?;
         if color_i_needed > self.color_index_capacity {
             let new_cap = Self::grow_capacity(
                 self.color_index_capacity,
@@ -277,8 +283,8 @@ impl GpuRenderer {
             self.color_index_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
-        let tex_v_needed = u64::try_from(tex_verts_needed)
-            .map_err(|_| "texture vertex count exceeds u64")?;
+        let tex_v_needed =
+            u64::try_from(tex_verts_needed).map_err(|_| "texture vertex count exceeds u64")?;
         if tex_v_needed > self.tex_vertex_capacity {
             let new_cap = Self::grow_capacity(
                 self.tex_vertex_capacity,
@@ -298,8 +304,8 @@ impl GpuRenderer {
                 self.tex_vertex_capacity
             );
         }
-        let tex_i_needed = u64::try_from(tex_idxs_needed)
-            .map_err(|_| "texture index count exceeds u64")?;
+        let tex_i_needed =
+            u64::try_from(tex_idxs_needed).map_err(|_| "texture index count exceeds u64")?;
         if tex_i_needed > self.tex_index_capacity {
             let new_cap = Self::grow_capacity(
                 self.tex_index_capacity,
@@ -336,8 +342,8 @@ impl GpuRenderer {
             self.particle_vertex_capacity = new_cap;
             self.render_diagnostics.record_buffer_growth_event();
         }
-        let particle_i_needed = u64::try_from(particle_idxs_needed)
-            .map_err(|_| "particle index count exceeds u64")?;
+        let particle_i_needed =
+            u64::try_from(particle_idxs_needed).map_err(|_| "particle index count exceeds u64")?;
         if particle_i_needed > self.particle_index_capacity {
             let new_cap = Self::grow_capacity(
                 self.particle_index_capacity,
@@ -519,9 +525,7 @@ impl GpuRenderer {
                 .validate_font_atlas_resource_budget(
                     // The old atlas remains alive until the new upload succeeds, so account
                     // for both during publication rather than allowing a transient overage.
-                    None,
-                    w,
-                    h,
+                    None, w, h,
                 )
                 .is_err()
             {
@@ -555,7 +559,9 @@ impl GpuRenderer {
         if !self.canvas_gpu_textures.contains_key(key)
             && self.canvas_gpu_textures.len() >= MAX_LIVE_CANVASES
         {
-            return Err(format!("live canvas count exceeds maximum of {MAX_LIVE_CANVASES}"));
+            return Err(format!(
+                "live canvas count exceeds maximum of {MAX_LIVE_CANVASES}"
+            ));
         }
         let texture = self.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("canvas_texture"),
@@ -698,6 +704,15 @@ impl GpuRenderer {
         for key in stale_shaders {
             self.shader_cache.remove(key);
         }
+        let stale_negative_shaders: Vec<ShaderKey> = self
+            .shader_negative_cache
+            .iter()
+            .map(|(key, _)| key)
+            .filter(|key| !shaders.contains_key(*key))
+            .collect();
+        for key in stale_negative_shaders {
+            self.shader_negative_cache.remove(key);
+        }
         let stale_meshes: Vec<StaticGeometryKey> = self
             .mesh_cache
             .static_geometry
@@ -745,15 +760,19 @@ impl GpuRenderer {
         let entry = if mesh.texture.is_some() {
             let mut verts = Vec::new();
             let mut idxs = Vec::new();
-            verts.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                field: "GPU vertex allocation",
-                count: tri_indices.len(),
-                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            verts.try_reserve_exact(tri_indices.len()).map_err(|_| {
+                crate::render::mesh::MeshError::TooLarge {
+                    field: "GPU vertex allocation",
+                    count: tri_indices.len(),
+                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                }
             })?;
-            idxs.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                field: "GPU index allocation",
-                count: tri_indices.len(),
-                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            idxs.try_reserve_exact(tri_indices.len()).map_err(|_| {
+                crate::render::mesh::MeshError::TooLarge {
+                    field: "GPU index allocation",
+                    count: tri_indices.len(),
+                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                }
             })?;
             for (i, &vi) in tri_indices.iter().enumerate() {
                 if let Some(mv) = mesh.vertices.get(vi) {
@@ -764,10 +783,12 @@ impl GpuRenderer {
                         w_depth: 1.0,
                         _pad: [0.0; 3],
                     });
-                    idxs.push(u32::try_from(i).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                        field: "GPU indices",
-                        count: i,
-                        max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                    idxs.push(u32::try_from(i).map_err(|_| {
+                        crate::render::mesh::MeshError::TooLarge {
+                            field: "GPU indices",
+                            count: i,
+                            max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                        }
                     })?);
                 }
             }
@@ -801,10 +822,12 @@ impl GpuRenderer {
             crate::render::gpu_state::StaticGeometryCacheEntry {
                 vertex_buffer: v_buf,
                 index_buffer: i_buf,
-                index_count: u32::try_from(idxs.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                    field: "GPU indices",
-                    count: idxs.len(),
-                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                index_count: u32::try_from(idxs.len()).map_err(|_| {
+                    crate::render::mesh::MeshError::TooLarge {
+                        field: "GPU indices",
+                        count: idxs.len(),
+                        max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                    }
                 })?,
                 geometry_kind: crate::render::gpu_pipeline::GeometryKind::TextureInstanced,
                 texture: mesh.texture,
@@ -812,15 +835,19 @@ impl GpuRenderer {
         } else {
             let mut verts = Vec::new();
             let mut idxs = Vec::new();
-            verts.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                field: "GPU vertex allocation",
-                count: tri_indices.len(),
-                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            verts.try_reserve_exact(tri_indices.len()).map_err(|_| {
+                crate::render::mesh::MeshError::TooLarge {
+                    field: "GPU vertex allocation",
+                    count: tri_indices.len(),
+                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                }
             })?;
-            idxs.try_reserve_exact(tri_indices.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                field: "GPU index allocation",
-                count: tri_indices.len(),
-                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            idxs.try_reserve_exact(tri_indices.len()).map_err(|_| {
+                crate::render::mesh::MeshError::TooLarge {
+                    field: "GPU index allocation",
+                    count: tri_indices.len(),
+                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                }
             })?;
             for (i, &vi) in tri_indices.iter().enumerate() {
                 if let Some(mv) = mesh.vertices.get(vi) {
@@ -828,10 +855,12 @@ impl GpuRenderer {
                         position: [mv.x, mv.y],
                         color: [mv.r, mv.g, mv.b, mv.a],
                     });
-                    idxs.push(u32::try_from(i).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                        field: "GPU indices",
-                        count: i,
-                        max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                    idxs.push(u32::try_from(i).map_err(|_| {
+                        crate::render::mesh::MeshError::TooLarge {
+                            field: "GPU indices",
+                            count: i,
+                            max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                        }
                     })?);
                 }
             }
@@ -865,10 +894,12 @@ impl GpuRenderer {
             crate::render::gpu_state::StaticGeometryCacheEntry {
                 vertex_buffer: v_buf,
                 index_buffer: i_buf,
-                index_count: u32::try_from(idxs.len()).map_err(|_| crate::render::mesh::MeshError::TooLarge {
-                    field: "GPU indices",
-                    count: idxs.len(),
-                    max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                index_count: u32::try_from(idxs.len()).map_err(|_| {
+                    crate::render::mesh::MeshError::TooLarge {
+                        field: "GPU indices",
+                        count: idxs.len(),
+                        max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+                    }
                 })?,
                 geometry_kind: crate::render::gpu_pipeline::GeometryKind::ColorInstanced,
                 texture: None,

@@ -1,8 +1,8 @@
 # Repo-wide defaults for Codex in this workspace.
 # Keep these generic. Narrow role behavior should live in per-agent TOML files.
 # model_reasoning_effort = "medium"
-approval_policy = "on-failure"
-sandbox_mode = "danger-full-access"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
 personality = "pragmatic"
 web_search = "cached"
 
@@ -67,23 +67,23 @@ nickname_candidates = ["review", "audit", "verifier"]
 [agents.architect]
 description = "Architecture steward for docs/architecture/, module boundaries, and system-level design contracts."
 config_file = "agents/architect.toml"
-nickname_candidates = ["architecture", "boundaries", "design"]
+nickname_candidates = ["architecture", "boundaries", "system-design"]
 
 # Docs and generated docs surfaces: specs, docstrings, pages, snippets, API-facing written material.
 [agents.doc_writer]
-description = "Documentation writer for docs/, the sibling lurek_2D_pages repo, specs, docstrings, snippets, and generated docs content."
+description = "Documentation writer for docs/, lurek_2d_pages/, specs, docstrings, snippets, and generated docs content."
 config_file = "agents/doc_writer.toml"
 nickname_candidates = ["docs", "specs", "writer"]
 
 # Lua-side content and playable artifacts, not engine internals.
 [agents.content]
-description = "Content maker for content/ and library/ gameplay scripts, demos, examples, and layouts."
+description = "Content maker for content/, lurek_2d_content/, and lurek_2d_workbench/ Lua artifacts."
 config_file = "agents/content.toml"
 nickname_candidates = ["content", "gameplay", "examples"]
 
 # VS Code extension and editor workflow only.
 [agents.extension]
-description = "Extension engineer for the sibling lurek_2D_extension repo, editor UX, snippets integration, and VS Code workflows."
+description = "Extension engineer for lurek_2d_extension/, editor UX, snippets integration, and VS Code workflows."
 config_file = "agents/extension.toml"
 nickname_candidates = ["vscode", "extension", "editor"]
 

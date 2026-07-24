@@ -30,7 +30,7 @@ Editable inputs:
 Generated outputs:
 
 - `docs/specs/*.md`
-- `docs/modules/*.md`
+- `lurek_2d_pages/.source/modules/*.md` (temporary Pages build input)
 - `docs/api/*.md`
 - `docs/api/*.lua`
 - `docs/wiki/*.md`

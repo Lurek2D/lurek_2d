@@ -44,6 +44,17 @@ impl GpuRenderer {
             .iter()
             .map(|(name, value)| ((*name).to_string(), uniform_kind(value)))
             .collect();
+        if self
+            .shader_negative_cache
+            .get(shader_key)
+            .is_some_and(|(source, signature)| {
+                source == &shader.source && signature == &uniform_signature
+            })
+        {
+            // The same device-limit rejection was already reported.  Avoid both
+            // repeat preparation work and per-frame diagnostic/log spam.
+            return;
+        }
         let needs_rebuild = self
             .shader_cache
             .get(shader_key)
@@ -55,6 +66,10 @@ impl GpuRenderer {
             let device_limits = self.device.limits();
             if uniform_signature.len() > device_limits.max_bindings_per_bind_group as usize {
                 self.render_diagnostics.record_shader_pipeline_failure();
+                self.shader_negative_cache.insert(
+                    shader_key,
+                    (shader.source.clone(), uniform_signature.clone()),
+                );
                 log::warn!(
                     "Skipping user shader whose {} uniforms exceed the device binding limit {}",
                     uniform_signature.len(),
@@ -273,6 +288,7 @@ impl GpuRenderer {
                     light_pipelines: HashMap::new(),
                 },
             );
+            self.shader_negative_cache.remove(shader_key);
         }
         if let Some(cache) = self.shader_cache.get(shader_key) {
             for ((_, value), buffer) in ordered_uniforms.iter().zip(cache.uniform_buffers.iter()) {

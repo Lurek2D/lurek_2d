@@ -26,5 +26,5 @@ Do not edit the generated stub directly. If documentation or signatures are wron
 
 ## User-Facing And Contributor-Facing API
 
-- User-facing Lua APIs are documented here and under `docs/modules/`.
+- User-facing Lua APIs are documented here and in the generated GitHub Pages module guides.
 - Rust internals and module contracts belong to [Contributor Docs](contributors.md), `docs/specs/`, and `docs/architecture/`.

@@ -22,6 +22,10 @@ pub struct RenderBudgetLimits {
     pub max_postfx_passes: usize,
     /// Maximum sprite instances expanded by batch draw commands across a frame.
     pub max_sprite_batch_items: usize,
+    /// Maximum rendered light quads accepted across a frame.
+    pub max_light_quads: usize,
+    /// Maximum shadow-atlas rows dispatched across a frame.
+    pub max_shadow_lights: usize,
 }
 
 impl Default for RenderBudgetLimits {
@@ -34,6 +38,8 @@ impl Default for RenderBudgetLimits {
             max_text_spans: 16_384,
             max_postfx_passes: 1_024,
             max_sprite_batch_items: 250_000,
+            max_light_quads: crate::render::gpu_types::MAX_LIGHT_QUADS,
+            max_shadow_lights: crate::render::gpu_light::MAX_SHADOW_LIGHTS,
         }
     }
 }
@@ -77,20 +83,33 @@ pub struct RenderBudget {
     text_spans: usize,
     postfx_passes: usize,
     sprite_batch_items: usize,
+    light_quads: usize,
+    shadow_lights: usize,
 }
 
 /// A deterministic aggregate-budget rejection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RenderBudgetError {
     /// A named cumulative counter would exceed its trusted maximum.
-    Exceeded { field: &'static str, attempted: usize, max: usize },
+    Exceeded {
+        field: &'static str,
+        attempted: usize,
+        max: usize,
+    },
 }
 
 impl fmt::Display for RenderBudgetError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Exceeded { field, attempted, max } => {
-                write!(f, "render frame {field} would be {attempted}, maximum is {max}")
+            Self::Exceeded {
+                field,
+                attempted,
+                max,
+            } => {
+                write!(
+                    f,
+                    "render frame {field} would be {attempted}, maximum is {max}"
+                )
             }
         }
     }
@@ -136,7 +155,12 @@ impl RenderBudget {
             limits.max_geometry_vertices,
             "geometry vertices",
         )?;
-        let text_bytes = checked_next(self.text_bytes, text_bytes, limits.max_text_bytes, "text bytes")?;
+        let text_bytes = checked_next(
+            self.text_bytes,
+            text_bytes,
+            limits.max_text_bytes,
+            "text bytes",
+        )?;
         let text_spans = checked_next(self.text_spans, spans, limits.max_text_spans, "text spans")?;
         let postfx_passes = checked_next(
             self.postfx_passes,
@@ -159,12 +183,45 @@ impl RenderBudget {
         self.sprite_batch_items = sprite_batch_items;
         Ok(())
     }
+
+    /// Validate and commit the renderer-owned lighting workload for this frame.
+    pub fn try_accept_light_work(
+        &mut self,
+        light_quads: usize,
+        shadow_lights: usize,
+        limits: &RenderBudgetLimits,
+    ) -> Result<(), RenderBudgetError> {
+        let next_light_quads = checked_next(
+            self.light_quads,
+            light_quads,
+            limits.max_light_quads,
+            "light quads",
+        )?;
+        let next_shadow_lights = checked_next(
+            self.shadow_lights,
+            shadow_lights,
+            limits.max_shadow_lights,
+            "shadow lights",
+        )?;
+        self.light_quads = next_light_quads;
+        self.shadow_lights = next_shadow_lights;
+        Ok(())
+    }
 }
 
-fn checked_next(current: usize, add: usize, max: usize, field: &'static str) -> Result<usize, RenderBudgetError> {
+fn checked_next(
+    current: usize,
+    add: usize,
+    max: usize,
+    field: &'static str,
+) -> Result<usize, RenderBudgetError> {
     let attempted = current.saturating_add(add);
     if attempted > max {
-        return Err(RenderBudgetError::Exceeded { field, attempted, max });
+        return Err(RenderBudgetError::Exceeded {
+            field,
+            attempted,
+            max,
+        });
     }
     Ok(attempted)
 }
@@ -196,9 +253,12 @@ fn command_cost(command: &RenderCommand) -> (usize, usize, usize, usize) {
         Print { text, .. } | PrintTransformed { text, .. } | PrintFormatted { text, .. } => {
             (0, text.len(), 0, 0)
         }
-        DrawRichText { spans, .. } | DrawRichTextTransformed { spans, .. } => {
-            (0, spans.iter().map(|span| span.text.len()).sum(), spans.len(), 0)
-        }
+        DrawRichText { spans, .. } | DrawRichTextTransformed { spans, .. } => (
+            0,
+            spans.iter().map(|span| span.text.len()).sum(),
+            spans.len(),
+            0,
+        ),
         // Ring particles produce 40 source vertices; charge that worst case before tessellation.
         DrawParticleSystem { particles, .. } => (particles.len().saturating_mul(40), 0, 0, 0),
         ApplyPostFx { passes, .. } => (0, 0, 0, passes.len()),

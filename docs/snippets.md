@@ -11,7 +11,7 @@
 The target is reusable gameplay building blocks, not single-API examples.
 
 Source-of-truth files are handcrafted and live in `content/snippets/*.lua`.
-Generated VS Code snippets live in `extension/vscode/data/snippets.json`.
+Generated VS Code snippets live in `lurek_2d_extension/data/snippets.json`.
 
 ## Why This Exists
 
