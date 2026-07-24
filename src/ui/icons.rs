@@ -1,11 +1,11 @@
-//! Owns the UI icons implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI icons data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI icons behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI icons defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near the UI icons state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI icons calculations explicit at their owning subsystem boundary.
+//! Defines the finite built-in icon vocabulary used by labels, buttons, menus, and icon-only retained widgets.
+//! Lookup maps stable public icon names to glyph metadata, while widgets retain only the chosen identifier string.
+//! Rendering resolves the identifier later, keeping font loading, glyph shaping, and rasterization outside this module.
+//! Lua bindings validate names here so unknown icons fail at the public boundary instead of painting silently.
+//! The icon set is deterministic and data-only, keeping examples and headless captures independent of font probing.
+//! Add or rename an icon here, then update its Lua documentation, examples, and tests that exercise the public name.
+//! Do not store per-widget handles or rendering resources here; WidgetBase and render remain their respective owners.
+//! Open this file for icon vocabulary changes and use render helpers when a valid icon has incorrect visual placement.
 
 /// One built-in UI icon entry.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

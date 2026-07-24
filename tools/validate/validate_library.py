@@ -1,4 +1,4 @@
-"""Validate Lureksome libraries under content/library/.
+"""Validate Lureksome libraries under lurek_2d_content/library/.
 
 Checks every library directory for required structure and conventions:
   - Has init.lua (the entry point loaded by require()).
@@ -26,7 +26,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(".").resolve()
-LIBRARY_DIR = ROOT / "library"
+LIBRARY_DIR = ROOT / "lurek_2d_content" / "library"
 TESTS_DIR = ROOT / "tests" / "lua" / "library"
 
 
@@ -122,7 +122,7 @@ Examples:
   python tools/validate/validate_library.py --help
 """
     parser = argparse.ArgumentParser(
-        description="Validate Lureksome libraries under content/library/.",
+        description="Validate Lureksome libraries under lurek_2d_content/library/.",
         epilog=epilog,
         formatter_class=RawDescriptionHelpFormatter
     )

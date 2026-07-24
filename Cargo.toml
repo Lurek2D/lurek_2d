@@ -467,6 +467,10 @@ name = "sprite_perf_tests"
 path = "tests/rust/perf/sprite_perf_tests.rs"
 
 [[test]]
+name = "ui_perf_tests"
+path = "tests/rust/perf/ui_perf_tests.rs"
+
+[[test]]
 name = "color_tests"
 path = "tests/rust/unit/color_tests.rs"
 

@@ -206,6 +206,18 @@ describe("lurek.filesystem functions", function()
         end)
     end)
 
+    -- @covers lurek.filesystem.mountWorkspace
+    it("mountWorkspace exposes a user-authorized workspace at a virtual path", function()
+        local source = TMP .. "workspace/"
+        lurek.filesystem.createDirectory(source)
+        local mountpoint = "unit_workspace"
+        lurek.filesystem.unmount(mountpoint)
+        expect_true(lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint))
+        lurek.filesystem.writeWorkspace(mountpoint .. "/state.toml", "name = 'workbench'")
+        expect_equal("name = 'workbench'", lurek.filesystem.read(mountpoint .. "/state.toml"))
+        lurek.filesystem.unmount(mountpoint)
+    end)
+
     -- @covers lurek.filesystem.move
     it("move relocates a file within the sandbox", function()
         local src = TMP .. "move_src.txt"
@@ -279,6 +291,22 @@ describe("lurek.filesystem functions", function()
         write_text(path, "changed")
         local changed = lurek.filesystem.pollWatchers()
         expect_type("table", changed)
+        lurek.filesystem.unwatchPath(path)
+
+        local source = TMP .. "watch_workspace/"
+        local mountpoint = "unit_watch_workspace"
+        lurek.filesystem.createDirectory(source)
+        lurek.filesystem.unmount(mountpoint)
+        lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+        local virtual_path = mountpoint .. "/content/watched.toml"
+        lurek.filesystem.writeWorkspaceAtomic(virtual_path, "revision = 1")
+        lurek.filesystem.watchPath(virtual_path)
+        lurek.filesystem.pollWatchers()
+        lurek.filesystem.writeWorkspaceAtomic(virtual_path, "revision = 2")
+        local mounted_changes = lurek.filesystem.pollWatchers()
+        expect_equal(virtual_path, mounted_changes[1], "mounted watcher reports the virtual GameFS path")
+        lurek.filesystem.unwatchPath(virtual_path)
+        lurek.filesystem.unmount(mountpoint)
     end)
 
     -- @covers lurek.filesystem.read
@@ -378,9 +406,11 @@ describe("lurek.filesystem functions", function()
 
     -- @covers lurek.filesystem.watchPath
     it("watchPath registers a path without raising an error", function()
+        local path = TMP .. "watch_register.txt"
         expect_no_error(function()
-            lurek.filesystem.watchPath(TMP .. "watch_register.txt")
+            lurek.filesystem.watchPath(path)
         end)
+        lurek.filesystem.unwatchPath(path)
     end)
 
     -- @covers lurek.filesystem.write
@@ -388,6 +418,26 @@ describe("lurek.filesystem functions", function()
         local path = TMP .. "write.txt"
         lurek.filesystem.write(path, "hello lurek")
         expect_equal("hello lurek", lurek.filesystem.read(path))
+    end)
+
+    -- @covers lurek.filesystem.writeWorkspace
+    it("writeWorkspace rejects ordinary save paths without a workspace mount", function()
+        expect_error(function()
+            lurek.filesystem.writeWorkspace(TMP .. "not_workspace.txt", "blocked")
+        end)
+    end)
+
+    -- @covers lurek.filesystem.writeWorkspaceAtomic
+    it("writeWorkspaceAtomic replaces a mounted workspace file", function()
+        local source = TMP .. "atomic_workspace/"
+        lurek.filesystem.createDirectory(source)
+        local mountpoint = "unit_atomic_workspace"
+        lurek.filesystem.unmount(mountpoint)
+        lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+        lurek.filesystem.writeWorkspaceAtomic(mountpoint .. "/content/value.toml", "value = 1")
+        lurek.filesystem.writeWorkspaceAtomic(mountpoint .. "/content/value.toml", "value = 2")
+        expect_equal("value = 2", lurek.filesystem.read(mountpoint .. "/content/value.toml"))
+        lurek.filesystem.unmount(mountpoint)
     end)
 
     -- @covers lurek.filesystem.writeAsync

@@ -360,12 +360,12 @@ describe("Evidence: lurek.raycaster", function()
     it("PNG: full scene day and night render", function()
         local function make_texture(kind)
             local texture_paths = {
-                wall = "content/games/dungeon_crawler/assets/textures/wall_stone_64.png",
-                floor = "content/games/dungeon_crawler/assets/textures/wall_cobble_64.png",
-                ceiling = "content/games/dungeon_crawler/assets/textures/wall_grass_64.png",
-                door = "content/games/dungeon_crawler/assets/textures/wall_wood_64.png",
-                crate = "content/games/dungeon_crawler/assets/textures/wall_wood_64.png",
-                window = "content/games/dungeon_crawler/assets/textures/ray_water.png",
+                wall = "lurek_2d_content/games/dungeon_crawler/assets/textures/wall_stone_64.png",
+                floor = "lurek_2d_content/games/dungeon_crawler/assets/textures/wall_cobble_64.png",
+                ceiling = "lurek_2d_content/games/dungeon_crawler/assets/textures/wall_grass_64.png",
+                door = "lurek_2d_content/games/dungeon_crawler/assets/textures/wall_wood_64.png",
+                crate = "lurek_2d_content/games/dungeon_crawler/assets/textures/wall_wood_64.png",
+                window = "lurek_2d_content/games/dungeon_crawler/assets/textures/ray_water.png",
             }
             if texture_paths[kind] then
                 return lurek.render.newImage(texture_paths[kind])

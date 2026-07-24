@@ -95,7 +95,7 @@ chmod +x "$BINARY_DEST"
 ok "Binary installed."
 
 # ── Install examples ──────────────────────────────────────────────────────────
-EXAMPLES_SOURCE="$WORKSPACE_ROOT/content/games"
+EXAMPLES_SOURCE="$WORKSPACE_ROOT/lurek_2d_content/games"
 if [[ -d "$EXAMPLES_SOURCE" ]]; then
     step "Copying examples to '$EXAMPLES_DEST' ..."
     mkdir -p "$EXAMPLES_DEST"
@@ -114,5 +114,5 @@ if ! command -v lurek2d &>/dev/null; then
     echo ""
 fi
 
-ok "Lurek2D installed. Run:  lurek2d content/games/music_composer"
+ok "Lurek2D installed. Run:  lurek2d lurek_2d_content/games/music_composer"
 ok "Or use games from:   $EXAMPLES_DEST"

@@ -31,7 +31,7 @@
 - Evidence artifacts must make the demonstrated behavior legible.
 - For `golden`, pass only when current output matches the stored baseline.
 - Prefer typed `expect_*` helpers over raw `assert`.
-- Demo-specific headless tests live next to the game as `content/games/**/test.lua`, not under `tests/lua/`.
+- Demo-specific headless tests live next to the game as `lurek_2d_content/games/**/test.lua`, not under `tests/lua/`.
 - End runnable Lua files with one bare `test_summary()` as the last non-empty line.
 
 ## Workflow

@@ -19,7 +19,7 @@ cargo run -- content/examples/render.lua
 Run a larger reference game:
 
 ```powershell
-cargo run -- content/games/hex_logistics
+cargo run -- lurek_2d_content/games/hex_logistics
 ```
 
 ## Create A Small Project

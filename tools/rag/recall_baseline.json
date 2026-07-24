@@ -179,7 +179,7 @@
   {
     "query": "content games demo conventions",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-demo/SKILL.md", "content/games/AGENTS.md", "tests/demo_smoke_tests.rs"]
+    "must_match_any": [".codex/skills/create-demo/SKILL.md", "lurek_2d_content/games/AGENTS.md", "tests/demo_smoke_tests.rs"]
   },
   {
     "query": "library Lua module conventions",

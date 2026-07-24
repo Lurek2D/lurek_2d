@@ -34,7 +34,7 @@ This file is the contributor guide for test ownership. The lifecycle source of t
 - `tests/lua/security/`: hostile input and safety behavior.
 - `tests/lua/evidence/`: runtime artifact production.
 - `tests/lua/golden/`: deterministic comparison against baselines.
-- `content/games/**/test.lua`: colocated headless game tests discovered by the Lua harness.
+- `lurek_2d_content/games/**/test.lua`: colocated headless game tests discovered by the Lua harness.
 - `tests/artifacts/current/`: current generated evidence artifacts.
 - `tests/artifacts/baselines/`: committed golden baselines used for comparison.
 
@@ -47,7 +47,7 @@ This repo uses a strict public-content chain:
 3. `tests/lua/unit/` proves every public API works.
 4. `tests/lua/evidence/` generates selected artifacts that show behavior in a legible way.
 5. `tests/lua/golden/` compares those artifacts against reviewed baselines.
-6. `content/games/` packages APIs into complete games or mini games.
+6. `lurek_2d_content/games/` packages APIs into complete games or mini games.
 
 Each layer has a different job. Do not collapse them into one folder.
 
@@ -95,7 +95,7 @@ Evidence artifacts must be purposeful:
 - Fix example ownership and 100% example coverage.
 - Fix Lua unit ownership and remove public API duplication from Rust tests.
 - Eliminate stale evidence files that generate artifacts with no clear review purpose.
-- Move feature showcases and mechanic scraps out of `content/games/`.
+- Move feature showcases and mechanic scraps out of `lurek_2d_content/games/`.
 - Keep generated baselines in sync only with evidence that still has a clear owner and purpose.
 
 ## Notes

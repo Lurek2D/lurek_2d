@@ -2,7 +2,7 @@
 --- Covers: CollisionGroupSet, MountSlot, Chassis, Turret, Weapon,
 ---         Projectile, ProjectilePool, CombatWorld.
 
-package.path = "./library/?/init.lua;" .. package.path
+package.path = "./lurek_2d_content/library/?/init.lua;" .. package.path
 
 local combat = require("library.combat")
 

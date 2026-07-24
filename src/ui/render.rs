@@ -1,28 +1,29 @@
-//! Owns the UI render implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI render data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI render defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near the UI render state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI render calculations explicit at their owning subsystem boundary.
-//! Provides the local adaptation layer that lets callers reuse UI render rules without duplicating engine decisions.
-//! Open this owner before sibling files when a regression centers on UI render state, helpers, or integration rules.
-//! Works with neighboring UI owners while keeping the main UI render responsibility anchored in one file.
-//! Changes to UI render names, caches, or helper boundaries should usually stay coupled inside this owner.
-//! This file is the right stop for maintainers tracing UI render regressions back to their concrete owner boundary.
+//! Lowers resolved UI widgets, styles, text, and overlays into render commands consumed by live and headless backends.
+//! It owns widget visuals, inherited shader selection, clipping commands, and deterministic command ordering.
+//! GuiContext supplies geometry and state; this file never changes widget ownership, focus, callbacks, or input routing.
+//! Theme lookup selects colors, borders, type, and state variants before commands are emitted for live or headless output.
+//! Font and shader resources remain render-owned; UI stores selected keys on retained widget state.
+//! Software capture replays this command vocabulary through render-owned capture instead of duplicating UI semantics.
+//! Toolbar separators and spacers are visual items paired with hit testing so only button entries are interactive.
+//! Rendering uses visible fallback output for missing optional resources instead of assuming GPU state at the UI boundary.
+//! Open this file for widget appearance, draw-command order, clipping, shader inheritance, or UI-to-image lowering changes.
+//! Generic renderer execution, GPU pipelines, and image encoding are deliberately outside this module's ownership boundary.
+//! Helper modules contain shared paint primitives; keep individual widget branches focused on observable visual contracts.
+//! GuiContext checks command limits before submission so pathological retained trees cannot exhaust a frame budget.
+//! Coordinates are logical UI pixels after layout scaling; downstream render modules perform target conversion.
+//! Tests for this owner should assert commands or capture output, not merely that a widget factory remains callable.
 
 use crate::font::Font;
 use crate::math::Rect;
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};
 use crate::runtime::resource_keys::{FontKey, ShaderKey};
 use crate::ui::context::{GuiContext, WidgetKind};
+use crate::ui::extras::ToolbarItem;
 use crate::ui::theme::{ThemeToken, WidgetStyle};
 use crate::ui::widget::{TextVAlign, WidgetBase, WidgetState};
 use slotmap::SlotMap;
 use std::collections::HashMap;
 
-mod cpu;
 mod helpers;
 
 use helpers::*;
@@ -180,42 +181,6 @@ fn emit_focus_ring(ctx: &GuiContext, base: &WidgetBase, cmds: &mut Vec<RenderCom
     });
 }
 
-fn draw_cpu_focus_ring(ctx: &GuiContext, base: &WidgetBase, img: &mut crate::image::ImageData) {
-    let Some([r, g, b, a]) = focus_ring_color(ctx, base) else {
-        return;
-    };
-    let thickness = 2i32;
-    let x = base.computed_rect.x.round() as i32;
-    let y = base.computed_rect.y.round() as i32;
-    let w = base.computed_rect.width.max(1.0).round() as u32;
-    let h = base.computed_rect.height.max(1.0).round() as u32;
-    let rr = (r * 255.0) as u8;
-    let gg = (g * 255.0) as u8;
-    let bb = (b * 255.0) as u8;
-    let aa = (a * 255.0) as u8;
-    img.draw_rect(
-        x - thickness,
-        y - thickness,
-        w + (thickness as u32 * 2),
-        thickness as u32,
-        rr,
-        gg,
-        bb,
-        aa,
-    );
-    img.draw_rect(
-        x - thickness,
-        y + h as i32,
-        w + (thickness as u32 * 2),
-        thickness as u32,
-        rr,
-        gg,
-        bb,
-        aa,
-    );
-    img.draw_rect(x - thickness, y, thickness as u32, h, rr, gg, bb, aa);
-    img.draw_rect(x + w as i32, y, thickness as u32, h, rr, gg, bb, aa);
-}
 /// A single laid-out text run with absolute screen position and clip bounds.
 pub struct TextLine {
     /// Text content for this run.
@@ -337,13 +302,16 @@ fn layout_text(
         .collect()
 }
 
+#[allow(dead_code)]
 fn cpu_text_height(font: Option<&crate::font::Font>) -> i32 {
     font.map(|f| f.size().round() as i32).unwrap_or(7).max(1)
 }
 
+#[allow(dead_code)]
 fn cpu_text_center_y(font: Option<&crate::font::Font>, y: i32, h: i32) -> i32 {
     y + ((h - cpu_text_height(font)) / 2).max(0)
 }
+
 /// Return the primary display text of text-bearing widget variants, or `None` for all others.
 fn display_text(widget: &WidgetKind) -> Option<&str> {
     let text = match widget {
@@ -550,6 +518,7 @@ fn emit_icon_and_text(
     }
 }
 /// Convert HSV in `[0.0, 1.0]` to 8-bit `(R, G, B)` using a six-sector conversion.
+#[allow(dead_code)] // Transitional compatibility helper; software replay owns production capture.
 fn hsv_to_rgb(h: f32, s: f32, v: f32) -> (u8, u8, u8) {
     let h6 = (h * 6.0).rem_euclid(6.0);
     let i = h6 as u32;
@@ -569,6 +538,7 @@ fn hsv_to_rgb(h: f32, s: f32, v: f32) -> (u8, u8, u8) {
 }
 /// Draw `text` into `img` using the bundled bitmap font if available, falling back to the 5Ă—7 bitmap.
 #[allow(clippy::too_many_arguments)]
+#[allow(dead_code)] // Transitional compatibility helper; software replay owns production capture.
 fn draw_cpu_text(
     img: &mut crate::image::ImageData,
     font: Option<&crate::font::Font>,
@@ -587,6 +557,7 @@ fn draw_cpu_text(
 }
 
 #[allow(clippy::too_many_arguments)]
+#[allow(dead_code)] // Transitional compatibility helper; software replay owns production capture.
 fn draw_cpu_icon_and_text(
     img: &mut crate::image::ImageData,
     font: Option<&crate::font::Font>,
@@ -922,7 +893,10 @@ fn render_widget_inner(
     let style = &style_with_alpha;
     let draw_widget_chrome = !matches!(
         widget,
-        WidgetKind::Label(_) | WidgetKind::RichLabel(_) | WidgetKind::AspectRatioContainer(_)
+        WidgetKind::Label(_)
+            | WidgetKind::RichLabel(_)
+            | WidgetKind::AspectRatioContainer(_)
+            | WidgetKind::DockPanel(_)
     );
     if draw_widget_chrome {
         emit_shadow(base, style, cmds);
@@ -1449,9 +1423,29 @@ fn render_widget_inner(
             }
         }
         WidgetKind::Toolbar(w) => {
-            let mut button_x = base.x + 4.0;
-            let button_size = base.height.min(28.0);
-            for button in &w.buttons {
+            let vertical = w.orientation == "vertical";
+            let button_size = if vertical { base.width.min(28.0) } else { base.height.min(28.0) };
+            let main_extent = if vertical { base.height } else { base.width };
+            let flexible = w.items.iter().filter(|item| matches!(item, ToolbarItem::Spacer(None))).count();
+            let fixed_spacers: f32 = w.items.iter().map(|item| match item { ToolbarItem::Spacer(Some(size)) => size.max(0.0), _ => 0.0 }).sum();
+            let button_count = w.items.iter().filter(|item| matches!(item, ToolbarItem::Button(_))).count() as f32;
+            let separator_count = w.items.iter().filter(|item| matches!(item, ToolbarItem::Separator)).count() as f32;
+            let remaining = (main_extent - 8.0 - button_count * (button_size + 4.0) - separator_count * 9.0 - fixed_spacers).max(0.0);
+            let mut main = if vertical { base.y + 4.0 } else { base.x + 4.0 };
+            for item in &w.items {
+                match item {
+                ToolbarItem::Separator => {
+                    cmds.push(RenderCommand::SetColor(0.32, 0.35, 0.42, 1.0));
+                    let (x, y, width, height) = if vertical {
+                        (base.x + 5.0, main + 3.0, (base.width - 10.0).max(1.0), 1.0)
+                    } else {
+                        (main + 3.0, base.y + 5.0, 1.0, (base.height - 10.0).max(1.0))
+                    };
+                    cmds.push(RenderCommand::Rectangle { mode: DrawMode::Fill, x, y, w: width, h: height });
+                    main += 9.0;
+                }
+                ToolbarItem::Spacer(size) => { main += size.unwrap_or_else(|| if flexible == 0 { 0.0 } else { remaining / flexible as f32 }).max(0.0); }
+                ToolbarItem::Button(button) => {
                 cmds.push(RenderCommand::SetColor(
                     if button.toggled { 0.22 } else { 0.16 },
                     if button.toggled { 0.36 } else { 0.18 },
@@ -1460,8 +1454,8 @@ fn render_widget_inner(
                 ));
                 cmds.push(RenderCommand::RoundedRectangle {
                     mode: DrawMode::Fill,
-                    x: button_x,
-                    y: base.y + (base.height - button_size) * 0.5,
+                    x: if vertical { base.x + (base.width - button_size) * 0.5 } else { main },
+                    y: if vertical { main } else { base.y + (base.height - button_size) * 0.5 },
                     w: button_size,
                     h: button_size,
                     rx: 4.0,
@@ -1476,14 +1470,16 @@ fn render_widget_inner(
                     .to_string();
                 emit_text_at(
                     &label,
-                    button_x + button_size * 0.5 - 3.0,
-                    base.y + (base.height - style.font_size) * 0.5,
+                    if vertical { base.x + button_size * 0.5 - 3.0 } else { main + button_size * 0.5 - 3.0 },
+                    if vertical { main + (button_size - style.font_size) * 0.5 } else { base.y + (base.height - style.font_size) * 0.5 },
                     font_key,
                     font,
                     style,
                     cmds,
                 );
-                button_x += button_size + 4.0;
+                main += button_size + 4.0;
+                }
+                }
             }
         }
         WidgetKind::MenuBar(_) => {
@@ -2051,14 +2047,32 @@ impl GuiContext {
         font_key: FontKey,
         fonts: &SlotMap<FontKey, Font>,
     ) -> Vec<RenderCommand> {
-        self.run_layout_pass();
+        if !self.dirty && !self.layout_dirty && !self.style_dirty && !self.text_dirty && !self.render_dirty {
+            if let Some((cached_font, generation, signature, cached)) = &self.command_cache {
+                if *cached_font == font_key && *generation == self.render_generation && *signature == self.compute_render_signature() {
+                    self.runtime_stats.last_frame_commands = cached.len();
+                    self.runtime_stats.command_cache_hits = self.runtime_stats.command_cache_hits.saturating_add(1);
+                    return cached.clone();
+                }
+            }
+        }
+        // Lowering a clean retained tree must not redo geometry work. Mutators
+        // and viewport updates invalidate `layout_dirty`; the first lowering
+        // after such a change performs the required layout pass.
+        if self.layout_dirty {
+            self.run_layout_pass();
+        }
         let default_style = WidgetStyle::default();
+        self.runtime_stats.command_cache_misses = self.runtime_stats.command_cache_misses.saturating_add(1);
         let mut cmds = Vec::new();
         WidgetRenderer::new(self, font_key, fonts, &default_style, &mut cmds)
             .render_root_children();
+        self.runtime_stats.last_frame_commands = cmds.len();
         if cmds.len() > self.limits().max_render_commands {
             cmds.truncate(self.limits().max_render_commands);
+            self.runtime_stats.command_limit_rejections = self.runtime_stats.command_limit_rejections.saturating_add(1);
         }
+        self.command_cache = Some((font_key, self.render_generation, self.compute_render_signature(), cmds.clone()));
         cmds
     }
 
@@ -2071,5 +2085,26 @@ impl GuiContext {
     /// Run a layout pass and emit render commands using the default font key.
     pub fn generate_render_commands(&mut self) -> Vec<RenderCommand> {
         self.build_render_commands(FontKey::default())
+    }
+
+    /// Replay this UI's single render-command stream through the render-owned software capture path.
+    pub fn draw_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
+        let mut layout_ctx = self.clone();
+        layout_ctx.set_viewport(width as f32, height as f32);
+        let ui_commands = layout_ctx.generate_render_commands();
+        // Seed the replay canvas before UI commands, both fixing its requested
+        // extent and avoiding a trailing transparent command that would erase
+        // rendered pixels in the software compositor.
+        let mut commands = vec![
+            RenderCommand::SetColor(0.094, 0.102, 0.133, 1.0),
+            RenderCommand::Rectangle { mode: DrawMode::Fill, x: 0.0, y: 0.0, w: width as f32, h: height as f32 },
+        ];
+        commands.extend(ui_commands);
+        crate::render::software_capture::capture_commands_to_image_sized(
+            &commands,
+            [0.094, 0.102, 0.133, 1.0],
+            width,
+            height,
+        )
     }
 }

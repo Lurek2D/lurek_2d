@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared discovery and classification helpers for content/games catalogs."""
+"""Shared discovery and classification helpers for lurek_2d_content/games catalogs."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_GAMES_ROOT = REPO_ROOT / "content" / "games"
+DEFAULT_GAMES_ROOT = REPO_ROOT / "lurek_2d_content" / "games"
 
 CATEGORY_ORDER = ["games"]
 
@@ -34,7 +34,7 @@ DECISION_DESCRIPTIONS = {
     "REVIEW": "Not covered by issue #30; needs manual classification.",
 }
 
-# Product decisions for the current flat `content/games/<name>` catalog.
+# Product decisions for the current flat `lurek_2d_content/games/<name>` catalog.
 GAME_DECISIONS: dict[str, tuple[str, str]] = {
     "cannon_fodder": ("KEEP", "Tactical action game kept in the current flat catalog."),
     "dungeon_crawler": ("KEEP", "Raycaster dungeon game kept in the current flat catalog."),

@@ -5,6 +5,7 @@ use crate::filesystem::watcher::FileWatcher;
 use crate::filesystem::{FileData, FileHandle, GameFS};
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 /// Lua-side handle for immutable file bytes and their source path.
 pub struct LuaFileData {
@@ -186,39 +187,66 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     let watcher_rc = Rc::new(RefCell::new(FileWatcher::new()));
+    // Watcher snapshots operate on host paths, while scripts must continue to see
+    // the virtual GameFS names they supplied (including mounted workspaces).
+    let watched_logical_paths = Rc::new(RefCell::new(HashMap::<String, String>::new()));
     let wrc = watcher_rc.clone();
+    let logical_paths = watched_logical_paths.clone();
+    let s = state.clone();
     // -- watchPath --
-    /// Adds a path to the module-local file watcher.
-    /// @param | path | string | Path to watch for changes.
+    /// Adds a GameFS path to the module-local file watcher.
+    /// Mounted paths are resolved to their host source internally while events keep this virtual path.
+    /// @param | path | string | Existing or future GameFS path to watch for changes.
     tbl.set(
         "watchPath",
         lua.create_function(move |_, path: String| {
-            wrc.borrow_mut().watch(&path);
+            let resolved = s
+                .borrow()
+                .fs
+                .resolve_watch_path(&path)
+                .map_err(LuaError::external)?;
+            let host_path = resolved.to_string_lossy().into_owned();
+            wrc.borrow_mut().watch(&resolved);
+            logical_paths.borrow_mut().insert(host_path, path);
             Ok(())
         })?,
     )?;
     let wrc = watcher_rc.clone();
+    let logical_paths = watched_logical_paths.clone();
+    let s = state.clone();
     // -- unwatchPath --
-    /// Removes a path from the module-local file watcher.
-    /// @param | path | string | Watched path to remove.
+    /// Removes a GameFS path from the module-local file watcher.
+    /// @param | path | string | Watched GameFS path to remove.
     tbl.set(
         "unwatchPath",
         lua.create_function(move |_, path: String| {
-            wrc.borrow_mut().unwatch(&path);
+            let resolved = s.borrow().fs.resolve_watch_path(&path).ok();
+            if let Some(resolved) = resolved {
+                let host_path = resolved.to_string_lossy().into_owned();
+                wrc.borrow_mut().unwatch(&resolved);
+                logical_paths.borrow_mut().remove(&host_path);
+            }
             Ok(())
         })?,
     )?;
     let wrc = watcher_rc.clone();
+    let logical_paths = watched_logical_paths.clone();
     // -- pollWatchers --
-    /// Polls watched paths and returns paths that changed since the previous poll.
-    /// @return | string[] | Changed path strings.
+    /// Polls watched paths and returns their GameFS paths when they changed since the previous poll.
+    /// @return | string[] | Changed logical GameFS path strings.
     tbl.set(
         "pollWatchers",
         lua.create_function(move |lua, ()| {
             let changed = wrc.borrow_mut().poll();
             let tbl = lua.create_table()?;
             for (i, p) in changed.iter().enumerate() {
-                tbl.set(i + 1, p.to_string_lossy().into_owned())?;
+                let host_path = p.to_string_lossy().into_owned();
+                let logical_path = logical_paths
+                    .borrow()
+                    .get(&host_path)
+                    .cloned()
+                    .unwrap_or(host_path);
+                tbl.set(i + 1, logical_path)?;
             }
             Ok(tbl)
         })?,
@@ -614,6 +642,54 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 .fs
                 .mount(&src, &mp)
                 .map(|_| true)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+    let s = state.clone();
+    // -- mountWorkspace --
+    /// Mounts a user-selected workspace directory at a non-empty virtual mount point.
+    /// Unlike `mount`, this explicit desktop-authoring operation permits a directory outside the
+    /// game root and enables `writeWorkspace` for files below that mount point.
+    /// @param | src | string | User-selected workspace directory path.
+    /// @param | mp | string | Non-empty virtual mount point such as `project`.
+    /// @return | boolean | True when the workspace mount succeeds.
+    tbl.set(
+        "mountWorkspace",
+        lua.create_function(move |_, (src, mp): (String, String)| {
+            s.borrow_mut()
+                .fs
+                .mount_workspace(&src, &mp)
+                .map(|_| true)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+    let s = state.clone();
+    // -- writeWorkspace --
+    /// Writes UTF-8 text inside a previously mounted user workspace.
+    /// @param | path | string | Virtual path below a writable workspace mount.
+    /// @param | content | string | UTF-8 content to write.
+    /// @return | nil | Errors if the path is outside a writable workspace mount.
+    tbl.set(
+        "writeWorkspace",
+        lua.create_function(move |_, (path, content): (String, String)| {
+            s.borrow()
+                .fs
+                .write_workspace_string(&path, &content)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+    let s = state.clone();
+    // -- writeWorkspaceAtomic --
+    /// Atomically writes UTF-8 text inside a previously mounted user workspace.
+    /// @param | path | string | Virtual path below a writable workspace mount.
+    /// @param | content | string | UTF-8 content to write.
+    /// @return | nil | Errors if the path is outside a writable workspace mount.
+    tbl.set(
+        "writeWorkspaceAtomic",
+        lua.create_function(move |_, (path, content): (String, String)| {
+            s.borrow()
+                .fs
+                .write_workspace_string_atomic(&path, &content)
                 .map_err(LuaError::external)
         })?,
     )?;

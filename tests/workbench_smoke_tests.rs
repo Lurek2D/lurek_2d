@@ -10,8 +10,10 @@ use lurek2d::lua_api::{create_lua_vm, SharedState};
 use lurek2d::runtime::config::Config;
 use lurek2d::runtime::RuntimeMode;
 
+const WORKBENCH_DIR: &str = "lurek_2d_workbench";
+
 fn make_workbench_vm() -> mlua::Lua {
-    let game_dir = PathBuf::from("workbench");
+    let game_dir = PathBuf::from(WORKBENCH_DIR);
     let (config, conf_error) = Config::load(&game_dir);
     assert!(
         conf_error.is_none(),
@@ -42,14 +44,23 @@ fn find_binary() -> PathBuf {
 }
 
 fn headless_render_path() -> PathBuf {
-    let dir = PathBuf::from("work").join("workbench_smoke");
+    let dir = PathBuf::from(WORKBENCH_DIR)
+        .join("save")
+        .join("workbench_smoke");
     std::fs::create_dir_all(&dir).expect("Failed to create workbench smoke work directory");
     dir.join("headless_ui_smoke.png")
 }
 
+fn pixel_art_render_path() -> PathBuf {
+    PathBuf::from(WORKBENCH_DIR)
+        .join("save")
+        .join("workbench_smoke")
+        .join("pixel_art_editor.png")
+}
+
 fn run_workbench_screenshot() -> PathBuf {
     let binary = find_binary();
-    let game_dir = std::fs::canonicalize("workbench").expect("workbench directory should exist");
+    let game_dir = std::fs::canonicalize(WORKBENCH_DIR).expect("workbench directory should exist");
     let screenshot_dir = PathBuf::from("work").join("workbench_smoke");
     std::fs::create_dir_all(&screenshot_dir).expect("Failed to create screenshot directory");
     let screenshot_path = std::fs::canonicalize(&screenshot_dir)
@@ -95,10 +106,11 @@ fn run_workbench_screenshot() -> PathBuf {
 fn workbench_headless_boots_and_processes() {
     let lua = make_workbench_vm();
     let code =
-        std::fs::read_to_string("workbench/main.lua").expect("Failed to read workbench/main.lua");
+        std::fs::read_to_string(format!("{WORKBENCH_DIR}/main.lua"))
+            .expect("Failed to read workbench/main.lua");
 
     lua.load(&code)
-        .set_name("workbench/main.lua")
+        .set_name("lurek_2d_workbench/main.lua")
         .exec()
         .expect("Workbench bootstrap should load");
 
@@ -143,7 +155,7 @@ fn workbench_headless_boots_and_processes() {
             .expect("Failed to remove stale headless workbench render");
     }
     render_to_image
-        .call::<_, ()>((1600_i64, 900_i64, render_path.to_string_lossy().to_string()))
+        .call::<_, ()>((1600_i64, 900_i64, "save/workbench_smoke/headless_ui_smoke.png"))
         .expect("workbench should render a headless UI screenshot");
 
     assert!(
@@ -189,17 +201,40 @@ local services = {
     projects = ProjectIndex.create(),
     documents = DocumentService.create(registry),
 }
+
 local ctx = State.create(registry, services)
 local shell = Shell.create(ctx)
 shell:update(1 / 60)
 
-local pressed_editors = shell:mousepressed(20, 94, 1)
-local released_editors = shell:mousereleased(20, 94, 1)
+local pressed_editors = shell:mousepressed(20, 136, 1)
+local released_editors = shell:mousereleased(20, 136, 1)
 shell:update(0)
 
-local pressed_home = shell:mousepressed(340, 20, 1)
-local released_home = shell:mousereleased(340, 20, 1)
+local pressed_home = shell:mousepressed(500, 20, 1)
+local released_home = shell:mousereleased(500, 20, 1)
 shell:update(0)
+
+shell:open_editor("particle")
+shell:update(0)
+-- The standard 1600px desktop chrome now uses the second quick-create row.
+-- That shifts the particle inspector below the 72px menu region.
+local pressed_curves = shell:mousepressed(1320, 306, 1)
+local released_curves = shell:mousereleased(1320, 306, 1)
+shell:update(0)
+
+local home_editor = "overview"
+shell:open_editor("overview")
+shell:update(0)
+home_editor = ctx.active_editor
+
+shell:open_editor("sprite_atlas")
+shell:update(0)
+
+local native_dimensions = lurek.window.getDimensions
+lurek.window.getDimensions = function() return 1000, 700 end
+shell:update(0)
+local compact_menu_height = shell.layout.menu.h
+lurek.window.getDimensions = native_dimensions
 
 return {
     active_sidebar = ctx.active_sidebar,
@@ -208,6 +243,12 @@ return {
     released_editors = released_editors,
     pressed_home = pressed_home,
     released_home = released_home,
+    pressed_curves = pressed_curves,
+    released_curves = released_curves,
+    curve_mode = services.documents:get_active().ui_mode,
+    home_editor = home_editor,
+    atlas_editor = ctx.active_editor,
+    compact_menu_height = compact_menu_height,
 }
 "#;
 
@@ -235,6 +276,16 @@ return {
     let released_home: bool = result
         .get("released_home")
         .expect("Missing released_home result");
+    let pressed_curves: bool = result
+        .get("pressed_curves")
+        .expect("Missing pressed_curves result");
+    let released_curves: bool = result
+        .get("released_curves")
+        .expect("Missing released_curves result");
+    let curve_mode: String = result.get("curve_mode").expect("Missing curve_mode result");
+    let atlas_editor: String = result.get("atlas_editor").expect("Missing atlas_editor result");
+    let home_editor: String = result.get("home_editor").expect("Missing home_editor result");
+    let compact_menu_height: i64 = result.get("compact_menu_height").expect("Missing compact menu height");
 
     assert!(
         pressed_editors,
@@ -246,8 +297,57 @@ return {
     );
     assert!(pressed_home, "home button should receive mouse press");
     assert!(released_home, "home button should receive mouse release");
+    assert!(pressed_curves, "curve mode button should receive mouse press");
+    assert!(released_curves, "curve mode button should receive mouse release");
+    assert_eq!(curve_mode, "curves");
+    assert_eq!(atlas_editor, "sprite_atlas");
+    assert_eq!(home_editor, "overview");
     assert_eq!(active_sidebar, "editors");
-    assert_eq!(active_editor, "overview");
+    assert_eq!(active_editor, "sprite_atlas");
+    assert_eq!(compact_menu_height, 72, "compact layouts use two toolbar rows");
+}
+
+#[test]
+fn workbench_pixel_art_headless_smoke_creates_a_real_png_document() {
+    let lua = make_workbench_vm();
+    let script = r#"
+local function load_workbench(path)
+    local chunk = lurek.filesystem.load(path)
+    assert(type(chunk) == "function", "cannot load " .. path)
+    local ok, result = pcall(chunk)
+    assert(ok, tostring(result))
+    return result
+end
+local Registry = load_workbench("app/editor_registry.lua")
+local State = load_workbench("app/state.lua")
+local Shell = load_workbench("app/shell.lua")
+local CommandBus = load_workbench("app/command_bus.lua")
+local ProjectIndex = load_workbench("app/services/project_index.lua")
+local DocumentService = load_workbench("app/services/document_service.lua")
+local source, mountpoint = "save/workbench_pixel_smoke_project", "pixel_smoke_project"
+lurek.filesystem.createDirectory(source)
+lurek.filesystem.unmount(mountpoint)
+lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+local registry = Registry.create(load_workbench)
+local services = { commands = CommandBus.create(), projects = ProjectIndex.create(), documents = DocumentService.create(registry) }
+local ctx = State.create(registry, services, { sample_project_root = mountpoint })
+local shell = Shell.create(ctx)
+local ok, result = ctx.command_bus:dispatch("asset.create", { editor_id = "pixel_art" })
+assert(ok, tostring(result))
+shell:open_editor("pixel_art")
+shell:update(1 / 60)
+shell:draw()
+lurek.ui.renderToImage(1600, 900, "save/workbench_smoke/pixel_art_editor.png")
+return { editor = ctx.active_editor }
+"#;
+    let result: mlua::Table = lua.load(script).set_name("workbench_pixel_art_render").eval()
+        .expect("pixel art headless smoke should execute");
+    let editor: String = result.get("editor").expect("Missing pixel editor id");
+    assert_eq!(editor, "pixel_art");
+    let size = std::fs::metadata(pixel_art_render_path())
+        .unwrap_or_else(|error| panic!("Cannot stat pixel art headless artifact: {error}"))
+        .len();
+    assert!(size > 2048, "pixel art headless artifact is suspiciously small: {size} bytes");
 }
 
 #[test]

@@ -230,7 +230,7 @@ fn with_lua_state_lock<T>(display_name: &str, run: impl FnOnce() -> T) -> T {
 fn needs_exclusive_lua_performance_slot(display_name: &str) -> bool {
     // Stress and complete-game scenarios enforce elapsed-time ceilings. Let their
     // measured workload own the CPU instead of competing with unrelated Lua VMs.
-    display_name.starts_with("stress/") || display_name.starts_with("content/games/")
+    display_name.starts_with("stress/") || display_name.starts_with("lurek_2d_content/games/")
 }
 
 fn needs_lua_test_lock(display_name: &str) -> bool {
@@ -1252,9 +1252,24 @@ fn lua_integration_ui_localization_data_integration() {
 }
 
 #[test]
+fn lua_integration_ui_render_integration() {
+    run_lua_test("integration/test_ui_render_integration.lua");
+}
+
+#[test]
 fn lua_integration_workbench_particle_integration() {
     run_lua_test("integration/test_workbench_particle_integration.lua");
 }
+
+#[test]
+    fn lua_integration_workbench_tilemap_integration() {
+        run_lua_test("integration/test_workbench_tilemap_integration.lua");
+    }
+
+    #[test]
+    fn lua_integration_workbench_asset_creation_integration() {
+        run_lua_test("integration/test_workbench_asset_creation_integration.lua");
+    }
 
 #[test]
 fn lua_library_battle_library() {
@@ -1364,6 +1379,11 @@ fn lua_security_tileset_security() {
 #[test]
 fn lua_security_sprite_security() {
     run_lua_test("security/test_sprite_security.lua");
+}
+
+#[test]
+fn lua_security_ui_security() {
+    run_lua_test("security/test_ui_security.lua");
 }
 
 #[test]
@@ -1524,6 +1544,11 @@ fn lua_stress_tween_stress() {
 #[test]
 fn lua_stress_sprite_stress() {
     run_lua_test("stress/test_sprite_stress.lua");
+}
+
+#[test]
+fn lua_stress_ui_stress() {
+    run_lua_test("stress/test_ui_stress.lua");
 }
 
 #[test]
@@ -1929,7 +1954,7 @@ fn lua_unit_window_unit() {
 #[test]
 fn lua_demo_colocated_games() {
     let mut paths = Vec::new();
-    collect_colocated_game_tests(Path::new("content/games"), &mut paths);
+    collect_colocated_game_tests(Path::new("lurek_2d_content/games"), &mut paths);
     paths.sort();
     for path in &paths {
         let display = path.to_str().expect("non-utf8 game test path");

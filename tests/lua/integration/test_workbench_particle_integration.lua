@@ -2,7 +2,8 @@
 -- @describe workbench particle integration
 
 local WORK_ROOT = "work/issue_36_workbench_particle"
-local SAMPLE_FIRE = "workbench/data/sample_project/content/particles/fire.particle.toml"
+local WORKBENCH_ROOT = "lurek_2d_workbench"
+local SAMPLE_FIRE = WORKBENCH_ROOT .. "/data/sample_project/content/particles/fire.particle.toml"
 local PARTICLE_PATH = WORK_ROOT .. "/content/particles/fire.particle.toml"
 local native_create_directory = lurek.filesystem.createDirectory
 local native_write = lurek.filesystem.write
@@ -26,7 +27,7 @@ local function restore_native_writes()
 end
 
 local function load_workbench_module(path)
-    local chunk = lurek.filesystem.load("workbench/" .. path)
+    local chunk = lurek.filesystem.load(WORKBENCH_ROOT .. "/" .. path)
     expect_type("function", chunk, "workbench module loads from GameFS")
 
     local ok, result = pcall(chunk)
@@ -90,6 +91,12 @@ describe("workbench particle integration", function()
         local mutated, mutate_error = services.documents:mutate_active(function(document)
             document.model.emission_rate = 33.0
             document.model.gravity_y = 77.0
+            document.model.sizes = { 12.0, 6.0, 0.5 }
+            document.model.colors = {
+                { 0.2, 0.8, 1.0, 1.0 },
+                { 0.5, 0.3, 1.0, 0.45 },
+                { 0.1, 0.1, 0.4, 0.0 },
+            }
         end)
         expect_not_nil(mutated, mutate_error)
 
@@ -102,6 +109,10 @@ describe("workbench particle integration", function()
         local saved_text = lurek.filesystem.read(PARTICLE_PATH)
         expect_true(saved_text:find("emission_rate = 33") ~= nil, "save writes snake_case emission_rate")
         expect_true(saved_text:find("gravity_y = 77") ~= nil, "save writes snake_case gravity_y")
+        local saved_model = lurek.serialize.fromToml(saved_text)
+        expect_equal(3, #saved_model.sizes, "save preserves size curve keyframes")
+        expect_equal(3, #saved_model.colors, "save preserves color curve keyframes")
+        expect_near(0.45, saved_model.colors[2][4], 0.001, "save preserves keyframe alpha")
 
         local ok_export, export_result = ctx.command_bus:dispatch("document.export_active")
         expect_true(ok_export, tostring(export_result))
@@ -151,5 +162,6 @@ describe("workbench particle integration", function()
         expect_near(9.0, active.model.emission_rate, 0.001, "revert restores the last saved disk model")
         expect_false(active.dirty, "revert clears unsaved changes")
     end)
+
 end)
 test_summary()

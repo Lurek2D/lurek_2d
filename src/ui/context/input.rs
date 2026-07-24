@@ -1,16 +1,17 @@
-//! Owns the UI context input implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI context input data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI context input behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI context input defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near UI context input state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI context input calculations explicit at their owning subsystem boundary.
-//! Provides the local adaptation layer that lets callers reuse UI context input rules without duplicating engine decisions.
-//! Open this owner before sibling files when a regression centers on UI context input state, helpers, or integration rules.
-//! Changes to UI context input names, caches, or helper boundaries should usually stay coupled inside this owner.
-//! Local input routing changes should stay here so pointer capture and hit-testing rules remain aligned.
-//! This file is the right stop for maintainers tracing UI context input regressions back to their concrete owner boundary.
+//! Routes pointer, keyboard, text, focus, modal, drag, and capture input through one retained GuiContext event pipeline.
+//! It owns hit testing and widget-local transitions, then queues GuiEvent values without invoking Lua callbacks directly.
+//! Resolved rectangles, visibility, clipping, and modal state determine whether a retained widget receives an event.
+//! Pointer capture and focus are cleared by lifecycle removal before stale widgets can consume input.
+//! Toolbar, dialog, text editor, selection, and drag helpers preserve deterministic event ordering during state changes.
+//! Layout preparation uses the geometry fast path so stable pointer movement does not repeatedly recompute the widget tree.
+//! Raw platform input belongs to adapters; Lua callback execution and registry lifetime belong to scripting bindings.
+//! Open this file for propagation, consumption, focus traversal, IME, modal behavior, and drag-and-drop semantics.
+//! GuiContext enforces queue ceilings and coalescing, keeping high-frequency input bounded before Lua observes it.
+//! Rendering reads the resulting widget state in a later pass, so this file deliberately emits no draw commands or pixels.
+//! Widget-kind branches belong here only when input changes their retained state; visual-only rules stay in render modules.
+//! Wrong or unsupported user actions are rejected predictably rather than silently mutating unrelated widgets or indexes.
+//! Tests exercise focus, capture, modal blocking, callback ordering, and destruction during dispatch through public APIs.
+//! Geometry helpers own coordinate validity; this file maps valid coordinates onto interactive retained widgets.
 
 use super::*;
 
@@ -1450,24 +1451,47 @@ impl GuiContext {
         }
         let button_size = rect.height.min(28.0);
         if toolbar.orientation == "vertical" {
+            let button_size = rect.width.min(28.0);
+            let flexible = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Spacer(None))).count();
+            let fixed_spacers: f32 = toolbar.items.iter().map(|item| match item { crate::ui::extras::ToolbarItem::Spacer(Some(size)) => size.max(0.0), _ => 0.0 }).sum();
+            let button_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Button(_))).count() as f32;
+            let separator_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Separator)).count() as f32;
+            let remaining = (rect.height - 8.0 - button_count * (button_size + TOOLBAR_BUTTON_GAP) - separator_count * 9.0 - fixed_spacers).max(0.0);
             let mut button_y = rect.y + TOOLBAR_BUTTON_GAP;
             let button_x = rect.x + (rect.width - button_size) * 0.5;
-            for (button_idx, button) in toolbar.buttons.iter().enumerate() {
-                let button_rect = Rect::new(button_x, button_y, button_size, button_size);
-                if button.enabled && button_rect.contains(x, y) {
-                    return Some(button_idx);
+            for (button_idx, item) in toolbar.items.iter().enumerate() {
+                match item {
+                    crate::ui::extras::ToolbarItem::Separator => button_y += 9.0,
+                    crate::ui::extras::ToolbarItem::Spacer(size) => button_y += size.unwrap_or_else(|| if flexible == 0 { 0.0 } else { remaining / flexible as f32 }).max(0.0),
+                    crate::ui::extras::ToolbarItem::Button(button) => {
+                        let button_rect = Rect::new(button_x, button_y, button_size, button_size);
+                        if button.enabled && button_rect.contains(x, y) {
+                            return Some(button_idx);
+                        }
+                        button_y += button_size + TOOLBAR_BUTTON_GAP;
+                    }
                 }
-                button_y += button_size + TOOLBAR_BUTTON_GAP;
             }
         } else {
             let mut button_x = rect.x + TOOLBAR_BUTTON_GAP;
             let button_y = rect.y + (rect.height - button_size) * 0.5;
-            for (button_idx, button) in toolbar.buttons.iter().enumerate() {
-                let button_rect = Rect::new(button_x, button_y, button_size, button_size);
-                if button.enabled && button_rect.contains(x, y) {
-                    return Some(button_idx);
+            let flexible = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Spacer(None))).count();
+            let fixed_spacers: f32 = toolbar.items.iter().map(|item| match item { crate::ui::extras::ToolbarItem::Spacer(Some(size)) => size.max(0.0), _ => 0.0 }).sum();
+            let button_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Button(_))).count() as f32;
+            let separator_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Separator)).count() as f32;
+            let remaining = (rect.width - 8.0 - button_count * (button_size + TOOLBAR_BUTTON_GAP) - separator_count * 9.0 - fixed_spacers).max(0.0);
+            for (button_idx, item) in toolbar.items.iter().enumerate() {
+                match item {
+                    crate::ui::extras::ToolbarItem::Separator => button_x += 9.0,
+                    crate::ui::extras::ToolbarItem::Spacer(size) => button_x += size.unwrap_or_else(|| if flexible == 0 { 0.0 } else { remaining / flexible as f32 }).max(0.0),
+                    crate::ui::extras::ToolbarItem::Button(button) => {
+                        let button_rect = Rect::new(button_x, button_y, button_size, button_size);
+                        if button.enabled && button_rect.contains(x, y) {
+                            return Some(button_idx);
+                        }
+                        button_x += button_size + TOOLBAR_BUTTON_GAP;
+                    }
                 }
-                button_x += button_size + TOOLBAR_BUTTON_GAP;
             }
         }
         None
@@ -1477,7 +1501,7 @@ impl GuiContext {
         let Some(WidgetKind::Toolbar(toolbar)) = self.widgets.get_mut(idx) else {
             return false;
         };
-        let Some(button) = toolbar.buttons.get_mut(button_idx) else {
+        let Some(crate::ui::extras::ToolbarItem::Button(button)) = toolbar.items.get_mut(button_idx) else {
             return false;
         };
         if !button.enabled {

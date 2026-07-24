@@ -222,6 +222,31 @@ mod vfs_tests {
     }
 
     #[test]
+    fn workspace_mount_explicitly_allows_atomic_writes_outside_game_root() {
+        let dir = make_temp_game("workspace_mount");
+        let workspace = std::env::temp_dir().join("luna_vfs_workspace_mount");
+        let _ = std::fs::remove_dir_all(&workspace);
+        std::fs::create_dir_all(&workspace).unwrap();
+        std::fs::write(workspace.join("project.toml"), "name = 'before'").unwrap();
+
+        let mut fs = GameFS::new(&dir);
+        assert!(fs.mount(&workspace.to_string_lossy(), "project").is_err());
+        fs.mount_workspace(&workspace.to_string_lossy(), "project")
+            .unwrap();
+        assert_eq!(fs.read_string("project/project.toml").unwrap(), "name = 'before'");
+        fs.write_workspace_string_atomic("project/content/data.toml", "value = 42")
+            .unwrap();
+        assert_eq!(
+            std::fs::read_to_string(workspace.join("content/data.toml")).unwrap(),
+            "value = 42"
+        );
+        assert!(fs.write_workspace_string("save/not_allowed.toml", "no").is_err());
+
+        let _ = std::fs::remove_dir_all(&dir);
+        let _ = std::fs::remove_dir_all(&workspace);
+    }
+
+    #[test]
     fn mounted_paths_affect_exists_file_directory_and_handle_reads() {
         let dir = make_temp_game("mount_readside");
         std::fs::create_dir_all(dir.join("mods/ui/sub")).unwrap();

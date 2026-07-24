@@ -20,6 +20,7 @@ description: "Load this skill when auditing performance regressions, baselines, 
 - Import, export, and restore paths need separate peak-memory analysis because temporary decoded buffers or duplicated snapshots may exceed steady-state storage even when final structures fit their limits.
 - Codec measurements must record encoded input, decoded output, aggregate frames/layers, and effect/work multipliers against explicit ceilings.
 - Timed animation/import reviews must measure `dt * rate` catch-up, callback/event amplification, parser depth/count, and precomputed-table growth independently of steady-state rendering.
+- Require a module-owned release baseline with cumulative work counters, retained-capacity checks, at-limit/over-limit recovery, and evidence that incremental work is equivalent to forced full recomputation.
 
 ## Workflow
 - Define the hypothesis and measurement protocol before broad reads, capture a release baseline through the perf gate/stress report, and save raw scenario parameters/results under `work/<short-chat-name>/` with warm-up and repetition details.

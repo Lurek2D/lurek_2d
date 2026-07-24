@@ -39,7 +39,7 @@ describe("lurek.ui module", function()
     -- @covers lurek.ui.loadLayout
     it("loadLayout creates widgets from a layout table", function()
         local before = lurek.ui.getWidgetCount()
-        local idx = lurek.ui.loadLayout({
+        local root = lurek.ui.loadLayout({
             type = "panel",
             id = "hud_root",
             children = {
@@ -61,7 +61,8 @@ describe("lurek.ui module", function()
                 },
             },
         })
-        expect_type("number", idx)
+        expect_type("table", root)
+        expect_true(root:isValid())
         expect_true(lurek.ui.getWidgetCount() > before)
         local label = lurek.ui.getRoot():findById("hp_label")
         expect_equal("center", label:getTextAlign())
@@ -346,8 +347,9 @@ describe("lurek.ui module", function()
     end)
 
     -- @covers lurek.ui.renderToImage
-    it("renderToImage writes an image without throwing", function()
+    it("renderToImage accepts canonical dimensions-first and deprecated path-first forms", function()
         expect_no_error(function()
+            lurek.ui.renderToImage(96, 64, "save/ui_render_canonical.png")
             lurek.ui.renderToImage("save/ui_render_unit.png", 96, 64)
         end)
     end)
@@ -834,21 +836,6 @@ describe("base widget methods", function()
         end)
     end)
 
-    -- @covers LUiWidget:attachToEntity
-    it("attachToEntity is callable", function()
-        expect_no_error(function()
-            make_basic_widget():attachToEntity(1)
-        end)
-    end)
-
-    -- @covers LUiWidget:detachFromEntity
-    it("detachFromEntity is callable", function()
-        local w = make_basic_widget()
-        w:attachToEntity(1)
-        expect_no_error(function()
-            w:detachFromEntity()
-        end)
-    end)
 end)
 
 -- @describe common ui controls
@@ -2137,7 +2124,9 @@ describe("supplementary ui module coverage", function()
     it("getActiveDrag returns active drag state after beginDrag", function()
         local w = lurek.ui.newButton("Drag")
         lurek.ui.beginDrag(w)
-        expect_not_nil(lurek.ui.getActiveDrag())
+        local active = lurek.ui.getActiveDrag()
+        expect_not_nil(active)
+        expect_true(active:isValid())
     end)
 
     -- @covers lurek.ui.dropOn
@@ -2154,7 +2143,9 @@ describe("supplementary ui module coverage", function()
     it("endDrag clears the active drag state", function()
         local w = lurek.ui.newButton("Drag")
         lurek.ui.beginDrag(w)
-        lurek.ui.endDrag()
+        local ended = lurek.ui.endDrag()
+        expect_not_nil(ended)
+        expect_true(ended:isValid())
         expect_equal(nil, lurek.ui.getActiveDrag())
     end)
 
@@ -2249,10 +2240,13 @@ describe("supplementary ui module coverage", function()
     end)
 
     -- @covers lurek.ui.loadLayoutGameFile
-    it("loadLayoutGameFile loads a sample TOML layout", function()
-        expect_no_error(function()
-            lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
-        end)
+    it("loadLayoutGameFile is a deprecated handle-returning alias of loadLayoutFile", function()
+        local legacy = lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
+        local canonical = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
+        expect_type("table", legacy)
+        expect_type("table", canonical)
+        expect_true(legacy:isValid())
+        expect_true(canonical:isValid())
     end)
 
     -- @covers lurek.ui.getStyleToken
@@ -2452,15 +2446,16 @@ describe("supplemental widget coverage", function()
         local label = lurek.ui.newLabel("Name")
         local input = lurek.ui.newTextInput()
         label:setLabelFor(input)
-        expect_equal(input._idx, label:getLabelFor())
+        expect_true(label:getLabelFor():isValid())
     end)
 
     -- @covers LUiWidget:getLabelFor
-    it("getLabelFor returns the linked widget index", function()
+    it("getLabelFor returns the linked widget handle", function()
         local label = lurek.ui.newLabel("Name")
         local input = lurek.ui.newTextInput()
         label:setLabelFor(input)
-        expect_equal(input._idx, label:getLabelFor())
+        expect_type("table", label:getLabelFor())
+        expect_true(label:getLabelFor():isValid())
     end)
 
     -- @covers lurek.ui.getAccessibilityTree
@@ -3558,11 +3553,30 @@ describe("ui retained widget owner coverage", function()
     end)
 
     -- @covers LDockPanel:dock
-    it("dock panel dock adds a child to the dock set", function()
+    it("dock panel dock lays a child into its assigned region", function()
+        lurek.ui.clear()
+        lurek.ui.setViewport(800, 600)
+        local root = lurek.ui.getRoot()
+        root:setSize(800, 600)
         local dock = lurek.ui.newDockPanel()
-        local child = lurek.ui.newPanel()
-        dock:dock(child, "left")
+        root:addChild(dock)
+        dock:setSize(800, 600)
+        local child = lurek.ui.newCustomWidget({ width = 16, height = 16 })
+        local callback_rect = nil
+        child:setOnDraw(function(rect)
+            callback_rect = rect
+        end)
+        dock:dock(child, "fill")
+        lurek.ui.draw()
+        local x, y, w, h = child:getRect()
         expect_equal(1, dock:getDockedCount())
+        expect_equal(0, x)
+        expect_equal(0, y)
+        expect_equal(800, w)
+        expect_equal(600, h)
+        expect_not_nil(callback_rect)
+        expect_equal(800, callback_rect.w)
+        expect_equal(600, callback_rect.h)
     end)
 
     -- @covers LDockPanel:undock
@@ -3803,13 +3817,12 @@ describe("ui utility widget owner coverage", function()
     end)
 
     -- @covers LStatusBar:setSectionWidget
-    it("status bar setSectionWidget is callable", function()
+    it("status bar setSectionWidget reparents a live widget", function()
         local status = lurek.ui.newStatusBar()
         status:setSectionCount(1)
         local widget = lurek.ui.newPanel()
-        expect_no_error(function()
-            status:setSectionWidget(1, widget)
-        end)
+        status:setSectionWidget(1, widget)
+        expect_equal(1, status:getChildCount())
     end)
 
     -- @covers LAccordion:addSection
@@ -4122,6 +4135,7 @@ end)
 end
 -- END test_ui_missing_unit.lua
 
+-- @describe ui lifecycle contract
 describe("ui lifecycle contract", function()
 -- @covers LUiWidget:isValid
 it("widget handles report stale state after clear", function()
@@ -4146,6 +4160,27 @@ it("destroy invalidates a widget subtree and removes stale references", function
     expect_equal(2, lurek.ui.destroy(parent))
     expect_false(parent:isValid())
     expect_false(child:isValid())
+end)
+
+-- @covers lurek.ui.getRuntimeStats
+it("getRuntimeStats exposes bounded work counters", function()
+    local button = lurek.ui.newButton("stats")
+    lurek.ui.update(0)
+    local stats = lurek.ui.getRuntimeStats()
+    expect_true(stats.liveWidgets >= 1)
+    expect_true(stats.layoutPasses >= 0)
+    expect_true(stats.lastFrameCommands >= 0)
+end)
+
+-- @covers lurek.ui.setSafeArea
+it("setSafeArea accepts normalized insets and rejects negative values", function()
+    lurek.ui.updateResolution(200, 100)
+    expect_no_error(function()
+        lurek.ui.setSafeArea(10, 20, 5, 15)
+    end)
+    expect_error(function()
+        lurek.ui.setSafeArea(-1, 0, 0, 0)
+    end)
 end)
 
 -- @covers LUiWidget:destroy

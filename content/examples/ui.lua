@@ -6855,43 +6855,26 @@ do
     lurek.log.info(tostring("addChild/animateAlpha/animatePosition ok; childCount:") .. " " .. tostring(cnt))
 end
 
---@api: LUiWidget:attachToEntity
-do
-
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
-    w:animateAlpha(0.0, 1.0, false)
-    local animating = w:isAnimating()
-    w:cancelAnimations()
-    w:bind("click")
-    w:detachFromEntity()
-    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
-end
-
 --@api: LUiWidget:bind
 do
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false)
     local animating = w:isAnimating()
     w:cancelAnimations()
     w:bind("click")
-    w:detachFromEntity()
-    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
+    lurek.log.info(tostring("bind/cancelAnimations ok"))
 end
 
 --@api: LUiWidget:cancelAnimations
 do
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false)
     local animating = w:isAnimating()
     w:cancelAnimations()
     w:bind("click")
-    w:detachFromEntity()
-    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
+    lurek.log.info(tostring("bind/cancelAnimations ok"))
 end
 
 --@api: LCustomWidget:setAnchor
@@ -6902,35 +6885,7 @@ do
     w:clearAnchor()
     w:setPosition(10, 10)
     local hit = w:containsPoint(15, 15)
-    w:attachToEntity(2)
-    w:detachFromEntity()
-    lurek.log.info(tostring("clearAnchor/containsPoint:") .. " " .. tostring(hit) .. " " .. tostring("detachFromEntity ok"))
-end
-
---@api: LCustomWidget:detachFromEntity
-do
-
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor()
-    w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15)
-    w:attachToEntity(2)
-    w:detachFromEntity()
-    lurek.log.info(tostring("clearAnchor/containsPoint:") .. " " .. tostring(hit) .. " " .. tostring("detachFromEntity ok"))
-end
-
---@api: LUiWidget:detachFromEntity
-do
-
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor()
-    w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15)
-    w:attachToEntity(2)
-    w:detachFromEntity()
-    lurek.log.info(tostring("clearAnchor/containsPoint:") .. " " .. tostring(hit) .. " " .. tostring("detachFromEntity ok"))
+    lurek.log.info(tostring("clearAnchor/containsPoint:") .. " " .. tostring(hit))
 end
 
 --@api: LCustomWidget:setId
@@ -7621,12 +7576,14 @@ end
 --@api: lurek.ui.loadLayoutGameFile
 do
 
-    local ok, result = pcall(function()
+    -- Deprecated alias: migrate this call to loadLayoutFile with the same GameFS path.
+    local ok, legacy = pcall(function()
         return lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
     end)
-    lurek.log.info(tostring("loadLayoutGameFile ok:") .. " " .. tostring(ok) .. " " .. tostring("result:") .. " " .. tostring(tostring(result)))
-    lurek.log.info(tostring("result type:") .. " " .. tostring(type(result)))
-    lurek.log.info(tostring("loaded layout:") .. " " .. tostring(tostring(ok and result ~= nil)))
+    local canonical = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
+    lurek.log.info(tostring("loadLayoutGameFile deprecated ok:") .. " " .. tostring(ok))
+    lurek.log.info(tostring("use loadLayoutFile instead:") .. " " .. tostring(canonical:isValid()))
+    lurek.log.info(tostring("legacy handle valid:") .. " " .. tostring(ok and legacy:isValid()))
 end
 
 --@api: lurek.ui.mousemoved
@@ -8799,4 +8756,23 @@ do
     lurek.ui.beginDrag(source)
     lurek.ui.dropOn(target)
     lurek.ui.update(0)
+end
+
+--@api: lurek.ui.getRuntimeStats
+do
+    local stats = lurek.ui.getRuntimeStats()
+    local live = stats.liveWidgets
+    local commands = stats.lastFrameCommands
+    local layouts = stats.layoutPasses
+    lurek.log.info(tostring("ui telemetry:") .. " " .. tostring(live) .. "/" .. tostring(commands) .. "/" .. tostring(layouts))
+end
+
+--@api: lurek.ui.setSafeArea
+do
+    lurek.ui.updateResolution(1280, 720)
+    lurek.ui.setSafeArea(24, 0, 12, 0)
+    local panel = lurek.ui.newPanel()
+    panel:setSize(200, 80)
+    lurek.ui.update(0)
+    lurek.log.info("safe-area insets applied to UI root layout")
 end

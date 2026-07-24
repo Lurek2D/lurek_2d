@@ -1,13 +1,14 @@
-//! Owns the control widget model for the ui subsystem and keeps its rules local to this file.
-//! Centers the implementation around normalized_range_or, Button, new, with helpers kept close to their invariants.
-//! Defines how controls data is validated, transformed, or stored before neighboring systems use it.
-//! Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-//! Keeps public crate helpers focused on controls behavior while Lua registration stays elsewhere.
-//! Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-//! Use this file when changing controls defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping controls calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
+//! Defines retained control widgets such as buttons, text inputs, selectors, sliders, and value displays for UI trees.
+//! Each type owns local value, selection, range, and presentation state while WidgetBase owns geometry and flags.
+//! Constructors normalize finite ranges and defaults so layout, input, and rendering consume valid control state.
+//! GuiContext owns tree membership and lifecycle; this file deliberately does not dispatch Lua callbacks or render pixels.
+//! Lua bindings convert script arguments into these types, while context input mutates them and render reads their state.
+//! Open this file for control data invariants, default values, selection semantics, and widget-specific state transitions.
+//! Text editing details remain with the input route, and general layouts remain owned by container and context passes.
+//! This data model keeps controls cloneable for transactional layout loading and deterministic software captures.
+//! Public constructors make no external allocation or callback registration, preserving context-owned lifetime rules.
+//! Neighboring extras types cover editor widgets; add common controls only when they share this base contract.
+//! Range and option changes keep labels, dirty generations, and one-based Lua selection rules coherent.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 

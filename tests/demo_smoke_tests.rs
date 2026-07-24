@@ -1,4 +1,4 @@
-//! Demo smoke tests — binary screenshot tests for `content/games/` demos.
+//! Demo smoke tests — binary screenshot tests for `lurek_2d_content/games/` demos.
 //!
 //! Per repository memory and `.github/copilot-instructions.md` (TST-05),
 //! binary screenshot tests for game demos live here as `#[ignore]` tests.
@@ -154,13 +154,13 @@ macro_rules! demo_smoke_test {
 
 // ─── arcade demos ─────────────────────────────────────────────────────────────
 
-demo_smoke_test!(demo_smoke_cannon_fodder, "content/games/cannon_fodder");
-demo_smoke_test!(demo_smoke_dungeon_crawler, "content/games/dungeon_crawler");
-demo_smoke_test!(demo_smoke_eu2, "content/games/eu2");
-demo_smoke_test!(demo_smoke_finance_app, "content/games/finance_app");
-demo_smoke_test!(demo_smoke_hex_logistics, "content/games/hex_logistics");
-demo_smoke_test!(demo_smoke_music_composer, "content/games/music_composer");
-demo_smoke_test!(demo_smoke_sensible_soccer, "content/games/sensible_soccer");
+demo_smoke_test!(demo_smoke_cannon_fodder, "lurek_2d_content/games/cannon_fodder");
+demo_smoke_test!(demo_smoke_dungeon_crawler, "lurek_2d_content/games/dungeon_crawler");
+demo_smoke_test!(demo_smoke_eu2, "lurek_2d_content/games/eu2");
+demo_smoke_test!(demo_smoke_finance_app, "lurek_2d_content/games/finance_app");
+demo_smoke_test!(demo_smoke_hex_logistics, "lurek_2d_content/games/hex_logistics");
+demo_smoke_test!(demo_smoke_music_composer, "lurek_2d_content/games/music_composer");
+demo_smoke_test!(demo_smoke_sensible_soccer, "lurek_2d_content/games/sensible_soccer");
 
 // ─── simulation demos ─────────────────────────────────────────────────────────
 

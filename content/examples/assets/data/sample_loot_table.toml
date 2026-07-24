@@ -1,0 +1,4 @@
+entries = [
+  { id = "wood", weight = 3.0 },
+  { id = "stone", weight = 1.0 },
+]

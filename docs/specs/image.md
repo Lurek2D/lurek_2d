@@ -13,7 +13,7 @@
 - Source path: `src/image`
 - Binding: `src/lua_api/image_api.rs`
 - Namespace: `lurek.image`
-- Lua API surface: `15` functions, `12` types, `106` methods
+- Lua API surface: `16` functions, `12` types, `106` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -180,6 +180,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 - `lurek.image.saveGIF(frames, filename, opts?) -> nil`: Encodes a sequence of equally sized image frames as an animated GIF.
 - `lurek.image.saveImage(img_ud, filename) -> nil`: Saves an image data object to a path under the current game directory.
 - `lurek.image.savePNG(img_ud, filename) -> nil`: Encodes image data as PNG and writes it under the current game directory.
+- `lurek.image.savePNGWorkspace(img_ud, filename) -> nil`: Encodes image data as PNG and atomically writes it to a user-authorized workspace mount.
 
 ### Callbacks
 

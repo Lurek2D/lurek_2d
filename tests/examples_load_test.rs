@@ -16,6 +16,7 @@ use lurek2d::runtime::config::Config;
 use lurek2d::runtime::RuntimeMode;
 
 fn make_vm() -> mlua::Lua {
+    std::fs::create_dir_all("save").expect("create example save directory");
     let mut shared = SharedState::new(800, 600, "ExamplesTest", PathBuf::from("."));
     shared.runtime_mode = RuntimeMode::Headless;
     let state = Rc::new(RefCell::new(shared));

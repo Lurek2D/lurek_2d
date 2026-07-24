@@ -84,11 +84,11 @@ def _write_incubator_readme() -> None:
     content = """# Game Incubator
 
 This shelf holds design-only, skeleton, or incomplete game/app demos moved out
-of the public `content/games/<name>` catalog.
+of the public `lurek_2d_content/games/<name>` catalog.
 
 Entries here are intentionally not discovered by `tools/demos/smoke_sweep.py`
 or the generated public demo catalog. Promote an entry back to
-`content/games/<name>` only after it has real gameplay, README,
+`lurek_2d_content/games/<name>` only after it has real gameplay, README,
 screen, preview GIF, static validation, and smoke evidence.
 """
     readme.parent.mkdir(parents=True, exist_ok=True)

@@ -2,7 +2,7 @@
 
 > **Audience:** Product, strategy, engine contributors, potential adopters.
 > **Goal:** Document every realistic and aspirational use case for Lurek2D, including the build variant required, the specific module combination that enables it, competitive position, constraints, and complexity level.
-> **Source ground truth:** `README.md`, `docs/lurek2d_positioning.md`, `docs/architecture/engine-architecture.md`, `Cargo.toml`, `src/agent/`, `ideas/`, `content/games/`, `content/examples/`, `library/`.
+> **Source ground truth:** `README.md`, `docs/lurek2d_positioning.md`, `docs/architecture/engine-architecture.md`, `Cargo.toml`, `src/agent/`, `ideas/`, `lurek_2d_content/games/`, `content/examples/`, `library/`.
 
 ---
 
@@ -319,8 +319,8 @@ This is where Lurek2D differentiates from Love2D and Godot: the `province`, `glo
 
 ### Examples Already in Repo
 
-- `content/games/eu2/` — EU-style strategy map
-- `content/games/hex_logistics/` — hex-grid logistics loop
+- `lurek_2d_content/games/eu2/` — EU-style strategy map
+- `lurek_2d_content/games/hex_logistics/` — hex-grid logistics loop
 - `ideas/IDEA.txt` — full digital twin / supply chain simulator design
 
 ### Build Variant
@@ -824,7 +824,7 @@ Python (Gymnasium, PyTorch) is the standard. Lurek2D's advantage: single binary,
 
 A developer rebuilds a classic arcade game (Pong, Tetris, Pac-Man, Space Invaders, Asteroids, Boulder Dash, Donkey Kong, Galaga, Snake) as a teaching exercise or portfolio piece, or creates an original 2D game inspired by the classics.
 
-The repo includes reference implementations such as `content/games/cannon_fodder/`, `content/games/dungeon_crawler/`, and `content/games/sensible_soccer/`. These serve as starting points and teaching artefacts.
+The repo includes reference implementations such as `lurek_2d_content/games/cannon_fodder/`, `lurek_2d_content/games/dungeon_crawler/`, and `lurek_2d_content/games/sensible_soccer/`. These serve as starting points and teaching artefacts.
 
 ### Build Variant
 
@@ -865,7 +865,7 @@ Pico-8 and TIC-80 are popular for retro games but have artificial constraints (1
 
 ### Description
 
-A writer or small studio builds a dialogue-driven game: visual novel, courtroom drama, social deduction game, or narrative adventure. Use `content/examples/dialog.lua` and `content/examples/scene.lua` for API-level references, then promote complete playable work to `content/games/<name>/`.
+A writer or small studio builds a dialogue-driven game: visual novel, courtroom drama, social deduction game, or narrative adventure. Use `content/examples/dialog.lua` and `content/examples/scene.lua` for API-level references, then promote complete playable work to `lurek_2d_content/games/<name>/`.
 
 The engine `lurek.dialog` module provides conversation graph, sequencer, and safe Ink-subset story state management.
 
@@ -909,7 +909,7 @@ The engine `lurek.dialog` module provides conversation graph, sequencer, and saf
 
 ### Description
 
-Physics-heavy sports or arcade games: golf, pinball, billiards, bowling, drift racing, ski jump, trajectory-based sports, boxing, tennis. The repo includes `content/games/sensible_soccer/` as the current sports reference.
+Physics-heavy sports or arcade games: golf, pinball, billiards, bowling, drift racing, ski jump, trajectory-based sports, boxing, tennis. The repo includes `lurek_2d_content/games/sensible_soccer/` as the current sports reference.
 
 The `rapier2d` physics backend handles rigid bodies, joints, and collision detection; the Lua API wraps this cleanly via `lurek.physics.*`.
 
@@ -944,7 +944,7 @@ The `rapier2d` physics backend handles rigid bodies, joints, and collision detec
 
 ### Description
 
-An interactive creative application built with Lurek2D: a piano roll sequencer, a step sequencer, a generative music tool, or a music visualiser. The repo includes `content/games/music_composer/` as a working reference (32-beat × 24-note grid with BPM control, preset patterns, and per-track mute).
+An interactive creative application built with Lurek2D: a piano roll sequencer, a step sequencer, a generative music tool, or a music visualiser. The repo includes `lurek_2d_content/games/music_composer/` as a working reference (32-beat × 24-note grid with BPM control, preset patterns, and per-track mute).
 
 ### Build Variant
 
@@ -1133,7 +1133,7 @@ A developer or researcher builds an interactive visualisation of a graph: networ
 
 ### Description
 
-A desktop application for personal finance management: budget tracking, expense categorisation, multi-year trend analysis, anomaly detection, and KPI dashboards. The repo includes a working reference implementation: `content/games/finance_app/` — a complete 5-person household finance dashboard with:
+A desktop application for personal finance management: budget tracking, expense categorisation, multi-year trend analysis, anomaly detection, and KPI dashboards. The repo includes a working reference implementation: `lurek_2d_content/games/finance_app/` — a complete 5-person household finance dashboard with:
 
 - Deterministic CSV generation (5 years, 2021–2025, multiple transaction types)
 - In-memory SQL database (`LDatabase`) with parameterised queries from external `.sql` files
@@ -1187,7 +1187,7 @@ A desktop application for personal finance management: budget tracking, expense 
 
 A trader or analyst builds a real-time stock tracking dashboard: candlestick charts, technical indicators (SMA, EMA, RSI, Bollinger Bands), portfolio performance, watchlists, and price alerts. Data arrives via HTTP polling or WebSocket from a market data API (or a local mock).
 
-Use `content/games/finance_app/` as the current app-style dashboard reference.
+Use `lurek_2d_content/games/finance_app/` as the current app-style dashboard reference.
 
 ### Build Variant
 
@@ -1221,7 +1221,7 @@ Use `content/games/finance_app/` as the current app-style dashboard reference.
 
 ### Description
 
-An analyst or scientist builds an interactive data exploration tool: upload CSV/JSON, select chart type (bar, line, scatter, pie, heatmap), apply filters, zoom/pan, export. Use `content/games/finance_app/` and `content/examples/charts.lua` as current references.
+An analyst or scientist builds an interactive data exploration tool: upload CSV/JSON, select chart type (bar, line, scatter, pie, heatmap), apply filters, zoom/pan, export. Use `lurek_2d_content/games/finance_app/` and `content/examples/charts.lua` as current references.
 
 ### Build Variant
 
@@ -1256,7 +1256,7 @@ An analyst or scientist builds an interactive data exploration tool: upload CSV/
 
 ### Description
 
-An artist or developer builds a CPU-side image processing tool: apply filters (blur, sharpen, colour correction, edge detection), layer blending, pixel-level manipulation, batch processing across hundreds of files. Use `content/examples/image.lua` as the current API reference before promoting a complete app to `content/games/<name>/`.
+An artist or developer builds a CPU-side image processing tool: apply filters (blur, sharpen, colour correction, edge detection), layer blending, pixel-level manipulation, batch processing across hundreds of files. Use `content/examples/image.lua` as the current API reference before promoting a complete app to `lurek_2d_content/games/<name>/`.
 
 ### Build Variant
 
@@ -2345,6 +2345,6 @@ That combination is Lurek2D's defensible position.
 
 ---
 
-*Document generated 2026-05-28. Sources: README.md, docs/lurek2d_positioning.md, docs/architecture/engine-architecture.md, Cargo.toml, src/agent/, ideas/, content/games/, content/examples/, library/.*
+*Document generated 2026-05-28. Sources: README.md, docs/lurek2d_positioning.md, docs/architecture/engine-architecture.md, Cargo.toml, src/agent/, ideas/, lurek_2d_content/games/, content/examples/, library/.*
 *Update this file when a new module is added or a new use case is validated with a working demo.*
 

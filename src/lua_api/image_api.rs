@@ -1035,6 +1035,26 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     let s = state.clone();
+    // -- savePNGWorkspace --
+    /// Encodes image data as PNG and atomically writes it to a user-authorized workspace mount.
+    /// @param | img_ud | LImageData | Image data handle to encode.
+    /// @param | filename | string | Virtual path inside a writable workspace mount.
+    tbl.set(
+        "savePNGWorkspace",
+        lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
+            let raw = img_ud
+                .borrow::<ImageData>()
+                .map_err(|_| LuaError::RuntimeError("lurek.image.savePNGWorkspace: argument must be an ImageData".into()))?;
+            let bytes = raw
+                .encode_png()
+                .map_err(|error| LuaError::RuntimeError(format!("lurek.image.savePNGWorkspace: {error}")))?;
+            s.borrow()
+                .fs
+                .write_workspace_bytes_atomic(&filename, &bytes)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+    let s = state.clone();
     // -- saveGIF --
     /// Encodes a sequence of equally sized image frames as an animated GIF.
     /// @param | frames | table | Array of `LImageData` frames in playback order.

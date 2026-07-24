@@ -1,6 +1,6 @@
 ---
 name: convert-gemini-game
-description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScript, HTML canvas, or other web game prototypes into runnable Lurek2D Lua games under content/games. Skip it for engine internals, docs-only edits, or tasks that do not start from an existing web prototype."
+description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScript, HTML canvas, or other web game prototypes into runnable Lurek2D Lua games under lurek_2d_content/games. Skip it for engine internals, docs-only edits, or tasks that do not start from an existing web prototype."
 ---
 
 # Convert Gemini Game
@@ -14,7 +14,7 @@ description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScr
 - Browser key/pointer handlers become named `lurek.input` actions plus mouse queries, with edge-triggered actions separated from held movement to avoid frame-dependent toggles.
 - React effects, `requestAnimationFrame`, intervals, and CSS transitions encode timing semantics that map to `dt`, `lurek.timer`, or `lurek.tween`; browser scheduling and fixed 60 Hz assumptions do not survive the port.
 - Physics, particles, audio, camera, and UI should use engine owners when their behavior matters; local math is for prototype-specific rules, not a shadow implementation of an existing subsystem.
-- Individual calls are best verified in `content/examples/` and generated API docs, while neighboring `content/games/` projects teach composition, asset loading, boot flow, and completeness.
+- Individual calls are best verified in `content/examples/` and generated API docs, while neighboring `lurek_2d_content/games/` projects teach composition, asset loading, boot flow, and completeness.
 - Preserve the feedback loop—player action, visible response, state consequence, and win/loss progression—even when DOM layout, CSS ornament, and React abstractions disappear.
 - Treat browser layout as evidence of visual intent rather than a geometry contract. Flex/grid panels usually map to TOML UI or explicit HUD groups, while absolutely positioned canvas labels often belong in world-space rendering; choose according to how the element should react to camera movement and resize.
 - Separate simulation state from presentation caches during translation. React often derives display data during render, but Lurek draw callbacks should not advance timers, mutate economy/combat state, or create persistent engine resources because multiple draws or screenshot paths would then change gameplay.
@@ -24,7 +24,7 @@ description: "Load this skill when converting Gemini Canvas, React, TSX, JavaScr
 
 ## Workflow
 - Decompose the source into a brief naming authoritative state, update cadence, action bindings, world/UI passes, assets, random seeds, collision/economy rules, and completion states; map every browser-only mechanism to a verified Lurek replacement or explicit Lua fallback.
-- Locate the closest `content/games/` owner and per-API examples before coding. Choose a new directory only when no project owns the playable concept, and keep bulky source/comparison notes under `work/<short-chat-name>/`.
+- Locate the closest `lurek_2d_content/games/` owner and per-API examples before coding. Choose a new directory only when no project owns the playable concept, and keep bulky source/comparison notes under `work/<short-chat-name>/`.
 - Port one vertical slice first: initialize local/module state, bind semantic actions, update continuous quantities from `dt`, render correct passes, and preserve action-to-feedback timing; add physics, audio, particles, assets, and menus after the loop boots cleanly.
 - Compare rules and transitions rather than pixels, document simplifications and API gaps, then run `validate_game.py`, launch the exact entry point, and use the targeted smoke sweep to catch unknown callbacks, asset paths, and lifecycle failures.
 - Build a source-to-target state table before implementation: list every React state variable or JavaScript singleton, its writer, update phase, persistence lifetime, and Lua owner. Identify values that are merely derived for rendering so they are not ported as competing authoritative state.

@@ -8,7 +8,7 @@ do
 
 local DDS_FIXTURE = "tests/fixtures/test_dxt1.dds"
 local PNG_FIXTURE = "content/examples/assets/images/sample_texture.png"
-local PROVINCE_FIXTURE = "content/games/eu2/map.png"
+local PROVINCE_FIXTURE = "lurek_2d_content/games/eu2/map.png"
 local ROUNDTRIP_IMAGE_PATH = "save/test_image_core_roundtrip.limg"
 local ROUNDTRIP_PNG_PATH = "save/test_image_core_roundtrip.png"
 local ROUNDTRIP_GIF_PATH = "save/test_image_core_roundtrip.gif"
@@ -182,6 +182,22 @@ describe("lurek.image module functions", function()
         expect_equal(2, loaded:getHeight())
     end)
 
+    -- @covers lurek.image.savePNGWorkspace
+    it("savePNGWorkspace writes a PNG inside a mounted project workspace", function()
+        local source = "save/test_image_workspace/"
+        local mountpoint = "unit_png_workspace"
+        lurek.filesystem.createDirectory(source)
+        lurek.filesystem.unmount(mountpoint)
+        lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+        local path = mountpoint .. "/content/sprites/pixel.png"
+        local src = solid_image(2, 2, 23, 45, 67, 255)
+        lurek.image.savePNGWorkspace(src, path)
+        local loaded = lurek.image.newImageData(path)
+        expect_equal(2, loaded:getWidth())
+        expect_pixel(loaded, 0, 0, 23, 45, 67, 255)
+        lurek.filesystem.unmount(mountpoint)
+    end)
+
     -- @covers lurek.image.saveGIF
     it("saveGIF writes an animated GIF header and output file", function()
         local frames = {}
@@ -219,6 +235,7 @@ describe("LCompressedImageData methods", function()
     it("getDimensions is pending because this runtime build rejects DDS", function()
         pending("DDS compressed textures are not supported in this runtime build; use PNG")
     end)
+
 
     -- @covers LCompressedImageData:getFormat
     it("getFormat is pending because this runtime build rejects DDS", function()

@@ -1,7 +1,7 @@
-//! Owns the UI context lifecycle implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI context lifecycle data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI context lifecycle behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Implements widget creation, removal, reparenting, root clear, and generational slot invalidation for GuiContext.
+//! Removal repairs child links, focus, capture, modal and drag state, and queued references before reuse is possible.
+//! These routines own tree and handle lifecycle only; layout, input, rendering, and Lua callback dispatch remain separate.
+//! Public handles resolve here, so stale or foreign values fail instead of accidentally selecting a recycled storage slot.
 
 use super::*;
 

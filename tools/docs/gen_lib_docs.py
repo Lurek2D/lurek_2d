@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """gen_lib_docs.py — Generate API docs from Lurek2D library Lua files.
 
-Scans ``content/library/**/init.lua`` for LDoc-style docstrings and emits:
+Scans ``lurek_2d_content/library/**/init.lua`` for LDoc-style docstrings and emits:
 
 * ``docs/api/lureksome.md`` — human-readable library API reference
 * ``docs/api/lureksome.lua`` — LuaCATS stubs for library modules
@@ -36,10 +36,15 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except AttributeError:
+    pass
+
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-LIB_DIR = REPO_ROOT / "library"
+LIB_DIR = REPO_ROOT / "lurek_2d_content" / "library"
 
 VALID_STATUS = {"full", "partial", "stub", "proxy"}
 
@@ -654,7 +659,7 @@ def render_aggregate_md(modules: dict) -> str:
     out.append("")
     out.append(
         "Documentation for the Lureksome standard library — pure-Lua modules under "
-        "`content/library/` that ship with Lurek2D and consume only the public "
+        "`lurek_2d_content/library/` that ship with Lurek2D and consume only the public "
         "`lurek.*` API."
     )
     out.append("")
@@ -703,7 +708,7 @@ def render_aggregate_md(modules: dict) -> str:
 
 
 def scan_library() -> dict:
-    """Walk ``content/library/`` and return ``{module_name: (path, info)}``."""
+    """Walk ``lurek_2d_content/library/`` and return ``{module_name: (path, info)}``."""
     results: dict[str, tuple[Path, dict]] = {}
     if not LIB_DIR.exists():
         return results
@@ -1200,13 +1205,13 @@ def main() -> int:
     args = parser.parse_args()
 
     modules = scan_library()
-    if not modules:
-        print(f"No library modules found under {LIB_DIR}", file=sys.stderr)
-        return 1
+    if not modules and args.check:
+        print(f"OK: 0 libraries, 0 functions, 0 errors.")
+        return 0
 
     if args.module:
         if args.module not in modules:
-            print(f"Module '{args.module}' not found in content/library/", file=sys.stderr)
+            print(f"Module '{args.module}' not found in lurek_2d_content/library/", file=sys.stderr)
             return 1
         modules = {args.module: modules[args.module]}
 

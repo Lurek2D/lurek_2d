@@ -6,15 +6,15 @@
 
 ## Files
 - `examples/`: Single-file, per-API reference examples.
-- `games/`: Finished playable games and mini games only.
+- `../lurek_2d_content/games/`: Finished playable games and mini games only.
 - `layouts/`: TOML UI layouts.
 - `snippets/`: Sources for VS Code snippets.
 
 ## Rules
 - Use real `lurek.*` calls, not stubs or placeholder tables.
-- Keep the ownership chain clear: public API docs feed `content/examples/`, examples feed Lua unit tests, evidence/golden prove selected behavior, and only complete products belong in `content/games/`.
+- Keep the ownership chain clear: public API docs feed `content/examples/`, examples feed Lua unit tests, evidence/golden prove selected behavior, and only complete products belong in `lurek_2d_content/games/`.
 - API examples must use exact `--@api:` marker-owned `do ... end` blocks; do not add shared helpers or setup outside those blocks.
-- Put API showcases, mechanic labs, and feature demonstrations in `content/examples/` or `tests/lua/evidence/`, not in `content/games/`.
+- Put API showcases, mechanic labs, and feature demonstrations in `content/examples/` or `tests/lua/evidence/`, not in `lurek_2d_content/games/`.
 - Scale movement, fades, and tweens by `dt`.
 - Keep state in locals, modules, or context tables; avoid globals.
 - Use forward slashes in asset paths.

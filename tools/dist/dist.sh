@@ -96,7 +96,7 @@ LUREK2D $VERSION — ${TARGET_TRIPLE} Distribution
 
 How to run a game
 -----------------
-  ./lurek2d  content/games/music_composer
+  ./lurek2d  lurek_2d_content/games/music_composer
   ./lurek2d  path/to/your_game
 
 How to show the splash screen (no game)

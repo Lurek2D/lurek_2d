@@ -68,21 +68,25 @@ Single registry for all durable tooling under `tools/`.
 - `audit/thin_modrs_audit.py` [audit; durable; mcp:no] - thin_modrs_audit.py — Enforce TST-04 (thin `mod.rs`).
 - `audit/thin_wrapper_audit.py` [audit; durable; mcp:no] - thin_wrapper_audit.py — Enforce TST-03 (thin wrappers in src/lua_api/).
 - `audit/tool_registry_audit.py` [audit; durable; mcp:candidate] - Audit the single-source tools registry for internal consistency.
+- `audit/ui_api_inventory.py` [audit; durable; mcp:no] - Validate the canonical generated inventory for the public ``lurek.ui`` API.
+- `audit/ui_boundary_check.py` [audit; durable; mcp:no] - Enforce the UI/render ownership boundary described in the UI architecture spec.
+- `audit/ui_docs_contract.py` [audit; durable; mcp:no] - Check source-backed UI documentation claims and UI-owned architecture links.
+- `audit/ui_perf_gate.py` [audit; durable; mcp:no] - Run release-mode UI scenarios and compare them to a reviewed baseline.
 - `audit/unit_test_api_coverage.py` [audit; durable; mcp:no] - unit_test_api_coverage.py - Lurek2D unit-test API coverage analysis.
 - `audit/wiki_coverage.py` [audit; durable; mcp:no] - Audit wiki page coverage against engine modules and Lua API.
 
 ## demos
 
-- `demos/audit_games.py` [maintenance; targeted-maintenance; mcp:no] - Audit content/games readiness for the public demo catalog.
+- `demos/audit_games.py` [maintenance; targeted-maintenance; mcp:no] - Audit lurek_2d_content/games readiness for the public demo catalog.
 - `demos/audit_showcase.py` [maintenance; targeted-maintenance; mcp:no] - Inventory and classify example-style entries.
-- `demos/capture_demo_gifs.py` [maintenance; targeted-maintenance; mcp:no] - Create preview.gif files for content/games demos from existing screen.png.
-- `demos/game_catalog.py` [maintenance; targeted-maintenance; mcp:no] - Shared discovery and classification helpers for content/games catalogs.
-- `demos/gen_demo_catalog.py` [maintenance; targeted-maintenance; mcp:no] - Generate content/games/README.md and catalog.json from audited metadata.
+- `demos/capture_demo_gifs.py` [maintenance; targeted-maintenance; mcp:no] - Create preview.gif files for lurek_2d_content/games demos from existing screen.png.
+- `demos/game_catalog.py` [maintenance; targeted-maintenance; mcp:no] - Shared discovery and classification helpers for lurek_2d_content/games catalogs.
+- `demos/gen_demo_catalog.py` [maintenance; targeted-maintenance; mcp:no] - Generate lurek_2d_content/games/README.md and catalog.json from audited metadata.
 - `demos/gen_demo_screenshots.py` [maintenance; targeted-maintenance; mcp:no] - gen_demo_screenshots.py — Capture a screen.png for every Lurek2D game demo.
-- `demos/gen_game_readmes.py` [maintenance; targeted-maintenance; mcp:no] - gen_game_readmes.py — Generate or repair README.md files for content/games/ projects.
+- `demos/gen_game_readmes.py` [maintenance; targeted-maintenance; mcp:no] - gen_game_readmes.py — Generate or repair README.md files for lurek_2d_content/games/ projects.
 - `demos/migrate_game_shelves.py` [maintenance; targeted-maintenance; mcp:no] - Move non-public game catalog entries into explicit holding shelves.
 - `demos/organize_demos.py` [maintenance; targeted-maintenance; mcp:no] - organize_demos.py — Three-in-one demos maintenance tool.
-- `demos/smoke_sweep.py` [maintenance; targeted-maintenance; mcp:no] - Smoke-sweep every playable project under content/games/ and every single-file
+- `demos/smoke_sweep.py` [maintenance; targeted-maintenance; mcp:no] - Smoke-sweep every playable project under lurek_2d_content/games/ and every single-file
 
 ## dev
 
@@ -193,7 +197,7 @@ Single registry for all durable tooling under `tools/`.
 - `validate/validate_example_coverage.py` [validate; durable; mcp:candidate] - validate_example_coverage.py - Quality gate for example coverage.
 - `validate/validate_game.py` [validate; durable; mcp:candidate] - validate_game.py — Validate Lua game scripts against the Lurek2D API surface.
 - `validate/validate_generated_lua_stubs.py` [validate; durable; mcp:no] - Validate committed generated Lua API artifacts against fresh generator output.
-- `validate/validate_library.py` [validate; durable; mcp:candidate] - Validate Lureksome libraries under content/library/.
+- `validate/validate_library.py` [validate; durable; mcp:candidate] - Validate Lureksome libraries under lurek_2d_content/library/.
 - `validate/validate_lua_api.py` [validate; durable; mcp:no] - validate_lua_api.py -- Validates a Lurek2D lua_api file against the SKILL.md contract.
 - `validate/validate_lua_binding_reports.py` [validate; durable; mcp:candidate] - Validate docstring bindings against code-derived Lua registration snapshots.
 - `validate/validate_module_coverage.py` [validate; durable; mcp:candidate] - Validate top-level module/spec coverage.

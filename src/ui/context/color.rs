@@ -1,6 +1,6 @@
-//! Owns the UI context color implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI context color data is validated, transformed, or stored before neighboring systems consume it.
+//! Implements color conversion and interpolation helpers used when GuiContext updates retained widget state.
+//! Helpers normalize finite channels and preserve the UI 0..1 color convention before rendering reads widget values.
+//! Theme ownership and paint selection remain in theme and render; this file supplies only context-local transforms.
 
 use super::*;
 

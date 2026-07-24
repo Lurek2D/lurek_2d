@@ -115,7 +115,7 @@ print("decrypted=" .. bd:getString())
 -- @description Use hash() to derive a compact, reproducible lookup key from an asset path or chunk content. Use "sha256" for integrity checks; "xxh64" for fast non-security cache keys (~4x faster).
 -- @body
 local SNIP_1_d    = lurek.binary
-local path = "content/games/mymod/map01.toml"
+local path = "lurek_2d_content/games/mymod/map01.toml"
 local secure_key = d.hash("sha256", path)
 print("sha256=" .. secure_key)
 

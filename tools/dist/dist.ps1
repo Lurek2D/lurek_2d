@@ -193,7 +193,7 @@ if (Test-Path $DemosSource) {
     $DemosDest = Join-Path $PackageDir 'games'
     if (Test-Path $DemosDest) { Remove-Item $DemosDest -Recurse -Force }
     Copy-Item $DemosSource -Destination $DemosDest -Recurse -Force
-    Write-OK "Copied content/games/"
+    Write-OK "Copied lurek_2d_content/games/"
 }
 
 $LibrarySource = Join-Path $WorkspaceRoot 'library'

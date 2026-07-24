@@ -1,11 +1,11 @@
 local Fixture = {}
 
 local EU2 = {
-    map = "content/games/eu2/map.png",
-    colors = "content/games/eu2/prov_cols.csv",
-    provinces = "content/games/eu2/province.toml",
-    scenario = "content/games/eu2/scripts/scenario.lua",
-    state = "content/games/eu2/scripts/state.lua",
+    map = "lurek_2d_content/games/eu2/map.png",
+    colors = "lurek_2d_content/games/eu2/prov_cols.csv",
+    provinces = "lurek_2d_content/games/eu2/province.toml",
+    scenario = "lurek_2d_content/games/eu2/scripts/scenario.lua",
+    state = "lurek_2d_content/games/eu2/scripts/state.lua",
 }
 
 local FONT = {

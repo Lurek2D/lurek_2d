@@ -198,7 +198,7 @@ end
 
 ### `lurek.ui.beginDrag`
 
-Begins a drag operation on a widget.
+Begins a drag operation on a live widget handle.
 
 ```lua
 lurek.ui.beginDrag(widget)
@@ -208,7 +208,7 @@ lurek.ui.beginDrag(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | table|number | The widget table or widget index. |
+| `widget` | [LUiWidget](#luiwidget) | The source widget handle; stale, foreign, and numeric values are rejected. |
 
 **Returns**
 
@@ -325,7 +325,7 @@ lurek.ui.destroy(widget, recursive)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | [LUiWidget](#luiwidget) | The live widget table to destroy. |
+| `widget` | [LUiWidget](#luiwidget) | The live widget handle to destroy. |
 | `recursive?` | boolean | Whether descendants are destroyed; defaults to true. |
 
 **Returns**
@@ -421,7 +421,7 @@ lurek.ui.dropOn(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | table|number | The target widget table or widget index. |
+| `target` | [LUiWidget](#luiwidget) | The target widget handle; stale, foreign, and numeric values are rejected. |
 
 **Returns**
 
@@ -457,7 +457,7 @@ lurek.ui.endDrag()
 
 | Type | Description |
 |------|-------------|
-| number | The widget index that was being dragged, or nil if no drag was active. |
+| [LUiWidget](#luiwidget)? | The widget handle that was being dragged, or nil if no drag was active. |
 
 **Example**
 
@@ -666,7 +666,7 @@ end
 
 ### `lurek.ui.getActiveDrag`
 
-Returns the widget index currently being dragged, or nil.
+Returns the live widget currently being dragged, or nil.
 
 ```lua
 lurek.ui.getActiveDrag()
@@ -676,7 +676,7 @@ lurek.ui.getActiveDrag()
 
 | Type | Description |
 |------|-------------|
-| number | The dragged widget index. |
+| [LUiWidget](#luiwidget)? | The dragged widget handle, or nil when no drag is active. |
 
 **Example**
 
@@ -848,6 +848,34 @@ do
     lurek.log.info(tostring("widget count = " .. lurek.ui.getWidgetCount()))
     lurek.log.info(tostring("root widgets = " .. lurek.ui.getWidgetCount()))
     lurek.log.info(tostring("focus exists = " .. tostring(lurek.ui.getFocus() ~= nil)))
+end
+```
+
+---
+
+### `lurek.ui.getRuntimeStats`
+
+Returns bounded UI work counters for development diagnostics.
+
+```lua
+lurek.ui.getRuntimeStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Snapshot with liveWidgets, lastFrameCommands, layoutPasses, eventQueueHighWater, commandLimitRejections, commandCacheHits, and commandCacheMisses. |
+
+**Example**
+
+```lua
+do
+    local stats = lurek.ui.getRuntimeStats()
+    local live = stats.liveWidgets
+    local commands = stats.lastFrameCommands
+    local layouts = stats.layoutPasses
+    lurek.log.info(tostring("ui telemetry:") .. " " .. tostring(live) .. "/" .. tostring(commands) .. "/" .. tostring(layouts))
 end
 ```
 
@@ -1193,7 +1221,7 @@ lurek.ui.loadLayout(def)
 
 | Type | Description |
 |------|-------------|
-| number | The root widget index. |
+| [LUiWidget](#luiwidget) | The new root widget handle. |
 
 **Example**
 
@@ -1235,7 +1263,7 @@ lurek.ui.loadLayoutFile(path)
 
 | Type | Description |
 |------|-------------|
-| number | The root widget index. |
+| [LUiWidget](#luiwidget) | The new root widget handle. |
 
 **Example**
 
@@ -1270,19 +1298,21 @@ lurek.ui.loadLayoutGameFile(path)
 
 | Type | Description |
 |------|-------------|
-| number | The root widget index. |
+| [LUiWidget](#luiwidget) | The new root widget handle. |
 
 **Example**
 
 ```lua
 do
 
-    local ok, result = pcall(function()
+    -- Deprecated alias: migrate this call to loadLayoutFile with the same GameFS path.
+    local ok, legacy = pcall(function()
         return lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
     end)
-    lurek.log.info(tostring("loadLayoutGameFile ok:") .. " " .. tostring(ok) .. " " .. tostring("result:") .. " " .. tostring(tostring(result)))
-    lurek.log.info(tostring("result type:") .. " " .. tostring(type(result)))
-    lurek.log.info(tostring("loaded layout:") .. " " .. tostring(tostring(ok and result ~= nil)))
+    local canonical = lurek.ui.loadLayoutFile("content/examples/assets/layouts/sample_main_menu.toml")
+    lurek.log.info(tostring("loadLayoutGameFile deprecated ok:") .. " " .. tostring(ok))
+    lurek.log.info(tostring("use loadLayoutFile instead:") .. " " .. tostring(canonical:isValid()))
+    lurek.log.info(tostring("legacy handle valid:") .. " " .. tostring(ok and legacy:isValid()))
 end
 ```
 
@@ -3319,7 +3349,7 @@ end
 
 ### `lurek.ui.renderToImage`
 
-Renders the entire UI to a PNG image file.
+Renders the entire UI to a PNG image file. The canonical form is `(width, height, path)`.
 
 ```lua
 lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath)
@@ -3476,7 +3506,7 @@ lurek.ui.setFocus(widget)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget?` | table | The widget table to focus, or nil to clear. |
+| `widget?` | [LUiWidget](#luiwidget) | The widget handle to focus, or nil to clear. |
 
 **Example**
 
@@ -3520,6 +3550,38 @@ do
     local w, h = widget:getSize()
     lurek.log.info("Invoked setFont on widget size " .. w .. "x" .. h)
     if w > 0 then widget:setVisible(true) end
+end
+```
+
+---
+
+### `lurek.ui.setSafeArea`
+
+Supplies normalized window safe-area insets in pixels. Window discovery remains app-owned.
+
+```lua
+lurek.ui.setSafeArea(top, right, bottom, left)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `top` | number | Top inset in pixels; must be finite and non-negative. |
+| `right` | number | Right inset in pixels; must be finite and non-negative. |
+| `bottom` | number | Bottom inset in pixels; must be finite and non-negative. |
+| `left` | number | Left inset in pixels; must be finite and non-negative. |
+
+**Example**
+
+```lua
+do
+    lurek.ui.updateResolution(1280, 720)
+    lurek.ui.setSafeArea(24, 0, 12, 0)
+    local panel = lurek.ui.newPanel()
+    panel:setSize(200, 80)
+    lurek.ui.update(0)
+    lurek.log.info("safe-area insets applied to UI root layout")
 end
 ```
 
@@ -3802,7 +3864,7 @@ lurek.ui.visibleRange(widget, item_count, item_height)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `widget` | table | Live widget table carrying an engine-owned handle. |
+| `widget` | [LUiWidget](#luiwidget) | Live widget handle carrying an engine-owned token. |
 | `item_count` | number | Total number of items. |
 | `item_height` | number | Height of each item in pixels. |
 
@@ -6241,7 +6303,7 @@ LDockPanel:dock(child, side)
 | Name | Type | Description |
 |------|------|-------------|
 | `child` | [LUiWidget](#luiwidget) | The child widget handle to dock. |
-| `side` | string | The dock side ("left", "right", "top", "bottom", "center"). |
+| `side` | string | The dock side ("left", "right", "top", "bottom", "fill" or "center"). |
 
 **Example**
 
@@ -11453,7 +11515,7 @@ end
 
 #### `LStatusBar:setSectionWidget`
 
-Associates a widget with a status bar section (reserved for future use).
+Assigns a live widget to a status bar section. The widget is reparented into the bar and clipped to that section.
 
 ```lua
 LStatusBar:setSectionWidget(section_idx, widget)
@@ -11464,7 +11526,7 @@ LStatusBar:setSectionWidget(section_idx, widget)
 | Name | Type | Description |
 |------|------|-------------|
 | `section_idx` | number | The 1-based section index. |
-| `widget?` | table | The widget table to associate, or nil to clear. |
+| `widget?` | [LUiWidget](#luiwidget) | The widget handle to associate, or nil to clear. |
 
 **Example**
 
@@ -12880,14 +12942,14 @@ end
 Adds a flexible spacer to this toolbar.
 
 ```lua
-LToolbar:addSpacer(_size)
+LToolbar:addSpacer(size)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `_size?` | number | Optional size hint (reserved for future use). |
+| `size?` | number | Fixed main-axis pixels; omit for a flexible spacer. |
 
 **Example**
 
@@ -13952,7 +14014,7 @@ LUiWidget:addChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LUiWidget](#luiwidget) | The live child widget table to add. |
+| `child` | [LUiWidget](#luiwidget) | The live child widget handle to add. |
 
 **Example**
 
@@ -14050,38 +14112,6 @@ end
 
 ---
 
-#### `LUiWidget:attachToEntity`
-
-Attaches this widget to a game entity so it follows the entity's position on screen.
-
-```lua
-LUiWidget:attachToEntity(entity_id)
-```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `entity_id` | number | The entity ID to attach to. |
-
-**Example**
-
-```lua
-do
-
-    local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
-    w:animateAlpha(0.0, 1.0, false)
-    local animating = w:isAnimating()
-    w:cancelAnimations()
-    w:bind("click")
-    w:detachFromEntity()
-    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
-end
-```
-
----
-
 #### `LUiWidget:bind`
 
 Binds this widget to a data key for use with update_bindings.
@@ -14102,13 +14132,11 @@ LUiWidget:bind(key)
 do
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false)
     local animating = w:isAnimating()
     w:cancelAnimations()
     w:bind("click")
-    w:detachFromEntity()
-    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
+    lurek.log.info(tostring("bind/cancelAnimations ok"))
 end
 ```
 
@@ -14134,13 +14162,11 @@ LUiWidget:cancelAnimations()
 do
 
     local w = lurek.ui.newCustomWidget({width=80, height=40})
-    w:attachToEntity(1)
     w:animateAlpha(0.0, 1.0, false)
     local animating = w:isAnimating()
     w:cancelAnimations()
     w:bind("click")
-    w:detachFromEntity()
-    lurek.log.info(tostring("attachToEntity/bind/cancelAnimations ok"))
+    lurek.log.info(tostring("bind/cancelAnimations ok"))
 end
 ```
 
@@ -14284,32 +14310,6 @@ do
     widget:destroy()
     local after = widget:isValid()
     lurek.log.info(tostring("destroyed " .. tostring(before) .. " -> " .. tostring(after)))
-end
-```
-
----
-
-#### `LUiWidget:detachFromEntity`
-
-Detaches this widget from any previously attached entity.
-
-```lua
-LUiWidget:detachFromEntity()
-```
-
-**Example**
-
-```lua
-do
-
-    local w = lurek.ui.newCustomWidget({width=100, height=50})
-    w:setAnchor(0, 0, 1, 0)
-    w:clearAnchor()
-    w:setPosition(10, 10)
-    local hit = w:containsPoint(15, 15)
-    w:attachToEntity(2)
-    w:detachFromEntity()
-    lurek.log.info(tostring("clearAnchor/containsPoint:") .. " " .. tostring(hit) .. " " .. tostring("detachFromEntity ok"))
 end
 ```
 
@@ -14493,7 +14493,7 @@ end
 
 #### `LUiWidget:getChildren`
 
-Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
+Returns live typed child widget handles. Their printable `_idx` field is diagnostic only and is never mutation authority.
 
 ```lua
 LUiWidget:getChildren()
@@ -14503,7 +14503,7 @@ LUiWidget:getChildren()
 
 | Type | Description |
 |------|-------------|
-| LUiWidgetGetChildrenResult | Array of child widget tables. |
+| [LUiWidget](#luiwidget)[] | Array of live child widget handles. |
 
 **Example**
 
@@ -14707,7 +14707,7 @@ end
 
 #### `LUiWidget:getLabelFor`
 
-Returns the widget index associated through `setLabelFor`, or nil.
+Returns the live widget handle associated through `setLabelFor`, or nil.
 
 ```lua
 LUiWidget:getLabelFor()
@@ -14717,7 +14717,7 @@ LUiWidget:getLabelFor()
 
 | Type | Description |
 |------|-------------|
-| number | The linked widget index. |
+| [LUiWidget](#luiwidget)? | The linked widget handle, or nil when unset or released. |
 
 **Example**
 
@@ -15354,7 +15354,7 @@ LUiWidget:removeChild(child)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `child` | [LUiWidget](#luiwidget) | The live child widget table to remove. |
+| `child` | [LUiWidget](#luiwidget) | The live child widget handle to remove. |
 
 **Example**
 

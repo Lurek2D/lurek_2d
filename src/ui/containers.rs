@@ -1,11 +1,11 @@
-//! Owns the UI containers implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI containers data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI containers behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI containers defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near the UI containers state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI containers calculations explicit at their owning subsystem boundary.
+//! Defines retained layouts, panels, scroll panels, tab bars, split panes, stacks, dock panels, and toolbars.
+//! Each container owns local direction, selection, scroll bounds, dock placement, and toolbar-entry configuration.
+//! WidgetBase owns shared geometry, visibility, parent links, and dirty state for every concrete container.
+//! Context layout and input consume this data, while render paints it and Lua bindings translate validated handles.
+//! Container types never own tree lifecycle, callback registries, renderer resources, or GameFS authorization.
+//! Open this file for container defaults and invariants, then trace context passes for interactive behavior.
+//! Keep child-tree ownership in GuiContext so reparenting, destruction, and cycle rejection stay globally consistent.
+//! Keep visual command construction in render, allowing these cloneable values to support transactional layout loading.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Plain box container that groups children with an optional title and scroll flag.

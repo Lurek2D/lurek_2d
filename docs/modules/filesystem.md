@@ -805,6 +805,43 @@ end
 
 ---
 
+### `lurek.filesystem.mountWorkspace`
+
+Mounts a user-selected workspace directory at a non-empty virtual mount point.
+
+```lua
+lurek.filesystem.mountWorkspace(src, mp)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `src` | string | User-selected workspace directory path. |
+| `mp` | string | Non-empty virtual mount point such as `project`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the workspace mount succeeds. |
+
+**Example**
+
+```lua
+do
+    local source = "save/example_workspace_mount/"
+    local mountpoint = "example_workspace"
+    lurek.filesystem.createDirectory(source)
+    lurek.filesystem.unmount(mountpoint)
+    local mounted = lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+    lurek.log.info("workspace mounted=" .. tostring(mounted) .. " at " .. mountpoint)
+    lurek.filesystem.unmount(mountpoint)
+end
+```
+
+---
+
 ### `lurek.filesystem.mountZip`
 
 Opens a ZIP archive and exposes it through a virtual prefix.
@@ -1073,7 +1110,7 @@ end
 
 ### `lurek.filesystem.pollWatchers`
 
-Polls watched paths and returns paths that changed since the previous poll.
+Polls watched paths and returns their GameFS paths when they changed since the previous poll.
 
 ```lua
 lurek.filesystem.pollWatchers()
@@ -1083,7 +1120,7 @@ lurek.filesystem.pollWatchers()
 
 | Type | Description |
 |------|-------------|
-| string[] | Changed path strings. |
+| string[] | Changed logical GameFS path strings. |
 
 **Example**
 
@@ -1555,7 +1592,7 @@ end
 
 ### `lurek.filesystem.unwatchPath`
 
-Removes a path from the module-local file watcher.
+Removes a GameFS path from the module-local file watcher.
 
 ```lua
 lurek.filesystem.unwatchPath(path)
@@ -1565,7 +1602,7 @@ lurek.filesystem.unwatchPath(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | string | Watched path to remove. |
+| `path` | string | Watched GameFS path to remove. |
 
 **Example**
 
@@ -1591,7 +1628,7 @@ end
 
 ### `lurek.filesystem.watchPath`
 
-Adds a path to the module-local file watcher.
+Adds a GameFS path to the module-local file watcher.
 
 ```lua
 lurek.filesystem.watchPath(path)
@@ -1601,7 +1638,7 @@ lurek.filesystem.watchPath(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | string | Path to watch for changes. |
+| `path` | string | Existing or future GameFS path to watch for changes. |
 
 **Example**
 
@@ -1772,6 +1809,82 @@ do
     lurek.filesystem.writeJson(path, payload)
     local bytes = #lurek.filesystem.read(path)
     lurek.log.info("persisted structured options bytes=" .. tostring(bytes) .. " to " .. path)
+end
+```
+
+---
+
+### `lurek.filesystem.writeWorkspace`
+
+Writes UTF-8 text inside a previously mounted user workspace.
+
+```lua
+lurek.filesystem.writeWorkspace(path, content)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | string | Virtual path below a writable workspace mount. |
+| `content` | string | UTF-8 content to write. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Errors if the path is outside a writable workspace mount. |
+
+**Example**
+
+```lua
+do
+    local source = "save/example_workspace_write/"
+    local mountpoint = "example_workspace_write"
+    lurek.filesystem.createDirectory(source)
+    lurek.filesystem.unmount(mountpoint)
+    lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+    lurek.filesystem.writeWorkspace(mountpoint .. "/content/settings.toml", "quality = 'high'")
+    lurek.log.info("workspace settings=" .. lurek.filesystem.read(mountpoint .. "/content/settings.toml"))
+    lurek.filesystem.unmount(mountpoint)
+end
+```
+
+---
+
+### `lurek.filesystem.writeWorkspaceAtomic`
+
+Atomically writes UTF-8 text inside a previously mounted user workspace.
+
+```lua
+lurek.filesystem.writeWorkspaceAtomic(path, content)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `path` | string | Virtual path below a writable workspace mount. |
+| `content` | string | UTF-8 content to write. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | Errors if the path is outside a writable workspace mount. |
+
+**Example**
+
+```lua
+do
+    local source = "save/example_workspace_atomic/"
+    local mountpoint = "example_workspace_atomic"
+    lurek.filesystem.createDirectory(source)
+    lurek.filesystem.unmount(mountpoint)
+    lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+    lurek.filesystem.writeWorkspaceAtomic(mountpoint .. "/content/particle.toml", "emission_rate = 32")
+    lurek.log.info("atomically wrote " .. mountpoint .. "/content/particle.toml")
+    lurek.filesystem.unmount(mountpoint)
 end
 ```
 

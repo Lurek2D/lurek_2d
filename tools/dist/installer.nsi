@@ -90,7 +90,7 @@ Section "Engine (required)" SecEngine
 
     ; Demos (playable game demos)
     SetOutPath "$INSTDIR\games"
-    File /r "..\..\content\games\*.*"
+    File /r "..\..\lurek_2d_content\games\*.*"
 
     ; Docs
     SetOutPath "$INSTDIR"

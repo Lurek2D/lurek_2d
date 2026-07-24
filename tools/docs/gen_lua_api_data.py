@@ -29,6 +29,13 @@ TOOLS_DIR = WORKSPACE_ROOT / "tools"
 SRC_DIR = WORKSPACE_ROOT / "src"
 TESTS_DIR = WORKSPACE_ROOT / "tests"
 OUTPUT_FILE = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
+CANONICAL_OUTPUT_FILE = WORKSPACE_ROOT / "build" / "docs-data" / "lua_api.json"
+# Compatibility entries are modeled in the same generated inventory as stable
+# APIs. Values are `(canonical public name, lifecycle)` and are intentionally
+# explicit so a rename cannot silently look like a second feature.
+INVENTORY_COMPATIBILITY: dict[str, tuple[str, str]] = {
+    "lurek.ui.loadLayoutGameFile": ("lurek.ui.loadLayoutFile", "deprecated"),
+}
 
 ENGINE_CALLBACK_TAG_RE = re.compile(
     r"^\s*//!\s*@engine-callback\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(.+?)\s*$"
@@ -76,7 +83,17 @@ def extract_lua_api(gen_lua_api, verbose: bool = False) -> dict:
         classes: dict = {}
 
         for f in funcs:
+            canonical_name, lifecycle = INVENTORY_COMPATIBILITY.get(
+                f.lua_name, (f.lua_name, "stable")
+            )
             entry = {
+                # Stable inventory identity consumed by API, example, test, and spec audits.
+                # Generated variants retain their public Lua name, so same-named methods on
+                # distinct userdata types cannot collide.
+                "inventory_id": f"{mod_name}:{f.kind}:{f.owner_type or 'namespace'}:{f.lua_name}",
+                "lifecycle": lifecycle,
+                "canonical_lua_name": canonical_name,
+                "alias_of": canonical_name if canonical_name != f.lua_name else None,
                 "name": f.name,
                 "lua_name": f.lua_name,
                 "kind": f.kind,
@@ -125,6 +142,7 @@ def extract_lua_api(gen_lua_api, verbose: bool = False) -> dict:
             print(f"  {mod_name:20s} functions={n_fns:3d}  classes={len(classes):2d}  methods={n_methods:3d}")
 
     return {
+        "inventory_schema": "lurek2d.lua_api_inventory.v1",
         "summary": {
             "total_functions": total,
             "documented": documented,
@@ -559,9 +577,14 @@ def main() -> int:
         "engine_callbacks": engine_callbacks,
     }
 
-    output_path.write_text(
-        json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    encoded = json.dumps(data, indent=2, ensure_ascii=False)
+    output_path.write_text(encoded, encoding="utf-8")
+    # The docs registry prefers build/docs-data. Keep that canonical consumer
+    # byte-for-byte in sync with the legacy logs output so coverage denominators
+    # cannot silently drift between generators and audits.
+    if output_path.resolve() == OUTPUT_FILE.resolve():
+        CANONICAL_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CANONICAL_OUTPUT_FILE.write_text(encoded, encoding="utf-8")
     size_kb = output_path.stat().st_size // 1024
     print(f"\n[OK] Generated {output_path} ({size_kb} KB)")
     return 0

@@ -18,7 +18,7 @@ GitHub Pages is the official public documentation for users. The root README is 
 | `docs/architecture/` | Design constraints, strategy, and positioning | Contributors and maintainers | Hand-written architecture docs |
 | `docs/wiki/` | Generated cookbook, quick guides, FAQ-style onboarding | Users who prefer Wiki-style navigation | `tools/docs/gen_wiki.py` and generated docs data |
 | `content/examples/` | Runnable API examples | Users, tests, docs, agents | Example files and coverage audit |
-| `content/games/` | Larger playable demos | Users evaluating complete projects | Game folders and generated catalog |
+| `lurek_2d_content/games/` | Larger playable demos | Users evaluating complete projects | Game folders and generated catalog |
 
 ## Rules
 

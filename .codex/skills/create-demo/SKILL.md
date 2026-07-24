@@ -1,15 +1,15 @@
 ---
 name: create-demo
-description: "Load this skill when creating or modifying finished playable Lua games or mini games under content/games, with assets, modular code, screenshots, validation, and smoke coverage. Skip it for API showcases, throwaway mechanic snippets, single-file examples, engine internals, or pure library modules."
+description: "Load this skill when creating or modifying finished playable Lua games or mini games under lurek_2d_content/games, with assets, modular code, screenshots, validation, and smoke coverage. Skip it for API showcases, throwaway mechanic snippets, single-file examples, engine internals, or pure library modules."
 ---
 
 # create-demo
 
 ## Mission
-- Create or modify finished playable games and mini games that use real Lurek2D APIs, live under `content/games`, and remain validator-safe.
+- Create or modify finished playable games and mini games that use real Lurek2D APIs, live under `lurek_2d_content/games`, and remain validator-safe.
 
 ## Domain Knowledge
-- Finished playable products live under `content/games/<name>/`; `content/examples/` owns API teaching and `tests/lua/evidence/` owns artifact demonstrations. There is no separate new-games content tree in this repository.
+- Finished playable products live under `lurek_2d_content/games/<name>/`; `content/examples/` owns API teaching and `tests/lua/evidence/` owns artifact demonstrations.
 - A catalog-ready game combines a stable entry point, complete rules loop, reachable start/end states, controls, feedback, and folder-local assets; feature count alone does not turn an example into a game.
 - `main.lua` should coordinate callbacks and game-local modules rather than accumulate state, rules, presentation, data, and automation in one file.
 - `screen.png` is catalog evidence and must show representative active play; a splash screen, empty map, or first loading frame is not sufficient proof.

@@ -1,0 +1,5 @@
+{
+  "required_scenarios": ["clean_frame_100", "clean_frame_1000", "clean_pointer_move_1000"],
+  "max_slowdown_ratio": 1.5,
+  "scenarios": {}
+}

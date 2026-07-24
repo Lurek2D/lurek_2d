@@ -1,16 +1,17 @@
-//! Owns the UI context implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI context data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI context behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI context defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near the UI context state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI context calculations explicit at their owning subsystem boundary.
-//! Provides the local adaptation layer that lets callers reuse UI context rules without duplicating engine decisions.
-//! Open this owner before sibling files when a regression centers on UI context state, helpers, or integration rules.
-//! Works with neighboring UI owners while keeping the main UI context responsibility anchored in one file.
-//! Changes to UI context names, caches, or helper boundaries should usually stay coupled inside this owner.
-//! This file is the right stop for maintainers tracing UI context regressions back to their concrete owner boundary.
+//! Owns GuiContext, the retained UI tree, generational widget identity, event queues, and frame-level state transitions.
+//! GuiContext coordinates widget storage, parenting, focus, capture, dirty generations, bindings, and diagnostics.
+//! It owns lifecycle rules for creation, destruction, clear, reparenting, and stale-handle resolution.
+//! Layout, input, and rendering are separate passes coordinated here so each observes one validated retained tree snapshot.
+//! Lua bindings hold opaque handles and validate script input, while this module owns the Rust-side state they mutate.
+//! Child links, modal state, focus, and capture are repaired during removal so destroyed widgets lose authority.
+//! UiLimits bounds widgets, events, commands, strings, and traversal before costly work reaches the context.
+//! Context callbacks are registered at the Lua edge, but queued event ordering and coalescing are defined by this owner.
+//! Layout loaders use transactional builders around this state; failed content must not partially alter a live screen.
+//! Rendering lowers resolved widgets into commands; image and render modules own pixel output and GPU execution.
+//! Input adapters supply raw events and receive consumption results; scene or ECS data is not owned by the UI context.
+//! Open this file for lifecycle invariants, widget-tree rules, event ordering, or cross-pass state coordination.
+//! Smaller context files contain builders, geometry, and input-specific algorithms to keep this owner navigable.
+//! This is the primary navigation point when a UI regression crosses lifecycle, layout, input, and rendering boundaries.
 
 use crate::log_msg;
 use crate::math::Rect;
@@ -23,7 +24,7 @@ use crate::ui::controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, RichLabel, ScrollBar,
     Slider, SpinBox, Switch, TabBar, TextArea, TextInput,
 };
-use crate::ui::diagnostics::{UiAccessibilityNode, UiDiagnostic};
+use crate::ui::diagnostics::{UiAccessibilityNode, UiDiagnostic, UiRuntimeStats};
 use crate::ui::extras::{
     Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem,
     PropertyWidget, Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
@@ -148,6 +149,8 @@ pub struct UiEventQueue {
     limit: usize,
     /// Number of critical events rejected after the queue reached its ceiling.
     pub overflowed_critical: usize,
+    /// Largest retained event count observed since this queue was created.
+    pub high_water: usize,
 }
 
 impl UiEventQueue {
@@ -156,6 +159,7 @@ impl UiEventQueue {
             events: Vec::new(),
             limit: limit.max(1),
             overflowed_critical: 0,
+            high_water: 0,
         }
     }
     fn is_safe_to_coalesce(event: &GuiEvent) -> bool {
@@ -167,6 +171,7 @@ impl UiEventQueue {
     fn push(&mut self, event: GuiEvent) {
         if self.events.len() < self.limit {
             self.events.push(event);
+            self.high_water = self.high_water.max(self.events.len());
             return;
         }
         if Self::is_safe_to_coalesce(&event) {
@@ -382,6 +387,7 @@ impl WidgetKind {
             Self::StackContainer(s) | Self::TabContainer(s) => Some(&s.children),
             Self::GUIWindow(w) => Some(&w.children),
             Self::Toolbar(w) => Some(&w.children),
+            Self::StatusBar(w) => Some(&w.children),
             _ => None,
         }
     }
@@ -395,6 +401,7 @@ impl WidgetKind {
             Self::StackContainer(s) | Self::TabContainer(s) => Some(&mut s.children),
             Self::GUIWindow(w) => Some(&mut w.children),
             Self::Toolbar(w) => Some(&mut w.children),
+            Self::StatusBar(w) => Some(&mut w.children),
             _ => None,
         }
     }
@@ -496,6 +503,8 @@ pub struct GuiContext {
     pub base_resolution: (f32, f32),
     /// Computed scale factor = current_height / base_height.
     pub scale_factor: f32,
+    /// Normalized pixel insets supplied by the app/window edge: top, right, bottom, left.
+    pub safe_area: [f32; 4],
     /// Trusted engine-owned resource ceilings for this context.
     limits: UiLimits,
     /// Stable identity of this context; never expose it as a Lua-authoritative value.
@@ -510,6 +519,15 @@ pub struct GuiContext {
     combo_typeahead_buffer: String,
     /// Seconds remaining before the combo-box typeahead buffer expires.
     combo_typeahead_ttl: f32,
+    /// Bounded observable work counters; no internal pointers or paths escape this snapshot.
+    pub(crate) runtime_stats: UiRuntimeStats,
+    /// Monotonic visual generation; unlike dirty flags it is never cleared by `flush_cache`.
+    pub(crate) render_generation: u64,
+    /// Last complete retained command stream, keyed by font, visual generation, and structural signature.
+    pub(crate) command_cache: Option<(crate::runtime::resource_keys::FontKey, u64, u64, Vec<crate::render::renderer::RenderCommand>)>,
+    /// Cached parent-membership bitmap for input routing; rebuilt only after topology changes.
+    pub(crate) input_parent_cache: Vec<bool>,
+    pub(crate) input_parent_cache_dirty: bool,
 }
 impl GuiContext {
     /// Create a new context with a root panel, default dark theme, and dirty=true.
@@ -541,6 +559,7 @@ impl GuiContext {
             last_render_signature: 0,
             base_resolution: (1920.0, 1080.0),
             scale_factor: 1.0,
+            safe_area: [0.0; 4],
             limits: UiLimits::default(),
             context_id,
             identity_generation: 1,
@@ -548,6 +567,11 @@ impl GuiContext {
             live_slots: vec![true],
             combo_typeahead_buffer: String::new(),
             combo_typeahead_ttl: 0.0,
+            runtime_stats: UiRuntimeStats::default(),
+            render_generation: 1,
+            command_cache: None,
+            input_parent_cache: vec![false],
+            input_parent_cache_dirty: true,
         }
     }
     /// Reset the retained widget tree and transient UI state while preserving the active theme.
@@ -618,6 +642,13 @@ impl GuiContext {
     /// Return the active trusted UI resource policy.
     pub fn limits(&self) -> UiLimits {
         self.limits
+    }
+    /// Return a read-only snapshot of bounded UI work counters.
+    pub fn runtime_stats(&self) -> UiRuntimeStats {
+        let mut stats = self.runtime_stats;
+        stats.live_widgets = self.widget_count().saturating_sub(1);
+        stats.event_queue_high_water = self.pending_events.high_water;
+        stats
     }
     /// Replace the UI resource policy from trusted engine setup code.
     pub fn set_limits(&mut self, limits: UiLimits) {
@@ -723,6 +754,13 @@ impl GuiContext {
                         .content_idx
                         .is_some_and(|target| doomed.contains(&target))
                 }),
+                WidgetKind::StatusBar(status_bar) => {
+                    for section in &mut status_bar.section_widgets {
+                        if section.is_some_and(|target| doomed.contains(&target)) {
+                            *section = None;
+                        }
+                    }
+                }
                 WidgetKind::TooltipPanel(tooltip) => {
                     if tooltip
                         .target_idx
@@ -764,10 +802,12 @@ impl GuiContext {
             self.live_slots[dead] = false;
         }
         self.mark_dirty_flags(true, true, true, true);
+        self.input_parent_cache_dirty = true;
         Ok(doomed.len())
     }
     /// Mark dirty state at both legacy and fine-grained levels.
     fn mark_dirty_flags(&mut self, layout: bool, style: bool, text: bool, render: bool) {
+        self.render_generation = self.render_generation.saturating_add(1);
         self.dirty = true;
         self.layout_dirty |= layout;
         self.style_dirty |= style;
@@ -777,6 +817,87 @@ impl GuiContext {
     /// Mark cached layout, style, text, or render state as stale after external widget mutation.
     pub fn mark_widget_dirty(&mut self, layout: bool, style: bool, text: bool, render: bool) {
         self.mark_dirty_flags(layout, style, text, render);
+    }
+    /// Assign a live widget to one status-bar section, reparenting it into the status bar.
+    /// Clearing the slot detaches the child but never destroys it.
+    pub fn set_status_bar_section_widget(
+        &mut self,
+        status_idx: usize,
+        section_idx: usize,
+        widget_idx: Option<usize>,
+    ) -> Result<(), String> {
+        let Some(WidgetKind::StatusBar(status)) = self.widgets.get(status_idx) else {
+            return Err("lurek.ui.setSectionWidget: target is not a status bar".into());
+        };
+        if section_idx >= status.sections.len() {
+            return Err("lurek.ui.setSectionWidget: section index is out of range".into());
+        }
+        if let Some(child_idx) = widget_idx {
+            if !self.widget_is_live(child_idx) || child_idx == status_idx {
+                return Err("lurek.ui.setSectionWidget: widget is not live".into());
+            }
+            if self.contains_descendant(child_idx, status_idx) {
+                return Err("lurek.ui.setSectionWidget: assignment would create a widget cycle".into());
+            }
+            if self.widgets.iter().enumerate().any(|(owner_idx, widget)| matches!(widget, WidgetKind::StatusBar(other) if owner_idx != status_idx && other.section_widgets.contains(&Some(child_idx)))) {
+                return Err("lurek.ui.setSectionWidget: widget already belongs to another status section".into());
+            }
+        }
+        let previous = match &self.widgets[status_idx] {
+            WidgetKind::StatusBar(status) => status.section_widgets[section_idx],
+            _ => None,
+        };
+        if let Some(previous) = previous {
+            if let Some(WidgetKind::StatusBar(status)) = self.widgets.get_mut(status_idx) {
+                status.section_widgets[section_idx] = None;
+                if !status.section_widgets.contains(&Some(previous)) {
+                    status.children.retain(|child| *child != previous);
+                }
+            }
+        }
+        if let Some(child_idx) = widget_idx {
+            self.detach_from_all_parents(child_idx);
+            if let Some(WidgetKind::StatusBar(status)) = self.widgets.get_mut(status_idx) {
+                status.section_widgets[section_idx] = Some(child_idx);
+                if !status.children.contains(&child_idx) {
+                    status.children.push(child_idx);
+                }
+            }
+        }
+        self.mark_dirty_flags(true, false, false, true);
+        self.input_parent_cache_dirty = true;
+        Ok(())
+    }
+    /// Resize a status bar while detaching widgets owned only by removed sections.
+    pub fn set_status_bar_section_count(&mut self, status_idx: usize, count: usize) -> Result<(), String> {
+        let Some(WidgetKind::StatusBar(status)) = self.widgets.get(status_idx) else {
+            return Err("lurek.ui.setSectionCount: target is not a status bar".into());
+        };
+        if count < status.sections.len() {
+            let removed: Vec<usize> = status.section_widgets[count..].iter().flatten().copied().collect();
+            if let Some(WidgetKind::StatusBar(status)) = self.widgets.get_mut(status_idx) {
+                status.sections.truncate(count);
+                status.section_widgets.truncate(count);
+                for child in removed.iter().copied() {
+                    if !status.section_widgets.contains(&Some(child)) {
+                        status.children.retain(|candidate| *candidate != child);
+                    }
+                }
+            }
+            for child in removed {
+                if !self.traversal_children(status_idx).contains(&child) {
+                    let _ = self.add_child(0, child);
+                }
+            }
+        } else if let Some(WidgetKind::StatusBar(status)) = self.widgets.get_mut(status_idx) {
+            while status.sections.len() < count {
+                status.sections.push((String::new(), 100.0));
+                status.section_widgets.push(None);
+            }
+        }
+        self.mark_dirty_flags(true, false, false, true);
+        self.input_parent_cache_dirty = true;
+        Ok(())
     }
     /// Return the total number of widgets including the root panel.
     pub fn widget_count(&self) -> usize {
@@ -856,6 +977,13 @@ impl GuiContext {
                 }
             }
         }
+        if let Some(WidgetKind::DockPanel(dock)) = self.widgets.get(idx) {
+            for (child_idx, _) in &dock.docked {
+                if !out.contains(child_idx) {
+                    out.push(*child_idx);
+                }
+            }
+        }
         out
     }
     fn is_descendant_of(&self, root_idx: usize, needle_idx: usize) -> bool {
@@ -909,6 +1037,7 @@ impl GuiContext {
     }
     /// Recursively compute and write `computed_rect` and `is_visible` for all widgets from root.
     pub fn run_layout_pass(&mut self) {
+        self.runtime_stats.layout_passes = self.runtime_stats.layout_passes.saturating_add(1);
         // Phase 1: Enforce minimum sizes on widgets with zero or undersize dimensions.
         for idx in 1..self.widgets.len() {
             if !self.widget_is_live(idx) {
@@ -926,7 +1055,13 @@ impl GuiContext {
 
         // Phase 2: Top-down layout pass computing absolute rects.
         let (viewport_w, viewport_h) = self.effective_viewport_size();
-        let root_rect = Rect::new(0.0, 0.0, viewport_w, viewport_h);
+        let [top, right, bottom, left] = self.safe_area;
+        let root_rect = Rect::new(
+            left,
+            top,
+            (viewport_w - left - right).max(0.0),
+            (viewport_h - top - bottom).max(0.0),
+        );
         let root_visible = if let Some(root) = self.widgets.first_mut() {
             let base = root.base_mut();
             base.computed_rect = root_rect;
@@ -939,6 +1074,7 @@ impl GuiContext {
         for &child_idx in &root_children {
             self.layout_widget(child_idx, &root_rect, root_visible, None);
         }
+        self.layout_dirty = false;
     }
 
     fn perform_flex_layout(&self, idx: usize, parent_rect: &Rect) -> Vec<(usize, Rect)> {
@@ -1161,6 +1297,83 @@ impl GuiContext {
         out
     }
 
+    /// Calculates the remaining-rectangle layout for a `DockPanel`.
+    ///
+    /// Children are processed in dock order. Explicit split sizes take precedence over a
+    /// child's requested size; a `fill` child receives the rectangle left by the edge docks.
+    fn perform_dock_layout(&self, idx: usize, rect: Rect) -> Vec<(usize, Rect)> {
+        let WidgetKind::DockPanel(dock) = &self.widgets[idx] else {
+            return Vec::new();
+        };
+        let pad = dock.base.padding;
+        let mut remaining = Rect::new(
+            rect.x + pad[3],
+            rect.y + pad[0],
+            (rect.width - pad[1] - pad[3]).max(0.0),
+            (rect.height - pad[0] - pad[2]).max(0.0),
+        );
+        let mut out = Vec::new();
+        for (child_idx, edge) in &dock.docked {
+            let Some(child) = self.widgets.get(*child_idx) else {
+                continue;
+            };
+            let requested = if edge == "top" || edge == "bottom" {
+                child.base().height.max(0.0)
+            } else {
+                child.base().width.max(0.0)
+            };
+            let size = dock
+                .split_sizes
+                .iter()
+                .find(|(side, _)| side == edge)
+                .map(|(_, size)| *size)
+                .unwrap_or(requested)
+                .max(0.0);
+            let child_rect = match edge.as_str() {
+                "top" => {
+                    let height = size.min(remaining.height);
+                    let child_rect = Rect::new(remaining.x, remaining.y, remaining.width, height);
+                    remaining.y += height;
+                    remaining.height = (remaining.height - height).max(0.0);
+                    child_rect
+                }
+                "bottom" => {
+                    let height = size.min(remaining.height);
+                    let child_rect = Rect::new(
+                        remaining.x,
+                        remaining.y + remaining.height - height,
+                        remaining.width,
+                        height,
+                    );
+                    remaining.height = (remaining.height - height).max(0.0);
+                    child_rect
+                }
+                "left" => {
+                    let width = size.min(remaining.width);
+                    let child_rect = Rect::new(remaining.x, remaining.y, width, remaining.height);
+                    remaining.x += width;
+                    remaining.width = (remaining.width - width).max(0.0);
+                    child_rect
+                }
+                "right" => {
+                    let width = size.min(remaining.width);
+                    let child_rect = Rect::new(
+                        remaining.x + remaining.width - width,
+                        remaining.y,
+                        width,
+                        remaining.height,
+                    );
+                    remaining.width = (remaining.width - width).max(0.0);
+                    child_rect
+                }
+                "fill" | "center" => remaining,
+                _ => continue,
+            };
+            out.push((*child_idx, child_rect));
+        }
+        out
+    }
+
     fn perform_aspect_ratio_layout(&self, idx: usize, rect: Rect) -> Vec<(usize, Rect)> {
         let WidgetKind::AspectRatioContainer(container) = &self.widgets[idx] else {
             return Vec::new();
@@ -1259,7 +1472,18 @@ impl GuiContext {
         let mut overrides = self.perform_flex_layout(idx, &computed);
         overrides.extend(self.perform_stack_layout(idx, computed));
         overrides.extend(self.perform_split_layout(idx, computed));
+        overrides.extend(self.perform_dock_layout(idx, computed));
         overrides.extend(self.perform_aspect_ratio_layout(idx, computed));
+        if let Some(WidgetKind::StatusBar(status)) = self.widgets.get(idx) {
+            let mut x = computed.x;
+            for ((_, width), child) in status.sections.iter().zip(&status.section_widgets) {
+                let section_width = if *width > 0.0 { *width } else { (computed.x + computed.width - x).max(0.0) };
+                if let Some(child_idx) = child {
+                    overrides.push((*child_idx, Rect::new(x, computed.y, section_width, computed.height)));
+                }
+                x += section_width;
+            }
+        }
         let mut child_indices: Vec<usize> =
             self.widgets[idx].children().cloned().unwrap_or_default();
         if let Some(WidgetKind::SplitPanel(split)) = self.widgets.get(idx) {
@@ -1271,6 +1495,13 @@ impl GuiContext {
             if let Some(child_idx) = split.second_child {
                 if !child_indices.contains(&child_idx) {
                     child_indices.push(child_idx);
+                }
+            }
+        }
+        if let Some(WidgetKind::DockPanel(dock)) = self.widgets.get(idx) {
+            for (child_idx, _) in &dock.docked {
+                if !child_indices.contains(child_idx) {
+                    child_indices.push(*child_idx);
                 }
             }
         }
@@ -1687,8 +1918,12 @@ impl GuiContext {
         changed
     }
     /// Compute an FNV-style hash of the visible widget tree for change detection.
-    fn compute_render_signature(&self) -> u64 {
+    pub(crate) fn compute_render_signature(&self) -> u64 {
         let mut hash = 1469598103934665603u64;
+        for value in [self.viewport_w, self.viewport_h, self.scale_factor, self.safe_area[0], self.safe_area[1], self.safe_area[2], self.safe_area[3]] {
+            hash ^= value.to_bits() as u64;
+            hash = hash.wrapping_mul(1099511628211);
+        }
         for (idx, w) in self.widgets.iter().enumerate() {
             let b = w.base();
             hash ^= idx as u64;
@@ -1754,6 +1989,7 @@ impl GuiContext {
                 children.push(child_idx);
             }
             self.mark_dirty_flags(true, false, false, true);
+            self.input_parent_cache_dirty = true;
             true
         } else {
             false
@@ -2116,6 +2352,7 @@ impl GuiContext {
             if let Some(pos) = children.iter().position(|&c| c == child_idx) {
                 children.remove(pos);
                 self.mark_dirty_flags(true, false, false, true);
+                self.input_parent_cache_dirty = true;
                 return true;
             }
         }

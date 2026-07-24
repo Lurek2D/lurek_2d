@@ -19,6 +19,8 @@ description: "Load this skill when running a coordinated audit and fix sweep acr
 - Security and hostile-input findings should be traced from Lua/file/import boundaries into allocation, mutation, serialization, and diagnostics. A limit documented only in one wrapper is insufficient when alternate constructors or restore paths bypass it.
 - Codec reviews must verify encoded-input, decompression-output, aggregate-frame/layer, and multiplied-work budgets; Lua saves must use the filesystem policy rather than direct host writes.
 - Compatibility namespaces must identify one canonical owner, and callback or multi-step mutations must be transactional when a later step can fail.
+- Before accepting coverage, require every consumer (unit, example, spec, and module audit) to agree with the canonical generated inventory; report aliases and userdata methods separately from canonical entries.
+- Stateful-module review must include lifecycle identity, feature-shaped no-op scans, aggregate work/limit budgets, path/trust boundaries, dependency direction, and owner-pure security/stress evidence.
 - Sprite-like indexed APIs must declare one-based or zero-based semantics at every boundary; reject zero where one-based, bound parser/input work, validate supplied resources, and require deterministic map exports.
 - Correctness review should include negative space: teardown, empty inputs, repeated initialization, partial failure, stale handles, and compatibility reads. These paths commonly escape feature-oriented examples and happy-path tests.
 - Feature-gap findings are valid only when the surrounding architecture clearly intends the capability and a missing piece blocks a real workflow; speculative enhancements should not be mixed with defects or contract drift.

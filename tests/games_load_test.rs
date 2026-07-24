@@ -1,4 +1,4 @@
-//! Headless load test: attempts to parse/load every `content/games/**/main.lua`
+//! Headless load test: attempts to parse/load every `lurek_2d_content/games/**/main.lua`
 //! via `create_lua_vm` without a window or GPU.
 //!
 //! Run: cargo test --test games_load_test -- --nocapture
@@ -34,10 +34,10 @@ fn load_game(path: &str) -> Result<(), String> {
         .map_err(|e| format!("{e}"))
 }
 
-/// Recursively collect all `main.lua` files under `content/games/`.
+/// Recursively collect all `main.lua` files under `lurek_2d_content/games/`.
 fn collect_game_mains() -> Vec<PathBuf> {
     let mut paths = Vec::new();
-    collect_recursive(Path::new("content/games"), &mut paths);
+    collect_recursive(Path::new("lurek_2d_content/games"), &mut paths);
     paths.sort();
     paths
 }
@@ -65,7 +65,7 @@ fn games_load_all() {
     let paths = collect_game_mains();
     assert!(
         !paths.is_empty(),
-        "No main.lua files found under content/games/"
+        "No main.lua files found under lurek_2d_content/games/"
     );
 
     let mut failed: Vec<(String, String)> = Vec::new();
@@ -73,7 +73,7 @@ fn games_load_all() {
 
     for path in &paths {
         let s = path.to_str().unwrap();
-        let short = s.replace("content/games/", "");
+        let short = s.replace("lurek_2d_content/games/", "");
         if let Some(reason) = should_skip_game(s) {
             println!("SKIP {short}: {reason}");
             continue;

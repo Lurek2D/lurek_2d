@@ -1,14 +1,14 @@
-//! Owns the UI extras implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI extras data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI extras behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI extras defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near the UI extras state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI extras calculations explicit at their owning subsystem boundary.
-//! Provides the local adaptation layer that lets callers reuse UI extras rules without duplicating engine decisions.
-//! Open this owner before sibling files when a regression centers on UI extras state, helpers, or integration rules.
-//! Works with neighboring UI owners while keeping the main UI extras responsibility anchored in one file.
+//! Defines retained specialized widgets outside the common control and container families used by ordinary UI screens.
+//! It stores local data for trees, menus, dialogs, status bars, accordions, tooltips, color pickers, and tables.
+//! Property and image widgets live here with spin boxes, switches, badges, separators, and spacers with clear defaults.
+//! These are data-only variants; context input performs interaction, context owns lifetime, and render emits commands.
+//! Lua bindings map validated calls onto fields but do not make this module responsible for callbacks or GameFS access.
+//! Dialog, menu, and tooltip links are retained indexes internally and always receive validated opaque widget handles.
+//! Separator and spacer entries carry layout and hit-test semantics rather than serving as inert visual placeholders.
+//! Status-bar section content is retained through this owner while context lifecycle repairs released child references.
+//! These values remain cloneable so a malformed declarative layout can roll back without changing the active UI tree.
+//! Open this file for local widget defaults and invariants; use input and render owners for events and paint behavior.
+//! Keep shared geometry in WidgetBase and tree structure in GuiContext instead of duplicating ownership per variant.
 
 use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::ui::widget::{WidgetBase, WidgetType};
@@ -333,6 +333,16 @@ pub struct ToolbarButton {
     /// Whether this button is in a pressed/on state (for toggle buttons).
     pub toggled: bool,
 }
+/// One concrete entry in a toolbar's ordered visual and interaction stream.
+#[derive(Debug, Clone)]
+pub enum ToolbarItem {
+    /// An interactive icon button.
+    Button(ToolbarButton),
+    /// A non-interactive visual divider between button groups.
+    Separator,
+    /// A non-interactive spacer. `None` consumes remaining main-axis space.
+    Spacer(Option<f32>),
+}
 impl ToolbarButton {
     /// Create an enabled, non-toggled button with the given id and tooltip.
     pub fn new(id: impl Into<String>, tooltip: impl Into<String>) -> Self {
@@ -353,8 +363,8 @@ pub struct Toolbar {
     pub orientation: String,
     /// Child widget indices nested inside this toolbar.
     pub children: Vec<usize>,
-    /// Ordered list of toolbar buttons.
-    pub buttons: Vec<ToolbarButton>,
+    /// Ordered visual items. Separators and spacers participate in layout and rendering.
+    pub items: Vec<ToolbarItem>,
 }
 impl Toolbar {
     /// Create an empty toolbar with the given orientation.
@@ -363,29 +373,29 @@ impl Toolbar {
             base: WidgetBase::new(WidgetType::Toolbar),
             orientation: orientation.into(),
             children: Vec::new(),
-            buttons: Vec::new(),
+            items: Vec::new(),
         }
     }
     /// Add a button with `id` and `tooltip` if not already present; return its index.
     pub fn add_button(&mut self, id: impl Into<String>, tooltip: impl Into<String>) -> usize {
         let id = id.into();
-        if let Some(pos) = self.buttons.iter().position(|b| b.id == id) {
+        if let Some(pos) = self.items.iter().position(|item| matches!(item, ToolbarItem::Button(button) if button.id == id)) {
             return pos;
         }
-        self.buttons.push(ToolbarButton::new(id, tooltip));
-        self.buttons.len() - 1
+        self.items.push(ToolbarItem::Button(ToolbarButton::new(id, tooltip)));
+        self.items.len() - 1
     }
-    /// Add a visual separator between button groups (no-op at runtime; layout hint only).
-    pub fn add_separator(&mut self) {}
-    /// Add a flexible spacer of `_width` pixels between button groups (no-op at runtime; layout hint only).
-    pub fn add_spacer(&mut self, _width: f32) {}
+    /// Add a visual separator between button groups.
+    pub fn add_separator(&mut self) { self.items.push(ToolbarItem::Separator); }
+    /// Add a fixed spacer when supplied, or a flexible spacer when `None`.
+    pub fn add_spacer(&mut self, size: Option<f32>) { self.items.push(ToolbarItem::Spacer(size)); }
     /// Return the index of the button with the given `id`, or `None` if not found.
     pub fn get_button_index(&self, id: &str) -> Option<usize> {
-        self.buttons.iter().position(|b| b.id == id)
+        self.items.iter().position(|item| matches!(item, ToolbarItem::Button(button) if button.id == id))
     }
     /// Set the enabled state of the button with `id`; return `false` if not found.
     pub fn set_button_enabled(&mut self, id: &str, enabled: bool) -> bool {
-        if let Some(b) = self.buttons.iter_mut().find(|b| b.id == id) {
+        if let Some(ToolbarItem::Button(b)) = self.items.iter_mut().find(|item| matches!(item, ToolbarItem::Button(button) if button.id == id)) {
             b.enabled = enabled;
             true
         } else {
@@ -394,7 +404,7 @@ impl Toolbar {
     }
     /// Set the toggled state of the button with `id`; return `false` if not found.
     pub fn set_button_toggled(&mut self, id: &str, toggled: bool) -> bool {
-        if let Some(b) = self.buttons.iter_mut().find(|b| b.id == id) {
+        if let Some(ToolbarItem::Button(b)) = self.items.iter_mut().find(|item| matches!(item, ToolbarItem::Button(button) if button.id == id)) {
             b.toggled = toggled;
             true
         } else {
@@ -403,7 +413,7 @@ impl Toolbar {
     }
     /// Return the toggled state of the button with `id`, or `None` if not found.
     pub fn is_button_toggled(&self, id: &str) -> Option<bool> {
-        self.buttons.iter().find(|b| b.id == id).map(|b| b.toggled)
+        self.items.iter().find_map(|item| match item { ToolbarItem::Button(button) if button.id == id => Some(button.toggled), _ => None })
     }
 }
 /// Top-level application menu bar holding ordered menu indices.
@@ -564,6 +574,10 @@ pub struct StatusBar {
     pub base: WidgetBase,
     /// Ordered sections as `(text, width)` pairs; width 0 = auto-fill remaining space.
     pub sections: Vec<(String, f32)>,
+    /// Optional retained child widget assigned to each section.
+    pub section_widgets: Vec<Option<usize>>,
+    /// Retained children currently owned by section slots.
+    pub children: Vec<usize>,
 }
 impl StatusBar {
     /// Create an empty status bar. This function is part of the public API.
@@ -571,6 +585,8 @@ impl StatusBar {
         Self {
             base: WidgetBase::new(WidgetType::StatusBar),
             sections: Vec::new(),
+            section_widgets: Vec::new(),
+            children: Vec::new(),
         }
     }
 }

@@ -12,7 +12,7 @@ Lurek2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. 
 git clone https://github.com/LurekDude/lurek_2d.git
 cd lurek_2d
 python tools/dev/parallel_cargo.py build debug  # debug build â†’ build/debug/lurek2d
-python tools/dev/parallel_cargo.py run debug -- content/games/music_composer  # verify it works
+python tools/dev/parallel_cargo.py run debug -- lurek_2d_content/games/music_composer  # verify it works
 ```
 
 Release build:
@@ -94,14 +94,14 @@ cargo test lua_test_<category>_<name> -- --nocapture
 - Lua tests must not call GPU, audio, or window APIs.
 - New `lurek.*` functions need at least one Lua test before merge.
 
-### Demos (`content/games/`)
+### Demos (`lurek_2d_content/games/`)
 
-Demos are playable projects kept directly under `content/games/<name>/`.
+Demos are playable projects kept directly under `lurek_2d_content/games/<name>/`.
 
 - Each demo needs: `main.lua`, `conf.lua` (optional), `README.md`, `screen.png`.
-- Every demo may provide a colocated `content/games/**/test.lua` headless test.
-- Register new demos in `content/games/README.md`.
-- Demos must run with `python tools/dev/parallel_cargo.py run debug -- content/games/<name>` and exit cleanly.
+- Every demo may provide a colocated `lurek_2d_content/games/**/test.lua` headless test.
+- Register new demos in `lurek_2d_content/games/README.md`.
+- Demos must run with `python tools/dev/parallel_cargo.py run debug -- lurek_2d_content/games/<name>` and exit cleanly.
 - Use `library/` modules and `lurek.*` API â€” no engine Rust internals.
 
 ### API Examples (`content/examples/`)

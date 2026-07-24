@@ -18,6 +18,7 @@ description: "Load this skill when auditing and fixing Rust and Lua API docstrin
 - Numeric documentation should distinguish validation range, meaningful operating range, storage type, and unit. Saying “number” or copying a Rust type can hide finite-only, positive-only, coordinate, duration, or byte-size semantics.
 - Callback documentation should state invocation phase, argument lifetime, replacement/removal behavior, error propagation, and whether callbacks may mutate the originating object safely.
 - Examples in docstrings should be kept only when the generator supports and validates them; otherwise link behavior to the canonical example owner rather than maintaining a second untested code sample.
+- File-doc review is qualitative as well as mechanical: compare `//!` content with `rust_file_docstring_guidelines.md` for real ownership, boundaries, invariants, and navigation rather than accepting marker presence or length alone.
 
 ## Workflow
 - Run file/public/docstring audits for the module and use their gaps to select symbols; compare each source comment with implementation, Lua registration, tests/examples, and emitted docs rather than editing generated prose.

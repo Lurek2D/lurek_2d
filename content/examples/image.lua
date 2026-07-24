@@ -58,6 +58,21 @@ do
     lurek.log.info("saved png bytes=" .. #encoded)
 end
 
+--@api: lurek.image.savePNGWorkspace
+do
+
+    local source = "save/example_png_workspace"
+    local mountpoint = "example_png_workspace"
+    lurek.filesystem.createDirectory(source)
+    lurek.filesystem.unmount(mountpoint)
+    lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+    local image = lurek.image.newImageData(8, 8)
+    image:fill(240, 160, 70, 255)
+    lurek.image.savePNGWorkspace(image, mountpoint .. "/sprites/example.png")
+    lurek.log.info("saved workspace PNG=" .. mountpoint .. "/sprites/example.png")
+    lurek.filesystem.unmount(mountpoint)
+end
+
 --@api: lurek.image.saveGIF
 do
 

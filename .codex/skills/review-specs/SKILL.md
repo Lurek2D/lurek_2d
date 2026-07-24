@@ -18,6 +18,7 @@ description: "Load this skill when auditing and fixing module specs, generated s
 - Signature tables must agree with Lua-observable names and table shapes, not merely Rust function declarations; userdata methods, aliases, defaults, and fallibility can be lost in a naive source scan.
 - Spec index/tiering metadata affects navigation and plugin/module visibility, so a correct standalone module page can still be misclassified or undiscoverable through the repository catalog.
 - Architecture links should point upward only for durable cross-module constraints; linking every implementation detail into architecture creates circular documentation ownership.
+- Consume the canonical generated inventory when judging coverage and flag callable no-ops, aliases without canonical ownership, or documented feature status that conflicts with observable source behavior.
 
 ## Workflow
 - Run module coverage and generate the selected spec into the working tree, then classify every diff by provenance: binding/docstring, module metadata, manual overlay, template/generator, or stale emitted output.

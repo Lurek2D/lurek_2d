@@ -1,4 +1,4 @@
-﻿-- Canonical evidence file for lurek.render shader target contracts and shader-bound module APIs.
+-- Canonical evidence file for lurek.render shader target contracts and shader-bound module APIs.
 
 local OUT = evidence_output_dir("render")
 
@@ -141,7 +141,7 @@ describe("Evidence: lurek.render", function()
         target_lines.tilemap[#target_lines.tilemap + 1] = "tilemap.shader=" .. tilemap:getShader():getTarget()
         target_lines.tilemap[#target_lines.tilemap + 1] = "tilemap.layer_shader=" .. tilemap:getLayerShader(1):getTarget()
 
-        local province = lurek.province.newFromPng("render-shader-mapviz-evidence", "content/games/eu2/map.png")
+        local province = lurek.province.newFromPng("render-shader-mapviz-evidence", "lurek_2d_content/games/eu2/map.png")
         province:setShader(shaders.mapviz)
         province:render({ backend = "commands", draw_labels = false, draw_capitals = false, draw_roads = false })
         lines[#lines + 1] = "province.shader=" .. province:getShader():getTarget()

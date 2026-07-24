@@ -1,13 +1,13 @@
-//! Owns the widget runtime for the ui subsystem and keeps its rules local to this file while keeping call sites explicit.
-//! Centers the implementation around TextVAlign, parse_str, as_str, with helpers kept close to their invariants.
-//! Defines how widget data is validated, transformed, or stored before neighboring systems use it.
-//! Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-//! Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere.
-//! Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-//! Use this file when changing widget defaults, lifecycle handling, validation, or data ownership.
-//! Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
-//! Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary.
-//! Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
+//! Defines WidgetBase, widget kinds, style and state enums, geometry metadata, and text-alignment parsing rules.
+//! WidgetBase carries common retained state used by layout, input, diagnostics, and rendering for every widget kind.
+//! Concrete control, container, and specialized payloads remain in sibling files so common contracts stay centralized.
+//! Enums define public names and validated defaults, while generational identity and destruction remain GuiContext work.
+//! Lua bindings expose opaque handles and never treat storage slots or printable _idx diagnostics as mutation authority.
+//! Coordinates use logical UI pixels; viewport scaling occurs in context geometry before rendering consumes rectangles.
+//! State values describe retained interaction and paint state, not platform events or direct callback execution work.
+//! Parsing helpers reject unknown public enum strings at the boundary rather than silently selecting a visual fallback.
+//! Read this file for cross-widget vocabulary, then navigate to controls, containers, or extras for concrete behavior.
+//! Keep tree ownership, callback registries, GameFS policies, and render-resource lifetime in their dedicated modules.
 
 use crate::runtime::resource_keys::{FontKey, ShaderKey};
 use crate::ui::icons::UiIconPosition;
@@ -727,8 +727,6 @@ pub struct WidgetBase {
     pub shader: Option<ShaderKey>,
     /// Named UI shader layers for this widget subtree, used when no direct shader override is set.
     pub shader_layers: HashMap<String, ShaderKey>,
-    /// Optional entity ID linking this widget to a game entity.
-    pub entity_attachment: Option<u64>,
     /// Optional data-binding key for `GuiContext::apply_bindings`.
     pub bind_key: Option<String>,
     /// Active animations evaluated each frame by `GuiContext::update`.
@@ -822,7 +820,6 @@ impl WidgetBase {
             font_key: None,
             shader: None,
             shader_layers: HashMap::new(),
-            entity_attachment: None,
             bind_key: None,
             transitions: Vec::new(),
             computed_rect: crate::math::Rect::new(0.0, 0.0, 0.0, 0.0),

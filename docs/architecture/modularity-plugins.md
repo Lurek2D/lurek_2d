@@ -98,7 +98,7 @@ A Lurek2D plugin is a Rust crate that:
 3. **Provides explicit init / teardown hooks** for deterministic lifecycle
 4. **Owns its own tests, docs, and Lua API reference**
 
-Plugins are **NOT** pure-Lua libraries (`library/`), game scripts (`content/games/`), asset bundles, or sandboxed mods (`mods` module).
+Plugins are **NOT** pure-Lua libraries (`library/`), game scripts (`lurek_2d_content/games/`), asset bundles, or sandboxed mods (`mods` module).
 
 **Registration shape (C-02 compliant):**
 

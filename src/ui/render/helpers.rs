@@ -1,18 +1,39 @@
-//! Owns the UI render helpers implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI render helpers data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI render helpers behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI render helpers defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near UI render helpers state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI render helpers calculations explicit at their owning subsystem boundary.
-//! Provides local adaptation layer that lets callers reuse UI render helpers rules without duplicating engine decisions.
-//! Read this file when renderer output depends on shared UI helper math more than widget-specific state.
+//! Provides shared render helpers for geometry, clipping, text placement, colors, and command construction.
+//! Functions convert resolved widget state into RenderCommand fragments without mutating tree or callback state.
+//! Widget-specific paint decisions stay in the parent render owner, keeping repeated drawing math small and consistent.
+//! GPU execution, fonts, images, and encoding remain renderer-owned, so helpers never allocate graphics resources directly.
+//! Inputs use logical UI pixels and preserve clipping and order invariants so headless capture matches live lowering.
+//! Helpers may choose visible fallbacks for absent optional resources but must not change layout or input ownership.
+//! Use this file when paint branches duplicate geometry or color calculations across parent renderer widget kinds.
+//! Keep lifecycle, callback dispatch, GameFS output, and coordinate conversion in dedicated subsystem owners.
+//! Tests should verify command content or capture evidence, rather than relying on a widget factory alone.
+//! Navigation stays here for shared paint math; keep per-widget visual policy in the parent render module.
 
 use super::*;
 
+/// Return the pixel height used by the legacy CPU preview text path.
+///
+/// Software preview still uses this metric while the renderer-owned replay
+/// path handles production capture. Keeping it here lets the transitional
+/// tree helper and the remaining preview branch share identical centering.
+pub(super) fn cpu_text_height(font: Option<&crate::font::Font>) -> i32 {
+    font.map(|font| font.size().round() as i32)
+        .unwrap_or(7)
+        .max(1)
+}
+
+/// Return the top-left Y coordinate that vertically centres preview text.
+pub(super) fn cpu_text_center_y(
+    font: Option<&crate::font::Font>,
+    y: i32,
+    height: i32,
+) -> i32 {
+    y + ((height - cpu_text_height(font)) / 2).max(0)
+}
+
 #[allow(clippy::too_many_arguments)]
 /// Rasterizes one tree node subtree into the CPU image preview for headless UI rendering.
+#[allow(dead_code)] // Transitional compatibility helper; software replay owns production capture.
 pub(super) fn draw_tree_nodes_cpu(
     nodes: &[crate::ui::extras::TreeNode],
     idx: usize,

@@ -2,12 +2,12 @@
 """
 gen_lua_library_api.py — Generate API reference docs from Lurek2D Lua library files.
 
-Reads all content/library/*/init.lua files and produces a comprehensive Markdown API
+Reads all lurek_2d_content/library/*/init.lua files and produces a comprehensive Markdown API
 reference at docs/reports/lua_library_api_reference.md.
 
 Usage: python tools/gen_lua_library_api.py [--output PATH] [--library-dir PATH]
        Default output: docs/reports/lua_library_api_reference.md
-       Default library-dir: content/library/
+       Default library-dir: lurek_2d_content/library/
 """
 
 import re
@@ -716,8 +716,8 @@ Examples:
         help='Output Markdown file path (default: logs/reports/lua_library_api_reference.md)'
     )
     parser.add_argument(
-        '--library-dir', default='library',
-        help='Path to the content/library/ directory (default: content/library/)'
+        '--library-dir', default='lurek_2d_content/library',
+        help='Path to the lurek_2d_content/library/ directory (default: lurek_2d_content/library/)'
     )
     args = parser.parse_args()
 

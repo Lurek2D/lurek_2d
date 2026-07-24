@@ -1,7 +1,8 @@
-//! Owns the UI context geometry implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI context geometry data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI context geometry behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+//! Maintains UI viewport geometry, resolution scaling, and input-layout preparation for retained widget trees.
+//! It owns viewport dimensions and dirty-layout checks, then delegates concrete placement to GuiContext layout passes.
+//! Input routing calls these helpers before hit testing so pointer coordinates observe the same rectangles as rendering.
+//! Lua bindings validate public sizes; this file accepts trusted context mutations and marks layout state dirty.
+//! Open this file for DPI or viewport changes, coordinate conversion, and the no-relayout fast path used by input dispatch.
 
 use super::*;
 
@@ -26,24 +27,45 @@ impl GuiContext {
         };
         self.layout_dirty = true;
         self.dirty = true;
+        self.render_generation = self.render_generation.saturating_add(1);
+    }
+
+    /// Accept normalized safe-area insets from the window/app edge and invalidate geometry.
+    pub fn set_safe_area(&mut self, top: f32, right: f32, bottom: f32, left: f32) -> bool {
+        let insets = [top, right, bottom, left];
+        if insets.iter().any(|value| !value.is_finite() || *value < 0.0) {
+            return false;
+        }
+        self.safe_area = insets;
+        self.layout_dirty = true;
+        self.dirty = true;
+        self.render_generation = self.render_generation.saturating_add(1);
+        true
     }
 
     /// Runs layout and backfills computed rectangles before hit testing or input dispatch.
     pub(super) fn ensure_input_layout(&mut self) {
-        self.run_layout_pass();
-        let mut is_child = vec![false; self.widgets.len()];
-        for idx in 0..self.widgets.len() {
-            if !self.widget_is_live(idx) {
-                continue;
-            }
-            for child_idx in self.traversal_children(idx) {
-                if child_idx < is_child.len() {
-                    is_child[child_idx] = true;
+        // Pointer movement over a stable tree must not relayout it. Structural
+        // and viewport mutations set `layout_dirty`, making this hot path a
+        // generation check after the first layout.
+        if self.layout_dirty {
+            self.run_layout_pass();
+            self.layout_dirty = false;
+        }
+        if self.input_parent_cache_dirty {
+            let mut is_child = vec![false; self.widgets.len()];
+            for idx in 0..self.widgets.len() {
+                if !self.widget_is_live(idx) { continue; }
+                for child_idx in self.traversal_children(idx) {
+                    if child_idx < is_child.len() { is_child[child_idx] = true; }
                 }
             }
+            self.input_parent_cache = is_child;
+            self.input_parent_cache_dirty = false;
         }
         let root_rect = Rect::new(0.0, 0.0, 0.0, 0.0);
-        for (idx, child) in is_child.iter().enumerate().skip(1) {
+        for idx in 1..self.input_parent_cache.len() {
+            let child = self.input_parent_cache[idx];
             if !child && self.widget_is_live(idx) {
                 self.layout_widget(idx, &root_rect, true, None);
             }

@@ -13,7 +13,7 @@
 - Source path: `src/filesystem`
 - Binding: `src/lua_api/filesystem_api.rs`
 - Namespace: `lurek.filesystem`
-- Lua API surface: `44` functions, `4` types, `17` methods
+- Lua API surface: `47` functions, `4` types, `17` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -123,13 +123,14 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - `lurek.filesystem.load(path) -> function`: Loads a Lua chunk from GameFS and returns it as a Lua function.
 - `lurek.filesystem.mkdir(path) -> nil`: Creates a directory under the GameFS base directory.
 - `lurek.filesystem.mount(src, mp) -> boolean`: Mounts an external source path at a GameFS mount point.
+- `lurek.filesystem.mountWorkspace(src, mp) -> boolean`: Mounts a user-selected workspace directory at a non-empty virtual mount point.
 - `lurek.filesystem.mountZip(archive_path, prefix) -> LZipMount`: Opens a ZIP archive and exposes it through a virtual prefix.
 - `lurek.filesystem.move(src, dst) -> nil`: Moves or renames one GameFS file to another path.
 - `lurek.filesystem.newFileData(path) -> LFileData`: Loads a file into an immutable file data handle.
 - `lurek.filesystem.openFile(path, mode) -> LFileHandle`: Opens a GameFS file handle in a requested mode.
 - `lurek.filesystem.pollAsync(handle_id) -> string`: Polls an asynchronous file load request.
 - `lurek.filesystem.pollAsyncWrite(handle_id) -> string`: Polls an asynchronous file write request.
-- `lurek.filesystem.pollWatchers() -> string[]`: Polls watched paths and returns paths that changed since the previous poll.
+- `lurek.filesystem.pollWatchers() -> string[]`: Polls watched paths and returns their GameFS paths when they changed since the previous poll.
 - `lurek.filesystem.read(path) -> string`: Reads a UTF-8 text file from GameFS.
 - `lurek.filesystem.readAsync(path) -> integer`: Starts an asynchronous file load request.
 - `lurek.filesystem.readBytes(path) -> string`: Reads a binary file from GameFS and returns the bytes as a Lua string.
@@ -141,12 +142,14 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - `lurek.filesystem.stat(path) -> table`: Returns size and file/directory flags for a GameFS path.
 - `lurek.filesystem.toAbsolutePath(path) -> string`: Resolves a GameFS-relative path against the filesystem base directory.
 - `lurek.filesystem.unmount(mp) -> boolean`: Removes a GameFS mount point by its name.
-- `lurek.filesystem.unwatchPath(path) -> nil`: Removes a path from the module-local file watcher.
-- `lurek.filesystem.watchPath(path) -> nil`: Adds a path to the module-local file watcher.
+- `lurek.filesystem.unwatchPath(path) -> nil`: Removes a GameFS path from the module-local file watcher.
+- `lurek.filesystem.watchPath(path) -> nil`: Adds a GameFS path to the module-local file watcher.
 - `lurek.filesystem.write(path, data) -> nil`: Writes a UTF-8 text file through GameFS.
 - `lurek.filesystem.writeAsync(path, data) -> integer`: Starts an asynchronous file write request.
 - `lurek.filesystem.writeBytes(path, data) -> nil`: Writes binary data through GameFS.
 - `lurek.filesystem.writeJson(path, json) -> nil`: Writes JSON text through the GameFS layer.
+- `lurek.filesystem.writeWorkspace(path, content) -> nil`: Writes UTF-8 text inside a previously mounted user workspace.
+- `lurek.filesystem.writeWorkspaceAtomic(path, content) -> nil`: Atomically writes UTF-8 text inside a previously mounted user workspace.
 
 ### Callbacks
 

@@ -18,6 +18,7 @@ description: "Load this skill when auditing and fixing example coverage, example
 - Generated-page context should remain understandable when a block is extracted without its filename or neighboring API descriptions; local variable names and observable outcomes must carry enough meaning for independent reading.
 - Example assets are shared infrastructure and should be minimal, stable, and referenced by forward-slash paths. An example that relies on a game-local or machine-local asset is structurally covered but not portable.
 - Lifecycle-sensitive examples must create resources at a legal phase and demonstrate the API where its result becomes visible, avoiding accidental patterns such as allocating every draw or mutating simulation only during rendering.
+- Reconcile examples with the canonical generated inventory, including aliases and userdata methods, and flag feature-shaped calls whose example has no visible effect or whose advertised implementation status disagrees with source.
 
 ## Workflow
 - Run module and repository coverage with no stubs/partials, classify missing, duplicate, malformed, TODO/PART, and thin owners, then join each candidate to its generated signature and canonical module file.

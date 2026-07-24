@@ -27,6 +27,8 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 - Mutation testing or deliberate assertion perturbation is especially valuable for blocks that only inspect types, non-nil handles, or default state; these tests can pass even when the named operation does nothing.
 - Float, randomized, frame-driven, and concurrent tests need an explicit stability strategy—epsilon, seed, bounded step count, deterministic scheduling seam, or release-only threshold—rather than repeated retries.
 - Test fixture ownership should mirror subsystem boundaries. Shared helpers may construct common context, but they must not perform the named operation or assertion invisibly because coverage then attributes behavior to the wrong block.
+- Semantic test ownership requires visible state, output, error category, or lifecycle proof; callable/type-only assertions are a shallow-test warning, not acceptance evidence.
+- Security and stress files must remain module-owned: reject suites whose markers or bodies are dominated by unrelated module APIs, and require hostile limits plus callback/resource cleanup for stateful surfaces.
 
 ## Workflow
 - Run unit ownership, Lua structure, non-unit, and evidence/golden contract audits first; build a module-by-layer matrix of missing/exact/duplicate owners, registration, execution target, artifacts, and affected generated API names.

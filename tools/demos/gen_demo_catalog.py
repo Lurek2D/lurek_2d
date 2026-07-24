@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate content/games/README.md and catalog.json from audited metadata.
+"""Generate lurek_2d_content/games/README.md and catalog.json from audited metadata.
 
 The generated README is a public-facing catalog. It lists only finished catalog
 candidates. Backlog and migration work stays in work/games-audit.* outputs.
@@ -46,7 +46,7 @@ def _preview_cell(row: audit_games.GameAudit) -> str:
 
 
 def _run_cell(row: audit_games.GameAudit) -> str:
-    return f"`cargo run -- content/games/{row.id}`"
+    return f"`cargo run -- lurek_2d_content/games/{row.id}`"
 
 
 def _api_cell(row: audit_games.GameAudit) -> str:
@@ -96,7 +96,7 @@ def build_catalog_json(rows: list[audit_games.GameAudit]) -> dict[str, Any]:
         "schema": 1,
         "source_issue": "https://github.com/Lurek2D/lurek_2d/issues/30",
         "generated_by": "tools/demos/gen_demo_catalog.py",
-        "games_root": "content/games",
+        "games_root": "lurek_2d_content/games",
         "decision_descriptions": game_catalog.DECISION_DESCRIPTIONS,
         "demos": [asdict(row) for row in rows],
     }
@@ -115,13 +115,13 @@ def build_readme(rows: list[audit_games.GameAudit]) -> str:
     lines: list[str] = [
         "# Lurek2D Demo Catalog",
         "",
-        "This catalog is generated from runnable `content/games/<name>` folders and the current product decisions.",
+        "This catalog is generated from runnable `lurek_2d_content/games/<name>` folders and the current product decisions.",
         "It lists only finished catalog candidates. Showcase-like entries, migration targets, and backlog cleanup stay out of this public catalog.",
         "",
         "## Run",
         "",
         "```powershell",
-        "cargo run -- content/games/<name>",
+        "cargo run -- lurek_2d_content/games/<name>",
         "python tools/demos/audit_games.py",
         "python tools/demos/gen_demo_catalog.py",
         "```",
@@ -147,7 +147,7 @@ def build_readme(rows: list[audit_games.GameAudit]) -> str:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate content/games/README.md and catalog.json.",
+        description="Generate lurek_2d_content/games/README.md and catalog.json.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

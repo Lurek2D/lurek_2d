@@ -19,10 +19,10 @@ This generated Wiki is the friendly cookbook and quick-guide layer. The full `lu
 ## Project Snapshot
 
 - 72 Lua API modules
-- 7109 Lua API functions
+- 7113 Lua API functions
 - 75 module specs
 - 72 API examples
-- 7 reference games
+- 8 reference games
 - 9 libraries, 821 functions
 
 ## Short Path
@@ -37,6 +37,6 @@ This generated Wiki is the friendly cookbook and quick-guide layer. The full `lu
 - [Callbacks](Callbacks) - functions the engine calls in a game script.
 - [Runtime Model](Runtime-Model) - startup and frame order.
 - [Examples](Examples) - files from `content/examples/`.
-- [Reference Games](Reference-Games) - games from `content/games/`.
+- [Reference Games](Reference-Games) - games from `lurek_2d_content/games/`.
 - [Lureksome](Lureksome) - reusable Lua libraries over the runtime.
 - [Glossary](Glossary) - common runtime and API terms.

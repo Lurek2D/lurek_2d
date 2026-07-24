@@ -21,7 +21,7 @@
 - Keep one test file per module per layer: `test_<module>_<layer>.lua`.
 - Keep tests deterministic; use epsilon ranges for floats.
 - Register new Lua suites through `tests/lua_tests.rs`.
-- Put headless demo tests next to the demo as `content/games/**/test.lua`.
+- Put headless demo tests next to the demo as `lurek_2d_content/games/**/test.lua`.
 - Use explicit state assertions, not only side-effect checks.
 - Keep one Lua artifact root: `tests/artifacts/`.
 - Write fresh evidence only under `tests/artifacts/current/`.

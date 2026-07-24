@@ -1,9 +1,9 @@
-//! Owns the UI context focus implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI context focus data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI context focus behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI context focus defaults, lifecycle handling, validation, or data ownership rules.
+//! Implements focus ownership and traversal for the retained tree, including directional and tab-order navigation.
+//! It validates live focusable handles, honors explicit neighbors and groups, and clears focus during lifecycle removal.
+//! Context input decides when an event requests focus; this owner resolves the next eligible widget deterministically.
+//! Lua bindings expose opaque handles and adapters report consumption, but neither owns focus order or stale repair.
+//! Modal constraints apply before traversal so background widgets cannot regain authority while a dialog is open.
+//! Open this file for focus invalidation, explicit-neighbor rules, and the input-to-retained-state boundary.
 
 use super::*;
 

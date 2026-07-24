@@ -13476,6 +13476,12 @@ lurek.filesystem.mkdir = function(path) end
 ---@return boolean True when the mount succeeds.
 lurek.filesystem.mount = function(src, mp) end
 
+--- Mounts a user-selected workspace directory at a non-empty virtual mount point.
+---@param src string User-selected workspace directory path.
+---@param mp string Non-empty virtual mount point such as `project`.
+---@return boolean True when the workspace mount succeeds.
+lurek.filesystem.mountWorkspace = function(src, mp) end
+
 --- Opens a ZIP archive and exposes it through a virtual prefix.
 ---@param archive_path string Archive path on disk.
 ---@param prefix string Virtual path prefix for archive contents.
@@ -13508,8 +13514,8 @@ lurek.filesystem.pollAsync = function(handle_id) end
 ---@return string Completed status, pending marker, or nil depending on async state.
 lurek.filesystem.pollAsyncWrite = function(handle_id) end
 
---- Polls watched paths and returns paths that changed since the previous poll.
----@return string[] Changed path strings.
+--- Polls watched paths and returns their GameFS paths when they changed since the previous poll.
+---@return string[] Changed logical GameFS path strings.
 lurek.filesystem.pollWatchers = function() end
 
 --- Reads a UTF-8 text file from GameFS.
@@ -13565,12 +13571,12 @@ lurek.filesystem.toAbsolutePath = function(path) end
 ---@return boolean True when a mount was removed.
 lurek.filesystem.unmount = function(mp) end
 
---- Removes a path from the module-local file watcher.
----@param path string Watched path to remove.
+--- Removes a GameFS path from the module-local file watcher.
+---@param path string Watched GameFS path to remove.
 lurek.filesystem.unwatchPath = function(path) end
 
---- Adds a path to the module-local file watcher.
----@param path string Path to watch for changes.
+--- Adds a GameFS path to the module-local file watcher.
+---@param path string Existing or future GameFS path to watch for changes.
 lurek.filesystem.watchPath = function(path) end
 
 --- Writes a UTF-8 text file through GameFS.
@@ -13593,6 +13599,18 @@ lurek.filesystem.writeBytes = function(path, data) end
 ---@param path string GameFS path to write.
 ---@param json string JSON text to store.
 lurek.filesystem.writeJson = function(path, json) end
+
+--- Writes UTF-8 text inside a previously mounted user workspace.
+---@param path string Virtual path below a writable workspace mount.
+---@param content string UTF-8 content to write.
+---@return nil Errors if the path is outside a writable workspace mount.
+lurek.filesystem.writeWorkspace = function(path, content) end
+
+--- Atomically writes UTF-8 text inside a previously mounted user workspace.
+---@param path string Virtual path below a writable workspace mount.
+---@param content string UTF-8 content to write.
+---@return nil Errors if the path is outside a writable workspace mount.
+lurek.filesystem.writeWorkspaceAtomic = function(path, content) end
 
 --- Creates an edge between two nodes with an optional edge type.
 ---@param from_ud LGraphNode Source node handle.
@@ -15974,6 +15992,11 @@ lurek.image.saveImage = function(img_ud, filename) end
 ---@param img_ud LImageData Image data handle to encode.
 ---@param filename string Output filename relative to game directory.
 lurek.image.savePNG = function(img_ud, filename) end
+
+--- Encodes image data as PNG and atomically writes it to a user-authorized workspace mount.
+---@param img_ud LImageData Image data handle to encode.
+---@param filename string Virtual path inside a writable workspace mount.
+lurek.image.savePNGWorkspace = function(img_ud, filename) end
 
 --- Feeds one key into the combo detector and returns progress status.
 ---@param key string Key name to feed into the combo sequence.
@@ -36153,7 +36176,7 @@ function LDialog:setTitle(title) end
 
 --- Docks a child widget to the specified side of this dock panel.
 ---@param child LUiWidget The child widget handle to dock.
----@param side string The dock side ("left", "right", "top", "bottom", "center").
+---@param side string The dock side ("left", "right", "top", "bottom", "fill" or "center").
 function LDockPanel:dock(child, side) end
 
 --- Returns the number of widgets docked in this dock panel.
@@ -36821,9 +36844,9 @@ function LStatusBar:setSectionCount(count) end
 ---@param text string The new section text.
 function LStatusBar:setSectionText(section_idx, text) end
 
---- Associates a widget with a status bar section (reserved for future use).
+--- Assigns a live widget to a status bar section. The widget is reparented into the bar and clipped to that section.
 ---@param section_idx number The 1-based section index.
----@param widget? table The widget table to associate, or nil to clear.
+---@param widget? LUiWidget The widget handle to associate, or nil to clear.
 function LStatusBar:setSectionWidget(section_idx, widget) end
 
 --- Returns whether this switch is currently in the on state.
@@ -37004,8 +37027,8 @@ function LToolbar:addButton(id, tooltip) end
 function LToolbar:addSeparator() end
 
 --- Adds a flexible spacer to this toolbar.
----@param _size? number Optional size hint (reserved for future use).
-function LToolbar:addSpacer(_size) end
+---@param size? number Fixed main-axis pixels; omit for a flexible spacer.
+function LToolbar:addSpacer(size) end
 
 --- Returns a table describing the toolbar button with the given ID.
 ---@param id string The button identifier.
@@ -37152,7 +37175,7 @@ function LTreeView:setSelectedNode(index) end
 function LTreeView:toggleNode(index) end
 
 --- Adds a child widget to this widget's hierarchy.
----@param child LUiWidget The live child widget table to add.
+---@param child LUiWidget The live child widget handle to add.
 function LUiWidget:addChild(child) end
 
 --- Smoothly animates this widget's opacity toward a target value over the given duration.
@@ -37168,10 +37191,6 @@ function LUiWidget:animateAlpha(target, duration, hide_on_complete) end
 ---@param duration? number Animation duration in seconds. Defaults to 0.2.
 ---@return table Table result returned by this call.
 function LUiWidget:animatePosition(x, y, duration) end
-
---- Attaches this widget to a game entity so it follows the entity's position on screen.
----@param entity_id number The entity ID to attach to.
-function LUiWidget:attachToEntity(entity_id) end
 
 --- Binds this widget to a data key for use with update_bindings.
 ---@param key string The binding key name.
@@ -37201,9 +37220,6 @@ function LUiWidget:containsPoint(x, y) end
 ---@return number Number of widgets invalidated by the destruction.
 function LUiWidget:destroy(recursive) end
 
---- Detaches this widget from any previously attached entity.
-function LUiWidget:detachFromEntity() end
-
 --- Instantly makes this widget fully opaque and visible.
 function LUiWidget:fadeIn() end
 
@@ -37227,8 +37243,8 @@ function LUiWidget:getAriaName() end
 ---@return number The child count.
 function LUiWidget:getChildCount() end
 
---- Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
----@return LUiWidgetGetChildrenResult Array of child widget tables.
+--- Returns live typed child widget handles. Their printable `_idx` field is diagnostic only and is never mutation authority.
+---@return LUiWidget[] Array of live child widget handles.
 function LUiWidget:getChildren() end
 
 --- Returns the flex-grow factor of this widget.
@@ -37255,8 +37271,8 @@ function LUiWidget:getIconSize() end
 ---@return string The widget ID, or an empty string if none was set.
 function LUiWidget:getId() end
 
---- Returns the widget index associated through `setLabelFor`, or nil.
----@return number The linked widget index.
+--- Returns the live widget handle associated through `setLabelFor`, or nil.
+---@return LUiWidget? The linked widget handle, or nil when unset or released.
 function LUiWidget:getLabelFor() end
 
 --- Returns the outer margin of this widget.
@@ -37353,7 +37369,7 @@ function LUiWidget:isValid() end
 function LUiWidget:isVisible() end
 
 --- Removes a child widget from this widget's hierarchy.
----@param child LUiWidget The live child widget table to remove.
+---@param child LUiWidget The live child widget handle to remove.
 function LUiWidget:removeChild(child) end
 
 --- Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
@@ -37624,8 +37640,8 @@ lurek.ui.animateRotation = function(widget, from, to, duration, easing) end
 ---@return nil Schedules the animation; no return value.
 lurek.ui.animateScale = function(widget, from_sx, from_sy, to_sx, to_sy, duration, easing) end
 
---- Begins a drag operation on a widget.
----@param widget table|number The widget table or widget index.
+--- Begins a drag operation on a live widget handle.
+---@param widget LUiWidget The source widget handle; stale, foreign, and numeric values are rejected.
 ---@return boolean True if the drag started.
 lurek.ui.beginDrag = function(widget) end
 
@@ -37640,7 +37656,7 @@ lurek.ui.clearFocus = function() end
 lurek.ui.clearFont = function() end
 
 --- Destroys a widget handle and, by default, its retained descendant subtree.
----@param widget LUiWidget The live widget table to destroy.
+---@param widget LUiWidget The live widget handle to destroy.
 ---@param recursive? boolean Whether descendants are destroyed; defaults to true.
 ---@return number Number of widgets invalidated by the destruction.
 lurek.ui.destroy = function(widget, recursive) end
@@ -37655,12 +37671,12 @@ lurek.ui.draw = function() end
 lurek.ui.drawToImage = function(w, h) end
 
 --- Drops the currently dragged widget onto a target widget.
----@param target table|number The target widget table or widget index.
+---@param target LUiWidget The target widget handle; stale, foreign, and numeric values are rejected.
 ---@return boolean True if the drop succeeded.
 lurek.ui.dropOn = function(target) end
 
 --- Ends the current drag operation without dropping.
----@return number The widget index that was being dragged, or nil if no drag was active.
+---@return LUiWidget? The widget handle that was being dragged, or nil if no drag was active.
 lurek.ui.endDrag = function() end
 
 --- Flushes internal UI layout and render caches.
@@ -37688,8 +37704,8 @@ lurek.ui.focusPrev = function() end
 ---@return table Array of accessibility node tables.
 lurek.ui.getAccessibilityTree = function() end
 
---- Returns the widget index currently being dragged, or nil.
----@return number The dragged widget index.
+--- Returns the live widget currently being dragged, or nil.
+---@return LUiWidget? The dragged widget handle, or nil when no drag is active.
 lurek.ui.getActiveDrag = function() end
 
 --- Returns the index of the currently focused widget, or nil.
@@ -37712,6 +37728,10 @@ lurek.ui.getIconNames = function() end
 --- Returns the root panel widget of the UI tree.
 ---@return LPanel The root panel widget table.
 lurek.ui.getRoot = function() end
+
+--- Returns bounded UI work counters for development diagnostics.
+---@return table Snapshot with liveWidgets, lastFrameCommands, layoutPasses, eventQueueHighWater, commandLimitRejections, commandCacheHits, and commandCacheMisses.
+lurek.ui.getRuntimeStats = function() end
 
 --- Get the current UI scale factor (current_height / base_height).
 ---@return number The scale factor.
@@ -37761,17 +37781,17 @@ lurek.ui.keypressed = function(key) end
 
 --- Loads a UI layout from a Lua table definition.
 ---@param def table The layout definition table.
----@return number The root widget index.
+---@return LUiWidget The new root widget handle.
 lurek.ui.loadLayout = function(def) end
 
 --- Loads a UI layout from a TOML layout file.
 ---@param path string Path to the TOML layout file.
----@return number The root widget index.
+---@return LUiWidget The new root widget handle.
 lurek.ui.loadLayoutFile = function(path) end
 
 --- Loads a UI layout from a TOML file resolved through GameFS.
 ---@param path string GameFS path to the TOML layout file.
----@return number The root widget index.
+---@return LUiWidget The new root widget handle.
 lurek.ui.loadLayoutGameFile = function(path) end
 
 --- Delivers a mouse move event to the UI.
@@ -38056,7 +38076,7 @@ lurek.ui.newWindow = function(title) end
 ---@return string The normalized state string, or nil if invalid.
 lurek.ui.parseWidgetState = function(state) end
 
---- Renders the entire UI to a PNG image file.
+--- Renders the entire UI to a PNG image file. The canonical form is `(width, height, path)`.
 ---@param pathOrWidth any Output file path for path-first calls, or image width for canonical calls.
 ---@param widthOrHeight number Image width for path-first calls, or image height for canonical calls.
 ---@param heightOrPath any Image height for path-first calls, or output file path for canonical calls.
@@ -38079,12 +38099,19 @@ lurek.ui.setBaseResolution = function(width, height) end
 lurek.ui.setDefaultTheme = function() end
 
 --- Sets keyboard focus to a widget, or clears focus if nil.
----@param widget? table The widget table to focus, or nil to clear.
+---@param widget? LUiWidget The widget handle to focus, or nil to clear.
 lurek.ui.setFocus = function(widget) end
 
 --- Sets the global UI font by applying it to the root widget.
 ---@param font LFont Font handle used by the UI when widgets do not override it.
 lurek.ui.setFont = function(font) end
+
+--- Supplies normalized window safe-area insets in pixels. Window discovery remains app-owned.
+---@param top number Top inset in pixels; must be finite and non-negative.
+---@param right number Right inset in pixels; must be finite and non-negative.
+---@param bottom number Bottom inset in pixels; must be finite and non-negative.
+---@param left number Left inset in pixels; must be finite and non-negative.
+lurek.ui.setSafeArea = function(top, right, bottom, left) end
 
 --- Applies a theme to the entire UI context.
 ---@param theme_ud LTheme The theme userdata to apply.
@@ -38124,7 +38151,7 @@ lurek.ui.update_bindings = function(data) end
 lurek.ui.validateUx = function() end
 
 --- Calculate the visible item range for a scrollable list widget.
----@param widget table Live widget table carrying an engine-owned handle.
+---@param widget LUiWidget Live widget handle carrying an engine-owned token.
 ---@param item_count number Total number of items.
 ---@param item_height number Height of each item in pixels.
 ---@return number Start index (0-based).

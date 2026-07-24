@@ -39,6 +39,7 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 ANALYTICS_PATH = WORKSPACE_ROOT / "logs" / "data" / "test_analytics.json"
 BASELINE_PATH = WORKSPACE_ROOT / "logs" / "data" / "perf_baseline.json"
 ANALYTICS_SCRIPT = WORKSPACE_ROOT / "tools" / "audit" / "test_analytics.py"
+UI_PERF_GATE = WORKSPACE_ROOT / "tools" / "audit" / "ui_perf_gate.py"
 
 
 def load_json(path: Path) -> dict:
@@ -115,6 +116,7 @@ Examples:
     parser.add_argument("--min-stress-pct", type=float, default=35.0)
     parser.add_argument("--baseline", default=str(BASELINE_PATH))
     parser.add_argument("--update-baseline", action="store_true")
+    parser.add_argument("--skip-ui-perf", action="store_true", help="Skip the release-mode UI scenario gate.")
     args = parser.parse_args()
 
     if not ensure_analytics_file():
@@ -155,6 +157,16 @@ Examples:
         baseline_path.parent.mkdir(parents=True, exist_ok=True)
         baseline_path.write_text(json.dumps(current, indent=2), encoding="utf-8")
         print(f"[OK] baseline updated: {baseline_path}")
+
+    if not args.skip_ui_perf:
+        result = subprocess.run(
+            [sys.executable, str(UI_PERF_GATE)],
+            cwd=WORKSPACE_ROOT,
+            check=False,
+        )
+        if result.returncode != 0:
+            print("[FAIL] UI release performance gate failed")
+            return result.returncode
 
     print("[OK] perf/stress gate passed")
     return 0

@@ -39,20 +39,6 @@ struct GuiCallbacks {
 }
 
 impl GuiCallbacks {
-    fn remove_widget(&mut self, idx: usize) {
-        self.on_click.remove(&idx);
-        self.on_change.remove(&idx);
-        self.on_close.remove(&idx);
-        self.on_select.remove(&idx);
-        self.on_drag_start.remove(&idx);
-        self.on_drag_end.remove(&idx);
-        self.on_drag_enter.remove(&idx);
-        self.on_drag_leave.remove(&idx);
-        self.on_drop.remove(&idx);
-        self.on_draw.remove(&idx);
-        self.dialog_action
-            .retain(|(widget_idx, _), _| *widget_idx != idx);
-    }
     fn clear(&mut self) {
         self.on_click.clear();
         self.on_change.clear();
@@ -65,6 +51,21 @@ impl GuiCallbacks {
         self.on_drop.clear();
         self.dialog_action.clear();
         self.on_draw.clear();
+    }
+    /// Drop registry keys for all slots invalidated by recursive destruction.
+    fn retain_live_widgets(&mut self, context: &GuiContext) {
+        let live = |slot: &usize| context.widget_is_live(*slot);
+        self.on_click.retain(|slot, _| live(slot));
+        self.on_change.retain(|slot, _| live(slot));
+        self.on_close.retain(|slot, _| live(slot));
+        self.on_select.retain(|slot, _| live(slot));
+        self.on_drag_start.retain(|slot, _| live(slot));
+        self.on_drag_end.retain(|slot, _| live(slot));
+        self.on_drag_enter.retain(|slot, _| live(slot));
+        self.on_drag_leave.retain(|slot, _| live(slot));
+        self.on_drop.retain(|slot, _| live(slot));
+        self.on_draw.retain(|slot, _| live(slot));
+        self.dialog_action.retain(|(slot, _), _| live(slot));
     }
 }
 
@@ -397,8 +398,8 @@ fn create_widget_table<'a>(
             let removed = g
                 .destroy_widget(index, recursive.unwrap_or(true))
                 .map_err(LuaError::RuntimeError)?;
+            cbs_destroy.borrow_mut().retain_live_widgets(&g);
             drop(g);
-            cbs_destroy.borrow_mut().remove_widget(index);
             Ok(removed as u32)
         })?,
     )?;
@@ -1107,15 +1108,24 @@ fn create_widget_table<'a>(
     )?;
 
     let c = ctx.clone();
+    let cbs_label_for = cbs.clone();
     // -- getLabelFor --
-    /// Returns the widget index associated through `setLabelFor`, or nil.
+    /// Returns the live widget handle associated through `setLabelFor`, or nil.
     /// @param | self | LUiWidget | The widget instance.
-    /// @return | integer | The linked widget index.
+    /// @return | LUiWidget? | The linked widget handle, or nil when unset or released.
     t.set(
         "getLabelFor",
-        lua.create_function(move |_, _self: LuaValue| {
-            let g = c.borrow();
-            Ok(g.widgets.get(idx).and_then(|w| w.base().label_for))
+        lua.create_function(move |lua, _self: LuaValue| {
+            let linked = { c.borrow().widgets.get(idx).and_then(|w| w.base().label_for) };
+            match linked {
+                Some(linked_idx) => Ok(LuaValue::Table(create_typed_widget_table(
+                    lua,
+                    &c,
+                    linked_idx,
+                    &cbs_label_for,
+                )?)),
+                None => Ok(LuaValue::Nil),
+            }
         })?,
     )?;
 
@@ -1284,7 +1294,7 @@ fn create_widget_table<'a>(
     // -- addChild --
     /// Adds a child widget to this widget's hierarchy.
     /// @param | self | LUiWidget | The widget instance.
-    /// @param | child | LUiWidget | The live child widget table to add.
+    /// @param | child | LUiWidget | The live child widget handle to add.
     t.set(
         "addChild",
         lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
@@ -1298,7 +1308,7 @@ fn create_widget_table<'a>(
     // -- removeChild --
     /// Removes a child widget from this widget's hierarchy.
     /// @param | self | LUiWidget | The widget instance.
-    /// @param | child | LUiWidget | The live child widget table to remove.
+    /// @param | child | LUiWidget | The live child widget handle to remove.
     t.set(
         "removeChild",
         lua.create_function(move |_, (_self, child): (LuaValue, LuaValue)| {
@@ -1321,10 +1331,11 @@ fn create_widget_table<'a>(
         })?,
     )?;
     let c = ctx.clone();
+    let cbs_children = cbs.clone();
     // -- getChildren --
-    /// Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
+    /// Returns live typed child widget handles. Their printable `_idx` field is diagnostic only and is never mutation authority.
     /// @param | self | LUiWidget | The widget instance.
-    /// @return | table | Array of child widget tables.
+    /// @return | LUiWidget[] | Array of live child widget handles.
     /// @field | _idx | integer | Diagnostic storage slot; never authoritative.
     t.set(
         "getChildren",
@@ -1339,15 +1350,7 @@ fn create_widget_table<'a>(
             };
             let out = lua.create_table()?;
             for (list_index, child_idx) in child_indices.into_iter().enumerate() {
-                let child = lua.create_table()?;
-                /// Performs the '_idx' operation.
-                child.set("_idx", child_idx)?;
-                if let Some(child_handle) = c.borrow().widget_id(child_idx) {
-                    child.set(
-                        "__lurek_ui_handle",
-                        lua.create_userdata(LuaUiWidgetHandle(child_handle))?,
-                    )?;
-                }
+                let child = create_typed_widget_table(lua, &c, child_idx, &cbs_children)?;
                 out.set(list_index + 1, child)?;
             }
             Ok(out)
@@ -2146,35 +2149,6 @@ fn create_widget_table<'a>(
     t.set(
         "cancelAnimations",
         lua.create_function(move |_, _self: LuaValue| Ok(c.borrow_mut().cancel_animations(idx)))?,
-    )?;
-    let c = ctx.clone();
-    // -- attachToEntity --
-    /// Attaches this widget to a game entity so it follows the entity's position on screen.
-    /// @param | self | LUiWidget | The widget instance.
-    /// @param | entity_id | integer | The entity ID to attach to.
-    t.set(
-        "attachToEntity",
-        lua.create_function(move |_, (_self, entity_id): (LuaValue, u64)| {
-            let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
-                w.base_mut().entity_attachment = Some(entity_id);
-            }
-            Ok(())
-        })?,
-    )?;
-    let c = ctx.clone();
-    // -- detachFromEntity --
-    /// Detaches this widget from any previously attached entity.
-    /// @param | self | LUiWidget | The widget instance.
-    t.set(
-        "detachFromEntity",
-        lua.create_function(move |_, _self: LuaValue| {
-            let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
-                w.base_mut().entity_attachment = None;
-            }
-            Ok(())
-        })?,
     )?;
     Ok(t)
 }
@@ -5437,7 +5411,7 @@ fn add_dock_panel_methods(
     /// Docks a child widget to the specified side of this dock panel.
     /// @param | self | LDockPanel | The widget instance.
     /// @param | child | LUiWidget | The child widget handle to dock.
-    /// @param | side | string | The dock side ("left", "right", "top", "bottom", "center").
+    /// @param | side | string | The dock side ("left", "right", "top", "bottom", "fill" or "center").
     t.set(
         "dock",
         lua.create_function(
@@ -5449,6 +5423,7 @@ fn add_dock_panel_methods(
                 let mut g = c.borrow_mut();
                 if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
                     dp.docked.push((child_idx, side));
+                    g.mark_widget_dirty(true, true, true, true);
                 }
                 Ok(())
             },
@@ -5467,9 +5442,10 @@ fn add_dock_panel_methods(
                 widget_index_from_value(&g, child, "undock")?
             };
             let mut g = c.borrow_mut();
-            if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
-                dp.docked.retain(|(ci, _)| *ci != child_idx);
-            }
+                if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
+                    dp.docked.retain(|(ci, _)| *ci != child_idx);
+                    g.mark_widget_dirty(true, true, true, true);
+                }
             Ok(())
         })?,
     )?;
@@ -5498,13 +5474,14 @@ fn add_dock_panel_methods(
         "setSplitSize",
         lua.create_function(move |_, (_self, side, size): (LuaValue, String, f32)| {
             let mut g = c.borrow_mut();
-            if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
+                if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
                 if let Some(entry) = dp.split_sizes.iter_mut().find(|(s, _)| *s == side) {
                     entry.1 = size;
                 } else {
-                    dp.split_sizes.push((side, size));
+                        dp.split_sizes.push((side, size));
+                    }
+                    g.mark_widget_dirty(true, true, true, true);
                 }
-            }
             Ok(())
         })?,
     )?;
@@ -5580,7 +5557,9 @@ fn add_toolbar_methods(
             move |_, (_self, id, tooltip): (LuaValue, String, Option<String>)| {
                 let mut g = c.borrow_mut();
                 if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) {
-                    Ok(tb.add_button(id, tooltip.unwrap_or_default()) + 1)
+                    let out = tb.add_button(id, tooltip.unwrap_or_default()) + 1;
+                    g.mark_widget_dirty(true, false, false, true);
+                    Ok(out)
                 } else {
                     Ok(0)
                 }
@@ -5594,7 +5573,11 @@ fn add_toolbar_methods(
     t.set(
         "addSeparator",
         lua.create_function(move |_, _self: LuaValue| {
-            let _ = c.borrow();
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) {
+                tb.add_separator();
+                g.mark_widget_dirty(true, false, false, true);
+            }
             Ok(())
         })?,
     )?;
@@ -5602,11 +5585,18 @@ fn add_toolbar_methods(
     // -- addSpacer --
     /// Adds a flexible spacer to this toolbar.
     /// @param | self | LToolbar | The widget instance.
-    /// @param | _size | number? | Optional size hint (reserved for future use).
+    /// @param | size | number? | Fixed main-axis pixels; omit for a flexible spacer.
     t.set(
         "addSpacer",
-        lua.create_function(move |_, (_self, _size): (LuaValue, Option<f32>)| {
-            let _ = c.borrow();
+        lua.create_function(move |_, (_self, size): (LuaValue, Option<f32>)| {
+            if size.is_some_and(|value| !value.is_finite() || value < 0.0) {
+                return Err(LuaError::RuntimeError("lurek.ui.addSpacer: size must be a finite non-negative number".into()));
+            }
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) {
+                tb.add_spacer(size);
+                g.mark_widget_dirty(true, false, false, true);
+            }
             Ok(())
         })?,
     )?;
@@ -5625,7 +5615,7 @@ fn add_toolbar_methods(
         lua.create_function(move |lua, (_self, id): (LuaValue, String)| {
             let g = c.borrow();
             if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get(idx) {
-                if let Some(btn) = tb.buttons.iter().find(|b| b.id == id) {
+                if let Some(crate::ui::extras::ToolbarItem::Button(btn)) = tb.items.iter().find(|item| matches!(item, crate::ui::extras::ToolbarItem::Button(button) if button.id == id)) {
                     let bt = lua.create_table()?;
                     /// The 'id' field value exposed to Lua scripts.
                     bt.set("id", btn.id.clone())?;
@@ -6544,7 +6534,9 @@ fn add_status_bar_methods(
                 let mut g = c.borrow_mut();
                 if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) {
                     sb.sections.push((text, width.unwrap_or(100.0)));
+                    sb.section_widgets.push(None);
                 }
+                g.mark_widget_dirty(true, false, false, true);
                 Ok(())
             },
         )?,
@@ -6615,29 +6607,25 @@ fn add_status_bar_methods(
         "setSectionCount",
         lua.create_function(move |_, (_self, count): (LuaValue, usize)| {
             let mut g = c.borrow_mut();
-            if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) {
-                if count < sb.sections.len() {
-                    sb.sections.truncate(count);
-                } else {
-                    while sb.sections.len() < count {
-                        sb.sections.push((String::new(), 100.0));
-                    }
-                }
-            }
-            Ok(())
+            g.set_status_bar_section_count(idx, count).map_err(mlua::Error::runtime)
         })?,
     )?;
     let c = ctx.clone();
     // -- setSectionWidget --
-    /// Associates a widget with a status bar section (reserved for future use).
+    /// Assigns a live widget to a status bar section. The widget is reparented into the bar and clipped to that section.
     /// @param | self | LStatusBar | The widget instance.
     /// @param | section_idx | integer | The 1-based section index.
-    /// @param | widget | table? | The widget table to associate, or nil to clear.
+    /// @param | widget | LUiWidget? | The widget handle to associate, or nil to clear.
     t.set(
         "setSectionWidget",
         lua.create_function(
-            move |_, (_self, _section_idx, _widget): (LuaValue, usize, LuaValue)| {
-                let _ = c.borrow();
+            move |_, (_self, section_idx, widget): (LuaValue, usize, LuaValue)| {
+                let child_idx = { let g = c.borrow(); optional_widget_index(&g, widget, "setSectionWidget")? };
+                if section_idx == 0 {
+                    return Err(LuaError::RuntimeError("lurek.ui.setSectionWidget: section index is 1-based".into()));
+                }
+                c.borrow_mut().set_status_bar_section_widget(idx, section_idx - 1, child_idx)
+                    .map_err(LuaError::RuntimeError)?;
                 Ok(())
             },
         )?,
@@ -8863,7 +8851,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let _cbs = callbacks.clone();
     // -- setFocus --
     /// Sets keyboard focus to a widget, or clears focus if nil.
-    /// @param | widget | table? | The widget table to focus, or nil to clear.
+    /// @param | widget | LUiWidget? | The widget handle to focus, or nil to clear.
     tbl.set(
         "setFocus",
         lua.create_function(move |_, widget: Option<LuaTable>| {
@@ -8936,6 +8924,26 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     let c = ctx.clone();
+    // -- getRuntimeStats --
+    /// Returns bounded UI work counters for development diagnostics.
+    /// @return | table | Snapshot with liveWidgets, lastFrameCommands, layoutPasses, eventQueueHighWater, commandLimitRejections, commandCacheHits, and commandCacheMisses.
+    tbl.set(
+        "getRuntimeStats",
+        lua.create_function(move |lua, ()| {
+            let stats = c.borrow().runtime_stats();
+            let out = lua.create_table()?;
+            out.set("liveWidgets", stats.live_widgets)?;
+            out.set("lastFrameCommands", stats.last_frame_commands)?;
+            out.set("layoutPasses", stats.layout_passes)?;
+            out.set("eventQueueHighWater", stats.event_queue_high_water)?;
+            out.set("commandLimitRejections", stats.command_limit_rejections)?;
+            out.set("commandCacheHits", stats.command_cache_hits)?;
+            out.set("commandCacheMisses", stats.command_cache_misses)?;
+            Ok(out)
+        })?,
+    )?;
+
+    let c = ctx.clone();
     // -- getAccessibilityTree --
     /// Returns a flattened accessibility snapshot for all live widgets except the root.
     /// @return | table | Array of accessibility node tables.
@@ -8993,6 +9001,21 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // -- setSafeArea --
+    /// Supplies normalized window safe-area insets in pixels. Window discovery remains app-owned.
+    /// @param | top | number | Top inset in pixels; must be finite and non-negative.
+    /// @param | right | number | Right inset in pixels; must be finite and non-negative.
+    /// @param | bottom | number | Bottom inset in pixels; must be finite and non-negative.
+    /// @param | left | number | Left inset in pixels; must be finite and non-negative.
+    let c = ctx.clone();
+    tbl.set(
+        "setSafeArea",
+        lua.create_function(move |_, (top, right, bottom, left): (f32, f32, f32, f32)| {
+            if c.borrow_mut().set_safe_area(top, right, bottom, left) { Ok(()) }
+            else { Err(LuaError::RuntimeError("lurek.ui.setSafeArea: insets must be finite non-negative numbers".into())) }
+        })?,
+    )?;
+
     // -- setBaseResolution --
     /// Set the logical base resolution the UI was designed for.
     /// @param | width | number | Base width (default 1920).
@@ -9020,7 +9043,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- visibleRange --
     /// Calculate the visible item range for a scrollable list widget.
-    /// @param | widget | table | Live widget table carrying an engine-owned handle.
+    /// @param | widget | LUiWidget | Live widget handle carrying an engine-owned token.
     /// @param | item_count | integer | Total number of items.
     /// @param | item_height | number | Height of each item in pixels.
     /// @return | integer | Start index (0-based).
@@ -9172,7 +9195,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let cbs_destroy = callbacks.clone();
     // -- destroy --
     /// Destroys a widget handle and, by default, its retained descendant subtree.
-    /// @param | widget | LUiWidget | The live widget table to destroy.
+    /// @param | widget | LUiWidget | The live widget handle to destroy.
     /// @param | recursive | boolean? | Whether descendants are destroyed; defaults to true.
     /// @return | integer | Number of widgets invalidated by the destruction.
     tbl.set(
@@ -9183,8 +9206,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let removed = g
                 .destroy_widget(idx, recursive.unwrap_or(true))
                 .map_err(LuaError::RuntimeError)?;
+            cbs_destroy.borrow_mut().retain_live_widgets(&g);
             drop(g);
-            cbs_destroy.borrow_mut().remove_widget(idx);
             Ok(removed as u32)
         })?,
     )?;
@@ -9641,8 +9664,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     let c = ctx.clone();
     // -- beginDrag --
-    /// Begins a drag operation on a widget.
-    /// @param | widget | table|number | The widget table or widget index.
+    /// Begins a drag operation on a live widget handle.
+    /// @param | widget | LUiWidget | The source widget handle; stale, foreign, and numeric values are rejected.
     /// @return | boolean | True if the drag started.
     tbl.set(
         "beginDrag",
@@ -9654,17 +9677,29 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
     let c = ctx.clone();
+    let cbs_active_drag = callbacks.clone();
     // -- getActiveDrag --
-    /// Returns the widget index currently being dragged, or nil.
-    /// @return | integer | The dragged widget index.
+    /// Returns the live widget currently being dragged, or nil.
+    /// @return | LUiWidget? | The dragged widget handle, or nil when no drag is active.
     tbl.set(
         "getActiveDrag",
-        lua.create_function(move |_, ()| Ok(c.borrow().active_drag()))?,
+        lua.create_function(move |lua, ()| {
+            let active = { c.borrow().active_drag() };
+            match active {
+            Some(idx) => Ok(LuaValue::Table(create_typed_widget_table(
+                lua,
+                &c,
+                idx,
+                &cbs_active_drag,
+            )?)),
+                None => Ok(LuaValue::Nil),
+            }
+        })?,
     )?;
     let c = ctx.clone();
     // -- dropOn --
     /// Drops the currently dragged widget onto a target widget.
-    /// @param | target | table|number | The target widget table or widget index.
+    /// @param | target | LUiWidget | The target widget handle; stale, foreign, and numeric values are rejected.
     /// @return | boolean | True if the drop succeeded.
     tbl.set(
         "dropOn",
@@ -9676,14 +9711,27 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
     let c = ctx.clone();
+    let cbs_end_drag = callbacks.clone();
     // -- endDrag --
     /// Ends the current drag operation without dropping.
-    /// @return | integer | The widget index that was being dragged, or nil if no drag was active.
+    /// @return | LUiWidget? | The widget handle that was being dragged, or nil if no drag was active.
     tbl.set(
         "endDrag",
-        lua.create_function(move |_, ()| Ok(c.borrow_mut().end_drag()))?,
+        lua.create_function(move |lua, ()| {
+            let ended = { c.borrow_mut().end_drag() };
+            match ended {
+            Some(idx) => Ok(LuaValue::Table(create_typed_widget_table(
+                lua,
+                &c,
+                idx,
+                &cbs_end_drag,
+            )?)),
+                None => Ok(LuaValue::Nil),
+            }
+        })?,
     )?;
     let c = ctx.clone();
+    let cbs_load_layout = callbacks.clone();
     // -- update_bindings --
     /// Updates data bindings for widgets that reference binding keys.
     /// @param | data | table | A table mapping binding keys to values.
@@ -9711,26 +9759,28 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- loadLayout --
     /// Loads a UI layout from a Lua table definition.
     /// @param | def | table | The layout definition table.
-    /// @return | integer | The root widget index.
+    /// @return | LUiWidget | The new root widget handle.
     tbl.set(
         "loadLayout",
-        lua.create_function(move |_, def: mlua::Table| {
+        lua.create_function(move |lua, def: mlua::Table| {
             let widget_def = lua_table_to_widget_def(&def)?;
             let mut g = c.borrow_mut();
             let root_idx = crate::ui::load_layout_def_attached(&mut g, &widget_def)
                 .map_err(mlua::Error::external)?;
-            Ok(root_idx as u32)
+            drop(g);
+            create_typed_widget_table(lua, &c, root_idx, &cbs_load_layout)
         })?,
     )?;
     let c = ctx.clone();
+    let cbs_load_layout_file = callbacks.clone();
     let s = state.clone();
     // -- loadLayoutFile --
     /// Loads a UI layout from a TOML layout file.
     /// @param | path | string | Path to the TOML layout file.
-    /// @return | integer | The root widget index.
+    /// @return | LUiWidget | The new root widget handle.
     tbl.set(
         "loadLayoutFile",
-        lua.create_function(move |_, path: String| {
+        lua.create_function(move |lua, path: String| {
             let src = {
                 let st = s.borrow();
                 st.fs.read_string(&path).map_err(mlua::Error::external)?
@@ -9738,18 +9788,21 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let mut g = c.borrow_mut();
             let root_idx = crate::ui::load_layout_toml_attached(&mut g, &src)
                 .map_err(mlua::Error::external)?;
-            Ok(root_idx as u32)
+            drop(g);
+            create_typed_widget_table(lua, &c, root_idx, &cbs_load_layout_file)
         })?,
     )?;
     let c = ctx.clone();
+    let cbs_load_layout_game_file = callbacks.clone();
     let s = state.clone();
     // -- loadLayoutGameFile --
     /// Loads a UI layout from a TOML file resolved through GameFS.
+    /// @deprecated | Use `loadLayoutFile(path)`; this alias warns in 1.1 and is removed in 1.3.
     /// @param | path | string | GameFS path to the TOML layout file.
-    /// @return | integer | The root widget index.
+    /// @return | LUiWidget | The new root widget handle.
     tbl.set(
         "loadLayoutGameFile",
-        lua.create_function(move |_, path: String| {
+        lua.create_function(move |lua, path: String| {
             let src = {
                 let st = s.borrow();
                 st.fs.read_string(&path).map_err(mlua::Error::external)?
@@ -9757,13 +9810,20 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let mut g = c.borrow_mut();
             let root_idx = crate::ui::load_layout_toml_attached(&mut g, &src)
                 .map_err(mlua::Error::external)?;
-            Ok(root_idx as u32)
+            drop(g);
+            create_typed_widget_table(
+                lua,
+                &c,
+                root_idx,
+                &cbs_load_layout_game_file,
+            )
         })?,
     )?;
     let c = ctx.clone();
     let s = state.clone();
     // -- renderToImage --
-    /// Renders the entire UI to a PNG image file.
+    /// Renders the entire UI to a PNG image file. The canonical form is `(width, height, path)`.
+    /// @deprecated | The legacy `(path, width, height)` form warns in 1.1 and is removed in 1.3.
     /// @param | pathOrWidth | any | Output file path for path-first calls, or image width for canonical calls.
     /// @param | widthOrHeight | integer | Image width for path-first calls, or image height for canonical calls.
     /// @param | heightOrPath | any | Image height for path-first calls, or output file path for canonical calls.

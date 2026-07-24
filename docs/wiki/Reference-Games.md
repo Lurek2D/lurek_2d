@@ -16,66 +16,75 @@
   - [Household Finance Lab](#household-finance-lab)
   - [Music Composer](#music-composer)
   - [Sensible Soccer](#sensible-soccer)
+  - [Tactical Mech Shooter](#tactical-mech-shooter)
 
-Reference games come from the generated catalog in `content/games/README.md` and `content/games/catalog.json`.
+Reference games come from the generated catalog in `lurek_2d_content/games/README.md` and `lurek_2d_content/games/catalog.json`.
 Only public catalog candidates are listed here; skeletons, feature-only examples, and duplicate migration work stay out of the ready-games wiki page.
 
-Catalog source: [content/games/README.md](../blob/main/content/games/README.md)
+Catalog source: [lurek_2d_content/games/README.md](../blob/main/lurek_2d_content/games/README.md)
 
 ## games
 
-### [Cannon Fodder](../tree/main/content/games/cannon_fodder)
+### [Cannon Fodder](../tree/main/lurek_2d_content/games/cannon_fodder)
 
-![Cannon Fodder screenshot](../raw/main/content/games/cannon_fodder/screen.png)
+![Cannon Fodder screenshot](../raw/main/lurek_2d_content/games/cannon_fodder/screen.png)
 
 _Dowodź oddziałem żołnierzy w niebezpiecznej dżungli — kieruj ruchem, prowadź ogień zaporowy i rzucaj granatami taktycznymi, pamiętając, że każda strata w ludziach jest bezpowrotna._
 
 **Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
-### [Dungeon Crawler](../tree/main/content/games/dungeon_crawler)
+### [Dungeon Crawler](../tree/main/lurek_2d_content/games/dungeon_crawler)
 
-![Dungeon Crawler screenshot](../raw/main/content/games/dungeon_crawler/screen.png)
+![Dungeon Crawler screenshot](../raw/main/lurek_2d_content/games/dungeon_crawler/screen.png)
 
 _Eksploruj trójwymiarowe korytarze lochów z perspektywy pierwszej osoby (FPP) — przemierzaj labirynt przy świetle pochodni, odkrywaj mgłę wojny na minimapie i zbieraj mistyczne kule._
 
 **Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [awareness](https://lurek2d.github.io/lurek_2d/modules/awareness.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [raycaster](https://lurek2d.github.io/lurek_2d/modules/raycaster.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [tilefield](https://lurek2d.github.io/lurek_2d/modules/tilefield.html), [tilelight](https://lurek2d.github.io/lurek_2d/modules/tilelight.html), +3
 
-### [Europa Universalis 2 Lite](../tree/main/content/games/eu2)
+### [Europa Universalis 2 Lite](../tree/main/lurek_2d_content/games/eu2)
 
-![Europa Universalis 2 Lite screenshot](../raw/main/content/games/eu2/screen.png)
+![Europa Universalis 2 Lite screenshot](../raw/main/lurek_2d_content/games/eu2/screen.png)
 
 **Engine:** Lurek2D
 
 **Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [log](https://lurek2d.github.io/lurek_2d/modules/log.html), [province](https://lurek2d.github.io/lurek_2d/modules/province.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
-### [Hex Logistics](../tree/main/content/games/hex_logistics)
+### [Hex Logistics](../tree/main/lurek_2d_content/games/hex_logistics)
 
-![Hex Logistics screenshot](../raw/main/content/games/hex_logistics/screen.png)
+![Hex Logistics screenshot](../raw/main/lurek_2d_content/games/hex_logistics/screen.png)
 
 Hex Logistics is a Lurek2D port of a Gemini React canvas prototype. Fly a construction ship over a procedural hex sector, pay metal to construct buildings, queue drones from factories, and tune building priorities while
 
 **Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [math](https://lurek2d.github.io/lurek_2d/modules/math.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [tilemap](https://lurek2d.github.io/lurek_2d/modules/tilemap.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
-### [Household Finance Lab](../tree/main/content/games/finance_app)
+### [Household Finance Lab](../tree/main/lurek_2d_content/games/finance_app)
 
-![Household Finance Lab screenshot](../raw/main/content/games/finance_app/screen.png)
+![Household Finance Lab screenshot](../raw/main/lurek_2d_content/games/finance_app/screen.png)
 
 _Kompleksowe laboratorium finansów domowych — analityczny dashboard oparty o bazy danych SQL, biblioteki Dataframe, zaawansowane wykresy statystyczne oraz interaktywne widżety UI._
 
 **Modules:** [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [save](https://lurek2d.github.io/lurek_2d/modules/save.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
-### [Music Composer](../tree/main/content/games/music_composer)
+### [Music Composer](../tree/main/lurek_2d_content/games/music_composer)
 
-![Music Composer screenshot](../raw/main/content/games/music_composer/screen.png)
+![Music Composer screenshot](../raw/main/lurek_2d_content/games/music_composer/screen.png)
 
 Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smooth cursor animation and particle effects.
 
 **Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [camera](https://lurek2d.github.io/lurek_2d/modules/camera.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [particle](https://lurek2d.github.io/lurek_2d/modules/particle.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
 
-### [Sensible Soccer](../tree/main/content/games/sensible_soccer)
+### [Sensible Soccer](../tree/main/lurek_2d_content/games/sensible_soccer)
 
-![Sensible Soccer screenshot](../raw/main/content/games/sensible_soccer/screen.png)
+![Sensible Soccer screenshot](../raw/main/lurek_2d_content/games/sensible_soccer/screen.png)
 
 _Niezwykle szybka, dynamiczna retro-gra piłkarska — przejmij kontrolę nad 5-osobową drużyną, stosuj podania i wślizgi taktyczne, i pokonaj komputer w emocjonującym meczu z fizyką piłki._
 
 **Modules:** [automation](https://lurek2d.github.io/lurek_2d/modules/automation.html), [event](https://lurek2d.github.io/lurek_2d/modules/event.html), [input](https://lurek2d.github.io/lurek_2d/modules/input.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [timer](https://lurek2d.github.io/lurek_2d/modules/timer.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)
+
+### [Tactical Mech Shooter](../tree/main/lurek_2d_content/games/tactical_mech_shooter)
+
+![Tactical Mech Shooter screenshot](../raw/main/lurek_2d_content/games/tactical_mech_shooter/screen.png)
+
+Scale: game
+
+**Modules:** [filesystem](https://lurek2d.github.io/lurek_2d/modules/filesystem.html), [render](https://lurek2d.github.io/lurek_2d/modules/render.html), [system](https://lurek2d.github.io/lurek_2d/modules/system.html), [tween](https://lurek2d.github.io/lurek_2d/modules/tween.html), [ui](https://lurek2d.github.io/lurek_2d/modules/ui.html), [window](https://lurek2d.github.io/lurek_2d/modules/window.html)

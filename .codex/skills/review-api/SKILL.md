@@ -19,6 +19,8 @@ description: "Load this skill when auditing and fixing Rust-to-Lua API coverage,
 - Return-shape parity includes nil versus empty tables, array versus keyed tables, copied snapshots versus live userdata, stable field names, and deterministic ordering where generated docs or callers rely on it.
 - Wrapper audits must follow every construction path, not only top-level functions: userdata methods, metamethods, callbacks, compatibility namespaces, and imported objects can expose the same domain state with different validation.
 - Error parity should compare type/category, method context, and mutation atomicity across aliases and fallible/legacy pairs rather than requiring incidental Rust wording to match byte for byte.
+- Stateful identity must be opaque and context-bound: flag forgeable/raw IDs, stale-handle reuse, aliases without a canonical owner, and feature-shaped public calls that discard input or return success without observable work.
+- Namespace placement is authoritative: flag runtime/domain work in a Lua wrapper even when its closure is short.
 
 ## Workflow
 - Generate the current API inventory and run coverage/thin-wrapper audits for the module; build a symbol matrix joining Rust owner, Lua registration, generated signature/doc, spec, example owner, and unit owner before judging gaps.

@@ -18,6 +18,7 @@ description: "Load this skill when auditing and fixing architecture docs against
 - Dependency review includes compile-time imports, runtime callbacks, shared registries, metadata/generator coupling, and filesystem conventions; absence of a Rust module import does not mean two subsystems are architecturally independent.
 - Architecture docs should identify operational ceilings and failure isolation when they shape multiple modules, but leave exact per-method ranges to specs and binding docs.
 - Rollback paths matter for migrations in serialization, public namespaces, renderer resources, and build/distribution flows because compatibility shims can otherwise become undocumented permanent architecture.
+- Verify documented dependency direction and public API ownership against concrete source imports, registrations, data flow, and lifecycle paths; prose is evidence, never the authority.
 
 ## Workflow
 - Select one architectural claim or subsystem and map its documented components, dependency arrows, state owners, lifecycle events, and failure/fallback paths to concrete source modules plus manual specs; run strict links first to remove broken-reference noise.

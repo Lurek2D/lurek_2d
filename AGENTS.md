@@ -13,9 +13,10 @@
 - `content/`: Lua examples, demos, layouts, snippets.
 - `library/`: Pure Lua packages.
 - `tests/`: Lua, Rust, smoke, golden, and evidence tests.
-- `docs/`, `pages/`: Source docs and generated site.
+- `docs/`: Source docs for the engine.
 - `tools/`: Repo scripts, generators, validators.
-- `extension/`: VS Code extension.
+- `lurek_2d_extension/`: Separate repository for the VS Code extension; do not create or edit a root-level `extension/` directory.
+- `lurek_2d_pages/`: Separate repository for generated documentation pages; do not create or edit a root-level `pages/` directory.
 - `work/`: Temporary notes, repros, and evidence.
 
 ## Rules

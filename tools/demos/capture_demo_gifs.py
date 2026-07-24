@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create preview.gif files for content/games demos from existing screen.png.
+"""Create preview.gif files for lurek_2d_content/games demos from existing screen.png.
 
 This is a lightweight catalog helper. The engine already captures screen.png
 through smoke_sweep.py/gen_demo_screenshots.py; this script turns that screenshot
@@ -102,7 +102,7 @@ def restore_screen_from_gif(screen_path: Path, gif_path: Path, *, overwrite: boo
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Create preview.gif files for content/games demos from existing screen.png.",
+        description="Create preview.gif files for lurek_2d_content/games demos from existing screen.png.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

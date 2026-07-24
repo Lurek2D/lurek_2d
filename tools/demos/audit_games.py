@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Audit content/games readiness for the public demo catalog.
+"""Audit lurek_2d_content/games readiness for the public demo catalog.
 
 The audit is intentionally non-destructive. It scans each
-content/games/<name> folder, applies the current product decision map, checks
+lurek_2d_content/games/<name> folder, applies the current product decision map, checks
 catalog assets, detects lurek.* modules, and can run the static
 validate_game.py checks in-process.
 
@@ -151,7 +151,7 @@ def _run_smoke_sweep(
             errors="replace",
         )
         status = "ERROR"
-        expected_label = f"content/games/{identifier}"
+        expected_label = f"lurek_2d_content/games/{identifier}"
         if partial.exists():
             try:
                 rows = [
@@ -227,7 +227,7 @@ def collect_audit(
         if manifest is not None:
             validate_status, validate_issues, validate_summary = _validate_one(game_dir, manifest)
 
-        smoke_label = f"content/games/{identifier}"
+        smoke_label = f"lurek_2d_content/games/{identifier}"
         smoke_row = smoke.get(smoke_label)
         smoke_status = str(smoke_row.get("bucket", "NOT_RUN")) if smoke_row else "NOT_RUN"
         smoke_error = str(smoke_row.get("error_head", "")) if smoke_row else ""
@@ -375,7 +375,7 @@ def write_markdown(rows: list[GameAudit], output: Path) -> None:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Audit content/games readiness for the public demo catalog.",
+        description="Audit lurek_2d_content/games readiness for the public demo catalog.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

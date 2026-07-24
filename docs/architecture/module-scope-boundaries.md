@@ -71,3 +71,18 @@ Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](m
 - If a module only consumes another module's data, use neutral DTOs, handles, snapshots, or render commands instead of importing the consumer's runtime state.
 - Tests should target the owning module for behavior and the adapter module only for translation.
 - Any cyclic dependency introduced between a listed pair is an architecture defect.
+# UI boundary
+
+The UI system owns retained widget identity, box/grid/container layout, styles, interaction state, focus, capture, gestures, accessibility intent, and lowering those semantics to a bounded deterministic `RenderCommand` stream.
+
+| Concern | Owner | UI boundary |
+| --- | --- | --- |
+| Raw keyboard, pointer, wheel, touch, and IME events | `input` / app edge | UI consumes normalized events and routes them to widgets. |
+| Generic graph and diagram layout | `layout` | UI may consume positions; it does not maintain a competing solver. |
+| Command execution, GPU state, scissor/stencil, and software pixel capture | `render` | UI emits commands only; it imports neither `wgpu` nor a rasterizer. |
+| Font loading, shaping, glyph metrics, and cache | `font` | UI requests metrics and retains only derived layout. |
+| CPU image codec and `ImageData` ownership | `image` | UI retains handles and asks the owning render/image API for capture/encoding. |
+| Entity lifetime, transforms, cameras, and projections | scene/entity/camera owners | UI may consume a versioned screen-anchor snapshot, never ECS state directly. |
+| Data storage, query, sort, and filtering | data modules | UI owns virtualization/view state and adapters only. |
+
+Exceptions must document the owner, direction of data flow, lifetime, and reason in the affected module specification.

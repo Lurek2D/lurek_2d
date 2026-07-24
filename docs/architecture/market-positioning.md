@@ -105,5 +105,5 @@ docs/specs     -> contributor-facing technical contracts
 docs/architecture -> design, strategy, positioning, and durable decisions
 docs/wiki      -> generated cookbook, quick guides, and FAQ-style onboarding
 content/examples -> runnable API examples
-content/games    -> larger reference games
+lurek_2d_content/games    -> larger reference games
 ```

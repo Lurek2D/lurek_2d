@@ -1201,3 +1201,38 @@ do
     lurek.filesystem.unwatchPath(WATCH_FILE)
     lurek.log.info("hot-reload poll observed " .. tostring(#changed) .. " changed path(s)")
 end
+
+--@api: lurek.filesystem.mountWorkspace
+do
+    local source = "save/example_workspace_mount/"
+    local mountpoint = "example_workspace"
+    lurek.filesystem.createDirectory(source)
+    lurek.filesystem.unmount(mountpoint)
+    local mounted = lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+    lurek.log.info("workspace mounted=" .. tostring(mounted) .. " at " .. mountpoint)
+    lurek.filesystem.unmount(mountpoint)
+end
+
+--@api: lurek.filesystem.writeWorkspace
+do
+    local source = "save/example_workspace_write/"
+    local mountpoint = "example_workspace_write"
+    lurek.filesystem.createDirectory(source)
+    lurek.filesystem.unmount(mountpoint)
+    lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+    lurek.filesystem.writeWorkspace(mountpoint .. "/content/settings.toml", "quality = 'high'")
+    lurek.log.info("workspace settings=" .. lurek.filesystem.read(mountpoint .. "/content/settings.toml"))
+    lurek.filesystem.unmount(mountpoint)
+end
+
+--@api: lurek.filesystem.writeWorkspaceAtomic
+do
+    local source = "save/example_workspace_atomic/"
+    local mountpoint = "example_workspace_atomic"
+    lurek.filesystem.createDirectory(source)
+    lurek.filesystem.unmount(mountpoint)
+    lurek.filesystem.mountWorkspace(lurek.filesystem.toAbsolutePath(source), mountpoint)
+    lurek.filesystem.writeWorkspaceAtomic(mountpoint .. "/content/particle.toml", "emission_rate = 32")
+    lurek.log.info("atomically wrote " .. mountpoint .. "/content/particle.toml")
+    lurek.filesystem.unmount(mountpoint)
+end

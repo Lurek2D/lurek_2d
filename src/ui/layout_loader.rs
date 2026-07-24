@@ -1,13 +1,15 @@
-//! Owns the UI layout loader implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI layout loader data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI layout loader behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI layout loader defaults, lifecycle handling, validation, or data ownership rules.
-//! Keeps failure paths and edge cases near UI layout loader state that explains them instead of spreading rules outward.
-//! Preserves deterministic behavior by keeping UI layout loader calculations explicit at their owning subsystem boundary.
-//! Provides the local adaptation layer that lets callers reuse UI layout loader rules without duplicating engine decisions.
-//! Open this owner before sibling files when a regression centers on UI layout loader state, helpers, or integration rules.
+//! Parses declarative TOML UI layouts into definitions and applies them transactionally to retained GuiContext state.
+//! This file owns schema conversion, finite-value checks, collection limits, reference resolution, and rollback behavior.
+//! Loaders use context builders only after the source passes depth, size, and path-policy validation.
+//! Lua bindings and GameFS select and read the source; this module does not authorize filesystem access itself.
+//! A failed document leaves the live UI tree untouched, so callers retain a usable screen and report diagnostics.
+//! It resolves id references, style metadata, bindings, and child structure after parsing instead of trusting TOML order.
+//! Layout definitions describe retained widgets; generic layout algorithms remain owned by context and container modules.
+//! Open this file for TOML syntax, declarative widget semantics, transaction boundaries, and loader error diagnostics.
+//! Collection and string limits are taken from UiLimits so layout files cannot create a separate unbounded resource path.
+//! Neighboring extras and controls modules provide concrete widget data configured from declarative fields.
+//! The parser produces deterministic definitions suitable for tests and headless capture without invoking Lua callbacks.
+//! Changes here require matching loader docs, GameFS examples, and tests for success and rollback failure paths.
 
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::extras::{

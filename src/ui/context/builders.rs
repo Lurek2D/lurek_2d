@@ -1,9 +1,9 @@
-//! Owns the UI context builders implementation for the UI subsystem and keeps related runtime rules local here.
-//! Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-//! Defines how UI context builders data is validated, transformed, or stored before neighboring systems consume it.
-//! Separates UI context builders behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-//! Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-//! Use this file when changing UI context builders defaults, lifecycle handling, validation, or data ownership rules.
+//! Creates concrete retained widgets and appends them to the GuiContext-owned storage in stable creation order.
+//! Each builder selects a widget type and leaves parenting, layout, callbacks, input, and Lua handles to their owners.
+//! push_widget enforces the live-widget ceiling before a slot is allocated, giving every factory one shared budget.
+//! Context lifecycle owns slot invalidation and generational identity; builders expose indices only inside the crate.
+//! Layout loaders and Lua bindings use these constructors after validation so defaults match across public entry paths.
+//! Open this file when adding a widget family, changing defaults, or tracing which WidgetKind owns a public factory.
 
 use super::*;
 

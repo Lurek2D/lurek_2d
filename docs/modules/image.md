@@ -559,6 +559,23 @@ end
 
 ---
 
+### `lurek.image.savePNGWorkspace`
+
+Encodes image data as PNG and atomically writes it to a user-authorized workspace mount.
+
+```lua
+lurek.image.savePNGWorkspace(img_ud, filename)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `img_ud` | [LImageData](#limagedata) | Image data handle to encode. |
+| `filename` | string | Virtual path inside a writable workspace mount. |
+
+---
+
 ## Module Fields
 
 *No module-level fields documented.*

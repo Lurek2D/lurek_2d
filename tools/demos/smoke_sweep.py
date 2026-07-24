@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke-sweep every playable project under content/games/ and every single-file
+"""Smoke-sweep every playable project under lurek_2d_content/games/ and every single-file
 content/examples/*.lua.
 
 For each target the tool runs the Lurek2D engine binary with the existing
@@ -40,7 +40,7 @@ usage: smoke_sweep.py [-h] [--binary BINARY] [--games-root GAMES_ROOT]
                       [--timeout TIMEOUT] [--report REPORT] [--only ONLY]
                       [--kind {game,example,all}] [--limit LIMIT] [--dry-run]
 
-Smoke-sweep every playable project under content/games/ and every single-file
+Smoke-sweep every playable project under lurek_2d_content/games/ and every single-file
 content/examples/*.lua.
 
 For each target the tool runs the Lurek2D engine binary with the existing

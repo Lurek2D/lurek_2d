@@ -50,6 +50,10 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ## Notes
 
+- UI lowers retained widgets into bounded, deterministic `RenderCommand` streams. `render` owns GPU execution and software replay/capture; UI must not add a second pixel rasterizer or GPU/WGSL types. A software capture that cannot represent a command records an explicit render diagnostic rather than silently taking a different UI-specific path.
+- Layout state is invalidated by explicit geometry, topology, theme, and viewport changes. Input routing checks that generation before recomputing geometry, so pointer movement over a clean tree does not perform another layout pass.
+- Toolbar separators and spacers are retained toolbar items with visible layout semantics. A spacer with an omitted size is flexible; a supplied finite non-negative size is fixed.
+
 - Widget tables carry an engine-owned generational handle. The `_idx` field is diagnostic only; APIs that accept widget references require the live widget table and reject forged, destroyed, or cleared handles.
 - `lurek.ui.destroy(widget, recursive?)`, `widget:destroy(recursive?)`, and `lurek.ui.clear()` remove references, focus/capture state, queued events, and registered callbacks before invalidating the affected handles. A stale table reports `isValid() == false` and cannot address a replacement widget.
 - UI input, layout, event, and render queues are bounded by trusted `UiLimits` ceilings. Layout sources are size-checked and loaded transactionally, with finite numeric fields, collection counts, child counts, and tree depth validated before the live context is committed.
@@ -60,6 +64,42 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.drawToImage` and `lurek.ui.renderToImage` remain deterministic software preview/export paths and do not execute GPU shaders.
 - `TextArea`, `RichLabel`, and `AspectRatioContainer` are intentionally pragmatic Godot-inspired additions: they cover multi-line editing, lightweight inline rich text spans, and aspect-ratio child fitting without attempting full Godot parity.
 
+### Trusted `UiLimits` defaults
+
+These ceilings are Rust-side trusted configuration, not Lua-settable knobs. Public entry points reject work above them rather
+than clamping or allocating partially: live widgets `8192`, children per widget `1024`, tree depth `128`, layout bytes
+`1048576`, strings `65536` bytes, collection items `10000`, queued events `4096`, render commands `100000`, image width
+and height `4096`, image pixels `16777216`, encoded image bytes `67108864`, and logical path bytes `512`.
+
 ## Architecture Links
 
-- Intentionally empty.
+- [UI module scope boundary](../../architecture/module-scope-boundaries.md#ui-boundary)
+- [Rendering pipeline](../../architecture/render-pipeline.md) owns GPU execution and command capture.
+- [Scripting bridge](../../architecture/scripting-bridge.md) owns Lua-side input and GameFS boundary behavior.
+- [Runtime tooling boundaries](../../architecture/runtime-tooling-boundaries.md) defines GameFS reads and authorized capture writes.
+
+## Practical journeys
+
+1. Build a root layout, add typed widget handles, and retain the root. A handle is valid only in its creating context; after
+   `destroy` or `clear`, use `isValid()` before retaining it in application state.
+2. Set sizes and style, then let the UI layout pass resolve logical pixels, clipping, and DPI scaling. Generic geometry stays
+   in `layout`; retained composition, theme inheritance, and focusable geometry belong to `ui`.
+3. Feed input through the UI context. It resolves hit testing, propagation, capture, focus, text input, and modal blocking
+   before queued callbacks run; raw platform input remains owned by `input`.
+4. Load declarative layouts through GameFS. Parsing is bounded and transactional: invalid content leaves the existing tree
+   untouched. Bind application data at the UI boundary rather than exposing ECS internals to layouts.
+5. Render with `ui.draw()` for the live command stream, or use headless capture. Fonts, images, encoding, and GPU shader
+   execution remain owned by the `font`, `image`, and `render` modules.
+6. Keep table, tree, and list data in the application or dataframe adapter; UI owns only visible rows, selection, scroll,
+   expansion, and bounded diagnostic snapshots. Do not expose ECS or storage indexes as widget mutation authority.
+7. Inspect diagnostics and accessibility snapshots when scaling a screen. Printable widget IDs help locate state but are
+   never accepted as handles; rebuild dynamic subtrees through typed widget references and lifecycle-safe cleanup.
+
+## Compatibility and removals
+
+| Legacy surface | Canonical form | Warning / removal | Migration and proof |
+| --- | --- | --- | --- |
+| `_idx` or numeric widget references | Opaque typed widget tables | Rejected now; no compatibility window. | Replace numeric arguments with the widget returned by a UI constructor; handle tests prove forged/stale tables fail. |
+| `loadLayoutGameFile` | `loadLayoutFile` | Deprecated in 1.1; remove in 1.3. | Mechanical rename; tests keep both loaders behaviorally identical until removal. |
+| `renderToImage(path, width, height)` | `renderToImage(width, height, path)` | Deprecated in 1.1; remove in 1.3. | Reorder arguments; unit tests cover both forms until removal. |
+| `attachToEntity` / `detachFromEntity` | Scene-owned versioned screen-anchor adapter | Removed in 1.1. | No automated migration: UI never queried ECS/camera state, so callers must supply an explicit screen-position snapshot. |

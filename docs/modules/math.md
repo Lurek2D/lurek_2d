@@ -2017,7 +2017,7 @@ lurek.math.lootFromToml(path)
 ```lua
 do
 
-    local tbl = lurek.math.lootFromToml("save/loot_table_unit_test.toml")
+    local tbl = lurek.math.lootFromToml("content/examples/assets/data/sample_loot_table.toml")
     lurek.log.info(tostring("lootFromToml entries = " .. tostring(tbl:entryCount())))
     lurek.log.info(tostring("sample preview = " .. tostring(tbl:sample())))
     lurek.log.info(tostring("entries = " .. tostring(tbl:entryCount())))

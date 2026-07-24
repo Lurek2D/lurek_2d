@@ -6,7 +6,7 @@
 .DESCRIPTION
     Builds the Lurek2D engine in release mode through tools/dev/parallel_cargo.py,
     copies lurek2d.exe to %USERPROFILE%\bin or a custom destination, copies
-    content/games, and registers .lurek archive double-click handling for the
+    lurek_2d_content/games, and registers .lurek archive double-click handling for the
     current user unless -SkipFileAssociation is passed.
 
 .PARAMETER Destination
@@ -104,16 +104,16 @@ Write-Step "Installing binary to '$BinaryDest'."
 Copy-Item $BuiltBinary -Destination $BinaryDest -Force
 Write-OK "Binary installed."
 
-$GamesSource = Join-Path $WorkspaceRoot 'content\games'
+$GamesSource = Join-Path $WorkspaceRoot 'lurek_2d_content\games'
 if (Test-Path $GamesSource) {
-    Write-Step "Copying content/games to '$GamesDest'."
+    Write-Step "Copying lurek_2d_content/games to '$GamesDest'."
     if (Test-Path $GamesDest) {
         Remove-Item $GamesDest -Recurse -Force
     }
     Copy-Item $GamesSource -Destination $GamesDest -Recurse -Force
     Write-OK "Games copied."
 } else {
-    Write-Host "[  --  ] content/games folder not found; skipping."
+    Write-Host "[  --  ] lurek_2d_content/games folder not found; skipping."
 }
 
 if (-not $SkipFileAssociation) {
@@ -139,5 +139,5 @@ if ($Destination -notin $PathDirs) {
     Write-Host ""
 }
 
-Write-OK "Lurek2D installed. Run: lurek2d.exe content\games\music_composer"
+Write-OK "Lurek2D installed. Run: lurek2d.exe lurek_2d_content\games\music_composer"
 Write-OK "Or use games from: $GamesDest"

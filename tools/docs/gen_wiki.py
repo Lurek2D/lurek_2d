@@ -53,7 +53,7 @@ SPEC_DIR = ROOT / "docs" / "specs"
 SPEC_INDEX = SPEC_DIR / "README.md"
 EXAMPLES_DIR = ROOT / "content" / "examples"
 EXAMPLES_INDEX = EXAMPLES_DIR / "README.md"
-GAMES_DIR = ROOT / "content" / "games"
+GAMES_DIR = ROOT / "lurek_2d_content" / "games"
 GAMES_INDEX = GAMES_DIR / "README.md"
 GAMES_CATALOG = GAMES_DIR / "catalog.json"
 LIBRARY_DOC = ROOT / "docs" / "api" / "lureksome.md"
@@ -1115,7 +1115,7 @@ def module_page(context: Context, module: str) -> Page:
     body += ["", sec("Examples"), ""]
     body += [f"- {file_link(context, example.path, example.file_name)} - {example.description}" for example in examples] or ["No module-specific example file was found."]
     body += ["", BACK_TOP, "", sec("Reference Games"), ""]
-    body += [f"- {file_link(context, game.folder, game.name)} ({game.category})" for game in games[:20]] or ["No direct references were found in `content/games/**/main.lua`."]
+    body += [f"- {file_link(context, game.folder, game.name)} ({game.category})" for game in games[:20]] or ["No direct references were found in `lurek_2d_content/games/**/main.lua`."]
 
     body += ["", BACK_TOP, "", sec("Related Modules"), ""]
     previous_module, next_module = module_neighbors(context, module)
@@ -1156,7 +1156,7 @@ def home_page(context: Context) -> Page:
         f"- {wiki('Callbacks')} - functions the engine calls in a game script.",
         f"- {wiki('Runtime-Model', 'Runtime Model')} - startup and frame order.",
         f"- {wiki('Examples')} - files from `content/examples/`.",
-        f"- {wiki('Reference-Games', 'Reference Games')} - games from `content/games/`.",
+        f"- {wiki('Reference-Games', 'Reference Games')} - games from `lurek_2d_content/games/`.",
         f"- {wiki('Lureksome')} - reusable Lua libraries over the runtime.",
         f"- {wiki('Glossary')} - common runtime and API terms.",
     ]
@@ -1184,7 +1184,7 @@ def start_page(context: Context) -> Page:
         "",
         "```bash",
         "cargo run -- content/examples/render.lua",
-        "cargo run -- content/games/music_composer",
+        "cargo run -- lurek_2d_content/games/music_composer",
         "```",
     ]
     return Page("Getting-Started.md", page("Getting Started", body))
@@ -1347,10 +1347,10 @@ def game_screenshot_md(context: Context, game: "GameInfo") -> str:
 
 def games_page(context: Context) -> Page:
     body = [
-        "Reference games come from the generated catalog in `content/games/README.md` and `content/games/catalog.json`.",
+        "Reference games come from the generated catalog in `lurek_2d_content/games/README.md` and `lurek_2d_content/games/catalog.json`.",
         "Only public catalog candidates are listed here; skeletons, feature-only examples, and duplicate migration work stay out of the ready-games wiki page.",
         "",
-        f"Catalog source: {file_link(context, GAMES_INDEX, 'content/games/README.md')}",
+        f"Catalog source: {file_link(context, GAMES_INDEX, 'lurek_2d_content/games/README.md')}",
         "",
     ]
     for category in sorted(set(game.category for game in context.games), key=str.lower):

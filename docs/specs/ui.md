@@ -18,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `113` functions, `45` types, `397` methods
+- Lua API surface: `115` functions, `45` types, `395` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -81,149 +81,155 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ### containers.rs
 
-- Owns the UI containers implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI containers data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI containers behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI containers defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near the UI containers state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI containers calculations explicit at their owning subsystem boundary.
+- Defines retained layouts, panels, scroll panels, tab bars, split panes, stacks, dock panels, and toolbars.
+- Each container owns local direction, selection, scroll bounds, dock placement, and toolbar-entry configuration.
+- WidgetBase owns shared geometry, visibility, parent links, and dirty state for every concrete container.
+- Context layout and input consume this data, while render paints it and Lua bindings translate validated handles.
+- Container types never own tree lifecycle, callback registries, renderer resources, or GameFS authorization.
+- Open this file for container defaults and invariants, then trace context passes for interactive behavior.
+- Keep child-tree ownership in GuiContext so reparenting, destruction, and cycle rejection stay globally consistent.
+- Keep visual command construction in render, allowing these cloneable values to support transactional layout loading.
 
 ### context/builders.rs
 
-- Owns the UI context builders implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI context builders data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI context builders behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI context builders defaults, lifecycle handling, validation, or data ownership rules.
+- Creates concrete retained widgets and appends them to the GuiContext-owned storage in stable creation order.
+- Each builder selects a widget type and leaves parenting, layout, callbacks, input, and Lua handles to their owners.
+- push_widget enforces the live-widget ceiling before a slot is allocated, giving every factory one shared budget.
+- Context lifecycle owns slot invalidation and generational identity; builders expose indices only inside the crate.
+- Layout loaders and Lua bindings use these constructors after validation so defaults match across public entry paths.
+- Open this file when adding a widget family, changing defaults, or tracing which WidgetKind owns a public factory.
 
 ### context/color.rs
 
-- Owns the UI context color implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI context color data is validated, transformed, or stored before neighboring systems consume it.
+- Implements color conversion and interpolation helpers used when GuiContext updates retained widget state.
+- Helpers normalize finite channels and preserve the UI 0..1 color convention before rendering reads widget values.
+- Theme ownership and paint selection remain in theme and render; this file supplies only context-local transforms.
 
 ### context/focus.rs
 
-- Owns the UI context focus implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI context focus data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI context focus behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI context focus defaults, lifecycle handling, validation, or data ownership rules.
+- Implements focus ownership and traversal for the retained tree, including directional and tab-order navigation.
+- It validates live focusable handles, honors explicit neighbors and groups, and clears focus during lifecycle removal.
+- Context input decides when an event requests focus; this owner resolves the next eligible widget deterministically.
+- Lua bindings expose opaque handles and adapters report consumption, but neither owns focus order or stale repair.
+- Modal constraints apply before traversal so background widgets cannot regain authority while a dialog is open.
+- Open this file for focus invalidation, explicit-neighbor rules, and the input-to-retained-state boundary.
 
 ### context/geometry.rs
 
-- Owns the UI context geometry implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI context geometry data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI context geometry behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Maintains UI viewport geometry, resolution scaling, and input-layout preparation for retained widget trees.
+- It owns viewport dimensions and dirty-layout checks, then delegates concrete placement to GuiContext layout passes.
+- Input routing calls these helpers before hit testing so pointer coordinates observe the same rectangles as rendering.
+- Lua bindings validate public sizes; this file accepts trusted context mutations and marks layout state dirty.
+- Open this file for DPI or viewport changes, coordinate conversion, and the no-relayout fast path used by input dispatch.
 
 ### context/input.rs
 
-- Owns the UI context input implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI context input data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI context input behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI context input defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near UI context input state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI context input calculations explicit at their owning subsystem boundary.
-- Provides the local adaptation layer that lets callers reuse UI context input rules without duplicating engine decisions.
-- Open this owner before sibling files when a regression centers on UI context input state, helpers, or integration rules.
-- Changes to UI context input names, caches, or helper boundaries should usually stay coupled inside this owner.
-- Local input routing changes should stay here so pointer capture and hit-testing rules remain aligned.
-- This file is the right stop for maintainers tracing UI context input regressions back to their concrete owner boundary.
+- Routes pointer, keyboard, text, focus, modal, drag, and capture input through one retained GuiContext event pipeline.
+- It owns hit testing and widget-local transitions, then queues GuiEvent values without invoking Lua callbacks directly.
+- Resolved rectangles, visibility, clipping, and modal state determine whether a retained widget receives an event.
+- Pointer capture and focus are cleared by lifecycle removal before stale widgets can consume input.
+- Toolbar, dialog, text editor, selection, and drag helpers preserve deterministic event ordering during state changes.
+- Layout preparation uses the geometry fast path so stable pointer movement does not repeatedly recompute the widget tree.
+- Raw platform input belongs to adapters; Lua callback execution and registry lifetime belong to scripting bindings.
+- Open this file for propagation, consumption, focus traversal, IME, modal behavior, and drag-and-drop semantics.
+- GuiContext enforces queue ceilings and coalescing, keeping high-frequency input bounded before Lua observes it.
+- Rendering reads the resulting widget state in a later pass, so this file deliberately emits no draw commands or pixels.
+- Widget-kind branches belong here only when input changes their retained state; visual-only rules stay in render modules.
+- Wrong or unsupported user actions are rejected predictably rather than silently mutating unrelated widgets or indexes.
+- Tests exercise focus, capture, modal blocking, callback ordering, and destruction during dispatch through public APIs.
+- Geometry helpers own coordinate validity; this file maps valid coordinates onto interactive retained widgets.
 
 ### context/lifecycle.rs
 
-- Owns the UI context lifecycle implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI context lifecycle data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI context lifecycle behavior from Lua bindings, tests, and sibling owners so integration stays readable.
+- Implements widget creation, removal, reparenting, root clear, and generational slot invalidation for GuiContext.
+- Removal repairs child links, focus, capture, modal and drag state, and queued references before reuse is possible.
+- These routines own tree and handle lifecycle only; layout, input, rendering, and Lua callback dispatch remain separate.
+- Public handles resolve here, so stale or foreign values fail instead of accidentally selecting a recycled storage slot.
 
 ### context.rs
 
-- Owns the UI context implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI context data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI context behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI context defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near the UI context state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI context calculations explicit at their owning subsystem boundary.
-- Provides the local adaptation layer that lets callers reuse UI context rules without duplicating engine decisions.
-- Open this owner before sibling files when a regression centers on UI context state, helpers, or integration rules.
-- Works with neighboring UI owners while keeping the main UI context responsibility anchored in one file.
-- Changes to UI context names, caches, or helper boundaries should usually stay coupled inside this owner.
-- This file is the right stop for maintainers tracing UI context regressions back to their concrete owner boundary.
+- Owns GuiContext, the retained UI tree, generational widget identity, event queues, and frame-level state transitions.
+- GuiContext coordinates widget storage, parenting, focus, capture, dirty generations, bindings, and diagnostics.
+- It owns lifecycle rules for creation, destruction, clear, reparenting, and stale-handle resolution.
+- Layout, input, and rendering are separate passes coordinated here so each observes one validated retained tree snapshot.
+- Lua bindings hold opaque handles and validate script input, while this module owns the Rust-side state they mutate.
+- Child links, modal state, focus, and capture are repaired during removal so destroyed widgets lose authority.
+- UiLimits bounds widgets, events, commands, strings, and traversal before costly work reaches the context.
+- Context callbacks are registered at the Lua edge, but queued event ordering and coalescing are defined by this owner.
+- Layout loaders use transactional builders around this state; failed content must not partially alter a live screen.
+- Rendering lowers resolved widgets into commands; image and render modules own pixel output and GPU execution.
+- Input adapters supply raw events and receive consumption results; scene or ECS data is not owned by the UI context.
+- Open this file for lifecycle invariants, widget-tree rules, event ordering, or cross-pass state coordination.
+- Smaller context files contain builders, geometry, and input-specific algorithms to keep this owner navigable.
+- This is the primary navigation point when a UI regression crosses lifecycle, layout, input, and rendering boundaries.
 
 ### controls.rs
 
-- Owns the control widget model for the ui subsystem and keeps its rules local to this file.
-- Centers the implementation around normalized_range_or, Button, new, with helpers kept close to their invariants.
-- Defines how controls data is validated, transformed, or stored before neighboring systems use it.
-- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Keeps public crate helpers focused on controls behavior while Lua registration stays elsewhere.
-- Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-- Use this file when changing controls defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping controls calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
+- Defines retained control widgets such as buttons, text inputs, selectors, sliders, and value displays for UI trees.
+- Each type owns local value, selection, range, and presentation state while WidgetBase owns geometry and flags.
+- Constructors normalize finite ranges and defaults so layout, input, and rendering consume valid control state.
+- GuiContext owns tree membership and lifecycle; this file deliberately does not dispatch Lua callbacks or render pixels.
+- Lua bindings convert script arguments into these types, while context input mutates them and render reads their state.
+- Open this file for control data invariants, default values, selection semantics, and widget-specific state transitions.
+- Text editing details remain with the input route, and general layouts remain owned by container and context passes.
+- This data model keeps controls cloneable for transactional layout loading and deterministic software captures.
+- Public constructors make no external allocation or callback registration, preserving context-owned lifetime rules.
+- Neighboring extras types cover editor widgets; add common controls only when they share this base contract.
+- Range and option changes keep labels, dirty generations, and one-based Lua selection rules coherent.
 
 ### diagnostics.rs
 
-- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Centers the implementation around UiAccessibilityNode, UiDiagnostic, new, with helpers kept close to their invariants.
-- Defines how diagnostics data is validated, transformed, or stored before neighboring systems use it.
+- Defines UI accessibility snapshots and diagnostics that expose retained-tree state without granting mutation authority.
+- UiAccessibilityNode records printable metadata, while UiDiagnostic carries bounded warnings for caller inspection.
+- GuiContext creates these from live state; Lua bindings serialize them but never expose indices as handles.
+- Open this file for diagnostic vocabulary, accessibility snapshot fields, and invariant failures visible to UI users.
 
 ### extras.rs
 
-- Owns the UI extras implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI extras data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI extras behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI extras defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near the UI extras state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI extras calculations explicit at their owning subsystem boundary.
-- Provides the local adaptation layer that lets callers reuse UI extras rules without duplicating engine decisions.
-- Open this owner before sibling files when a regression centers on UI extras state, helpers, or integration rules.
-- Works with neighboring UI owners while keeping the main UI extras responsibility anchored in one file.
+- Defines retained specialized widgets outside the common control and container families used by ordinary UI screens.
+- It stores local data for trees, menus, dialogs, status bars, accordions, tooltips, color pickers, and tables.
+- Property and image widgets live here with spin boxes, switches, badges, separators, and spacers with clear defaults.
+- These are data-only variants; context input performs interaction, context owns lifetime, and render emits commands.
+- Lua bindings map validated calls onto fields but do not make this module responsible for callbacks or GameFS access.
+- Dialog, menu, and tooltip links are retained indexes internally and always receive validated opaque widget handles.
+- Separator and spacer entries carry layout and hit-test semantics rather than serving as inert visual placeholders.
+- Status-bar section content is retained through this owner while context lifecycle repairs released child references.
+- These values remain cloneable so a malformed declarative layout can roll back without changing the active UI tree.
+- Open this file for local widget defaults and invariants; use input and render owners for events and paint behavior.
+- Keep shared geometry in WidgetBase and tree structure in GuiContext instead of duplicating ownership per variant.
 
 ### icons.rs
 
-- Owns the UI icons implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI icons data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI icons behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI icons defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near the UI icons state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI icons calculations explicit at their owning subsystem boundary.
+- Defines the finite built-in icon vocabulary used by labels, buttons, menus, and icon-only retained widgets.
+- Lookup maps stable public icon names to glyph metadata, while widgets retain only the chosen identifier string.
+- Rendering resolves the identifier later, keeping font loading, glyph shaping, and rasterization outside this module.
+- Lua bindings validate names here so unknown icons fail at the public boundary instead of painting silently.
+- The icon set is deterministic and data-only, keeping examples and headless captures independent of font probing.
+- Add or rename an icon here, then update its Lua documentation, examples, and tests that exercise the public name.
+- Do not store per-widget handles or rendering resources here; WidgetBase and render remain their respective owners.
+- Open this file for icon vocabulary changes and use render helpers when a valid icon has incorrect visual placement.
 
 ### layout_loader.rs
 
-- Owns the UI layout loader implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI layout loader data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI layout loader behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI layout loader defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near UI layout loader state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI layout loader calculations explicit at their owning subsystem boundary.
-- Provides the local adaptation layer that lets callers reuse UI layout loader rules without duplicating engine decisions.
-- Open this owner before sibling files when a regression centers on UI layout loader state, helpers, or integration rules.
+- Parses declarative TOML UI layouts into definitions and applies them transactionally to retained GuiContext state.
+- This file owns schema conversion, finite-value checks, collection limits, reference resolution, and rollback behavior.
+- Loaders use context builders only after the source passes depth, size, and path-policy validation.
+- Lua bindings and GameFS select and read the source; this module does not authorize filesystem access itself.
+- A failed document leaves the live UI tree untouched, so callers retain a usable screen and report diagnostics.
+- It resolves id references, style metadata, bindings, and child structure after parsing instead of trusting TOML order.
+- Layout definitions describe retained widgets; generic layout algorithms remain owned by context and container modules.
+- Open this file for TOML syntax, declarative widget semantics, transaction boundaries, and loader error diagnostics.
+- Collection and string limits are taken from UiLimits so layout files cannot create a separate unbounded resource path.
+- Neighboring extras and controls modules provide concrete widget data configured from declarative fields.
+- The parser produces deterministic definitions suitable for tests and headless capture without invoking Lua callbacks.
+- Changes here require matching loader docs, GameFS examples, and tests for success and rollback failure paths.
 
 ### limits.rs
 
-- Shared ceilings for Lua-controlled UI input, retained state, traversal, and software capture.
-- This policy is deliberately owned by `ui`: loaders, Lua conversion helpers,
-- event production, and image capture use the same defaults so one entry path
-- cannot bypass another. Trusted engine setup may replace the policy before a
-- game starts; normal Lua code cannot change it.
+- Defines UiLimits, the shared resource ceilings used by retained UI creation, layout loading, events, and capture.
+- Loader, Lua conversion, event production, and image export consult this policy so no public entry path bypasses it.
+- Trusted engine setup may replace these limits before a game starts; normal Lua code cannot mutate the policy.
+- Open this file when changing accepted UI sizes, collection budgets, capture allocations, or their rejection messages.
 
 ### mod.rs
 
@@ -236,49 +242,35 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - Reexports here help agents find right module quickly when changes touch `containers.rs`, `context.rs`, subsystem.
 - Keep concrete logic in `containers.rs`, `context.rs`, and `controls.rs` so symbol lookup stays shallow.
 
-### render/cpu.rs
-
-- Owns the UI render cpu implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI render cpu data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI render cpu behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI render cpu defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near the UI render cpu state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI render cpu calculations explicit at their owning subsystem boundary.
-- Provides the local adaptation layer that lets callers reuse UI render cpu rules without duplicating engine decisions.
-- Open this owner before sibling files when a regression centers on UI render cpu state, helpers, or integration rules.
-- Works with neighboring UI owners while keeping the main UI render cpu responsibility anchored in one file.
-- Changes to UI render cpu names, caches, or helper boundaries should usually stay coupled inside this owner.
-
 ### render/helpers.rs
 
-- Owns the UI render helpers implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI render helpers data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI render helpers behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI render helpers defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near UI render helpers state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI render helpers calculations explicit at their owning subsystem boundary.
-- Provides local adaptation layer that lets callers reuse UI render helpers rules without duplicating engine decisions.
-- Read this file when renderer output depends on shared UI helper math more than widget-specific state.
+- Provides shared render helpers for geometry, clipping, text placement, colors, and command construction.
+- Functions convert resolved widget state into RenderCommand fragments without mutating tree or callback state.
+- Widget-specific paint decisions stay in the parent render owner, keeping repeated drawing math small and consistent.
+- GPU execution, fonts, images, and encoding remain renderer-owned, so helpers never allocate graphics resources directly.
+- Inputs use logical UI pixels and preserve clipping and order invariants so headless capture matches live lowering.
+- Helpers may choose visible fallbacks for absent optional resources but must not change layout or input ownership.
+- Use this file when paint branches duplicate geometry or color calculations across parent renderer widget kinds.
+- Keep lifecycle, callback dispatch, GameFS output, and coordinate conversion in dedicated subsystem owners.
+- Tests should verify command content or capture evidence, rather than relying on a widget factory alone.
+- Navigation stays here for shared paint math; keep per-widget visual policy in the parent render module.
 
 ### render.rs
 
-- Owns the UI render implementation for the UI subsystem and keeps related runtime rules local here.
-- Keeps retained widget state, layout helpers, and presentation rules so helpers stay close to invariants this updates.
-- Defines how UI render data is validated, transformed, or stored before neighboring systems consume it.
-- Separates UI render behavior from Lua bindings, tests, and sibling owners so integration stays readable.
-- Documents the boundary where UI code accepts inputs, reports errors, allocates state, or emits outputs.
-- Use this file when changing UI render defaults, lifecycle handling, validation, or data ownership rules.
-- Keeps failure paths and edge cases near the UI render state that explains them instead of spreading rules outward.
-- Preserves deterministic behavior by keeping UI render calculations explicit at their owning subsystem boundary.
-- Provides the local adaptation layer that lets callers reuse UI render rules without duplicating engine decisions.
-- Open this owner before sibling files when a regression centers on UI render state, helpers, or integration rules.
-- Works with neighboring UI owners while keeping the main UI render responsibility anchored in one file.
-- Changes to UI render names, caches, or helper boundaries should usually stay coupled inside this owner.
-- This file is the right stop for maintainers tracing UI render regressions back to their concrete owner boundary.
+- Lowers resolved UI widgets, styles, text, and overlays into render commands consumed by live and headless backends.
+- It owns widget visuals, inherited shader selection, clipping commands, and deterministic command ordering.
+- GuiContext supplies geometry and state; this file never changes widget ownership, focus, callbacks, or input routing.
+- Theme lookup selects colors, borders, type, and state variants before commands are emitted for live or headless output.
+- Font and shader resources remain render-owned; UI stores selected keys on retained widget state.
+- Software capture replays this command vocabulary through render-owned capture instead of duplicating UI semantics.
+- Toolbar separators and spacers are visual items paired with hit testing so only button entries are interactive.
+- Rendering uses visible fallback output for missing optional resources instead of assuming GPU state at the UI boundary.
+- Open this file for widget appearance, draw-command order, clipping, shader inheritance, or UI-to-image lowering changes.
+- Generic renderer execution, GPU pipelines, and image encoding are deliberately outside this module's ownership boundary.
+- Helper modules contain shared paint primitives; keep individual widget branches focused on observable visual contracts.
+- GuiContext checks command limits before submission so pathological retained trees cannot exhaust a frame budget.
+- Coordinates are logical UI pixels after layout scaling; downstream render modules perform target conversion.
+- Tests for this owner should assert commands or capture output, not merely that a widget factory remains callable.
 
 ### theme.rs
 
@@ -296,16 +288,16 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ### widget.rs
 
-- Owns the widget runtime for the ui subsystem and keeps its rules local to this file while keeping call sites explicit.
-- Centers the implementation around TextVAlign, parse_str, as_str, with helpers kept close to their invariants.
-- Defines how widget data is validated, transformed, or stored before neighboring systems use it.
-- Owns ui behavior with explicit state, validation, and crate-local integration boundaries. for engine changes.
-- Keeps public crate helpers focused on widget behavior while Lua registration stays elsewhere.
-- Documents the boundary where ui code accepts inputs, reports errors, or updates state while keeping call sites explicit.
-- Use this file when changing widget defaults, lifecycle handling, validation, or data ownership.
-- Keeps failure paths and edge cases near the ui state that can explain them while keeping call sites explicit.
-- Preserves deterministic behavior by keeping widget calculations explicit at their owner boundary.
-- Provides the local adaptation layer that lets callers avoid duplicating ui rules while keeping call sites explicit.
+- Defines WidgetBase, widget kinds, style and state enums, geometry metadata, and text-alignment parsing rules.
+- WidgetBase carries common retained state used by layout, input, diagnostics, and rendering for every widget kind.
+- Concrete control, container, and specialized payloads remain in sibling files so common contracts stay centralized.
+- Enums define public names and validated defaults, while generational identity and destruction remain GuiContext work.
+- Lua bindings expose opaque handles and never treat storage slots or printable _idx diagnostics as mutation authority.
+- Coordinates use logical UI pixels; viewport scaling occurs in context geometry before rendering consumes rectangles.
+- State values describe retained interaction and paint state, not platform events or direct callback execution work.
+- Parsing helpers reject unknown public enum strings at the boundary rather than silently selecting a visual fallback.
+- Read this file for cross-widget vocabulary, then navigate to controls, containers, or extras for concrete behavior.
+- Keep tree ownership, callback registries, GameFS policies, and render-resource lifetime in their dedicated modules.
 
 
 
@@ -317,7 +309,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.animateColor(widget, from, to, duration, easing?) -> nil`: Animate widget color tint from one RGBA value to another.
 - `lurek.ui.animateRotation(widget, from, to, duration, easing?) -> nil`: Animate widget rotation from one angle to another (in radians).
 - `lurek.ui.animateScale(widget, from_sx, from_sy, to_sx, to_sy, duration, easing?) -> nil`: Animate widget scale from one value to another.
-- `lurek.ui.beginDrag(widget) -> boolean`: Begins a drag operation on a widget.
+- `lurek.ui.beginDrag(widget) -> boolean`: Begins a drag operation on a live widget handle.
 - `lurek.ui.clear() -> integer`: Clears all retained UI widgets and transient UI state while keeping the active theme.
 - `lurek.ui.clearFocus() -> nil`: Clears keyboard focus from all widgets.
 - `lurek.ui.clearFont() -> nil`: Clears the global UI font override so the UI falls back to the active render font again.
@@ -325,19 +317,20 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.draw() -> nil`: Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 - `lurek.ui.drawToImage(w, h) -> LImageData`: Renders the entire UI to an image buffer.
 - `lurek.ui.dropOn(target) -> boolean`: Drops the currently dragged widget onto a target widget.
-- `lurek.ui.endDrag() -> integer`: Ends the current drag operation without dropping.
+- `lurek.ui.endDrag() -> LUiWidget?`: Ends the current drag operation without dropping.
 - `lurek.ui.flushCache() -> boolean`: Flushes internal UI layout and render caches.
 - `lurek.ui.focusDirection(dx, dy) -> boolean`: Move focus in a spatial direction. Uses geometry to find nearest focusable widget.
 - `lurek.ui.focusNeighbor(direction) -> boolean`: Moves keyboard focus using an explicit directional focus link.
 - `lurek.ui.focusNext() -> nil`: Moves keyboard focus to the next focusable widget.
 - `lurek.ui.focusPrev() -> nil`: Moves keyboard focus to the previous focusable widget.
 - `lurek.ui.getAccessibilityTree() -> table`: Returns a flattened accessibility snapshot for all live widgets except the root.
-- `lurek.ui.getActiveDrag() -> integer`: Returns the widget index currently being dragged, or nil.
+- `lurek.ui.getActiveDrag() -> LUiWidget?`: Returns the live widget currently being dragged, or nil.
 - `lurek.ui.getFocus() -> integer`: Returns the index of the currently focused widget, or nil.
 - `lurek.ui.getFont() -> LFont`: Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
 - `lurek.ui.getIconGlyph(name) -> string|nil`: Returns the built-in text glyph for an icon name, or nil when missing.
 - `lurek.ui.getIconNames() -> string[]`: Returns all built-in UI icon names in stable catalog order.
 - `lurek.ui.getRoot() -> LPanel`: Returns the root panel widget of the UI tree.
+- `lurek.ui.getRuntimeStats() -> table`: Returns bounded UI work counters for development diagnostics.
 - `lurek.ui.getScaleFactor() -> number`: Get the current UI scale factor (current_height / base_height).
 - `lurek.ui.getStyleToken(name) -> number`: Returns the value of a named semantic style token from the active theme.
 - `lurek.ui.getTheme() -> boolean`: Returns whether a theme is currently set.
@@ -348,9 +341,9 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.hasAutoUpdate() -> boolean`: Returns whether `lurek.ui.update(dt)` is called automatically each frame.
 - `lurek.ui.hasIcon(name) -> boolean`: Returns whether a built-in UI icon name exists.
 - `lurek.ui.keypressed(key) -> boolean`: Delivers a key press event to the UI.
-- `lurek.ui.loadLayout(def) -> integer`: Loads a UI layout from a Lua table definition.
-- `lurek.ui.loadLayoutFile(path) -> integer`: Loads a UI layout from a TOML layout file.
-- `lurek.ui.loadLayoutGameFile(path) -> integer`: Loads a UI layout from a TOML file resolved through GameFS.
+- `lurek.ui.loadLayout(def) -> LUiWidget`: Loads a UI layout from a Lua table definition.
+- `lurek.ui.loadLayoutFile(path) -> LUiWidget`: Loads a UI layout from a TOML layout file.
+- `lurek.ui.loadLayoutGameFile(path) -> LUiWidget`: Loads a UI layout from a TOML file resolved through GameFS.
 - `lurek.ui.mousemoved(x, y) -> boolean`: Delivers a mouse move event to the UI.
 - `lurek.ui.mousepressed(x, y, btn?) -> boolean`: Delivers a mouse press event to the UI.
 - `lurek.ui.mousereleased(x, y, btn?) -> boolean`: Delivers a mouse release event to the UI.
@@ -409,13 +402,14 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newVBoxContainer() -> LLayout`: Creates a vertical box container that stacks children top-to-bottom.
 - `lurek.ui.newWindow(title?) -> LGuiWindow`: Creates a new GUI window widget with an optional title.
 - `lurek.ui.parseWidgetState(state) -> string`: Validates and normalizes a widget state string.
-- `lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath) -> nil`: Renders the entire UI to a PNG image file.
+- `lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath) -> nil`: Renders the entire UI to a PNG image file. The canonical form is `(width, height, path)`.
 - `lurek.ui.setAutoInput(enabled) -> nil`: Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.
 - `lurek.ui.setAutoUpdate(enabled) -> nil`: Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.
 - `lurek.ui.setBaseResolution(width, height) -> nil`: Set the logical base resolution the UI was designed for.
 - `lurek.ui.setDefaultTheme() -> nil`: Applies the built-in default theme to the UI context.
 - `lurek.ui.setFocus(widget?) -> nil`: Sets keyboard focus to a widget, or clears focus if nil.
 - `lurek.ui.setFont(font) -> nil`: Sets the global UI font by applying it to the root widget.
+- `lurek.ui.setSafeArea(top, right, bottom, left) -> nil`: Supplies normalized window safe-area insets in pixels. Window discovery remains app-owned.
 - `lurek.ui.setTheme(theme_ud) -> nil`: Applies a theme to the entire UI context.
 - `lurek.ui.setViewport(w, h) -> nil`: Sets the viewport size for the UI context.
 - `lurek.ui.textinput(text) -> boolean`: Delivers a text input event to the UI.
@@ -1036,7 +1030,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LStatusBar:getSectionText(section_idx) -> string`: Returns the text of a status bar section by its 1-based index.
 - `LStatusBar:setSectionCount(count) -> nil`: Sets the number of sections, truncating or adding empty sections as needed.
 - `LStatusBar:setSectionText(section_idx, text) -> nil`: Sets the text of a status bar section by its 1-based index.
-- `LStatusBar:setSectionWidget(section_idx, widget?) -> nil`: Associates a widget with a status bar section (reserved for future use).
+- `LStatusBar:setSectionWidget(section_idx, widget?) -> nil`: Assigns a live widget to a status bar section. The widget is reparented into the bar and clipped to that section.
 
 #### LSwitch Type
 
@@ -1167,7 +1161,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 - `LToolbar:addButton(id, tooltip?) -> integer`: Adds a new button to this toolbar and returns its 1-based index.
 - `LToolbar:addSeparator() -> nil`: Adds a visual separator to this toolbar.
-- `LToolbar:addSpacer(_size?) -> nil`: Adds a flexible spacer to this toolbar.
+- `LToolbar:addSpacer(size?) -> nil`: Adds a flexible spacer to this toolbar.
 - `LToolbar:getButton(id) -> table`: Returns a table describing the toolbar button with the given ID.
 - `LToolbar:getOrientation() -> string`: Returns the toolbar orientation ("horizontal" or "vertical").
 - `LToolbar:isButtonToggled(id) -> boolean`: Returns whether a toolbar button is toggled on.
@@ -1250,7 +1244,6 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:addChild(child) -> nil`: Adds a child widget to this widget's hierarchy.
 - `LUiWidget:animateAlpha(target, duration?, hide_on_complete?) -> table`: Smoothly animates this widget's opacity toward a target value over the given duration.
 - `LUiWidget:animatePosition(x, y, duration?) -> table`: Smoothly animates this widget's position toward the target coordinates.
-- `LUiWidget:attachToEntity(entity_id) -> nil`: Attaches this widget to a game entity so it follows the entity's position on screen.
 - `LUiWidget:bind(key) -> nil`: Binds this widget to a data key for use with update_bindings.
 - `LUiWidget:cancelAnimations() -> boolean`: Cancels all active animations on this widget, leaving it at its current state.
 - `LUiWidget:clearAnchor() -> nil`: Removes all anchor constraints from this widget.
@@ -1258,21 +1251,20 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:clearIcon() -> nil`: Clears this widget's assigned built-in icon.
 - `LUiWidget:containsPoint(x, y) -> boolean`: Tests whether the given screen-space point is inside this widget's bounds.
 - `LUiWidget:destroy(recursive?) -> integer`: Destroys this widget and, by default, its retained descendant subtree.
-- `LUiWidget:detachFromEntity() -> nil`: Detaches this widget from any previously attached entity.
 - `LUiWidget:fadeIn() -> nil`: Instantly makes this widget fully opaque and visible.
 - `LUiWidget:fadeOut() -> nil`: Instantly makes this widget fully transparent and hidden.
 - `LUiWidget:findById(id) -> LWidget`: Searches this widget's subtree for a child with the given ID.
 - `LUiWidget:getAlpha() -> number`: Returns the current opacity of this widget.
 - `LUiWidget:getAriaName() -> string`: Returns the explicit accessible name metadata for this widget.
 - `LUiWidget:getChildCount() -> integer`: Returns the number of direct child widgets attached to this widget.
-- `LUiWidget:getChildren() -> table`: Returns a table of lightweight child widget references, each containing diagnostic `_idx` metadata and an opaque handle token.
+- `LUiWidget:getChildren() -> LUiWidget[]`: Returns live typed child widget handles. Their printable `_idx` field is diagnostic only and is never mutation authority.
 - `LUiWidget:getFlexGrow() -> number`: Returns the flex-grow factor of this widget.
 - `LUiWidget:getFlexShrink() -> number`: Returns the flex-shrink factor of this widget.
 - `LUiWidget:getIcon() -> string|nil`: Returns this widget's assigned built-in icon name, or nil when no icon is assigned.
 - `LUiWidget:getIconPosition() -> string`: Returns this widget's icon placement token.
 - `LUiWidget:getIconSize() -> number`: Returns this widget's requested icon size in pixels.
 - `LUiWidget:getId() -> string`: Returns the string identifier assigned to this widget.
-- `LUiWidget:getLabelFor() -> integer`: Returns the widget index associated through `setLabelFor`, or nil.
+- `LUiWidget:getLabelFor() -> LUiWidget?`: Returns the live widget handle associated through `setLabelFor`, or nil.
 - `LUiWidget:getMargin() -> number, number, number, number`: Returns the outer margin of this widget.
 - `LUiWidget:getMaxSize() -> number, number`: Returns the maximum width and height of this widget.
 - `LUiWidget:getMinSize() -> number, number`: Returns the minimum width and height of this widget.
@@ -1364,9 +1356,16 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 
 ## Architecture Links
 
-- Intentionally empty.
+- [UI module scope boundary](../../architecture/module-scope-boundaries.md#ui-boundary)
+- [Rendering pipeline](../../architecture/render-pipeline.md) owns GPU execution and command capture.
+- [Scripting bridge](../../architecture/scripting-bridge.md) owns Lua-side input and GameFS boundary behavior.
+- [Runtime tooling boundaries](../../architecture/runtime-tooling-boundaries.md) defines GameFS reads and authorized capture writes.
 
 ## Notes
+
+- UI lowers retained widgets into bounded, deterministic `RenderCommand` streams. `render` owns GPU execution and software replay/capture; UI must not add a second pixel rasterizer or GPU/WGSL types. A software capture that cannot represent a command records an explicit render diagnostic rather than silently taking a different UI-specific path.
+- Layout state is invalidated by explicit geometry, topology, theme, and viewport changes. Input routing checks that generation before recomputing geometry, so pointer movement over a clean tree does not perform another layout pass.
+- Toolbar separators and spacers are retained toolbar items with visible layout semantics. A spacer with an omitted size is flexible; a supplied finite non-negative size is fixed.
 
 - Widget tables carry an engine-owned generational handle. The `_idx` field is diagnostic only; APIs that accept widget references require the live widget table and reject forged, destroyed, or cleared handles.
 - `lurek.ui.destroy(widget, recursive?)`, `widget:destroy(recursive?)`, and `lurek.ui.clear()` remove references, focus/capture state, queued events, and registered callbacks before invalidating the affected handles. A stale table reports `isValid() == false` and cannot address a replacement widget.
@@ -1377,3 +1376,10 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.draw()` queues retained widget render commands before invoking custom draw callbacks. Widget shader bindings affect that live render-command path and are inherited by child widgets until overridden by a child shader.
 - `lurek.ui.drawToImage` and `lurek.ui.renderToImage` remain deterministic software preview/export paths and do not execute GPU shaders.
 - `TextArea`, `RichLabel`, and `AspectRatioContainer` are intentionally pragmatic Godot-inspired additions: they cover multi-line editing, lightweight inline rich text spans, and aspect-ratio child fitting without attempting full Godot parity.
+
+### Trusted `UiLimits` defaults
+
+These ceilings are Rust-side trusted configuration, not Lua-settable knobs. Public entry points reject work above them rather
+than clamping or allocating partially: live widgets `8192`, children per widget `1024`, tree depth `128`, layout bytes
+`1048576`, strings `65536` bytes, collection items `10000`, queued events `4096`, render commands `100000`, image width
+and height `4096`, image pixels `16777216`, encoded image bytes `67108864`, and logical path bytes `512`.

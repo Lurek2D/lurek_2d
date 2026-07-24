@@ -3,7 +3,7 @@
 Cross-references wiki/ pages against:
   - src/ module directories (each module should have a wiki page).
   - lurek.* API surface (key namespaces should be documented).
-  - content/library/ entries (each library should appear in wiki).
+  - lurek_2d_content/library/ entries (each library should appear in wiki).
 
 Reports missing wiki pages, orphaned pages (wiki page with no matching
 module), and pages with potential staleness indicators (e.g. references
@@ -27,7 +27,7 @@ import module_registry
 
 WIKI_DIR = ROOT / "docs" / "wiki"
 SRC_DIR = ROOT / "src"
-LIBRARY_DIR = ROOT / "library"
+LIBRARY_DIR = ROOT / "lurek_2d_content" / "library"
 API_JSON = module_registry.lua_api_json_path()
 
 # Modules that are internal and don't need dedicated coverage checks
@@ -84,7 +84,7 @@ def discover_api_modules() -> set[str]:
 
 
 def discover_libraries() -> set[str]:
-    """Return set of library names from content/library/."""
+    """Return set of library names from lurek_2d_content/library/."""
     libs = set()
     if not LIBRARY_DIR.exists():
         return libs

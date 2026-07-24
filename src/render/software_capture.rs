@@ -786,6 +786,27 @@ pub fn capture_commands_to_image(
     capture_commands_to_image_with_diagnostics(commands, background_color).0
 }
 
+/// Replay commands into an explicitly sized CPU image rather than inferring a canvas from command bounds.
+///
+/// UI capture uses this form because off-viewport retained widgets may legitimately have geometry larger
+/// than the requested output. Replay still clips every primitive to the supplied image dimensions.
+pub fn capture_commands_to_image_sized(
+    commands: &[RenderCommand],
+    background_color: [f32; 4],
+    width: u32,
+    height: u32,
+) -> ImageData {
+    let bg = color_to_rgba8(background_color);
+    let mut img = ImageData::new(width, height);
+    img.draw_rect(0, 0, width, height, bg[0], bg[1], bg[2], bg[3]);
+    let mut state = CaptureState::new(width, height);
+    let mut diagnostics = SoftwareCaptureDiagnostics::default();
+    for command in commands {
+        replay_command(&mut img, &mut state, &mut diagnostics, command);
+    }
+    img
+}
+
 /// Replay queued render commands and return software-capture diagnostics alongside the image.
 pub fn capture_commands_to_image_with_diagnostics(
     commands: &[RenderCommand],

@@ -2,7 +2,7 @@
 """
 gen_demo_screenshots.py — Capture a screen.png for every Lurek2D game demo.
 
-Scans ``content/games/<name>/`` for any folder containing ``main.lua``
+Scans ``lurek_2d_content/games/<name>/`` for any folder containing ``main.lua``
 and launches the engine binary in screenshot mode.  Up to ``--workers`` (default 6)
 games are captured in parallel, each window placed in its own grid slot so they
 do not overlap on the desktop.
@@ -12,7 +12,7 @@ Usage:
 
 Options:
     --binary PATH            Path to the lurek2d binary (auto-detects build/release or build/debug)
-    --games-dir PATH         Root games directory (default: content/games/)
+    --games-dir PATH         Root games directory (default: lurek_2d_content/games/)
     --screenshot-time SECS   Wall-clock seconds after game start before capture (default: 3.0)
     --workers N              Parallel capture slots (default: 6)
     --slot-width PX          Slot width in pixels used for window positioning only (default: auto from monitor width)
@@ -384,7 +384,7 @@ def main():  # noqa: C901 — intentional length; argument parsing + orchestrati
     parser.add_argument("--binary",          default=None,
                         help="Path to the lurek2d binary (auto-detected if omitted)")
     parser.add_argument("--games-dir",       default=None,
-                        help="Root game directory (default: content/games/)")
+                        help="Root game directory (default: lurek_2d_content/games/)")
     parser.add_argument("--screenshot-time", type=float, default=3.0,
                         help="Wall-clock seconds after game start before capturing (default: 3.0)")
     parser.add_argument("--workers",         type=int, default=6,
@@ -426,7 +426,7 @@ def main():  # noqa: C901 — intentional length; argument parsing + orchestrati
         sys.exit(1)
     print("[binary] {}".format(binary))
 
-    games_root = Path(args.games_dir) if args.games_dir else repo_root / "content" / "games"
+    games_root = Path(args.games_dir) if args.games_dir else repo_root / "lurek_2d_content" / "games"
     all_demos = discover_demos(games_root, args.demos or [])
 
     if args.demos:

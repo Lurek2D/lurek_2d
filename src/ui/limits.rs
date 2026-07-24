@@ -1,9 +1,7 @@
-//! Shared ceilings for Lua-controlled UI input, retained state, traversal, and software capture.
-//!
-//! This policy is deliberately owned by `ui`: loaders, Lua conversion helpers,
-//! event production, and image capture use the same defaults so one entry path
-//! cannot bypass another. Trusted engine setup may replace the policy before a
-//! game starts; normal Lua code cannot change it.
+//! Defines UiLimits, the shared resource ceilings used by retained UI creation, layout loading, events, and capture.
+//! Loader, Lua conversion, event production, and image export consult this policy so no public entry path bypasses it.
+//! Trusted engine setup may replace these limits before a game starts; normal Lua code cannot mutate the policy.
+//! Open this file when changing accepted UI sizes, collection budgets, capture allocations, or their rejection messages.
 
 /// Bounded resource policy applied at UI trust boundaries.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

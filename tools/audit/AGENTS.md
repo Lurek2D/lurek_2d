@@ -18,4 +18,5 @@
 
 ## Workflow
 - Run focused checks, e.g. `tools/python.cmd tools/audit/cag_link_check.py --strict`.
-- Audit one module with `tools/python.cmd tools/audit/audit_module.py --module <name>`.
+- Audit one module with `tools/python.cmd tools/audit/audit_module.py <name>`.
+- Use the installed audit names and flags: `lua_spec_coverage.py --module <name>`, `example_coverage.py --module <name>`, and `docstring_audit.py --file <path> --check`.

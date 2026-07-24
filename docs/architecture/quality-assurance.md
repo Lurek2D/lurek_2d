@@ -13,7 +13,7 @@ Public `lurek.*` behavior should move through these layers in order:
 3. `tests/lua/unit/` proves every public API works.
 4. `tests/lua/evidence/` produces selected artifacts that make behavior reviewable.
 5. `tests/lua/golden/` compares those artifacts against reviewed baselines.
-6. `content/games/` packages APIs into complete games or mini games.
+6. `lurek_2d_content/games/` packages APIs into complete games or mini games.
 
 Each layer has a different job:
 
@@ -67,7 +67,7 @@ Each layer has a different job:
 - Golden tests do not create new artifacts.
 - Evidence must stay meaningful before golden baselines are refreshed.
 
-### `content/games/`
+### `lurek_2d_content/games/`
 
 - Only finished playable `game` or `minigame` entries belong here.
 - Both are complete products. `minigame` only means smaller scope.
@@ -83,7 +83,7 @@ Use this decision order:
 3. Is the goal to prove a private helper or internal seam? Put it in `tests/rust/unit/`.
 4. Is the goal to generate a screenshot, audio file, text dump, waveform, or other proof artifact? Put it in `tests/lua/evidence/`.
 5. Is the goal to compare a newly generated artifact with a baseline? Put it in `tests/lua/golden/`.
-6. Is the goal to ship a finished playable experience? Put it in `content/games/`.
+6. Is the goal to ship a finished playable experience? Put it in `lurek_2d_content/games/`.
 7. Is it interactive but not a complete game? Split the durable API slice into `content/examples/` and the reviewable proof into `tests/lua/evidence/`.
 
 ## Quality Gates
@@ -111,6 +111,6 @@ The cleanup order for this repo is:
 2. Fix Lua unit ownership and remove public API duplication from Rust tests.
 3. Redesign evidence so every artifact has a clear review purpose.
 4. Realign golden baselines to the cleaned evidence layer.
-5. Reclassify `content/games/` so only real games and mini games remain there.
+5. Reclassify `lurek_2d_content/games/` so only real games and mini games remain there.
 
 That order matters. Cleaning games before fixing examples, unit coverage, and evidence will keep recreating the same duplication.

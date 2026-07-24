@@ -1,23 +1,23 @@
 """
-gen_game_readmes.py — Generate or repair README.md files for content/games/ projects.
+gen_game_readmes.py — Generate or repair README.md files for lurek_2d_content/games/ projects.
 
 Scans each game directory for main.lua and conf.lua, extracts lurek.* API
 references, and produces a well-structured README.md matching the canonical
-template from content/games/_template/README.md.
+template from lurek_2d_content/games/_template/README.md.
 
 Usage:
     python tools/demos/gen_game_readmes.py [options]
 
 Arguments:
-    --game PATH      Path to one game directory (e.g. content/games/music_composer)
-    --all            Process all game directories under content/games/
+    --game PATH      Path to one game directory (e.g. lurek_2d_content/games/music_composer)
+    --all            Process all game directories under lurek_2d_content/games/
     --dry-run        Print generated README to stdout, don't write files
     --threshold N    Only update READMEs shorter than N lines (default: 30)
     --force          Regenerate even if README is already extensive
 
 Examples:
     # Preview generated README for one game (no file write)
-    python tools/demos/gen_game_readmes.py --dry-run --game content/games/music_composer
+    python tools/demos/gen_game_readmes.py --dry-run --game lurek_2d_content/games/music_composer
 
     # Fix all short READMEs (under 30 lines, default threshold)
     python tools/demos/gen_game_readmes.py --all
@@ -120,7 +120,7 @@ def _parse_conf(conf_path: Path) -> dict:
 
 
 def _game_rel_path(game_dir: Path) -> str:
-    """Return the content/games path relative to repo root."""
+    """Return the lurek_2d_content/games path relative to repo root."""
     try:
         return game_dir.relative_to(REPO_ROOT).as_posix()
     except ValueError:
@@ -336,7 +336,7 @@ def _extract_changes(readme: Path) -> str:
     return (
         "This is an original game created for Lurek2D — no prior demo existed. "
         "Built from scratch following the patterns established in the "
-        "`content/games/` collection."
+        "`lurek_2d_content/games/` collection."
     )
 
 # ---------------------------------------------------------------------------
@@ -358,18 +358,18 @@ def find_all_game_dirs() -> list[Path]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Generate or repair README.md files for content/games/ projects.",
+        description="Generate or repair README.md files for lurek_2d_content/games/ projects.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         "--game", metavar="PATH",
-        help="Path to one game directory (e.g. content/games/music_composer).",
+        help="Path to one game directory (e.g. lurek_2d_content/games/music_composer).",
     )
     group.add_argument(
         "--all", action="store_true",
-        help="Process all game directories under content/games/.",
+        help="Process all game directories under lurek_2d_content/games/.",
     )
     parser.add_argument(
         "--dry-run", action="store_true",

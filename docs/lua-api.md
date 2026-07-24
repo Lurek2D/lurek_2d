@@ -9,7 +9,7 @@ The public scripting surface lives under `lurek.*`. Generated docs and stubs are
 | [Full Lua API Reference](api/lurek.md) | Complete generated Markdown reference for `lurek.*`. |
 | [Runtime callbacks](api/callbacks.md) | Functions the runtime calls, such as `lurek.process(dt)` and `lurek.draw()`. |
 | [LuaCATS stub](https://github.com/Lurek2D/lurek_2d/blob/main/docs/api/lurek.lua) | Editor and tooling declarations for completions, hover text, and agents. |
-| [Lureksome API](api/lureksome.md) | Generated docs for pure-Lua libraries under `library/`. |
+| [Lureksome API](api/lureksome.md) | Generated docs for pure-Lua libraries under `lurek_2d_content/library/`. |
 
 ## How To Read The API
 

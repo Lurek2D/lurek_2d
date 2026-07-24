@@ -88,6 +88,6 @@ Both must exit 0.
 - TST-02 No #[cfg(test)] in src/. Rust unit tests → tests/rust/unit/<module>_tests.rs.
 - TST-03 src/lua_api/<module>_api.rs: bindings only. Business logic stays in src/<module>/ as pure Rust.
 - TST-04 Every mod.rs: only pub mod, pub use, attributes, and doc comments.
-- TST-05 Demo tests → colocated `content/games/**/test.lua`. Screenshot demos → tests/demo_smoke_tests.rs with #[ignore].
+- TST-05 Demo tests → colocated `lurek_2d_content/games/**/test.lua`. Screenshot demos → tests/demo_smoke_tests.rs with #[ignore].
 - TST-06 One test file per module per layer: test_<module>_<layer>.lua.
 ```

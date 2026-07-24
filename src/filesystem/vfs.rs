@@ -63,6 +63,8 @@ pub struct MountLayer {
     pub source: PathBuf,
     /// Virtual prefix exposed inside GameFS.
     pub mountpoint: String,
+    /// Whether explicit workspace-write calls may modify this mounted source tree.
+    pub writable: bool,
 }
 /// Game filesystem rooted at a base directory with optional mount overlays.
 #[derive(Clone)]
@@ -140,6 +142,54 @@ impl GameFS {
             ));
         }
         Ok(None)
+    }
+    /// Resolve a path into the newest writable workspace mount while preserving
+    /// the mount boundary after directory creation.
+    fn resolve_workspace_write_path(&self, path: &str) -> EngineResult<PathBuf> {
+        Self::reject_traversal(path)?;
+        let normalized = Self::normalize_logical_path(path);
+        for layer in self.mounts.iter().rev() {
+            if !layer.writable {
+                continue;
+            }
+            let Some(relative) = Self::relative_inside_mount(&normalized, &layer.mountpoint) else {
+                continue;
+            };
+            if relative.is_empty() {
+                return Err(EngineError::FileSystemError(
+                    "Workspace write path must name a file inside its mount".into(),
+                ));
+            }
+            let candidate = layer.source.join(relative);
+            let parent = candidate.parent().ok_or_else(|| {
+                EngineError::FileSystemError("Workspace write path has no parent directory".into())
+            })?;
+            std::fs::create_dir_all(parent).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to create workspace directories: {e}"))
+            })?;
+            let parent_canonical = parent.canonicalize().map_err(|_| {
+                EngineError::FileSystemError("Cannot resolve workspace output directory".into())
+            })?;
+            if !parent_canonical.starts_with(&layer.source) {
+                return Err(EngineError::FileSystemError(
+                    "Access denied: workspace output escaped its mount".into(),
+                ));
+            }
+            if candidate.exists() {
+                let canonical = candidate.canonicalize().map_err(|_| {
+                    EngineError::FileSystemError("Cannot resolve workspace output file".into())
+                })?;
+                if !canonical.starts_with(&layer.source) {
+                    return Err(EngineError::FileSystemError(
+                        "Access denied: workspace output escaped its mount".into(),
+                    ));
+                }
+            }
+            return Ok(candidate);
+        }
+        Err(EngineError::FileSystemError(
+            "Write access requires a writable workspace mount".into(),
+        ))
     }
     /// Collect recursive entries from `dir`, prefixing them with `virtual_prefix`.
     fn collect_recursive_prefixed(
@@ -253,6 +303,54 @@ impl GameFS {
         }
         std::fs::write(&resolved, bytes)
             .map_err(|e| EngineError::FileSystemError(format!("Failed to write '{}': {}", path, e)))
+    }
+    /// Write UTF-8 content to a user-authorized writable workspace mount.
+    ///
+    /// Ordinary GameFS writes stay restricted to `save/`. This explicit operation is
+    /// intended for desktop authoring tools after the user has selected a workspace.
+    pub fn write_workspace_string(&self, path: &str, content: &str) -> EngineResult<()> {
+        let resolved = self.resolve_workspace_write_path(path)?;
+        std::fs::write(&resolved, content)
+            .map_err(|e| EngineError::FileSystemError(format!("Failed to write workspace file '{}': {}", path, e)))
+    }
+    /// Atomically write UTF-8 content to a user-authorized writable workspace mount.
+    pub fn write_workspace_string_atomic(&self, path: &str, content: &str) -> EngineResult<()> {
+        self.write_workspace_bytes_atomic(path, content.as_bytes())
+    }
+    /// Atomically write arbitrary bytes to a user-authorized writable workspace mount.
+    ///
+    /// This is the binary counterpart of `write_workspace_string_atomic` for
+    /// authored images and other non-UTF-8 project assets.
+    pub fn write_workspace_bytes_atomic(&self, path: &str, bytes: &[u8]) -> EngineResult<()> {
+        let resolved = self.resolve_workspace_write_path(path)?;
+        let parent = resolved.parent().ok_or_else(|| {
+            EngineError::FileSystemError("Workspace output path has no parent directory".into())
+        })?;
+        let file_name = resolved
+            .file_name()
+            .and_then(|name| name.to_str())
+            .ok_or_else(|| EngineError::FileSystemError("Workspace output path has an invalid file name".into()))?;
+        let temp_path = parent.join(format!(
+            ".{file_name}.tmp-{}",
+            NEXT_ATOMIC_WRITE_TEMP.fetch_add(1, Ordering::Relaxed)
+        ));
+        let result = (|| {
+            let mut file = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&temp_path)
+                .map_err(|e| EngineError::FileSystemError(format!("Failed to create workspace output: {e}")))?;
+            file.write_all(bytes)
+                .map_err(|e| EngineError::FileSystemError(format!("Failed to write workspace output: {e}")))?;
+            file.sync_all()
+                .map_err(|e| EngineError::FileSystemError(format!("Failed to flush workspace output: {e}")))?;
+            std::fs::rename(&temp_path, &resolved)
+                .map_err(|e| EngineError::FileSystemError(format!("Failed to commit workspace output: {e}")))
+        })();
+        if result.is_err() {
+            let _ = std::fs::remove_file(&temp_path);
+        }
+        result
     }
     /// Atomically replace a save file after checking that its parent and destination remain inside save/.
     pub fn write_bytes_atomic(&self, path: &str, bytes: &[u8]) -> EngineResult<()> {
@@ -636,6 +734,35 @@ impl GameFS {
         self.mounts.push(MountLayer {
             source: canonical,
             mountpoint: Self::normalize_logical_path(mountpoint),
+            writable: false,
+        });
+        Ok(())
+    }
+    /// Mount a user-authorized workspace directory for reads and explicit workspace writes.
+    ///
+    /// This is deliberately separate from [`Self::mount`]: normal script mounts
+    /// remain sandboxed to the game root, while desktop tools can opt into a
+    /// workspace only after a user-selected path reaches this API.
+    pub fn mount_workspace(&mut self, source_path: &str, mountpoint: &str) -> EngineResult<()> {
+        let mountpoint = Self::normalize_logical_path(mountpoint);
+        if mountpoint.is_empty() {
+            return Err(EngineError::FileSystemError(
+                "Workspace mount point must not be empty".into(),
+            ));
+        }
+        let canonical = PathBuf::from(source_path).canonicalize().map_err(|_| {
+            EngineError::FileSystemError("Cannot access selected workspace directory".into())
+        })?;
+        if !canonical.is_dir() {
+            return Err(EngineError::FileSystemError(
+                "Selected workspace path must be a directory".into(),
+            ));
+        }
+        self.mounts.retain(|layer| layer.mountpoint != mountpoint);
+        self.mounts.push(MountLayer {
+            source: canonical,
+            mountpoint,
+            writable: true,
         });
         Ok(())
     }
@@ -653,6 +780,7 @@ impl GameFS {
         self.mounts.push(MountLayer {
             source: canonical,
             mountpoint: Self::normalize_logical_path(mountpoint),
+            writable: false,
         });
         Ok(())
     }
@@ -745,6 +873,32 @@ impl GameFS {
             ));
         }
         Ok(canonical)
+    }
+    /// Resolve a GameFS path to a host path suitable for change watching.
+    ///
+    /// Existing files return the same canonical path as `resolve_read_path`.
+    /// Missing files are still returned below their mounted source or game root so
+    /// callers can register interest before a tool creates the file.
+    pub fn resolve_watch_path(&self, path: &str) -> EngineResult<PathBuf> {
+        let normalized = Self::normalize_logical_path(path);
+        Self::reject_traversal(normalized.as_str())?;
+        if let Some(resolved) = self.resolve_mount_read_path(normalized.as_str())? {
+            return Ok(resolved);
+        }
+        for layer in self.mounts.iter().rev() {
+            if let Some(relative) = Self::relative_inside_mount(&normalized, &layer.mountpoint) {
+                return Ok(if relative.is_empty() {
+                    layer.source.clone()
+                } else {
+                    layer.source.join(relative)
+                });
+            }
+        }
+        Ok(if normalized.is_empty() {
+            self.base_dir.clone()
+        } else {
+            self.base_dir.join(normalized)
+        })
     }
     /// Resolve a writable path inside save/ or return a filesystem error.
     pub fn resolve_save_path(&self, path: &str) -> EngineResult<PathBuf> {

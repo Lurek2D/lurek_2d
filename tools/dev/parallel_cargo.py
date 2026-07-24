@@ -8,7 +8,7 @@ bounded process-level parallelism for multi-target Rust test runs.
 Examples:
     python tools/dev/parallel_cargo.py build debug
     python tools/dev/parallel_cargo.py check
-    python tools/dev/parallel_cargo.py run debug -- content/games/music_composer
+    python tools/dev/parallel_cargo.py run debug -- lurek_2d_content/games/music_composer
     python tools/dev/parallel_cargo.py test rust --warm-build
     python tools/dev/parallel_cargo.py test target math_tests --nocapture
     python tools/dev/parallel_cargo.py clippy --deny-warnings
