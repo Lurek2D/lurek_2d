@@ -24,7 +24,7 @@ description: "Load this skill when authoring or updating an established module s
 - The same metadata, bindings, and manual overlay must emit the same module spec.
 - A second generator run must produce no diff.
 - `docs/specs/README.md` owns the spec index and tiering guide.
-- `docs/templates/SPEC_TEMPLATE.md` defines the shape of a new module spec.
+- `docs/templates/SPEC_TEMPLATE.md` defines the shape of a manual overlay under `docs/specs/manual/`.
 - Module metadata also records the user-facing flag and plugin tier.
 - Generated spec prose is never copied back into Rust docstrings.
 - A missing or stale module link is a metadata defect, not manual-overlay prose.

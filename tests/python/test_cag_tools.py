@@ -59,9 +59,16 @@ class CagToolsTests(unittest.TestCase):
     def test_contract_character_cap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "AGENTS.md"
-            path.write_text("# x\n\n## Mission & Scope\n- x\n\n## Files\n- x\n\n## Rules\n- x\n\n## Workflow\n- x\n" + "x" * 3001, encoding="utf-8")
+            path.write_text("# x\n\n## Mission & Scope\n- x\n\n## Files\n- x\n\n## Rules\n- x\n\n## Workflow\n- x\n" + "x" * 2501, encoding="utf-8")
             rules = {item.rule for item in self.validator.check_contract(path)}
             self.assertIn("E401", rules)
+
+    def test_contract_section_order(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "AGENTS.md"
+            path.write_text("# x\n\n## Files\n- x\n\n## Mission & Scope\n- x\n\n## Rules\n- x\n\n## Workflow\n- x\n", encoding="utf-8")
+            rules = {item.rule for item in self.validator.check_contract(path)}
+            self.assertIn("E404", rules)
 
     def test_skill_character_cap_and_reference_check(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

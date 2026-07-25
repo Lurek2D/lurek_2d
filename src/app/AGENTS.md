@@ -5,7 +5,9 @@
 - Keep host events routed through guarded runtime callbacks.
 
 ## Files
-- `main_loop.rs`, `runner.rs`: Launch and frame control.
+- `app.rs`: Event-loop state and frame control.
+- `lua_callbacks.rs`: Guarded Lua callback dispatch.
+- `debug_overlay.rs`, `frame_profile.rs`: Runtime debug views and timing.
 - `error_screen.rs`, `splash_screen.rs`: User-visible startup/failure surfaces.
 
 ## Rules

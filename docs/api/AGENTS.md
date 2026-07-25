@@ -5,8 +5,9 @@
 - Keep final docs derived from source binding annotations.
 
 ## Files
-- `lurek.md`: Markdown reference for `lurek.*`.
-- `lurek.lua`: EmmyLua/LDoc declarations for IDEs.
+- `lurek.md`, `lurek.lua`: Lua API reference and IDE declarations.
+- `rust.md`: Rust API reference.
+- `callbacks.md`, `lureksome.*`: Callback and pure Lua library references.
 
 ## Rules
 - Files here are generated; never edit them by hand.
@@ -14,4 +15,4 @@
 - Keep generated anchors and external links stable.
 
 ## Workflow
-- Run `python tools/gen_all_docs.py` after editing binding definitions.
+- Run `tools/python.cmd tools/gen_all_docs.py` after editing binding definitions.

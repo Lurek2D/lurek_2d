@@ -1,25 +1,24 @@
 # Tilefield Module Contract
 
 ## Mission & Scope
-- Own tile-based gameplay semantics for single fields, field maps, and layered field maps: movement, vision, action, light-blocking inputs, top-light inputs, author refs, regions, and runtime modifiers.
+- Own tile gameplay data: movement, vision, actions, light inputs, references, regions, and modifiers.
 - Keep algorithms data-oriented and renderer-independent.
 
 ## Files
-- `field.rs`, `field_map.rs`, `cell.rs`: Field storage, field-map storage, bounds, channel state, refs, regions, modifiers, exports.
-- `line.rs`, `topology.rs`: Grid topology, distances, and line traversal.
-- `modifier.rs`: Runtime tile modifiers applied over base cell/object values.
+- `field.rs`, `field_map.rs`, `cell.rs`: Field and cell storage.
+- `category.rs`, `semantics.rs`, `modifier.rs`: Gameplay channels and modifiers.
+- `line.rs`, `topology.rs`: Distances and line traversal.
+- `reference.rs`, `catalog.rs`, `emitter.rs`, `limits.rs`: References, catalogs, light input, and limits.
 
 ## Rules
 - Keep coordinates zero-based internally and convert at Lua boundaries.
-- Do not depend on raycaster, minimap, render, awareness, pathfind, or tilelight from this module.
+- Do not depend on render, awareness, pathfind, minimap, raycaster, or tilelight.
 - Keep channel semantics independent; never infer action from vision or movement from light.
-- `TileFieldLimits` bounds dense cells, map products, levels, categories, modifiers, slots, regions, refs, dirty rectangles, provider rows, snapshot entries, and stored string lengths. Check `u64` products before allocation.
-- Provider imports and Lua snapshot restores build/validate replacement state before swapping it into a live field; failed restore leaves the original field unchanged.
-- Every successful mutation increments version and dirty state. Dirty cells coalesce and fall back to a bounded coarse level rectangle; `beginEdit` is nested and does not discard pending changes.
-- `clear` resets cells, regions, occupants, resources, and buildability while retaining category/modifier/slot definitions. Occupant id `0` means empty; missing buildability is `true`; empty resource labels are absent.
-- Tilefield stores authored environmental light metadata only. Runtime physics body creation belongs to `physics`; render light/occluder creation belongs to `light`. The legacy tilefield aliases are compatibility shims during migration.
-- Tilelight consumes authored emitter metadata and tilefield blocker/transmission/topology/version data; tilefield does not own runtime light ids, computed output, or propagation.
-- Hostile-input coverage belongs in `tests/lua/security/test_tilefield_security.lua` and large bounded mutations belong in the tilefield stress suite.
+- Apply `TileFieldLimits` before allocation, import, snapshot load, export, or large work. Check size products with `u64`.
+- Imports and snapshot loads build a full valid replacement before changing a live field.
+- Each successful change updates version and dirty state. Nested `beginEdit` must keep pending changes.
+- `clear` removes live cell data but keeps category, modifier, and slot definitions.
+- Store authored light facts only. `physics`, `light`, and `tilelight` own runtime results.
 
 ## Workflow
-- Validate with `cargo test --test tilefield_tests` and Lua tilefield unit coverage.
+- Run `cargo test --test tilefield_tests` and tilefield Lua unit/security/stress tests.

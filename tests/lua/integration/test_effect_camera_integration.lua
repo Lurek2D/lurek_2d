@@ -1,7 +1,5 @@
 -- Integration: post-processing effects using camera viewport state
 -- @describe effect + camera integration
-
--- @describe effect + camera integration
 describe("effect + camera integration", function()
     -- @integration LCamera:getViewport
     -- @integration LCamera:setViewport

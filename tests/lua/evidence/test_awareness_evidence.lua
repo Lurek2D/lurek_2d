@@ -1,4 +1,13 @@
 -- Evidence tests: awareness module.
+-- @covers lurek.awareness.lineOfAction
+-- @covers lurek.awareness.new
+-- @covers lurek.awareness.newFov
+-- @covers lurek.awareness.newTileAwareness
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.tilefield.new
+
 
 local OUT = evidence_output_dir("awareness")
 

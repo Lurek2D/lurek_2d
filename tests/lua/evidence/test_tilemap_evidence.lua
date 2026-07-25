@@ -1,5 +1,22 @@
 -- test_tilemap_evidence.lua
 -- Canonical evidence file for lurek.tilemap visual outputs.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.render.newShader
+-- @covers lurek.tilefield.new
+-- @covers lurek.tilelight.new
+-- @covers lurek.tilemap.getAutoTileFormats
+-- @covers lurek.tilemap.hexArea
+-- @covers lurek.tilemap.hexDistance
+-- @covers lurek.tilemap.hexSpiral
+-- @covers lurek.tilemap.newAutoTileSheet
+-- @covers lurek.tilemap.newChunkMap
+-- @covers lurek.tilemap.newIsoMap
+-- @covers lurek.tilemap.newTileMap
+-- @covers lurek.tilemap.newTileSet
+-- @covers lurek.tilemap.toScreenHex
+
 
 
 local OUT = evidence_output_dir("tilemap")

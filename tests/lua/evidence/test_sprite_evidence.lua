@@ -1,3 +1,13 @@
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.saveGIF
+-- @covers lurek.image.savePNG
+-- @covers lurek.render.newImage
+-- @covers lurek.sprite.newAnimator
+-- @covers lurek.sprite.newAtlasPacker
+-- @covers lurek.sprite.newSheet
+-- @covers lurek.sprite.newSprite
+-- @covers lurek.sprite.parseAtlas
+
 ﻿-- Canonical evidence file for lurek.sprite visual artifacts.
 
 local OUT = evidence_output_dir("sprite")

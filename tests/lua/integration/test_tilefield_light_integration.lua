@@ -1,4 +1,13 @@
 -- Integration: authored tilefield refs become bounded light-world render previews.
+-- @covers lurek.light.clear
+-- @covers lurek.light.createLightsFromTilefield
+-- @covers lurek.light.drawToImage
+-- @covers lurek.light.getLightCount
+-- @covers lurek.light.setEnabled
+-- @covers lurek.tilefield.createLightsFromTileset
+-- @covers lurek.tilefield.new
+-- @covers lurek.tileset.fromProvider
+
 
 local function fixture()
     local tileset = lurek.tileset.fromProvider({

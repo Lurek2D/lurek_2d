@@ -1,4 +1,18 @@
 -- Canonical evidence file for lurek.layout visual artifacts.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.layout.centerInArea
+-- @covers lurek.layout.circular
+-- @covers lurek.layout.dag
+-- @covers lurek.layout.force
+-- @covers lurek.layout.grid
+-- @covers lurek.layout.radial
+-- @covers lurek.layout.snapToGrid
+-- @covers lurek.layout.spiral
+-- @covers lurek.layout.stress
+-- @covers lurek.layout.tree
+
 
 local OUT = evidence_output_dir("layout")
 

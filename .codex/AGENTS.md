@@ -3,7 +3,7 @@
 Owns Codex-only guidance for `lurek_2D`.
 
 ## Mission & Scope
-- Keep roles, skills, prompts, and config separate from product code.
+- Keep roles, skills, and Codex config separate from product code.
 - Put repo invariants in root or nested `AGENTS.md`; keep `.codex/` about CAG setup.
 - Maintain active role mappings and reusable workflows.
 
@@ -12,6 +12,7 @@ Owns Codex-only guidance for `lurek_2D`.
 - `agents/`: Runtime role overlays, not direct task instructions.
 - `skills/`: Reusable task workflows.
 - `coverage.toml`: Domain-to-contract-to-skill coverage matrix.
+- `migration/`: Old CAG mapping notes; not active guidance.
 
 ## Rules
 - Pick the narrowest owner: contracts for invariants, `agents/` for roles, `skills/` for workflows.
@@ -21,10 +22,10 @@ Owns Codex-only guidance for `lurek_2D`.
 - Keep skill owner labels synced with the registered profile names they target.
 - Skill frontmatter descriptions are the routing source for when to load or skip a skill.
 - Keep active skills compact: retain only mission, unique domain knowledge, workflow, and references.
-- Keep normalized character counts within the repository limits enforced by `cag_validate.py`.
+- Keep root `AGENTS.md` at or below 4000 normalized characters and nested contracts at or below 2500.
 - Shared CAG process rules belong here; do not repeat them in every skill.
 - Before broad reads, query RAG; prefer existing MCP/repo tools; modify the existing owning artifact.
-- Keep optional local runtimes repo-scoped; use `tools/dev/headroom_runtime.py` instead of hard-wiring Headroom into active `config.toml`.
+- Keep optional local runtimes out of active shared config.
 
 ## Workflow
 - Run `tools/python.cmd tools/validate/cag_validate.py` after CAG config changes.

@@ -1,22 +1,23 @@
 # UI Module Contract
 
 ## Mission & Scope
-- Own retained widgets, tree/layout/style state, normalized-input routing, callbacks, and UI-to-`RenderCommand` lowering.
-- `context.rs` and `context/*` own lifecycle/cache passes; `widget.rs`, `controls.rs`, `extras.rs`, and `theme.rs` own widget data; `layout_loader.rs` owns validated transactional layouts.
-- `render.rs` lowers UI only. `render` owns GPU/software replay; `filesystem` owns GameFS/path policy and `image` owns encoding.
+- Own widgets, UI trees, layout, styles, input routing, callbacks, and UI render commands.
+- Do not own GPU replay, filesystem policy, or image encoding.
 
 ## Files
-- `context.rs`, `widget.rs`, `controls.rs`, `extras.rs`, `theme.rs`, `layout_loader.rs`, and `render.rs` are the current UI owners.
+- `context.rs`, `context/`: UI lifecycle, tree state, and caches.
+- `widget.rs`, `controls.rs`, `extras.rs`, `containers.rs`: Widget data.
+- `layout_loader.rs`, `theme.rs`, `icons.rs`: Layouts, themes, and icons.
+- `render.rs`, `diagnostics.rs`, `limits.rs`: Render commands, checks, and limits.
 
 ## Rules
-- Widget references are opaque generational handles; reject stale, foreign, or wrong-kind handles before mutation.
-- Destruction and `clear` must release callbacks, events, focus/capture, tree links, and derived caches through the lifecycle path.
-- Apply `UiLimits`, finite numeric checks, checked allocation, and bounded traversal to every Lua/TOML entry path.
-- Layout loading is transactional; public layout reads use GameFS and capture output follows the filesystem policy.
-- Keep dirty generations/cache work observable and preserve deterministic, bounded command lowering.
+- Reject stale, foreign, or wrong-kind widget handles before mutation.
+- Destroy and `clear` must release callbacks, events, focus, tree links, and caches.
+- Apply `UiLimits`, finite-number checks, safe allocation, and bounded tree walks to Lua and TOML input.
+- Layout loading validates first and commits once. Public paths use GameFS.
+- Keep render command order stable and bounded.
 
 ## Workflow
-- `cargo test --test ui_tests`
-- `cargo test --release --test ui_perf_tests -- --nocapture`
-- `cargo test --test lua_tests lua_security_ui_security` and `cargo test --test lua_tests lua_stress_ui_stress`
-- `tools/python.cmd tools/audit/ui_boundary_check.py`
+- Run `cargo test --test ui_tests`.
+- Run `cargo test --release --test ui_perf_tests -- --nocapture` for hot-path changes.
+- Run `tools/python.cmd tools/audit/ui_boundary_check.py`.

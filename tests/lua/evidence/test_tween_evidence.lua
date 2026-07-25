@@ -1,5 +1,13 @@
 -- test_tween_evidence.lua
 -- Canonical evidence file for lurek.tween visual and trace outputs.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.tween.cancelAll
+-- @covers lurek.tween.getActiveCount
+-- @covers lurek.tween.to
+-- @covers lurek.tween.update
+
 
 local OUT = evidence_output_dir("tween")
 

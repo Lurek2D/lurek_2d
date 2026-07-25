@@ -20,6 +20,7 @@ from query import (
     RAG_CONTEXT_NEIGHBORS_MIN,
     RAG_CONTEXT_DEFAULT_LIMIT,
     RAG_CONTEXT_DEFAULT_NEIGHBORS,
+    RAG_SEARCH_MAX_LIMIT,
     hydrate_hits,
     read_api_usage_chunks,
     read_module_usage_chunks,
@@ -175,6 +176,12 @@ def build_context_bundle(
     content_chars: int = RAG_CONTEXT_CONTENT_CHARS_DEFAULT,
     db_path: Path | None = None,
 ) -> dict[str, Any]:
+    try:
+        limit = _clamp_rag_arg(limit, "limit", RAG_CONTEXT_LIMIT_MIN, RAG_CONTEXT_LIMIT_MAX)
+        neighbors = _clamp_rag_arg(neighbors, "neighbors", RAG_CONTEXT_NEIGHBORS_MIN, RAG_CONTEXT_NEIGHBORS_MAX)
+        content_chars = _clamp_rag_arg(content_chars, "content_chars", RAG_CONTEXT_CONTENT_CHARS_MIN, RAG_CONTEXT_CONTENT_CHARS_MAX)
+    except ValueError as exc:
+        return {"error": str(exc), "prompt": prompt, "results": [], "searches": []}
     searches = _context_searches(prompt)
     intent = _bundle_intent(prompt)
     budget = _bundle_budget(intent, limit, content_chars)
@@ -182,7 +189,7 @@ def build_context_bundle(
     seen: set[str] = set()
     candidates: list[dict[str, Any]] = []
     search_reports: list[dict[str, Any]] = []
-    per_search_limit = max(6, budget["search_results"] * 2)
+    per_search_limit = min(RAG_SEARCH_MAX_LIMIT, max(6, budget["search_results"] * 2))
 
     for query_text in searches:
         report = search_index(
@@ -201,6 +208,12 @@ def build_context_bundle(
                 "result_count": len(report.get("results", [])),
             }
         )
+        if report.get("error"):
+            return {
+                "error": f"Primary RAG search failed: {report['error']}",
+                "prompt": prompt, "profile": profile, "intent": intent,
+                "budget": budget, "searches": search_reports, "results": [],
+            }
         for item in report.get("results", []):
             chunk_id = item["id"]
             if chunk_id in seen:
@@ -265,6 +278,25 @@ def build_context_bundle(
         context_items = governing_contracts + module_usage_chunks + api_usage_chunks + results + related_chunks + navigation_chunks
     else:
         context_items = governing_contracts + navigation_chunks + module_usage_chunks + api_usage_chunks + results + related_chunks
+
+    # `content_chars` is a bundle-wide payload budget, not a per-query allowance.
+    remaining_chars = content_chars
+    emitted: set[str] = set()
+    capped_context_items: list[dict[str, Any]] = []
+    for item in context_items:
+        item_id = str(item.get("id", ""))
+        if not item_id or item_id in emitted:
+            continue
+        emitted.add(item_id)
+        content = item.get("content")
+        if isinstance(content, str):
+            if remaining_chars <= 0:
+                continue
+            if len(content) > remaining_chars:
+                item = {**item, "content": content[:remaining_chars].rstrip() + "\n...[truncated]"}
+            remaining_chars -= len(str(item.get("content", "")))
+        capped_context_items.append(item)
+    context_items = capped_context_items
 
     return {
         "prompt": prompt,

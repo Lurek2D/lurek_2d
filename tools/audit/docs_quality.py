@@ -18,6 +18,18 @@ SPECS = ROOT / "docs" / "specs"
 MANUAL = SPECS / "manual"
 PAGES_INPUT = ROOT / "lurek_2d_pages" / ".source"
 GENERATED_HEADER = "<!-- GENERATED FILE."
+MOJIBAKE_MARKERS = ("Ã", "Â", "â€™", "â€œ", "â€", "â€”", "â€“", "â€¦")
+TEXT_DOC_ROOTS = (
+    "docs/index.md",
+    "docs/lua-api.md",
+)
+TEXT_DOC_DIRS = (
+    "docs/guides",
+    "docs/contributing",
+    "docs/architecture",
+    "docs/templates",
+)
+TEXT_DOC_DIR_EXCLUDES: set[str] = set()
 
 
 def api_module_name(module: str) -> str:
@@ -27,8 +39,8 @@ def api_module_name(module: str) -> str:
     return module
 
 
-def rel(path: Path) -> str:
-    return path.relative_to(ROOT).as_posix()
+def rel(path: Path, root: Path = ROOT) -> str:
+    return path.relative_to(root).as_posix()
 
 
 def load_json(path: Path) -> dict:
@@ -90,22 +102,25 @@ def check_coverage(errors: list[str]) -> None:
 def check_module_pages_indexed(errors: list[str]) -> None:
     mkdocs_text = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
     guide_text = (PAGES_INPUT / "module-guides.md").read_text(encoding="utf-8")
-    page_only_excluded = [
-        "getting-started.md",
-        "first-game.md",
-        "project-structure.md",
-        "examples.md",
-        "reference-games.md",
-        "recipes.md",
-        "contributors.md",
+    required_public_pages = [
+        "guides/index.md",
+        "guides/getting-started.md",
+        "guides/first-game.md",
+        "guides/project-structure.md",
+        "guides/examples.md",
+        "guides/recipes.md",
+        "guides/reference-games.md",
+        "contributing/index.md",
+        "contributing/build-and-distribution.md",
+        "contributing/rust-file-docstrings.md",
         "api/lurek.md",
         "api/lureksome.md",
     ]
-    for path in page_only_excluded:
-        if f"  {path}" not in mkdocs_text:
-            errors.append(f"MISSING_PAGES_EXCLUDE {path}")
-        if re.search(rf"^\s*-\s+.*:\s+{re.escape(path)}\s*$", mkdocs_text, re.MULTILINE):
-            errors.append(f"FORBIDDEN_PAGES_NAV {path}")
+    for path in required_public_pages:
+        if not re.search(rf"^\s*-\s+.*:\s+{re.escape(path)}\s*$", mkdocs_text, re.MULTILINE):
+            errors.append(f"MISSING_PAGES_NAV {path}")
+        if re.search(rf"^\s+{re.escape(path)}\s*$", mkdocs_text, re.MULTILINE):
+            errors.append(f"FORBIDDEN_PAGES_EXCLUDE {path}")
     if "  index.md" in mkdocs_text:
         errors.append("FORBIDDEN_PAGES_EXCLUDE index.md")
 
@@ -185,6 +200,59 @@ def check_dead_architecture_links(errors: list[str]) -> None:
                 errors.append(f"DEAD_TEST_FRAMEWORK_LINK {rel(path)}")
 
 
+def check_relative_text_docs(root: Path, errors: list[str]) -> None:
+    targets: list[Path] = []
+    for relative in TEXT_DOC_ROOTS:
+        path = root / relative
+        if path.exists():
+            targets.append(path)
+    for relative in TEXT_DOC_DIRS:
+        path = root / relative
+        if path.is_dir():
+            for child in sorted(child for child in path.rglob("*.md") if child.is_file()):
+                parts = child.relative_to(path).parts
+                if parts and parts[0] in TEXT_DOC_DIR_EXCLUDES:
+                    continue
+                if child.name == "AGENTS.md":
+                    continue
+                targets.append(child)
+
+    link_re = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+    for path in targets:
+        rel_path = rel(path, root)
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            errors.append(f"NON_UTF8_TEXT {rel_path}")
+            continue
+
+        for marker in MOJIBAKE_MARKERS:
+            if marker in text:
+                errors.append(f"MOJIBAKE_TEXT {rel_path} {marker!r}")
+                break
+
+        for target in link_re.findall(text):
+            link = target.split()[0].strip("<>")
+            if not link or link.startswith("#"):
+                continue
+            if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*://", link) or link.startswith("mailto:"):
+                continue
+            if re.match(r"^(?:[A-Za-z]:[\\/]|/)", link):
+                errors.append(f"ABSOLUTE_LINK {rel_path} -> {link}")
+                continue
+            link_path = re.split(r"[?#]", link, maxsplit=1)[0]
+            normalized_parts = [
+                part
+                for part in Path(link_path).parts
+                if part not in {".", ".."}
+            ]
+            if normalized_parts and normalized_parts[0] == "modules":
+                continue
+            resolved = (path.parent / link_path).resolve()
+            if not resolved.exists():
+                errors.append(f"BROKEN_RELATIVE_LINK {rel_path} -> {link}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Audit docs ownership, generated headers, and docs coverage gates")
     parser.parse_args()
@@ -193,6 +261,7 @@ def main() -> int:
     check_coverage(errors)
     check_module_pages_indexed(errors)
     check_dead_architecture_links(errors)
+    check_relative_text_docs(ROOT, errors)
     if errors:
         print("Docs quality failed:")
         for error in errors:

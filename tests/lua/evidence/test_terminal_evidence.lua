@@ -1,4 +1,21 @@
 -- Canonical evidence file for lurek.terminal visual artifacts.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.savePNG
+-- @covers lurek.render.newShader
+-- @covers lurek.terminal.addCompletion
+-- @covers lurek.terminal.applyTheme
+-- @covers lurek.terminal.clearCmdHistory
+-- @covers lurek.terminal.clearCompletions
+-- @covers lurek.terminal.cmdHistoryLen
+-- @covers lurek.terminal.getCompletions
+-- @covers lurek.terminal.newBorder
+-- @covers lurek.terminal.newButton
+-- @covers lurek.terminal.newList
+-- @covers lurek.terminal.newTerminal
+-- @covers lurek.terminal.newTextBox
+-- @covers lurek.terminal.prevCmd
+-- @covers lurek.terminal.pushCmdHistory
+
 
 local OUT = evidence_output_dir("terminal")
 

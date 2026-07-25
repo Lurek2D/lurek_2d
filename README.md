@@ -37,8 +37,8 @@ Lurek is not mobile-first, web-first, 3D-first, or editor-first. It does not cen
 | Step | Link | Purpose |
 |---|---|---|
 | 1 | [GitHub Pages documentation](https://lurek2d.github.io/lurek_2d_pages/) | Official public docs entry point. |
-| 2 | [Getting Started](https://lurek2d.github.io/lurek_2d_pages/getting-started.html) | First commands and project shape. |
-| 3 | [First Game](https://lurek2d.github.io/lurek_2d_pages/first-game.html) | Minimal `main.lua` with update and draw callbacks. |
+| 2 | [Guides](https://lurek2d.github.io/lurek_2d_pages/guides/) | Onboarding path for first projects, examples, and recipes. |
+| 3 | [First Game](https://lurek2d.github.io/lurek_2d_pages/guides/first-game.html) | Minimal `main.lua` with update and draw callbacks. |
 | 4 | [Lua API Overview](https://lurek2d.github.io/lurek_2d_pages/lua-api.html) | How to read and use the generated `lurek.*` API. |
 | 5 | [Full Lua API Reference](https://lurek2d.github.io/lurek_2d_pages/api/lurek.html) | Complete generated public API reference. |
 
@@ -54,8 +54,8 @@ Lurek is not mobile-first, web-first, 3D-first, or editor-first. It does not cen
 | Content | [`lurek_2d_content`](lurek_2d_content/README.md) | Games, reusable Lua libraries, and design references in a nested repository. |
 | VS Code extension | [`lurek_2d_extension`](lurek_2d_extension/README.md) | Standalone VS Code extension repository. |
 | Workbench | [`lurek_2d_workbench`](lurek_2d_workbench/README.md) | Standalone native Lurek Workbench repository. |
-| Wiki | [docs/wiki/Home.md](docs/wiki/Home.md) | Generated cookbook/onboarding/FAQ-style material, not the API source of truth. |
-| Architecture | [docs/architecture/](docs/architecture/) | Contributor-facing design, positioning, boundaries, and durable decisions. |
+| Guides | [docs/guides/index.md](docs/guides/index.md) | Hand-written onboarding, examples, recipes, and reference-game navigation. |
+| Architecture | [docs/architecture/](docs/architecture/) | Contributor-facing boundaries, lifecycles, ownership, and durable decisions. |
 | Specs | [docs/specs/README.md](docs/specs/README.md) | Contributor-facing generated module contracts and technical source of truth. |
 
 ## Lua API
@@ -73,15 +73,15 @@ For VS Code and Lua language servers, point workspace library settings at `docs/
 
 - [Examples guide](content/examples/README.md) explains the one-file examples under `content/examples/`.
 - [Content catalog](lurek_2d_content/README.md) covers complete games, reusable Lua libraries, and game-design references.
-- Pages also includes [Examples](https://lurek2d.github.io/lurek_2d_pages/examples.html) and [Reference Games](https://lurek2d.github.io/lurek_2d_pages/reference-games.html) indexes.
+- Pages also includes [Examples](https://lurek2d.github.io/lurek_2d_pages/guides/examples.html) and [Reference Games](https://lurek2d.github.io/lurek_2d_pages/guides/reference-games.html) indexes.
 
 ## For Contributors
 
 Engine contributors should start from:
 
+- [Contributor docs](docs/contributing/index.md)
 - [Architecture overview](docs/architecture/engine-core.md)
-- [Documentation strategy](docs/architecture/documentation-strategy.md)
-- [Positioning](docs/architecture/market-positioning.md)
+- [Design constraints](docs/architecture/philosophy.md)
 - [Specs index](docs/specs/README.md)
 - [Documentation system](docs/architecture/docs-system.md)
 - [Tests and quality gates](tests/README.md)

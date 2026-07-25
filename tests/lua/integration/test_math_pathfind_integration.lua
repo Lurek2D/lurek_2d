@@ -2,8 +2,6 @@
 
 -- Vec3 heuristic applied to pathfinding costs
 -- @describe vec3 + pathfinding heuristic integration
-
--- @describe vec3 + pathfinding heuristic integration
 describe("vec3 + pathfinding heuristic integration", function()
 
     -- @integration LJpsGrid:findPath

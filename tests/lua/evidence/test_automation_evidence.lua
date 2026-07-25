@@ -1,4 +1,34 @@
 -- Canonical evidence file for lurek.automation artifacts.
+-- @covers lurek.automation.getCondition
+-- @covers lurek.automation.getCurrentScript
+-- @covers lurek.automation.getCurrentStep
+-- @covers lurek.automation.getElapsedTime
+-- @covers lurek.automation.getPlaybackSpeed
+-- @covers lurek.automation.getScripts
+-- @covers lurek.automation.getStepCount
+-- @covers lurek.automation.getStepLimit
+-- @covers lurek.automation.hasMacro
+-- @covers lurek.automation.isComplete
+-- @covers lurek.automation.isHighlightMode
+-- @covers lurek.automation.isPaused
+-- @covers lurek.automation.isRunning
+-- @covers lurek.automation.listMacros
+-- @covers lurek.automation.load
+-- @covers lurek.automation.pause
+-- @covers lurek.automation.playMacro
+-- @covers lurek.automation.resume
+-- @covers lurek.automation.saveMacro
+-- @covers lurek.automation.setCondition
+-- @covers lurek.automation.setHighlightMode
+-- @covers lurek.automation.setPlaybackSpeed
+-- @covers lurek.automation.setStepLimit
+-- @covers lurek.automation.start
+-- @covers lurek.automation.stop
+-- @covers lurek.automation.unload
+-- @covers lurek.automation.update
+-- @covers lurek.automation.waitUntil
+-- @covers lurek.filesystem.write
+
 
 local OUT = evidence_output_dir("automation")
 

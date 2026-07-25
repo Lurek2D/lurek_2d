@@ -1,4 +1,8 @@
-# Mirror the matching [agents.<name>] description in .codex/config.toml.
+# Copy to `.codex/agents/<role_name>.toml`.
+# Register the matching `[agents.<role_name>]` entry in `.codex/config.toml`.
+# Keep `description` identical in both places; `cag_validate.py` checks that match.
+# Required keys: `name`, `description`, `model`, `model_reasoning_effort`,
+# `approval_policy`, and `sandbox_mode`.
 name = "role_name"
 description = "One-sentence ownership and boundary."
 model = "gpt-5.4"
@@ -9,4 +13,4 @@ approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 personality = "pragmatic"
 service_tier = "default"
-web_search = "disabled"
+web_search = "cached"

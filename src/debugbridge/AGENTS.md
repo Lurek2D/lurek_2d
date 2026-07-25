@@ -6,10 +6,10 @@
 
 ## Files
 - `server.rs`: Protocol handling and request dispatch.
-- `protocol.rs`: Message shapes and capability metadata.
+- `bridge.rs`: Shared bridge state, commands, and runtime handoff.
 
 ## Rules
-- Require nonce validation for non-handshake commands.
+- Require the session handshake before protected commands.
 - Never let malformed JSON or unknown methods panic the server thread.
 - Keep screenshot, eval, and hot-reload requests queued through runtime flags.
 

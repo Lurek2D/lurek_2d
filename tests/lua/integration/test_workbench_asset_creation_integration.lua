@@ -1,11 +1,9 @@
 -- Integration: Workbench creates game-ready assets through its document and project services.
 -- @describe workbench asset creation integration
-
 local WORK_ROOT = "work/workbench_asset_creation"
 local WORKBENCH_ROOT = "lurek_2d_workbench"
 local native_create_directory = lurek.filesystem.createDirectory
 local native_write = lurek.filesystem.write
-
 local function load_workbench_module(path)
     local chunk = lurek.filesystem.load(WORKBENCH_ROOT .. "/" .. path)
     expect_type("function", chunk, "workbench module loads from GameFS")
@@ -13,7 +11,6 @@ local function load_workbench_module(path)
     expect_true(ok, "workbench module executes: " .. tostring(result))
     return result
 end
-
 local function enable_fixture_writes()
     lurek.filesystem.createDirectory = function(_path) return nil end
     lurek.filesystem.write = function(path, text)
@@ -24,7 +21,7 @@ local function enable_fixture_writes()
         return native_write(path, text)
     end
 end
-
+-- @describe workbench asset creation integration
 describe("workbench asset creation integration", function()
     before_each(function()
         enable_fixture_writes()

@@ -6,7 +6,7 @@
 
 ## Files
 - `audit_module.py`: Module audit entry point.
-- `cag_link_check.py`: Markdown link target checker.
+- `cag_link_check.py`: CAG contract and tool reference checker.
 - `doc_coverage.py`: API doc coverage checker.
 - `test_coverage.py`: Test-to-module coverage report.
 
@@ -19,4 +19,4 @@
 ## Workflow
 - Run focused checks, e.g. `tools/python.cmd tools/audit/cag_link_check.py --strict`.
 - Audit one module with `tools/python.cmd tools/audit/audit_module.py <name>`.
-- Use the installed audit names and flags: `lua_spec_coverage.py --module <name>`, `example_coverage.py --module <name>`, and `docstring_audit.py --file <path> --check`.
+- Use real parser flags. Examples: `lua_spec_coverage.py --module <name>` and `docstring_audit.py --file <path> --check`.

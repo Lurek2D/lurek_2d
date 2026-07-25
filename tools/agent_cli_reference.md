@@ -66,7 +66,6 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/ui_docs_contract.py` - Check source-backed UI documentation claims and UI-owned architecture links. [durable; mcp:no]
 - `audit/ui_perf_gate.py` - Run release-mode UI scenarios and compare them to a reviewed baseline. [durable; mcp:no]
 - `audit/unit_test_api_coverage.py` - unit_test_api_coverage.py - Lurek2D unit-test API coverage analysis. [durable; mcp:no]
-- `audit/wiki_coverage.py` - Audit wiki page coverage against engine modules and Lua API. [durable; mcp:no]
 
 ## /demos
 - `demos/audit_games.py` - Audit lurek_2d_content/games readiness for the public demo catalog. [targeted-maintenance; mcp:no]
@@ -83,11 +82,20 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 ## /dev
 - `dev/headroom_runtime.py` - Manage a repo-local Headroom runtime for Codex and MCP workflows. [developer-workflow; mcp:no]
 - `dev/parallel_cargo.py` - Repository-owned cargo orchestration for build, run, test, lint, fmt, and doc. [developer-workflow; mcp:no]
+- `dev/setup_python_path.ps1` - param( [developer-workflow; mcp:no]
 - `dev/test_fix_loop.py` - Agent-friendly test-run / fix / re-run loop for cargo test. [developer-workflow; mcp:no]
 
 ## /dist
+- `dist/dist.ps1` - Requires -Version 5.1 [durable; mcp:no]
+- `dist/dist.sh` - !/usr/bin/env bash [durable; mcp:no]
+- `dist/install.ps1` - Requires -Version 5.1 [durable; mcp:no]
+- `dist/install.sh` - !/usr/bin/env bash [durable; mcp:no]
+- `dist/installer.nsi` - Lurek2D NSIS Installer Script [durable; mcp:no]
+- `dist/pack.ps1` - tools/pack.ps1 [durable; mcp:no]
 - `dist/pack.py` - tools/pack.py — Pack a Lurek2D game directory into a .lurek archive. [durable; mcp:no]
 - `dist/package_games.py` - tools/dist/package_games.py — Pack each game into a .lurek archive (ZIP). [durable; mcp:no]
+- `dist/register_lurek_filetype.ps1` - param( [durable; mcp:no]
+- `dist/release.ps1` - Requires -Version 5.1 [durable; mcp:no]
 
 ## /docs
 - `docs/check_freshness.py` - Regenerate docs and fail if generated outputs are stale. [durable; mcp:no]
@@ -112,8 +120,6 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `docs/gen_rust_api_data.py` - gen_rust_api_data.py — Generate Lurek2D master API data file. [durable; mcp:no]
 - `docs/gen_rust_docstrings.py` - gen_rust_docstrings.py — AI-assisted Rust doc-comment generator for src/ (excluding lua_api/). [durable; mcp:no]
 - `docs/gen_test_docs.py` - gen_test_docs.py — Generate human-readable test docs-general for Lurek2D. [durable; mcp:no]
-- `docs/gen_wiki.py` - Generate the user-facing GitHub Wiki for Lurek2D. [durable; mcp:no]
-- `docs/gen_wiki_api.py` - gen_wiki_api.py — Generate wiki/API-Reference.md from logs/data/lua_api_data.json. [durable; mcp:no]
 - `docs/migrate_spec_manual_overlays.py` - Migrate hand-written spec sections into docs/specs/manual overlays. [durable; mcp:no]
 - `docs/module_registry.py` - Load the canonical Lurek2D module registry. [durable; mcp:no]
 - `docs/scan_missing_docs.py` - scan_missing_docs.py — detect Rust items without doc-comments in src/ (no lua_api). [durable; mcp:no]
@@ -147,9 +153,11 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `rag/context.py` - Build an agent-friendly context bundle from the local Lurek2D RAG index. [durable; mcp:no]
 - `rag/contract.py` - Shared RAG contract constants loaded from ``rag_contract.json``. [durable; mcp:no]
 - `rag/eval.py` - Evaluate local RAG recall against a prompt baseline for agent workflows. [durable; mcp:no]
+- `rag/generate_contract.py` - Generate the checked-in RAG limit/watch contract from the canonical TOML. [durable; mcp:no]
 - `rag/insights.py` - Run SQL insights and audits over the local DuckDB RAG index. [durable; mcp:no]
 - `rag/query.py` - Query and read the local DuckDB RAG index for Lurek2D. [durable; mcp:candidate]
 - `rag/read.py` - Read full chunks from the local Lurek2D RAG index by chunk id. [durable; mcp:no]
+- `rag/state.py` - Shared state, configuration, and tokenization helpers for the local RAG. [durable; mcp:no]
 
 ## /root
 - `fix_remaining_markers.py` - Add missing @covers markers to specific it() blocks. [targeted-maintenance; mcp:no]
@@ -157,6 +165,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `fix_test_structure.py` - Fix Lua test structure violations. [targeted-maintenance; mcp:no]
 - `fix_wrapped_tests.py` - Add missing @covers markers to wrapped test functions. [targeted-maintenance; mcp:no]
 - `gen_all_docs.py` - Regenerate the full Lurek2D documentation pipeline in one command. [durable; mcp:no]
+- `python.cmd` - setlocal [durable; mcp:no]
 
 ## /snippets
 - `snippets/gen_vscode_snippets.py` - Build ../lurek_2d_extension/data/snippets.json from content/snippets/*.lua. [durable; mcp:no]

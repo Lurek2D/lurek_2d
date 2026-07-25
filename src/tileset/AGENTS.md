@@ -2,22 +2,23 @@
 
 ## Mission & Scope
 - Own atlas-local tile metadata, animation, autotile rules, and visual tile profiles.
-- Keep map storage, chunk ownership, coordinate conversion, import budgets, and dirty-region state in `tilemap`.
-- Keep validation limits, checked atlas arithmetic, object-archetype defaults, and typed-ref catalog snapshot semantics here.
+- Keep map storage, coordinates, imports, and dirty state in `tilemap`.
 
 ## Files
-- `mod.rs`, `tileset.rs`, `catalog.rs`: Atlas metadata, animation, autotile, and catalog state.
-- `animation.rs`, `archetype.rs`, `autotile.rs`, `visual.rs`, `limits.rs`, `error.rs`: Local records, validation, ceilings, and structured errors.
-- `AGENTS.md`: Reciprocal ownership boundary with `tilemap`.
+- `tileset.rs`, `catalog.rs`: Tile metadata and catalog snapshots.
+- `animation.rs`, `autotile.rs`: Animation and autotile rules.
+- `archetype.rs`, `visual.rs`: Object defaults and visual profiles.
+- `limits.rs`, `error.rs`: Limits and errors.
 
 ## Rules
-- `TileSet` describes what a GID means; it must not become a second owner of map cells or map-wide reverse indexes.
-- Animation metadata is consumed by `tilemap` timers and render selection; tileset mutations must preserve stable GID ranges and metadata semantics.
-- Autotile layout policy may be shared with `tilemap`, but map mutation and dirty propagation remain tilemap-owned.
-- Lua-created instances must use checked construction and bounded mutation paths; errors crossing Lua include `lurek.tileset.<method>`.
-- Archetypes describe defaults only; `physics`, `light`, `render`, and `tilefield` materialize their own runtime state.
-- Catalogs intentionally clone tilesets as snapshots; do not introduce live shared handles without an explicit API/spec decision.
+- `TileSet` explains GIDs; it does not own map cells or map-wide indexes.
+- Keep GID ranges and animation metadata stable across valid changes.
+- `tilemap` owns map mutation and dirty updates.
+- Lua construction and mutation use checked, bounded paths. Errors name `lurek.tileset.<method>`.
+- Archetypes are defaults only. Other modules create their own runtime state.
+- Catalog entries are snapshots, not live shared tilesets.
 
 ## Workflow
-- Validate with the owning module tests and the tilemap tests when changing animation or autotile contracts.
-- Run `cargo test --test tileset_tests`, the tileset security/stress Lua tests, and `tools\python.cmd tools\audit\audit_module.py tileset --docs-quality` for behavior changes.
+- Run `cargo test --test tileset_tests`.
+- Run tilemap tests after animation or autotile contract changes.
+- Run tileset Lua security/stress tests for public changes.

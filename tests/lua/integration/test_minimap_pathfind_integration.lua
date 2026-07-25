@@ -2,6 +2,10 @@
 -- @integration lurek.minimap.newMinimap
 -- @integration lurek.pathfind.newNavGrid
 -- @integration lurek.pathfind.newPathfinder
+-- @covers lurek.minimap.newMinimap
+-- @covers lurek.pathfind.newNavGrid
+-- @covers lurek.pathfind.newPathfinder
+
 
 
 

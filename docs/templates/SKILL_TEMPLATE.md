@@ -1,8 +1,14 @@
 ---
+# Copy to `.codex/skills/<skill-name>/SKILL.md`.
+# Keep the folder name and `name` value identical.
+# The description must contain both literal routing clauses:
+# `Load this skill when ...` and `Skip it for ...`.
 name: skill-name
-description: "Use this skill when the task clearly matches this domain. Skip it for adjacent work owned by another skill."
+description: "Load this skill when the task clearly matches this domain. Skip it for adjacent work owned by another skill."
 ---
 # skill-name
+
+<!-- Validator notes: keep one H1, exactly these four H2 sections, no fenced code blocks, and a registered agent reference. -->
 
 ## Mission
 - Own one narrow knowledge area.
@@ -23,7 +29,3 @@ description: "Use this skill when the task clearly matches this domain. Skip it 
 - `tools: tools/python.cmd path/to/check.py`
 - `agent: registered_role`
 - RAG: `representative retrieval phrase`; `canonical/path/`
-
-## Template Notes
-- Copy this file to `.codex/skills/<skill-name>/SKILL.md` and keep it at most 5000 normalized characters.
-- Put load/skip routing in frontmatter and folder-local invariants in the nearest `AGENTS.md`.

@@ -9,7 +9,7 @@ from collections import defaultdict
 import json
 import re
 import sys
-import tomllib
+import time
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +35,7 @@ from contract import (
     RAG_SEARCH_LIMIT_MAX,
     RAG_SEARCH_LIMIT_MIN,
 )
+from state import active_db_path, load_config, load_manifest, tokenize
 
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -42,8 +43,7 @@ DB_PATH = WORKSPACE_ROOT / "tools" / "rag" / "rag_index.duckdb"
 CONFIG_PATH = WORKSPACE_ROOT / "tools" / "rag" / "rag.toml"
 
 
-with open(CONFIG_PATH, "rb") as f:
-    config = tomllib.load(f)
+config = load_config()
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -192,7 +192,7 @@ MODULE_QUERY_STOPWORDS = {
 
 
 def connect(db_path_override: Path | None = None) -> duckdb.DuckDBPyConnection:
-    active_db = db_path_override if db_path_override else DB_PATH
+    active_db = active_db_path(db_path_override)
     if not active_db.exists():
         raise FileNotFoundError(f"RAG index not found: {active_db}. Run tools/rag/build_index.py first.")
     return duckdb.connect(str(active_db), read_only=True)
@@ -201,8 +201,7 @@ def connect(db_path_override: Path | None = None) -> duckdb.DuckDBPyConnection:
 def sanitize_fts_query(query: str) -> str:
     if len(query) > MAX_QUERY_LENGTH:
         query = query[:MAX_QUERY_LENGTH]
-    raw_tokens = re.findall(r"[A-Za-z0-9_]+", query)
-    return " ".join(raw_tokens)
+    return " ".join(tokenize(query))
 
 
 def _require_int_in_range(
@@ -262,7 +261,7 @@ def _normalize_bool(value: Any) -> bool:
 def _dedupe_tokens(safe_query: str) -> list[str]:
     return list(
         dict.fromkeys(
-            token.lower()
+            token.casefold()
             for token in safe_query.split()
             if token and token.lower() not in MODULE_QUERY_STOPWORDS
         )
@@ -350,10 +349,19 @@ def row_to_dict(row: dict[str, Any], *, include_content: bool = False, content_c
         item["governs_path"] = row["governs_path"]
     if "section_kind" in row:
         item["section_kind"] = row["section_kind"]
+    for field in ("surface", "authority_tier", "canonical_owner", "chunk_ordinal"):
+        if field in row:
+            item[field] = row[field]
     if "context" in row:
         item["context"] = row["context"]
     if "rank" in row:
         item["rank"] = row["rank"]
+    if "score" in row:
+        item["score"] = float(row["score"])
+    if "matched_terms_list" in row:
+        item["matched_terms"] = row["matched_terms_list"]
+    if "score_components" in row:
+        item["score_components"] = row["score_components"]
     if include_content:
         content = str(row["content"])
         if content_chars > 0 and len(content) > content_chars:
@@ -382,13 +390,24 @@ def _profile_filter_sql(profile: str) -> str:
 def _candidate_sql(profile: str, token_count: int, conjunctive: bool) -> str:
     if token_count <= 0:
         raise ValueError("search requires at least one token")
-    token_predicates = [
-        "(strpos(lower(path), ?) > 0 OR strpos(lower(title), ?) > 0 OR strpos(lower(content), ?) > 0)"
-        for _ in range(token_count)
-    ]
-    joiner = " AND " if conjunctive else " OR "
-    where_tokens = joiner.join(token_predicates)
+    placeholders = ",".join("?" for _ in range(token_count))
+    required_terms = token_count if conjunctive else 1
     return f"""
+        WITH corpus AS (SELECT count(*) AS documents FROM documents),
+        matches AS (
+            SELECT dt.document_rowid,
+                   count(DISTINCT dt.term) AS matched_terms,
+                   sum((dt.path_tf * {float(FIELD_WEIGHTS[0]) if FIELD_WEIGHTS else 1.0}
+                        + dt.title_tf * {float(FIELD_WEIGHTS[1]) if len(FIELD_WEIGHTS) > 1 else 8.0}
+                        + dt.body_tf * {float(FIELD_WEIGHTS[2]) if len(FIELD_WEIGHTS) > 2 else 1.0})
+                       * ln((corpus.documents + 1.0) / (ts.df + 0.5))) AS bm25_score
+            FROM document_terms dt
+            JOIN term_stats ts ON ts.term = dt.term
+            CROSS JOIN corpus
+            WHERE dt.term IN ({placeholders})
+            GROUP BY dt.document_rowid
+            HAVING count(DISTINCT dt.term) >= {required_terms}
+        )
         SELECT
             d.id,
             d.path,
@@ -403,14 +422,20 @@ def _candidate_sql(profile: str, token_count: int, conjunctive: bool) -> str:
             d.is_vendor,
             d.governs_path,
             d.section_kind,
+            d.surface,
+            d.authority_tier,
+            d.canonical_owner,
+            d.chunk_ordinal,
+            m.matched_terms,
+            m.bm25_score,
             coalesce(ci.agent_term_count, 0) AS insight_agent_term_count,
             coalesce(ci.symbol_count, 0) AS insight_symbol_count,
             coalesce(ci.contains_agent_terms, false) AS insight_contains_agent_terms
         FROM documents d
+        JOIN matches m ON m.document_rowid = d.rowid
         LEFT JOIN code_insights ci ON ci.id = d.id
         WHERE 1 = 1
         {_profile_filter_sql(profile)}
-          AND ({where_tokens.replace('path', 'd.path').replace('title', 'd.title').replace('content', 'd.content')})
         ORDER BY
             CAST(d.is_vendor AS INTEGER) ASC,
             CAST(d.is_generated AS INTEGER) ASC,
@@ -422,14 +447,110 @@ def _candidate_sql(profile: str, token_count: int, conjunctive: bool) -> str:
 
 
 def _candidate_params(tokens: list[str], limit: int) -> tuple[Any, ...]:
-    params: list[Any] = []
-    for token in tokens:
-        params.extend([token, token, token])
+    params: list[Any] = list(tokens)
     params.append(limit)
     return tuple(params)
 
 
+def _trigrams(value: str) -> set[str]:
+    padded = f"  {value} "
+    return {padded[index:index + 3] for index in range(max(0, len(padded) - 2))}
+
+
+def _bounded_edit_distance(left: str, right: str, maximum: int) -> int:
+    """Return a small Levenshtein distance, stopping once it cannot qualify."""
+    if abs(len(left) - len(right)) > maximum:
+        return maximum + 1
+    previous = list(range(len(right) + 1))
+    for left_index, left_char in enumerate(left, start=1):
+        current = [left_index]
+        row_minimum = left_index
+        for right_index, right_char in enumerate(right, start=1):
+            cost = 0 if left_char == right_char else 1
+            value = min(previous[right_index] + 1, current[right_index - 1] + 1, previous[right_index - 1] + cost)
+            current.append(value)
+            row_minimum = min(row_minimum, value)
+        if row_minimum > maximum:
+            return maximum + 1
+        previous = current
+    return previous[-1]
+
+
+def _is_single_adjacent_swap(left: str, right: str) -> bool:
+    if len(left) != len(right):
+        return False
+    mismatches = [index for index, (a, b) in enumerate(zip(left, right)) if a != b]
+    return (
+        len(mismatches) == 2
+        and mismatches[1] == mismatches[0] + 1
+        and left[mismatches[0]] == right[mismatches[1]]
+        and left[mismatches[1]] == right[mismatches[0]]
+    )
+
+
+def _near_miss_expansions(conn: duckdb.DuckDBPyConnection, tokens: list[str]) -> dict[str, str]:
+    """Suggest one unambiguous spelling repair for a missing lexical term.
+
+    The compact term dictionary is used as a trigram index at query time.  This
+    keeps corrections explicit in the response and avoids broad synonym or OR
+    expansion for normal successful searches.
+    """
+    candidates = [token for token in tokens if len(token) >= 4 and token.replace("_", "").isalnum()]
+    if not candidates:
+        return {}
+    known_terms = dict(
+        conn.execute(
+            "SELECT term, df FROM term_stats WHERE term IN (" + ",".join("?" for _ in candidates) + ")",
+            tuple(candidates),
+        ).fetchall()
+    )
+    expansions: dict[str, str] = {}
+    for token in candidates:
+        # A term present in more than one document is almost certainly an
+        # intentional query word.  One-off terms (for example a typo retained
+        # in a test) may still be repaired if the AND search could not use it.
+        if int(known_terms.get(token, 0)) >= 2:
+            continue
+        maximum = max(1, min(2, len(token) // 3))
+        terms = conn.execute(
+            """SELECT term, df FROM term_stats
+               WHERE term LIKE ? AND length(term) BETWEEN ? AND ?
+               LIMIT 2000""",
+            (f"{token[:1]}%", max(2, len(token) - maximum), len(token) + maximum),
+        ).fetchall()
+        source_grams = _trigrams(token)
+        ranked: list[tuple[int, float, int, str]] = []
+        for term, document_frequency in terms:
+            if term == token or int(document_frequency) < 2:
+                continue
+            overlap = len(source_grams & _trigrams(term))
+            union = len(source_grams | _trigrams(term))
+            similarity = overlap / union if union else 0.0
+            if similarity < 0.22:
+                continue
+            distance = 1 if _is_single_adjacent_swap(token, term) else _bounded_edit_distance(token, term, maximum)
+            if distance <= maximum:
+                # Prefer the edit-distance correction first; trigram overlap
+                # breaks ties, then corpus support avoids one-off typos.
+                ranked.append((-distance, similarity, int(document_frequency), term))
+        ranked.sort(reverse=True)
+        if not ranked:
+            continue
+        best = ranked[0]
+        # Do not silently pick between similarly plausible terms.
+        if len(ranked) > 1 and best[:2] == ranked[1][:2] and best[2] == ranked[1][2]:
+            continue
+        expansions[token] = best[3]
+    return expansions
+
+
+def _replace_tokens(safe_query: str, expansions: dict[str, str]) -> str:
+    return " ".join(expansions.get(token, token) for token in _dedupe_tokens(safe_query))
+
+
 def _candidate_score(row: dict[str, Any], tokens: list[str]) -> tuple[int, float]:
+    if "bm25_score" in row:
+        return int(row["matched_terms"]), float(row["bm25_score"])
     path_l = str(row["path"]).lower()
     title_l = str(row["title"]).lower()
     content_l = str(row["content"]).lower()
@@ -460,6 +581,7 @@ def search_index(
     content_chars: int = 6000,
     neighbors: int = 0,
 ) -> dict[str, Any]:
+    started = time.perf_counter()
     if not query:
         return {"error": "query cannot be empty", "results": []}
     if len(query) > MAX_QUERY_LENGTH:
@@ -471,7 +593,7 @@ def search_index(
 
     try:
         conn = connect(db_path_override)
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, RuntimeError, duckdb.Error) as exc:
         return {"error": str(exc)}
 
     try:
@@ -505,6 +627,17 @@ def search_index(
             conjunctive=True,
         )
         mode = "and"
+        near_miss = {}
+        if not results:
+            near_miss = _near_miss_expansions(conn, _dedupe_tokens(safe_query))
+            if near_miss:
+                repaired_query = _replace_tokens(safe_query, near_miss)
+                results = _search_once(
+                    conn, repaired_query, profile, validated_limit, include_content,
+                    validated_content_chars, conjunctive=True,
+                )
+                if results:
+                    mode = "and+near_miss"
         if len(results) < validated_limit and " " in safe_query:
             relaxed_results = _search_once(
                 conn,
@@ -522,7 +655,58 @@ def search_index(
                     seen.add(item["id"])
                 if len(results) >= validated_limit:
                     break
-            mode = "and+or" if results else "or"
+            mode = f"{mode}+or" if results else "or"
+        # A fully-qualified Lua symbol names one canonical API record.  Promote
+        # that record ahead of prose and source mirrors while retaining the
+        # latter as useful follow-up material.
+        exact_api_terms = _extract_api_terms(query)
+        if exact_api_terms:
+            existing_ids = {item["id"] for item in results}
+            for symbol in exact_api_terms:
+                api_rows = _fetch_rows(
+                    conn,
+                    _base_select_sql() + " WHERE path = 'API' AND lower(content) LIKE ?",
+                    (f"%symbol: {symbol.casefold()}%",),
+                )
+                for row in api_rows:
+                    if row["id"] in existing_ids:
+                        next(item for item in results if item["id"] == row["id"])["rank"] = -20000.0
+                        continue
+                    row["context"] = _build_snippet(str(row["content"]), _dedupe_tokens(safe_query))
+                    row["rank"] = -20000.0
+                    results.append(row_to_dict(row, include_content=include_content, content_chars=validated_content_chars))
+                    existing_ids.add(row["id"])
+        # Structural anchors prevent a long natural-language query from losing a
+        # canonical module/tool owner during lexical relaxation.
+        query_tokens = set(_dedupe_tokens(safe_query))
+        anchors: list[str] = []
+        for module_name in _extract_module_terms(query, limit=3):
+            anchors.extend((f"docs/specs/{module_name}.md", f"src/lua_api/{module_name}_api.rs"))
+        if {"tool", "registry"}.issubset(query_tokens):
+            anchors.extend(("tools/agent_cli_reference.md", "tools/audit/tool_registry_audit.py", "tools/tests/gen_tool_registry.py"))
+        if anchors:
+            anchor_rows = _fetch_rows(
+                conn,
+                _base_select_sql() + " WHERE path IN (" + ",".join("?" for _ in anchors) + ")",
+                tuple(anchors),
+            )
+            existing_ids = {item["id"] for item in results}
+            for row in anchor_rows:
+                if row["id"] in existing_ids:
+                    continue
+                row["context"] = _build_snippet(str(row["content"]), _dedupe_tokens(safe_query))
+                row["rank"] = -10000.0
+                results.append(row_to_dict(row, include_content=include_content, content_chars=validated_content_chars))
+                existing_ids.add(row["id"])
+        for item in results:
+            adjusted = _adjusted_rank(item, safe_query, intent)
+            item["score"] = -adjusted
+            item["matched_terms_list"] = [token for token in _dedupe_tokens(safe_query) if token in str(item.get("context", "")).casefold()]
+            item["score_components"] = {
+                "bm25": round(float(item.get("bm25_score", 0.0)), 4),
+                "authority": float(item.get("priority", 0.0)),
+                "generated_penalty": 7.0 if item.get("is_generated") else 0.0,
+            }
         results = sorted(results, key=lambda item: _adjusted_rank(item, safe_query, intent))
         results = _select_diverse_rows(results, validated_limit)[:validated_limit]
         if validated_neighbors > 0:
@@ -533,11 +717,22 @@ def search_index(
                     validated_neighbors,
                     content_chars=validated_content_chars,
                 )
-        return {"query": query, "fts_query": safe_query, "profile": profile, "mode": mode, "results": results}
+        manifest = load_manifest() if db_path_override is None else None
+        return {
+            "query": query, "fts_query": safe_query, "profile": profile, "mode": mode,
+            "results": results,
+            "query_expansions": {
+                "aliases": [token for token in _dedupe_tokens(safe_query) if token not in query.casefold()],
+                "near_miss": near_miss,
+            },
+            "elapsed_ms": round((time.perf_counter() - started) * 1000, 2),
+            "build_id": manifest.get("build_id") if manifest else None,
+            "index_state": "snapshot" if manifest else "direct",
+        }
     except ValueError as exc:
         return {"error": str(exc)}
     except duckdb.Error as exc:
-        return {"error": f"Search syntax error: {exc}"}
+        return {"error": f"RAG search failed: {exc}"}
     finally:
         conn.close()
 
@@ -567,6 +762,9 @@ def _search_once(
         if conjunctive and matched_terms < len(tokens):
             continue
         row["rank"] = -(matched_terms * 100.0 + lexical_score)
+        row["score"] = lexical_score
+        row["matched_terms_list"] = [token for token in tokens if token in tokenize(str(row["path"]) + " " + str(row["title"]) + " " + str(row["content"]))]
+        row["score_components"] = {"bm25": round(lexical_score, 4), "lexical": round(lexical_score, 4)}
         row["context"] = _build_snippet(str(row["content"]), tokens)
         ranked_rows.append(row)
 
@@ -695,6 +893,9 @@ def _adjusted_rank(row: dict[str, Any], safe_query: str, intent: dict[str, Any])
             score -= 34.0
         if path == "tools/rag/build_index.py":
             score -= 28.0
+    if "tool" in tokens and "registry" in tokens:
+        if path in {"tools/agent_cli_reference.md", "tools/audit/tool_registry_audit.py", "tools/tests/gen_tool_registry.py"}:
+            score -= 45.0
     if "skill" in tokens and intent["wants_examples"] and intent["wants_api"]:
         if path == ".codex/skills/create-example/skill.md":
             score -= 42.0
@@ -834,7 +1035,8 @@ def _table_exists(conn: duckdb.DuckDBPyConnection, table_name: str) -> bool:
 def _base_select_sql() -> str:
     return """
         SELECT id, path, type, title, content, line_start, line_end,
-               source_kind, priority, is_generated, is_vendor, governs_path, section_kind
+               source_kind, priority, is_generated, is_vendor, governs_path, section_kind,
+               surface, authority_tier, canonical_owner, chunk_ordinal
         FROM documents
     """
 
@@ -1518,8 +1720,9 @@ def read_neighbors(
 
 def stats(db_path_override: Path | None = None) -> dict[str, Any]:
     try:
+        resolved_path = active_db_path(db_path_override)
         conn = connect(db_path_override)
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, RuntimeError, duckdb.Error) as exc:
         return {"error": str(exc)}
     try:
         by_type = _fetch_rows(conn, "SELECT type, count(*) as chunks FROM documents GROUP BY type ORDER BY chunks DESC")
@@ -1532,7 +1735,17 @@ def stats(db_path_override: Path | None = None) -> dict[str, Any]:
             conn,
             "SELECT path, count(*) as chunks FROM documents GROUP BY path ORDER BY chunks DESC LIMIT 20",
         )
-        return {"total_chunks": total, "by_type": by_type, "by_kind": by_kind, "top_paths": top_paths}
+        metadata = _fetch_rows(conn, "SELECT key, value FROM index_metadata ORDER BY key") if _table_exists(conn, "index_metadata") else []
+        generated = conn.execute("SELECT count(*) FROM documents WHERE is_generated").fetchone()[0]
+        vendor = conn.execute("SELECT count(*) FROM documents WHERE is_vendor").fetchone()[0]
+        violations = conn.execute("SELECT count(*) FROM documents WHERE length(content) > 1800").fetchone()[0]
+        duplicates = conn.execute("SELECT count(*) FROM (SELECT id FROM documents GROUP BY id HAVING count(*) > 1)").fetchone()[0]
+        return {
+            "total_chunks": total, "by_type": by_type, "by_kind": by_kind, "top_paths": top_paths,
+            "db_size_bytes": resolved_path.stat().st_size, "metadata": {row["key"]: row["value"] for row in metadata},
+            "generated_chunks": generated, "vendor_chunks": vendor,
+            "chunk_size_violations": violations, "duplicate_ids": duplicates,
+        }
     finally:
         conn.close()
 

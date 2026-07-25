@@ -7,6 +7,8 @@
 ## Files
 - `unit/`: Crate-level private helper and module tests.
 - `golden/`: Deterministic snapshot tests.
+- `ext/`: Runtime and platform smoke tests.
+- `perf/`, `stress/`: Performance and long-load tests.
 - `fixtures/`: Checked-in data and configs.
 
 ## Rules

@@ -29,7 +29,7 @@ description: "Load this skill when creating or modifying Codex CAG artifacts suc
 - Mission, Domain Knowledge, Workflow, and References must each appear exactly once.
 - References require `contracts`, `tools`, one registered `agent`, and one `RAG:` line.
 - Every active skill must be assigned to at least one domain in `.codex/coverage.toml`.
-- Root `AGENTS.md` has a 5000-character cap; nested contracts have a 3000-character cap.
+- Root `AGENTS.md` has a 4000-character cap; nested contracts have a 2500-character cap.
 - `.codex/migration/` stores old-to-new mapping notes and does not override active skills.
 
 ## Workflow

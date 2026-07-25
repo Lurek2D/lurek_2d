@@ -1,43 +1,46 @@
 # Documentation System
 
-## Canonical editable sources
+## Decision
 
-- `src/**/*.rs`
-- `src/lua_api/**/*.rs`
-- `content/examples/*.lua`
-- `tests/**/*.lua`
-- `tests/**/*.rs`
-- `docs/meta/modules.toml`
-- `docs/specs/manual/*.md`
-- `docs/architecture/*.md`
+GitHub Pages is the single public documentation surface. The root `README.md` is the repository landing page; durable prose and generator inputs remain in this workspace.
 
-## Surface roles
+## Ownership
 
-- `README.md` is the first-contact landing page and repository map.
-- GitHub Pages is the official public documentation for users.
-- `docs/api/` contains generated API artifacts for Pages, editors, agents, and tooling.
-- GitHub Pages contains generated human-readable module guides plus callable details.
-- `docs/specs/` contains contributor-facing generated module contracts.
-- `docs/architecture/` contains contributor-facing design constraints, strategy, positioning, and durable decisions.
-- `docs/wiki/` is a generated cookbook/onboarding layer, not a second full API reference.
+| Surface | Owner | Audience |
+|---|---|---|
+| `docs/guides/` | Hand-written user guidance | Lua users |
+| `docs/api/` | Generated from Rust and Lua binding documentation | Users, editors, tooling |
+| `docs/specs/` | Generated facts plus manual overlays | Contributors and agents |
+| `docs/architecture/` | Durable boundaries and accepted decisions | Maintainers |
+| `docs/contributing/` | Contributor workflows and policies | Contributors |
+| `docs/meta/modules.toml` | Module names, paths, tiers, examples, and tests | Generators and audits |
+| `docs/templates/` | Copyable CAG and spec-overlay scaffolds | Contributors |
 
-## Generated outputs
+`docs/assets/` contains the logo and CSS consumed by `mkdocs.yml`. It is site input, not general media storage.
 
-- `docs/specs/*.md`
-- `docs/api/*.md`
-- `docs/api/*.lua`
-- `lurek_2d_pages/.source/modules/*.md` (temporary Pages build input)
-- `docs/wiki/*.md`
-- `pages/**`
-- `build/docs-data/**`
-- `logs/data/**`
-- `logs/reports/**`
+## Source Flow
 
-## Rules
+```text
+Rust docs + Lua binding docs + examples + tests + modules.toml + manual overlays
+    -> generated data
+    -> specs, API references, module pages
+    -> MkDocs staging
+    -> lurek_2d_pages/
+```
 
-- Do not edit generated outputs directly.
-- Fix source docstrings if API docs are wrong.
-- Fix `docs/specs/manual/<module>.md` if high-level module intent is wrong.
-- Fix examples in `content/examples/` if example coverage or snippets are wrong.
-- Fix tests if coverage or proof status is wrong.
-- Never copy generated spec prose back into source docstrings.
+Generated API and spec files are never edited directly. Wrong signatures or descriptions are fixed in source documentation; wrong module intent is fixed in `docs/specs/manual/`; wrong ownership metadata is fixed in `docs/meta/modules.toml`.
+
+## Publication Rules
+
+- Pages navigation follows `Start -> First Game -> Lua API -> Module Guides -> Examples`.
+- Guides link to the canonical API instead of copying signatures.
+- Architecture documents contain current facts; proposed changes live under `proposals/`.
+- Generators must be deterministic and a second run must produce no diff.
+- Structural changes require strict local-link, UTF-8, freshness, and MkDocs checks.
+
+## Failure And Recovery
+
+- A generator failure leaves its source inputs authoritative; partial output is not published.
+- A stale generated page is repaired through its upstream owner and regenerated.
+- A broken route is treated as a public contract regression.
+- Deployment output under `lurek_2d_pages/` can be rebuilt from workspace sources and must not become the only copy of durable prose.

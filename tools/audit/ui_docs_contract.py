@@ -19,7 +19,6 @@ UI_DOC_FILES = (
     "docs/specs/manual/ui.md",
     "docs/specs/ui.md",
     "docs/modules/ui.md",
-    "docs/wiki/Module-ui.md",
 )
 REMOVED_SYMBOLS = ("attachToEntity", "detachFromEntity")
 BOILERPLATE = (

@@ -1,7 +1,5 @@
 -- Integration: progression status events are explicitly projected into ECS state.
 -- @describe integration: progression status to ECS ChangeSet
-
--- @describe integration: progression status to ECS ChangeSet
 describe("integration: progression status to ECS ChangeSet", function()
     -- @integration lurek.ecs.newUniverse
     -- @integration LUniverse:spawn

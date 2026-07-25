@@ -1,8 +1,8 @@
 # Examples
 
-`content/examples/` contains runnable one-file examples for public `lurek.*` APIs. Each module owns one example file, and each public API has one owning example block.
+`content/examples/` is the canonical runnable example layer for the public `lurek.*` API. Each file owns one module and demonstrates real usage patterns you can copy into a project.
 
-## Recommended Starting Examples
+## Recommended Starting Points
 
 | Example | Use it for |
 |---|---|
@@ -17,15 +17,25 @@
 | [dataframe.lua](https://github.com/Lurek2D/lurek_2d/blob/main/content/examples/dataframe.lua) | Table-shaped data loading and querying. |
 | [automation.lua](https://github.com/Lurek2D/lurek_2d/blob/main/content/examples/automation.lua) | Replay and deterministic test workflows. |
 
-## Run Examples
+## How To Use The Example Layer
+
+- Run one file directly:
 
 ```powershell
 cargo run -- content/examples/render.lua
+```
+
+- Sweep all examples:
+
+```powershell
 tools/python.cmd tools/demos/smoke_sweep.py --kind example
 ```
 
-## Source Of Truth
+- Use [content/examples/README.md](https://github.com/Lurek2D/lurek_2d/blob/main/content/examples/README.md) when you need the repository ownership rules for `-- @api:` example blocks.
 
-The canonical example index is [content/examples/README.md](https://github.com/Lurek2D/lurek_2d/blob/main/content/examples/README.md).
+## How Examples Fit With The Rest Of The Docs
 
-Generated module pages and Wiki pages reuse these examples. If an example is wrong, fix the owning `content/examples/<module>.lua` block rather than copying a workaround into docs.
+- Start here when you want runnable code before full reference material.
+- Use [Module Guides](../module-guides.md) to choose a namespace.
+- Use the [Full Lua API Reference](../api/lurek.md) for exact signatures and return values.
+- Move on to [Reference Games](reference-games.md) when a one-file example is no longer enough.

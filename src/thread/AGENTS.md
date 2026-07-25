@@ -5,8 +5,8 @@
 - Keep cross-thread state message-passed, not shared mutably.
 
 ## Files
-- `worker.rs`, `channel.rs`, `promise.rs`: Execution and communication.
-- `types.rs`: Cross-thread value contracts.
+- `worker.rs`, `pool.rs`: Worker execution and pooling.
+- `channel.rs`, `promise.rs`: Messages and completion state.
 
 ## Rules
 - Do not move borrowed Lua values across thread boundaries.

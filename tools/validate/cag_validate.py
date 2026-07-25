@@ -13,7 +13,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _cag_common import (  # noqa: E402
     CODEX_CONFIG, COVERAGE_CONFIG, ROLE_CONFIG_DIR, SKILLS_DIR, WORKSPACE_ROOT,
-    REPO_AGENT_SECTIONS, SKILL_SECTIONS, body_after_frontmatter, discover_repo_agents,
+    NESTED_AGENT_CHAR_CAP, REPO_AGENT_SECTIONS, ROOT_AGENT_CHAR_CAP, SKILL_SECTIONS,
+    body_after_frontmatter, discover_repo_agents, headings,
     discover_role_configs, discover_skills, exact_heading_count, load_coverage,
     optional_missing, parse_frontmatter, parse_references, read_config, registered_roles,
     relpath, safe_read, script_paths,
@@ -42,7 +43,7 @@ def error(path: Path, rule: str, message: str, line: int = 0) -> Violation:
 
 def check_contract(path: Path) -> list[Violation]:
     text = safe_read(path)
-    cap = 5000 if path.resolve() == (WORKSPACE_ROOT / "AGENTS.md").resolve() else 3000
+    cap = ROOT_AGENT_CHAR_CAP if path.resolve() == (WORKSPACE_ROOT / "AGENTS.md").resolve() else NESTED_AGENT_CHAR_CAP
     out: list[Violation] = []
     if len(text) > cap:
         out.append(error(path, "E401", f"Contract has {len(text)} normalized characters (cap {cap})"))
@@ -53,6 +54,9 @@ def check_contract(path: Path) -> list[Violation]:
         count = exact_heading_count(text, section)
         if count != 1:
             out.append(error(path, "E403", f"Required H2 '{section}' must appear exactly once (found {count})"))
+    h2_titles = [title for _, level, title in headings(text) if level == 2]
+    if h2_titles != list(REPO_AGENT_SECTIONS):
+        out.append(error(path, "E404", "Contract H2 sections must match the required names and order"))
     return out
 
 

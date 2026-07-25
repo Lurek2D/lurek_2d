@@ -1,7 +1,5 @@
 -- Integration: AI world agent position is mirrored by camera while scene stack is active.
 -- @describe integration: ai + scene + camera
-
--- @describe integration: ai + scene + camera
 describe("integration: ai + scene + camera", function()
     -- @integration lurek.ai.newWorld
     -- @integration lurek.camera.newCamera

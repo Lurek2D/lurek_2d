@@ -5,9 +5,8 @@
 - Keep the runtime network surface focused on small direct-IP or LAN multiplayer.
 
 ## Files
-- `enet.rs`: ENet transport backend.
-- `host.rs`, `peer.rs`, `queue.rs`: Runtime ownership and handoff.
-- `lobby.rs`, `message.rs`, `net_sync.rs`, `rpc.rs`, `net_state.rs`, `relay.rs`: Small multiplayer helpers.
+- `host.rs`, `message.rs`, `constants.rs`, `error.rs`: Transport state and packet rules.
+- `lobby.rs`, `net_sync.rs`, `rpc.rs`, `netstate.rs`, `relay.rs`: LAN and gameplay helpers.
 
 ## Rules
 - Network messages must be typed, bounded when possible, and loss behavior documented.

@@ -1,5 +1,13 @@
 -- test_image_evidence.lua
 -- Canonical evidence file for lurek.image visual outputs.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.newLayeredImage
+-- @covers lurek.image.newPaletteLut
+-- @covers lurek.image.newProvinceGrid
+-- @covers lurek.image.saveGIF
+-- @covers lurek.image.savePNG
+
 
 
 local OUT = evidence_output_dir("image")

@@ -1,4 +1,9 @@
 -- Canonical evidence file for lurek.cursor runtime-facing artifacts.
+-- @covers lurek.cursor.newManager
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("cursor")
 

@@ -1,5 +1,29 @@
 -- test_math_evidence.lua
 -- Canonical evidence file for lurek.math visual outputs.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.math.applyEasing
+-- @covers lurek.math.bresenham
+-- @covers lurek.math.clamp
+-- @covers lurek.math.convexHull
+-- @covers lurek.math.distance
+-- @covers lurek.math.inCubic
+-- @covers lurek.math.inOutQuad
+-- @covers lurek.math.inQuad
+-- @covers lurek.math.lineIntersect
+-- @covers lurek.math.linear
+-- @covers lurek.math.newBezierCurve
+-- @covers lurek.math.outBounce
+-- @covers lurek.math.outCubic
+-- @covers lurek.math.outQuad
+-- @covers lurek.math.pointInPolygon
+-- @covers lurek.math.polygonArea
+-- @covers lurek.math.polygonCentroid
+-- @covers lurek.math.segmentIntersectsSegment
+-- @covers lurek.math.triangulate
+-- @covers lurek.math.vec2
+
 
 
 local OUT = evidence_output_dir("math")

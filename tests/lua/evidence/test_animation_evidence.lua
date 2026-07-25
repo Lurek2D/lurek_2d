@@ -1,5 +1,14 @@
 -- test_animation_evidence.lua
 -- Canonical evidence file for lurek.animation outputs.
+-- @covers lurek.animation.new
+-- @covers lurek.animation.newCurve
+-- @covers lurek.animation.newStateMachine
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.saveGIF
+-- @covers lurek.image.savePNG
+-- @covers lurek.render.newImage
+
 
 
 local OUT = evidence_output_dir("animation")

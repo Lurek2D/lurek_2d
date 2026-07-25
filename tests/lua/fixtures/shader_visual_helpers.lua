@@ -1,3 +1,47 @@
+-- @covers lurek.effect.newCustomEffect
+-- @covers lurek.effect.newEffect
+-- @covers lurek.effect.newPass
+-- @covers lurek.effect.newStack
+-- @covers lurek.filesystem.load
+-- @covers lurek.globe.new
+-- @covers lurek.globe.remove
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.light.clear
+-- @covers lurek.light.drawToImage
+-- @covers lurek.light.newLight
+-- @covers lurek.light.setAmbient
+-- @covers lurek.light.setEnabled
+-- @covers lurek.light.setShader
+-- @covers lurek.minimap.newMinimap
+-- @covers lurek.overlay.new
+-- @covers lurek.parallax.newLayer
+-- @covers lurek.particle.newSystem
+-- @covers lurek.raycaster.new
+-- @covers lurek.raycaster.setShader
+-- @covers lurek.render.applyShaderToCanvas
+-- @covers lurek.render.newCanvas
+-- @covers lurek.render.newImage
+-- @covers lurek.render.newShader
+-- @covers lurek.render.print
+-- @covers lurek.render.rectangle
+-- @covers lurek.render.setDebugShader
+-- @covers lurek.render.setShader
+-- @covers lurek.render.setTextShader
+-- @covers lurek.sprite.newSheet
+-- @covers lurek.sprite.newSprite
+-- @covers lurek.terminal.applyTheme
+-- @covers lurek.terminal.newBorder
+-- @covers lurek.terminal.newTerminal
+-- @covers lurek.tilemap.newTileMap
+-- @covers lurek.ui.clear
+-- @covers lurek.ui.draw
+-- @covers lurek.ui.drawToImage
+-- @covers lurek.ui.newButton
+-- @covers lurek.ui.newPanel
+-- @covers lurek.ui.setViewport
+-- @covers lurek.ui.update
+
 ﻿local ShaderEvidence = {}
 
 local SPRITE_TEXTURE = lurek.render.newImage("assets/icon.png")

@@ -1,88 +1,127 @@
-# Lurek2D - Module Scope Boundaries
+# Module Scope Boundaries
 
-## TL;DR
+## Purpose
 
-- Canonical separation-of-scope contract for module pairs that are easy to confuse.
-- Each pair must complement through data, adapters, or explicit orchestration, not duplicate ownership.
-- If a feature fits both sides of a pair, pick the owner below and make the other side consume it through a narrow API.
+These contracts resolve module pairs that can otherwise duplicate state or policy. Each pair has one primary owner; the neighbor consumes data or calls a narrow API.
 
-Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](modularity-plugins.md), [effects-particles-overlay-plan.md](effects-particles-overlay-plan.md)
+## General Rules
 
----
+- One mutable state model has one owner.
+- Lower-level modules expose neutral data or algorithms; higher-level modules apply runtime or presentation policy.
+- A cache, snapshot, serialized payload, or renderer command is derived state.
+- Cross-module orchestration belongs in the higher-level owner or an explicit adapter, not in duplicated schedulers.
+- Public registration remains in `src/lua_api/`.
 
-## Boundary Rules
+## Module Layers And Dependency Direction
 
-1. Lower-tier modules provide neutral data structures and algorithms; higher-tier modules apply game, UI, runtime, or workflow policy.
-2. A module may consume another module's output, but must not silently copy the other module's state model, scheduler, codec, renderer, or policy layer.
-3. Cross-module helpers should be named as adapters, bridges, importers, exporters, or render-plan builders so ownership stays visible.
-4. Debug previews and evidence artifacts do not transfer ownership. A module may visualize another module's data without becoming that module.
-5. `minimap` is a presentation consumer only. Other modules may expose neutral data that a minimap adapter reads, but they must not embed minimap state or depend on minimap internals.
+This is the canonical layer model for Rust modules under `src/`. It classifies
+responsibility; it is not a requirement that every module in one row be
+isolated from every other module in that row. The hard rule is an acyclic
+dependency graph and a single authority for mutable state.
 
----
+```text
+                 Composition root
+               app + runtime lifecycle
+                        |
+                        v
+             Edge / Integration layer
+       lua_api, devtools, debugbridge, docs, automation
+                        |
+                        v
+                Feature systems
+   scene, ui, physics, tilemap, sprite, animation, ...
+                        |
+                        v
+                Platform services
+ render, window, input, audio, filesystem, network, thread
+                        |
+                        v
+             Core runtime contracts
+       errors, IDs, configuration, commands, shared runtime seams
+                        |
+                        v
+                  Foundations
+ math, binary, serialize, compute, dataframe, graph, procgen, patterns
+```
+
+The diagram shows the normal direction of dependency: a row can depend on a
+lower row through its public contract. A module may also depend on a stable
+peer when that does not create a cycle or duplicate state ownership. `app` is
+the composition root, not a reusable feature module: it may assemble the
+layers but lower layers never import it.
+
+| Layer | Module type and responsibility | Allowed relationships | Prohibited relationships |
+|---|---|---|---|
+| Foundations | Stateless or self-contained algorithms, value types, encoding, and data transforms. | May depend on the standard library and other stable foundation modules. | No dependency on windowing, GPU/rendering, audio, input, physics, Lua registration, or application lifecycle. |
+| Core runtime | Shared lifecycle contracts, errors, configuration, identity, commands, and neutral runtime services. | May depend on foundations; platform and feature modules consume its contracts. | Does not own a game feature, UI, renderer backend, host event loop, or Lua public API. |
+| Platform services | OS, device, transport, storage, rendering, audio, and worker-thread boundaries. | May depend on foundations and runtime contracts; features call their public seams. | Does not own scene, widget, gameplay, map, or other feature-system state. |
+| Feature systems | Domain state and rules such as scene, UI, physics, tiles, sprites, effects, maps, AI, progression, and gameplay services. | May depend on foundations, runtime contracts, and platform facades; stable feature-to-feature dependency is allowed when acyclic. | Does not reach into platform backends, own the application loop, or register Lua names. |
+| Edge / integration | Translation and optional developer-facing adapters: `src/lua_api/`, diagnostics, docs, automation, and debug bridges. | May translate calls to lower-layer public owners and may observe their state through explicit APIs. | Is never imported by a foundation, runtime, platform, or feature module; it does not become a second state owner. |
+| Composition root | `app` and lifecycle assembly. | Creates and wires services, Lua, callbacks, and frame order; may know every layer. | Is not imported by any lower layer and does not absorb domain algorithms. |
+
+### Required Dependency Edges
+
+- `app` creates the runtime state and wires platform services, feature stores,
+  and `src/lua_api/` registration.
+- `src/lua_api/` converts Lua values, validates handles, calls the Rust owner,
+  and translates errors back to Lua. It does not contain feature algorithms.
+- Feature systems submit resolved draw or audio work through `render` and
+  `audio` contracts; they do not own GPU/device resources or mixer state.
+- Tools use explicit registries, generated metadata, or public APIs. They do
+  not become dependencies of runtime features.
+
+### Choosing A Layer
+
+Choose the lowest layer that can enforce the module's invariant. Move a module
+up only when it must own a domain policy or translate across a boundary. If two
+modules need each other's private state, redesign the shared contract or merge
+the responsibility; do not introduce a cycle.
 
 ## Pair Contracts
 
-| Pair | First module owns | Second module owns | Allowed collaboration and forbidden overlap |
-|---|---|---|---|
-| `automation` vs `pipeline` | Authored QA replay: timed input steps, waits, assertions, macro playback, deterministic demo or regression scenarios. | Generic staged workflows: DAG steps, dependencies, scheduling eligibility, retries, result aggregation. | Automation may trigger or verify a pipeline as test content. Pipeline must not know about gameplay input, screenshots, or visual assertions; automation must not replace DAG workflow orchestration. |
-| `binary` vs `serialize` | Raw byte layout: buffers, views, writers, packing, endian-aware reads, compression, checksums, hashes, text-safe byte encodings. | Structured value normalization: JSON, TOML, CSV, XML, INI, MessagePack, schemas, Lua value conversion. | `binary` may transport encoded payloads. `serialize` decides semantic data shape; `binary` decides exact bytes. Do not add general JSON/TOML/XML logic to `binary`, and do not add offset-level buffer editing to `serialize`. |
-| `compute` vs `dataframe` | Dense numeric arrays, dtypes, strides, reductions, FFT, linear algebra, morphology, signal/image-like kernels. | Labeled table data, rows, columns, joins, grouping, windows, SQL-style queries, table diagnostics, tabular import/export. | Dataframes may convert numeric columns to compute arrays for kernels. Compute must not grow SQL, joins, schemas, or labeled table semantics; dataframe must not reimplement dense N-D math kernels except table-specific column execution. |
-| `dataframe` vs `serialize` | Tabular runtime model and table-specific persistence: `DataFrame`, `Database`, rows, columns, LVDF, table JSON/CSV import-export. | General external-format codecs and the recursive `SerialValue` tree. | Dataframe may use serialize at file or value boundaries. Dataframe codecs must stay table-shaped; serialize must not own query, grouping, window, SQL, or database semantics. |
-| `animation` vs `spine` | Generic clip timing, state machines, transitions, sync groups, events, blend curves, sprite/source-rect playback policy. | Skeletal rig runtime: bones, slots, skins, IK, imported Spine/DragonBones data, skeletal timelines, posed skeleton rendering bridge. | Animation may trigger skeletal clips or consume skeletal events through a narrow handle. Spine owns bone pose solving and attachment state; animation owns non-rig playback policy and cross-asset timing. |
-| `animation` vs `cinematic` | Per-actor or per-asset animation playback and transitions. | Multi-system timeline choreography across camera, audio, tween, signal, and presentation tracks. | Cinematic may start, pause, seek, or branch animation playback. It must not own animation clips, state machines, skeletal poses, or sprite frame extraction; animation must not become a cutscene sequencer. |
-| `minimap` vs world/render modules | Compact HUD-scale map presentation: markers, layers, fog display, view indicators, minimap styling, adapters from neutral world data. | Camera, province, raycaster, visibility, render, image, and UI own their normal data, projection, rendering, and interaction responsibilities. | Other modules may expose neutral snapshots that minimap reads. They must not embed minimap state, render a built-in minimap, or import minimap internals. UI may host a minimap surface, but minimap owns map presentation policy. |
-| `image` vs `sprite` | CPU-side pixels: load, inspect, transform, compose, diff, pack, export, atlas preparation, diagnostic images. | Runtime textured instances: sprite transforms, tint, source regions, sheets, atlases as presentation models, batching. | Sprite consumes image-prepared textures and regions. Image must not own live sprite instance state or batching; sprite must not own pixel filters, image export, diffing, or CPU composition. |
-| `sprite` vs `tilemap` | Dynamic or individually addressed textured instances, sheets, atlases, sprite animation helpers, batch entries. | Grid world model: tile IDs, layers, tilesets, collision/metadata, tile-space interpretation, culling/render bridges. | Sprites may be placed on or above tilemaps. Tilemap may use atlas/tile texture metadata, but must not store world tiles as sprite objects; sprite must not own grid topology, tile collision, or map import semantics. |
-| `tilemap` vs `mapblock` | Stable tile-space storage and interpretation: cells, layers, tilesets, object layers, tile metadata, tilemap render/query behavior. | Modular authored generation: blocks, sockets, footprints, placement legality, block libraries, multi-level assembly, generation scripts. | Mapblock outputs tilemap-compatible cells or layers. Tilemap must not decide block grammar or socket legality; mapblock must not replace the canonical tilemap storage/query model. |
-| `mapblock` vs `procgen` | Block-based authored grammar and placement over reusable fragments. | Generic procedural algorithms: noise, rooms, caves, WFC, Voronoi, heightmaps, names, samplers, world graphs. | Mapblock may call procgen for seeds, noise, candidate layouts, or WFC-like support. Procgen must not know mapblock library semantics; mapblock must own block sockets, transforms, placement policy, and output shaping. |
-| `procgen` vs `math` | Procedural content algorithms and generated artifacts: terrain fields, dungeons, names, WFC grids, sampled point sets, generator reports. | Foundational numeric primitives: vectors, matrices, geometry, easing, random helpers, spatial indexes, scalar utility functions. | Procgen may use math primitives. Math must not import procgen or grow terrain, dungeon, WFC, biome, naming, or content-generation policy. Procgen may keep generator-local RNG/noise internals when reproducibility belongs to that algorithm. |
-| `overlay` vs `effect` | Screen-space presentation policy: weather, fade, flash, shake, ambient tint, water overlay, accessibility and diagnostics for scene treatments. | Post-processing pipeline: effect instances, effect kinds, stacks, presets, shader-pass descriptors, capture/apply orchestration. | Overlay may request or preview effect output. Effect must not own weather/fade/shake scene policy; overlay must not own shader pass catalogs, post-fx stack ordering, or capture lifecycle. |
-| `effect` vs `image` | Runtime and image-scoped post-fx effect descriptions, validation, presets, stacks, shader pass generation, preview rendering. | CPU pixel operations, file/image formats, layers, packing, export, image diffs, diagnostic image buffers. | Effect previews may produce `ImageData`; image may feed source textures to effects. Effect must not become a general CPU image editor; image must not own post-fx stack state or shader-pass semantics. |
-| `image` vs `particle` | Static or generated pixel buffers, image transforms, visual evidence, texture/atlas preparation. | Transient visual simulation: emitters, particle pools, lifetimes, forces, trails, sub-emitters, particle render bridges. | Particle may export debug previews through image. Image must not own emitter state, spawn policy, or per-frame particle updates; particle must not own general pixel filters, image composition, or asset export. |
-| `ai` vs `learning` | Game behavior decision systems: FSM, behavior trees, GOAP, utility AI, steering, senses, blackboards, command queues, coordination. | Machine learning and optimization: neural nets, genetic algorithms, Q-learning, bandits, training/evaluation helpers. | AI may consume a learned model or score from learning. Learning must not own game-specific command queues, senses, steering, or NPC coordination; AI must not own training algorithms or model optimization loops. |
-| `agent` vs `learning` | LLM-agent runtime: prompts, memory, tools/skills context, async request orchestration, structured responses, local/remote backend lifecycle. | Numeric/statistical learning algorithms and model training surfaces. | Agent may call learning outputs as tools or context. Learning must not own prompt identity, conversation memory, or LLM dispatch; agent must not implement neural/evolutionary/RL training as its core runtime. |
-| `agent` vs `ai` | Assistant-style model orchestration, prompt/memory state, batch polling, structured LLM responses, callback delivery. | Frame-friendly game AI behavior and actor decision state. | AI may optionally ask agent for high-latency planning through explicit asynchronous boundaries. Agent must not be the default NPC brain or frame loop planner; AI must not own LLM backend, prompt memory, or external model lifecycle. |
-| `ecs` vs `patterns` | Entity identity, component storage, queries, dirty tracking, relationships, blueprints, snapshots, shared world composition. | Reusable domain-neutral structures: event bus, observer, command history, blackboard, pools, queues, state machines, registries. | ECS may use pattern helpers internally or expose events through them. Patterns must not become an entity/component world; ECS must not copy every reusable structural pattern that has no entity-specific semantics. |
-| `mods` vs `save` | External content governance: manifests, dependency ordering, sandbox policy, reload, trust/capability boundaries, hook execution policy. | Player/game persistence lifecycle: save slots, metadata, versions, migrations, summaries, restore coordination. | Saves may record active mod metadata and compatibility requirements. Mods may provide migration hooks under policy. Mods must not own save slots or player persistence; save must not discover, sandbox, or activate mods. |
-| `save` vs `serialize` | Save/load workflow policy: slot naming, metadata, versioning, migration, validation, restore coordination, user-facing persistence lifecycle. | Data encoding/decoding into external formats and normalized `SerialValue` trees. | Save may choose serialize or binary codecs for payloads. Serialize must not own save slots, migrations, compatibility reports, or restore sequencing; save must not implement general-purpose format codecs. |
-| `mods` vs `serialize` | Mod package policy: manifest schema, scan/load reports, dependency graph, sandbox capabilities, hook activation, reload behavior. | General format translation and schema validation primitives. | Mods may use serialize to parse TOML/JSON-like payloads. Serialize must not know mod trust policy, dependency sorting, or hooks; mods must not fork general codecs beyond strict manifest-specific validation. |
-| `terminal` vs `ui` | Character-grid interaction: cells, ANSI parsing, command editing, prompt state, completion, history, scrollback, text-mode rendering. | Retained widget UI: layout, focus, hover/active state, themes, controls, bindings, panels, dialogs, widget event routing. | UI may host a terminal widget or route focus to it. Terminal owns grid/editing/ANSI semantics; UI owns retained widget composition and layout. Terminal must not recreate retained UI widgets; UI must not duplicate terminal command-line behavior. |
+### Image And Render
 
----
+`image` owns CPU pixel buffers, import/export, diffs, and CPU transformations. `render` owns uploaded textures, GPU targets, and submission.
 
-## Audit Results
+### Sprite And Animation
 
-| Pair | Audit result | Required state |
-|---|---|---|
-| `binary` vs `serialize` | Overlap found and fixed. `lurek.binary` previously exposed TOML and MessagePack helpers that duplicated `lurek.serialize`. | `binary` exposes byte buffers, packing, compression, hashing, and byte encodings only. TOML, MessagePack, JSON, CSV, XML, and schema-aware structured value conversion stay in `serialize`. |
-| `ai` vs `learning` | Overlap found and fixed. `lurek.ai` previously exposed Q-learning, neural-net, genetic, bandit, and neuroevolution constructors that duplicated `lurek.learning`. | `ai` exposes game-behavior decision systems only. ML/RL/evolution constructors stay in `learning`; `ai` may consume learned policies through explicit integration points. |
-| `agent` vs `ai` | Terminology risk, not a functional overlap. `ai` has per-actor `Agent` state, while `agent` is the LLM assistant subsystem. | Keep game actor state under `ai`; keep LLM prompt, memory, backend, and async request lifecycle under `agent`. |
-| `agent` vs `learning` | No direct API overlap found. Both can involve "models", but one owns LLM orchestration and the other owns local learning algorithms. | Keep LLM request/memory/tool orchestration in `agent`; keep trainable tensors, RL, bandits, and GA in `learning`. |
-| `terminal` vs `ui` | Intentional local overlap in names such as label, button, text box, and panel, but the runtime model is different. | Terminal widgets stay character-grid components; retained, themed, layout-driven widgets stay in `ui`. |
-| `image` vs `sprite` | Shared atlas terminology found, but ownership is split by lifecycle. | `image` may pack and export pixel regions; `sprite` owns runtime sprite instances, sheets, animation-facing regions, and batching. |
-| `overlay` vs `effect` | Presentation/pipeline adjacency found, but no owner collision when screen policy stays in `overlay` and post-fx pass policy stays in `effect`. | `overlay` owns weather, fade, flash, shake, ambient, and water presentation. `effect` owns post-fx stacks, effect kinds, presets, and shader pass descriptors. |
-| All other listed pairs | No direct public API overlap found in the audited specs/source. Existing risk is mostly naming adjacency or consumer/provider coupling. | Use the pair contract above as the required boundary for future changes. |
+`sprite` owns drawable sprite state and batching inputs. `animation` owns time-based sequence and pose progression. Animation updates sprite-facing data; it does not own GPU resources.
 
----
+### Scene And App/Runtime
 
-## Enforcement Checklist
+`scene` owns scene registration, stack state, scene-local callback policy, and traversal. `app`/`runtime` owns the application loop and decides when scene processing is invoked.
 
-- New APIs touching these pairs must name the owner module in the spec or docstring.
-- If a module only consumes another module's data, use neutral DTOs, handles, snapshots, or render commands instead of importing the consumer's runtime state.
-- Tests should target the owning module for behavior and the adapter module only for translation.
-- Any cyclic dependency introduced between a listed pair is an architecture defect.
-# UI boundary
+### UI And Render/Input
 
-The UI system owns retained widget identity, box/grid/container layout, styles, interaction state, focus, capture, gestures, accessibility intent, and lowering those semantics to a bounded deterministic `RenderCommand` stream.
+`ui` owns widget identity, layout, focus, interaction, and resolved UI draw data. `input` owns device state. `render` draws resolved output; neither input nor render owns widget state.
 
-| Concern | Owner | UI boundary |
-| --- | --- | --- |
-| Raw keyboard, pointer, wheel, touch, and IME events | `input` / app edge | UI consumes normalized events and routes them to widgets. |
-| Generic graph and diagram layout | `layout` | UI may consume positions; it does not maintain a competing solver. |
-| Command execution, GPU state, scissor/stencil, and software pixel capture | `render` | UI emits commands only; it imports neither `wgpu` nor a rasterizer. |
-| Font loading, shaping, glyph metrics, and cache | `font` | UI requests metrics and retains only derived layout. |
-| CPU image codec and `ImageData` ownership | `image` | UI retains handles and asks the owning render/image API for capture/encoding. |
-| Entity lifetime, transforms, cameras, and projections | scene/entity/camera owners | UI may consume a versioned screen-anchor snapshot, never ECS state directly. |
-| Data storage, query, sort, and filtering | data modules | UI owns virtualization/view state and adapters only. |
+### Tilemap And Tilefield
 
-Exceptions must document the owner, direction of data flow, lifetime, and reason in the affected module specification.
+`tilemap` owns authored/imported map structure and tileset interpretation. `tilefield` owns scalable runtime tile storage and field-oriented operations. Conversion creates data for the target owner rather than shared mutable authority.
+
+### Effect, Overlay, Particle, Image, And Render
+
+The durable split is defined in [Effects, Particles, Image, And Overlay Boundaries](effects-particles-overlay-plan.md).
+
+### Filesystem, Mods, And Asset
+
+`filesystem` resolves approved paths and file operations. `mods` applies sandbox/mod policy. `asset` catalogs validated loaded resources. Raw path access never becomes asset ownership.
+
+### Docs, Validator, Grep, Log, And Devtools
+
+The durable split is defined in [Runtime Tooling Boundaries](runtime-tooling-boundaries.md).
+
+### Save And Serialize
+
+`serialize` owns value encoding/decoding. `save` owns slots, metadata, versions, and persistence workflow. Serialized bytes are not primary live state.
+
+### Network And Domain Modules
+
+`network` owns transport, connection, and protocol delivery. Domain modules own the meaning and validation of payloads after decoding.
+
+## Enforcement
+
+- New dependencies identify the concrete call, message, shared registry, generated data, or filesystem edge.
+- Changes that introduce a second mutable owner are architecture defects.
+- Public APIs use a documented fallback when an optional neighbor is absent.
+- Specs may link here for durable scope, but per-function catalogs remain generated.

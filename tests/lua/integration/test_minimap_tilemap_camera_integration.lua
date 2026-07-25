@@ -1,7 +1,5 @@
 -- Integration: minimap reflects logical tilemap coordinates and camera movement.
 -- @describe integration: minimap + tilemap + camera
-
--- @describe integration: minimap + tilemap + camera
 describe("integration: minimap + tilemap + camera", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition

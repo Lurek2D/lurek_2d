@@ -21,5 +21,5 @@
 - Include failing `lurek.<module>.<method>` names in runtime errors.
 
 ## Workflow
-- Run `python tools/gen_all_docs.py` after docstring edits.
+- Run `tools/python.cmd tools/gen_all_docs.py` after docstring edits.
 - Verify API changes with unit tests and example projects.

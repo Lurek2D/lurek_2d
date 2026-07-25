@@ -1,4 +1,10 @@
 -- Canonical evidence file for lurek.province topology and property artifacts.
+-- @covers lurek.filesystem.load
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.saveGIF
+-- @covers lurek.image.savePNG
+-- @covers lurek.render.newShader
+
 
 local Fixture = lurek.filesystem.load("tests/fixtures/province_evidence_fixture.lua")()
 local OUT = evidence_output_dir("province")

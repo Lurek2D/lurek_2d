@@ -1,7 +1,7 @@
 # RAG Contract
 
 ## Mission & Scope
-- Own repo search corpus rules, SQLite FTS5 indexes, chunking, ranking, and recall tests.
+- Own repo search corpus rules, the DuckDB index, chunking, ranking, and recall tests.
 - Keep retrieval useful for agents before broad file reads.
 
 ## Files
@@ -9,14 +9,14 @@
 - `read.py`: Full chunk plus neighbor reader.
 - `context.py`: Agent context bundle builder.
 - `eval.py`: Recall baseline runner.
-- `build_index.py`: Local SQLite FTS5 index builder.
+- `build_index.py`: Local DuckDB index builder.
 - `rag.toml`: File filters, priorities, and chunk weights.
 - `recall_baseline.json`: Expected prompt-to-source hits.
 
 ## Rules
 - Rank specs and core guidance above examples and generated pages.
 - Chunk by logic boundaries such as functions, classes, or spec sections.
-- Keep generated FTS data out of version control.
+- Keep generated index data out of version control.
 - Rebuild the index after changing indexed sources or `rag.toml`.
 - Use `context.py` or `query.py --include-content --neighbors 1` when agents need readable context.
 

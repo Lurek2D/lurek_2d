@@ -1,6 +1,9 @@
 -- Shared visual renderer for terminal-style evidence PNGs.
 -- The owning tests still exercise their module APIs; this file only makes
 -- headless evidence readable by drawing a compact bitmap terminal surface.
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 terminal_visual = terminal_visual or {}
 

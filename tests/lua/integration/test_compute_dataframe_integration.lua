@@ -1,7 +1,5 @@
 -- Integration: compute statistics fed into dataframe reports
 -- @describe integration: compute statistics to dataframe
-
--- @describe integration: compute statistics to dataframe
 describe("integration: compute statistics to dataframe", function()
     -- @integration LDataFrame:addColumn
     -- @integration LDataFrame:addRow

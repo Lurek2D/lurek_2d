@@ -1,4 +1,6 @@
 -- Canonical evidence file for lurek.repl visual artifacts.
+-- @covers lurek.repl.new
+
 
 dofile("tests/lua/fixtures/terminal_visual_helpers.lua")
 

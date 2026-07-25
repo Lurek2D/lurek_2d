@@ -1,6 +1,5 @@
 -- Integration: ECS object model attached to scene-owned objects.
 -- @describe ecs + scene object model integration
-
 describe("ecs + scene object model integration", function()
     -- @integration LSceneObjectContainer:add
     -- @integration LSceneObjectContainer:update

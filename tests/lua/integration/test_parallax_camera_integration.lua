@@ -3,6 +3,11 @@
 -- @integration lurek.parallax.newLayer
 -- @integration lurek.parallax.newSet
 -- @integration lurek.render.newImage
+-- @covers lurek.camera.new
+-- @covers lurek.parallax.newLayer
+-- @covers lurek.parallax.newSet
+-- @covers lurek.render.newImage
+
 
 
 local function load_image()

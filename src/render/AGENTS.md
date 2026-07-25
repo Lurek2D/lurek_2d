@@ -5,8 +5,10 @@
 - Keep render output deterministic from deferred draw intent.
 
 ## Files
-- `context.rs`, `pipeline.rs`, `texture.rs`: GPU state and resources.
-- `commands.rs`, `geometry.rs`, `text.rs`: CPU-side draw data.
+- `renderer.rs`, `gpu_state.rs`, `gpu_resources.rs`: Main renderer and GPU state.
+- `gpu_pipeline.rs`, `gpu_*_replay.rs`, `gpu_*_pass.rs`: GPU pipelines and command replay.
+- `shape.rs`, `mesh.rs`, `canvas.rs`, `software_capture.rs`: CPU draw data and capture.
+- `shaders/`: WGSL sources.
 
 ## Rules
 - Separate flat-color, textured, and text paths when pipeline state differs.

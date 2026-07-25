@@ -20,7 +20,7 @@ description: "Load this skill when creating or modifying RAG corpus configuratio
 - `rag_read` reads one chunk and optional neighbors.
 - `rag_stats` reports index counts and largest indexed paths.
 - `rag_eval` runs the recall baseline through MCP.
-- `rag_rebuild` rebuilds the full index or selected repo-relative targets.
+- `rag_rebuild_index` rebuilds the full index or selected repo-relative targets.
 - Repository MCP tools are preferred over direct CLI calls when the same operation is available.
 - `recall_baseline.json` stores query-to-source expectations.
 - `eval.py` checks recall expectations.
@@ -47,7 +47,7 @@ description: "Load this skill when creating or modifying RAG corpus configuratio
 4. Classify the change as corpus, chunking, metadata, query, or ranking.
 5. Change one retrieval dimension.
 6. Add or update a recall case for the intended behavior.
-7. Use `rag_rebuild` to rebuild the full index or changed targets.
+7. Use `rag_rebuild_index` to rebuild the full index or changed targets.
 8. Run the target query in the correct profile.
 9. Run a near-miss query.
 10. Run an authority-conflict query.

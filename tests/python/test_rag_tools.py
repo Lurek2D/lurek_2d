@@ -7,6 +7,7 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import duckdb
 
@@ -466,6 +467,60 @@ class RagToolTests(unittest.TestCase):
             )
 
         self.assertIn("error", report)
+
+    def test_unicode_tokenization_preserves_polish_and_expands_aliases(self) -> None:
+        tokens = query.sanitize_fts_query("dźwięk przykład lurek.audio.playMusic")
+
+        self.assertIn("dźwięk", tokens)
+        self.assertIn("dzwiek", tokens)
+        self.assertIn("audio", tokens)
+        self.assertIn("example", tokens)
+        self.assertIn("lurek.audio.playmusic", tokens)
+
+    def test_search_repairs_an_unambiguous_near_miss_only_after_and_miss(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = Path(tmp) / "rag.db"
+            self.build_fixture_index(db_path)
+            report = query.search_index("widnow fullscreen", profile="game", limit=5, db_path_override=db_path)
+
+        self.assertIn("widnow", report["query_expansions"]["near_miss"])
+        self.assertEqual(report["query_expansions"]["near_miss"]["widnow"], "window")
+        self.assertTrue(any(item["path"] == "content/examples/window.lua" for item in report["results"]))
+
+    def test_context_limit_25_never_hides_a_search_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = Path(tmp) / "rag.db"
+            self.build_fixture_index(db_path)
+            report = context_tool.build_context_bundle(
+                "RAG build index", profile="engine", limit=25, content_chars=1200, db_path=db_path
+            )
+
+        self.assertNotIn("error", report)
+        self.assertTrue(report["searches"])
+        self.assertTrue(all(not item.get("error") for item in report["searches"]))
+
+    def test_build_rejects_target_traversal_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ValueError):
+                build_index.build_index(["../outside"], Path(tmp) / "rag.db")
+
+    def test_snapshot_publish_keeps_previous_generation_available(self) -> None:
+        import state
+
+        with tempfile.TemporaryDirectory() as tmp:
+            rag_dir = Path(tmp)
+            with patch.object(state, "RAG_DIR", rag_dir), \
+                 patch.object(state, "MANIFEST_PATH", rag_dir / "rag_index.manifest.json"), \
+                 patch.object(state, "LEGACY_DB_PATH", rag_dir / "rag_index.duckdb"):
+                first = build_index.build_index(["AGENTS.md"])
+                first_manifest = json.loads((rag_dir / "rag_index.manifest.json").read_text(encoding="utf-8"))
+                first_snapshot = rag_dir / first_manifest["active"]
+                second = build_index.build_index(["AGENTS.md"])
+
+                self.assertEqual(first["index_state"], "published")
+                self.assertEqual(second["index_state"], "published")
+                self.assertTrue(first_snapshot.exists())
+                self.assertNotEqual(first["generation"], second["generation"])
 
 
 if __name__ == "__main__":

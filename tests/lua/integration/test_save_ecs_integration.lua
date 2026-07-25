@@ -1,7 +1,5 @@
 -- Integration: save manager tracking entity state and TOML config blueprints
 -- @describe integration: save entity world state
-
--- @describe integration: save entity world state
 describe("integration: save entity world state", function()
 
     -- @integration LSaveManager:isDirty

@@ -1,6 +1,6 @@
 """Audit the single-source tools registry for internal consistency.
 
-Checks that every durable Python script under `tools/` is:
+Checks that every durable script under `tools/` is:
   1. Registered in `tools/README.md`.
   2. Registered in `tools/agent_cli_reference.md`.
   3. Documented with a module-level docstring.
@@ -30,10 +30,15 @@ CLI_REFERENCE = TOOLS_DIR / "agent_cli_reference.md"
 HELPER_FILES = {"__init__.py"}
 
 
+SCRIPT_SUFFIXES = {".py", ".ps1", ".cmd", ".bat", ".sh", ".nsi"}
+
+
 def find_all_scripts() -> list[Path]:
     """Find tool scripts under `tools/`, excluding tests and helper modules."""
     scripts: list[Path] = []
-    for script in sorted(TOOLS_DIR.rglob("*.py")):
+    for script in sorted(TOOLS_DIR.rglob("*")):
+        if not script.is_file() or script.suffix.lower() not in SCRIPT_SUFFIXES:
+            continue
         rel = script.relative_to(TOOLS_DIR).as_posix()
         if rel.startswith("tests/") or "__pycache__" in rel:
             continue
@@ -45,6 +50,8 @@ def find_all_scripts() -> list[Path]:
 
 def has_docstring(script: Path) -> bool:
     """Check whether the module has a top-level docstring."""
+    if script.suffix.lower() != ".py":
+        return bool(script.read_text(encoding="utf-8", errors="replace").strip())
     try:
         text = script.read_text(encoding="utf-8")
         tree = ast.parse(text)
@@ -74,11 +81,11 @@ def has_hardcoded_user_path(script: Path) -> str | None:
 
 
 def extract_registry_scripts(readme_path: Path) -> set[str]:
-    """Extract backtick-wrapped Python paths from a generated registry file."""
+    """Extract backtick-wrapped script paths from a generated registry file."""
     if not readme_path.exists():
         return set()
     text = readme_path.read_text(encoding="utf-8")
-    return set(re.findall(r"`([a-zA-Z0-9_./-]+\.py)`", text))
+    return set(re.findall(r"`([a-zA-Z0-9_./-]+\.(?:py|ps1|cmd|bat|sh|nsi))`", text))
 
 
 def find_duplicate_names(scripts: list[Path]) -> list[tuple[str, list[str]]]:

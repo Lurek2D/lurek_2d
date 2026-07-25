@@ -24,17 +24,19 @@
 - Read root `AGENTS.md`, then nested contracts on the target path, then relevant skills/agents.
 - CAG is active guidance: `AGENTS.md` contracts, `.codex/agents/`, `.codex/skills/`, and task skills.
 - Use only registered agent profiles from `.codex/agents/`; do not invent role names in contracts or skills.
-- RAG is first-pass discovery: use `tools/rag/query.py "<keywords>" --profile all|game|engine` before broad reads.
+- RAG is first-pass discovery: use `tools/python.cmd tools/rag/query.py "<keywords>" --profile all|game|engine` before broad reads.
 - MCP/repo CLI comes before ad hoc scripts when a matching tool exists.
 - Prefer `tools/python.cmd path/to/script.py` for parsing, reporting, and automation on Windows.
-- When a repo tool enforces a marker, path, registry, or file-shape contract, treat that parser as source of truth and keep the nearest `AGENTS.md` plus task skills synced.
+- Repo parsers are the source of truth for markers, paths, registries, and file shapes.
+- Keep the nearest `AGENTS.md` and task skill in sync with those parsers.
 - Keep captured output under 1000 lines.
 - Keep scope narrow and never revert unrelated user changes.
 - Write temporary files only under `work/`.
-- CAG limits use normalized UTF-8 characters: this root contract is at most 5000, every other `AGENTS.md` at most 3000, and every `SKILL.md` at most 5000.
+- CAG limits use normalized UTF-8 characters: this file is at most 4000, every nested `AGENTS.md` is at most 2500, and every `SKILL.md` is at most 5000.
 
 ## Workflow
 - Keep public API changes synced with specs, examples, and coverage.
 - Leave proof when behavior changes.
-- For behavior or contract changes, run as relevant: `cargo test`, `cargo clippy -- -D warnings`, `tools/python.cmd tools/validate/cag_validate.py`, `tools/python.cmd tools/audit/cag_link_check.py --strict`.
+- For code changes, run the relevant tests and `cargo clippy -- -D warnings`.
+- For CAG changes, run `tools/python.cmd tools/validate/cag_validate.py` and `tools/python.cmd tools/audit/cag_link_check.py --strict`.
 - Put scratch artifacts under `work/{short-chat-name}/`.

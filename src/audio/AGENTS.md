@@ -1,7 +1,8 @@
 # Audio Module Contract
 
 ## Mission & Scope
-- Own playback, decode, buses, spatial source data, and DSP routing.
+- Own playback, decode, buses, spatial source data, and audio mixing.
+- Keep reusable signal effects in `src/dsp/`.
 - Keep long-running audio work off frame-critical paths.
 
 ## Files

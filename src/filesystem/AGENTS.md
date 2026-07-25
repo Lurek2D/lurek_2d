@@ -1,12 +1,13 @@
 # FS Module Contract
 
 ## Mission & Scope
-- Own sandboxed file access, mounts, archive reads, and stream handles.
+- Own sandboxed file access, mounts, and stream handles.
 - Keep script I/O inside controlled workspace/game paths.
 
 ## Files
-- `path.rs`, `mount.rs`: Normalization and virtual roots.
-- `file.rs`, `archive.rs`: Handles and archive-backed reads.
+- `vfs.rs`: Virtual roots, path checks, and file access.
+- `file_data.rs`, `file_handle.rs`: File values and open handles.
+- `async_loader.rs`, `watcher.rs`: Background loads and file watching.
 
 ## Rules
 - Normalize paths before access and reject traversal outside the sandbox.

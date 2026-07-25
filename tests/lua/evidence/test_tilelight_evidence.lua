@@ -1,4 +1,10 @@
 -- Evidence tests: tilelight module.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.tilefield.new
+-- @covers lurek.tilelight.new
+
 
 local OUT = evidence_output_dir("tilelight")
 

@@ -1,4 +1,8 @@
 -- Canonical evidence file for lurek.mapblock artifacts.
+-- @covers lurek.filesystem.load
+-- @covers lurek.image.saveGIF
+-- @covers lurek.image.savePNG
+
 
 local Fixture = lurek.filesystem.load("tests/fixtures/mapblock_evidence_fixture.lua")()
 local OUT = evidence_output_dir("mapblock")

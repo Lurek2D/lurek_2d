@@ -1,4 +1,19 @@
 -- Canonical evidence file for lurek.raycaster visual outputs.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.raycaster.buildMultiLevelSceneFromField
+-- @covers lurek.raycaster.drawLastScene
+-- @covers lurek.raycaster.getShader
+-- @covers lurek.raycaster.new
+-- @covers lurek.raycaster.newMultiLevelGrid
+-- @covers lurek.raycaster.setShader
+-- @covers lurek.render.newImage
+-- @covers lurek.render.newShader
+-- @covers lurek.tilefield.new
+-- @covers lurek.tileset.fromProvider
+-- @covers lurek.tileset.newCatalog
+
 
 local OUT = evidence_output_dir("raycaster")
 

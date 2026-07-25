@@ -1,6 +1,5 @@
 -- Integration: scene object groups suspend scene-owned physics stepping.
 -- @describe scene + physics activation integration
-
 describe("scene + physics activation integration", function()
     -- @integration LSceneObjectContainer:defineGroup
     -- @integration LSceneObjectContainer:add

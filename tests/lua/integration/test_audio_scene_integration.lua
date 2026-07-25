@@ -4,6 +4,12 @@
 -- @integration lurek.scene.clear
 -- @integration lurek.scene.pop
 -- @integration lurek.scene.push
+-- @covers lurek.audio.getMasterVolume
+-- @covers lurek.audio.setMasterVolume
+-- @covers lurek.scene.clear
+-- @covers lurek.scene.pop
+-- @covers lurek.scene.push
+
 
 
 

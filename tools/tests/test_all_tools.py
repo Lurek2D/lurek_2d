@@ -5,6 +5,21 @@ import sys
 import subprocess
 import ast
 
+# Only execute help for commands whose CLI contract is intentionally kept
+# side-effect free.  Many tools are generators or fixers, and historically a
+# blanket ``<tool> --help`` smoke test executed their default write path.
+# Add a tool here only after verifying that argument parsing occurs before any
+# filesystem, process, or network side effect.
+HELP_SAFE_PATHS = {
+    'audit/cag_link_check.py',
+    'audit/tool_registry_audit.py',
+    'rag/context.py',
+    'rag/eval.py',
+    'rag/query.py',
+    'rag/read.py',
+    'validate/cag_validate.py',
+}
+
 class DynamicToolTest(unittest.TestCase):
     pass
 
@@ -23,9 +38,9 @@ def make_docstring_test(filepath):
 
 def make_help_test(filepath, root_dir):
     def test(self):
-        # We skip files that are purely utility modules or don't take CLI execution well.
-        # But our assumption is they should at least parse --help if they are tools.
-        # Let's try running --help
+        # This smoke test is deliberately allowlisted.  It must never execute
+        # a generator, fixer, packager, or other mutating command merely to
+        # discover whether ``--help`` exists.
         cmd = [sys.executable, filepath, '--help']
         env = os.environ.copy()
         env['PYTHONIOENCODING'] = 'utf-8'
@@ -33,17 +48,11 @@ def make_help_test(filepath, root_dir):
         
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-            if 'argparse' not in content and 'sys.argv' not in content:
-                pass 
-            else:
-                success = res.returncode == 0 or 'usage:' in res.stdout.lower() or 'usage:' in res.stderr.lower() or 'help' in res.stdout.lower()
-                # Skip known scripts that need external deps like anthropic
-                if 'anthropic package is not installed' in res.stderr:
-                    success = True
-                # Skip legacy scripts without argparse that crash on --help
-                if filepath.endswith('pack.py') or filepath.endswith('scan_missing_docs.py'):
-                    success = True
-                self.assertTrue(success, f"Tool {filepath} failed on --help. Stdout: {res.stdout} Stderr: {res.stderr}")
+            success = res.returncode == 0 and (
+                'usage:' in res.stdout.lower()
+                or 'usage:' in res.stderr.lower()
+            )
+            self.assertTrue(success, f"Tool {filepath} failed on --help. Stdout: {res.stdout} Stderr: {res.stderr}")
     return test
 
 def _inject_tests():
@@ -61,8 +70,9 @@ def _inject_tests():
         # Inject docstring test
         setattr(DynamicToolTest, f'test_docstring_{rel_path}', make_docstring_test(filepath))
         
-        # Inject help test
-        setattr(DynamicToolTest, f'test_help_{rel_path}', make_help_test(filepath, root_dir))
+        tool_path = os.path.relpath(filepath, tools_dir).replace('\\', '/')
+        if tool_path in HELP_SAFE_PATHS:
+            setattr(DynamicToolTest, f'test_help_{rel_path}', make_help_test(filepath, root_dir))
 
 _inject_tests()
 

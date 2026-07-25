@@ -1,4 +1,10 @@
 -- Canonical evidence file for lurek.cinematic visual artifacts.
+-- @covers lurek.cinematic.new
+-- @covers lurek.cinematic.newTimeline
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.saveGIF
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("cinematic")
 

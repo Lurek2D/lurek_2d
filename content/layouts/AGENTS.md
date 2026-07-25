@@ -17,6 +17,6 @@
 - Do not add keys unsupported by the engine layout deserializer.
 
 ## Workflow
-- Run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive`.
-- Run `python tools/ui/fix_layouts.py content/layouts/ --recursive --fix`.
+- Run `tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive`.
+- Run `tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix`.
 - Verify rendered output with checked-in visual or GUI evidence tests.

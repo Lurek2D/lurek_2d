@@ -5,8 +5,10 @@
 - Keep automation local, repeatable, and safe on Windows.
 
 ## Files
-- `audit/`: Link, docstring, example, and quality checks.
-- `validate/`: Schema and CAG validators.
+- `audit/`, `validate/`: Read-only checks and contract validators.
+- `docs/`, `snippets/`, `ui/`: Generators for docs and content data.
+- `demos/`, `dist/`: Content smoke tools and package builders.
+- `dev/`, `fix/`: Developer helpers and source fixers.
 - `rag/`: Workspace search index and query tools.
 - `gen_all_docs.py`: Full docs build entry point.
 

@@ -5,8 +5,9 @@
 - Keep event-loop-sensitive changes deferred and explicit.
 
 ## Files
-- `state.rs`, `display.rs`: Window and monitor state.
-- `commands.rs`: Deferred window operations.
+- `event_loop.rs`: Window event handling and safe update points.
+- `management.rs`: Window, display, fullscreen, and icon operations.
+- `viewport.rs`: Logical and physical viewport conversion.
 
 ## Rules
 - Do not apply mode or monitor changes outside safe event-loop points.

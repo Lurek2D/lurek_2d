@@ -1,5 +1,15 @@
 -- test_agent_evidence.lua
 -- Canonical evidence file for lurek.agent context and memory artifacts.
+-- @covers lurek.agent.getDiagnostics
+-- @covers lurek.agent.new
+-- @covers lurek.agent.newAgentMemory
+-- @covers lurek.agent.newEpisodicMemory
+-- @covers lurek.agent.newSemanticMemory
+-- @covers lurek.agent.newSystem
+-- @covers lurek.agent.newTemplate
+-- @covers lurek.agent.newWorkingMemory
+-- @covers lurek.filesystem.write
+
 
 local OUT = evidence_output_dir("agent")
 

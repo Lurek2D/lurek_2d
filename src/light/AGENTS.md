@@ -1,24 +1,23 @@
 # Light Module Contract
 
 ## Mission & Scope
-- `light` owns authoritative 2D light, occluder, group, flicker, transition, and renderer-ready snapshot state.
-- `render` owns GPU pipelines, texture binding, and command submission; `light` never loads textures or compiles shaders.
-- `tilefield` supplies authored tile facts, `tilelight` owns grid propagation, and `awareness` owns gameplay visibility.
+- Own 2D lights, occluders, groups, flicker, transitions, and render-ready snapshots.
+- Do not own GPU pipelines, tile-grid light propagation, or gameplay visibility.
 
 ## Files
 
-- `light2d.rs`, `occluder.rs`, `limits.rs`, and `light_world.rs` own per-light data, geometry, ceilings, and scene snapshots.
-- `debug_image.rs` owns only bounded CPU preview/evidence rasterization; it must borrow scene data rather than duplicate it.
-- `src/lua_api/light_api.rs` owns conversion and registration; `src/lua_api/tilefield_api.rs` provides the tile metadata adapter only.
+- `light2d.rs`, `light_world.rs`: Light state, groups, and snapshots.
+- `occluder.rs`, `shadow.rs`: Geometry and shadow data.
+- `flicker.rs`, `transition.rs`, `attenuation.rs`, `falloff.rs`: Light behavior.
+- `limits.rs`, `debug_image.rs`: Limits and bounded CPU previews.
 
 ## Rules
-- Validate every Lua-reachable number as finite before mutation; reject invalid state rather than silently repairing it.
-- `LightLimits` must bound stored lights, occluders, vertices, hint exports, and preview allocation/work before iteration or allocation.
-- `max_lights` is renderer selection only, never a storage limit. Selection must remain deterministic.
-- Constructors and bulk adapters are transactional: a rejected operation leaves world counts and existing handles unchanged.
-- Occluder geometry uses checked constructors; no Lua-reachable path may panic.
-- Keep cookies and transitions on authoritative `Light2D`/`LightWorld` state, not per-handle wrappers.
+- Reject non-finite Lua numbers before mutation.
+- Apply `LightLimits` before storing lights, geometry, exports, previews, or work.
+- `max_lights` limits render selection, not stored lights. Selection order is stable.
+- Failed constructors and bulk imports leave counts and handles unchanged.
+- Checked occluder input must return errors, never panic.
+- Keep cookies and transitions on `Light2D` or `LightWorld`, not handle wrappers.
 
 ## Workflow
-- Add Rust tests for domain limits and lifecycle invariants, plus Lua security/stress proof for public paths.
-- Run `cargo test --test light_tests` and the light Lua coverage/security targets after behavioral changes.
+- Run `cargo test --test light_tests` and the light Lua unit/security tests.

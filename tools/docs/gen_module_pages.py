@@ -8,6 +8,7 @@ Usage:
     python tools/docs/gen_module_pages.py
     python tools/docs/gen_module_pages.py render audio physics
 """
+import argparse
 import re
 import sys
 import json
@@ -803,8 +804,25 @@ def build_module_guides_page(targets: list[str]) -> str:
 # Main
 # ---------------------------------------------------------------------------
 
-def main():
-    targets = sys.argv[1:] if len(sys.argv) > 1 else module_registry.user_facing_modules()
+def main(argv: list[str] | None = None):
+    parser = argparse.ArgumentParser(
+        description="Generate Pages module guides from the canonical API and spec sources."
+    )
+    parser.add_argument(
+        "modules",
+        nargs="*",
+        metavar="MODULE",
+        help="Optional source module names. Omitting them regenerates every public module.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Report generated targets without writing files or pruning existing pages.",
+    )
+    args = parser.parse_args(argv)
+
+    full_rebuild = not args.modules
+    targets = args.modules or module_registry.user_facing_modules()
 
     print("Parsing docs/api/lurek.lua ...")
     module_fns, module_fields, class_methods, class_fields = parse_stub(STUB_FILE)
@@ -815,12 +833,17 @@ def main():
         for cls in classes:
             class_owner[cls] = api_module_name(mod_name)
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    if not args.dry_run:
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    expected_pages = {f"{module_page_name(module)}.md" for module in targets}
-    for stale_page in OUT_DIR.glob("*.md"):
-        if stale_page.name not in expected_pages:
-            stale_page.unlink()
+    # A partial rebuild must update only its requested modules.  The former
+    # implementation treated every partial target list as the complete set and
+    # deleted all other generated pages, including when invoked as ``--help``.
+    if full_rebuild and not args.dry_run:
+        expected_pages = {f"{module_page_name(module)}.md" for module in targets}
+        for stale_page in OUT_DIR.glob("*.md"):
+            if stale_page.name not in expected_pages:
+                stale_page.unlink()
 
     generated = []
     for module in targets:
@@ -841,19 +864,26 @@ def main():
             class_owner,
         )
         out_file = OUT_DIR / f"{module_page_name(module)}.md"
-        out_file.write_text(page, encoding="utf-8")
+        if not args.dry_run:
+            out_file.write_text(page, encoding="utf-8")
         fn_count = len(module_fns.get(api_module, []))
         print(f"  {module_page_name(module)}.md  ({fn_count} functions)")
         generated.append(module)
 
     print(f"\nDone — {len(generated)} Lua module pages in {OUT_DIR}")
 
-    callbacks_md = build_callbacks_page()
-    CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")
-    print("Updated docs/api/callbacks.md from callbacks spec/json")
+    if not args.dry_run:
+        callbacks_md = build_callbacks_page()
+        CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")
+        print("Updated docs/api/callbacks.md from callbacks spec/json")
 
-    MODULE_GUIDES_MD.write_text(build_module_guides_page(targets), encoding="utf-8")
-    print(f"Updated {MODULE_GUIDES_MD.relative_to(ROOT)} from public API modules")
+        # Module guides are global; only regenerate them during a complete
+        # rebuild so a narrow target cannot silently drop the other modules.
+        if full_rebuild:
+            MODULE_GUIDES_MD.write_text(build_module_guides_page(targets), encoding="utf-8")
+            print(f"Updated {MODULE_GUIDES_MD.relative_to(ROOT)} from public API modules")
+    else:
+        print("Dry run: no files were written or pruned.")
 
     return generated
 

@@ -1,4 +1,11 @@
 -- Canonical evidence file for lurek.progression artifacts.
+-- @covers lurek.filesystem.write
+-- @covers lurek.progression.createLegacyQuestAdapter
+-- @covers lurek.progression.createLegacyStatsAdapter
+-- @covers lurek.progression.newStore
+-- @covers lurek.serialize.fromJson
+-- @covers lurek.serialize.toJson
+
 
 local OUT = evidence_output_dir("progression")
 

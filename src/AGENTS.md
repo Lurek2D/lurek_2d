@@ -2,29 +2,26 @@
 
 ## Mission & Scope
 - Own the Rust engine runtime: render, physics, audio, assets, windowing, and runtime orchestration.
-- Keep modules decoupled and Lua-facing behavior synced with specs.
+- Keep each subsystem in its own module. Child contracts define local rules.
 
 ## Files
-- `lib.rs`: Engine subsystem entry point.
-- `main.rs`: Standalone app boot path.
+- `lib.rs`: Module exports and shared engine entry points.
+- `main.rs`: Desktop binary entry point.
 - `lua_api/`: Public `lurek.*` binding layer.
-- `app/`, `runtime/`: App and execution frameworks.
+- Other child folders: Engine subsystem owners.
 
 ## Rules
 - Keep gameplay logic and state in Rust modules; keep `src/lua_api/` thin.
-- New top-level `src/<module>/` owners need matching `docs/meta/modules.toml`, `docs/specs/<module>.md`, example, and Lua unit-test registry entries unless intentionally excluded by tools.
-- Every `.rs` file needs `//!` file docs stating purpose, owned state, and boundary.
-- Follow `docs/architecture/rust_file_docstring_guidelines.md` for qualitative file-level `//!` writing rules.
-- Public structs, enums, fields, methods, and Lua-facing helpers need factual `///` docs.
-- Method docs must state units, defaults, bounds, errors, and side effects when relevant.
+- Register new top-level modules in `docs/meta/modules.toml` unless a repo tool excludes them.
+- Every `.rs` file needs `//!` docs for purpose, state, and boundaries. Follow `docs/contributing/rust-file-docstrings.md`.
+- Public items and Lua-facing helpers need factual `///` docs.
 - Do not add `#[cfg(test)]`, `mod tests`, or inline test fixtures under `src/`.
-- Put Rust tests in `tests/rust/unit|ext|golden` and public API tests in Lua.
+- Put private Rust tests under `tests/rust/`. Test public `lurek.*` behavior in Lua.
 - Do not hold `borrow_mut()` locks across mlua callbacks or yielding frames.
-- Use `pub(crate)` for test seams and document the invariant.
 - Add clear `// SAFETY:` comments for every `unsafe` block.
 - Keep `mod.rs` export-only.
 - Return `mlua::Result` across Lua boundaries instead of panicking.
 
 ## Workflow
 - Run `cargo test` and `cargo clippy -- -D warnings`.
-- If a binding signature changes, run `python tools/gen_all_docs.py`.
+- If a binding signature changes, run `tools/python.cmd tools/gen_all_docs.py`.

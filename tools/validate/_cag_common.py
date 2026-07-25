@@ -14,6 +14,8 @@ CODEX_CONFIG = CODEX_DIR / "config.toml"
 COVERAGE_CONFIG = CODEX_DIR / "coverage.toml"
 REPO_AGENT_SECTIONS = ("Mission & Scope", "Files", "Rules", "Workflow")
 SKILL_SECTIONS = ("Mission", "Domain Knowledge", "Workflow", "References")
+ROOT_AGENT_CHAR_CAP = 4000
+NESTED_AGENT_CHAR_CAP = 2500
 IGNORED_PARTS = {".git", "build", "dist", "target", "node_modules", "__pycache__", ".cache", ".vscode-test"}
 
 

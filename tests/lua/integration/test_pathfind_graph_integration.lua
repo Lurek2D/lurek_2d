@@ -2,8 +2,6 @@
 
 -- JPS Grid + WorldGraph produced by procgen
 -- @describe procgen worldGraph + JPS grid integration
-
--- @describe procgen worldGraph + JPS grid integration
 describe("procgen worldGraph + JPS grid integration", function()
 
     -- @integration LJpsGrid:findPath

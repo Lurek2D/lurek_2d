@@ -1,5 +1,4 @@
 -- @describe integration: input + camera + physics + particle shooter helpers
-
 describe("integration: input + camera + physics + particle shooter helpers", function()
     -- @integration LCamera:presetHorizontalFollow
     -- @integration LParticleSystem:emitAt

@@ -1,6 +1,6 @@
 # Contributing to Lurek2D
 
-Lurek2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. Read [docs/architecture/philosophy.md](docs/architecture/philosophy.md), [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md), and [docs/architecture/docs-system.md](docs/architecture/docs-system.md) before making structural or documentation-flow changes.
+Lurek2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. Start with [docs/contributing/index.md](docs/contributing/index.md) for the contributor doc map, then read [docs/architecture/philosophy.md](docs/architecture/philosophy.md), [docs/architecture/engine-core.md](docs/architecture/engine-core.md), and [docs/architecture/docs-system.md](docs/architecture/docs-system.md) before making structural or documentation-flow changes.
 
 ---
 
@@ -114,7 +114,7 @@ Examples are single-file documentation scripts â€” one per `lurek.*` module
 - Batch-run all examples through the real engine with `python tools/demos/smoke_sweep.py --kind example` or the `â–¶ Run: Examples Sweep (Debug)` VS Code task.
 - Add a line to `content/examples/README.md` describing what it demonstrates.
 
-### Lua Libraries (`library/`)
+### Lua Libraries (`lurek_2d_content/library/`)
 
 Libraries are pure-Lua game-mechanics modules with no Rust internals.
 
@@ -123,22 +123,22 @@ Libraries are pure-Lua game-mechanics modules with no Rust internals.
 - Add tests under `tests/lua/library/test_<name>.lua`.
 - Keep libraries self-contained â€” minimal cross-library dependencies.
 
-### VS Code Extension (`extension/vscode/`)
+### VS Code Extension (`lurek_2d_extension/`)
 
-See [`extension/vscode/README.md`](extension/vscode/README.md) and [docs/architecture/vscode-architecture.md](docs/architecture/vscode-architecture.md).
+See [`lurek_2d_extension/README.md`](lurek_2d_extension/README.md) and [Developer Ecosystem Architecture](docs/architecture/developer-ecosystem.md).
 
-- TypeScript source is in `extension/vscode/src/`.
+- TypeScript source is in `lurek_2d_extension/src/`.
 - The extension reads API data from `docs/` â€” regenerate with `python tools/gen_all_docs.py` after engine API changes.
 - Test the extension with `F5` launch in VS Code (Extension Development Host).
 - Keep MCP server endpoints in sync with engine API additions.
 
-### CAG Layer (`.github/`)
+### CAG Layer (`.codex/` and `AGENTS.md`)
 
-The `.github/` directory contains agents, skills, prompts, and the system prompt that power AI-assisted development.
+The `.codex/` directory contains active roles, skills, coverage, and shared Codex workspace guidance.
 
-- Validate after every edit: `python tools/validate/cag_validate.py`.
-- Agent files live in `.github/agents/`, skills in `.github/skills/<name>/SKILL.md`.
-- Follow the schema documented in `.github/skills/cag-workflow/SKILL.md`.
+- Validate after every edit: `tools/python.cmd tools/validate/cag_validate.py`.
+- Agent files live in `.codex/agents/`, skills in `.codex/skills/<name>/SKILL.md`.
+- Follow [.codex/README.md](.codex/README.md) and the nearest `AGENTS.md`.
 
 ---
 

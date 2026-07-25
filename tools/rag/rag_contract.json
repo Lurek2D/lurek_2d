@@ -1,25 +1,102 @@
 {
-  "search": {
-    "limit": {"min": 1, "max": 25, "default": 8}
-  },
-  "read": {
-    "neighbors": {"min": 0, "max": 3, "default": 1},
-    "content_chars": {"min": 500, "max": 100000, "default": 12000}
-  },
+  "config_hash": "4d16342e35114fb452e1b2778adafe265a91a827eca49fc9978f0e691648cd93",
   "context": {
-    "limit": {"min": 1, "max": 25, "default": 8},
-    "neighbors": {"min": 0, "max": 3, "default": 1},
-    "content_chars": {"min": 500, "max": 100000, "default": 8000}
+    "content_chars": {
+      "default": 8000,
+      "max": 100000,
+      "min": 500
+    },
+    "limit": {
+      "default": 8,
+      "max": 25,
+      "min": 1
+    },
+    "neighbors": {
+      "default": 1,
+      "max": 3,
+      "min": 0
+    }
   },
   "eval": {
-    "limit": {"min": 3, "max": 25, "default": 10}
+    "limit": {
+      "default": 10,
+      "max": 25,
+      "min": 3
+    }
   },
   "indexing": {
-    "allowed_extensions": [".md", ".lua", ".rs", ".py", ".toml", ".json", ".html", ".js", ".ts", ".css", ".wgsl"],
-    "default_target_dirs": ["AGENTS.md", ".codex", "content", "docs", "src", "tests", "tools", "lurek_2d_content", "lurek_2d_extension", "lurek_2d_workbench", "lurek_2d_pages/AGENTS.md"]
+    "allowed_extensions": [
+      ".md",
+      ".lua",
+      ".rs",
+      ".py",
+      ".toml",
+      ".json",
+      ".html",
+      ".js",
+      ".ts",
+      ".css",
+      ".wgsl"
+    ],
+    "default_target_dirs": [
+      "AGENTS.md",
+      ".codex",
+      "content",
+      "docs",
+      "src",
+      "tests",
+      "tools",
+      "lurek_2d_content",
+      "lurek_2d_extension",
+      "lurek_2d_workbench",
+      "lurek_2d_pages/AGENTS.md"
+    ]
+  },
+  "read": {
+    "content_chars": {
+      "default": 12000,
+      "max": 100000,
+      "min": 500
+    },
+    "neighbors": {
+      "default": 1,
+      "max": 3,
+      "min": 0
+    }
+  },
+  "search": {
+    "limit": {
+      "default": 8,
+      "max": 25,
+      "min": 1
+    }
   },
   "watch": {
-    "extensions": [".md", ".lua", ".rs", ".py", ".toml", ".html", ".js", ".ts", ".css", ".wgsl", ".json"],
-    "prefixes": ["AGENTS.md", ".codex", "content", "docs", "src", "tests", "tools", "lurek_2d_content", "lurek_2d_extension", "lurek_2d_workbench", "lurek_2d_pages/AGENTS.md"]
+    "extensions": [
+      ".md",
+      ".lua",
+      ".rs",
+      ".py",
+      ".toml",
+      ".html",
+      ".js",
+      ".ts",
+      ".css",
+      ".wgsl",
+      ".json"
+    ],
+    "prefixes": [
+      "AGENTS.md",
+      ".codex",
+      "content",
+      "docs",
+      "src",
+      "tests",
+      "tools",
+      "lurek_2d_content",
+      "lurek_2d_extension",
+      "lurek_2d_workbench",
+      "lurek_2d_pages/AGENTS.md"
+    ]
   }
 }

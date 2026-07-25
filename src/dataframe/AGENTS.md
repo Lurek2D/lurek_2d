@@ -5,8 +5,10 @@
 - Keep query behavior deterministic and schema-aware.
 
 ## Files
-- `frame.rs`, `query.rs`, `database.rs`: Data, query, and multi-table logic.
-- `schema.rs`, `csv.rs`: Type inference and import parsing.
+- `frame.rs`, `vectorized.rs`: Table storage and transforms.
+- `query/`, `sql.rs`, `lazy.rs`: Queries, analytics, and lazy pipelines.
+- `file_io.rs`, `serial.rs`: File import and serialization.
+- `rng.rs`, `task.rs`: Random operations and background tasks.
 
 ## Rules
 - Preserve row order unless an operation explicitly sorts or groups.

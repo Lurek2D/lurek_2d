@@ -5,7 +5,9 @@
 - Keep state changes explicit across push, pop, switch, pause, and resume.
 
 ## Files
-- `stack.rs`, `scene.rs`: Stack ownership and scene descriptors.
+- `stack.rs`: Stack ownership and scene lifecycle.
+- `object.rs`, `object_container.rs`: Scene objects and storage.
+- `render.rs`, `depth_sorter.rs`: Scene draw data and order.
 - `transition.rs`: Scene transition state.
 
 ## Rules
@@ -14,4 +16,4 @@
 - Avoid global scene data; pass data through scene APIs.
 
 ## Workflow
-- Validate stack behavior with `cargo test` until a dedicated scene test target exists.
+- Validate stack behavior with `cargo test --test scene_tests`.

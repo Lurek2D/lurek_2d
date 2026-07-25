@@ -1,8 +1,6 @@
 -- Integration: lurek.tween.newState easing output cross-checked against lurek.math easing functions
 
 -- @describe timer + tween easing integration
-
--- @describe timer + tween easing integration
 describe("timer + tween easing integration", function()
 
     -- @integration lurek.tween.newState

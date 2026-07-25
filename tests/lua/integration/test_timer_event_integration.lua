@@ -1,7 +1,5 @@
 -- Integration: timer scheduler callbacks emitting event signals
 -- @describe timer + event integration
-
--- @describe timer + event integration
 describe("timer + event integration", function()
 
     -- @integration LScheduler:after

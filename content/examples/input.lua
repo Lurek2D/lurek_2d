@@ -1263,3 +1263,128 @@ do
         fireball:consume()
     end
 end
+
+--@api: LCombo:update
+do
+
+    local combo = lurek.input.newCombo({ { press = "punch" } }, { total_ms = 250 })
+    local completed = combo:update()
+    local pending = combo:wasCompleted()
+    local still_fresh = combo:completedWithin(100)
+    lurek.log.info("combo update=" .. tostring(completed))
+    lurek.log.info("combo pending=" .. tostring(pending) .. " fresh=" .. tostring(still_fresh))
+end
+
+--@api: lurek.input.assignPlayer
+do
+
+    local player = 1
+    local gamepad_id = 0
+    lurek.input.assignPlayer(player, gamepad_id)
+    local assigned_player = lurek.input.gamepad.getAssignedPlayer(gamepad_id)
+    local assigned_gamepad = lurek.input.getPlayerGamepad(player)
+    lurek.log.info("assigned player=" .. tostring(assigned_player))
+    lurek.log.info("assigned gamepad=" .. tostring(assigned_gamepad))
+end
+
+--@api: lurek.input.gamepad.getAssignedPlayer
+do
+
+    local player = 2
+    local gamepad_id = 0
+    lurek.input.assignPlayer(player, gamepad_id)
+    local assigned = lurek.input.gamepad.getAssignedPlayer(gamepad_id)
+    local selected = lurek.input.getPlayerGamepad(player)
+    lurek.log.info("gamepad player=" .. tostring(assigned))
+    lurek.log.info("player gamepad=" .. tostring(selected))
+end
+
+--@api: lurek.input.gamepad.getDeadzone
+do
+
+    local gamepad_id = 0
+    local stick = "leftstick"
+    lurek.input.gamepad.setDeadzone(gamepad_id, stick, 0.18)
+    local deadzone = lurek.input.gamepad.getDeadzone(gamepad_id, stick)
+    local axis = lurek.input.gamepad.getStandardAxis(gamepad_id, "leftx")
+    lurek.log.info("deadzone=" .. tostring(deadzone))
+    lurek.log.info("left stick=" .. tostring(axis))
+end
+
+--@api: lurek.input.gamepad.getStandardButton
+do
+
+    local gamepad_id = 0
+    local confirm_down = lurek.input.gamepad.getStandardButton(gamepad_id, "a")
+    local menu_down = lurek.input.gamepad.getStandardButton(gamepad_id, "start")
+    local confirm_released = lurek.input.gamepad.wasReleased(gamepad_id, 0)
+    lurek.log.info("confirm down=" .. tostring(confirm_down))
+    lurek.log.info("menu down=" .. tostring(menu_down) .. " released=" .. tostring(confirm_released))
+end
+
+--@api: lurek.input.getPlayerGamepad
+do
+
+    local player = 3
+    local gamepad_id = 0
+    lurek.input.assignPlayer(player, gamepad_id)
+    local assigned = lurek.input.getPlayerGamepad(player)
+    local owner = lurek.input.gamepad.getAssignedPlayer(gamepad_id)
+    lurek.log.info("player gamepad=" .. tostring(assigned))
+    lurek.log.info("gamepad owner=" .. tostring(owner))
+end
+
+--@api: lurek.input.keyboard.getTextInput
+do
+
+    local text_segments = lurek.input.keyboard.getTextInput()
+    local count = #text_segments
+    local first = text_segments[1] or ""
+    local pressed = lurek.input.keyboard.wasPressed("return")
+    lurek.log.info("committed text segments=" .. tostring(count))
+    lurek.log.info("first text=" .. first .. " return=" .. tostring(pressed))
+end
+
+--@api: lurek.input.keyboard.wasReleased
+do
+
+    local key = "space"
+    local released = lurek.input.keyboard.wasReleased(key)
+    local down = lurek.input.keyboard.isDown(key)
+    local pressed = lurek.input.keyboard.wasPressed(key)
+    lurek.log.info("key released=" .. tostring(released))
+    lurek.log.info("key down=" .. tostring(down) .. " pressed=" .. tostring(pressed))
+end
+
+--@api: lurek.input.keyboard.wasScancodePressed
+do
+
+    local scancode = "KeyW"
+    local pressed = lurek.input.keyboard.wasScancodePressed(scancode)
+    local released = lurek.input.keyboard.wasScancodeReleased(scancode)
+    local down = lurek.input.keyboard.isScancodeDown(scancode)
+    lurek.log.info("scancode pressed=" .. tostring(pressed))
+    lurek.log.info("scancode released=" .. tostring(released) .. " down=" .. tostring(down))
+end
+
+--@api: lurek.input.keyboard.wasScancodeReleased
+do
+
+    local scancode = "Space"
+    local released = lurek.input.keyboard.wasScancodeReleased(scancode)
+    local pressed = lurek.input.keyboard.wasScancodePressed(scancode)
+    local down = lurek.input.keyboard.isScancodeDown(scancode)
+    lurek.log.info("scancode released=" .. tostring(released))
+    lurek.log.info("scancode pressed=" .. tostring(pressed) .. " down=" .. tostring(down))
+end
+
+--@api: lurek.input.mouse.wasReleased
+do
+
+    local button = 1
+    local released = lurek.input.mouse.wasReleased(button)
+    local pressed = lurek.input.mouse.wasPressed(button)
+    local down = lurek.input.mouse.isDown(button)
+    lurek.log.info("mouse released=" .. tostring(released))
+    lurek.log.info("mouse pressed=" .. tostring(pressed) .. " down=" .. tostring(down))
+end

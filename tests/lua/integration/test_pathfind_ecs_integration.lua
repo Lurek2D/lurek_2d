@@ -1,7 +1,5 @@
 -- Integration: pathfinding results driving entity positioning via ECS
 -- @describe pathfinding + entity integration
-
--- @describe pathfinding + entity integration
 describe("pathfinding + entity integration", function()
     -- @integration LUnitPathfinder:findPath
     -- @integration LUniverse:get

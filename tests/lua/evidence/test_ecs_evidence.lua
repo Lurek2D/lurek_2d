@@ -1,4 +1,14 @@
 -- Canonical evidence file for lurek.ecs data outputs.
+-- @covers lurek.ecs.classNames
+-- @covers lurek.ecs.clearClasses
+-- @covers lurek.ecs.clearObjects
+-- @covers lurek.ecs.defineClass
+-- @covers lurek.ecs.getClass
+-- @covers lurek.ecs.newObject
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.ecs.objectIds
+-- @covers lurek.filesystem.write
+
 
 
 local OUT = evidence_output_dir("ecs")

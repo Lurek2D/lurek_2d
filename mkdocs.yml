@@ -10,25 +10,12 @@ site_dir: lurek_2d_pages
 use_directory_urls: false
 
 exclude_docs: |
-  getting-started.md
-  first-game.md
-  project-structure.md
-  examples.md
-  reference-games.md
-  recipes.md
-  contributors.md
   specs/
-  wiki/
   templates/
   meta/
-  snippets.md
-  api/lurek.md
-  api/lureksome.md
   api/rust.md
   CHANGELOG.md
   linux_build.md
-  rust-api.md
-  howto.md
   **/AGENTS.md
   architecture/
 
@@ -94,7 +81,24 @@ extra:
       link: https://github.com/Lurek2D/lurek_2d
 
 nav:
-  - Lua API Overview: lua-api.md
+  - Guides:
+    - Index: guides/index.md
+    - Getting Started: guides/getting-started.md
+    - First Game: guides/first-game.md
+    - Project Structure: guides/project-structure.md
+    - Examples: guides/examples.md
+    - Recipes: guides/recipes.md
+    - Reference Games: guides/reference-games.md
+    - Lua API Overview: lua-api.md
+    - Module Guides: module-guides.md
+  - Contributing:
+    - Index: contributing/index.md
+    - Build and Distribution: contributing/build-and-distribution.md
+    - Rust File Docstrings: contributing/rust-file-docstrings.md
+  - API Reference:
+    - Lua API: api/lurek.md
+    - Runtime Callbacks: api/callbacks.md
+    - Lureksome: api/lureksome.md
   - Module API Specs:
     - Overview: module-guides.md
     - Agent: modules/agent.md
@@ -169,4 +173,3 @@ nav:
     - UI: modules/ui.md
     - Validator: modules/validator.md
     - Window: modules/window.md
-  - Callbacks: api/callbacks.md

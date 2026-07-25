@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -43,6 +44,8 @@ def evaluate(
     cases = json.loads(baseline_path.read_text(encoding="utf-8"))
     results: list[dict[str, Any]] = []
     passed = 0
+    reciprocal_ranks: list[float] = []
+    latencies: list[float] = []
 
     for case in cases:
         query = case["query"]
@@ -50,6 +53,7 @@ def evaluate(
         expected = case.get("must_match_any", [])
         expected_tools = case.get("must_tool_any", [])
         runner = case.get("runner", "search")
+        started = time.perf_counter()
         if runner == "context":
             bundle = build_context_bundle(
                 query,
@@ -78,15 +82,31 @@ def evaluate(
                         paths.append(path)
             tool_names = [item.get("tool_name", "") for item in bundle.get("tool_candidates", [])]
             error = None
+            result_items = [item for section_name in sections for item in bundle.get(section_name, [])]
         else:
             report = search_index(query, profile=profile, limit=limit, db_path_override=db_path)
             paths = [item["path"] for item in report.get("results", [])]
             tool_names = []
             error = report.get("error")
-        path_ok = True if not expected else any(any(_matches(path, item) for path in paths) for item in expected)
+            result_items = report.get("results", [])
+        elapsed_ms = (time.perf_counter() - started) * 1000.0
+        latencies.append(elapsed_ms)
+        matching_ranks = [index + 1 for index, path in enumerate(paths) if any(_matches(path, item) for item in expected)]
+        path_ok = True if not expected else bool(matching_ranks)
         tool_ok = True if not expected_tools else any(tool in expected_tools for tool in tool_names if tool)
-        ok = path_ok and tool_ok
+        max_rank = int(case.get("max_rank", limit))
+        rank_ok = not matching_ranks or min(matching_ranks) <= max_rank
+        forbidden = case.get("forbidden_paths", [])
+        forbidden_ok = not any(any(_matches(path, item) for item in forbidden) for path in paths)
+        required_owner = case.get("required_owner")
+        owner_ok = not required_owner or any(str(item.get("canonical_owner", "")) == required_owner for item in result_items)
+        min_unique = int(case.get("min_unique_paths", 0))
+        diversity_ok = len(set(paths)) >= min_unique
+        latency_ok = elapsed_ms <= float(case.get("max_elapsed_ms", float("inf")))
+        ok = path_ok and tool_ok and rank_ok and forbidden_ok and owner_ok and diversity_ok and latency_ok
         passed += int(ok)
+        if matching_ranks:
+            reciprocal_ranks.append(1.0 / min(matching_ranks))
         results.append(
             {
                 "query": query,
@@ -98,15 +118,24 @@ def evaluate(
                 "top_paths": paths[:limit],
                 "top_tools": tool_names[:limit],
                 "error": error,
+                "rank": min(matching_ranks) if matching_ranks else None,
+                "elapsed_ms": round(elapsed_ms, 2),
+                "forbidden_ok": forbidden_ok,
+                "diversity_ok": diversity_ok,
             }
         )
 
     total = len(results)
+    sorted_latency = sorted(latencies)
+    percentile = lambda fraction: sorted_latency[min(len(sorted_latency) - 1, int(len(sorted_latency) * fraction))] if sorted_latency else 0.0
     return {
         "ok": passed == total,
         "passed": passed,
         "total": total,
         "pass_rate": round((passed / total * 100.0) if total else 100.0, 2),
+        "recall_at_k": round((passed / total) if total else 1.0, 4),
+        "mrr": round(sum(reciprocal_ranks) / len(reciprocal_ranks), 4) if reciprocal_ranks else 0.0,
+        "latency_ms": {"p50": round(percentile(0.5), 2), "p95": round(percentile(0.95), 2)},
         "results": results,
     }
 

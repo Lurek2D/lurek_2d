@@ -1,4 +1,27 @@
 -- Evidence tests: tilefield module.
+-- @covers lurek.awareness.lineOfAction
+-- @covers lurek.awareness.lineOfSight
+-- @covers lurek.awareness.newTileAwareness
+-- @covers lurek.filesystem.load
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.pathfind.newFlowField
+-- @covers lurek.pathfind.newHexGrid
+-- @covers lurek.pathfind.newNavGridFromField
+-- @covers lurek.pathfind.newPathfinder
+-- @covers lurek.pathfind.rangeMapFromField
+-- @covers lurek.procgen.cellularAutomata
+-- @covers lurek.procgen.heightmap
+-- @covers lurek.raycaster.buildMultiLevelSceneFromField
+-- @covers lurek.sprite.parseAtlas
+-- @covers lurek.tilefield.new
+-- @covers lurek.tilefield.newFieldMap
+-- @covers lurek.tilelight.new
+-- @covers lurek.tilemap.newTileMap
+-- @covers lurek.tileset.fromProvider
+-- @covers lurek.tileset.newCatalog
+
 
 local MapblockFixture = lurek.filesystem.load("tests/fixtures/mapblock_evidence_fixture.lua")()
 local OUT = evidence_output_dir("tilefield")

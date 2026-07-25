@@ -2736,6 +2736,30 @@ do
     lurek.log.info("terrain userdata=" .. terrain:type())
 end
 
+--@api: LTerrain:setColliderStrategy
+do
+
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:fillRect(0, 256, 512, 32, true)
+    terrain:setColliderStrategy("contourEdges")
+    local report = terrain:flush()
+    lurek.log.info("terrain strategy=" .. terrain:getColliderStrategy())
+    lurek.log.info("rebuilt chunks=" .. tostring(report.dirtyChunksRebuilt))
+end
+
+--@api: LTerrain:getColliderStrategy
+do
+
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:setColliderStrategy("rowRuns")
+    terrain:fillAll(true)
+    local strategy = terrain:getColliderStrategy()
+    local report = terrain:flush()
+    lurek.log.info("terrain strategy=" .. strategy .. " rebuilt=" .. tostring(report.dirtyChunksRebuilt))
+end
+
 --@api: lurek.physics.newLiquidMap
 do
 

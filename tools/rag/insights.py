@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -375,7 +376,7 @@ def run_report(
 
     try:
         conn = connect(db_path)
-    except FileNotFoundError as exc:
+    except (FileNotFoundError, RuntimeError, duckdb.Error) as exc:
         return {"error": str(exc), "db_path": str(db_path or DB_PATH)}
 
     try:
@@ -392,13 +393,25 @@ def run_report(
             }
 
         if report == "all":
+            reports: dict[str, Any] = {}
+            ok = True
+            for name in REPORT_ORDER:
+                started = time.perf_counter()
+                try:
+                    rows = _fetch_rows(conn, REPORT_SQL[name], (limit,))
+                    reports[name] = {
+                        "ok": True,
+                        "elapsed_ms": round((time.perf_counter() - started) * 1000, 2),
+                        "rows": rows,
+                    }
+                except duckdb.Error as exc:
+                    ok = False
+                    reports[name] = {"ok": False, "elapsed_ms": round((time.perf_counter() - started) * 1000, 2), "error": str(exc), "rows": []}
             return {
                 "report": "all",
                 "db_path": str(db_path or DB_PATH),
-                "reports": {
-                    name: _fetch_rows(conn, REPORT_SQL[name], (limit,))
-                    for name in REPORT_ORDER
-                },
+                "ok": ok,
+                "reports": reports,
             }
 
         return {

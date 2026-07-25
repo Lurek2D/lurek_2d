@@ -5,7 +5,7 @@ Phases:
     data     - generated machine-readable docs data
     specs    - generated module specs from source + manual overlays
     api      - generated API references and LuaCATS stubs
-    pages    - generated module pages and wiki input
+    pages    - generated module pages and site input
     reports  - generated coverage and quality reports
 
 Usage:
@@ -56,7 +56,6 @@ PHASES: list[tuple[str, list[tuple[str, list[str], str]]]] = [
     ]),
     ("pages", [
         ("docs/gen_module_pages.py", [], "Lua module pages (lurek_2d_pages/.source/modules/<module>.md)"),
-        ("docs/gen_wiki.py", ["--skip-module-pages"], "User wiki static pages (docs/wiki/*.md)"),
     ]),
     ("reports", [
         ("audit/doc_coverage.py", [], "Doc coverage analytics (logs/data/doc_coverage.json)"),

@@ -1,229 +1,91 @@
-# Lurek2D â€” Philosophy and Design Assumptions
+# Lurek2D Philosophy And Design Constraints
 
-## TL;DR
+## Purpose
 
-- Source of truth for first principles, binding architectural decisions, and project identity.
+This document owns the durable principles used when engine boundaries compete. [Engine Core](engine-core.md) describes the runtime structure; module-specific behavior belongs in `docs/specs/`.
 
- All other architecture docs reference this file.
+## Product Identity
 
-Companion documents: [engine-architecture.md](engine-architecture.md) Â· [quality-assurance.md](quality-assurance.md)
+- Lurek2D is one Rust desktop binary that runs Lua game scripts.
+- The public authoring surface is Lua-first and lives under `lurek.*`.
+- The engine targets games, simulations, visual tools, and interactive desktop applications.
+- AI assistance and agent-friendly tooling support development; they are not the runtime's defining promise.
+- Finished games and reusable Lua packages live in `lurek_2d_content/`, outside the Rust engine repository surface.
 
----
+## The Zen of Lurek
 
-## Table of Contents
+These rules are the architectural test for a feature, API, or refactor. A
+proposal that conflicts with one of them must make the trade-off explicit and
+change this document or an RFC; it must not create an undocumented exception.
 
-- [Lurek2D â€” Philosophy and Design Assumptions](#lurek2d--philosophy-and-design-assumptions)
-	- [TL;DR](#tldr)
-	- [Table of Contents](#table-of-contents)
-	- [The Zen of Lurek 2.0](#the-zen-of-lurek-20)
-	- [Core Idea](#core-idea)
-	- [Project Identity](#project-identity)
-	- [Decision Heuristics](#decision-heuristics)
-	- [Platform and Runtime Constraints](#platform-and-runtime-constraints)
-	- [Technology Stack Constraints](#technology-stack-constraints)
-	- [Active Module Group Constraints](#active-module-group-constraints)
-	- [API Design Constraints](#api-design-constraints)
-	- [Testing Constraints](#testing-constraints)
-	- [Quality Gate Constraints](#quality-gate-constraints)
-	- [Constraint Status Model](#constraint-status-model)
-	- [Retired Decisions](#retired-decisions)
-		- [Retired: Strict Tier Numbering](#retired-strict-tier-numbering)
-		- [Retired: Baseline â†’ Tier 1 â†’ Tier 2 â†’ Tier 3 Naming](#retired-baseline--tier-1--tier-2--tier-3-naming)
-		- [Retired: Tier 4 as the Platform Integration Slot](#retired-tier-4-as-the-platform-integration-slot)
+| # | Rule | Consequence |
+|---|---|---|
+| 1 | No cycles, ever. | The Rust module dependency graph is acyclic. |
+| 2 | The composition root is one-way. | `app` and `lua_api` may compose lower layers; lower layers do not import them. |
+| 3 | Depend on contracts, not backends. | Feature code uses public renderer and runtime seams, not backend GPU details. |
+| 4 | Keep the runtime boring. | Runtime services own lifecycle, errors, configuration, IDs, and commands—not product features. |
+| 5 | Registries are not god objects. | A registry exposes owned resources; domain rules stay in their domain module. |
+| 6 | Stable acyclic peers may cooperate. | A same-responsibility import is acceptable when its direction and ownership are clear. |
+| 7 | Split by reason to change. | Make a new module for a distinct responsibility, not an arbitrary file-size threshold. |
+| 8 | Draw is a projection. | Rendering consumes state and produces commands; it does not become the state authority. |
+| 9 | Pure logic stays pure. | Math, data transforms, generation, and graph work do not acquire window, GPU, audio, input, or Lua dependencies. |
+| 10 | Separate durable state from runtime resources. | Serializable state does not require a GPU handle, OS window, or Lua VM reference. |
+| 11 | Tooling lives at the edge. | Diagnostics, docs, automation, and development bridges observe or orchestrate; they do not own gameplay state. |
+| 12 | Bindings are thin and one-directional. | Lua bindings translate public calls to domain owners; domain modules do not know the binding layer. |
+| 13 | Tests follow responsibility. | Private algorithms are tested with their owner; public contracts and integrations are tested in their relevant test layer. |
+| 14 | Merge weak modules early. | A module without a distinct, durable responsibility belongs with the owner it serves. |
+| 15 | Optimise for human and AI readability. | Names, public APIs, docs, examples, and boundaries should make ownership and intent obvious. |
 
----
+The practical rule behind the list is simple: prefer fewer concepts, explicit
+names, sensible defaults, and one canonical owner for every rule and state
+model.
 
-## The Zen of Lurek 2.0
+## Active Constraints
 
-These fifteen rules are binding constraints. Every feature proposal, API design, and architectural decision must be checked against this list. If a choice violates a rule, the choice changes or the rule is formally amended â€” never silently overridden.
+### Runtime
 
-The module grouping (Foundations â†’ Core Runtime â†’ Platform Services â†’ Feature Systems â†’ Edge/Integration) is loose and practical. It does not ban same-group imports. It says: know what each module belongs to and what it should not do. The one hard invariant is **no cycles**.
+- The application owns the window, device resources, event loop, audio services, and Lua VM lifetime.
+- Lua owns game/application state unless a public API explicitly creates Rust-owned state.
+- The main loop is single-process and ordered. Work may run on worker threads only behind an owner that defines synchronization and failure behavior.
+- Desktop support is the active platform contract; mobile and browser targets require an explicit architecture decision.
 
-| # | Rule | Summary |
-|---|------|---------|
-| 1 | No Cycles, Ever | The module import graph is a DAG. A cycle means the design is wrong. |
-| 2 | Composition Root Is One-Way | `app` and `lua_api` can know everything. Nothing below them imports `app` or any binding module. |
-| 3 | Depend on Contracts, Not Backends | Feature Systems depend on the `render` facade. Never on backend GPU details. |
-| 4 | Runtime Stays Boring | `runtime` owns errors, config, IDs, commands, and traits. It does not know about the event loop, VM boot, or debug overlays. |
-| 5 | World Is a Registry, Not a God Brain | `world` holds services and resources. Domain logic belongs in Feature Systems, not in `world`. |
-| 6 | Same-Group Imports Are Allowed When Stable and Acyclic | A `tilemap` importing scene state from `scene` is fine â€” both are Feature Systems and there is no cycle. |
-| 7 | Split by Reason to Change, Not by File Length | A new module is born when it has a different responsibility, not when a file hits 800 lines. |
-| 8 | Draw Is a Projection Layer | If a module has a complex state â†’ render-commands transformation, extract a `draw.rs`. Do not do it ritually. |
-| 9 | Pure Logic Stays Pure | `math`, `procgen`, `graph` must never need render, audio, input, or Lua. |
-| 10 | CPU State and Runtime Resources Must Stay Separate | Serialisable game state must not require a GPU handle, OS window, or VM reference. |
-| 11 | Tooling Lives at the Edge | `devtools`, `debugbridge`, `docs`, `automation` observe; they never own. |
-| 12 | Bindings Are Thin and One-Directional | The Lua bridge maps API calls onto domain functions. Domain modules never know the bridge exists. |
-| 13 | Tests Follow Responsibility | A unit test for a private algorithm lives locally. A contract test or integration test lives in `tests/`. |
-| 14 | Merge Weak Modules Fast | If a module has no clear, distinct responsibility, merge it into the module it most closely serves. |
-| 15 | Optimise for Human and AI Readability | From a module's name and public API, it must be obvious whether it is core, a service, a feature, or a bridge. |
+### Public Boundary
 
----
+- `src/lua_api/` owns registration, Lua-facing names, argument conversion, and public error translation.
+- `mlua` is not exclusive to `src/lua_api/`: runtime and domain seams may store callbacks, tables, or values when Lua identity is part of their responsibility.
+- Engine modules must not invent a second public namespace or register themselves independently.
+- Public handles are validated at their Rust owner before use. Serialized identifiers and renderer snapshots are copies, not new state authorities.
 
-## Core Idea
+### Ownership
 
-Lurek2D is the Lua-first runtime and toolkit for people who want interactive 2D systems without the ceremony of editor-heavy engines.
+- One subsystem owns each mutable state model; consumers receive handles, messages, queries, or snapshots.
+- Caches are derived state and follow the invalidation rules of their primary owner.
+- GPU resources and submission are renderer-owned.
+- Filesystem input remains external until path policy and format validation accept it.
+- Errors cross boundaries as structured results or Lua errors; expected absence uses documented fallback behavior.
 
-A game, simulation, tool, or interactive app can start as a `main.lua` file. The runtime runs it. You write Lua; the Rust core owns the GPU, the physics solver, the audio mixer, the filesystem boundary, and the threading model.
+### Documentation And Proof
 
-The competitive landscape is dominated by large editor-first engines and minimal frameworks that leave most systems to the user. Lurek2D sits between them: one runtime, one scripting language, and a broad built-in `lurek.*` API.
-
-**The AI/tooling angle**: Lurek2D is AI-assisted and agent-friendly, but not dependent on generative AI. Every API is shaped so humans and coding agents can use it correctly from generated docs, stubs, specs, examples, and tests. Runtime AI modules are separate features for game behavior, simulations, automation, and learning experiments.
-
----
-
-## Project Identity
-
-| Symbol | Meaning | Where It Appears |
-|--------|---------|-----------------|
-| Crescent Moon | Lua (Portuguese for "moon") â€” the scripting surface | Logo, splash screen |
-| Gear / Pacman shape | Rust engine core â€” industrial-strength | Logo (primary shape) |
-| Small Cube | Industry giants orbiting Lurek2D | Logo (accent) |
-| Deep blue + orange palette | Night sky + warm engine glow | All branding |
-
-**Naming**: "Lurek" + "2D". Short form: `lurek2d`. Binary: `lurek2d` (Unix), `lurek2d.exe` (Windows). Lua API prefix: `lurek.*`.
-
----
+- Source behavior outranks stale prose; accepted architecture and manual specs define durable intent.
+- Public behavior changes keep source docs, generated API, examples, specs, and tests aligned.
+- Generated output is reproducible and never the only source of durable prose.
+- New architectural claims identify an owner, a concrete dependency edge, a lifecycle, and a failure or rollback path.
 
 ## Decision Heuristics
 
-When two paths are available and neither violates a rule above, use these:
+1. Put state where its invariants can be enforced.
+2. Prefer a narrow data boundary over shared mutable access.
+3. Keep Lua wrappers thin and move reusable computation to its Rust or pure-Lua owner.
+4. Keep optional product ideas out of current architecture until an RFC is accepted.
+5. Prefer deletion or consolidation when two documents claim the same authority.
 
-| Heuristic | Meaning |
-|-----------|---------|
-| Simpler is better | Fewer moving parts, fewer concepts, fewer files |
-| Explicit over implicit | Name things directly. Avoid magic. |
-| Defaults over configuration | Ship the 80% case. Make the 20% possible but optional. |
-| Rust performance, Lua ergonomics | User-facing API must feel Lua-native. Engine internals optimise in Rust. |
-| Test the contract, not the implementation | Tests break when behaviour changes, not when code is refactored. |
-| One canonical place | Every rule, pattern, and convention has one source of truth. Reference it, do not duplicate it. |
-| AI-verifiable | Could a Copilot agent use this API correctly without a clarifying question? If not, redesign. |
+The canonical definition of module layers, allowed dependencies, and the
+composition-root exception is [Module Scope Boundaries](module-scope-boundaries.md).
 
----
+## Proposed Constraints
 
-## Platform and Runtime Constraints
+Optional native/module packaging is not active architecture. Its trade-offs and acceptance gates live in [Modularity And Plugins](modularity-plugins.md) and [RFC: Optional Module Packaging](proposals/optional-module-packaging.md).
 
-Active and binding. All code must comply. Do not propose changes without first opening a design-assumption update discussion.
+## Retired Language
 
-| ID | Status | Constraint |
-|----|--------|-----------|
-| **A-01** | Active | Lurek2D is a **runtime only** â€” no embedded visual editor or IDE. The VS Code extension is an opt-in developer layer, not part of the engine binary. |
-| **A-02** | Active | **Desktop only** â€” Windows / Linux / macOS, x86_64 + ARM. Mobile and WASM are out of scope. |
-| **A-03** | Active | **2D graphics only** â€” no 3D scene graph, no perspective projection pipeline. Raycasting and isometric rendering use 2D draw calls. |
-| **A-04** | Active | No platform SDK integration (Steam, Epic, itch.io) in the core binary. Wrappers live outside the five-group module stack. |
-| **A-05** | Proposed | Core binary stays â‰¤ 10 MB stripped on desktop targets. Optional subsystems ship as plugins. Becomes Active when the plugin system (see [plugins.md](plugins.md)) is accepted and a baseline measurement is recorded. |
-
----
-
-## Technology Stack Constraints
-
-| ID | Status | Constraint |
-|----|--------|-----------|
-| **B-01** | Active | **LuaJIT** is the primary scripting runtime via mlua 0.9. Lua 5.4 (`lua54` Cargo feature) is a non-shipping CI fallback for environments where LuaJIT is unavailable. |
-| **B-02** | Active | **wgpu 22** is the only renderer backend (Vulkan / DX12 / Metal). No raw OpenGL path, no software fallback. |
-| **B-03** | Active | Games must run at **60 FPS at 1080p on integrated GPUs** (Intel UHD 620, AMD Vega 8 class). No feature requirements beyond wgpu baseline capabilities. |
-| **B-04** | Active | Concurrency lives in **Rust threads**. LuaJIT VMs are single-threaded and cannot share state. Inter-VM communication uses typed MPMC `Channel` objects. |
-| **B-05** | Active | **TOML** is the human-authored config format. JSON is accepted for external interop. YAML is not used anywhere in the project. |
-
----
-
-## Active Module Group Constraints
-
-These constraints formalise the [module group model](engine-architecture.md#module-group-model).
-
-| ID | Status | Constraint |
-|----|--------|-----------|
-| **T-01** | Active | The active module structure uses **five responsibility groups**: Foundations, Core Runtime, Platform Services, Feature Systems, and Edge/Integration. See [engine-architecture.md](engine-architecture.md) Â§ Module Group Model. |
-| **T-02** | Active | `lua_api` (`src/lua_api/`) is the binding layer that registers `lurek.*`. It sits in Edge/Integration. No domain module may import `lua_api`. |
-| **T-03** | Active | **No cycles, ever.** The module import graph must be a DAG. Same-group imports are allowed when acyclic. |
-| **T-04** | Active | **Composition root is one-way.** `app` and `lua_api` may depend on any module below them. Nothing below them imports `app` or any `lua_api` binding module. |
-| **T-05** | Active | **Lureksome** (`library/`) is the pure-Lua standard library. It consumes only public `lurek.*` APIs â€” no Rust engine internals, no `require` of engine source files. |
-| **T-06** | Active | **Foundations group modules** (`math`, `log`, `data`, `serial`, `compute`, `dataframe`, `graph`, `procgen`, `patterns`) must never import render, audio, input, physics, or Lua APIs. |
-| **T-07** | Active | **Edge/Integration group modules** (`devtools`, `debugbridge`, `automation`) are never imported by domain modules. They are optional components compiled only for development builds. |
-| **T-08** | Active | Platform SDK integrations must not be imported by any module in Foundations, Core Runtime, Platform Services, or Feature Systems. They belong to external wrapping binaries only. |
-
----
-
-## API Design Constraints
-
-| ID | Status | Constraint |
-|----|--------|-----------|
-| **C-01** | Active | All Lua-facing APIs live under the `lurek.*` namespace. No bare globals, no engine-prefixed names, no alternative top-level tables. |
-| **C-02** | Active | Every `lua_api` sub-module exposes exactly one `pub fn register(lua, lurek_table, state)` function. |
-| **C-03** | Active | API functions must have sensible defaults. Never require parameters a beginner would always pass as the same value. |
-| **C-04** | Active | Every callback (`lurek.init`, `lurek.ready`, `lurek.process`, `lurek.draw`, etc.) is **optional**. An empty `main.lua` is a valid game. |
-| **C-05** | Active | The Lua API is **synchronous from the script's perspective**. Async work happens in Rust threads and communicates results via `Channel`. The Lua VM never blocks on I/O or network. |
-| **C-06** | Active | **Callback names must not shadow API module keys.** If a planned callback key equals an existing API module name, the callback key must be renamed. Never work around the collision with a local alias in Lua scripts â€” that disguises an engine design bug. |
-
----
-
-## Testing Constraints
-
-These constraints formalise test placement and layering rules. They are binding. Existing violations are migration-scheduled under session `testing-cleanup-20260420`.
-
-| ID | Status | Constraint |
-|----|--------|-----------|
-| **TST-01** | Active | **Lua-first testing.** Any behaviour reachable through the `lurek.*` API must be tested in `tests/lua/`. Rust tests must not duplicate `lurek.*`-reachable coverage. |
-| **TST-02** | Active | **Centralised Rust unit tests.** Rust unit tests live in `tests/rust/unit/<module>_tests.rs`. Inline `#[cfg(test)]` blocks inside `src/**/*.rs` are banned. |
-| **TST-03** | Active | **Thin Lua API wrappers.** `src/lua_api/<module>_api.rs` contains only `impl LuaUserData`, registration, and type conversions. Business logic lives in `src/<module>/` as pure Rust. |
-| **TST-04** | Active | **Thin `mod.rs`.** Every `mod.rs` contains only `pub mod X`, `pub use X::*`, module-level attributes, and doc comments. Definitions live in sibling files. |
-| **TST-05** | Active | Demo tests: headless Lua tests live next to the game as `lurek_2d_content/games/**/test.lua`. Screenshot tests live in `tests/demo_smoke_tests.rs` with `#[ignore]`. |
-| **TST-06** | Active | One test file per module per layer: `test_<module>_<layer>.lua`. No split per-sub-feature files within a layer. |
-
-See [quality-assurance.md](quality-assurance.md) for the decision tree and enforcement audit scripts.
-
----
-
-## Quality Gate Constraints
-
-| ID | Status | Constraint |
-|----|--------|-----------|
-| **Q-01** | Active | `cargo test` must exit 0 before any merge. All Rust and Lua tests must pass. |
-| **Q-02** | Active | `cargo clippy -- -D warnings` must exit 0. No suppressed warnings without a comment explaining why. |
-| **Q-03** | Active | Every new public Rust API item (`pub fn`, `pub struct`, `pub enum`, `pub trait`) requires at least one integration test before merge. |
-| **Q-04** | Active | Every new `lurek.*` Lua API function requires at least one Lua BDD test before merge. |
-| **Q-05** | Active | `python tools/docs/collect_docs.py --report-missing` must exit 0. Every `pub fn`, `pub struct`, `pub enum`, `pub trait`, and `pub type` must have a `///` doc comment. |
-
----
-
-## Constraint Status Model
-
-| Status | Meaning |
-|--------|---------|
-| **Active** | Binding. All code must comply. Violations require a design discussion before implementation. |
-| **Proposed** | Under consideration. Not yet binding. May be promoted to Active or withdrawn. |
-| **Retired** | Was Active; superseded by a newer decision. Kept for historical context. |
-
-To change a constraint's status: open a discussion referencing the specific constraint ID, get agreement from the project maintainer, update this document, and update the system prompt if the change affects it.
-
----
-
-## Retired Decisions
-
-### Retired: Strict Tier Numbering
-
-**Original (c. v0.4):** T-03 banned all same-tier imports. T-04 banned all Tier 2 â†” Tier 2 imports.
-
-**Why retired:** The ban was a proxy for the real invariant (no cycles). It was overly conservative and ruled out legitimate stable acyclic imports. For example, `tilemap` importing scene state from `scene` is correct design â€” both are Feature Systems and there is no cycle.
-
-**Replaced by:** T-03 (Active): No cycles, ever. Same-group imports allowed when stable and acyclic.
-
----
-
-### Retired: Baseline â†’ Tier 1 â†’ Tier 2 â†’ Tier 3 Naming
-
-**Original (c. v0.4):** T-01 defined the stack as Baseline + Tier 1 + Tier 2 + Tier 3. Baseline was `src/math/` and `src/engine/`.
-
-**Why retired:** The Baseline/Tier nomenclature became misleading as the engine grew. The tier numbers implied a linear progression that did not match actual import topology.
-
-**Replaced by:** T-01 (Active): Five responsibility groups. See [engine-architecture.md](engine-architecture.md) Â§ Module Group Model.
-
----
-
-### Retired: Tier 4 as the Platform Integration Slot
-
-**Original (c. v0.4):** Principle 6 placed platform integrations at "Tier 4 (future)" or in external wrapping binaries.
-
-**Why retired:** "Tier 4" was never defined or implemented.
-
-**Replaced by:** T-08 (Active) and A-04 (Active).
-
+Historic tier-number naming and legacy root-level sibling paths are not current repo contracts. Use the responsibility groups in metadata and the repositories `lurek_2d_content/`, `lurek_2d_extension/`, and `lurek_2d_pages/`.

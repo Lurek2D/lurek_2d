@@ -1,5 +1,8 @@
 -- tests/lua/library/test_roguelike_library.lua
 -- BDD tests for library/roguelike/init.lua     FOV, scheduler, goal map.
+-- @covers lurek.awareness.newFov
+-- @covers lurek.pathfind.newGoalMap
+
 
 local rl = require("library.roguelike")
 

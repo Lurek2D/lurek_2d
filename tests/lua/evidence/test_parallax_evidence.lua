@@ -1,4 +1,14 @@
 -- Canonical evidence file for lurek.parallax visual artifacts.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.saveGIF
+-- @covers lurek.image.savePNG
+-- @covers lurek.parallax.newLayer
+-- @covers lurek.parallax.newPresetLayer
+-- @covers lurek.parallax.newSet
+-- @covers lurek.render.newImage
+-- @covers lurek.render.newShader
+
 
 local OUT = evidence_output_dir("parallax")
 local TEXTURE_PATH = "content/examples/assets/images/sample_texture.png"

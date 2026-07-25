@@ -1,4 +1,33 @@
 -- Canonical evidence file for lurek.render shader target contracts and shader-bound module APIs.
+-- @covers lurek.effect.newCustomEffect
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.requestShader
+-- @covers lurek.light.getShader
+-- @covers lurek.light.newLight
+-- @covers lurek.light.setShader
+-- @covers lurek.minimap.newMinimap
+-- @covers lurek.overlay.new
+-- @covers lurek.particle.newSystem
+-- @covers lurek.province.newFromPng
+-- @covers lurek.render.applyShaderToCanvas
+-- @covers lurek.render.getDebugShader
+-- @covers lurek.render.getShader
+-- @covers lurek.render.getTextShader
+-- @covers lurek.render.newCanvas
+-- @covers lurek.render.newImage
+-- @covers lurek.render.newShader
+-- @covers lurek.render.print
+-- @covers lurek.render.rectangle
+-- @covers lurek.render.setDebugShader
+-- @covers lurek.render.setShader
+-- @covers lurek.render.setTextShader
+-- @covers lurek.sprite.newSprite
+-- @covers lurek.terminal.newTerminal
+-- @covers lurek.tilemap.newTileMap
+-- @covers lurek.ui.draw
+-- @covers lurek.ui.newButton
+
 
 local OUT = evidence_output_dir("render")
 

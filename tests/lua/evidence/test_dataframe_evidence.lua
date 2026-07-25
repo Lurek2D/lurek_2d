@@ -1,4 +1,15 @@
 -- Canonical evidence file for lurek.dataframe data outputs.
+-- @covers lurek.dataframe.fromBinary
+-- @covers lurek.dataframe.fromCSV
+-- @covers lurek.dataframe.fromJSON
+-- @covers lurek.dataframe.fromRows
+-- @covers lurek.dataframe.newDataFrame
+-- @covers lurek.dataframe.newDatabase
+-- @covers lurek.dataframe.toVec
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 
 local OUT = evidence_output_dir("dataframe")

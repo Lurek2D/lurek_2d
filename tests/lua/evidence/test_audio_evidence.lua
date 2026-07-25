@@ -1,4 +1,16 @@
 -- Canonical evidence file for lurek.audio artifacts.
+-- @covers lurek.audio.judgeBeat
+-- @covers lurek.audio.mixInto
+-- @covers lurek.audio.newBeatClock
+-- @covers lurek.audio.newBus
+-- @covers lurek.audio.newDecoder
+-- @covers lurek.audio.newPool
+-- @covers lurek.audio.newSoundData
+-- @covers lurek.audio.saveWAV
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 
 local OUT = evidence_output_dir("audio")

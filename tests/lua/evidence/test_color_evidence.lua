@@ -1,4 +1,24 @@
 -- Canonical evidence file for lurek.color artifacts.
+-- @covers lurek.color.additive
+-- @covers lurek.color.alphaBlend
+-- @covers lurek.color.brightness
+-- @covers lurek.color.fromHex
+-- @covers lurek.color.fromHsl
+-- @covers lurek.color.fromHsv
+-- @covers lurek.color.fromU8
+-- @covers lurek.color.gammaToLinear
+-- @covers lurek.color.invert
+-- @covers lurek.color.linearToGamma
+-- @covers lurek.color.multiply
+-- @covers lurek.color.overlay
+-- @covers lurek.color.screen
+-- @covers lurek.color.toHex
+-- @covers lurek.color.toHsl
+-- @covers lurek.color.withAlpha
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 
 local OUT = evidence_output_dir("color")

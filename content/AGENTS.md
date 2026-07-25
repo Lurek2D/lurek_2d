@@ -11,16 +11,15 @@
 
 ## Rules
 - Use real `lurek.*` calls, not stubs or placeholder tables.
-- Keep the ownership chain clear: public API docs feed `content/examples/`, examples feed Lua unit tests, and evidence/golden prove selected behavior.
-- API examples must use exact `--@api:` marker-owned `do ... end` blocks; do not add shared helpers or setup outside those blocks.
-- Put API showcases, mechanic labs, and feature demonstrations in `content/examples/` or `tests/lua/evidence/`; finished products belong in the separate content repository.
+- Keep examples, layouts, and snippets in their own child folders.
+- Put finished games and reusable Lua packages in `lurek_2d_content/`.
 - Scale movement, fades, and tweens by `dt`.
 - Keep state in locals, modules, or context tables; avoid globals.
 - Use forward slashes in asset paths.
 - Use `lurek.log.*` instead of raw print calls.
-- Do not hide warnings with `.vscode/settings.json` or `---@diagnostic disable`.
+- Do not hide warnings with local editor settings or diagnostic-disable comments.
 
 ## Workflow
 - Run only validators and smoke flows for the edited content type.
 - For examples, run `tools/python.cmd tools/audit/example_coverage.py --report --no-stubs --no-partials`.
-- For layouts, run `tools/ui/fix_layouts.py` and `tools/ui/snap_to_grid.py`, then verify visual output.
+- For layouts, run `tools/python.cmd tools/ui/fix_layouts.py` and `tools/python.cmd tools/ui/snap_to_grid.py`, then verify visual output.

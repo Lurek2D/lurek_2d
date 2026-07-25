@@ -1,4 +1,8 @@
 -- Canonical evidence file for lurek.graph / flownet visual artifacts.
+-- @covers lurek.graph.newGraph
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("flownet")
 

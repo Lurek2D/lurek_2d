@@ -1,7 +1,5 @@
 -- Integration: i18n text source serialized with data and consumed by UI layout.
 -- @describe integration: ui + i18n + data
-
--- @describe integration: ui + i18n + data
 describe("integration: ui + i18n + data", function()
     -- @integration lurek.binary.pack
     -- @integration lurek.binary.unpack

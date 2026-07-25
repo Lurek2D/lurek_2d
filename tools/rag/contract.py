@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from state import config_fingerprint, load_config
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 CONTRACT_PATH = WORKSPACE_ROOT / "tools" / "rag" / "rag_contract.json"
@@ -16,11 +17,14 @@ CONTRACT_PATH = WORKSPACE_ROOT / "tools" / "rag" / "rag_contract.json"
 
 def _load_contract() -> dict[str, Any]:
     try:
-        if CONTRACT_PATH.exists():
-            return json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return {}
-    return {}
+        if not CONTRACT_PATH.exists():
+            raise RuntimeError("RAG contract is missing; run tools/rag/generate_contract.py.")
+        contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+        if not isinstance(contract, dict) or contract.get("config_hash") != config_fingerprint(load_config()):
+            raise RuntimeError("RAG contract drift; run tools/rag/generate_contract.py.")
+        return contract
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Invalid RAG contract: {exc}") from exc
 
 
 RAG_CONTRACT = _load_contract()

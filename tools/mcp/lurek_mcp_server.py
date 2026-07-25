@@ -17,7 +17,14 @@ from typing import Any, Callable
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PYTHON = sys.executable
 SERVER_NAME = "lurek-tools"
-SERVER_VERSION = "0.2.0"
+SERVER_VERSION = "0.3.0"
+SUPPORTED_PROTOCOL_VERSIONS = (
+    "2025-11-25",
+    "2025-06-18",
+    "2025-03-26",
+    "2024-11-05",
+)
+MAX_STREAM_CHARS = 16_000
 
 RAG_DIR = REPO_ROOT / "tools" / "rag"
 if str(RAG_DIR) not in sys.path:
@@ -54,6 +61,7 @@ class ToolSpec:
     description: str
     input_schema: dict[str, Any]
     handler: Callable[[dict[str, Any]], dict[str, Any]]
+    annotations: dict[str, Any] | None = None
 
 
 def _json_rpc_result(request_id: Any, result: dict[str, Any]) -> dict[str, Any]:
@@ -65,32 +73,34 @@ def _json_rpc_error(request_id: Any, code: int, message: str) -> dict[str, Any]:
 
 
 def _read_message() -> dict[str, Any] | None:
-    headers: dict[str, str] = {}
+    """Read one newline-delimited JSON-RPC message from stdio.
+
+    MCP stdio intentionally uses one UTF-8 JSON message per line.  This is
+    not the LSP ``Content-Length`` framing protocol.
+    """
     while True:
         line = sys.stdin.buffer.readline()
         if not line:
             return None
-        if line in (b"\r\n", b"\n"):
-            break
         decoded = line.decode("utf-8").strip()
-        if ":" not in decoded:
+        if not decoded:
             continue
-        name, value = decoded.split(":", 1)
-        headers[name.strip().lower()] = value.strip()
-
-    length = int(headers.get("content-length", "0"))
-    if length <= 0:
-        return None
-    payload = sys.stdin.buffer.read(length)
-    return json.loads(payload.decode("utf-8"))
+        return json.loads(decoded)
 
 
 def _write_message(payload: dict[str, Any]) -> None:
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    header = f"Content-Length: {len(body)}\r\n\r\n".encode("ascii")
-    sys.stdout.buffer.write(header)
     sys.stdout.buffer.write(body)
+    sys.stdout.buffer.write(b"\n")
     sys.stdout.buffer.flush()
+
+
+def _truncate_stream(value: str) -> tuple[str, bool]:
+    """Keep tool diagnostics bounded before they enter an MCP response."""
+    if len(value) <= MAX_STREAM_CHARS:
+        return value, False
+    omitted = len(value) - MAX_STREAM_CHARS
+    return value[:MAX_STREAM_CHARS] + f"\n… truncated {omitted} character(s)", True
 
 
 def _run_python_tool(
@@ -143,13 +153,17 @@ def _run_python_tool(
             parse_error = "Expected JSON output file was not produced."
 
         duration_ms = round((time.perf_counter() - start) * 1000, 2)
+        stdout, stdout_truncated = _truncate_stream(proc.stdout)
+        stderr, stderr_truncated = _truncate_stream(proc.stderr)
         return {
             "ok": proc.returncode == 0,
             "exit_code": proc.returncode,
             "elapsed_ms": duration_ms,
             "command": cmd,
-            "stdout": proc.stdout,
-            "stderr": proc.stderr,
+            "stdout": stdout,
+            "stderr": stderr,
+            "stdout_truncated": stdout_truncated,
+            "stderr_truncated": stderr_truncated,
             "parse_error": parse_error,
             "parsed": parsed,
         }
@@ -158,6 +172,8 @@ def _run_python_tool(
 
 
 def _coerce_int_in_range(value: Any, name: str, *, minimum: int, maximum: int) -> int:
+    if isinstance(value, bool):
+        raise ValueError(f"`{name}` must be an integer.")
     try:
         parsed = int(value)
     except (TypeError, ValueError) as exc:
@@ -169,8 +185,6 @@ def _coerce_int_in_range(value: Any, name: str, *, minimum: int, maximum: int) -
 
 def _text_result(summary: str, data: dict[str, Any], *, is_error: bool | None = None) -> dict[str, Any]:
     error_state = (not data.get("ok", False)) if is_error is None else is_error
-    if "payload" not in data and "parsed" in data:
-        data = {**data, "payload": data.get("parsed")}
     result = {
         "content": [{"type": "text", "text": summary}],
         "structuredContent": data,
@@ -220,7 +234,7 @@ def _normalize_rag_targets(args: dict[str, Any]) -> list[str]:
                 raise ValueError("`targets` must be an array of strings.")
             trimmed = item.strip()
             if trimmed:
-                normalized = trimmed.replace("\\", "/").lstrip("/")
+                normalized = _safe_repo_relative_path(trimmed, "targets")
                 if normalized not in seen:
                     candidates.append(normalized)
                     seen.add(normalized)
@@ -230,11 +244,81 @@ def _normalize_rag_targets(args: dict[str, Any]) -> list[str]:
                 raise ValueError("`directories` must be an array of strings.")
             trimmed = item.strip()
             if trimmed:
-                normalized = trimmed.replace("\\", "/").lstrip("/")
+                normalized = _safe_repo_relative_path(trimmed, "directories")
                 if normalized not in seen:
                     candidates.append(normalized)
                     seen.add(normalized)
     return candidates
+
+
+def _safe_repo_relative_path(value: str, name: str) -> str:
+    """Return a normalized path that cannot escape the repository root."""
+    normalized = value.replace("\\", "/").strip()
+    if not normalized or normalized.startswith("/") or ":" in normalized.split("/", 1)[0]:
+        raise ValueError(f"`{name}` entries must be non-empty repository-relative paths.")
+    parts = normalized.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        raise ValueError(f"`{name}` entries must not contain traversal segments.")
+    return "/".join(parts)
+
+
+def _validate_tool_arguments(spec: ToolSpec, arguments: Any) -> dict[str, Any] | str:
+    """Validate the supported JSON Schema subset before a handler runs."""
+    if not isinstance(arguments, dict):
+        return "`arguments` must be an object."
+    schema = spec.input_schema
+    properties = schema.get("properties", {})
+    required = schema.get("required", [])
+    for name in required:
+        if name not in arguments:
+            return f"`{name}` is required."
+    if schema.get("additionalProperties") is False:
+        unknown = sorted(set(arguments) - set(properties))
+        if unknown:
+            return f"Unknown argument(s): {', '.join(unknown)}."
+
+    for name, value in arguments.items():
+        property_schema = properties.get(name)
+        if not isinstance(property_schema, dict) or value is None:
+            continue
+        kind = property_schema.get("type")
+        valid = (
+            kind is None
+            or (kind == "string" and isinstance(value, str))
+            or (kind == "boolean" and isinstance(value, bool))
+            or (kind == "integer" and isinstance(value, int) and not isinstance(value, bool))
+            or (kind == "number" and isinstance(value, (int, float)) and not isinstance(value, bool))
+            or (kind == "array" and isinstance(value, list))
+        )
+        if not valid:
+            return f"`{name}` must be a {kind}."
+        if "enum" in property_schema and value not in property_schema["enum"]:
+            return f"`{name}` must be one of: {', '.join(map(str, property_schema['enum']))}."
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            minimum = property_schema.get("minimum")
+            maximum = property_schema.get("maximum")
+            if minimum is not None and value < minimum:
+                return f"`{name}` must be at least {minimum}."
+            if maximum is not None and value > maximum:
+                return f"`{name}` must be at most {maximum}."
+        if isinstance(value, list):
+            item_schema = property_schema.get("items", {})
+            if item_schema.get("type") == "string" and any(not isinstance(item, str) for item in value):
+                return f"`{name}` must contain only strings."
+    return arguments
+
+
+def _negotiate_protocol_version(params: dict[str, Any]) -> tuple[str | None, dict[str, Any] | None]:
+    requested = params.get("protocolVersion")
+    if not isinstance(requested, str):
+        return None, _json_rpc_error(None, -32602, "`protocolVersion` is required.")
+    if requested in SUPPORTED_PROTOCOL_VERSIONS:
+        return requested, None
+    return None, _json_rpc_error(
+        None,
+        -32602,
+        "Unsupported protocol version",
+    )
 
 
 def handle_rag_search(args: dict[str, Any]) -> dict[str, Any]:
@@ -661,36 +745,45 @@ def handle_tool_registry_audit(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def handle_cag_validate(args: dict[str, Any]) -> dict[str, Any]:
-    cmd = ["--format", "json"]
+    cmd: list[str] = []
     if args.get("type"):
         cmd.extend(["--type", str(args["type"])])
     if args.get("file"):
         cmd.extend(["--file", str(args["file"])])
     if args.get("baseline"):
         cmd.append("--baseline")
-    if args.get("write_baseline"):
-        cmd.append("--write-baseline")
 
     data = _run_python_tool(
         "tools/validate/cag_validate.py",
         cmd,
         timeout_sec=300,
-        json_mode="format",
     )
-    report = data.get("parsed") or {}
-    summary = report.get("summary", {})
-    scanned = report.get("scanned", {})
-    lines = [
-        f"CAG validation: {summary.get('errors', 0)} error(s), {summary.get('warnings', 0)} warning(s).",
-        f"Scanned files: {sum(scanned.values()) if isinstance(scanned, dict) else 0}.",
-    ]
-    return _text_result("\n".join(lines), data)
+    report_lines = [line for line in data.get("stdout", "").splitlines() if line.startswith(("Scanned:", "Summary:"))]
+    summary = "\n".join(report_lines) or "CAG validation completed."
+    return _text_result(summary, data)
+
+
+def handle_cag_write_baseline(args: dict[str, Any]) -> dict[str, Any]:
+    """Explicitly update the CAG baseline after a reviewed policy decision."""
+    cmd = ["--write-baseline"]
+    if args.get("type"):
+        cmd.extend(["--type", str(args["type"])])
+    if args.get("file"):
+        cmd.extend(["--file", str(args["file"])])
+    data = _run_python_tool(
+        "tools/validate/cag_validate.py",
+        cmd,
+        timeout_sec=300,
+    )
+    return _text_result("CAG baseline write finished.", data)
 
 
 def handle_cag_link_check(args: dict[str, Any]) -> dict[str, Any]:
     cmd = ["--format", "json"]
     if args.get("strict"):
         cmd.append("--strict")
+    if args.get("require_workspace"):
+        cmd.append("--require-workspace")
     data = _run_python_tool(
         "tools/audit/cag_link_check.py",
         cmd,
@@ -1206,26 +1299,40 @@ TOOLS: dict[str, ToolSpec] = {
     ),
     "cag_validate": ToolSpec(
         name="cag_validate",
-        description="Validate Codex agent, skill, and prompt files against the CAG contract.",
+        description="Validate Codex roles, skills, contracts, domains, and registered agents.",
         input_schema={
             "type": "object",
             "properties": {
-                "type": {"type": "string", "enum": ["system_prompt", "agent", "skill", "prompt"]},
+                "type": {
+                    "type": "string",
+                    "enum": ["all", "role", "skill", "contract", "domain", "agent", "repo_agent"],
+                },
                 "file": {"type": "string"},
                 "baseline": {"type": "boolean", "default": False},
-                "write_baseline": {"type": "boolean", "default": False},
             },
             "additionalProperties": False,
         },
         handler=handle_cag_validate,
     ),
+    "cag_write_baseline": ToolSpec(
+        name="cag_write_baseline",
+        description="Write the current CAG validation findings as the local baseline.",
+        input_schema={
+            "type": "object",
+            "properties": {"type": {"type": "string", "enum": ["all", "role", "skill", "contract", "domain", "agent", "repo_agent"]}, "file": {"type": "string"}},
+            "additionalProperties": False,
+        },
+        handler=handle_cag_write_baseline,
+        annotations={"readOnlyHint": False, "destructiveHint": True, "idempotentHint": False},
+    ),
     "cag_link_check": ToolSpec(
         name="cag_link_check",
-        description="Check .github markdown files for broken links and stale references.",
+        description="Check Codex contracts and skills for broken links and stale references.",
         input_schema={
             "type": "object",
             "properties": {
                 "strict": {"type": "boolean", "default": False},
+                "require_workspace": {"type": "boolean", "default": False},
             },
             "additionalProperties": False,
         },
@@ -1283,12 +1390,21 @@ def _handle_request(message: dict[str, Any]) -> dict[str, Any] | None:
     method = message.get("method")
     request_id = message.get("id")
     params = message.get("params", {})
+    if not isinstance(params, dict):
+        return _json_rpc_error(request_id, -32602, "`params` must be an object.")
 
     if method == "initialize":
+        version, error = _negotiate_protocol_version(params)
+        if error is not None:
+            return _json_rpc_error(
+                request_id,
+                error["error"]["code"],
+                error["error"]["message"],
+            )
         return _json_rpc_result(
             request_id,
             {
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": version,
                 "capabilities": {"tools": {}},
                 "serverInfo": {"name": SERVER_NAME, "version": SERVER_VERSION},
             },
@@ -1306,6 +1422,7 @@ def _handle_request(message: dict[str, Any]) -> dict[str, Any] | None:
                 "name": spec.name,
                 "description": spec.description,
                 "inputSchema": spec.input_schema,
+                **({"annotations": spec.annotations} if spec.annotations else {}),
             }
             for spec in TOOLS.values()
         ]
@@ -1313,11 +1430,16 @@ def _handle_request(message: dict[str, Any]) -> dict[str, Any] | None:
 
     if method == "tools/call":
         name = params.get("name")
+        if not isinstance(name, str):
+            return _json_rpc_error(request_id, -32602, "`name` is required.")
         spec = TOOLS.get(name)
         if spec is None:
             return _json_rpc_error(request_id, -32602, f"Unknown tool: {name}")
+        arguments = _validate_tool_arguments(spec, params.get("arguments", {}))
+        if isinstance(arguments, str):
+            return _json_rpc_error(request_id, -32602, arguments)
         try:
-            result = spec.handler(params.get("arguments") or {})
+            result = spec.handler(arguments)
             return _json_rpc_result(request_id, result)
         except subprocess.TimeoutExpired as exc:
             return _json_rpc_result(
@@ -1328,15 +1450,15 @@ def _handle_request(message: dict[str, Any]) -> dict[str, Any] | None:
                     "isError": True,
                 },
             )
-        except Exception as exc:  # pragma: no cover - defensive server boundary
+        except Exception:  # pragma: no cover - defensive server boundary
+            traceback.print_exc(file=sys.stderr)
             return _json_rpc_result(
                 request_id,
                 {
-                    "content": [{"type": "text", "text": f"Internal server error: {exc}"}],
+                    "content": [{"type": "text", "text": "Internal server error."}],
                     "structuredContent": {
                         "ok": False,
-                        "error": str(exc),
-                        "traceback": traceback.format_exc(),
+                        "error": "internal_error",
                     },
                     "isError": True,
                 },
@@ -1347,7 +1469,11 @@ def _handle_request(message: dict[str, Any]) -> dict[str, Any] | None:
 
 def main() -> int:
     while True:
-        message = _read_message()
+        try:
+            message = _read_message()
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            _write_message(_json_rpc_error(None, -32700, "Parse error"))
+            continue
         if message is None:
             return 0
         response = _handle_request(message)

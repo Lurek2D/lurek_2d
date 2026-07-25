@@ -1,6 +1,5 @@
 -- Integration: Workbench TMX document editing is consumed by the tilemap importer.
 -- @describe workbench tilemap integration
-
 local WORK_ROOT = "work/workbench_tilemap_integration"
 local WORKBENCH_ROOT = "lurek_2d_workbench"
 local SAMPLE_TMX = WORKBENCH_ROOT .. "/data/sample_project/content/maps/tutorial.tmx"
@@ -9,7 +8,6 @@ local TMX_PATH = WORK_ROOT .. "/content/maps/tutorial.tmx"
 local TILESET_PATH = WORK_ROOT .. "/content/tilesets/terrain.tileset.toml"
 local native_create_directory = lurek.filesystem.createDirectory
 local native_write = lurek.filesystem.write
-
 local function load_workbench_module(path)
     local chunk = lurek.filesystem.load(WORKBENCH_ROOT .. "/" .. path)
     expect_type("function", chunk, "workbench module loads from GameFS")
@@ -17,7 +15,6 @@ local function load_workbench_module(path)
     expect_true(ok, "workbench module executes: " .. tostring(result))
     return result
 end
-
 local function enable_fixture_writes()
     lurek.filesystem.createDirectory = function(_path) return nil end
     lurek.filesystem.write = function(path, text)
@@ -28,7 +25,6 @@ local function enable_fixture_writes()
         return native_write(path, text)
     end
 end
-
 -- @describe workbench tilemap integration
 describe("workbench tilemap integration", function()
     before_each(function()

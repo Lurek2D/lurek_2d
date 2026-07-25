@@ -1,13 +1,11 @@
 -- Integration: workbench command/state/document flow for particle files
 -- @describe workbench particle integration
-
 local WORK_ROOT = "work/issue_36_workbench_particle"
 local WORKBENCH_ROOT = "lurek_2d_workbench"
 local SAMPLE_FIRE = WORKBENCH_ROOT .. "/data/sample_project/content/particles/fire.particle.toml"
 local PARTICLE_PATH = WORK_ROOT .. "/content/particles/fire.particle.toml"
 local native_create_directory = lurek.filesystem.createDirectory
 local native_write = lurek.filesystem.write
-
 local function enable_host_writes()
     lurek.filesystem.createDirectory = function(_path)
         return nil
@@ -20,27 +18,22 @@ local function enable_host_writes()
         return native_write(path, text)
     end
 end
-
 local function restore_native_writes()
     lurek.filesystem.createDirectory = native_create_directory
     lurek.filesystem.write = native_write
 end
-
 local function load_workbench_module(path)
     local chunk = lurek.filesystem.load(WORKBENCH_ROOT .. "/" .. path)
     expect_type("function", chunk, "workbench module loads from GameFS")
-
     local ok, result = pcall(chunk)
     expect_true(ok, "workbench module executes: " .. tostring(result))
     return result
 end
-
 local function write_sample_particle_project()
     lurek.filesystem.createDirectory(WORK_ROOT .. "/content/particles")
     local source = lurek.filesystem.read(SAMPLE_FIRE)
     lurek.filesystem.write(PARTICLE_PATH, source)
 end
-
 -- @describe workbench particle integration
 describe("workbench particle integration", function()
     before_each(function()

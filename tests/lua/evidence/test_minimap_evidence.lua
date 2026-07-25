@@ -1,6 +1,15 @@
 -- test_minimap_evidence.lua
 -- Evidence tests: lurek.minimap API + PNG visualization
 -- Canonical evidence file for lurek.minimap visual outputs.
+-- @covers lurek.awareness.newTileAwareness
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.savePNG
+-- @covers lurek.minimap.newMinimap
+-- @covers lurek.province.newFromPng
+-- @covers lurek.render.newShader
+-- @covers lurek.tilefield.new
+-- @covers lurek.tilelight.new
+
 
 local OUT = evidence_output_dir("minimap")
 

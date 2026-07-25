@@ -66,7 +66,7 @@ _UNSAFE_CONSTRUCT_RE = re.compile(r"\bunsafe\s*(?:\{|fn\b|impl\b|trait\b|extern\
 # â”€â”€ Explicit cross-tier exemptions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Format: {(importer_module, imported_module): "reason"}
 # Only list exemptions that have an explicit architectural justification
-# documented in docs/architecture/engine-architecture.md or the module docs/specs.
+# documented in docs/architecture/engine-core.md or the module docs/specs.
 CROSS_TIER_EXEMPTIONS: dict = {
     # automation/simulator.rs pushes synthetic events into EventQueue.
     # EventQueue is a core data structure that both modules share; the
@@ -1215,17 +1215,7 @@ def check_unwrap(analysis: ModuleFileAnalysis) -> Check:
 
 
 
-# â”€â”€ Phase 6: Docs & Wiki â”€â”€
-
-
-def check_wiki_page(module: str) -> Check:
-    """W-05: Wiki API stubs are optional; specs and generated API docs are canonical."""
-    return Check(
-        "W-05",
-        "Wiki page",
-        PASS,
-        "Optional â€” canonical API docs live in docs/specs/ and docs/api/",
-    )
+# â”€â”€ Phase 6: Docs â”€â”€
 
 
 def check_example_exists(module: str) -> Check:
@@ -1405,12 +1395,11 @@ def audit_module(module: str) -> Tuple[str, List[Check], str]:
     checks.append(Check("T-07", "Tests pass", MANUAL,
                           f"Run: cargo test --test {module}_tests -- --nocapture"))
 
-    # Phase 8: Documentation, Examples & Wiki
+    # Phase 8: Documentation & Examples
     checks.extend(check_example_file(module))
     checks.append(Check("W-03", "Example comments", MANUAL,
                           f"Verify content/examples/{module}.lua has realistic one-line comments per call"))
     checks.append(check_example_spec_sync(module))
-    checks.append(check_wiki_page(module))
     checks.append(Check("W-06", "Changelog entry", MANUAL,
                           "Verify recent API changes have docs/CHANGELOG.md entries"))
 
@@ -1498,7 +1487,7 @@ def format_quality_report(module: str, checks: List[Check], result: str, date: s
         ("Phase 5 â€” Luaâ†”Rust Bridge",        ["B-"]),
         ("Phase 6 â€” Architecture Compliance",     ["R-"]),
         ("Phase 7 â€” Test Coverage",               ["T-"]),
-        ("Phase 8 â€” Documentation & Wiki",        ["W-"]),
+        ("Phase 8 â€” Documentation & Examples",    ["W-"]),
         ("Phase 9 â€” Code Quality",                ["Q-"]),
         ("Phase 10 â€” Performance",                ["P-"]),
         ("Phase 11 â€” Integration & Extension",    ["I-"]),

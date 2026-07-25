@@ -1,4 +1,20 @@
 -- Canonical evidence file for lurek.charts visual artifacts.
+-- @covers lurek.charts.newArea
+-- @covers lurek.charts.newBar
+-- @covers lurek.charts.newBoxPlot
+-- @covers lurek.charts.newBubble
+-- @covers lurek.charts.newCandlestick
+-- @covers lurek.charts.newHeatmap
+-- @covers lurek.charts.newHistogram
+-- @covers lurek.charts.newLine
+-- @covers lurek.charts.newPie
+-- @covers lurek.charts.newRadar
+-- @covers lurek.charts.newScatter
+-- @covers lurek.charts.newTreemap
+-- @covers lurek.dataframe.fromRows
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("charts")
 
