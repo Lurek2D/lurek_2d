@@ -13,10 +13,9 @@ The public scripting surface lives under `lurek.*`. Generated docs and stubs are
 
 ## How To Read The API
 
-- Start with [Guides](guides/index.md) if you are new to the runtime.
-- Use [Module Guides](module-guides.md) to choose a namespace.
+- Start with [Module Guides](module-guides.md) to choose a namespace.
 - Use [Full Lua API Reference](api/lurek.md) for exact signatures and return values.
-- Use [Examples](guides/examples.md) when you want runnable code first.
+- Use [Examples](examples.md) when you want runnable code first.
 - Use `docs/api/lurek.lua` in your editor for IntelliSense.
 
 ## Editor Stub
@@ -28,4 +27,4 @@ Do not edit the generated stub directly. If documentation or signatures are wron
 ## User-Facing And Contributor-Facing API
 
 - User-facing Lua APIs are documented here and in the generated GitHub Pages module guides.
-- Rust internals and module contracts belong to [Contributor Docs](contributing/index.md), `docs/specs/`, and `docs/architecture/`.
+- Rust internals and module contracts belong to [Contributor Docs](contributors.md), `docs/specs/`, and `docs/architecture/`.

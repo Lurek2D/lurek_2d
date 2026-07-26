@@ -14,11 +14,11 @@
 - Treat `docs/specs/*.md` as generated output.
 - Edit `docs/specs/manual/<module>.md` for `TL;DR`, `Summary`, `Notes`, and architecture links.
 - Edit source docstrings, tests, examples, or `docs/meta/modules.toml` when generated facts are wrong.
-- `docs/meta/modules.toml` owns module paths, Lua names, examples, tests, tiers, and public flags.
+- Keep `docs/meta/modules.toml` as source of truth for module tier, source path, Lua binding path, namespace, example file, Lua unit test, user-facing flag, and plugin tier.
 - Never copy generated spec prose back into Rust docstrings.
 - Rebuild specs after Rust Lua API signature or docs metadata changes.
 
 ## Workflow
-- Run `tools/python.cmd tools/docs/gen_module_specs.py` or `tools/python.cmd tools/gen_all_docs.py`.
-- Run `tools/python.cmd tools/validate/validate_module_coverage.py`.
-- Run `tools/python.cmd tools/audit/docs_quality.py`.
+- Run `python tools/docs/gen_module_specs.py` or `python tools/gen_all_docs.py`.
+- Run `python tools/validate/validate_module_coverage.py`.
+- Run `python tools/audit/docs_quality.py`.

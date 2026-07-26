@@ -1,29 +1,68 @@
-# <module> manual spec overlay
+# `<module>`
 
 <!--
-Copy this file to `docs/specs/manual/<module>.md`.
-This file is a generator input for durable manual intent.
-Do not copy it to `docs/specs/<module>.md`; that page is generated.
-Keep only high-level TL;DR, Summary, Notes, and Architecture Links here.
-Do not add API tables, file inventories, test lists, or generated prose.
+  TEMPLATE — merged module reference format.
+  Copy this file to docs/specs/<module>.md and fill in every section.
+  Summary is manual prose.
+  Imports, Files, and Lua API Ref are scaffolded by tools/docs/gen_module_specs.py.
+  Keep this aligned with docs/specs/AGENTS.md and the live module layout.
 -->
 
 ## TL;DR
 
-- One durable sentence about what this module owns.
-- One durable sentence about the most important boundary or capability.
+- A short 1-2 sentence summary of what this module does.
+
+## General Info
+
+- Module group: `<Foundations | Core Runtime | Platform Services | Feature Systems | Edge/Integration>`
+- Source path: `src/<module>/`
+- Binding: `src/lua_api/<module>_api.rs` or `None direct`
+- Namespace: `lurek.<namespace>` or `None direct`
+- Lua API surface: `<N>` functions, `<N>` types, `<N>` methods
+- Rust test path(s): `tests/rust/unit/<module>_tests.rs`
+- Lua test path(s): `tests/lua/unit/test_<module>_core_unit.lua`
 
 ## Summary
 
-- Explain the module's user-facing purpose and scope in a few high-signal paragraphs or bullets.
-- Describe stable boundaries, important invariants, and how this module relates to neighboring systems.
-- Keep this distinct from generated callable facts, parameter lists, file summaries, and test inventories.
+- Several sentences describing what the module delivers for the user and which problems it helps solve.
+- Use wording that is distinct from file, type, method, and function descriptions elsewhere in the spec.
+- Describe scope boundaries only in terms of what the module owns versus what the user must get from other modules.
 
-## Notes
+## Imports
 
-- Add durable caveats, limits, trust boundaries, or authoring guidance that should survive regeneration.
-- Keep implementation trivia, one-off migration notes, and generated API prose out of this section.
+- `math`: Explain why this module depends on or interacts with `src/math/`.
+- `runtime`: Explain the separation of duties with `src/runtime/`.
 
-## Architecture Links
+## Files
 
-- `docs/architecture/example.md`
+- `mod.rs`: Module root and re-export surface.
+- `type_a.rs`: Describe the file's purpose.
+- `type_b.rs`: Describe the file's purpose.
+
+## Lua API Ref
+
+### Functions
+
+- `lurek.<namespace>.example`: Describe what the binding exposes.
+
+### Callbacks
+
+- `lurek.<namespace>.exampleAsync` param `callback` (`function`): Describe callback contract and invocation shape.
+
+### Enums
+
+- No documented module-level enums/constants.
+
+### Types
+
+#### `TypeA` Type
+
+- One-line description of the Lua-visible type.
+
+##### Fields
+
+- `field` (`type`): Describe the field.
+
+##### Methods
+
+- `TypeA:method`: Describe what the Lua-visible method does.
