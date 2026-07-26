@@ -14,7 +14,7 @@
 - Source path: `src/pathfind`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `35` functions, `31` types, `209` methods
+- Lua API surface: `35` functions, `31` types, `210` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -645,6 +645,7 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `LNavGrid:isWalkable(x, y, unit_size?) -> boolean`: Returns whether a one-based grid cell is walkable for a unit size.
 - `LNavGrid:isWalkableFor(name, x, y) -> boolean`: Returns whether a one-based grid cell is walkable for a named footprint.
 - `LNavGrid:loadFromString(data) -> nil`: Loads grid data from a serialized binary string.
+- `LNavGrid:patchCells(patches, opts?) -> table`: Atomically patches navigation-owned cost or blocked state.
 - `LNavGrid:rebuildAbstract() -> nil`: Rebuilds the cached abstract graph for this grid.
 - `LNavGrid:rebuildClearance(opts?) -> integer`: Rebuilds clearance caches for all defined footprints or the supplied named subset.
 - `LNavGrid:saveToString() -> string`: Saves grid data to a serialized binary string.

@@ -53,12 +53,13 @@ impl LurekApp {
                     // Stop immediately on disconnect; the central scheduler applies this request
                     // later in the same poll cycle without creating a background thread.
                     st.gamepad_vibration_active.remove(&id);
-                    st.gamepad_vibration_requests.push(crate::input::GamepadVibrationRequest {
-                        id,
-                        low_freq: 0.0,
-                        high_freq: 0.0,
-                        duration_ms: 0,
-                    });
+                    st.gamepad_vibration_requests
+                        .push(crate::input::GamepadVibrationRequest {
+                            id,
+                            low_freq: 0.0,
+                            high_freq: 0.0,
+                            duration_ms: 0,
+                        });
                     st.input_history.push(crate::input::InputHistoryEvent {
                         frame,
                         time_ms,
@@ -277,7 +278,11 @@ impl LurekApp {
                 } else {
                     st.gamepad_vibration_active.insert(
                         request.id,
-                        (request.low_freq, request.high_freq, now_ms + request.duration_ms as u64),
+                        (
+                            request.low_freq,
+                            request.high_freq,
+                            now_ms + request.duration_ms as u64,
+                        ),
                     );
                     commands.push((request.id, request.low_freq, request.high_freq));
                 }
@@ -313,14 +318,18 @@ fn normalize_xinput_thumb(value: i16, deadzone: i16) -> f32 {
 #[cfg(windows)]
 fn apply_gamepad_vibration(id: usize, low_freq: f32, high_freq: f32) {
     use windows_sys::Win32::UI::Input::XboxController::{XInputSetState, XINPUT_VIBRATION};
-    if id >= 4 { return; }
+    if id >= 4 {
+        return;
+    }
     let vibration = XINPUT_VIBRATION {
         wLeftMotorSpeed: (low_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16,
         wRightMotorSpeed: (high_freq.clamp(0.0, 1.0) * u16::MAX as f32) as u16,
     };
-        // SAFETY: request ids outside the supported 0..=3 range are filtered above, and the
-        // vibration struct is initialized stack storage valid for this immediate FFI call.
-    unsafe { let _ = XInputSetState(id as u32, &vibration); }
+    // SAFETY: request ids outside the supported 0..=3 range are filtered above, and the
+    // vibration struct is initialized stack storage valid for this immediate FFI call.
+    unsafe {
+        let _ = XInputSetState(id as u32, &vibration);
+    }
 }
 #[cfg(not(windows))]
 fn apply_gamepad_vibration(_id: usize, _low_freq: f32, _high_freq: f32) {}

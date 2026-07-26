@@ -14,7 +14,7 @@
 - Source path: `src/progression`
 - Binding: `src/lua_api/progression_api.rs`
 - Namespace: `lurek.progression`
-- Lua API surface: `92` functions, `21` types, `219` methods
+- Lua API surface: `92` functions, `21` types, `225` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -39,7 +39,7 @@ The current slice includes:
 - initial challenge templates with manual or counter-driven progress, activation windows, status filters, expiry, and reward records;
 - initial rivals with leaderboard-aware delta queries, overtake events, and a bounded local activity feed derived from retained progression events;
 - initial virtual population templates with deterministic identity generation, leaderboard-backed lightweight profiles, logical-time simulation, materialization/dematerialization, and leaderboard participation without a network service;
-- isolated `newStatusTracker()` handles with validated status definitions, replace/refresh/add stacking, finite duration and periodic tick scheduling, snapshots, and neutral lifecycle events;
+- isolated `newStatusTracker()` handles with validated status definitions, copied per-instance tags, replace/refresh/add stacking, finite or infinite duration, pause/resume controls, deterministic filtered queries and bulk removal, backward-compatible snapshots, and neutral lifecycle events;
 - attributes, resources, modifiers, and XP/level tracks;
 - achievements with manual and counter-triggered unlocks;
 - reward records with pending, claimed, applied, and rejected states;
@@ -52,6 +52,8 @@ The current slice includes:
 The module is intentionally headless. It owns data and mutation rules only.
 Status ticks and expiry are emitted as neutral records; Lua gameplay code explicitly decides whether
 to apply damage, healing, animation, audio, ECS changes, or other effects.
+Pausing a status freezes both duration and periodic tick timers. Setting zero remaining duration
+expires it on the next explicit tracker update, including `update(0)`.
 
 ## Ownership
 
@@ -269,6 +271,7 @@ to apply damage, healing, animation, audio, ECS changes, or other effects.
 - Avoids renderer, network, audio, and Lua conversion concerns so progression state stays fully headless.
 - Provides mutation plumbing that Rust tests, Lua bindings, changesets, and evidence artifacts rely on.
 - Retains store-wide helpers for ids, bounds, formulas, deterministic sampling, and population setup.
+- Status helpers keep copied tags, pause state, filtering, timers, and ordered removals inside tracker ownership.
 - Open this file when a change touches shared tables, snapshots, transactions, or multi-slice coordination.
 
 ### types.rs
@@ -281,6 +284,7 @@ to apply damage, healing, animation, audio, ECS changes, or other effects.
 - Anchors deterministic serde behavior for snapshots, changesets, and debug payloads that cross module boundaries.
 - Integrates with `store.rs` as the state schema owner while sibling files focus on behavior and mutation rules.
 - Avoids renderer, filesystem, and Lua-specific adapters so these types stay transport-neutral and domain-focused.
+- Status snapshots retain copied tags and pause state while serde defaults accept snapshots authored before them.
 - Open this file when adding stored fields, authored definition shapes, or snapshot-visible progression contracts.
 - Reach here before changing persistence, docs generation, or Lua serialization that depends on stable type layout.
 
@@ -835,9 +839,15 @@ to apply damage, healing, animation, audio, ECS changes, or other effects.
 - `LStatusTracker:clear() -> nil`: Removes all definitions, instances, and queued events.
 - `LStatusTracker:define(definition) -> nil`: Registers or replaces one status definition.
 - `LStatusTracker:drainEvents() -> table`: Takes and clears neutral apply/refresh/stack/tick/expired events.
-- `LStatusTracker:list(subjectId) -> table`: Lists active status instances attached to one subject.
+- `LStatusTracker:get(instanceId) -> table?`: Returns one active status instance by runtime id.
+- `LStatusTracker:has(subjectId, definitionOrTag) -> boolean`: Checks whether a subject has a status with the requested definition id or tag.
+- `LStatusTracker:list(subjectId, filter?) -> table`: Lists active status instances attached to one subject and matching all optional filters.
 - `LStatusTracker:remove(instanceId) -> boolean`: Removes one active status instance.
+- `LStatusTracker:removeByDefinition(subjectId, definitionId) -> integer`: Removes every matching definition instance from one subject.
+- `LStatusTracker:removeByTag(subjectId, tag) -> integer`: Removes every instance carrying a copied tag from one subject.
 - `LStatusTracker:restore(snapshot) -> nil`: Restores definitions, active instances, and ID allocation from a snapshot.
+- `LStatusTracker:setPaused(instanceId, paused) -> boolean`: Pauses or resumes one status instance's lifecycle timers.
+- `LStatusTracker:setRemaining(instanceId, seconds?) -> boolean`: Sets one status instance's remaining duration; nil makes it infinite.
 - `LStatusTracker:snapshot() -> table`: Captures definitions, instances, and ID allocation state.
 - `LStatusTracker:type() -> string`: Returns the Lua-visible type name.
 - `LStatusTracker:typeOf(name) -> boolean`: Checks whether this handle matches `LStatusTracker` or `LObject`.

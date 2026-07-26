@@ -3683,6 +3683,199 @@ describe("horizontal shooter physics helpers", function()
         expect_near(10, miss.travel, 0.001)
         expect_near(0, miss.remaining, 0.001)
     end)
+
+    -- @covers LWorld:newKinematicController
+    it("newKinematicController requires a kinematic body from the same world", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+        local controller = world:newKinematicController(body, { radius = 0.5 })
+        expect_equal("LKinematicController2D", controller:type())
+        local dynamic = world:newCircleBody(0, 0, 0.5, "dynamic")
+        expect_false(pcall(function()
+            world:newKinematicController(dynamic, { radius = 0.5 })
+        end))
+    end)
+
+    -- @covers LKinematicController2D:move
+    it("move uses bounded sweeps and slides along a wall", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+        world:newBody(5, 0, 1, 20, "static")
+        world:step(1 / 60)
+        local result = world:newKinematicController(body, {
+            radius = 0.5, skin = 0.01, maxSlides = 4,
+        }):move(10, 3)
+        expect_true(result.collided)
+        expect_true(result.appliedX < 5)
+        expect_true(result.appliedY > 0)
+        expect_true(result.hitCount >= 1)
+        expect_type("number", result.hits[1].fixtureIndex)
+    end)
+
+    -- @covers LKinematicController2D:testMove
+    it("testMove leaves the controlled body unchanged", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+        local controller = world:newKinematicController(body, { radius = 0.5 })
+        local before_x, before_y = body:getPosition()
+        local result = controller:testMove(3, 4)
+        local after_x, after_y = body:getPosition()
+        expect_near(5, math.sqrt(result.appliedX ^ 2 + result.appliedY ^ 2), 0.001)
+        expect_near(before_x, after_x, 0.001)
+        expect_near(before_y, after_y, 0.001)
+    end)
+
+    -- @covers LKinematicController2D:setRadius
+    it("setRadius validates positive finite values", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"), { radius = 0.5 })
+        expect_no_error(function() controller:setRadius(0.75) end)
+        expect_false(pcall(function() controller:setRadius(0) end))
+    end)
+
+    -- @covers LKinematicController2D:setSkin
+    it("setSkin validates non-negative finite values", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"), { radius = 0.5 })
+        expect_no_error(function() controller:setSkin(0.02) end)
+        expect_false(pcall(function() controller:setSkin(-1) end))
+    end)
+
+    -- @covers LKinematicController2D:setMaxSlides
+    it("setMaxSlides enforces the solver ceiling", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"), { radius = 0.5 })
+        expect_no_error(function() controller:setMaxSlides(8) end)
+        expect_false(pcall(function() controller:setMaxSlides(1000) end))
+    end)
+
+    -- @covers LKinematicController2D:setFilter
+    it("setFilter accepts standard query filters and keeps self excluded", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"), { radius = 0.5 })
+        expect_no_error(function()
+            controller:setFilter({ includeSensors = false, layer = 1, mask = 1 })
+        end)
+    end)
+
+    -- @covers LKinematicController2D:setVerticalSpan
+    it("setVerticalSpan enables altitude-filtered sweeps", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"), { radius = 0.5 })
+        expect_no_error(function() controller:setVerticalSpan(0, 2) end)
+        expect_false(pcall(function() controller:setVerticalSpan(2, 1) end))
+    end)
+
+    -- @covers LKinematicController2D:clearVerticalSpan
+    it("clearVerticalSpan restores ordinary XY sweeps", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"),
+            { radius = 0.5, zMin = 0, zMax = 2 })
+        expect_no_error(function() controller:clearVerticalSpan() end)
+    end)
+
+    -- @covers LKinematicController2D:recover
+    it("recover moves a penetrated body out in a bounded result", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+        world:newBody(0, 0, 2, 2, "static")
+        world:step(1 / 60)
+        local controller = world:newKinematicController(body, { radius = 0.5 })
+        local result = controller:recover()
+        expect_true(result.collided)
+        expect_true(math.abs(result.appliedX) + math.abs(result.appliedY) > 0)
+    end)
+
+    -- @covers LKinematicController2D:getLastResult
+    it("getLastResult returns the latest immutable result snapshot", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"), { radius = 0.5 })
+        expect_equal(nil, controller:getLastResult())
+        controller:testMove(1, 0)
+        expect_near(1, controller:getLastResult().requestedX, 0.001)
+    end)
+
+    -- @covers LKinematicController2D:release
+    it("release invalidates further controller operations", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local controller = world:newKinematicController(
+            world:newCircleBody(0, 0, 0.5, "kinematic"), { radius = 0.5 })
+        controller:release()
+        expect_false(pcall(function() controller:move(1, 0) end))
+    end)
+
+    -- @covers LKinematicController2D:type
+    it("type returns the kinematic controller userdata name", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+        local controller = world:newKinematicController(body, { radius = 0.5 })
+        expect_equal("LKinematicController2D", controller:type())
+    end)
+
+    -- @covers LKinematicController2D:typeOf
+    it("typeOf recognizes the controller and base object names", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+        local controller = world:newKinematicController(body, { radius = 0.5 })
+        expect_true(controller:typeOf("LKinematicController2D"))
+        expect_true(controller:typeOf("LObject"))
+    end)
+
+    -- @covers LWorld:querySector
+    it("querySector orders hits by distance angle and body id", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local near = world:newCircleBody(2, 0, 0.5, "static")
+        local far = world:newCircleBody(4, 1, 0.5, "static")
+        world:newCircleBody(-2, 0, 0.5, "static")
+        world:step(1 / 60)
+        local hits = world:querySector(0, 0, 10, 0, math.pi / 2)
+        expect_equal(2, #hits)
+        expect_equal(near:getId(), hits[1].bodyId)
+        expect_equal(far:getId(), hits[2].bodyId)
+        expect_true(hits[1].distance <= hits[2].distance)
+    end)
+
+    -- @covers LWorld:setBodyEnabled
+    it("setBodyEnabled toggles a stable body without synthetic events", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(2, 2, 1, "static")
+        world:setBodyEnabled(body:getId(), false)
+        expect_false(world:isBodyEnabled(body:getId()))
+        world:setBodyEnabled(body:getId(), true)
+        expect_true(world:isBodyEnabled(body:getId()))
+    end)
+
+    -- @covers LWorld:isBodyEnabled
+    it("isBodyEnabled rejects inactive ids", function()
+        local world = lurek.physics.newWorld(0, 0)
+        expect_false(pcall(function() world:isBodyEnabled(9999) end))
+    end)
+
+    -- @covers LWorld:setFixtureEnabled
+    it("setFixtureEnabled independently toggles a zero-based fixture", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(2, 2, 1, "static")
+        world:setFixtureEnabled(body:getId(), 0, false)
+        expect_false(world:isFixtureEnabled(body:getId(), 0))
+        world:setFixtureEnabled(body:getId(), 0, true)
+        expect_true(world:isFixtureEnabled(body:getId(), 0))
+    end)
+
+    -- @covers LWorld:isFixtureEnabled
+    it("isFixtureEnabled rejects missing fixtures", function()
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newCircleBody(2, 2, 1, "static")
+        expect_false(pcall(function()
+            world:isFixtureEnabled(body:getId(), 4)
+        end))
+    end)
 end)
 
 test_summary()

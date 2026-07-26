@@ -33,7 +33,10 @@ impl GuiContext {
     /// Accept normalized safe-area insets from the window/app edge and invalidate geometry.
     pub fn set_safe_area(&mut self, top: f32, right: f32, bottom: f32, left: f32) -> bool {
         let insets = [top, right, bottom, left];
-        if insets.iter().any(|value| !value.is_finite() || *value < 0.0) {
+        if insets
+            .iter()
+            .any(|value| !value.is_finite() || *value < 0.0)
+        {
             return false;
         }
         self.safe_area = insets;
@@ -55,9 +58,13 @@ impl GuiContext {
         if self.input_parent_cache_dirty {
             let mut is_child = vec![false; self.widgets.len()];
             for idx in 0..self.widgets.len() {
-                if !self.widget_is_live(idx) { continue; }
+                if !self.widget_is_live(idx) {
+                    continue;
+                }
                 for child_idx in self.traversal_children(idx) {
-                    if child_idx < is_child.len() { is_child[child_idx] = true; }
+                    if child_idx < is_child.len() {
+                        is_child[child_idx] = true;
+                    }
                 }
             }
             self.input_parent_cache = is_child;

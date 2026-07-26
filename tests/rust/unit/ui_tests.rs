@@ -1,10 +1,36 @@
 //! Internal regression tests for retained UI container layout behavior.
 
-use lurek2d::ui::{GuiContext, Layout, LayoutDirection, WidgetBase, WidgetType};
 use lurek2d::ui::extras::{Toolbar, ToolbarItem};
+use lurek2d::ui::{
+    load_layout_def_attached, GuiContext, Layout, LayoutDirection, WidgetBase, WidgetDef,
+    WidgetType,
+};
 
 fn assert_near(actual: f32, expected: f32) {
-    assert!((actual - expected).abs() <= 0.001, "expected {expected}, got {actual}");
+    assert!(
+        (actual - expected).abs() <= 0.001,
+        "expected {expected}, got {actual}"
+    );
+}
+
+#[test]
+fn isolated_context_layout_widgets_are_focusable_after_attachment() {
+    let mut context = GuiContext::new();
+    context.set_viewport(640.0, 360.0);
+    let definition = WidgetDef {
+        widget_type: "button".to_string(),
+        text: Some("Start".to_string()),
+        ..WidgetDef::default()
+    };
+    let slot = load_layout_def_attached(&mut context, &definition).unwrap();
+    context.run_layout_pass();
+    let base = context.widgets[slot].base();
+    assert!(base.visible);
+    assert!(base.is_visible);
+    assert!(base.enabled);
+    assert!(base.focusable);
+    context.set_focus(Some(slot));
+    assert_eq!(context.focused_widget, Some(slot));
 }
 
 #[test]
@@ -60,12 +86,15 @@ fn status_bar_section_widget_is_reparented_laid_out_and_cleared_on_destroy() {
         bar.sections.push((String::new(), 120.0));
         bar.section_widgets.push(None);
     }
-    ctx.set_status_bar_section_widget(status, 0, Some(child)).unwrap();
+    ctx.set_status_bar_section_widget(status, 0, Some(child))
+        .unwrap();
     ctx.run_layout_pass();
     assert_eq!(ctx.child_count(status), 1);
     assert_near(ctx.widgets[child].base().computed_rect.width, 120.0);
     ctx.destroy_widget(child, true).unwrap();
-    let lurek2d::ui::context::WidgetKind::StatusBar(bar) = &ctx.widgets[status] else { panic!("status bar retained its kind"); };
+    let lurek2d::ui::context::WidgetKind::StatusBar(bar) = &ctx.widgets[status] else {
+        panic!("status bar retained its kind");
+    };
     assert_eq!(bar.section_widgets, vec![None]);
 }
 
@@ -79,7 +108,8 @@ fn shrinking_status_sections_detaches_removed_section_widgets() {
         bar.sections.push((String::new(), 100.0));
         bar.section_widgets.push(None);
     }
-    ctx.set_status_bar_section_widget(status, 0, Some(child)).unwrap();
+    ctx.set_status_bar_section_widget(status, 0, Some(child))
+        .unwrap();
     ctx.set_status_bar_section_count(status, 0).unwrap();
     assert_eq!(ctx.child_count(status), 0);
     assert!(ctx.validate_tree().is_empty());
@@ -97,7 +127,11 @@ fn dock_panel_allocates_edges_then_gives_fill_the_remaining_rectangle() {
     ctx.widgets[dock].base_mut().width = 800.0;
     ctx.widgets[dock].base_mut().height = 600.0;
     if let lurek2d::ui::context::WidgetKind::DockPanel(panel) = &mut ctx.widgets[dock] {
-        panel.docked = vec![(top, "top".into()), (left, "left".into()), (fill, "fill".into())];
+        panel.docked = vec![
+            (top, "top".into()),
+            (left, "left".into()),
+            (fill, "fill".into()),
+        ];
         panel.split_sizes = vec![("top".into(), 64.0), ("left".into(), 200.0)];
     } else {
         panic!("expected dock panel");
@@ -106,9 +140,16 @@ fn dock_panel_allocates_edges_then_gives_fill_the_remaining_rectangle() {
     let top_rect = ctx.widgets[top].base().computed_rect;
     let left_rect = ctx.widgets[left].base().computed_rect;
     let fill_rect = ctx.widgets[fill].base().computed_rect;
-    assert_near(top_rect.width, 800.0); assert_near(top_rect.height, 64.0);
-    assert_near(left_rect.x, 0.0); assert_near(left_rect.y, 64.0); assert_near(left_rect.width, 200.0); assert_near(left_rect.height, 536.0);
-    assert_near(fill_rect.x, 200.0); assert_near(fill_rect.y, 64.0); assert_near(fill_rect.width, 600.0); assert_near(fill_rect.height, 536.0);
+    assert_near(top_rect.width, 800.0);
+    assert_near(top_rect.height, 64.0);
+    assert_near(left_rect.x, 0.0);
+    assert_near(left_rect.y, 64.0);
+    assert_near(left_rect.width, 200.0);
+    assert_near(left_rect.height, 536.0);
+    assert_near(fill_rect.x, 200.0);
+    assert_near(fill_rect.y, 64.0);
+    assert_near(fill_rect.width, 600.0);
+    assert_near(fill_rect.height, 536.0);
 }
 
 #[test]

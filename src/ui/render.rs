@@ -1424,61 +1424,121 @@ fn render_widget_inner(
         }
         WidgetKind::Toolbar(w) => {
             let vertical = w.orientation == "vertical";
-            let button_size = if vertical { base.width.min(28.0) } else { base.height.min(28.0) };
+            let button_size = if vertical {
+                base.width.min(28.0)
+            } else {
+                base.height.min(28.0)
+            };
             let main_extent = if vertical { base.height } else { base.width };
-            let flexible = w.items.iter().filter(|item| matches!(item, ToolbarItem::Spacer(None))).count();
-            let fixed_spacers: f32 = w.items.iter().map(|item| match item { ToolbarItem::Spacer(Some(size)) => size.max(0.0), _ => 0.0 }).sum();
-            let button_count = w.items.iter().filter(|item| matches!(item, ToolbarItem::Button(_))).count() as f32;
-            let separator_count = w.items.iter().filter(|item| matches!(item, ToolbarItem::Separator)).count() as f32;
-            let remaining = (main_extent - 8.0 - button_count * (button_size + 4.0) - separator_count * 9.0 - fixed_spacers).max(0.0);
+            let flexible = w
+                .items
+                .iter()
+                .filter(|item| matches!(item, ToolbarItem::Spacer(None)))
+                .count();
+            let fixed_spacers: f32 = w
+                .items
+                .iter()
+                .map(|item| match item {
+                    ToolbarItem::Spacer(Some(size)) => size.max(0.0),
+                    _ => 0.0,
+                })
+                .sum();
+            let button_count = w
+                .items
+                .iter()
+                .filter(|item| matches!(item, ToolbarItem::Button(_)))
+                .count() as f32;
+            let separator_count = w
+                .items
+                .iter()
+                .filter(|item| matches!(item, ToolbarItem::Separator))
+                .count() as f32;
+            let remaining = (main_extent
+                - 8.0
+                - button_count * (button_size + 4.0)
+                - separator_count * 9.0
+                - fixed_spacers)
+                .max(0.0);
             let mut main = if vertical { base.y + 4.0 } else { base.x + 4.0 };
             for item in &w.items {
                 match item {
-                ToolbarItem::Separator => {
-                    cmds.push(RenderCommand::SetColor(0.32, 0.35, 0.42, 1.0));
-                    let (x, y, width, height) = if vertical {
-                        (base.x + 5.0, main + 3.0, (base.width - 10.0).max(1.0), 1.0)
-                    } else {
-                        (main + 3.0, base.y + 5.0, 1.0, (base.height - 10.0).max(1.0))
-                    };
-                    cmds.push(RenderCommand::Rectangle { mode: DrawMode::Fill, x, y, w: width, h: height });
-                    main += 9.0;
-                }
-                ToolbarItem::Spacer(size) => { main += size.unwrap_or_else(|| if flexible == 0 { 0.0 } else { remaining / flexible as f32 }).max(0.0); }
-                ToolbarItem::Button(button) => {
-                cmds.push(RenderCommand::SetColor(
-                    if button.toggled { 0.22 } else { 0.16 },
-                    if button.toggled { 0.36 } else { 0.18 },
-                    if button.toggled { 0.56 } else { 0.24 },
-                    1.0,
-                ));
-                cmds.push(RenderCommand::RoundedRectangle {
-                    mode: DrawMode::Fill,
-                    x: if vertical { base.x + (base.width - button_size) * 0.5 } else { main },
-                    y: if vertical { main } else { base.y + (base.height - button_size) * 0.5 },
-                    w: button_size,
-                    h: button_size,
-                    rx: 4.0,
-                    ry: 4.0,
-                });
-                let label = button
-                    .id
-                    .chars()
-                    .next()
-                    .unwrap_or('?')
-                    .to_ascii_uppercase()
-                    .to_string();
-                emit_text_at(
-                    &label,
-                    if vertical { base.x + button_size * 0.5 - 3.0 } else { main + button_size * 0.5 - 3.0 },
-                    if vertical { main + (button_size - style.font_size) * 0.5 } else { base.y + (base.height - style.font_size) * 0.5 },
-                    font_key,
-                    font,
-                    style,
-                    cmds,
-                );
-                main += button_size + 4.0;
-                }
+                    ToolbarItem::Separator => {
+                        cmds.push(RenderCommand::SetColor(0.32, 0.35, 0.42, 1.0));
+                        let (x, y, width, height) = if vertical {
+                            (base.x + 5.0, main + 3.0, (base.width - 10.0).max(1.0), 1.0)
+                        } else {
+                            (main + 3.0, base.y + 5.0, 1.0, (base.height - 10.0).max(1.0))
+                        };
+                        cmds.push(RenderCommand::Rectangle {
+                            mode: DrawMode::Fill,
+                            x,
+                            y,
+                            w: width,
+                            h: height,
+                        });
+                        main += 9.0;
+                    }
+                    ToolbarItem::Spacer(size) => {
+                        main += size
+                            .unwrap_or_else(|| {
+                                if flexible == 0 {
+                                    0.0
+                                } else {
+                                    remaining / flexible as f32
+                                }
+                            })
+                            .max(0.0);
+                    }
+                    ToolbarItem::Button(button) => {
+                        cmds.push(RenderCommand::SetColor(
+                            if button.toggled { 0.22 } else { 0.16 },
+                            if button.toggled { 0.36 } else { 0.18 },
+                            if button.toggled { 0.56 } else { 0.24 },
+                            1.0,
+                        ));
+                        cmds.push(RenderCommand::RoundedRectangle {
+                            mode: DrawMode::Fill,
+                            x: if vertical {
+                                base.x + (base.width - button_size) * 0.5
+                            } else {
+                                main
+                            },
+                            y: if vertical {
+                                main
+                            } else {
+                                base.y + (base.height - button_size) * 0.5
+                            },
+                            w: button_size,
+                            h: button_size,
+                            rx: 4.0,
+                            ry: 4.0,
+                        });
+                        let label = button
+                            .id
+                            .chars()
+                            .next()
+                            .unwrap_or('?')
+                            .to_ascii_uppercase()
+                            .to_string();
+                        emit_text_at(
+                            &label,
+                            if vertical {
+                                base.x + button_size * 0.5 - 3.0
+                            } else {
+                                main + button_size * 0.5 - 3.0
+                            },
+                            if vertical {
+                                main + (button_size - style.font_size) * 0.5
+                            } else {
+                                base.y + (base.height - style.font_size) * 0.5
+                            },
+                            font_key,
+                            font,
+                            style,
+                            cmds,
+                        );
+                        main += button_size + 4.0;
+                    }
                 }
             }
         }
@@ -2047,11 +2107,20 @@ impl GuiContext {
         font_key: FontKey,
         fonts: &SlotMap<FontKey, Font>,
     ) -> Vec<RenderCommand> {
-        if !self.dirty && !self.layout_dirty && !self.style_dirty && !self.text_dirty && !self.render_dirty {
+        if !self.dirty
+            && !self.layout_dirty
+            && !self.style_dirty
+            && !self.text_dirty
+            && !self.render_dirty
+        {
             if let Some((cached_font, generation, signature, cached)) = &self.command_cache {
-                if *cached_font == font_key && *generation == self.render_generation && *signature == self.compute_render_signature() {
+                if *cached_font == font_key
+                    && *generation == self.render_generation
+                    && *signature == self.compute_render_signature()
+                {
                     self.runtime_stats.last_frame_commands = cached.len();
-                    self.runtime_stats.command_cache_hits = self.runtime_stats.command_cache_hits.saturating_add(1);
+                    self.runtime_stats.command_cache_hits =
+                        self.runtime_stats.command_cache_hits.saturating_add(1);
                     return cached.clone();
                 }
             }
@@ -2063,16 +2132,25 @@ impl GuiContext {
             self.run_layout_pass();
         }
         let default_style = WidgetStyle::default();
-        self.runtime_stats.command_cache_misses = self.runtime_stats.command_cache_misses.saturating_add(1);
+        self.runtime_stats.command_cache_misses =
+            self.runtime_stats.command_cache_misses.saturating_add(1);
         let mut cmds = Vec::new();
         WidgetRenderer::new(self, font_key, fonts, &default_style, &mut cmds)
             .render_root_children();
         self.runtime_stats.last_frame_commands = cmds.len();
         if cmds.len() > self.limits().max_render_commands {
             cmds.truncate(self.limits().max_render_commands);
-            self.runtime_stats.command_limit_rejections = self.runtime_stats.command_limit_rejections.saturating_add(1);
+            self.runtime_stats.command_limit_rejections = self
+                .runtime_stats
+                .command_limit_rejections
+                .saturating_add(1);
         }
-        self.command_cache = Some((font_key, self.render_generation, self.compute_render_signature(), cmds.clone()));
+        self.command_cache = Some((
+            font_key,
+            self.render_generation,
+            self.compute_render_signature(),
+            cmds.clone(),
+        ));
         cmds
     }
 
@@ -2097,7 +2175,13 @@ impl GuiContext {
         // rendered pixels in the software compositor.
         let mut commands = vec![
             RenderCommand::SetColor(0.094, 0.102, 0.133, 1.0),
-            RenderCommand::Rectangle { mode: DrawMode::Fill, x: 0.0, y: 0.0, w: width as f32, h: height as f32 },
+            RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: 0.0,
+                y: 0.0,
+                w: width as f32,
+                h: height as f32,
+            },
         ];
         commands.extend(ui_commands);
         crate::render::software_capture::capture_commands_to_image_sized(

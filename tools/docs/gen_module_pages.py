@@ -27,6 +27,7 @@ PAGES_INPUT = ROOT / "lurek_2d_pages" / ".source"
 OUT_DIR = PAGES_INPUT / "modules"
 CALLBACKS_MD = ROOT / "docs" / "api" / "callbacks.md"
 MODULE_GUIDES_MD = PAGES_INPUT / "module-guides.md"
+GUIDES_MODULE_INDEX_MD = ROOT / "docs" / "guides" / "module-guides.md"
 
 
 def api_module_name(module: str) -> str:
@@ -782,14 +783,14 @@ def build_module_guides_page(targets: list[str]) -> str:
         purpose = summary_bullets[0] if summary_bullets else (tldr_bullets[0] if tldr_bullets else f"`lurek.{api_module}` public API.")
         purpose = publicize_module_text(purpose, module)
         label = api_module_label(api_module)
-        rows.append((label, api_module, f"modules/{module_page_name(module)}.md", purpose))
+        rows.append((label, api_module, f"../modules/{module_page_name(module)}.md", purpose))
 
     out = [
         "# Module API Specs",
         "",
         "This GitHub Pages site contains only generated API module specs and runtime callbacks.",
         "",
-        "Callbacks: [Runtime callbacks](api/callbacks.md)",
+        "Callbacks: [Runtime callbacks](../api/callbacks.md)",
         "",
         "| Module | Namespace | Purpose |",
         "|---|---|---|",
@@ -818,6 +819,11 @@ def main(argv: list[str] | None = None):
         "--dry-run",
         action="store_true",
         help="Report generated targets without writing files or pruning existing pages.",
+    )
+    parser.add_argument(
+        "--skip-callbacks",
+        action="store_true",
+        help="Regenerate module pages and indexes without rewriting docs/api/callbacks.md.",
     )
     args = parser.parse_args(argv)
 
@@ -873,15 +879,21 @@ def main(argv: list[str] | None = None):
     print(f"\nDone — {len(generated)} Lua module pages in {OUT_DIR}")
 
     if not args.dry_run:
-        callbacks_md = build_callbacks_page()
-        CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")
-        print("Updated docs/api/callbacks.md from callbacks spec/json")
+        if not args.skip_callbacks:
+            callbacks_md = build_callbacks_page()
+            CALLBACKS_MD.write_text(callbacks_md, encoding="utf-8")
+            print("Updated docs/api/callbacks.md from callbacks spec/json")
 
         # Module guides are global; only regenerate them during a complete
         # rebuild so a narrow target cannot silently drop the other modules.
         if full_rebuild:
-            MODULE_GUIDES_MD.write_text(build_module_guides_page(targets), encoding="utf-8")
-            print(f"Updated {MODULE_GUIDES_MD.relative_to(ROOT)} from public API modules")
+            guides_page = build_module_guides_page(targets)
+            MODULE_GUIDES_MD.write_text(guides_page, encoding="utf-8")
+            GUIDES_MODULE_INDEX_MD.write_text(guides_page, encoding="utf-8")
+            print(
+                f"Updated {MODULE_GUIDES_MD.relative_to(ROOT)} and "
+                f"{GUIDES_MODULE_INDEX_MD.relative_to(ROOT)} from public API modules"
+            )
     else:
         print("Dry run: no files were written or pruned.")
 

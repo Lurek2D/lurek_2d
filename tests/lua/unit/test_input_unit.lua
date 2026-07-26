@@ -1224,4 +1224,217 @@ describe("input expanded edge and controller API", function()
     end)
 end)
 
+-- @describe lurek.input player contexts
+describe("lurek.input player contexts", function()
+    -- @covers lurek.input.newPlayerContext
+    it("newPlayerContext creates isolated local action namespaces", function()
+        local contexts = {}
+        for player = 1, 4 do
+            contexts[player] = lurek.input.newPlayerContext(player)
+            contexts[player]:assignGamepad(100 + player)
+            contexts[player]:defineButton("attack", { bindings = { "gamepad:a" } })
+            expect_false(contexts[player]:isDown("attack"))
+        end
+        contexts[1]:removeAction("attack")
+        expect_false(contexts[2]:isDown("attack"))
+    end)
+
+    -- @covers LPlayerInputContext:assignKeyboardMouse
+    it("assignKeyboardMouse claims keyboard and mouse explicitly", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:assignKeyboardMouse()
+        expect_true(context:getAssignedDevices().keyboardMouse)
+        context:unassignKeyboardMouse()
+    end)
+
+    -- @covers LPlayerInputContext:unassignKeyboardMouse
+    it("unassignKeyboardMouse releases keyboard and mouse", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:assignKeyboardMouse()
+        context:unassignKeyboardMouse()
+        expect_false(context:getAssignedDevices().keyboardMouse)
+    end)
+
+    -- @covers LPlayerInputContext:assignGamepad
+    it("assignGamepad enforces exclusive ownership by default", function()
+        local first = lurek.input.newPlayerContext(1)
+        local second = lurek.input.newPlayerContext(2)
+        first:assignGamepad(220)
+        local ok = pcall(function()
+            second:assignGamepad(220)
+        end)
+        expect_false(ok)
+    end)
+
+    -- @covers LPlayerInputContext:unassignGamepad
+    it("unassignGamepad releases one or every persistent slot", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:assignGamepad(221)
+        context:assignGamepad(222)
+        context:unassignGamepad(221)
+        expect_equal(1, #context:getAssignedDevices().gamepads)
+        context:unassignGamepad()
+        expect_equal(0, #context:getAssignedDevices().gamepads)
+    end)
+
+    -- @covers LPlayerInputContext:getAssignedDevices
+    it("getAssignedDevices returns deterministic assignment records", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:assignGamepad(224, { shared = true })
+        local devices = context:getAssignedDevices()
+        expect_false(devices.keyboardMouse)
+        expect_equal(224, devices.gamepads[1].id)
+        expect_true(devices.gamepads[1].shared)
+    end)
+
+    -- @covers LPlayerInputContext:defineButton
+    it("defineButton accepts keyboard mouse and contextual gamepad bindings", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineButton("attack", { bindings = { "mouse1", "gamepad:a" } })
+        expect_false(context:isDown("attack"))
+    end)
+
+    -- @covers LPlayerInputContext:defineAxis1D
+    it("defineAxis1D creates a continuous shaped action", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineAxis1D("throttle", {
+            negative = "s",
+            positive = "w",
+            gamepad = { axis = "lefty" },
+            deadzone = 0.2,
+            invert = true,
+        })
+        expect_equal(0, context:getAxis1D("throttle"))
+    end)
+
+    -- @covers LPlayerInputContext:defineAxis2D
+    it("defineAxis2D composes digital and radial analog sources", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineAxis2D("move", {
+            keyboard = { left = "a", right = "d", up = "w", down = "s" },
+            gamepad = { x = "leftx", y = "lefty" },
+            deadzone = 0.15,
+            curve = "linear",
+            sensitivity = 1,
+        })
+        local x, y = context:getAxis2D("move")
+        expect_equal(0, x)
+        expect_equal(0, y)
+    end)
+
+    -- @covers LPlayerInputContext:removeAction
+    it("removeAction affects only the selected local definition", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineButton("attack", { bindings = { "space" } })
+        expect_true(context:removeAction("attack"))
+        expect_false(context:removeAction("attack"))
+    end)
+
+    -- @covers LPlayerInputContext:clearActions
+    it("clearActions removes every local definition", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineButton("a", { bindings = { "a" } })
+        context:defineButton("b", { bindings = { "b" } })
+        context:clearActions()
+        expect_false(context:isDown("a"))
+        expect_false(context:isDown("b"))
+    end)
+
+    -- @covers LPlayerInputContext:isDown
+    it("isDown reports false for idle button and analog actions", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineButton("attack", { bindings = { "space" } })
+        expect_false(context:isDown("attack"))
+    end)
+
+    -- @covers LPlayerInputContext:wasPressed
+    it("wasPressed reports a single-frame transition state", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineAxis1D("move", { positive = "d", negative = "a" })
+        expect_false(context:wasPressed("move"))
+    end)
+
+    -- @covers LPlayerInputContext:wasReleased
+    it("wasReleased reports a hysteresis-aware transition state", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineAxis1D("move", { positive = "d", negative = "a" })
+        expect_false(context:wasReleased("move"))
+    end)
+
+    -- @covers LPlayerInputContext:getAxis1D
+    it("getAxis1D returns a bounded continuous value", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineAxis1D("move", { positive = "d", negative = "a", sensitivity = 2 })
+        local value = context:getAxis1D("move")
+        expect_true(value >= -1 and value <= 1)
+    end)
+
+    -- @covers LPlayerInputContext:getAxis2D
+    it("getAxis2D clamps vector length to one", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineAxis2D("move", {
+            keyboard = { left = "a", right = "d", up = "w", down = "s" },
+        })
+        local x, y = context:getAxis2D("move")
+        expect_true(math.sqrt(x * x + y * y) <= 1)
+    end)
+
+    -- @covers LPlayerInputContext:setEnabled
+    it("setEnabled gates all action queries", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:setEnabled(false)
+        expect_false(context:isEnabled())
+    end)
+
+    -- @covers LPlayerInputContext:isEnabled
+    it("isEnabled defaults to true", function()
+        local context = lurek.input.newPlayerContext(1)
+        expect_true(context:isEnabled())
+    end)
+
+    -- @covers LPlayerInputContext:getConflicts
+    it("getConflicts reports only conflicts inside one context", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineButton("attack", { bindings = { "space" } })
+        context:defineButton("use", { bindings = { "space" } })
+        expect_equal("attack", context:getConflicts().space[1])
+        expect_equal("use", context:getConflicts().space[2])
+    end)
+
+    -- @covers LPlayerInputContext:serializeBindings
+    it("serializeBindings produces a versioned deterministic snapshot", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:defineButton("attack", { bindings = { "space" } })
+        expect_type("string", context:serializeBindings())
+    end)
+
+    -- @covers LPlayerInputContext:restoreBindings
+    it("restoreBindings atomically replaces local definitions", function()
+        local source = lurek.input.newPlayerContext(1)
+        source:defineButton("attack", { bindings = { "space" } })
+        local target = lurek.input.newPlayerContext(2)
+        target:restoreBindings(source:serializeBindings())
+        expect_false(target:isDown("attack"))
+    end)
+
+    -- @covers LPlayerInputContext:vibrate
+    it("vibrate returns the number of supporting connected assignments", function()
+        local context = lurek.input.newPlayerContext(1)
+        context:assignGamepad(225)
+        expect_equal(0, context:vibrate(0.5, 0.25, 20))
+    end)
+
+    -- @covers LPlayerInputContext:type
+    it("type returns the player context type name", function()
+        expect_equal("LPlayerInputContext", lurek.input.newPlayerContext(1):type())
+    end)
+
+    -- @covers LPlayerInputContext:typeOf
+    it("typeOf recognizes player contexts and objects", function()
+        local context = lurek.input.newPlayerContext(1)
+        expect_true(context:typeOf("LPlayerInputContext"))
+        expect_true(context:typeOf("LObject"))
+    end)
+end)
+
 test_summary()

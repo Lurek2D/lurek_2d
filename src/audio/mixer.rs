@@ -8,6 +8,7 @@
 //! Spatial helpers own listener and source transforms, doppler scale, distance model, and pan updates from positions.
 //! Queueable-source helpers manage push-buffer streaming slots, free-buffer accounting, and queueable lifecycle control.
 //! The mixer also owns pool creation and peak metering, making it the integration point for most runtime audio control.
+//! Multi-listener policies calculate one bounded spatial result per source without cloning sinks or starting playback.
 //! Open this file when playback orchestration changes; decode, pools, buses, and pure timing models live in siblings.
 
 use crate::audio::bus::Bus;
@@ -21,7 +22,7 @@ use crate::runtime::resource_keys::QueueableKey;
 use crate::runtime::resource_keys::SoundKey;
 use rodio::Source;
 use slotmap::SlotMap;
-use std::collections::VecDeque;
+use std::collections::{BTreeSet, VecDeque};
 use std::io::BufReader;
 use std::path::Path;
 use std::sync::Arc;
@@ -88,6 +89,8 @@ struct AudioEntry {
     stereo_width: f32,
     /// Optional random pitch range `(min, max)` applied per play trigger.
     pitch_range: Option<(f32, f32)>,
+    /// Optional listener allow-list. Manual policy treats absence as silence.
+    listener_mask: Option<BTreeSet<String>>,
     /// Last measured peak amplitude for metering.
     pub peak: f32,
 }
@@ -156,6 +159,10 @@ pub struct Mixer {
     listener_orientation: [f32; 6],
     /// Listener velocity `[vx, vy, vz]` for doppler calculation.
     listener_velocity: [f32; 3],
+    /// Ordered neutral listener set used by multi-listener spatial policies.
+    listeners: Vec<crate::audio::SpatialListener>,
+    /// Policy used to reduce the listener set to one effective source result.
+    listener_policy: crate::audio::SpatialListenerPolicy,
     /// Doppler effect intensity multiplier.
     doppler_scale: f32,
     /// Distance attenuation model name (e.g. "inverse_clamped").
@@ -191,6 +198,13 @@ impl Mixer {
             listener_position: [0.0, 0.0, 0.0],
             listener_orientation: [0.0, 0.0, -1.0, 0.0, 1.0, 0.0],
             listener_velocity: [0.0, 0.0, 0.0],
+            listeners: vec![crate::audio::SpatialListener {
+                id: "default".to_string(),
+                position: [0.0, 0.0, 0.0],
+                velocity: [0.0, 0.0, 0.0],
+                weight: 1.0,
+            }],
+            listener_policy: crate::audio::SpatialListenerPolicy::Nearest,
             doppler_scale: 1.0,
             distance_model: "inverse_clamped".to_string(),
             queueables: SlotMap::with_key(),
@@ -223,6 +237,7 @@ impl Mixer {
             spatial: None,
             stereo_width: 1.0,
             pitch_range: None,
+            listener_mask: None,
             peak: 0.0,
         })
     }
@@ -247,15 +262,18 @@ impl Mixer {
                 }
             }
         }
+        let spatial = self.get_source_spatial_result(key);
         let params = self.sources.get(key).map(|entry| {
             let was_stopped = entry.play_state == PlayState::Stopped;
+            let spatial_gain = spatial.as_ref().map_or(1.0, |result| result.gain);
+            let spatial_pan = spatial.as_ref().map_or(0.0, |result| result.pan);
             (
                 entry.file_path.clone(),
                 entry.source_type,
                 entry.decoded_data.clone(),
-                entry.volume * master_vol * bus_vol,
+                entry.volume * spatial_gain * master_vol * bus_vol,
                 entry.pitch * bus_pitch,
-                entry.pan,
+                (entry.pan + spatial_pan).clamp(-1.0, 1.0),
                 entry.looping,
                 entry.lowpass_cutoff,
                 entry.highpass_cutoff,
@@ -337,10 +355,13 @@ impl Mixer {
     /// Set per-source volume multiplier; clamped to [0.0, 2.0] and applied to the active sink.
     pub fn set_volume(&mut self, key: SoundKey, volume: f32) {
         let vol = volume.clamp(0.0, 2.0);
+        let spatial_gain = self
+            .get_source_spatial_result(key)
+            .map_or(1.0, |result| result.gain);
         if let Some(entry) = self.sources.get_mut(key) {
             entry.volume = vol;
             if let Some(ref sink) = entry.sink {
-                sink.set_volume(vol * self.master_volume);
+                sink.set_volume(vol * spatial_gain * self.master_volume);
             }
         }
     }
@@ -451,9 +472,14 @@ impl Mixer {
     /// Set global master volume; clamped to [0.0, 1.0] and propagated to all active sinks.
     pub fn set_master_volume(&mut self, volume: f32) {
         self.master_volume = volume.clamp(0.0, 1.0);
+        let listeners = &self.listeners;
+        let policy = self.listener_policy;
+        let distance_model = self.distance_model.as_str();
         for entry in self.sources.values() {
+            let spatial_gain =
+                Self::spatial_result_for_entry(entry, listeners, policy, distance_model).gain;
             if let Some(ref sink) = entry.sink {
-                sink.set_volume(entry.volume * self.master_volume);
+                sink.set_volume(entry.volume * spatial_gain * self.master_volume);
             }
         }
     }
@@ -548,6 +574,7 @@ impl Mixer {
             spatial: entry.spatial,
             stereo_width: entry.stereo_width,
             pitch_range: entry.pitch_range,
+            listener_mask: entry.listener_mask.clone(),
             peak: entry.peak,
         };
         Some(self.sources.insert(new_entry))
@@ -731,11 +758,14 @@ impl Mixer {
     /// Seek the source to `position_secs`, rebuilding the sink from that offset.
     pub fn seek(&mut self, key: SoundKey, position_secs: f32, game_dir: &Path) {
         let master_vol = self.master_volume;
+        let spatial = self.get_source_spatial_result(key);
         let params = {
             let entry = match self.sources.get(key) {
                 Some(e) => e,
                 None => return,
             };
+            let spatial_gain = spatial.as_ref().map_or(1.0, |result| result.gain);
+            let spatial_pan = spatial.as_ref().map_or(0.0, |result| result.pan);
             let clamped = position_secs
                 .max(0.0)
                 .min(entry.duration_secs.unwrap_or(f32::MAX));
@@ -743,9 +773,9 @@ impl Mixer {
                 entry.file_path.clone(),
                 entry.source_type,
                 entry.decoded_data.clone(),
-                entry.volume * master_vol,
+                entry.volume * spatial_gain * master_vol,
                 entry.pitch,
-                entry.pan,
+                (entry.pan + spatial_pan).clamp(-1.0, 1.0),
                 entry.looping,
                 entry.lowpass_cutoff,
                 entry.highpass_cutoff,
@@ -880,8 +910,6 @@ impl Mixer {
                 .spatial
                 .get_or_insert_with(crate::audio::SpatialState::default);
             state.position = [x, y, z];
-            let dx = x - self.listener_position[0];
-            entry.pan = (dx / 200.0).clamp(-1.0, 1.0);
         }
     }
     /// Return the 3D position of the source, or `[0,0,0]` if spatial state is unset.
@@ -939,6 +967,13 @@ impl Mixer {
     /// Set the 3D listener position for spatial audio.
     pub fn set_listener_position(&mut self, x: f32, y: f32, z: f32) {
         self.listener_position = [x, y, z];
+        self.listeners = vec![crate::audio::SpatialListener {
+            id: "default".to_string(),
+            position: [x, y, z],
+            velocity: self.listener_velocity,
+            weight: 1.0,
+        }];
+        self.listener_policy = crate::audio::SpatialListenerPolicy::Nearest;
     }
     /// Return the current listener position.
     pub fn get_listener_position(&self) -> [f32; 3] {
@@ -964,6 +999,13 @@ impl Mixer {
     /// Set the listener velocity vector for doppler calculations.
     pub fn set_listener_velocity(&mut self, x: f32, y: f32, z: f32) {
         self.listener_velocity = [x, y, z];
+        if let Some(listener) = self
+            .listeners
+            .iter_mut()
+            .find(|listener| listener.id == "default")
+        {
+            listener.velocity = [x, y, z];
+        }
     }
     /// Return the current listener velocity.
     pub fn get_listener_velocity(&self) -> [f32; 3] {
@@ -984,6 +1026,222 @@ impl Mixer {
     /// Return the name of the active distance model.
     pub fn get_distance_model(&self) -> &str {
         &self.distance_model
+    }
+
+    /// Atomically replaces the ordered listener set and active reduction policy.
+    pub fn set_listeners(
+        &mut self,
+        listeners: Vec<crate::audio::SpatialListener>,
+        policy: crate::audio::SpatialListenerPolicy,
+    ) -> Result<(), String> {
+        if listeners.len() > 64 {
+            return Err("listener count exceeds limit 64".to_string());
+        }
+        let mut ids = BTreeSet::new();
+        for listener in &listeners {
+            if listener.id.trim().is_empty() || listener.id.len() > 128 {
+                return Err("listener id must contain 1..=128 characters".to_string());
+            }
+            if !ids.insert(listener.id.as_str()) {
+                return Err(format!("duplicate listener id '{}'", listener.id));
+            }
+            if listener
+                .position
+                .iter()
+                .chain(listener.velocity.iter())
+                .any(|value| !value.is_finite())
+                || !listener.weight.is_finite()
+                || listener.weight <= 0.0
+            {
+                return Err(format!(
+                    "listener '{}' coordinates, velocity, and weight must be finite and weight positive",
+                    listener.id
+                ));
+            }
+        }
+        self.listener_position = listeners
+            .first()
+            .map_or([0.0, 0.0, 0.0], |listener| listener.position);
+        self.listener_velocity = listeners
+            .first()
+            .map_or([0.0, 0.0, 0.0], |listener| listener.velocity);
+        self.listeners = listeners;
+        self.listener_policy = policy;
+        Ok(())
+    }
+
+    /// Returns the configured listeners in deterministic input order.
+    pub fn get_listeners(&self) -> &[crate::audio::SpatialListener] {
+        &self.listeners
+    }
+
+    /// Returns the active multi-listener reduction policy.
+    pub fn get_listener_policy(&self) -> crate::audio::SpatialListenerPolicy {
+        self.listener_policy
+    }
+
+    /// Atomically sets or clears one source's listener allow-list.
+    pub fn set_source_listener_mask(
+        &mut self,
+        key: SoundKey,
+        listener_ids: Option<Vec<String>>,
+    ) -> Result<(), String> {
+        if !self.sources.contains_key(key) {
+            return Err("invalid source handle".to_string());
+        }
+        let mask = if let Some(listener_ids) = listener_ids {
+            let known = self
+                .listeners
+                .iter()
+                .map(|listener| listener.id.as_str())
+                .collect::<BTreeSet<_>>();
+            let mut mask = BTreeSet::new();
+            for id in listener_ids {
+                if !known.contains(id.as_str()) {
+                    return Err(format!("unknown listener id '{id}'"));
+                }
+                if !mask.insert(id.clone()) {
+                    return Err(format!("duplicate listener id '{id}' in source mask"));
+                }
+            }
+            Some(mask)
+        } else {
+            None
+        };
+        self.sources
+            .get_mut(key)
+            .expect("source existence validated")
+            .listener_mask = mask;
+        Ok(())
+    }
+
+    /// Calculates one bounded spatial result without duplicating source playback.
+    pub fn get_source_spatial_result(
+        &self,
+        key: SoundKey,
+    ) -> Option<crate::audio::SourceSpatialResult> {
+        self.sources.get(key).map(|entry| {
+            Self::spatial_result_for_entry(
+                entry,
+                &self.listeners,
+                self.listener_policy,
+                &self.distance_model,
+            )
+        })
+    }
+
+    fn spatial_result_for_entry(
+        entry: &AudioEntry,
+        listeners: &[crate::audio::SpatialListener],
+        policy: crate::audio::SpatialListenerPolicy,
+        distance_model: &str,
+    ) -> crate::audio::SourceSpatialResult {
+        let Some(spatial) = entry.spatial.as_ref() else {
+            return crate::audio::SourceSpatialResult {
+                policy,
+                spatial: false,
+                gain: 1.0,
+                pan: 0.0,
+                distance: 0.0,
+                listener_id: None,
+                listener_ids: Vec::new(),
+            };
+        };
+        let candidates = listeners
+            .iter()
+            .filter(|listener| {
+                if policy == crate::audio::SpatialListenerPolicy::Manual
+                    && entry.listener_mask.is_none()
+                {
+                    return false;
+                }
+                entry.listener_mask.is_none()
+                    || entry
+                        .listener_mask
+                        .as_ref()
+                        .is_some_and(|mask| mask.contains(&listener.id))
+            })
+            .map(|listener| {
+                let dx = spatial.position[0] - listener.position[0];
+                let dy = spatial.position[1] - listener.position[1];
+                let dz = spatial.position[2] - listener.position[2];
+                let distance = (dx * dx + dy * dy + dz * dz).sqrt();
+                let gain = match distance_model {
+                    "none" => 1.0,
+                    "linear" => (1.0 - distance / 200.0).clamp(0.0, 1.0),
+                    "exponent" => (1.0 / (1.0 + distance / 200.0)).powi(2),
+                    _ => 1.0 / (1.0 + distance / 200.0),
+                };
+                let pan = (dx / 200.0).clamp(-1.0, 1.0);
+                (listener, distance, gain, pan)
+            })
+            .collect::<Vec<_>>();
+        if candidates.is_empty() {
+            return crate::audio::SourceSpatialResult {
+                policy,
+                spatial: true,
+                gain: 0.0,
+                pan: 0.0,
+                distance: 0.0,
+                listener_id: None,
+                listener_ids: Vec::new(),
+            };
+        }
+        if policy == crate::audio::SpatialListenerPolicy::Nearest {
+            let nearest = candidates
+                .iter()
+                .min_by(|left, right| left.1.total_cmp(&right.1))
+                .expect("non-empty candidates");
+            return crate::audio::SourceSpatialResult {
+                policy,
+                spatial: true,
+                gain: nearest.2.clamp(0.0, 1.0),
+                pan: nearest.3,
+                distance: nearest.1,
+                listener_id: Some(nearest.0.id.clone()),
+                listener_ids: vec![nearest.0.id.clone()],
+            };
+        }
+        let contribution_total = candidates
+            .iter()
+            .map(|(listener, _, gain, _)| listener.weight * gain)
+            .sum::<f32>();
+        let listener_weight_total = candidates
+            .iter()
+            .map(|(listener, _, _, _)| listener.weight)
+            .sum::<f32>();
+        let (pan, distance) = if contribution_total > 0.0 {
+            (
+                candidates
+                    .iter()
+                    .map(|(listener, _, gain, pan)| pan * listener.weight * gain)
+                    .sum::<f32>()
+                    / contribution_total,
+                candidates
+                    .iter()
+                    .map(|(listener, distance, gain, _)| distance * listener.weight * gain)
+                    .sum::<f32>()
+                    / contribution_total,
+            )
+        } else {
+            (0.0, 0.0)
+        };
+        crate::audio::SourceSpatialResult {
+            policy,
+            spatial: true,
+            gain: if listener_weight_total > 0.0 {
+                (contribution_total / listener_weight_total).clamp(0.0, 1.0)
+            } else {
+                0.0
+            },
+            pan: pan.clamp(-1.0, 1.0),
+            distance,
+            listener_id: None,
+            listener_ids: candidates
+                .iter()
+                .map(|(listener, _, _, _)| listener.id.clone())
+                .collect(),
+        }
     }
     /// Create a new queueable push-buffer source and return its key.
     pub fn new_queueable(

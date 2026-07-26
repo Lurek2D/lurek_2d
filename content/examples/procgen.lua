@@ -1244,3 +1244,22 @@ do
     local status = ok and "ok" or "error"
     lurek.log.info(status .. " " .. tostring(value))
 end
+--@api: lurek.procgen.placeConstrained
+do
+    local candidates = {
+        { id = "a", x = 0, y = 0, tags = { "floor" } },
+        { id = "b", x = 10, y = 0, tags = { "floor" } },
+        { id = "c", x = 20, y = 0, tags = { "floor" } },
+    }
+    local placements, report = lurek.procgen.placeConstrained(candidates, { count = 2, minDistance = 5 }, { seed = 7 })
+    lurek.log.info("placements=" .. tostring(#placements) .. " complete=" .. tostring(report.complete))
+end
+
+--@api: lurek.procgen.validateConnectivity
+do
+    local grid = lurek.procgen.newGridResult(3, 2, { 0, 0, 1, 0, 1, 0 })
+    local options = { starts = { { x = 0, y = 0 } }, goals = { { x = 2, y = 1 } } }
+    local report = lurek.procgen.validateConnectivity(grid, options)
+    local unreachable = #report.unreachableGoals
+    lurek.log.info("components=" .. tostring(#report.components) .. " unreachable=" .. tostring(unreachable))
+end

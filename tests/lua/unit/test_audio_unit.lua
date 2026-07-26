@@ -182,6 +182,68 @@ describe("audio global state", function()
         expect_type("number", y)
     end)
 
+    -- @covers lurek.audio.setListeners
+    it("setListeners atomically validates and replaces the listener set", function()
+        lurek.audio.setListeners({
+            { id = "left", x = -100, y = 0 },
+            { id = "right", x = 100, y = 0, weight = 2 },
+        }, { policy = "weighted" })
+        expect_equal(2, #lurek.audio.getListeners())
+        expect_error(function()
+            lurek.audio.setListeners({
+                { id = "duplicate", x = 0, y = 0 },
+                { id = "duplicate", x = 1, y = 0 },
+            })
+        end)
+        expect_equal("left", lurek.audio.getListeners()[1].id)
+        lurek.audio.setListener(0, 0, 0)
+    end)
+
+    -- @covers lurek.audio.getListeners
+    it("getListeners returns stable positions velocities and weights", function()
+        lurek.audio.setListeners({
+            { id = "camera", x = 3, y = 4, z = 5, vx = 1, vy = 2, vz = 3, weight = 0.5 },
+        })
+        local listener = lurek.audio.getListeners()[1]
+        expect_equal("camera", listener.id)
+        expect_near(5, listener.z, 0.0001)
+        expect_near(2, listener.vy, 0.0001)
+        expect_near(0.5, listener.weight, 0.0001)
+        lurek.audio.setListener(0, 0, 0)
+    end)
+
+    -- @covers lurek.audio.setSourceListenerMask
+    it("setSourceListenerMask restricts manual spatial calculation", function()
+        local source = new_source()
+        lurek.audio.setPosition(source, 90, 0, 0)
+        lurek.audio.setListeners({
+            { id = "left", x = -100, y = 0 },
+            { id = "right", x = 100, y = 0 },
+        }, { policy = "manual" })
+        expect_near(0, lurek.audio.getSourceSpatialResult(source).gain, 0.0001)
+        lurek.audio.setSourceListenerMask(source, { "right" })
+        expect_equal("right", lurek.audio.getSourceSpatialResult(source).listenerIds[1])
+        lurek.audio.release(source)
+        lurek.audio.setListener(0, 0, 0)
+    end)
+
+    -- @covers lurek.audio.getSourceSpatialResult
+    it("getSourceSpatialResult selects the nearest listener deterministically", function()
+        local source = new_source()
+        lurek.audio.setPosition(source, 90, 0, 0)
+        lurek.audio.setListeners({
+            { id = "left", x = 0, y = 0 },
+            { id = "right", x = 100, y = 0 },
+        }, { policy = "nearest" })
+        local result = lurek.audio.getSourceSpatialResult(source)
+        expect_equal("nearest", result.policy)
+        expect_true(result.spatial)
+        expect_equal("right", result.listenerId)
+        expect_near(10, result.distance, 0.0001)
+        lurek.audio.release(source)
+        lurek.audio.setListener(0, 0, 0)
+    end)
+
     -- @covers lurek.audio.setMeter
     it("setMeter is callable", function()
         expect_no_error(function()

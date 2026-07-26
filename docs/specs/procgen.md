@@ -14,7 +14,7 @@
 - Source path: `src/procgen`
 - Binding: `src/lua_api/procgen_api.rs`
 - Namespace: `lurek.procgen`
-- Lua API surface: `44` functions, `17` types, `59` methods
+- Lua API surface: `46` functions, `17` types, `59` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -95,6 +95,17 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - This file owns the scalar-to-RGBA conversion helper used to turn normalized procedural values into grayscale pixels.
 - The conversion stays here because clamping and flat buffer layout are color-export concerns, not noise semantics.
 - Open it when scalar preview encoding changes; terrain generation and sampled grids live in sibling modules.
+
+### constraints.rs
+
+- This file owns deterministic constrained placement and flat-grid connectivity validation for procgen data.
+- Placement consumes neutral coordinates, tags, levels, regions, weights, and caller uniqueness groups.
+- Seeded weighted selection remains bounded by shared procgen limits and returns partial diagnostic reports.
+- Connectivity consumes integer cells plus plain starts, goals, and safe points through iterative flood fill.
+- Stable ordered collections make component tie breaks, rejection counts, and returned diagnostics reproducible.
+- Public Rust helpers expose typed inputs and reports while Lua bindings only translate tables and userdata.
+- The algorithms never call Lua callbacks and never inspect tilefields, entities, loot, combat, or world state.
+- Open this file when neutral placement or connectivity rules change inside the existing procgen namespace.
 
 ### error.rs
 
@@ -283,6 +294,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `lurek.procgen.perlin3d(x, y, z, seed?) -> number`: Samples stateless 3D Perlin noise.
 - `lurek.procgen.perlin4d(x, y, z, w, seed?) -> number`: Samples stateless 4D Perlin noise.
 - `lurek.procgen.perlinNoise(x, y, periodX, periodY) -> number`: Sample periodic 2D Perlin noise at a given coordinate.
+- `lurek.procgen.placeConstrained(candidates, rules, opts?) -> table, table`: Selects a deterministic weighted subset satisfying neutral spatial and tag constraints.
 - `lurek.procgen.poissonDisk(width, height, minDist, maxAttempts?, seed?) -> table`: Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.
 - `lurek.procgen.roomsDungeon(opts?) -> table`: Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns a full tile grid.
 - `lurek.procgen.roomsDungeonGrid(opts?) -> LProcgenGrid`: Generate a rooms dungeon and return only its tile grid as a typed procgen result.
@@ -292,6 +304,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `lurek.procgen.simplex2d(x, y) -> number`: Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
 - `lurek.procgen.simplex3d(x, y, z) -> number`: Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
 - `lurek.procgen.simplexNoise(x, y, z?) -> number`: Sample a 2D or 3D simplex noise value at a given point.
+- `lurek.procgen.validateConnectivity(grid, opts?) -> table`: Reports deterministic connectivity, unreachable goals, isolated regions, and safe-radius failures.
 - `lurek.procgen.voronoi(width, height, points, opts?) -> integer[]`: Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
 - `lurek.procgen.wfcFromPrompt(prompt, config) -> table`: Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
 - `lurek.procgen.wfcGenerate(opts) -> table`: Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
@@ -616,3 +629,6 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `Lcg` now exposes algorithm versioning, raw-state snapshot/restore, `next_u64`, `next_f64`, and bounded integer helpers so deterministic procgen callers can reproduce results without modulo-biased indexing.
 - Strict `wfc_llm` parsing is now bounded by `ProcgenLimits` (`max_parser_input_bytes`, `max_wfc_tiles`, `max_wfc_adjacency_refs`) and returns structured `ProcgenError` values for malformed schema, oversized payloads, and count overruns instead of silently partially parsing by default.
 - Auxiliary grid helpers also participate in the safe contract: `NoiseGrid::try_from_perlin`, `try_poisson_disk`, `try_voronoi_diagram`, `try_rooms_dungeon`, `BiomeClassifier::try_classify_map`, and `try_flood_fill` validate dimensions or finite parameters before allocating.
+- `placeConstrained` performs seeded, weighted, bounded selection over neutral coordinates, tags, levels, regions, weights, and uniqueness groups. It never mutates candidates and returns a deterministic partial report when constraints cannot satisfy the requested count.
+- `validateConnectivity` accepts only `LProcgenGrid` or a plain `{width, height, cells}` table, uses bounded iterative flood fill with four- or eight-neighbor topology, and reports components, unreachable goals, isolated regions, safe-radius violations, and bounded diagnostics.
+- Placement and connectivity deliberately do not know monsters, loot, shops, keys, bosses, tilefields, pathfinding grids, or other module state. Lua chooses whether and how to materialize their results elsewhere.

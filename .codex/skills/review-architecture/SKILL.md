@@ -30,8 +30,7 @@ description: "Load this skill when auditing and fixing architecture docs against
 - Broken links are document defects but do not alone prove an architecture defect.
 - A stale description and a broken system boundary are separate findings.
 - Core architecture owners include `engine-core.md`, `render-pipeline.md`, and `scripting-bridge.md`.
-- QA and release boundaries live in `quality-assurance.md` and `build-and-distribution.md`.
-- Developer CAG and workflow boundaries live in `developer-ecosystem.md` and `developer-workflow.md`.
+- QA, release, CAG, and workflow guidance lives under `docs/contributing/`, not in the architecture surface.
 - Large refactors record options, trade-offs, risks, and rollback paths before implementation.
 - Cyclic dependencies, leaked state authority, and missing public API fallbacks are explicit architecture defects.
 - A changed durable constraint updates its canonical spec or architecture owner before downstream prose.

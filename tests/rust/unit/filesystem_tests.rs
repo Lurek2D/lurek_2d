@@ -233,14 +233,19 @@ mod vfs_tests {
         assert!(fs.mount(&workspace.to_string_lossy(), "project").is_err());
         fs.mount_workspace(&workspace.to_string_lossy(), "project")
             .unwrap();
-        assert_eq!(fs.read_string("project/project.toml").unwrap(), "name = 'before'");
+        assert_eq!(
+            fs.read_string("project/project.toml").unwrap(),
+            "name = 'before'"
+        );
         fs.write_workspace_string_atomic("project/content/data.toml", "value = 42")
             .unwrap();
         assert_eq!(
             std::fs::read_to_string(workspace.join("content/data.toml")).unwrap(),
             "value = 42"
         );
-        assert!(fs.write_workspace_string("save/not_allowed.toml", "no").is_err());
+        assert!(fs
+            .write_workspace_string("save/not_allowed.toml", "no")
+            .is_err());
 
         let _ = std::fs::remove_dir_all(&dir);
         let _ = std::fs::remove_dir_all(&workspace);

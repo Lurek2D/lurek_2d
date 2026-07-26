@@ -43,7 +43,6 @@ LUA_API_DATA = module_registry.lua_api_json_path()
 TESTS_RUST = WORKSPACE / "tests" / "rust"
 TESTS_LUA = WORKSPACE / "tests" / "lua"
 DOCS_API = WORKSPACE / "docs" / "API"
-WIKI = WORKSPACE / "docs" / "wiki"
 
 # Tier assignments are loaded from docs/meta/modules.toml.
 

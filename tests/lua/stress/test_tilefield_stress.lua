@@ -79,6 +79,24 @@ describe("tilefield stress", function()
         local light = light_map:exportLayer(1)
         expect_equal(10000, #light)
     end)
+
+    -- @stress LTileField:patchCells
+    it("atomically applies a 10000-cell neutral patch", function()
+        local field = lurek.tilefield.new({ width = 100, height = 100 })
+        local patches = {}
+        for y = 1, 100 do
+            for x = 1, 100 do
+                patches[#patches + 1] = {
+                    x = x,
+                    y = y,
+                    costs = { move = 1 + ((x + y) % 4) },
+                }
+            end
+        end
+        local dirty = field:patchCells(patches)
+        expect_equal(10000, #dirty)
+        expect_equal(1, field:getCost(100, 100, nil, "move"))
+    end)
 end)
 
 test_summary()

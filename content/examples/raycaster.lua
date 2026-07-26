@@ -2899,3 +2899,165 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     lurek.log.info("raycaster shader id = " .. tostring(active and active:getId()))
     lurek.raycaster.setShader(nil)
 end
+--@api: lurek.raycaster.newView
+do
+    local view = lurek.raycaster.newView({ viewport = { x = 0, y = 0, w = 160, h = 100 }, rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    local viewport = view:getViewport()
+    local kind = view:type()
+    lurek.log.info(kind .. " width=" .. tostring(viewport.w))
+end
+
+--@api: LRaycasterView:setViewport
+do
+    local view = lurek.raycaster.newView()
+    view:setViewport({ x = 10, y = 20, w = 160, h = 100 })
+    local viewport = view:getViewport()
+    local origin = tostring(viewport.x) .. "," .. tostring(viewport.y)
+    lurek.log.info("view origin=" .. origin)
+end
+
+--@api: LRaycasterView:getViewport
+do
+    local view = lurek.raycaster.newView({ viewport = { x = 1, y = 2, w = 80, h = 60 } })
+    local viewport = view:getViewport()
+    local width = viewport.w
+    local height = viewport.h
+    lurek.log.info("viewport=" .. tostring(width) .. "x" .. tostring(height))
+end
+
+--@api: LRaycasterView:setCameraState
+do
+    local view = lurek.raycaster.newView()
+    view:setCameraState({ x = 2, y = 3, angle = 0.5, fov = 1, cameraHeight = 0.5 })
+    local camera = view:getCameraState()
+    local position = tostring(camera.x) .. "," .. tostring(camera.y)
+    lurek.log.info("camera=" .. position)
+end
+
+--@api: LRaycasterView:getCameraState
+do
+    local view = lurek.raycaster.newView()
+    view:setCameraState({ x = 4, y = 5, angle = 0, fov = 1 })
+    local camera = view:getCameraState()
+    local fov = camera.fov
+    lurek.log.info("camera fov=" .. tostring(fov))
+end
+
+--@api: LRaycasterView:setQuality
+do
+    local view = lurek.raycaster.newView()
+    view:setQuality({ rays = 48, maxDistance = 20 })
+    view:setCameraState({ x = 1, y = 1, angle = 0, fov = 1 })
+    local stats = view:getStats()
+    lurek.log.info("quality rays=" .. tostring(stats.rays))
+end
+
+--@api: LRaycasterView:setShader
+do
+    local view = lurek.raycaster.newView()
+    view:setShader(nil)
+    view:setCameraState({ x = 1, y = 1, angle = 0, fov = 1 })
+    local kind = view:type()
+    lurek.log.info("shader cleared on " .. kind)
+end
+
+--@api: LRaycasterView:build
+do
+    local source = lurek.raycaster.new(8, 8)
+    local view = lurek.raycaster.newView({ rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    local quads = view:build(source)
+    lurek.log.info("view quads=" .. tostring(quads))
+end
+
+--@api: LRaycasterView:buildFromAdapter
+do
+    local source = lurek.raycaster.new(8, 8)
+    local adapter = lurek.raycaster.newSceneAdapter()
+    local view = lurek.raycaster.newView({ rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    lurek.log.info("adapter quads=" .. tostring(view:buildFromAdapter(source, adapter)))
+end
+
+--@api: LRaycasterView:queue
+do
+    local source = lurek.raycaster.new(8, 8)
+    local view = lurek.raycaster.newView({ rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    view:build(source)
+    lurek.log.info("queued=" .. tostring(view:queue()))
+end
+
+--@api: LRaycasterView:pick
+do
+    local source = lurek.raycaster.new(8, 8)
+    local view = lurek.raycaster.newView({ viewport = { x = 0, y = 0, w = 160, h = 100 }, rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    view:build(source)
+    lurek.log.info("pick=" .. tostring(view:pick(80, 50)))
+end
+
+--@api: LRaycasterView:getDepthAt
+do
+    local source = lurek.raycaster.new(8, 8)
+    local view = lurek.raycaster.newView({ viewport = { x = 0, y = 0, w = 160, h = 100 }, rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    view:build(source)
+    lurek.log.info("depth=" .. tostring(view:getDepthAt(80, 50)))
+end
+
+--@api: LRaycasterView:getStats
+do
+    local source = lurek.raycaster.new(8, 8)
+    local view = lurek.raycaster.newView({ rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    view:build(source)
+    lurek.log.info("view quads=" .. tostring(view:getStats().quadCount))
+end
+
+--@api: LRaycasterView:clear
+do
+    local source = lurek.raycaster.new(8, 8)
+    local view = lurek.raycaster.newView({ rays = 32 })
+    view:setCameraState({ x = 2, y = 2, angle = 0, fov = 1 })
+    view:build(source)
+    view:clear()
+    lurek.log.info("cleared quads=" .. tostring(view:getStats().quadCount))
+end
+
+--@api: LRaycasterView:type
+do
+    local view = lurek.raycaster.newView()
+    local kind = view:type()
+    local exact = view:typeOf("LRaycasterView")
+    local base = view:typeOf("LObject")
+    lurek.log.info(kind .. " exact=" .. tostring(exact) .. " base=" .. tostring(base))
+end
+
+--@api: LRaycasterView:typeOf
+do
+    local view = lurek.raycaster.newView()
+    local exact = view:typeOf("LRaycasterView")
+    local base = view:typeOf("LObject")
+    local other = view:typeOf("LRaycaster")
+    lurek.log.info("view types=" .. tostring(exact) .. "," .. tostring(base) .. "," .. tostring(other))
+end
+
+--@api: LRaycaster:patchCells
+do
+    local source = lurek.raycaster.new(3, 3)
+    source:patchCells({ { x = 1, y = 1, value = 4 } })
+    local value = source:getCell(1, 1)
+    local hit = source:castRay(0.5, 1.5, 0, 4)
+    lurek.log.info("patched=" .. tostring(value) .. " hit=" .. tostring(hit ~= nil))
+end
+
+--@api: LMultiLevelGrid:patchCells
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({ { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } } })
+    grid:patchCells({ { level = 0, x = 1, y = 1, value = 6, floorHole = true } })
+    local value = grid:getCell(1, 1)
+    local patched = value == 6
+    lurek.log.info("multilevel patch=" .. tostring(value) .. " applied=" .. tostring(patched))
+end

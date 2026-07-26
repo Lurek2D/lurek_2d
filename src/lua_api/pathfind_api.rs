@@ -593,6 +593,75 @@ impl LuaUserData for LuaNavGrid {
                 Ok(())
             },
         );
+        // -- patchCells --
+        /// Atomically patches navigation-owned cost or blocked state.
+        /// @param | patches | table | Array of `{x, y, cost}` or `{x, y, blocked}`.
+        /// @param | opts | table? | Optional `{rebuild="none"|"dirty_chunks"|"full"}`.
+        /// @return | table | Stable one-cell `{x, y, w, h}` dirty rectangles.
+        methods.add_method(
+            "patchCells",
+            |lua, this, (patches, opts): (LuaTable, Option<LuaTable>)| {
+                let rebuild = rebuild_mode_from_opts(opts, "LNavGrid:patchCells")?;
+                let patch_count = patches.raw_len();
+                let mut staged = this.inner.borrow().clone();
+                let (width, height) = staged.get_dimensions();
+                let cell_limit = u64::from(width) * u64::from(height);
+                if patch_count as u64 > cell_limit {
+                    return Err(LuaError::RuntimeError(
+                        "LNavGrid:patchCells: patch count exceeds grid cell count".to_string(),
+                    ));
+                }
+                let mut dirty = std::collections::HashSet::with_capacity(patch_count);
+                staged.begin_update();
+                for index in 1..=patch_count {
+                    let patch: LuaTable = patches.raw_get(index)?;
+                    let x = patch.get::<_, u32>("x").map_err(|_| {
+                        LuaError::RuntimeError(format!(
+                            "LNavGrid:patchCells: patch {index}.x is required"
+                        ))
+                    })?;
+                    let y = patch.get::<_, u32>("y").map_err(|_| {
+                        LuaError::RuntimeError(format!(
+                            "LNavGrid:patchCells: patch {index}.y is required"
+                        ))
+                    })?;
+                    let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                    if x >= width || y >= height {
+                        return Err(LuaError::RuntimeError(format!(
+                            "LNavGrid:patchCells: patch {index} coordinate is out of bounds"
+                        )));
+                    }
+                    let cost = patch.get::<_, Option<u8>>("cost")?;
+                    let blocked = patch.get::<_, Option<bool>>("blocked")?;
+                    match (cost, blocked) {
+                        (Some(cost), None) => staged.set_cost(x, y, cost),
+                        (None, Some(blocked)) => staged.set_blocked(x, y, blocked),
+                        _ => {
+                            return Err(LuaError::RuntimeError(format!(
+                                "LNavGrid:patchCells: patch {index} must contain exactly one of cost or blocked"
+                            )))
+                        }
+                    }
+                    dirty.insert((x, y));
+                }
+                staged.commit_update(rebuild);
+                *this.inner.borrow_mut() = staged;
+                *this.abstract_graph.borrow_mut() = None;
+
+                let mut dirty: Vec<_> = dirty.into_iter().collect();
+                dirty.sort_by_key(|(x, y)| (*y, *x));
+                let result = lua.create_table()?;
+                for (index, (x, y)) in dirty.into_iter().enumerate() {
+                    let rect = lua.create_table()?;
+                    rect.set("x", x + 1)?;
+                    rect.set("y", y + 1)?;
+                    rect.set("w", 1)?;
+                    rect.set("h", 1)?;
+                    result.set(index + 1, rect)?;
+                }
+                Ok(result)
+            },
+        );
         // -- isBlocked --
         /// Returns whether a one-based grid cell is blocked.
         /// @param | x | integer | One-based column.

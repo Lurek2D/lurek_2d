@@ -228,8 +228,13 @@ impl MouseState {
 
     /// Register a press and return its click count using a 500 ms multi-click window.
     pub fn register_click(&mut self, button: usize, time_ms: u64) -> u32 {
-        let (previous_time, previous_count) = self.click_state.get(&button).copied().unwrap_or((0, 0));
-        let count = if time_ms.saturating_sub(previous_time) <= 500 { previous_count.saturating_add(1) } else { 1 };
+        let (previous_time, previous_count) =
+            self.click_state.get(&button).copied().unwrap_or((0, 0));
+        let count = if time_ms.saturating_sub(previous_time) <= 500 {
+            previous_count.saturating_add(1)
+        } else {
+            1
+        };
         self.click_state.insert(button, (time_ms, count));
         count
     }

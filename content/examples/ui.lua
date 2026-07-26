@@ -8776,3 +8776,218 @@ do
     lurek.ui.update(0)
     lurek.log.info("safe-area insets applied to UI root layout")
 end
+--@api: lurek.ui.newContext
+do
+    local context = lurek.ui.newContext({ viewport = { x = 0, y = 0, w = 320, h = 180 } })
+    local label = context:create("label", { id = "status", text = "Ready" })
+    local viewport = context:getViewport()
+    local kind = context:type()
+    lurek.log.info(kind .. " " .. label:getText() .. " width=" .. tostring(viewport.w))
+end
+
+--@api: LUiContext:create
+do
+    local context = lurek.ui.newContext()
+    local button = context:create("button", { id = "start", text = "Start" })
+    local text = button:getText()
+    local kind = button:type()
+    lurek.log.info(kind .. " text=" .. text)
+end
+
+--@api: LUiContext:loadLayout
+do
+    local context = lurek.ui.newContext()
+    local ok, root = pcall(function() return context:loadLayout("content/layouts/games/settings_menu.toml") end)
+    local diagnostics = context:getDiagnostics()
+    local loaded = ok and root ~= nil
+    lurek.log.info("layout loaded=" .. tostring(loaded) .. " widgets=" .. tostring(diagnostics.liveWidgets))
+end
+
+--@api: LUiContext:getById
+do
+    local context = lurek.ui.newContext()
+    context:create("label", { id = "status", text = "Ready" })
+    local label = context:getById("status")
+    local text = label:getText()
+    lurek.log.info("status=" .. text)
+end
+
+--@api: LUiContext:destroy
+do
+    local context = lurek.ui.newContext()
+    local button = context:create("button", { id = "temporary", text = "Close" })
+    local removed = context:destroy(button)
+    local missing = context:getById("temporary") == nil
+    lurek.log.info("destroyed=" .. tostring(removed) .. " missing=" .. tostring(missing))
+end
+
+--@api: LUiContext:clear
+do
+    local context = lurek.ui.newContext()
+    context:create("button", { text = "One" })
+    context:create("button", { text = "Two" })
+    local removed = context:clear()
+    lurek.log.info("cleared widgets=" .. tostring(removed))
+end
+
+--@api: LUiContext:setViewport
+do
+    local context = lurek.ui.newContext()
+    context:setViewport({ x = 10, y = 20, w = 300, h = 200 })
+    local viewport = context:getViewport()
+    local origin = tostring(viewport.x) .. "," .. tostring(viewport.y)
+    lurek.log.info("UI origin=" .. origin)
+end
+
+--@api: LUiContext:getViewport
+do
+    local context = lurek.ui.newContext({ viewport = { x = 1, y = 2, w = 300, h = 200 } })
+    local viewport = context:getViewport()
+    local size = tostring(viewport.w) .. "x" .. tostring(viewport.h)
+    local origin = tostring(viewport.x) .. "," .. tostring(viewport.y)
+    lurek.log.info("UI viewport=" .. origin .. " " .. size)
+end
+
+--@api: LUiContext:dispatchPointer
+do
+    local context = lurek.ui.newContext({ viewport = { x = 0, y = 0, w = 200, h = 100 } })
+    context:create("button", { id = "start", text = "Start" })
+    local consumed = context:dispatchPointer({ type = "move", x = 20, y = 20 })
+    local focus = context:getFocus()
+    lurek.log.info("pointer consumed=" .. tostring(consumed) .. " focus=" .. tostring(focus))
+end
+
+--@api: LUiContext:dispatchWheel
+do
+    local context = lurek.ui.newContext()
+    context:create("panel", { id = "scroll" })
+    local consumed = context:dispatchWheel(0, -1)
+    local widgets = context:getDiagnostics().liveWidgets
+    lurek.log.info("wheel consumed=" .. tostring(consumed) .. " widgets=" .. tostring(widgets))
+end
+
+--@api: LUiContext:dispatchKey
+do
+    local context = lurek.ui.newContext()
+    context:create("button", { text = "One" })
+    context:create("button", { text = "Two" })
+    local consumed = context:dispatchKey("tab")
+    lurek.log.info("key consumed=" .. tostring(consumed) .. " focus=" .. tostring(context:getFocus()))
+end
+
+--@api: LUiContext:dispatchText
+do
+    local context = lurek.ui.newContext()
+    local input = context:create("textinput", { id = "name" })
+    context:setFocus(input)
+    local consumed = context:dispatchText("Ada")
+    lurek.log.info("text consumed=" .. tostring(consumed) .. " value=" .. input:getText())
+end
+
+--@api: LUiContext:dispatchAction
+do
+    local context = lurek.ui.newContext()
+    context:create("button", { text = "One" })
+    local consumed = context:dispatchAction("focus_next")
+    local focus = context:getFocus()
+    lurek.log.info("action consumed=" .. tostring(consumed) .. " focus=" .. tostring(focus))
+end
+
+--@api: LUiContext:setFocus
+do
+    local context = lurek.ui.newContext()
+    local button = context:create("button", { text = "One" })
+    context:setFocus(button)
+    local focused = context:getFocus()
+    lurek.log.info("focused type=" .. focused:type())
+end
+
+--@api: LUiContext:getFocus
+do
+    local context = lurek.ui.newContext()
+    local button = context:create("button", { text = "One" })
+    context:setFocus(button)
+    local focused = context:getFocus()
+    lurek.log.info("focus matches=" .. tostring(focused:type() == button:type()))
+end
+
+--@api: LUiContext:focusNext
+do
+    local context = lurek.ui.newContext()
+    context:create("button", { text = "One" })
+    context:create("button", { text = "Two" })
+    local moved = context:focusNext()
+    lurek.log.info("focus next=" .. tostring(moved) .. " focus=" .. tostring(context:getFocus()))
+end
+
+--@api: LUiContext:focusPrev
+do
+    local context = lurek.ui.newContext()
+    context:create("button", { text = "One" })
+    context:create("button", { text = "Two" })
+    local moved = context:focusPrev()
+    lurek.log.info("focus prev=" .. tostring(moved) .. " focus=" .. tostring(context:getFocus()))
+end
+
+--@api: LUiContext:focusDirection
+do
+    local context = lurek.ui.newContext()
+    local button = context:create("button", { text = "One" })
+    context:setFocus(button)
+    local moved = context:focusDirection("right")
+    lurek.log.info("focus right=" .. tostring(moved))
+end
+
+--@api: LUiContext:update
+do
+    local context = lurek.ui.newContext()
+    context:create("button", { text = "One" })
+    context:update(0.016)
+    local diagnostics = context:getDiagnostics()
+    lurek.log.info("updated widgets=" .. tostring(diagnostics.liveWidgets))
+end
+
+--@api: LUiContext:queueDraw
+do
+    local context = lurek.ui.newContext({ viewport = { x = 0, y = 0, w = 160, h = 90 } })
+    context:create("button", { text = "Draw" })
+    context:update(0)
+    local commands = context:queueDraw()
+    lurek.log.info("UI commands=" .. tostring(commands))
+end
+
+--@api: LUiContext:renderToImage
+do
+    local context = lurek.ui.newContext({ viewport = { x = 0, y = 0, w = 64, h = 32 } })
+    context:create("label", { text = "HUD" })
+    context:update(0)
+    local image = context:renderToImage()
+    lurek.log.info("UI image=" .. tostring(image:getWidth()) .. "x" .. tostring(image:getHeight()))
+end
+
+--@api: LUiContext:getDiagnostics
+do
+    local context = lurek.ui.newContext()
+    context:create("button", { text = "One" })
+    local diagnostics = context:getDiagnostics()
+    local widgets = diagnostics.liveWidgets
+    lurek.log.info("UI widgets=" .. tostring(widgets))
+end
+
+--@api: LUiContext:type
+do
+    local context = lurek.ui.newContext()
+    local kind = context:type()
+    local exact = context:typeOf("LUiContext")
+    local base = context:typeOf("LObject")
+    lurek.log.info(kind .. " exact=" .. tostring(exact) .. " base=" .. tostring(base))
+end
+
+--@api: LUiContext:typeOf
+do
+    local context = lurek.ui.newContext()
+    local exact = context:typeOf("LUiContext")
+    local base = context:typeOf("LObject")
+    local other = context:typeOf("LButton")
+    lurek.log.info("context types=" .. tostring(exact) .. "," .. tostring(base) .. "," .. tostring(other))
+end

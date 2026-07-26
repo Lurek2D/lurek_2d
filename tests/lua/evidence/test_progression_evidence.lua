@@ -478,6 +478,41 @@ describe("Evidence: lurek.progression headless performance traces", function()
         write_text(OUT .. "progression_legacy_adapter_migration.json", lurek.serialize.toJson(report))
         write_text(OUT .. "progression_legacy_adapter_migration.txt", table.concat(lines, "\n") .. "\n")
     end)
+
+    -- Does: Applies, pauses, filters, snapshots, and restores one neutral status instance through the existing progression tracker.
+    -- Shows: The trace records copied tags, paused state, remaining time, filter count, and restored compatibility state.
+    -- Artifact: tests/artifacts/current/progression/progression_status_tracker_trace.txt
+    -- Why: This proves the tracker owns deterministic lifecycle data only; no damage, healing, ECS, audio, or presentation action occurs automatically.
+    it("TXT: neutral status lifecycle and snapshot trace", function()
+        local tracker = lurek.progression.newStatusTracker()
+        tracker:define({
+            id = "evidence_status",
+            duration = 5,
+            tickInterval = 1,
+            tags = { "harmful", "evidence" },
+        })
+        local instance_id = tracker:apply(17, "evidence_status", 44)
+        tracker:setPaused(instance_id, true)
+        tracker:update(2)
+        local filtered = tracker:list(17, {
+            tag = "evidence",
+            sourceId = 44,
+            paused = true,
+        })
+        local restored = lurek.progression.newStatusTracker()
+        restored:restore(tracker:snapshot())
+        local instance = restored:get(instance_id)
+        local lines = {
+            "instance_id=" .. tostring(instance.id),
+            "definition_id=" .. tostring(instance.definitionId),
+            "tags=" .. table.concat(instance.tags, ","),
+            "paused=" .. tostring(instance.paused),
+            "remaining=" .. tostring(instance.remaining),
+            "filtered_count=" .. tostring(#filtered),
+            "events_after_paused_update=" .. tostring(#tracker:drainEvents()),
+        }
+        write_text(OUT .. "progression_status_tracker_trace.txt", table.concat(lines, "\n") .. "\n")
+    end)
 end)
 
 test_summary()

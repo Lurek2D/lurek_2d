@@ -1,7 +1,7 @@
 //! Registers the `lurek.ui` Lua API for widget userdata, render-to-image helpers, dialogs, and typed widgets.
 
 use super::dataframe_api::LuaDataFrame;
-use super::render_api::{ensure_shader_target, LuaFont, LuaShader};
+use super::render_api::{ensure_shader_target, LuaCanvas, LuaFont, LuaImageData, LuaShader};
 use super::SharedState;
 use crate::render::renderer::RenderCommand;
 use crate::render::ShaderTarget;
@@ -2170,6 +2170,7 @@ fn create_typed_widget_table<'a>(
 enum TypedWidgetKind {
     TabBar,
     ComboBox,
+    TextInput,
     TextArea,
     RichLabel,
     AspectRatioContainer,
@@ -2188,6 +2189,7 @@ fn typed_widget_kind(ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> TypedWidgetKi
     match g.widgets.get(idx) {
         Some(WidgetKind::TabBar(_)) => TypedWidgetKind::TabBar,
         Some(WidgetKind::ComboBox(_)) => TypedWidgetKind::ComboBox,
+        Some(WidgetKind::TextInput(_)) => TypedWidgetKind::TextInput,
         Some(WidgetKind::TextArea(_)) => TypedWidgetKind::TextArea,
         Some(WidgetKind::RichLabel(_)) => TypedWidgetKind::RichLabel,
         Some(WidgetKind::AspectRatioContainer(_)) => TypedWidgetKind::AspectRatioContainer,
@@ -2206,6 +2208,7 @@ fn typed_widget_type_name(kind: TypedWidgetKind) -> &'static str {
     match kind {
         TypedWidgetKind::TabBar => "LTabBar",
         TypedWidgetKind::ComboBox => "LComboBox",
+        TypedWidgetKind::TextInput => "LTextInput",
         TypedWidgetKind::TextArea => "LTextArea",
         TypedWidgetKind::RichLabel => "LRichLabel",
         TypedWidgetKind::AspectRatioContainer => "LAspectRatioContainer",
@@ -2231,6 +2234,7 @@ fn add_typed_widget_methods(
     match kind {
         TypedWidgetKind::TabBar => add_tab_bar_methods(lua, table, ctx, idx),
         TypedWidgetKind::ComboBox => add_combo_box_methods(lua, table, ctx, idx),
+        TypedWidgetKind::TextInput => add_text_input_methods(lua, table, ctx, idx),
         TypedWidgetKind::TextArea => add_text_area_methods(lua, table, ctx, idx),
         TypedWidgetKind::RichLabel => add_rich_label_methods(lua, table, ctx, idx),
         TypedWidgetKind::AspectRatioContainer => {
@@ -5442,10 +5446,10 @@ fn add_dock_panel_methods(
                 widget_index_from_value(&g, child, "undock")?
             };
             let mut g = c.borrow_mut();
-                if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
-                    dp.docked.retain(|(ci, _)| *ci != child_idx);
-                    g.mark_widget_dirty(true, true, true, true);
-                }
+            if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
+                dp.docked.retain(|(ci, _)| *ci != child_idx);
+                g.mark_widget_dirty(true, true, true, true);
+            }
             Ok(())
         })?,
     )?;
@@ -5474,14 +5478,14 @@ fn add_dock_panel_methods(
         "setSplitSize",
         lua.create_function(move |_, (_self, side, size): (LuaValue, String, f32)| {
             let mut g = c.borrow_mut();
-                if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
+            if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
                 if let Some(entry) = dp.split_sizes.iter_mut().find(|(s, _)| *s == side) {
                     entry.1 = size;
                 } else {
-                        dp.split_sizes.push((side, size));
-                    }
-                    g.mark_widget_dirty(true, true, true, true);
+                    dp.split_sizes.push((side, size));
                 }
+                g.mark_widget_dirty(true, true, true, true);
+            }
             Ok(())
         })?,
     )?;
@@ -5590,7 +5594,9 @@ fn add_toolbar_methods(
         "addSpacer",
         lua.create_function(move |_, (_self, size): (LuaValue, Option<f32>)| {
             if size.is_some_and(|value| !value.is_finite() || value < 0.0) {
-                return Err(LuaError::RuntimeError("lurek.ui.addSpacer: size must be a finite non-negative number".into()));
+                return Err(LuaError::RuntimeError(
+                    "lurek.ui.addSpacer: size must be a finite non-negative number".into(),
+                ));
             }
             let mut g = c.borrow_mut();
             if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) {
@@ -6607,7 +6613,8 @@ fn add_status_bar_methods(
         "setSectionCount",
         lua.create_function(move |_, (_self, count): (LuaValue, usize)| {
             let mut g = c.borrow_mut();
-            g.set_status_bar_section_count(idx, count).map_err(mlua::Error::runtime)
+            g.set_status_bar_section_count(idx, count)
+                .map_err(mlua::Error::runtime)
         })?,
     )?;
     let c = ctx.clone();
@@ -6620,11 +6627,17 @@ fn add_status_bar_methods(
         "setSectionWidget",
         lua.create_function(
             move |_, (_self, section_idx, widget): (LuaValue, usize, LuaValue)| {
-                let child_idx = { let g = c.borrow(); optional_widget_index(&g, widget, "setSectionWidget")? };
+                let child_idx = {
+                    let g = c.borrow();
+                    optional_widget_index(&g, widget, "setSectionWidget")?
+                };
                 if section_idx == 0 {
-                    return Err(LuaError::RuntimeError("lurek.ui.setSectionWidget: section index is 1-based".into()));
+                    return Err(LuaError::RuntimeError(
+                        "lurek.ui.setSectionWidget: section index is 1-based".into(),
+                    ));
                 }
-                c.borrow_mut().set_status_bar_section_widget(idx, section_idx - 1, child_idx)
+                c.borrow_mut()
+                    .set_status_bar_section_widget(idx, section_idx - 1, child_idx)
                     .map_err(LuaError::RuntimeError)?;
                 Ok(())
             },
@@ -7771,9 +7784,617 @@ fn parse_widget_style(t: &LuaTable) -> LuaResult<WidgetStyle> {
     }
     Ok(style)
 }
+fn dispatch_context_callbacks(
+    lua: &Lua,
+    context: &Rc<RefCell<GuiContext>>,
+    callbacks: &Rc<RefCell<GuiCallbacks>>,
+) -> LuaResult<()> {
+    let limit = context.borrow().limits().max_pending_events;
+    for _ in 0..limit {
+        let event = {
+            let mut context = context.borrow_mut();
+            if context.pending_events.is_empty() {
+                None
+            } else {
+                Some(context.pending_events.remove(0))
+            }
+        };
+        let Some(event) = event else {
+            break;
+        };
+        let result = match event.clone() {
+            GuiEvent::Click(widget) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::Click, widget)?
+                {
+                    callback.call::<_, ()>(widget as u64)?;
+                }
+                Ok(())
+            }
+            GuiEvent::Change(widget) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::Change, widget)?
+                {
+                    callback.call::<_, ()>(widget as u64)?;
+                }
+                Ok(())
+            }
+            GuiEvent::Close(widget) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::Close, widget)?
+                {
+                    callback.call::<_, ()>(widget as u64)?;
+                }
+                Ok(())
+            }
+            GuiEvent::Select(widget, item) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::Select, widget)?
+                {
+                    callback.call::<_, ()>((widget as u64, item as u64))?;
+                }
+                let action: Option<LuaFunction> = callbacks
+                    .borrow()
+                    .dialog_action
+                    .get(&(widget, item))
+                    .map(|key| lua.registry_value(key))
+                    .transpose()?;
+                if let Some(callback) = action {
+                    callback.call::<_, ()>((widget as u64, (item + 1) as u64))?;
+                }
+                Ok(())
+            }
+            GuiEvent::DragStart(source) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::DragStart, source)?
+                {
+                    callback.call::<_, ()>(source as u64)?;
+                }
+                Ok(())
+            }
+            GuiEvent::DragEnd(source, target) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::DragEnd, source)?
+                {
+                    callback.call::<_, ()>((source as u64, target.map(|slot| slot as u64)))?;
+                }
+                Ok(())
+            }
+            GuiEvent::DragEnter(source, target) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::DragEnter, target)?
+                {
+                    callback.call::<_, ()>((source as u64, target as u64))?;
+                }
+                Ok(())
+            }
+            GuiEvent::DragLeave(source, target) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::DragLeave, target)?
+                {
+                    callback.call::<_, ()>((source as u64, target as u64))?;
+                }
+                Ok(())
+            }
+            GuiEvent::Drop(source, target) => {
+                if let Some(callback) =
+                    callback_function(lua, callbacks, UiCallbackKind::Drop, target)?
+                {
+                    callback.call::<_, ()>((source as u64, target as u64))?;
+                }
+                Ok(())
+            }
+        };
+        if let Err(error) = result {
+            context.borrow_mut().pending_events.insert(0, event);
+            return Err(error);
+        }
+    }
+    Ok(())
+}
+
+/// Lua handle for one explicitly driven, isolated UI context.
+struct LuaUiContext {
+    context: Rc<RefCell<GuiContext>>,
+    callbacks: Rc<RefCell<GuiCallbacks>>,
+    state: Rc<RefCell<SharedState>>,
+    viewport: (f32, f32, f32, f32),
+}
+
+impl LuaUiContext {
+    fn local_pointer(&self, x: f32, y: f32) -> Option<(f32, f32)> {
+        let (vx, vy, width, height) = self.viewport;
+        (x >= vx && y >= vy && x < vx + width && y < vy + height).then_some((x - vx, y - vy))
+    }
+}
+
+impl LuaUserData for LuaUiContext {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- create --
+        /// Creates a widget of `widget_type` from optional layout fields.
+        /// @param | widget_type | string | Canonical widget type such as `button` or `panel`.
+        /// @param | opts | table? | Widget definition fields.
+        /// @return | LUiWidget | Context-owned widget handle.
+        methods.add_method(
+            "create",
+            |lua, this, (widget_type, opts): (String, Option<LuaTable>)| {
+                let definition = lua.create_table()?;
+                if let Some(opts) = opts {
+                    for pair in opts.pairs::<LuaValue, LuaValue>() {
+                        let (key, value) = pair?;
+                        definition.set(key, value)?;
+                    }
+                }
+                definition.set("type", widget_type)?;
+                let definition = lua_table_to_widget_def(&definition).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.ui.LUiContext:create: {error}"))
+                })?;
+                let slot = crate::ui::load_layout_def_attached(
+                    &mut this.context.borrow_mut(),
+                    &definition,
+                )
+                .map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.ui.LUiContext:create: {error}"))
+                })?;
+                create_typed_widget_table(lua, &this.context, slot, &this.callbacks)
+            },
+        );
+        // -- loadLayout --
+        /// Loads and atomically attaches a TOML layout through GameFS.
+        /// @param | path | string | GameFS layout path.
+        /// @param | opts | table? | Reserved layout options.
+        /// @return | LUiWidget | New layout root.
+        methods.add_method(
+            "loadLayout",
+            |lua, this, (path, _opts): (String, Option<LuaTable>)| {
+                let source = this.state.borrow().fs.read_string(&path).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.ui.LUiContext:loadLayout: {error}"))
+                })?;
+                let slot =
+                    crate::ui::load_layout_toml_attached(&mut this.context.borrow_mut(), &source)
+                        .map_err(|error| {
+                        LuaError::RuntimeError(format!("lurek.ui.LUiContext:loadLayout: {error}"))
+                    })?;
+                create_typed_widget_table(lua, &this.context, slot, &this.callbacks)
+            },
+        );
+        // -- getById --
+        /// Finds a widget by id inside this context.
+        /// @param | id | string | Widget id.
+        /// @return | LUiWidget? | Matching widget or nil.
+        methods.add_method("getById", |lua, this, id: String| {
+            let slot = this.context.borrow().find_by_id(0, &id);
+            match slot {
+                Some(slot) => Ok(Some(create_typed_widget_table(
+                    lua,
+                    &this.context,
+                    slot,
+                    &this.callbacks,
+                )?)),
+                None => Ok(None),
+            }
+        });
+        // -- destroy --
+        /// Destroys a live widget from this context.
+        /// @param | widget | LUiWidget | Context-owned widget.
+        /// @param | recursive | boolean? | Defaults to true.
+        /// @return | integer | Invalidated widget count.
+        methods.add_method(
+            "destroy",
+            |_, this, (widget, recursive): (LuaValue, Option<bool>)| {
+                let mut context = this.context.borrow_mut();
+                let slot = widget_index_from_value(&context, widget, "LUiContext:destroy")?;
+                let removed = context
+                    .destroy_widget(slot, recursive.unwrap_or(true))
+                    .map_err(|error| {
+                        LuaError::RuntimeError(format!("lurek.ui.LUiContext:destroy: {error}"))
+                    })?;
+                this.callbacks.borrow_mut().retain_live_widgets(&context);
+                Ok(removed)
+            },
+        );
+        // -- clear --
+        /// Clears all widgets, callbacks, focus, capture, drag, modal, and tooltip state.
+        /// @return | integer | Removed widget count.
+        methods.add_method_mut("clear", |_, this, ()| {
+            let removed = this.context.borrow_mut().clear();
+            this.callbacks.borrow_mut().clear();
+            Ok(removed)
+        });
+        // -- setViewport --
+        /// Sets this context's screen rectangle.
+        /// @param | viewport | table | `{x, y, w, h}`.
+        methods.add_method_mut("setViewport", |_, this, viewport: LuaTable| {
+            let x = viewport.get::<_, Option<f32>>("x")?.unwrap_or(0.0);
+            let y = viewport.get::<_, Option<f32>>("y")?.unwrap_or(0.0);
+            let width = viewport.get::<_, f32>("w")?;
+            let height = viewport.get::<_, f32>("h")?;
+            if !x.is_finite()
+                || !y.is_finite()
+                || !width.is_finite()
+                || !height.is_finite()
+                || width <= 0.0
+                || height <= 0.0
+            {
+                return Err(LuaError::RuntimeError(
+                    "lurek.ui.LUiContext:setViewport: values must be finite with positive w/h"
+                        .to_string(),
+                ));
+            }
+            this.viewport = (x, y, width, height);
+            this.context.borrow_mut().set_viewport(width, height);
+            Ok(())
+        });
+        // -- getViewport --
+        /// Returns this context's screen rectangle.
+        /// @return | table | `{x, y, w, h}`.
+        methods.add_method("getViewport", |lua, this, ()| {
+            let out = lua.create_table()?;
+            out.set("x", this.viewport.0)?;
+            out.set("y", this.viewport.1)?;
+            out.set("w", this.viewport.2)?;
+            out.set("h", this.viewport.3)?;
+            Ok(out)
+        });
+        // -- dispatchPointer --
+        /// Explicitly dispatches a pointer event.
+        /// @param | event | table | `{type="move"|"press"|"release", x, y, button?}`.
+        /// @return | boolean | Whether the context consumed it.
+        methods.add_method("dispatchPointer", |_, this, event: LuaTable| {
+            let kind = event.get::<_, String>("type")?;
+            let x = event.get::<_, f32>("x")?;
+            let y = event.get::<_, f32>("y")?;
+            let Some((x, y)) = this.local_pointer(x, y) else {
+                return Ok(false);
+            };
+            let button = event.get::<_, Option<u32>>("button")?.unwrap_or(1);
+            let mut context = this.context.borrow_mut();
+            match kind.as_str() {
+                "move" => Ok(context.mouse_moved(x, y)),
+                "press" | "pressed" => Ok(context.mouse_pressed(x, y, button)),
+                "release" | "released" => Ok(context.mouse_released(x, y, button)),
+                _ => Err(LuaError::RuntimeError(
+                    "lurek.ui.LUiContext:dispatchPointer: type must be move, press, or release"
+                        .to_string(),
+                )),
+            }
+        });
+        // -- dispatchWheel --
+        /// Explicitly dispatches a wheel delta.
+        /// @param | x | number | Horizontal delta.
+        /// @param | y | number | Vertical delta.
+        /// @return | boolean | Whether consumed.
+        methods.add_method("dispatchWheel", |_, this, (x, y): (f32, f32)| {
+            Ok(this.context.borrow_mut().wheel_moved(x, y))
+        });
+        // -- dispatchKey --
+        /// Explicitly dispatches a key press.
+        /// @param | key | string | Key name.
+        /// @return | boolean | Whether consumed.
+        methods.add_method("dispatchKey", |_, this, key: String| {
+            let mut context = this.context.borrow_mut();
+            if context.layout_dirty {
+                context.run_layout_pass();
+            }
+            Ok(context.key_pressed(&key))
+        });
+        // -- dispatchText --
+        /// Explicitly dispatches text input.
+        /// @param | text | string | Text payload.
+        /// @return | boolean | Whether consumed.
+        methods.add_method("dispatchText", |_, this, text: String| {
+            Ok(this.context.borrow_mut().text_input(&text))
+        });
+        // -- dispatchAction --
+        /// Dispatches a gameplay-neutral UI action.
+        /// @param | action | string | focus_next, focus_prev, activate, cancel, or direction.
+        /// @param | value | any? | Optional action value.
+        /// @return | boolean | Whether the action was handled.
+        methods.add_method(
+            "dispatchAction",
+            |_, this, (action, _value): (String, Option<LuaValue>)| {
+                let mut context = this.context.borrow_mut();
+                if context.layout_dirty {
+                    context.run_layout_pass();
+                }
+                match action.as_str() {
+                    "focus_next" => {
+                        context.focus_next();
+                        Ok(true)
+                    }
+                    "focus_prev" => {
+                        context.focus_prev();
+                        Ok(true)
+                    }
+                    "activate" => Ok(context.key_pressed("return")),
+                    "cancel" => Ok(context.key_pressed("escape")),
+                    "focus_left" => Ok(context.focus_direction(-1.0, 0.0)),
+                    "focus_right" => Ok(context.focus_direction(1.0, 0.0)),
+                    "focus_up" => Ok(context.focus_direction(0.0, -1.0)),
+                    "focus_down" => Ok(context.focus_direction(0.0, 1.0)),
+                    _ => Err(LuaError::RuntimeError(format!(
+                        "lurek.ui.LUiContext:dispatchAction: unknown action `{action}`"
+                    ))),
+                }
+            },
+        );
+        // -- setFocus --
+        /// Sets focus to a context-owned widget or clears it with nil.
+        /// @param | widget | LUiWidget? | Widget or nil.
+        methods.add_method("setFocus", |_, this, widget: Option<LuaTable>| {
+            let slot = match widget {
+                Some(widget) => Some(widget_index_from_table(
+                    &this.context.borrow(),
+                    widget,
+                    "LUiContext:setFocus",
+                )?),
+                None => None,
+            };
+            let mut context = this.context.borrow_mut();
+            if context.layout_dirty {
+                context.run_layout_pass();
+            }
+            context.set_focus(slot);
+            Ok(())
+        });
+        // -- getFocus --
+        /// Returns the focused widget handle.
+        /// @return | LUiWidget? | Focused widget or nil.
+        methods.add_method("getFocus", |lua, this, ()| {
+            match this.context.borrow().focused_widget {
+                Some(slot) => Ok(Some(create_typed_widget_table(
+                    lua,
+                    &this.context,
+                    slot,
+                    &this.callbacks,
+                )?)),
+                None => Ok(None),
+            }
+        });
+        // -- focusNext --
+        /// Moves focus forward.
+        methods.add_method("focusNext", |_, this, ()| {
+            let mut context = this.context.borrow_mut();
+            if context.layout_dirty {
+                context.run_layout_pass();
+            }
+            context.focus_next();
+            Ok(())
+        });
+        // -- focusPrev --
+        /// Moves focus backward.
+        methods.add_method("focusPrev", |_, this, ()| {
+            let mut context = this.context.borrow_mut();
+            if context.layout_dirty {
+                context.run_layout_pass();
+            }
+            context.focus_prev();
+            Ok(())
+        });
+        // -- focusDirection --
+        /// Moves focus in a named spatial direction.
+        /// @param | direction | string | left, right, up, or down.
+        /// @return | boolean | Whether focus moved.
+        methods.add_method("focusDirection", |_, this, direction: String| {
+            let (x, y) = match direction.as_str() {
+                "left" => (-1.0, 0.0),
+                "right" => (1.0, 0.0),
+                "up" => (0.0, -1.0),
+                "down" => (0.0, 1.0),
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.ui.LUiContext:focusDirection: direction must be left, right, up, or down"
+                            .to_string(),
+                    ))
+                }
+            };
+            let mut context = this.context.borrow_mut();
+            if context.layout_dirty {
+                context.run_layout_pass();
+            }
+            Ok(context.focus_direction(x, y))
+        });
+        // -- update --
+        /// Advances this context and dispatches only its callbacks.
+        /// @param | dt | number | Finite non-negative delta time.
+        methods.add_method("update", |lua, this, dt: f32| {
+            if !dt.is_finite() || dt < 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "lurek.ui.LUiContext:update: dt must be finite and non-negative".to_string(),
+                ));
+            }
+            this.context.borrow_mut().update(dt);
+            dispatch_context_callbacks(lua, &this.context, &this.callbacks)
+        });
+        // -- queueDraw --
+        /// Queues this context to its viewport or an explicit canvas and restores render state.
+        /// @param | opts | table? | Optional `{canvas=LCanvas}`.
+        /// @return | integer | Queued command count.
+        methods.add_method("queueDraw", |_, this, opts: Option<LuaTable>| {
+            let explicit_canvas = opts
+                .as_ref()
+                .map(|opts| opts.get::<_, Option<LuaAnyUserData>>("canvas"))
+                .transpose()?
+                .flatten();
+            let canvas = match explicit_canvas {
+                Some(canvas) => Some(
+                    canvas
+                        .borrow::<LuaCanvas>()
+                        .map_err(|_| {
+                            LuaError::RuntimeError(
+                                "lurek.ui.LUiContext:queueDraw: canvas must be LCanvas".to_string(),
+                            )
+                        })?
+                        .key,
+                ),
+                None => this.state.borrow().active_canvas,
+            };
+            let commands = {
+                let state = this.state.borrow();
+                let font = state.active_font.or(state.default_font).ok_or_else(|| {
+                    LuaError::RuntimeError(
+                        "lurek.ui.LUiContext:queueDraw: no active or default font".to_string(),
+                    )
+                })?;
+                this.context.borrow_mut().build_render_commands(font)
+            };
+            let mut state = this.state.borrow_mut();
+            let previous_canvas = state.active_canvas;
+            let previous_scissor = state.scissor;
+            let previous_shader = state.active_shader;
+            let previous_blend = state.blend_mode;
+            let mut wrapped = Vec::with_capacity(commands.len() + 10);
+            if canvas != previous_canvas {
+                wrapped.push(RenderCommand::SetCanvas(canvas));
+            }
+            if canvas.is_none() {
+                wrapped.push(RenderCommand::PushTransform);
+                wrapped.push(RenderCommand::Translate {
+                    x: this.viewport.0,
+                    y: this.viewport.1,
+                });
+            }
+            wrapped.push(RenderCommand::SetScissor(Some(if canvas.is_some() {
+                (0.0, 0.0, this.viewport.2, this.viewport.3)
+            } else {
+                this.viewport
+            })));
+            wrapped.extend(commands);
+            wrapped.push(RenderCommand::SetShader(previous_shader));
+            wrapped.push(RenderCommand::SetBlendMode(previous_blend));
+            wrapped.push(RenderCommand::SetScissor(previous_scissor));
+            if canvas.is_none() {
+                wrapped.push(RenderCommand::PopTransform);
+            }
+            if canvas != previous_canvas {
+                wrapped.push(RenderCommand::SetCanvas(previous_canvas));
+            }
+            let count = wrapped.len();
+            state.render_commands.extend(wrapped);
+            Ok(count)
+        });
+        // -- renderToImage --
+        /// Renders this context into CPU image data.
+        /// @param | opts | table? | Optional width and height.
+        /// @return | LImageData | Captured image.
+        methods.add_method("renderToImage", |_, this, opts: Option<LuaTable>| {
+            let width = opts
+                .as_ref()
+                .map(|opts| opts.get::<_, Option<u32>>("width"))
+                .transpose()?
+                .flatten()
+                .unwrap_or(this.viewport.2 as u32);
+            let height = opts
+                .as_ref()
+                .map(|opts| opts.get::<_, Option<u32>>("height"))
+                .transpose()?
+                .flatten()
+                .unwrap_or(this.viewport.3 as u32);
+            crate::image::ImageData::rgba_byte_len(width, height).map_err(|error| {
+                LuaError::RuntimeError(format!("lurek.ui.LUiContext:renderToImage: {error}"))
+            })?;
+            Ok(LuaImageData {
+                inner: this.context.borrow().draw_to_image(width, height),
+            })
+        });
+        // -- getDiagnostics --
+        /// Returns isolated runtime counters and UX diagnostics.
+        /// @return | table | Context diagnostics.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            let context = this.context.borrow();
+            let stats = context.runtime_stats();
+            let out = lua.create_table()?;
+            out.set("liveWidgets", stats.live_widgets)?;
+            out.set(
+                "visibleWidgets",
+                context
+                    .widgets
+                    .iter()
+                    .skip(1)
+                    .filter(|widget| widget.base().is_visible)
+                    .count(),
+            )?;
+            out.set(
+                "focusableWidgets",
+                context
+                    .widgets
+                    .iter()
+                    .skip(1)
+                    .filter(|widget| {
+                        let base = widget.base();
+                        base.is_visible && base.enabled && base.focusable
+                    })
+                    .count(),
+            )?;
+            out.set("focusedWidget", context.focused_widget)?;
+            out.set("lastFrameCommands", stats.last_frame_commands)?;
+            out.set("layoutPasses", stats.layout_passes)?;
+            out.set("eventQueueHighWater", stats.event_queue_high_water)?;
+            let warnings = lua.create_table()?;
+            for (index, warning) in context.validate_ux().into_iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("widgetIndex", warning.widget_idx)?;
+                entry.set("message", warning.message)?;
+                warnings.set(index + 1, entry)?;
+            }
+            out.set("warnings", warnings)?;
+            Ok(out)
+        });
+        // -- type --
+        /// Returns `LUiContext`.
+        /// @return | string | Handle type.
+        methods.add_method("type", |_, _, ()| Ok("LUiContext"));
+        // -- typeOf --
+        /// Checks this handle type.
+        /// @param | name | string | Type name.
+        /// @return | boolean | Whether it matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LUiContext" || name == "LObject")
+        });
+    }
+}
+
 /// Registers the `lurek.ui` module into the Lua runtime.
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    let context_state = state.clone();
+    // -- newContext --
+    /// Creates an explicitly driven UI context with independent widgets and interaction state.
+    /// @param | opts | table? | Optional `{viewport={x,y,w,h}}`.
+    /// @return | LUiContext | New isolated context.
+    tbl.set(
+        "newContext",
+        lua.create_function(move |lua, opts: Option<LuaTable>| {
+            let opts = opts.unwrap_or(lua.create_table()?);
+            let viewport = opts
+                .get::<_, Option<LuaTable>>("viewport")?
+                .unwrap_or(lua.create_table()?);
+            let x = viewport.get::<_, Option<f32>>("x")?.unwrap_or(0.0);
+            let y = viewport.get::<_, Option<f32>>("y")?.unwrap_or(0.0);
+            let width = viewport.get::<_, Option<f32>>("w")?.unwrap_or(640.0);
+            let height = viewport.get::<_, Option<f32>>("h")?.unwrap_or(360.0);
+            if !x.is_finite()
+                || !y.is_finite()
+                || !width.is_finite()
+                || !height.is_finite()
+                || width <= 0.0
+                || height <= 0.0
+            {
+                return Err(LuaError::RuntimeError(
+                    "lurek.ui.newContext: viewport values must be finite with positive w/h"
+                        .to_string(),
+                ));
+            }
+            let mut context = GuiContext::new();
+            context.set_viewport(width, height);
+            Ok(LuaUiContext {
+                context: Rc::new(RefCell::new(context)),
+                callbacks: Rc::new(RefCell::new(GuiCallbacks::default())),
+                state: context_state.clone(),
+                viewport: (x, y, width, height),
+            })
+        })?,
+    )?;
     let ctx = Rc::new(RefCell::new(GuiContext::new()));
     let callbacks = Rc::new(RefCell::new(GuiCallbacks::default()));
     state.borrow_mut().auto_ui_ctx = Some(Rc::downgrade(&ctx));
@@ -9011,8 +9632,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "setSafeArea",
         lua.create_function(move |_, (top, right, bottom, left): (f32, f32, f32, f32)| {
-            if c.borrow_mut().set_safe_area(top, right, bottom, left) { Ok(()) }
-            else { Err(LuaError::RuntimeError("lurek.ui.setSafeArea: insets must be finite non-negative numbers".into())) }
+            if c.borrow_mut().set_safe_area(top, right, bottom, left) {
+                Ok(())
+            } else {
+                Err(LuaError::RuntimeError(
+                    "lurek.ui.setSafeArea: insets must be finite non-negative numbers".into(),
+                ))
+            }
         })?,
     )?;
 
@@ -9686,12 +10312,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |lua, ()| {
             let active = { c.borrow().active_drag() };
             match active {
-            Some(idx) => Ok(LuaValue::Table(create_typed_widget_table(
-                lua,
-                &c,
-                idx,
-                &cbs_active_drag,
-            )?)),
+                Some(idx) => Ok(LuaValue::Table(create_typed_widget_table(
+                    lua,
+                    &c,
+                    idx,
+                    &cbs_active_drag,
+                )?)),
                 None => Ok(LuaValue::Nil),
             }
         })?,
@@ -9720,12 +10346,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |lua, ()| {
             let ended = { c.borrow_mut().end_drag() };
             match ended {
-            Some(idx) => Ok(LuaValue::Table(create_typed_widget_table(
-                lua,
-                &c,
-                idx,
-                &cbs_end_drag,
-            )?)),
+                Some(idx) => Ok(LuaValue::Table(create_typed_widget_table(
+                    lua,
+                    &c,
+                    idx,
+                    &cbs_end_drag,
+                )?)),
                 None => Ok(LuaValue::Nil),
             }
         })?,
@@ -9811,12 +10437,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let root_idx = crate::ui::load_layout_toml_attached(&mut g, &src)
                 .map_err(mlua::Error::external)?;
             drop(g);
-            create_typed_widget_table(
-                lua,
-                &c,
-                root_idx,
-                &cbs_load_layout_game_file,
-            )
+            create_typed_widget_table(lua, &c, root_idx, &cbs_load_layout_game_file)
         })?,
     )?;
     let c = ctx.clone();
@@ -9955,10 +10576,11 @@ fn lua_dialog_actions(
         result.push(crate::ui::layout_loader::DialogActionDef {
             text: action_table.get("text").unwrap_or_default(),
             role: action_table.get("role").ok(),
-            close_on_activate: action_table
-                .get("close_on_activate")
-                .or_else(|_| action_table.get("closeOnActivate"))
-                .ok(),
+            close_on_activate: optional_lua_bool_alias(
+                &action_table,
+                "close_on_activate",
+                "closeOnActivate",
+            ),
         });
     }
     Ok(Some(result))
@@ -10011,11 +10633,12 @@ fn apply_widget_value_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table
     def.min = table.get("min").ok();
     def.max = table.get("max").ok();
     def.value = table.get("value").ok();
-    def.checked = table.get("checked").ok();
-    def.on = table.get("on").ok();
-    def.visible = table.get("visible").ok();
-    def.enabled = table.get("enabled").ok();
+    def.checked = optional_lua_bool(table, "checked");
+    def.on = optional_lua_bool(table, "on");
+    def.visible = optional_lua_bool(table, "visible");
+    def.enabled = optional_lua_bool(table, "enabled");
     def.placeholder = table.get("placeholder").ok();
+    def.submit_on_enter = optional_lua_bool_alias(table, "submit_on_enter", "submitOnEnter");
     def.tooltip = table.get("tooltip").ok();
 }
 
@@ -10065,14 +10688,8 @@ fn apply_widget_text_layout_fields(def: &mut crate::ui::WidgetDef, table: &mlua:
         .get("text_v_align")
         .or_else(|_| table.get("textVAlign"))
         .ok();
-    def.text_wrap = table
-        .get("text_wrap")
-        .or_else(|_| table.get("textWrap"))
-        .ok();
-    def.text_ellipsis = table
-        .get("text_ellipsis")
-        .or_else(|_| table.get("textEllipsis"))
-        .ok();
+    def.text_wrap = optional_lua_bool_alias(table, "text_wrap", "textWrap");
+    def.text_ellipsis = optional_lua_bool_alias(table, "text_ellipsis", "textEllipsis");
     def.flex_grow = table
         .get("flex_grow")
         .or_else(|_| table.get("flexGrow"))
@@ -10092,7 +10709,7 @@ fn apply_widget_container_fields(
     def.align = table.get("align").ok();
     def.justify = table.get("justify").ok();
     def.columns = lua_columns_def(table)?;
-    def.wrap = table.get("wrap").ok();
+    def.wrap = optional_lua_bool(table, "wrap");
     def.active_index = table
         .get("active_index")
         .or_else(|_| table.get("activeIndex"))
@@ -10124,21 +10741,24 @@ fn apply_widget_container_fields(
 }
 
 fn apply_widget_dialog_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
-    def.modal = table.get("modal").ok();
-    def.open = table.get("open").ok();
-    def.closeable = table.get("closeable").ok();
-    def.draggable = table.get("draggable").ok();
-    def.resizable = table.get("resizable").ok();
-    def.dismiss_on_outside_click = table
-        .get("dismiss_on_outside_click")
-        .or_else(|_| table.get("dismissOnOutsideClick"))
-        .ok();
-    def.center_on_open = table
-        .get("center_on_open")
-        .or_else(|_| table.get("centerOnOpen"))
-        .ok();
+    def.modal = optional_lua_bool(table, "modal");
+    def.open = optional_lua_bool(table, "open");
+    def.closeable = optional_lua_bool(table, "closeable");
+    def.draggable = optional_lua_bool(table, "draggable");
+    def.resizable = optional_lua_bool(table, "resizable");
+    def.dismiss_on_outside_click =
+        optional_lua_bool_alias(table, "dismiss_on_outside_click", "dismissOnOutsideClick");
+    def.center_on_open = optional_lua_bool_alias(table, "center_on_open", "centerOnOpen");
     def.min_size = table.get("min_size").or_else(|_| table.get("minSize")).ok();
     def.max_size = table.get("max_size").or_else(|_| table.get("maxSize")).ok();
+}
+
+fn optional_lua_bool(table: &mlua::Table, key: &str) -> Option<bool> {
+    table.get::<_, Option<bool>>(key).ok().flatten()
+}
+
+fn optional_lua_bool_alias(table: &mlua::Table, key: &str, alias: &str) -> Option<bool> {
+    optional_lua_bool(table, key).or_else(|| optional_lua_bool(table, alias))
 }
 
 fn lua_string_array(table: mlua::Table) -> mlua::Result<Vec<String>> {
@@ -10254,7 +10874,7 @@ fn lua_tree_nodes(table: mlua::Table) -> mlua::Result<Vec<crate::ui::layout_load
         nodes.push(crate::ui::layout_loader::TreeNodeDef {
             text: node.get("text")?,
             parent: node.get("parent").ok(),
-            expanded: node.get("expanded").ok(),
+            expanded: optional_lua_bool(&node, "expanded"),
             icon: node.get("icon").ok(),
         });
     }
@@ -10304,7 +10924,7 @@ fn lua_property_groups(
         let group_table: mlua::Table = groups_table.get(group_idx)?;
         groups.push(crate::ui::layout_loader::PropertyGroupDef {
             title: group_table.get("title")?,
-            collapsed: group_table.get("collapsed").ok(),
+            collapsed: optional_lua_bool(&group_table, "collapsed"),
             rows: Some(lua_property_rows(&group_table)?),
         });
     }
@@ -10343,10 +10963,7 @@ fn lua_property_row(
             .get::<_, Option<mlua::Table>>("options")?
             .map(lua_string_array)
             .transpose()?,
-        read_only: row_table
-            .get("read_only")
-            .or_else(|_| row_table.get("readOnly"))
-            .ok(),
+        read_only: optional_lua_bool_alias(&row_table, "read_only", "readOnly"),
     })
 }
 fn scalar_value_to_text(value: LuaValue) -> LuaResult<String> {

@@ -1188,9 +1188,8 @@ fn resolve_new_font(
             LuaError::RuntimeError("lurek.render.newFont: built-in fonts not loaded".into())
         });
     }
-    let path = path.ok_or_else(|| {
-        LuaError::RuntimeError("lurek.render.newFont: missing font path".into())
-    })?;
+    let path = path
+        .ok_or_else(|| LuaError::RuntimeError("lurek.render.newFont: missing font path".into()))?;
     if path == "default" {
         if let Some(key) = builtin_font_key_by_point_size(st, size.max(1.0) as u32, None) {
             return Ok(key);
@@ -5002,7 +5001,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let mut resolver = |reference: &str| {
                     st.fs
                         .read_string(&base.join(reference).to_string_lossy())
-                        .map_err(|error| crate::render::obj_loader::ObjError::Parse(error.to_string()))
+                        .map_err(|error| {
+                            crate::render::obj_loader::ObjError::Parse(error.to_string())
+                        })
                 };
                 crate::render::obj_loader::ObjLoader::parse_obj_with_resolver(
                     &source,
@@ -5010,8 +5011,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     &mut resolver,
                 )
             };
-            let model = model
-                .map_err(|e| LuaError::RuntimeError(format!("loadObj '{}': {}", path, e)))?;
+            let model =
+                model.map_err(|e| LuaError::RuntimeError(format!("loadObj '{}': {}", path, e)))?;
             Ok(LuaObjModel {
                 state: state_for_obj.clone(),
                 model,
@@ -5066,7 +5067,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let mut resolver = |reference: &str| {
                     st.fs
                         .read_string(&base.join(reference).to_string_lossy())
-                        .map_err(|error| crate::render::obj_loader::ObjError::Parse(error.to_string()))
+                        .map_err(|error| {
+                            crate::render::obj_loader::ObjError::Parse(error.to_string())
+                        })
                 };
                 crate::render::obj_loader::ObjLoader::parse_obj_with_resolver(
                     &source,

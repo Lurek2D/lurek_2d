@@ -40,6 +40,9 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `Lcg` now exposes algorithm versioning, raw-state snapshot/restore, `next_u64`, `next_f64`, and bounded integer helpers so deterministic procgen callers can reproduce results without modulo-biased indexing.
 - Strict `wfc_llm` parsing is now bounded by `ProcgenLimits` (`max_parser_input_bytes`, `max_wfc_tiles`, `max_wfc_adjacency_refs`) and returns structured `ProcgenError` values for malformed schema, oversized payloads, and count overruns instead of silently partially parsing by default.
 - Auxiliary grid helpers also participate in the safe contract: `NoiseGrid::try_from_perlin`, `try_poisson_disk`, `try_voronoi_diagram`, `try_rooms_dungeon`, `BiomeClassifier::try_classify_map`, and `try_flood_fill` validate dimensions or finite parameters before allocating.
+- `placeConstrained` performs seeded, weighted, bounded selection over neutral coordinates, tags, levels, regions, weights, and uniqueness groups. It never mutates candidates and returns a deterministic partial report when constraints cannot satisfy the requested count.
+- `validateConnectivity` accepts only `LProcgenGrid` or a plain `{width, height, cells}` table, uses bounded iterative flood fill with four- or eight-neighbor topology, and reports components, unreachable goals, isolated regions, safe-radius violations, and bounded diagnostics.
+- Placement and connectivity deliberately do not know monsters, loot, shops, keys, bosses, tilefields, pathfinding grids, or other module state. Lua chooses whether and how to materialize their results elsewhere.
 
 ## Architecture Links
 

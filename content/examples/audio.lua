@@ -2270,6 +2270,43 @@ do
     lurek.log.info(tostring("volume = " .. tostring(sfx:getVolume())))
 end
 
+--@api: lurek.audio.setListeners
+do
+    local listeners = {
+        { id = "left", x = -100, y = 0 },
+        { id = "right", x = 100, y = 0 },
+    }
+    lurek.audio.setListeners(listeners, { policy = "weighted" })
+    lurek.log.info("listeners configured=" .. tostring(#listeners))
+end
+
+--@api: lurek.audio.getListeners
+do
+    lurek.audio.setListeners({ { id = "camera", x = 10, y = 20, weight = 1 } })
+    local listeners = lurek.audio.getListeners()
+    local first = listeners[1]
+    local position = tostring(first.x) .. "," .. tostring(first.y)
+    lurek.log.info("listener " .. first.id .. "=" .. position)
+end
+
+--@api: lurek.audio.setSourceListenerMask
+do
+    local source = lurek.audio.newSource("assets/audio/sample_click.wav", "static")
+    lurek.audio.setListeners({ { id = "player", x = 0, y = 0 } }, { policy = "manual" })
+    lurek.audio.setPosition(source, 20, 0, 0)
+    lurek.audio.setSourceListenerMask(source, { "player" })
+    lurek.log.info("masked gain=" .. tostring(lurek.audio.getSourceSpatialResult(source).gain))
+end
+
+--@api: lurek.audio.getSourceSpatialResult
+do
+    local source = lurek.audio.newSource("assets/audio/sample_click.wav", "static")
+    lurek.audio.setListeners({ { id = "camera", x = 0, y = 0 } })
+    lurek.audio.setPosition(source, 25, 0, 0)
+    local result = lurek.audio.getSourceSpatialResult(source)
+    lurek.log.info("spatial gain=" .. tostring(result.gain))
+end
+
 --@api: LBeatClock:judge
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
@@ -2294,5 +2331,8 @@ end
 --@api: lurek.audio.manager.setGroupVolume
 do
     lurek.audio.manager.setGroupVolume("music", 0.6)
-    lurek.log.info("music group volume updated")
+    local source = lurek.audio.newSource("content/examples/assets/audio/sample_click.wav", "static")
+    source:setVolume(0.5)
+    local volume = source:getVolume()
+    lurek.log.info("music group volume updated source=" .. tostring(volume))
 end

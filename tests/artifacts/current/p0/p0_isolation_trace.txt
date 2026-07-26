@@ -1,0 +1,9 @@
+input_a_removed_door=true
+input_b_removed_door=false
+ui_a_door=open
+ui_b_door=closed
+ray_a_x=3
+ray_b_x=0
+physics_test_move_x=2
+tilefield_cost=7
+nav_blocked=true

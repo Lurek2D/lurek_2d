@@ -15,7 +15,7 @@
 - Source path: `src/raycaster`
 - Binding: `src/lua_api/raycaster_api.rs`
 - Namespace: `lurek.raycaster`
-- Lua API surface: `19` functions, `18` types, `126` methods
+- Lua API surface: `20` functions, `19` types, `143` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -298,6 +298,13 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - This file is the boundary between first-person UI input and render-space selection on grid or multilevel data.
 - Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.
 
+### view.rs
+
+- Owns camera-specific raycaster projection snapshots for independent viewports.
+- A view retains only its last built scene, depth columns, pick snapshot, camera, and presentation policy.
+- Authoritative cells remain owned by `Raycaster2D` or `MultiLevelGrid`; builds clone only the pick snapshot.
+- Render-target selection and command queuing remain in the Lua/runtime binding layer.
+
 ### visibility.rs
 
 - This file owns `field_of_view`, the radial visibility-polygon builder that casts around segment endpoints.
@@ -343,6 +350,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `lurek.raycaster.newMultiLevelGrid(levels?) -> LMultiLevelGrid`: Creates a persistent multi-level raycaster world from plain Lua level tables or as an empty container.
 - `lurek.raycaster.newSceneAdapter() -> LSceneAdapter`: Creates a runtime adapter for sprites, lights, and models that can follow physics bodies.
 - `lurek.raycaster.newSpriteManager() -> LSpriteManager`: Creates a new sprite manager for tracking and projecting billboard sprites.
+- `lurek.raycaster.newView(opts?) -> LRaycasterView`: Creates an isolated camera projection and picking view.
 - `lurek.raycaster.pickScreenMultiLevel(sx, sy, params, levels, wallTextures?, sprites?, models?) -> table`: Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
 - `lurek.raycaster.pickScreenMultiLevelFromAdapter(sx, sy, params, levels, wallTextures?, adapter) -> table`: Resolves a screen-space click against a stack of plain Lua level tables using a runtime scene adapter.
 - `lurek.raycaster.projectColumn(distance, fov, screenHeight) -> number`: Computes the projected wall-column height for a given distance, FOV, and screen height.
@@ -438,6 +446,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LMultiLevelGrid:isCeilingHole(x, y) -> boolean`: Returns true when an active-level cell is open to the level above.
 - `LMultiLevelGrid:isFloorHole(x, y) -> boolean`: Returns true when an active-level cell is open to the level below.
 - `LMultiLevelGrid:levelCount() -> integer`: Returns the total number of stored levels.
+- `LMultiLevelGrid:patchCells(patches) -> nil`: Atomically patches render cells and surface overrides across persistent levels.
 - `LMultiLevelGrid:pickScreen(sx, sy, params, wallTextures?, sprites?, models?) -> table`: Resolves a screen-space click against this persistent multi-level world and returns the owning level.
 - `LMultiLevelGrid:pickScreenFromAdapter(sx, sy, params, wallTextures?, adapter) -> table`: Resolves a screen-space click against this multilevel world using a runtime scene adapter.
 - `LMultiLevelGrid:setActiveLevel(level) -> nil`: Sets the currently active level index used for stacked camera height.
@@ -526,6 +535,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LRaycaster:getWallMaterial(cellValue) -> table`: Returns the material override for a wall tile type, or nil when none is set.
 - `LRaycaster:height() -> integer`: Returns the map height in grid cells.
 - `LRaycaster:isBlocked(x, y) -> boolean`: Returns true if the grid cell is a solid wall (non-zero value).
+- `LRaycaster:patchCells(patches) -> nil`: Atomically patches render cells, wall features, and per-cell surface overrides.
 - `LRaycaster:pickScreen(sx, sy, params, sprites?, models?) -> table`: Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
 - `LRaycaster:pickScreenFromAdapter(sx, sy, params, adapter) -> table`: Resolves a screen-space click using sprite/model inputs sourced from a runtime scene adapter.
 - `LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW) -> table`: Projects a world-space sprite to screen coordinates for billboard rendering.
@@ -715,6 +725,32 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 ##### Methods
 
 - No documented methods.
+
+#### LRaycasterView Type
+
+- Registers the `lurek.raycaster` module table and all its factory functions into Lua.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LRaycasterView:build(source, inputs?) -> integer`: Builds an isolated projection from `LRaycaster` or `LMultiLevelGrid`.
+- `LRaycasterView:buildFromAdapter(source, adapter, opts?) -> integer`: Builds using inputs resolved from an `LSceneAdapter`.
+- `LRaycasterView:clear() -> nil`: Clears the last projection without changing view configuration.
+- `LRaycasterView:getCameraState() -> table`: Returns the current camera values.
+- `LRaycasterView:getDepthAt(screen_x) -> number`: Returns the last-built wall depth for a screen X coordinate.
+- `LRaycasterView:getStats() -> table`: Returns per-view build telemetry.
+- `LRaycasterView:getViewport() -> table`: Returns the screen composition rectangle.
+- `LRaycasterView:pick(screen_x, screen_y) -> table`: Picks against the exact source and depth snapshot retained by the last build.
+- `LRaycasterView:queue(opts?) -> integer`: Queues this view without changing the legacy global raycaster output.
+- `LRaycasterView:setCameraState(camera) -> nil`: Replaces the camera used by subsequent builds.
+- `LRaycasterView:setQuality(quality) -> nil`: Sets ray count and maximum distance for subsequent builds.
+- `LRaycasterView:setShader(shader?) -> nil`: Sets or clears the per-view raycaster shader.
+- `LRaycasterView:setViewport(viewport) -> nil`: Replaces the screen composition rectangle.
+- `LRaycasterView:type() -> string`: Returns `LRaycasterView`.
+- `LRaycasterView:typeOf(name) -> boolean`: Checks the handle type.
 
 #### LSceneAdapter Type
 

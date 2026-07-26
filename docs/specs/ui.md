@@ -18,7 +18,7 @@
 - Source path: `src/ui`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `115` functions, `45` types, `395` methods
+- Lua API surface: `116` functions, `46` types, `418` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -356,6 +356,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.newColorPicker() -> LColorPicker`: Creates a new color picker widget for color selection.
 - `lurek.ui.newComboBox() -> LComboBox`: Creates a new combo box (drop-down) widget.
 - `lurek.ui.newComparisonBar(label, current, target) -> LLayout`: Creates a horizontal comparison row from a label, current value, and target value.
+- `lurek.ui.newContext(opts?) -> LUiContext`: Creates an explicitly driven UI context with independent widgets and interaction state.
 - `lurek.ui.newCustomWidget(config?) -> LUiWidget`: Creates a new custom widget with optional initial configuration.
 - `lurek.ui.newDialog(title?) -> LDialog`: Creates a new dialog widget with an optional title.
 - `lurek.ui.newDockPanel() -> LDockPanel`: Creates a new dock panel widget for docking child widgets to sides.
@@ -1230,6 +1231,40 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LTreeView:setNodeText(index, text) -> boolean`: Sets the text of the node at the given 1-based index.
 - `LTreeView:setSelectedNode(index) -> boolean`: Sets the selected node by 1-based index.
 - `LTreeView:toggleNode(index) -> boolean`: Toggles the expanded/collapsed state of the node at the given 1-based index.
+
+#### LUiContext Type
+
+- Lua handle for one explicitly driven, isolated UI context.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LUiContext:clear() -> integer`: Clears all widgets, callbacks, focus, capture, drag, modal, and tooltip state.
+- `LUiContext:create(widget_type, opts?) -> LUiWidget`: Creates a widget of `widget_type` from optional layout fields.
+- `LUiContext:destroy(widget, recursive?) -> integer`: Destroys a live widget from this context.
+- `LUiContext:dispatchAction(action, value?) -> boolean`: Dispatches a gameplay-neutral UI action.
+- `LUiContext:dispatchKey(key) -> boolean`: Explicitly dispatches a key press.
+- `LUiContext:dispatchPointer(event) -> boolean`: Explicitly dispatches a pointer event.
+- `LUiContext:dispatchText(text) -> boolean`: Explicitly dispatches text input.
+- `LUiContext:dispatchWheel(x, y) -> boolean`: Explicitly dispatches a wheel delta.
+- `LUiContext:focusDirection(direction) -> boolean`: Moves focus in a named spatial direction.
+- `LUiContext:focusNext() -> nil`: Moves focus forward.
+- `LUiContext:focusPrev() -> nil`: Moves focus backward.
+- `LUiContext:getById(id) -> LUiWidget?`: Finds a widget by id inside this context.
+- `LUiContext:getDiagnostics() -> table`: Returns isolated runtime counters and UX diagnostics.
+- `LUiContext:getFocus() -> LUiWidget?`: Returns the focused widget handle.
+- `LUiContext:getViewport() -> table`: Returns this context's screen rectangle.
+- `LUiContext:loadLayout(path, opts?) -> LUiWidget`: Loads and atomically attaches a TOML layout through GameFS.
+- `LUiContext:queueDraw(opts?) -> integer`: Queues this context to its viewport or an explicit canvas and restores render state.
+- `LUiContext:renderToImage(opts?) -> LImageData`: Renders this context into CPU image data.
+- `LUiContext:setFocus(widget?) -> nil`: Sets focus to a context-owned widget or clears it with nil.
+- `LUiContext:setViewport(viewport) -> nil`: Sets this context's screen rectangle.
+- `LUiContext:type() -> string`: Returns `LUiContext`.
+- `LUiContext:typeOf(name) -> boolean`: Checks this handle type.
+- `LUiContext:update(dt) -> nil`: Advances this context and dispatches only its callbacks.
 
 #### LUiWidget Type
 

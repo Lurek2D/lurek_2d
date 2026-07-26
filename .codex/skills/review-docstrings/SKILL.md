@@ -28,7 +28,7 @@ description: "Load this skill when auditing and fixing Rust and Lua API docstrin
 - Frame or thread side effects are documented when callers must respect them.
 - A file doc that only restates the filename is not useful.
 - Presence and minimum length do not prove a docstring is correct.
-- `rust_file_docstring_guidelines.md` defines the expected file-doc content.
+- `docs/contributing/rust-file-docstrings.md` defines the expected file-doc content.
 - `docstring_audit.py` reports docstring gaps.
 - `gen_rust_docstrings.py` and `gen_all_docs.py` produce downstream documentation.
 - Every Rust source file begins with one contiguous `//!` block.

@@ -2196,6 +2196,67 @@ impl LuaUserData for LuaTileField {
             },
         );
 
+        // -- patchCells --
+        /// Atomically applies cell/profile/modifier/reference patches and returns stable dirty rectangles.
+        /// @param | patches | table | Array of `{x, y, z?, cell?}` patch tables.
+        /// @return | table | Ordered one-cell `{x, y, z, w, h}` dirty rectangles.
+        methods.add_method("patchCells", |lua, this, patches: LuaTable| {
+            let patch_count = patches.raw_len();
+            let mut staged = this.inner.borrow().clone();
+            if patch_count as u64 > staged.limits().max_cells_per_field {
+                return Err(lua_err(
+                    "patchCells",
+                    "patch count exceeds the field cell limit",
+                ));
+            }
+            let mut dirty = HashSet::with_capacity(patch_count);
+            for index in 1..=patch_count {
+                let patch: LuaTable = patches
+                    .raw_get(index)
+                    .map_err(|error| lua_err("patchCells", error))?;
+                let coord = coord_from_values(
+                    patch.get("x").map_err(|_| {
+                        lua_err("patchCells", format!("patch {index}.x is required"))
+                    })?,
+                    patch.get("y").map_err(|_| {
+                        lua_err("patchCells", format!("patch {index}.y is required"))
+                    })?,
+                    patch.get::<_, Option<u32>>("z")?,
+                )?;
+                if !staged.in_bounds(coord) {
+                    return Err(lua_err(
+                        "patchCells",
+                        format!("patch {index} coordinate is out of bounds"),
+                    ));
+                }
+                if patch.get::<_, Option<bool>>("clear")?.unwrap_or(false) {
+                    staged
+                        .clear_cell(coord)
+                        .map_err(|error| lua_err("patchCells", error))?;
+                }
+                let cell = patch
+                    .get::<_, Option<LuaTable>>("cell")?
+                    .unwrap_or_else(|| patch.clone());
+                TileFieldLuaParser::apply_provider_cell(&mut staged, coord, cell, "patchCells")?;
+                dirty.insert(coord);
+            }
+            *this.inner.borrow_mut() = staged;
+
+            let mut dirty: Vec<_> = dirty.into_iter().collect();
+            dirty.sort_by_key(|coord| (coord.z, coord.y, coord.x));
+            let result = lua.create_table()?;
+            for (index, coord) in dirty.into_iter().enumerate() {
+                let rect = lua.create_table()?;
+                rect.set("x", coord.x + 1)?;
+                rect.set("y", coord.y + 1)?;
+                rect.set("z", coord.z + 1)?;
+                rect.set("w", 1)?;
+                rect.set("h", 1)?;
+                result.set(index + 1, rect)?;
+            }
+            Ok(result)
+        });
+
         // -- setBlock --
         /// Sets whether a cell blocks a channel.
         /// @param | x | integer | One-based column.

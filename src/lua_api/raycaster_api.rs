@@ -10,7 +10,7 @@ use crate::lua_api::render_api::LuaObjModel;
 #[cfg(feature = "voxel-loader")]
 use crate::lua_api::render_api::LuaVoxelModel;
 use crate::lua_api::render_api::{
-    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaShader,
+    ensure_shader_target, shader_key_from_userdata, LuaCanvas, LuaImage, LuaShader,
 };
 use crate::raycaster::lighting::{apply_global_light, apply_lit_shade};
 use crate::raycaster::sprite_manager::SpriteManager;
@@ -20,9 +20,10 @@ use crate::raycaster::{
     PickAttrSurface, PickResult, PickSurface, PointLight, RayHit, Raycaster2D, RaycasterBackground,
     RaycasterBuildStats, RaycasterLastBuildContext, RaycasterLevel, RaycasterLimits,
     RaycasterMaterial, RaycasterMaterialFrameLayout, RaycasterOverlayEffect,
-    RaycasterParticleEmitter, RaycasterPickWorld, RaycasterScene, SceneAdapter, SceneAdapterLight,
-    SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams, WallFeature,
-    WallFeatureKind, WorldSprite,
+    RaycasterParticleEmitter, RaycasterPickWorld, RaycasterRenderState, RaycasterScene,
+    RaycasterView, RaycasterViewCamera, RaycasterViewQuality, RaycasterViewport, SceneAdapter,
+    SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams,
+    WallFeature, WallFeatureKind, WorldSprite,
 };
 #[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 use crate::raycaster::{SceneAdapterModel, SceneAdapterModelAsset};
@@ -30,7 +31,7 @@ use crate::raycaster::{SceneAdapterModel, SceneAdapterModelAsset};
 use crate::render::obj_loader::Vec3;
 use crate::render::renderer::ParticleRenderShape;
 use crate::render::shader::UniformValue;
-use crate::render::{BlendMode, ShaderTarget};
+use crate::render::{BlendMode, RenderCommand, ShaderTarget};
 use crate::runtime::resource_keys::{ShaderKey, TextureKey};
 use crate::tilefield::{CellCoord, TileChannel, TileField, TileObjectCatalog, TileRef};
 use crate::tileset::{TileCatalog, TileVisual};
@@ -39,6 +40,7 @@ use slotmap::Key;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
+use std::time::Instant;
 /// Rebuilds a texture key and raw handle pair from the persisted numeric texture id.
 fn texture_key_from_raw_id(raw_id: u64) -> (TextureKey, u64) {
     (TextureKey::from(slotmap::KeyData::from_ffi(raw_id)), raw_id)
@@ -2683,6 +2685,7 @@ impl LuaUserData for LuaHeightMap {
 }
 /// Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
 /// collision, and scene-building operations for first-person dungeon-crawler rendering.
+#[derive(Clone)]
 pub struct LuaRaycaster {
     inner: Raycaster2D,
     state: Rc<RefCell<SharedState>>,
@@ -3040,6 +3043,105 @@ impl LuaUserData for LuaRaycaster {
         /// @param | val | integer | Wall type (0 = empty, 1+ = wall texture index).
         methods.add_method_mut("setCell", |_, this, (x, y, val): (u32, u32, u32)| {
             this.inner.set_cell(x, y, val);
+            Ok(())
+        });
+        // -- patchCells --
+        /// Atomically patches render cells, wall features, and per-cell surface overrides.
+        /// @param | patches | table | Array of zero-based `{x, y, value?, wallFeature?, floorTexture?, ceilingTexture?, floorMaterial?, ceilingMaterial?}`.
+        methods.add_method_mut("patchCells", |_, this, patches: LuaTable| {
+            let mut staged = this.clone();
+            for index in 1..=patches.raw_len() {
+                let patch: LuaTable = patches.raw_get(index)?;
+                let x = patch.get::<_, u32>("x").map_err(|_| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.raycaster.LRaycaster:patchCells: patch {index}.x is required"
+                    ))
+                })?;
+                let y = patch.get::<_, u32>("y").map_err(|_| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.raycaster.LRaycaster:patchCells: patch {index}.y is required"
+                    ))
+                })?;
+                if x >= staged.inner.width() || y >= staged.inner.height() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.raycaster.LRaycaster:patchCells: patch {index} coordinate is out of bounds"
+                    )));
+                }
+                if let Some(value) = patch.get::<_, Option<u32>>("value")? {
+                    staged.inner.set_cell(x, y, value);
+                }
+                if patch.contains_key("wallFeature")? {
+                    match patch.get::<_, LuaValue>("wallFeature")? {
+                        LuaValue::Nil => staged.inner.clear_wall_feature(x, y),
+                        LuaValue::Table(feature) => staged.inner.set_wall_feature(
+                            x,
+                            y,
+                            parse_wall_feature_payload(
+                                &feature,
+                                "lurek.raycaster.LRaycaster:patchCells",
+                            )?,
+                        ),
+                        other => {
+                            return Err(LuaError::RuntimeError(format!(
+                                "lurek.raycaster.LRaycaster:patchCells: wallFeature must be table or nil, got {}",
+                                other.type_name()
+                            )))
+                        }
+                    }
+                }
+                for (field, target) in [
+                    ("floorTexture", &mut staged.floor_cell_textures),
+                    ("ceilingTexture", &mut staged.ceiling_cell_textures),
+                ] {
+                    if patch.contains_key(field)? {
+                        match parse_texture_key_value(
+                            &patch.get::<_, LuaValue>(field)?,
+                            "lurek.raycaster.LRaycaster:patchCells",
+                        )? {
+                            Some(texture) => {
+                                target.insert((x, y), texture);
+                            }
+                            None => {
+                                target.remove(&(x, y));
+                            }
+                        }
+                    }
+                }
+                for (field, target) in [
+                    ("floorMaterial", &mut staged.floor_cell_materials),
+                    ("ceilingMaterial", &mut staged.ceiling_cell_materials),
+                ] {
+                    if patch.contains_key(field)? {
+                        match patch.get::<_, LuaValue>(field)? {
+                            LuaValue::Nil => {
+                                target.remove(&(x, y));
+                            }
+                            LuaValue::Table(material) => {
+                                let spec = {
+                                    let state = staged.state.borrow();
+                                    RaycasterLuaHelpers::parse_material_spec(
+                                        &material,
+                                        &state,
+                                        "lurek.raycaster.LRaycaster:patchCells",
+                                        staged.next_material_id,
+                                        &[ShaderTarget::Draw],
+                                    )?
+                                };
+                                staged.next_material_id =
+                                    staged.next_material_id.saturating_add(1);
+                                target.insert((x, y), spec);
+                            }
+                            other => {
+                                return Err(LuaError::RuntimeError(format!(
+                                    "lurek.raycaster.LRaycaster:patchCells: {field} must be table or nil, got {}",
+                                    other.type_name()
+                                )))
+                            }
+                        }
+                    }
+                }
+            }
+            *this = staged;
             Ok(())
         });
         // -- getCell --
@@ -4537,6 +4639,86 @@ impl LuaUserData for LuaMultiLevelGrid {
             let level =
                 active_multilevel_level_mut(&mut grid, "lurek.raycaster.LMultiLevelGrid:setCell")?;
             level.set_wall(x as usize, y as usize, val);
+            Ok(())
+        });
+        // -- patchCells --
+        /// Atomically patches render cells and surface overrides across persistent levels.
+        /// @param | patches | table | Array of zero-based `{level?, x, y, value?, wallFeature?, floorTexture?, ceilingTexture?, floorHole?, ceilingHole?}`.
+        methods.add_method("patchCells", |_, this, patches: LuaTable| {
+            let mut staged = this.inner.borrow().clone();
+            for index in 1..=patches.raw_len() {
+                let patch: LuaTable = patches.raw_get(index)?;
+                let level_index = patch
+                    .get::<_, Option<usize>>("level")?
+                    .unwrap_or_else(|| staged.active_level());
+                let x = patch.get::<_, usize>("x").map_err(|_| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.raycaster.LMultiLevelGrid:patchCells: patch {index}.x is required"
+                    ))
+                })?;
+                let y = patch.get::<_, usize>("y").map_err(|_| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.raycaster.LMultiLevelGrid:patchCells: patch {index}.y is required"
+                    ))
+                })?;
+                let level = staged.get_level_mut(level_index).ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.raycaster.LMultiLevelGrid:patchCells: patch {index} level is out of bounds"
+                    ))
+                })?;
+                if x >= level.width || y >= level.height {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.raycaster.LMultiLevelGrid:patchCells: patch {index} coordinate is out of bounds"
+                    )));
+                }
+                if let Some(value) = patch.get::<_, Option<u32>>("value")? {
+                    level.set_wall(x, y, value);
+                }
+                if patch.contains_key("wallFeature")? {
+                    match patch.get::<_, LuaValue>("wallFeature")? {
+                        LuaValue::Nil => level.clear_wall_feature(x, y),
+                        LuaValue::Table(feature) => level.set_wall_feature(
+                            x,
+                            y,
+                            parse_wall_feature_payload(
+                                &feature,
+                                "lurek.raycaster.LMultiLevelGrid:patchCells",
+                            )?,
+                        ),
+                        other => {
+                            return Err(LuaError::RuntimeError(format!(
+                                "lurek.raycaster.LMultiLevelGrid:patchCells: wallFeature must be table or nil, got {}",
+                                other.type_name()
+                            )))
+                        }
+                    }
+                }
+                if patch.contains_key("floorTexture")? {
+                    match parse_texture_key_value(
+                        &patch.get::<_, LuaValue>("floorTexture")?,
+                        "lurek.raycaster.LMultiLevelGrid:patchCells",
+                    )? {
+                        Some((texture, _)) => level.set_floor_texture(x, y, texture),
+                        None => level.clear_floor_texture(x, y),
+                    }
+                }
+                if patch.contains_key("ceilingTexture")? {
+                    match parse_texture_key_value(
+                        &patch.get::<_, LuaValue>("ceilingTexture")?,
+                        "lurek.raycaster.LMultiLevelGrid:patchCells",
+                    )? {
+                        Some((texture, _)) => level.set_ceiling_texture(x, y, texture),
+                        None => level.clear_ceiling_texture(x, y),
+                    }
+                }
+                if let Some(hole) = patch.get::<_, Option<bool>>("floorHole")? {
+                    level.set_floor_hole(x, y, hole);
+                }
+                if let Some(hole) = patch.get::<_, Option<bool>>("ceilingHole")? {
+                    level.set_ceiling_hole(x, y, hole);
+                }
+            }
+            *this.inner.borrow_mut() = staged;
             Ok(())
         });
         // -- getCell --
@@ -6764,10 +6946,615 @@ impl LuaUserData for LuaSpriteManager {
     }
 }
 /// Registers the `lurek.raycaster` module table and all its factory functions into Lua.
+/// Lua handle for one independently built raycaster projection.
+struct LuaRaycasterView {
+    inner: RaycasterView,
+    state: Rc<RefCell<SharedState>>,
+}
+
+fn view_rect_from_table(table: &LuaTable, api: &str) -> LuaResult<RaycasterViewport> {
+    RaycasterViewport {
+        x: table.get::<_, Option<f32>>("x")?.unwrap_or(0.0),
+        y: table.get::<_, Option<f32>>("y")?.unwrap_or(0.0),
+        width: table
+            .get::<_, Option<f32>>("w")?
+            .or(table.get::<_, Option<f32>>("width")?)
+            .unwrap_or(640.0),
+        height: table
+            .get::<_, Option<f32>>("h")?
+            .or(table.get::<_, Option<f32>>("height")?)
+            .unwrap_or(360.0),
+    }
+    .validate()
+    .map_err(|error| LuaError::RuntimeError(format!("{api}: {error}")))
+}
+
+fn view_params_table<'lua>(lua: &'lua Lua, view: &RaycasterView) -> LuaResult<LuaTable<'lua>> {
+    let params = lua.create_table()?;
+    params.set("px", view.camera.x)?;
+    params.set("py", view.camera.y)?;
+    params.set("angle", view.camera.angle)?;
+    params.set("fov", view.camera.fov)?;
+    params.set("camera_height", view.camera.camera_height)?;
+    params.set("horizon_offset", view.camera.horizon_offset)?;
+    params.set("rays", view.quality.rays)?;
+    params.set("max_dist", view.quality.max_distance)?;
+    params.set("screen_w", view.viewport.width)?;
+    params.set("screen_h", view.viewport.height)?;
+    Ok(params)
+}
+
+fn build_raycaster_view(
+    lua: &Lua,
+    this: &mut LuaRaycasterView,
+    source: LuaAnyUserData,
+    inputs: Option<LuaTable>,
+) -> LuaResult<usize> {
+    let params_table = view_params_table(lua, &this.inner)?;
+    let params = {
+        let state = this.state.borrow();
+        parse_scene_build_params_for_state(
+            &params_table,
+            "lurek.raycaster.LRaycasterView:build",
+            state.total_time,
+            &state,
+        )?
+    };
+    let inputs = inputs.unwrap_or(lua.create_table()?);
+    let lights_value = inputs
+        .get::<_, Option<LuaValue>>("lights")?
+        .unwrap_or(LuaValue::Nil);
+    let sprites_value = inputs
+        .get::<_, Option<LuaValue>>("sprites")?
+        .unwrap_or(LuaValue::Nil);
+    let wall_value = inputs
+        .get::<_, Option<LuaValue>>("wallTextures")?
+        .or(inputs.get::<_, Option<LuaValue>>("wall_textures")?)
+        .unwrap_or(LuaValue::Nil);
+    let models = inputs.get::<_, Option<LuaTable>>("models")?;
+    let lights = parse_point_lights(lights_value, "lurek.raycaster.LRaycasterView:build")?;
+    let wall_textures = parse_wall_texture_map(wall_value, "lurek.raycaster.LRaycasterView:build")?;
+    let started = Instant::now();
+    let (scene, world) = if let Ok(raycaster) = source.borrow::<LuaRaycaster>() {
+        let sprites = {
+            let state = this.state.borrow();
+            parse_world_sprites(
+                sprites_value,
+                "lurek.raycaster.LRaycasterView:build",
+                &state,
+            )?
+        };
+        let mut scene = RaycasterScene::build_with_scene_features(
+            &raycaster.inner,
+            &params,
+            &lights,
+            &sprites,
+            &raycaster.particle_emitters,
+            &|cell_value| wall_textures.get(&cell_value).copied(),
+            &|cell_value| {
+                raycaster
+                    .wall_materials
+                    .get(&cell_value)
+                    .map(|spec| spec.material.clone())
+            },
+            &|x, y| {
+                raycaster
+                    .floor_cell_textures
+                    .get(&(x, y))
+                    .map(|entry| entry.0)
+            },
+            &|x, y| {
+                raycaster
+                    .ceiling_cell_textures
+                    .get(&(x, y))
+                    .map(|entry| entry.0)
+            },
+            &|x, y| {
+                raycaster
+                    .floor_cell_materials
+                    .get(&(x, y))
+                    .map(|spec| spec.material.clone())
+            },
+            &|x, y| {
+                raycaster
+                    .ceiling_cell_materials
+                    .get(&(x, y))
+                    .map(|spec| spec.material.clone())
+            },
+            &|x, y| {
+                raycaster
+                    .lowered_floor_cells
+                    .get(&(x, y))
+                    .map(lowered_floor_cell_to_runtime)
+            },
+        );
+        #[cfg(feature = "obj-loader")]
+        if let Some(models) = &models {
+            let cam_pos = Vec3::new(params.player_x, params.camera_height, params.player_y);
+            let cam_target = Vec3::new(
+                params.player_x + params.player_angle.cos(),
+                params.camera_height,
+                params.player_y + params.player_angle.sin(),
+            );
+            for model in models.clone().sequence_values::<LuaTable>() {
+                let model = model?;
+                let cell_x = model.get::<_, f32>("x")?.floor().max(0.0) as u32;
+                let cell_y = model.get::<_, f32>("y")?.floor().max(0.0) as u32;
+                let ambient = if raycaster
+                    .ceiling_cell_textures
+                    .contains_key(&(cell_x, cell_y))
+                {
+                    params.ambient_light * params.roofed_ambient_factor
+                } else {
+                    params.ambient_light
+                };
+                let wall_at = |x: i32, y: i32| {
+                    x < 0 || y < 0 || raycaster.inner.blocks_render_light_at(x as u32, y as u32)
+                };
+                if let Some(mesh) = project_model_instance(
+                    &model,
+                    "lurek.raycaster.LRaycasterView:build",
+                    &params,
+                    cam_pos,
+                    cam_target,
+                    0,
+                    0.0,
+                    ambient,
+                    &lights,
+                    &wall_at,
+                )? {
+                    scene.models.push(mesh);
+                }
+            }
+        }
+        (scene, RaycasterPickWorld::Single(raycaster.inner.clone()))
+    } else if let Ok(grid) = source.borrow::<LuaMultiLevelGrid>() {
+        let active_level = grid.inner.borrow().active_level();
+        let sprites = {
+            let state = this.state.borrow();
+            parse_level_sprites(
+                sprites_value,
+                "lurek.raycaster.LRaycasterView:build",
+                active_level,
+                &state,
+            )?
+        };
+        let mut scene = RaycasterScene::build_multilevel(
+            &grid.inner.borrow(),
+            &params,
+            &lights,
+            &sprites,
+            &|_, cell_value| wall_textures.get(&cell_value).copied(),
+            &|_, _, _| None,
+            &|_, _, _| None,
+            &|_, _, _| None,
+        );
+        #[cfg(feature = "obj-loader")]
+        if let Some(models) = &models {
+            let grid_ref = grid.inner.borrow();
+            let eye = params.camera_height.clamp(0.1, 0.9);
+            let camera_world_z = grid_ref
+                .get_active()
+                .map(|level| level.floor_offset + eye)
+                .unwrap_or(eye);
+            let cam_pos = Vec3::new(params.player_x, camera_world_z, params.player_y);
+            let cam_target = Vec3::new(
+                params.player_x + params.player_angle.cos(),
+                camera_world_z,
+                params.player_y + params.player_angle.sin(),
+            );
+            let models_by_level =
+                collect_model_tables_by_level(models, active_level, grid_ref.level_count())?;
+            for level_index in grid_ref.visible_level_indices(
+                params.player_x,
+                params.player_y,
+                params.max_distance,
+            ) {
+                let level_models = &models_by_level[level_index];
+                let Some(level_result) = grid_ref.with_runtime_level(
+                    level_index,
+                    |level, raycaster| -> LuaResult<Vec<ModelMesh>> {
+                        let wall_at = |x: i32, y: i32| {
+                            x < 0 || y < 0 || raycaster.blocks_render_light_at(x as u32, y as u32)
+                        };
+                        let mut meshes = Vec::new();
+                        for model in level_models {
+                            let cell_x = model.get::<_, f32>("x")?.floor().max(0.0) as usize;
+                            let cell_y = model.get::<_, f32>("y")?.floor().max(0.0) as usize;
+                            let roofed = cell_x < level.width
+                                && cell_y < level.height
+                                && !level.is_ceiling_hole(cell_x, cell_y);
+                            let ambient = if roofed {
+                                params.ambient_light * params.roofed_ambient_factor
+                            } else {
+                                params.ambient_light
+                            };
+                            if let Some(mesh) = project_model_instance(
+                                model,
+                                "lurek.raycaster.LRaycasterView:build",
+                                &params,
+                                cam_pos,
+                                cam_target,
+                                level_index,
+                                level.floor_offset,
+                                ambient,
+                                &lights,
+                                &wall_at,
+                            )? {
+                                meshes.push(mesh);
+                            }
+                        }
+                        Ok(meshes)
+                    },
+                ) else {
+                    continue;
+                };
+                scene.models.extend(level_result?);
+            }
+        }
+        (
+            scene,
+            RaycasterPickWorld::Multi(grid.inner.borrow().clone()),
+        )
+    } else {
+        return Err(LuaError::RuntimeError(
+            "lurek.raycaster.LRaycasterView:build: source must be LRaycaster or LMultiLevelGrid"
+                .to_string(),
+        ));
+    };
+    let count = scene.quad_count();
+    this.inner.store_build(
+        RaycasterLastBuildContext {
+            params: scene_params_to_screen_pick(&params),
+            world,
+            scene,
+        },
+        started.elapsed().as_secs_f64() * 1_000.0,
+    );
+    Ok(count)
+}
+
+impl LuaUserData for LuaRaycasterView {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setViewport --
+        /// Replaces the screen composition rectangle.
+        /// @param | viewport | table | `{x, y, w, h}` in pixels.
+        methods.add_method_mut("setViewport", |_, this, viewport: LuaTable| {
+            this.inner.viewport =
+                view_rect_from_table(&viewport, "lurek.raycaster.LRaycasterView:setViewport")?;
+            Ok(())
+        });
+        // -- getViewport --
+        /// Returns the screen composition rectangle.
+        /// @return | table | `{x, y, w, h}`.
+        methods.add_method("getViewport", |lua, this, ()| {
+            let out = lua.create_table()?;
+            out.set("x", this.inner.viewport.x)?;
+            out.set("y", this.inner.viewport.y)?;
+            out.set("w", this.inner.viewport.width)?;
+            out.set("h", this.inner.viewport.height)?;
+            Ok(out)
+        });
+        // -- setCameraState --
+        /// Replaces the camera used by subsequent builds.
+        /// @param | camera | table | `{x, y, angle, fov, cameraHeight?, horizonOffset?}`.
+        methods.add_method_mut("setCameraState", |_, this, camera: LuaTable| {
+            let next = RaycasterViewCamera {
+                x: camera.get("x")?,
+                y: camera.get("y")?,
+                angle: camera.get("angle")?,
+                fov: camera.get("fov")?,
+                camera_height: camera.get::<_, Option<f32>>("cameraHeight")?.unwrap_or(0.5),
+                horizon_offset: camera
+                    .get::<_, Option<f32>>("horizonOffset")?
+                    .unwrap_or(0.0),
+            };
+            if !next.x.is_finite()
+                || !next.y.is_finite()
+                || !next.angle.is_finite()
+                || !next.fov.is_finite()
+                || !(0.01..std::f32::consts::PI).contains(&next.fov)
+                || !(0.1..=0.9).contains(&next.camera_height)
+                || !next.horizon_offset.is_finite()
+            {
+                return Err(LuaError::RuntimeError(
+                    "lurek.raycaster.LRaycasterView:setCameraState: camera values are invalid"
+                        .to_string(),
+                ));
+            }
+            this.inner.camera = next;
+            Ok(())
+        });
+        // -- getCameraState --
+        /// Returns the current camera values.
+        /// @return | table | Camera snapshot.
+        methods.add_method("getCameraState", |lua, this, ()| {
+            let out = lua.create_table()?;
+            out.set("x", this.inner.camera.x)?;
+            out.set("y", this.inner.camera.y)?;
+            out.set("angle", this.inner.camera.angle)?;
+            out.set("fov", this.inner.camera.fov)?;
+            out.set("cameraHeight", this.inner.camera.camera_height)?;
+            out.set("horizonOffset", this.inner.camera.horizon_offset)?;
+            Ok(out)
+        });
+        // -- setQuality --
+        /// Sets ray count and maximum distance for subsequent builds.
+        /// @param | quality | table | `{rays?, maxDistance?}`.
+        methods.add_method_mut("setQuality", |_, this, quality: LuaTable| {
+            let next = RaycasterViewQuality {
+                rays: quality
+                    .get::<_, Option<u32>>("rays")?
+                    .unwrap_or(this.inner.quality.rays),
+                max_distance: quality
+                    .get::<_, Option<f32>>("maxDistance")?
+                    .unwrap_or(this.inner.quality.max_distance),
+            };
+            RaycasterView::new(this.inner.viewport, next).map_err(|error| {
+                LuaError::RuntimeError(format!(
+                    "lurek.raycaster.LRaycasterView:setQuality: {error}"
+                ))
+            })?;
+            this.inner.quality = next;
+            Ok(())
+        });
+        // -- setShader --
+        /// Sets or clears the per-view raycaster shader.
+        /// @param | shader | LShader? | Raycaster-target shader or nil.
+        methods.add_method_mut("setShader", |_, this, shader: Option<LuaAnyUserData>| {
+            this.inner.shader = match shader {
+                Some(shader) => {
+                    let key = shader_key_from_userdata(&shader)?;
+                    let state = this.state.borrow();
+                    ensure_shader_target(
+                        &state,
+                        key,
+                        ShaderTarget::Draw,
+                        "lurek.raycaster.LRaycasterView:setShader",
+                    )?;
+                    Some(key)
+                }
+                None => None,
+            };
+            Ok(())
+        });
+        // -- build --
+        /// Builds an isolated projection from `LRaycaster` or `LMultiLevelGrid`.
+        /// @param | source | any | Raycaster world source.
+        /// @param | inputs | table? | Optional lights, sprites, models, and wallTextures.
+        /// @return | integer | Projected primitive count.
+        methods.add_method_mut(
+            "build",
+            |lua, this, (source, inputs): (LuaAnyUserData, Option<LuaTable>)| {
+                build_raycaster_view(lua, this, source, inputs)
+            },
+        );
+        // -- buildFromAdapter --
+        /// Builds using inputs resolved from an `LSceneAdapter`.
+        /// @param | source | any | Raycaster world source.
+        /// @param | adapter | LSceneAdapter | Explicit scene adapter.
+        /// @param | opts | table? | Optional wallTextures.
+        /// @return | integer | Projected primitive count.
+        methods.add_method_mut(
+            "buildFromAdapter",
+            |lua,
+             this,
+             (source, adapter, opts): (
+                LuaAnyUserData,
+                LuaAnyUserData,
+                Option<LuaTable>,
+            )| {
+                let adapter = adapter.borrow::<LuaRaycasterSceneAdapter>().map_err(|_| {
+                    LuaError::RuntimeError(
+                        "lurek.raycaster.LRaycasterView:buildFromAdapter: adapter must be LSceneAdapter"
+                            .to_string(),
+                    )
+                })?;
+                let resolved = adapter.scene_inputs(lua)?;
+                let lights = resolved.get::<_, LuaTable>("lights")?;
+                let sprites = resolved.get::<_, LuaTable>("sprites")?;
+                let models = resolved.get::<_, LuaTable>("models")?;
+                let inputs = opts.unwrap_or(lua.create_table()?);
+                inputs.set("lights", lights)?;
+                inputs.set("sprites", sprites)?;
+                inputs.set("models", models)?;
+                build_raycaster_view(lua, this, source, Some(inputs))
+            },
+        );
+        // -- queue --
+        /// Queues this view without changing the legacy global raycaster output.
+        /// @param | opts | table? | Optional `{canvas=LCanvas}` target.
+        /// @return | integer | Number of queued render commands.
+        methods.add_method("queue", |_, this, opts: Option<LuaTable>| {
+            let scene = this.inner.scene().ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "lurek.raycaster.LRaycasterView:queue: build must be called first".to_string(),
+                )
+            })?;
+            let explicit_canvas = opts
+                .as_ref()
+                .map(|options| options.get::<_, Option<LuaAnyUserData>>("canvas"))
+                .transpose()?
+                .flatten();
+            let canvas_key = match explicit_canvas {
+                Some(canvas) => Some(
+                    canvas
+                        .borrow::<LuaCanvas>()
+                        .map_err(|_| {
+                            LuaError::RuntimeError(
+                                "lurek.raycaster.LRaycasterView:queue: canvas must be LCanvas"
+                                    .to_string(),
+                            )
+                        })?
+                        .key,
+                ),
+                None => this.state.borrow().active_canvas,
+            };
+            let mut state = this.state.borrow_mut();
+            let previous_canvas = state.active_canvas;
+            let previous_scissor = state.scissor;
+            let previous_shader = state.active_shader;
+            let previous_blend = state.blend_mode;
+            let mut commands = Vec::new();
+            if canvas_key != previous_canvas {
+                commands.push(RenderCommand::SetCanvas(canvas_key));
+            }
+            if canvas_key.is_some() {
+                commands.push(RenderCommand::SetScissor(Some((
+                    0.0,
+                    0.0,
+                    this.inner.viewport.width,
+                    this.inner.viewport.height,
+                ))));
+            } else {
+                commands.push(RenderCommand::PushTransform);
+                commands.push(RenderCommand::SetScissor(Some((
+                    this.inner.viewport.x,
+                    this.inner.viewport.y,
+                    this.inner.viewport.width,
+                    this.inner.viewport.height,
+                ))));
+                commands.push(RenderCommand::Translate {
+                    x: this.inner.viewport.x,
+                    y: this.inner.viewport.y,
+                });
+            }
+            commands.extend(
+                scene.generate_render_commands_with_state(RaycasterRenderState {
+                    scene_shader: this.inner.shader,
+                    restore_shader: previous_shader,
+                    restore_blend: previous_blend,
+                }),
+            );
+            commands.push(RenderCommand::SetScissor(previous_scissor));
+            if canvas_key.is_none() {
+                commands.push(RenderCommand::PopTransform);
+            }
+            if canvas_key != previous_canvas {
+                commands.push(RenderCommand::SetCanvas(previous_canvas));
+            }
+            let count = commands.len();
+            state.render_commands.extend(commands);
+            Ok(count)
+        });
+        // -- pick --
+        /// Picks against the exact source and depth snapshot retained by the last build.
+        /// @param | screen_x | number | Screen X coordinate.
+        /// @param | screen_y | number | Screen Y coordinate.
+        /// @return | table | Pick record, or nil outside the viewport/no hit.
+        methods.add_method("pick", |lua, this, (screen_x, screen_y): (f32, f32)| {
+            if !this.inner.viewport.contains(screen_x, screen_y) {
+                return Ok(LuaValue::Nil);
+            }
+            let Some(build) = &this.inner.last_build else {
+                return Ok(LuaValue::Nil);
+            };
+            let local_x = screen_x - this.inner.viewport.x;
+            let local_y = screen_y - this.inner.viewport.y;
+            let entity = {
+                let state = this.state.borrow();
+                build.scene.pick_entity_with_sprite_alpha_test(
+                    local_x,
+                    local_y,
+                    &|texture, u, v| texture_pick_is_opaque(&state.textures, texture, u, v),
+                )
+            };
+            let tile = match &build.world {
+                RaycasterPickWorld::Single(world) => {
+                    world.pick_screen(&build.params, local_x, local_y)
+                }
+                RaycasterPickWorld::Multi(world) => {
+                    world.pick_screen(&build.params, local_x, local_y)
+                }
+            };
+            if let Some(entity) = entity.as_ref() {
+                if tile
+                    .as_ref()
+                    .map(|tile| entity_pick_precedes_tile(entity, tile))
+                    .unwrap_or(true)
+                {
+                    return Ok(LuaValue::Table(entity_pick_to_table(lua, entity)?));
+                }
+            }
+            match tile {
+                Some(tile) => Ok(LuaValue::Table(pick_result_to_table(lua, &tile)?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+        // -- getDepthAt --
+        /// Returns the last-built wall depth for a screen X coordinate.
+        /// @param | screen_x | number | Screen X coordinate.
+        /// @return | number | Depth, or nil outside the viewport.
+        methods.add_method("getDepthAt", |_, this, screen_x: f32| {
+            Ok(this.inner.depth_at(screen_x))
+        });
+        // -- getStats --
+        /// Returns per-view build telemetry.
+        /// @return | table | Build time, primitive, ray, depth, particle, and model counts.
+        methods.add_method("getStats", |lua, this, ()| {
+            let out = lua.create_table()?;
+            out.set("buildTimeMs", this.inner.stats.build_time_ms)?;
+            out.set("quadCount", this.inner.stats.quad_count)?;
+            out.set("rays", this.inner.stats.rays)?;
+            out.set("depthColumns", this.inner.stats.depth_columns)?;
+            out.set("particles", this.inner.stats.particles)?;
+            out.set("models", this.inner.stats.models)?;
+            Ok(out)
+        });
+        // -- clear --
+        /// Clears the last projection without changing view configuration.
+        methods.add_method_mut("clear", |_, this, ()| {
+            this.inner.clear();
+            Ok(())
+        });
+        // -- type --
+        /// Returns `LRaycasterView`.
+        /// @return | string | Handle type.
+        methods.add_method("type", |_, _, ()| Ok("LRaycasterView"));
+        // -- typeOf --
+        /// Checks the handle type.
+        /// @param | name | string | Type name.
+        /// @return | boolean | Whether it matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LRaycasterView" || name == "LObject")
+        });
+    }
+}
+
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // --- Raycaster factories and module entry points ---
+    let view_state = state.clone();
+    // -- newView --
+    /// Creates an isolated camera projection and picking view.
+    /// @param | opts | table? | Optional `{viewport={x,y,w,h}, rays?, maxDistance?}`.
+    /// @return | LRaycasterView | New empty view.
+    tbl.set(
+        "newView",
+        lua.create_function(move |lua, opts: Option<LuaTable>| {
+            let opts = opts.unwrap_or(lua.create_table()?);
+            let viewport = match opts.get::<_, Option<LuaTable>>("viewport")? {
+                Some(viewport) => view_rect_from_table(&viewport, "lurek.raycaster.newView")?,
+                None => RaycasterViewport {
+                    x: 0.0,
+                    y: 0.0,
+                    width: 640.0,
+                    height: 360.0,
+                },
+            };
+            let quality = RaycasterViewQuality {
+                rays: opts.get::<_, Option<u32>>("rays")?.unwrap_or(320),
+                max_distance: opts.get::<_, Option<f32>>("maxDistance")?.unwrap_or(64.0),
+            };
+            Ok(LuaRaycasterView {
+                inner: RaycasterView::new(viewport, quality).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.raycaster.newView: {error}"))
+                })?,
+                state: view_state.clone(),
+            })
+        })?,
+    )?;
     // -- new --
     /// Creates a new raycaster map with the given grid dimensions.
     /// Dimensions must be greater than zero and stay within the shared raycaster safety limits.

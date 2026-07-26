@@ -324,6 +324,103 @@ impl World {
             self.record_invalid_operation();
         }
     }
+
+    /// Enable or disable a live body and all of its solver participation.
+    pub fn try_set_body_enabled(
+        &mut self,
+        body_id: usize,
+        enabled: bool,
+    ) -> Result<(), PhysicsError> {
+        if !self.has_body(body_id) {
+            return Err(PhysicsError::InvalidBodyReference { body_id });
+        }
+        let handle = self
+            .active_body_handle(body_id)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id })?;
+        let body = self
+            .rbodies
+            .get_mut(handle)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id })?;
+        body.set_enabled(enabled);
+        Ok(())
+    }
+
+    /// Return whether a live body's Rapier owner is enabled.
+    pub fn is_body_enabled(&self, body_id: usize) -> Result<bool, PhysicsError> {
+        if !self.has_body(body_id) {
+            return Err(PhysicsError::InvalidBodyReference { body_id });
+        }
+        let handle = self
+            .active_body_handle(body_id)
+            .ok_or(PhysicsError::InvalidBodyReference { body_id })?;
+        self.rbodies
+            .get(handle)
+            .map(|body| body.is_enabled())
+            .ok_or(PhysicsError::InvalidBodyReference { body_id })
+    }
+
+    /// Enable or disable one primary or extra fixture without changing sensor state.
+    pub fn try_set_fixture_enabled(
+        &mut self,
+        body_id: usize,
+        fixture_idx: usize,
+        enabled: bool,
+    ) -> Result<(), PhysicsError> {
+        if !self.has_body(body_id) {
+            return Err(PhysicsError::InvalidBodyReference { body_id });
+        }
+        let handle = if fixture_idx == 0 {
+            self.collider_handles.get(body_id).copied()
+        } else {
+            self.extra_collider_handles
+                .get(body_id)
+                .and_then(|handles| handles.get(fixture_idx - 1))
+                .copied()
+        }
+        .ok_or(PhysicsError::InvalidFixtureReference {
+            body_id,
+            fixture_index: fixture_idx,
+        })?;
+        let collider =
+            self.rcolliders
+                .get_mut(handle)
+                .ok_or(PhysicsError::InvalidFixtureReference {
+                    body_id,
+                    fixture_index: fixture_idx,
+                })?;
+        collider.set_enabled(enabled);
+        Ok(())
+    }
+
+    /// Return whether one live fixture participates in queries and simulation.
+    pub fn is_fixture_enabled(
+        &self,
+        body_id: usize,
+        fixture_idx: usize,
+    ) -> Result<bool, PhysicsError> {
+        if !self.has_body(body_id) {
+            return Err(PhysicsError::InvalidBodyReference { body_id });
+        }
+        let handle = if fixture_idx == 0 {
+            self.collider_handles.get(body_id).copied()
+        } else {
+            self.extra_collider_handles
+                .get(body_id)
+                .and_then(|handles| handles.get(fixture_idx - 1))
+                .copied()
+        }
+        .ok_or(PhysicsError::InvalidFixtureReference {
+            body_id,
+            fixture_index: fixture_idx,
+        })?;
+        self.rcolliders
+            .get(handle)
+            .map(|collider| collider.is_enabled())
+            .ok_or(PhysicsError::InvalidFixtureReference {
+                body_id,
+                fixture_index: fixture_idx,
+            })
+    }
     /// Return a shared reference to body `id`, or `None` if out of range.
     pub fn get_body(&self, id: usize) -> Option<&Body> {
         self.has_body(id).then(|| self.bodies.get(id)).flatten()

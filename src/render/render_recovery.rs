@@ -73,7 +73,10 @@ impl RenderRecoveryState {
                 Self::DeviceRecoveryPending,
                 RenderRecoveryAction::RecoverDevice,
             ),
-            RenderRecoveryEvent::Suspended => (Self::SurfaceReconfigurePending, RenderRecoveryAction::SkipFrame),
+            RenderRecoveryEvent::Suspended => (
+                Self::SurfaceReconfigurePending,
+                RenderRecoveryAction::SkipFrame,
+            ),
             RenderRecoveryEvent::Resumed if self == Self::SurfaceReconfigurePending => (
                 Self::SurfaceReconfigurePending,
                 RenderRecoveryAction::ReconfigureSurface,

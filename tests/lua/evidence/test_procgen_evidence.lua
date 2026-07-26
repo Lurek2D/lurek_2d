@@ -666,6 +666,57 @@ describe("Evidence: lurek.procgen visual and sampled outputs", function()
 
         save_png(img, OUT .. "procgen_wfc_lsystem_names.png")
     end)
+
+    -- Does: Runs seeded constrained placement and iterative connectivity validation on neutral Lua data.
+    -- Shows: The trace records deterministic placement ids, bounded attempts, component sizes, and unreachable-goal counts.
+    -- Artifact: tests/artifacts/current/procgen/procgen_constraints_connectivity_trace.txt
+    -- Why: This proves the algorithms return inspectable building blocks without knowing monsters, loot, doors, or any other gameplay module.
+    it("TXT: constrained placement and connectivity trace", function()
+        local candidates = {}
+        for i = 1, 16 do
+            candidates[i] = {
+                id = "point_" .. i,
+                x = i * 3,
+                y = i % 4,
+                level = 1,
+                region = "region_" .. (i % 2),
+                tags = { "floor" },
+                weight = i,
+            }
+        end
+        local placements, placement_report = lurek.procgen.placeConstrained(candidates, {
+            count = 5,
+            requiredTags = { "floor" },
+            minDistance = 2,
+            perRegionCapacity = 3,
+        }, { seed = 2026, maxAttempts = 32 })
+        local connectivity = lurek.procgen.validateConnectivity({
+            width = 4,
+            height = 3,
+            cells = {
+                0, 0, 1, 0,
+                0, 0, 1, 0,
+                1, 1, 1, 0,
+            },
+        }, {
+            starts = { { x = 0, y = 0 } },
+            goals = { { x = 3, y = 2 } },
+        })
+        local ids = {}
+        for i, placement in ipairs(placements) do
+            ids[i] = placement.id
+        end
+        local lines = {
+            "seed=" .. tostring(placement_report.seed),
+            "complete=" .. tostring(placement_report.complete),
+            "attempts=" .. tostring(placement_report.attempts),
+            "placements=" .. table.concat(ids, ","),
+            "components=" .. tostring(#connectivity.components),
+            "primary_component=" .. tostring(connectivity.primaryComponent),
+            "unreachable_goals=" .. tostring(#connectivity.unreachableGoals),
+        }
+        write_text(OUT .. "procgen_constraints_connectivity_trace.txt", table.concat(lines, "\n") .. "\n")
+    end)
 end)
 
 -- @describe Evidence: lurek.procgen sampled data exports

@@ -125,7 +125,7 @@ Libraries are pure-Lua game-mechanics modules with no Rust internals.
 
 ### VS Code Extension (`lurek_2d_extension/`)
 
-See [`lurek_2d_extension/README.md`](lurek_2d_extension/README.md) and [Developer Ecosystem Architecture](docs/architecture/developer-ecosystem.md).
+See [`lurek_2d_extension/README.md`](lurek_2d_extension/README.md), the [Codex CAG System](docs/contributing/cag-system.md), and the extension's local contracts.
 
 - TypeScript source is in `lurek_2d_extension/src/`.
 - The extension reads API data from `docs/` â€” regenerate with `python tools/gen_all_docs.py` after engine API changes.

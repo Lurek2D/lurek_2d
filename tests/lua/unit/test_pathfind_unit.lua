@@ -2157,6 +2157,28 @@ describe("pathfind movement and tactical APIs", function()
     end)
 end)
 
+describe("LNavGrid atomic patches", function()
+    -- @covers LNavGrid:patchCells
+    it("patchCells validates all entries before replacing navigation state", function()
+        local grid = lurek.pathfind.newNavGrid(3, 3)
+        local dirty = grid:patchCells({
+            { x = 2, y = 1, blocked = true },
+            { x = 1, y = 2, cost = 7 },
+        }, { rebuild = "dirty_chunks" })
+        expect_equal(2, #dirty)
+        expect_true(grid:isBlocked(2, 1))
+        expect_equal(7, grid:getCost(1, 2))
+
+        expect_false(pcall(function()
+            grid:patchCells({
+                { x = 1, y = 1, blocked = true },
+                { x = 4, y = 4, cost = 2 },
+            })
+        end))
+        expect_false(grid:isBlocked(1, 1))
+    end)
+end)
+
 end
 -- END test_pathfind_core_unit.lua
 

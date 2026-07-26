@@ -90,8 +90,12 @@ impl fmt::Display for RenderFrameStateError {
         match self {
             Self::TooDeep { scope, max } => write!(f, "{scope} scope exceeds maximum depth {max}"),
             Self::UnexpectedClose { scope } => write!(f, "{scope} close has no active scope"),
-            Self::MismatchedClose { scope } => write!(f, "{scope} close does not match active scope"),
-            Self::Unclosed { scope, depth } => write!(f, "{scope} scope remains open at frame end (depth {depth})"),
+            Self::MismatchedClose { scope } => {
+                write!(f, "{scope} close does not match active scope")
+            }
+            Self::Unclosed { scope, depth } => {
+                write!(f, "{scope} scope remains open at frame end (depth {depth})")
+            }
         }
     }
 }
@@ -99,7 +103,9 @@ impl fmt::Display for RenderFrameStateError {
 impl std::error::Error for RenderFrameStateError {}
 
 /// Validate scopes whose imbalance could otherwise make command ordering ambiguous.
-pub fn validate_render_frame_state(commands: &[RenderCommand]) -> Result<(), RenderFrameStateError> {
+pub fn validate_render_frame_state(
+    commands: &[RenderCommand],
+) -> Result<(), RenderFrameStateError> {
     let mut transforms = 0usize;
     let mut stencils = 0usize;
     let mut postfx = Vec::new();
@@ -108,10 +114,12 @@ pub fn validate_render_frame_state(commands: &[RenderCommand]) -> Result<(), Ren
     for command in commands {
         match command {
             RenderCommand::PushTransform => {
-                transforms = transforms.checked_add(1).ok_or(RenderFrameStateError::TooDeep {
-                    scope: "transform",
-                    max: MAX_RENDER_SCOPE_DEPTH,
-                })?;
+                transforms = transforms
+                    .checked_add(1)
+                    .ok_or(RenderFrameStateError::TooDeep {
+                        scope: "transform",
+                        max: MAX_RENDER_SCOPE_DEPTH,
+                    })?;
                 if transforms > MAX_RENDER_SCOPE_DEPTH {
                     return Err(RenderFrameStateError::TooDeep {
                         scope: "transform",
@@ -120,13 +128,17 @@ pub fn validate_render_frame_state(commands: &[RenderCommand]) -> Result<(), Ren
                 }
             }
             RenderCommand::PopTransform => {
-                transforms = transforms.checked_sub(1).ok_or(RenderFrameStateError::UnexpectedClose { scope: "transform" })?;
+                transforms = transforms
+                    .checked_sub(1)
+                    .ok_or(RenderFrameStateError::UnexpectedClose { scope: "transform" })?;
             }
             RenderCommand::StencilBegin { .. } => {
-                stencils = stencils.checked_add(1).ok_or(RenderFrameStateError::TooDeep {
-                    scope: "stencil",
-                    max: MAX_RENDER_SCOPE_DEPTH,
-                })?;
+                stencils = stencils
+                    .checked_add(1)
+                    .ok_or(RenderFrameStateError::TooDeep {
+                        scope: "stencil",
+                        max: MAX_RENDER_SCOPE_DEPTH,
+                    })?;
                 if stencils > MAX_RENDER_SCOPE_DEPTH {
                     return Err(RenderFrameStateError::TooDeep {
                         scope: "stencil",
@@ -135,7 +147,9 @@ pub fn validate_render_frame_state(commands: &[RenderCommand]) -> Result<(), Ren
                 }
             }
             RenderCommand::StencilEnd => {
-                stencils = stencils.checked_sub(1).ok_or(RenderFrameStateError::UnexpectedClose { scope: "stencil" })?;
+                stencils = stencils
+                    .checked_sub(1)
+                    .ok_or(RenderFrameStateError::UnexpectedClose { scope: "stencil" })?;
             }
             RenderCommand::BeginPostFx { stack_id } => {
                 if postfx.len() >= MAX_RENDER_SCOPE_DEPTH {
@@ -165,10 +179,14 @@ pub fn validate_render_frame_state(commands: &[RenderCommand]) -> Result<(), Ren
             }
             RenderCommand::FlushSortGroup { group_id } => {
                 let Some(active) = sort_groups.pop() else {
-                    return Err(RenderFrameStateError::UnexpectedClose { scope: "sort group" });
+                    return Err(RenderFrameStateError::UnexpectedClose {
+                        scope: "sort group",
+                    });
                 };
                 if active != *group_id {
-                    return Err(RenderFrameStateError::MismatchedClose { scope: "sort group" });
+                    return Err(RenderFrameStateError::MismatchedClose {
+                        scope: "sort group",
+                    });
                 }
             }
             RenderCommand::PushLayer { id, .. } => {
@@ -191,11 +209,36 @@ pub fn validate_render_frame_state(commands: &[RenderCommand]) -> Result<(), Ren
             _ => {}
         }
     }
-    if transforms != 0 { return Err(RenderFrameStateError::Unclosed { scope: "transform", depth: transforms }); }
-    if stencils != 0 { return Err(RenderFrameStateError::Unclosed { scope: "stencil", depth: stencils }); }
-    if !postfx.is_empty() { return Err(RenderFrameStateError::Unclosed { scope: "postfx", depth: postfx.len() }); }
-    if !sort_groups.is_empty() { return Err(RenderFrameStateError::Unclosed { scope: "sort group", depth: sort_groups.len() }); }
-    if !layers.is_empty() { return Err(RenderFrameStateError::Unclosed { scope: "layer", depth: layers.len() }); }
+    if transforms != 0 {
+        return Err(RenderFrameStateError::Unclosed {
+            scope: "transform",
+            depth: transforms,
+        });
+    }
+    if stencils != 0 {
+        return Err(RenderFrameStateError::Unclosed {
+            scope: "stencil",
+            depth: stencils,
+        });
+    }
+    if !postfx.is_empty() {
+        return Err(RenderFrameStateError::Unclosed {
+            scope: "postfx",
+            depth: postfx.len(),
+        });
+    }
+    if !sort_groups.is_empty() {
+        return Err(RenderFrameStateError::Unclosed {
+            scope: "sort group",
+            depth: sort_groups.len(),
+        });
+    }
+    if !layers.is_empty() {
+        return Err(RenderFrameStateError::Unclosed {
+            scope: "layer",
+            depth: layers.len(),
+        });
+    }
     Ok(())
 }
 

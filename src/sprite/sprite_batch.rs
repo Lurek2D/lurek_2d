@@ -48,7 +48,8 @@ pub struct BatchEntry {
 impl SpriteBatch {
     /// Create a bounded batch; 0 uses a default capacity of 256.
     pub fn new(texture_key: TextureKey, max_entries: usize) -> Self {
-        let cap = if max_entries > 0 { max_entries } else { 256 }.min(SpriteLimits::MAX_BATCH_ENTRIES);
+        let cap =
+            if max_entries > 0 { max_entries } else { 256 }.min(SpriteLimits::MAX_BATCH_ENTRIES);
         SpriteBatch {
             texture_key,
             entries: Vec::new(),

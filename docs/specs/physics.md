@@ -21,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `28` functions, `26` types, `300` methods
+- Lua API surface: `28` functions, `27` types, `319` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -119,6 +119,12 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Use this file when changing physics flow defaults, lifecycle handling, validation, or data ownership rules.
 - Keeps failure paths and edge cases near the physics flow state that explains them instead of spreading rules outward.
 - Preserves deterministic behavior by keeping physics flow calculations explicit at their owning subsystem boundary.
+
+### kinematic.rs
+
+- Bounded, deterministic kinematic-circle movement built on the authoritative physics world.
+- The solver owns sweep, wall-slide, optional altitude filtering, and conservative penetration recovery.
+- It does not own actor state, input, levels, stairs, or gameplay callbacks.
 
 ### limits.rs
 
@@ -469,6 +475,30 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LFlowStream:type() -> string`: Returns the type name of this object.
 - `LFlowStream:typeOf(name) -> boolean`: Returns whether this object matches the requested type name.
 
+#### LKinematicController2D Type
+
+- Explicitly driven controller bound to one kinematic body in one world.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LKinematicController2D:clearVerticalSpan() -> nil`: Lua-visible method.
+- `LKinematicController2D:getLastResult() -> nil`: Lua-visible method.
+- `LKinematicController2D:move(dx, dy, opts?) -> table`: Sweeps and wall-slides the controlled kinematic body.
+- `LKinematicController2D:recover(opts?) -> nil`: Lua-visible method.
+- `LKinematicController2D:release() -> nil`: Lua-visible method.
+- `LKinematicController2D:setFilter(filter) -> nil`: Lua-visible method.
+- `LKinematicController2D:setMaxSlides(max_slides) -> nil`: Lua-visible method.
+- `LKinematicController2D:setRadius(radius) -> nil`: Lua-visible method.
+- `LKinematicController2D:setSkin(skin) -> nil`: Lua-visible method.
+- `LKinematicController2D:setVerticalSpan(z_min, z_max) -> nil`: Lua-visible method.
+- `LKinematicController2D:testMove(dx, dy, opts?) -> nil`: Solves movement without mutating the controlled body.
+- `LKinematicController2D:type() -> nil`: Lua-visible method.
+- `LKinematicController2D:typeOf(name) -> nil`: Lua-visible method.
+
 #### LLiquidMap Type
 
 - A separate grid-based liquid map linked to a physics world and optionally to terrain blocking.
@@ -704,17 +734,21 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getZoneEvents() -> table`: Returns all zone enter/leave events from the last step.
 - `LWorld:hasBody(id) -> boolean`: Returns true when a body ID still refers to a live body slot.
 - `LWorld:hasJoint(id) -> boolean`: Returns true when a joint ID still refers to a live joint slot.
+- `LWorld:isBodyEnabled(body_id) -> nil`: Returns whether one live body participates in simulation and queries.
 - `LWorld:isBodySleeping(id) -> boolean`: Returns whether a body is currently in the sleeping (inactive) state.
+- `LWorld:isFixtureEnabled(body_id, fixture_index) -> nil`: Returns whether one zero-based fixture participates in simulation and queries.
 - `LWorld:jointCount() -> integer`: Returns the total number of joints in the world.
 - `LWorld:newBodies(specs) -> integer[]`: Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
 - `LWorld:newBody(x, y, bodyType, opts?) -> LBody`: Creates a new physics body at the given position with the specified type and dimensions.
 - `LWorld:newChainBody(x, y, vertices, closed, bodyType, opts?) -> LBody`: Creates a new body with a chain (polyline) collider. Useful for terrain edges.
 - `LWorld:newCircleBody(x, y, radius, bodyType, opts?) -> LBody`: Creates a new body with a circle collider already attached.
 - `LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts?) -> LBody`: Creates a new body with an edge (line segment) collider between two local points.
+- `LWorld:newKinematicController(body, opts) -> LKinematicController2D`: Creates a bounded circle-sweep controller for one kinematic body.
 - `LWorld:newPolygonBody(x, y, vertices, bodyType, opts?) -> LBody`: Creates a new body with a convex polygon collider defined by vertex pairs.
 - `LWorld:newProjectileBody(opts) -> LBody`: Creates a small circle body with shooter-friendly projectile defaults.
 - `LWorld:queryAABB(x, y, w, h, filter?) -> integer[]`: Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
 - `LWorld:queryAltitudeOverlap(x, y, radius, zMin, zMax, filter?) -> table`: Returns all 2.5D overlaps whose XY footprint and world-space Z interval match the query.
+- `LWorld:querySector(x, y, radius, angle, halfAngle, filter?) -> table`: Returns body centers in a radius and angular sector with stable ordering.
 - `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 - `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
 - `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
@@ -729,12 +763,14 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
 - `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling. This is the world-level alias for `LBody:setBullet`.
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
+- `LWorld:setBodyEnabled(body_id, enabled) -> nil`: Enables or disables one body without destroying its stable id.
 - `LWorld:setBodyOneWay(id, nx, ny) -> nil`: Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
 - `LWorld:setBodyType(id, bodyType) -> nil`: Changes the type of an existing body (e.g. from "dynamic" to "static").
 - `LWorld:setCcdSubsteps(n) -> nil`: Sets the maximum number of CCD substeps. Increase this when fast bullet bodies still need more reliable thin-wall resolution.
 - `LWorld:setCollisionGroupMask(group, mask) -> nil`: Replaces one row of the 16-group collision matrix.
 - `LWorld:setCollisionPair(groupA, groupB, enabled) -> nil`: Enables or disables collisions between two world-level collision groups.
 - `LWorld:setEndContact(callback) -> nil`: Registers a callback function invoked whenever two bodies stop touching.
+- `LWorld:setFixtureEnabled(body_id, fixture_index, enabled) -> nil`: Enables or disables one zero-based fixture without changing sensor state.
 - `LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) -> nil`: Updates the friction coefficient of a specific fixture on a body.
 - `LWorld:setFixtureMaterial(bodyId, fixtureIndex, material) -> nil`: Assigns a reusable material table to one fixture.
 - `LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution) -> nil`: Updates the restitution (bounciness) of a specific fixture on a body.

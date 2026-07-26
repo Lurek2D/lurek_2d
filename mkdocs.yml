@@ -89,18 +89,23 @@ nav:
     - Examples: guides/examples.md
     - Recipes: guides/recipes.md
     - Reference Games: guides/reference-games.md
-    - Lua API Overview: lua-api.md
-    - Module Guides: module-guides.md
+    - Lua API Overview: guides/lua-api.md
+    - Module Guides: guides/module-guides.md
   - Contributing:
     - Index: contributing/index.md
     - Build and Distribution: contributing/build-and-distribution.md
+    - Quality Assurance: contributing/quality-assurance.md
     - Rust File Docstrings: contributing/rust-file-docstrings.md
+    - Lua API Authoring: contributing/lua-api-authoring.md
+    - Codex Workflow: contributing/codex-workflow.md
+    - CAG System: contributing/cag-system.md
+    - Snippet System: contributing/snippet-system.md
   - API Reference:
     - Lua API: api/lurek.md
     - Runtime Callbacks: api/callbacks.md
     - Lureksome: api/lureksome.md
   - Module API Specs:
-    - Overview: module-guides.md
+    - Overview: guides/module-guides.md
     - Agent: modules/agent.md
     - AI: modules/ai.md
     - Animation: modules/animation.md

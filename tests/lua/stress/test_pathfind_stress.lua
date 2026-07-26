@@ -346,5 +346,23 @@ describe("pathfinding stress: clearance and dirty updates", function()
         expect_equal(50, committed)
         expect_false(grid:isWalkableFor("tank", 1, 1))
     end)
+
+    -- @stress LNavGrid:patchCells
+    it("atomically applies a 40000-cell navigation patch", function()
+        local grid = lurek.pathfind.newNavGrid(200, 200)
+        local patches = {}
+        for y = 1, 200 do
+            for x = 1, 200 do
+                patches[#patches + 1] = {
+                    x = x,
+                    y = y,
+                    cost = 1 + ((x + y) % 8),
+                }
+            end
+        end
+        local dirty = grid:patchCells(patches)
+        expect_equal(40000, #dirty)
+        expect_equal(1, grid:getCost(200, 200))
+    end)
 end)
 test_summary()

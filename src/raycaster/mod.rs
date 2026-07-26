@@ -49,6 +49,8 @@ pub mod sprite_manager;
 pub mod sprite_projection;
 /// Tile picker: screen-to-tile coordinate mapping.
 pub mod tile_picker;
+/// Camera-specific projection snapshots for isolated viewports.
+pub mod view;
 /// Field-of-view visibility grid computation.
 pub mod visibility;
 /// Debug visualization helpers (ray paths, normals, tiles).
@@ -107,6 +109,9 @@ pub use sprite_manager::{
 pub use sprite_projection::SpriteProjection;
 pub use tile_picker::{
     PickAttrSurface, PickResult, PickSurface, PickWallSection, ScreenPickParams, TilePicker,
+};
+pub use view::{
+    RaycasterView, RaycasterViewCamera, RaycasterViewQuality, RaycasterViewStats, RaycasterViewport,
 };
 pub use visibility::field_of_view;
 pub use wall_feature::{WallFeature, WallFeatureKind};

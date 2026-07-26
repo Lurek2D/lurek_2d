@@ -60,10 +60,10 @@ pub mod offline_image_shader;
 pub mod postfx_pipeline;
 /// Fullscreen province map shader pipeline and bind-group setup.
 pub mod province_map_pipeline;
-/// Per-frame diagnostics for skipped render commands and invalid render resources.
-pub mod render_diagnostics;
 /// Aggregate frame budgets applied before expensive render work.
 pub mod render_budget;
+/// Per-frame diagnostics for skipped render commands and invalid render resources.
+pub mod render_diagnostics;
 /// Surface and device failure classification for app-owned recovery orchestration.
 pub mod render_recovery;
 /// `RenderCommand` enum and all draw-state types consumed by `GpuRenderer`.
@@ -86,8 +86,8 @@ pub use image_effect::ShaderPassDescriptor;
 pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
 pub use postfx_pipeline::PostFxPipeline;
 pub use province_map_pipeline::ProvinceMapPipeline;
-pub use render_diagnostics::RenderDiagnostics;
 pub use render_budget::{RenderBudget, RenderBudgetError, RenderBudgetLimits};
+pub use render_diagnostics::RenderDiagnostics;
 pub use render_recovery::{
     surface_error_action, RenderRecoveryAction, RenderRecoveryEvent, RenderRecoveryState,
 };

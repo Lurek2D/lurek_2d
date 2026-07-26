@@ -6,12 +6,15 @@ use lurek2d::ui::GuiContext;
 use std::time::{Duration, Instant};
 
 fn emit(name: &str, iterations: usize, widgets: usize, elapsed: Duration) {
-    println!("UI_PERF:{}", serde_json::json!({
-        "scenario": name,
-        "iterations": iterations,
-        "widgets": widgets,
-        "elapsed_ns": elapsed.as_nanos(),
-    }));
+    println!(
+        "UI_PERF:{}",
+        serde_json::json!({
+            "scenario": name,
+            "iterations": iterations,
+            "widgets": widgets,
+            "elapsed_ns": elapsed.as_nanos(),
+        })
+    );
 }
 
 fn populated_context(count: usize) -> GuiContext {
@@ -31,7 +34,9 @@ fn populated_context(count: usize) -> GuiContext {
 fn clean_frame_100_widgets() {
     let mut ctx = populated_context(100);
     let start = Instant::now();
-    for _ in 0..100 { let _ = ctx.generate_render_commands(); }
+    for _ in 0..100 {
+        let _ = ctx.generate_render_commands();
+    }
     emit("clean_frame_100", 100, 100, start.elapsed());
 }
 
@@ -39,7 +44,9 @@ fn clean_frame_100_widgets() {
 fn clean_frame_1000_widgets() {
     let mut ctx = populated_context(1_000);
     let start = Instant::now();
-    for _ in 0..20 { let _ = ctx.generate_render_commands(); }
+    for _ in 0..20 {
+        let _ = ctx.generate_render_commands();
+    }
     emit("clean_frame_1000", 20, 1_000, start.elapsed());
 }
 
@@ -48,7 +55,13 @@ fn clean_pointer_move_1000_widgets() {
     let mut ctx = populated_context(1_000);
     let before = ctx.runtime_stats().layout_passes;
     let start = Instant::now();
-    for point in 0..500 { ctx.mouse_moved((point % 400) as f32, (point % 200) as f32); }
-    assert_eq!(before, ctx.runtime_stats().layout_passes, "clean pointer moves must not relayout");
+    for point in 0..500 {
+        ctx.mouse_moved((point % 400) as f32, (point % 200) as f32);
+    }
+    assert_eq!(
+        before,
+        ctx.runtime_stats().layout_passes,
+        "clean pointer moves must not relayout"
+    );
     emit("clean_pointer_move_1000", 500, 1_000, start.elapsed());
 }

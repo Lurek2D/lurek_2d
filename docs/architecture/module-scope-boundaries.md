@@ -6,7 +6,7 @@
 - Each pair must complement through data, adapters, or explicit orchestration, not duplicate ownership.
 - If a feature fits both sides of a pair, pick the owner below and make the other side consume it through a narrow API.
 
-Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](modularity-plugins.md), [effects-particles-overlay-plan.md](effects-particles-overlay-plan.md)
+Companion documents: [engine-core.md](engine-core.md), [render-pipeline.md](render-pipeline.md), [philosophy.md](philosophy.md)
 
 ---
 
@@ -71,7 +71,7 @@ Companion documents: [engine-core.md](engine-core.md), [modularity-plugins.md](m
 - If a module only consumes another module's data, use neutral DTOs, handles, snapshots, or render commands instead of importing the consumer's runtime state.
 - Tests should target the owning module for behavior and the adapter module only for translation.
 - Any cyclic dependency introduced between a listed pair is an architecture defect.
-# UI boundary
+## UI boundary
 
 The UI system owns retained widget identity, box/grid/container layout, styles, interaction state, focus, capture, gestures, accessibility intent, and lowering those semantics to a bounded deterministic `RenderCommand` stream.
 

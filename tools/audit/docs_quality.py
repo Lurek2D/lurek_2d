@@ -21,7 +21,6 @@ GENERATED_HEADER = "<!-- GENERATED FILE."
 MOJIBAKE_MARKERS = ("Ã", "Â", "â€™", "â€œ", "â€", "â€”", "â€“", "â€¦")
 TEXT_DOC_ROOTS = (
     "docs/index.md",
-    "docs/lua-api.md",
 )
 TEXT_DOC_DIRS = (
     "docs/guides",
@@ -110,8 +109,11 @@ def check_module_pages_indexed(errors: list[str]) -> None:
         "guides/examples.md",
         "guides/recipes.md",
         "guides/reference-games.md",
+        "guides/lua-api.md",
+        "guides/module-guides.md",
         "contributing/index.md",
         "contributing/build-and-distribution.md",
+        "contributing/quality-assurance.md",
         "contributing/rust-file-docstrings.md",
         "api/lurek.md",
         "api/lureksome.md",
@@ -129,7 +131,7 @@ def check_module_pages_indexed(errors: list[str]) -> None:
         if re.search(rf"^##\s+{re.escape(heading)}\s*$", guide_text, re.MULTILINE):
             errors.append(f"FORBIDDEN_MODULE_GUIDE_SECTION {heading}")
 
-    guide_labels = re.findall(r"^\| \[([^\]]+)\]\(modules/[^)]+\.md\) \|", guide_text, re.MULTILINE)
+    guide_labels = re.findall(r"^\| \[([^\]]+)\]\(\.\./modules/[^)]+\.md\) \|", guide_text, re.MULTILINE)
     if guide_labels != sorted(guide_labels, key=str.casefold):
         errors.append("MODULE_GUIDE_NOT_ALPHABETICAL")
 
@@ -157,7 +159,7 @@ def check_module_pages_indexed(errors: list[str]) -> None:
             errors.append(f"MISSING_MKDOCS_MODULE_NAV {module_ref}")
         if re.search(rf"^  - [^:\n]+:\s+{re.escape(module_ref)}\s*$", mkdocs_text, re.MULTILINE):
             errors.append(f"FORBIDDEN_TOP_LEVEL_MODULE_NAV {module_ref}")
-        if f"]({module_ref})" not in guide_text:
+        if f"](../{module_ref})" not in guide_text:
             errors.append(f"MISSING_MODULE_GUIDE_LINK {module_ref}")
         if module_path.exists():
             module_text = module_path.read_text(encoding="utf-8")
@@ -176,7 +178,7 @@ def check_module_pages_indexed(errors: list[str]) -> None:
     for module in module_registry.user_facing_modules():
         api_module = api_module_name(module)
         if api_module != module and f"{module} module" in guide_lower:
-            errors.append(f"FORBIDDEN_INTERNAL_MODULE_ALIAS_TEXT docs/module-guides.md:{module}")
+            errors.append(f"FORBIDDEN_INTERNAL_MODULE_ALIAS_TEXT docs/guides/module-guides.md:{module}")
 
     callbacks_text = (ROOT / "docs" / "api" / "callbacks.md").read_text(encoding="utf-8")
     if "No callbacks found" in callbacks_text or "No callback details available" in callbacks_text:

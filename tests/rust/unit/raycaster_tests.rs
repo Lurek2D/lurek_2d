@@ -48,6 +48,89 @@ mod visibility_tests {
     }
 }
 
+mod isolated_view_tests {
+    use lurek2d::raycaster::{
+        Raycaster2D, RaycasterLastBuildContext, RaycasterPickWorld, RaycasterScene, RaycasterView,
+        RaycasterViewQuality, RaycasterViewport, ScreenPickParams,
+    };
+
+    fn empty_build(width: f32, height: f32) -> RaycasterLastBuildContext {
+        RaycasterLastBuildContext {
+            params: ScreenPickParams {
+                player_x: 1.5,
+                player_y: 1.5,
+                player_angle: 0.0,
+                fov: 1.0,
+                screen_width: width,
+                screen_height: height,
+                camera_height: 0.5,
+                horizon_offset: 0.0,
+                max_distance: 16.0,
+            },
+            world: RaycasterPickWorld::Single(Raycaster2D::new(4, 4)),
+            scene: RaycasterScene::new(width, height),
+        }
+    }
+
+    #[test]
+    fn views_retain_independent_scene_and_pick_snapshots() {
+        let quality = RaycasterViewQuality {
+            rays: 80,
+            max_distance: 16.0,
+        };
+        let mut left = RaycasterView::new(
+            RaycasterViewport {
+                x: 0.0,
+                y: 0.0,
+                width: 320.0,
+                height: 180.0,
+            },
+            quality,
+        )
+        .unwrap();
+        let mut right = RaycasterView::new(
+            RaycasterViewport {
+                x: 320.0,
+                y: 0.0,
+                width: 320.0,
+                height: 180.0,
+            },
+            quality,
+        )
+        .unwrap();
+        left.store_build(empty_build(320.0, 180.0), 0.1);
+        right.store_build(empty_build(320.0, 180.0), 0.2);
+
+        assert_eq!(left.stats.build_time_ms, 0.1);
+        assert_eq!(right.stats.build_time_ms, 0.2);
+        left.clear();
+        assert!(left.scene().is_none());
+        assert!(right.scene().is_some());
+    }
+
+    #[test]
+    fn depth_queries_reject_coordinates_outside_the_viewport() {
+        let mut view = RaycasterView::new(
+            RaycasterViewport {
+                x: 100.0,
+                y: 20.0,
+                width: 200.0,
+                height: 100.0,
+            },
+            RaycasterViewQuality::default(),
+        )
+        .unwrap();
+        let mut build = empty_build(200.0, 100.0);
+        build.scene.depth_columns = vec![2.0, 4.0];
+        view.store_build(build, 0.0);
+
+        assert_eq!(view.depth_at(100.0), Some(2.0));
+        assert_eq!(view.depth_at(299.0), Some(4.0));
+        assert_eq!(view.depth_at(99.0), None);
+        assert_eq!(view.depth_at(300.0), None);
+    }
+}
+
 mod segment_tests {
     use super::*;
 

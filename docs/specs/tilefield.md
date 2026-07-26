@@ -12,7 +12,7 @@
 - Source path: `src/tilefield`
 - Binding: `src/lua_api/tilefield_api.rs`
 - Namespace: `lurek.tilefield`
-- Lua API surface: `6` functions, `2` types, `94` methods
+- Lua API surface: `6` functions, `2` types, `95` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -236,6 +236,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:inBounds(x, y, z?) -> boolean`: Returns whether one-based coordinates are inside the field.
 - `LTileField:isBuildable(x, y, z?) -> boolean`: Returns whether one tile cell accepts build placement.
 - `LTileField:line(opts) -> nil`: Returns topology-aware one-based cells between `from` and `to` tables.
+- `LTileField:patchCells(patches) -> table`: Atomically applies cell/profile/modifier/reference patches and returns stable dirty rectangles.
 - `LTileField:regionContains(name, x, y, z?) -> boolean`: Returns whether a named region contains a one-based tile cell.
 - `LTileField:regionsAt(x, y, z?) -> table`: Returns all region names that contain the addressed one-based tile cell.
 - `LTileField:removeCategory(name) -> boolean`: Removes a custom category and clears dependent cell/modifier data.

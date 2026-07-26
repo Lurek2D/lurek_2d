@@ -502,4 +502,27 @@ describe("LTileLightMap lighting and LTileField exports", function()
     end)
 end)
 
+-- @describe LTileField atomic patches
+describe("LTileField atomic patches", function()
+    -- @covers LTileField:patchCells
+    it("patchCells commits the whole batch or leaves the field unchanged", function()
+        local field = lurek.tilefield.new({ width = 3, height = 3 })
+        local dirty = field:patchCells({
+            { x = 2, y = 1, blocks = { move = true } },
+            { x = 1, y = 2, costs = { move = 4 } },
+        })
+        expect_equal(2, #dirty)
+        expect_true(field:blocks(2, 1, nil, "move"))
+        expect_near(4, field:getCost(1, 2, nil, "move"), 0.001)
+
+        expect_false(pcall(function()
+            field:patchCells({
+                { x = 1, y = 1, blocks = { move = true } },
+                { x = 99, y = 99, blocks = { move = true } },
+            })
+        end))
+        expect_false(field:blocks(1, 1, nil, "move"))
+    end)
+end)
+
 test_summary()

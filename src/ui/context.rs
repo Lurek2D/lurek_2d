@@ -524,7 +524,12 @@ pub struct GuiContext {
     /// Monotonic visual generation; unlike dirty flags it is never cleared by `flush_cache`.
     pub(crate) render_generation: u64,
     /// Last complete retained command stream, keyed by font, visual generation, and structural signature.
-    pub(crate) command_cache: Option<(crate::runtime::resource_keys::FontKey, u64, u64, Vec<crate::render::renderer::RenderCommand>)>,
+    pub(crate) command_cache: Option<(
+        crate::runtime::resource_keys::FontKey,
+        u64,
+        u64,
+        Vec<crate::render::renderer::RenderCommand>,
+    )>,
     /// Cached parent-membership bitmap for input routing; rebuilt only after topology changes.
     pub(crate) input_parent_cache: Vec<bool>,
     pub(crate) input_parent_cache_dirty: bool,
@@ -837,7 +842,9 @@ impl GuiContext {
                 return Err("lurek.ui.setSectionWidget: widget is not live".into());
             }
             if self.contains_descendant(child_idx, status_idx) {
-                return Err("lurek.ui.setSectionWidget: assignment would create a widget cycle".into());
+                return Err(
+                    "lurek.ui.setSectionWidget: assignment would create a widget cycle".into(),
+                );
             }
             if self.widgets.iter().enumerate().any(|(owner_idx, widget)| matches!(widget, WidgetKind::StatusBar(other) if owner_idx != status_idx && other.section_widgets.contains(&Some(child_idx)))) {
                 return Err("lurek.ui.setSectionWidget: widget already belongs to another status section".into());
@@ -869,12 +876,20 @@ impl GuiContext {
         Ok(())
     }
     /// Resize a status bar while detaching widgets owned only by removed sections.
-    pub fn set_status_bar_section_count(&mut self, status_idx: usize, count: usize) -> Result<(), String> {
+    pub fn set_status_bar_section_count(
+        &mut self,
+        status_idx: usize,
+        count: usize,
+    ) -> Result<(), String> {
         let Some(WidgetKind::StatusBar(status)) = self.widgets.get(status_idx) else {
             return Err("lurek.ui.setSectionCount: target is not a status bar".into());
         };
         if count < status.sections.len() {
-            let removed: Vec<usize> = status.section_widgets[count..].iter().flatten().copied().collect();
+            let removed: Vec<usize> = status.section_widgets[count..]
+                .iter()
+                .flatten()
+                .copied()
+                .collect();
             if let Some(WidgetKind::StatusBar(status)) = self.widgets.get_mut(status_idx) {
                 status.sections.truncate(count);
                 status.section_widgets.truncate(count);
@@ -1477,9 +1492,16 @@ impl GuiContext {
         if let Some(WidgetKind::StatusBar(status)) = self.widgets.get(idx) {
             let mut x = computed.x;
             for ((_, width), child) in status.sections.iter().zip(&status.section_widgets) {
-                let section_width = if *width > 0.0 { *width } else { (computed.x + computed.width - x).max(0.0) };
+                let section_width = if *width > 0.0 {
+                    *width
+                } else {
+                    (computed.x + computed.width - x).max(0.0)
+                };
                 if let Some(child_idx) = child {
-                    overrides.push((*child_idx, Rect::new(x, computed.y, section_width, computed.height)));
+                    overrides.push((
+                        *child_idx,
+                        Rect::new(x, computed.y, section_width, computed.height),
+                    ));
                 }
                 x += section_width;
             }
@@ -1920,7 +1942,15 @@ impl GuiContext {
     /// Compute an FNV-style hash of the visible widget tree for change detection.
     pub(crate) fn compute_render_signature(&self) -> u64 {
         let mut hash = 1469598103934665603u64;
-        for value in [self.viewport_w, self.viewport_h, self.scale_factor, self.safe_area[0], self.safe_area[1], self.safe_area[2], self.safe_area[3]] {
+        for value in [
+            self.viewport_w,
+            self.viewport_h,
+            self.scale_factor,
+            self.safe_area[0],
+            self.safe_area[1],
+            self.safe_area[2],
+            self.safe_area[3],
+        ] {
             hash ^= value.to_bits() as u64;
             hash = hash.wrapping_mul(1099511628211);
         }

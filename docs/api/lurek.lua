@@ -2449,6 +2449,10 @@ LCursor = {}
 ---@class LInputRecording
 LInputRecording = {}
 
+--- Lua handle for one isolated player input context.
+---@class LPlayerInputContext
+LPlayerInputContext = {}
+
 --- Lua handle for multi-armed bandit action selection.
 ---@class LBandit
 LBandit = {}
@@ -2842,6 +2846,10 @@ LBody = {}
 ---@class LFlowStream
 LFlowStream = {}
 
+--- Explicitly driven controller bound to one kinematic body in one world.
+---@class LKinematicController2D
+LKinematicController2D = {}
+
 --- A separate grid-based liquid map linked to a physics world and optionally to terrain blocking.
 ---@class LLiquidMap
 LLiquidMap = {}
@@ -2976,6 +2984,10 @@ LMultiLevelGrid = {}
 --- Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
 ---@class LRaycaster
 LRaycaster = {}
+
+--- Registers the `lurek.raycaster` module table and all its factory functions into Lua.
+---@class LRaycasterView
+LRaycasterView = {}
 
 --- Lua-visible adapter that snapshots sprites, lights, and models from static data and physics bodies.
 ---@class LSceneAdapter
@@ -3345,6 +3357,10 @@ LTooltipPanel = {}
 --- Registers tree-view-specific Lua methods on a widget method table.
 ---@class LTreeView : LUiWidget
 LTreeView = {}
+
+--- Lua handle for one explicitly driven, isolated UI context.
+---@class LUiContext : LUiWidget
+LUiContext = {}
 
 --- Creates a Lua table representing a widget with all shared base methods common to every widget type.
 ---@class LUiWidget
@@ -6241,6 +6257,10 @@ lurek.audio.getListener = function() end
 ---@return number X and Y position of the listener. (value 2).
 lurek.audio.getListener2D = function() end
 
+--- Returns the configured listeners in deterministic input order.
+---@return table Listener records.
+lurek.audio.getListeners = function() end
+
 --- Returns the current lowpass filter cutoff of a source.
 ---@param source LSource|number Audio source or numeric source ID.
 ---@return number Cutoff frequency in Hz, or 0 if not set.
@@ -6301,6 +6321,11 @@ lurek.audio.getSourceBus = function(source) end
 --- Returns the total number of loaded audio sources (playing or idle).
 ---@return number Total source count.
 lurek.audio.getSourceCount = function() end
+
+--- Returns the current bounded spatial result for one source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return table Effective policy, gain, pan, distance, and contributing listener IDs.
+lurek.audio.getSourceSpatialResult = function(source) end
 
 --- Returns whether a source is static or streaming.
 ---@param source LSource|number Audio source or numeric source ID.
@@ -6505,6 +6530,11 @@ lurek.audio.setListener = function(x, y, z) end
 ---@param y number Listener Y position in world units.
 lurek.audio.setListener2D = function(x, y) end
 
+--- Atomically replaces the neutral spatial listener set.
+---@param listeners table Ordered listeners with id, x, y, optional z/vx/vy/vz, and positive weight.
+---@param opts? table Options with policy: nearest, weighted, or manual.
+lurek.audio.setListeners = function(listeners, opts) end
+
 --- Enables or disables looping for a source.
 ---@param source LSource|number Audio source or numeric source ID.
 ---@param looping boolean True to loop, false to play once.
@@ -6568,6 +6598,11 @@ lurek.audio.setRandomPitch = function(src_ud, min, max) end
 ---@param source LSource|number Audio source or numeric source ID.
 ---@param bus LBus The bus to route through.
 lurek.audio.setSourceBus = function(source, bus) end
+
+--- Sets or clears the listener allow-list for one source.
+---@param source LSource|number Audio source or numeric source ID.
+---@param listenerIds? table Listener IDs; nil clears the mask.
+lurek.audio.setSourceListenerMask = function(source, listenerIds) end
 
 --- Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
 ---@param src_ud LSource The audio source to adjust.
@@ -16092,6 +16127,111 @@ function LInputRecording:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LInputRecording:typeOf(name) end
 
+--- Assigns a persistent gamepad slot to this context.
+---@param id number Non-negative gamepad slot.
+---@param opts? table Options with `shared`; all owners must opt into sharing.
+function LPlayerInputContext:assignGamepad(id, opts) end
+
+--- Assigns keyboard and mouse to this context.
+---@param opts? table Options with `shared`; all owners must opt into sharing.
+function LPlayerInputContext:assignKeyboardMouse(opts) end
+
+--- Removes every local action.
+function LPlayerInputContext:clearActions() end
+
+--- Defines or replaces a continuous one-dimensional action.
+---@param name string Local action name.
+---@param opts table Digital, gamepad-axis, deadzone, curve, and sensitivity options.
+function LPlayerInputContext:defineAxis1D(name, opts) end
+
+--- Defines or replaces a continuous radial two-dimensional action.
+---@param name string Local action name.
+---@param opts table Keyboard directions, gamepad axes, and analog processing options.
+function LPlayerInputContext:defineAxis2D(name, opts) end
+
+--- Defines or replaces a player-local digital action.
+---@param name string Local action name.
+---@param opts table Definition with a `bindings` array.
+function LPlayerInputContext:defineButton(name, opts) end
+
+--- Returns keyboard/mouse ownership and deterministic gamepad slot records.
+---@return table Device assignment snapshot.
+function LPlayerInputContext:getAssignedDevices() end
+
+--- Returns a shaped continuous one-dimensional value.
+---@param name string Local axis action name.
+---@return number Value in [-1, 1].
+function LPlayerInputContext:getAxis1D(name) end
+
+--- Returns a shaped continuous vector with length no greater than one.
+---@param name string Local axis action name.
+---@return number X component.
+---@return number Y component.
+function LPlayerInputContext:getAxis2D(name) end
+
+--- Returns local binding conflicts in deterministic order.
+---@return table Map from binding string to action-name arrays.
+function LPlayerInputContext:getConflicts() end
+
+--- Returns whether a button or thresholded analog action is currently active.
+---@param name string Local action name.
+---@return boolean Current action state.
+function LPlayerInputContext:isDown(name) end
+
+--- Returns whether this context is enabled.
+---@return boolean Current enabled state.
+function LPlayerInputContext:isEnabled() end
+
+--- Removes one local action.
+---@param name string Local action name.
+---@return boolean True when an action was removed.
+function LPlayerInputContext:removeAction(name) end
+
+--- Atomically restores definitions and enabled state from JSON.
+---@param json string Snapshot produced by `serializeBindings`.
+function LPlayerInputContext:restoreBindings(json) end
+
+--- Serializes local definitions and enabled state as versioned JSON.
+---@return string Deterministic binding snapshot.
+function LPlayerInputContext:serializeBindings() end
+
+--- Enables or disables all queries for this context.
+---@param enabled boolean New enabled state.
+function LPlayerInputContext:setEnabled(enabled) end
+
+--- Returns the Lua-visible handle type.
+---@return string `LPlayerInputContext`.
+function LPlayerInputContext:type() end
+
+--- Checks this handle against `LPlayerInputContext` or `LObject`.
+---@param name string Type name.
+---@return boolean Whether the name matches.
+function LPlayerInputContext:typeOf(name) end
+
+--- Releases one gamepad slot, or every assigned slot when id is nil.
+---@param id? number Optional gamepad slot.
+function LPlayerInputContext:unassignGamepad(id) end
+
+--- Releases keyboard and mouse ownership.
+function LPlayerInputContext:unassignKeyboardMouse() end
+
+--- Queues vibration for every assigned connected gamepad that supports it.
+---@param low number Low-frequency strength in [0, 1].
+---@param high number High-frequency strength in [0, 1].
+---@param duration_ms number Non-negative duration in milliseconds.
+---@return number Number of queued gamepad requests.
+function LPlayerInputContext:vibrate(low, high, duration_ms) end
+
+--- Returns the current-frame press transition, including analog hysteresis transitions.
+---@param name string Local action name.
+---@return boolean True on the press frame.
+function LPlayerInputContext:wasPressed(name) end
+
+--- Returns the current-frame release transition, including analog hysteresis transitions.
+---@param name string Local action name.
+---@return boolean True on the release frame.
+function LPlayerInputContext:wasReleased(name) end
+
 --- Advances playback by one frame and returns events for that frame.
 ---@return LInputAdvancePlaybackResult Array of event records with `kind` and `name` fields.
 lurek.input.advancePlayback = function() end
@@ -16113,8 +16253,7 @@ lurek.input.clearBindings = function() end
 ---@param name string Action name.
 ---@param bindings any Binding string or array of binding strings.
 ---@param category? string Category label for grouping (default empty string).
----@param context? any
-lurek.input.define = function(name, bindings, category, context) end
+lurek.input.define = function(name, bindings, category) end
 
 --- Defines multiple named actions at once, replacing prior definitions.
 ---@param defs table Map of action name to binding array or { bindings = {...}, category? }.
@@ -16417,6 +16556,11 @@ lurek.input.mouse.newCursor = function(pixels, width, height, hotx, hoty) end
 ---@param keys any Binding string or array table of binding strings.
 ---@return LInputNewMappingResult Mapping table with action query closures.
 lurek.input.newMapping = function(name, keys) end
+
+--- Creates an isolated player-scoped input context with local action names.
+---@param player_id number Positive player identifier used for diagnostics.
+---@return LPlayerInputContext New context with no assigned devices or actions.
+lurek.input.newPlayerContext = function(player_id) end
 
 --- Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.
 ---@param callback function function(action_name, new_keys) called on any change.
@@ -22806,6 +22950,12 @@ function LNavGrid:isWalkableFor(name, x, y) end
 ---@param data string Serialized grid bytes.
 function LNavGrid:loadFromString(data) end
 
+--- Atomically patches navigation-owned cost or blocked state.
+---@param patches table Array of `{x, y, cost}` or `{x, y, blocked}`.
+---@param opts? table?|Optional "full"}`.
+---@return table Stable one-cell `{x, y, w, h}` dirty rectangles.
+function LNavGrid:patchCells(patches, opts) end
+
 --- Rebuilds the cached abstract graph for this grid.
 function LNavGrid:rebuildAbstract() end
 
@@ -25192,6 +25342,49 @@ function LFlowStream:type() end
 ---@return boolean True for `LFlowStream` and `LObject`.
 function LFlowStream:typeOf(name) end
 
+function LKinematicController2D:clearVerticalSpan() end
+
+function LKinematicController2D:getLastResult() end
+
+--- Sweeps and wall-slides the controlled kinematic body.
+---@param dx number Requested X displacement.
+---@param dy number Requested Y displacement.
+---@param opts? table Optional `{zMin, zMax}` override.
+---@return table Deterministic movement result and ordered hits.
+function LKinematicController2D:move(dx, dy, opts) end
+
+---@param opts? any
+function LKinematicController2D:recover(opts) end
+
+function LKinematicController2D:release() end
+
+---@param filter any
+function LKinematicController2D:setFilter(filter) end
+
+---@param max_slides any
+function LKinematicController2D:setMaxSlides(max_slides) end
+
+---@param radius any
+function LKinematicController2D:setRadius(radius) end
+
+---@param skin any
+function LKinematicController2D:setSkin(skin) end
+
+---@param z_min any
+---@param z_max any
+function LKinematicController2D:setVerticalSpan(z_min, z_max) end
+
+--- Solves movement without mutating the controlled body.
+---@param dx any
+---@param dy any
+---@param opts? any
+function LKinematicController2D:testMove(dx, dy, opts) end
+
+function LKinematicController2D:type() end
+
+---@param name any
+function LKinematicController2D:typeOf(name) end
+
 --- Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.
 ---@param opts? table Optional controls: { layerMask?, density?, drag? }.
 ---@return table Diagnostics with `affectedBodies` and `submergedBodies`.
@@ -25866,10 +26059,19 @@ function LWorld:hasBody(id) end
 ---@return boolean True if the joint is active.
 function LWorld:hasJoint(id) end
 
+--- Returns whether one live body participates in simulation and queries.
+---@param body_id any
+function LWorld:isBodyEnabled(body_id) end
+
 --- Returns whether a body is currently in the sleeping (inactive) state.
 ---@param id number The body ID.
 ---@return boolean True if the body is sleeping.
 function LWorld:isBodySleeping(id) end
+
+--- Returns whether one zero-based fixture participates in simulation and queries.
+---@param body_id any
+---@param fixture_index any
+function LWorld:isFixtureEnabled(body_id, fixture_index) end
 
 --- Returns the total number of joints in the world.
 ---@return number Joint count.
@@ -25919,6 +26121,12 @@ function LWorld:newCircleBody(x, y, radius, bodyType, opts) end
 ---@return LBody The newly created body handle.
 function LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType, opts) end
 
+--- Creates a bounded circle-sweep controller for one kinematic body.
+---@param body LBody Kinematic body owned by this world.
+---@param opts table `{radius, skin?, maxSlides?, filter?, zMin?, zMax?}`.
+---@return LKinematicController2D Explicit controller handle.
+function LWorld:newKinematicController(body, opts) end
+
 --- Creates a new body with a convex polygon collider defined by vertex pairs.
 ---@param x number Initial X position in world coordinates.
 ---@param y number Initial Y position in world coordinates.
@@ -25951,6 +26159,16 @@ function LWorld:queryAABB(x, y, w, h, filter) end
 ---@param filter? table Optional query filter: {layer?, mask?, group?, groups?, includeSensors?, excludeBody?}.
 ---@return table Array of altitude-hit tables.
 function LWorld:queryAltitudeOverlap(x, y, radius, zMin, zMax, filter) end
+
+--- Returns body centers in a radius and angular sector with stable ordering.
+---@param x number Sector origin X.
+---@param y number Sector origin Y.
+---@param radius number Positive query radius.
+---@param angle number Sector center angle in radians.
+---@param halfAngle number Half width in radians, from 0 through pi.
+---@param filter? table Standard physics query filter.
+---@return table Ordered `{bodyId, x, y, distance, angle}` hits.
+function LWorld:querySector(x, y, radius, angle, halfAngle, filter) end
 
 --- Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 ---@param x1 number Ray origin X.
@@ -26035,6 +26253,11 @@ function LWorld:setBodyCCD(id, enabled) end
 ---@param value any Lua value to associate with this body (table, number, string, etc.).
 function LWorld:setBodyData(id, value) end
 
+--- Enables or disables one body without destroying its stable id.
+---@param body_id any
+---@param enabled any
+function LWorld:setBodyEnabled(body_id, enabled) end
+
 --- Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
 ---@param id number The body ID.
 ---@param nx number One-way normal X (points toward the blocking side).
@@ -26064,6 +26287,12 @@ function LWorld:setCollisionPair(groupA, groupB, enabled) end
 --- Registers a callback function invoked whenever two bodies stop touching.
 ---@param callback function Called with (bodyIdA, bodyIdB) on each ended contact.
 function LWorld:setEndContact(callback) end
+
+--- Enables or disables one zero-based fixture without changing sensor state.
+---@param body_id any
+---@param fixture_index any
+---@param enabled any
+function LWorld:setFixtureEnabled(body_id, fixture_index, enabled) end
 
 --- Updates the friction coefficient of a specific fixture on a body.
 ---@param bodyId number The body ID.
@@ -27350,6 +27579,14 @@ lurek.procgen.perlin4d = function(x, y, z, w, seed) end
 ---@return number Noise value in the range [-1, 1].
 lurek.procgen.perlinNoise = function(x, y, periodX, periodY) end
 
+--- Selects a deterministic weighted subset satisfying neutral spatial and tag constraints.
+---@param candidates table Candidate records with x, y, optional id/level/region/tags/weight/uniquenessGroup.
+---@param rules table Rules with count, tags, minDistance, and perRegionCapacity.
+---@param opts? table Options with seed and bounded maxAttempts.
+---@return table Placements and deterministic report. (value 1).
+---@return table Placements and deterministic report. (value 2).
+lurek.procgen.placeConstrained = function(candidates, rules, opts) end
+
 --- Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.
 ---@param width number Area width.
 ---@param height number Area height.
@@ -27408,6 +27645,12 @@ lurek.procgen.simplex3d = function(x, y, z) end
 ---@param z? number Z coordinate for 3D noise.
 ---@return number Noise value.
 lurek.procgen.simplexNoise = function(x, y, z) end
+
+--- Reports deterministic connectivity, unreachable goals, isolated regions, and safe-radius failures.
+---@param grid LProcgenGrid|table Typed grid or {width,height,cells} table.
+---@param opts? table walkableValues, neighbors, starts, goals, and safePoints.
+---@return table Bounded connectivity report.
+lurek.procgen.validateConnectivity = function(grid, opts) end
 
 --- Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
 ---@param width number Grid width.
@@ -28312,19 +28555,55 @@ function LStatusTracker:define(definition) end
 ---@return table Event records in deterministic emission order.
 function LStatusTracker:drainEvents() end
 
---- Lists active status instances attached to one subject.
+--- Returns one active status instance by runtime id.
+---@param instanceId number Runtime status instance id.
+---@return table? Status instance record, or nil when missing.
+function LStatusTracker:get(instanceId) end
+
+--- Checks whether a subject has a status with the requested definition id or tag.
 ---@param subjectId number Stable subject/entity id.
+---@param definitionOrTag string Definition id or copied instance tag.
+---@return boolean Whether a matching instance exists.
+function LStatusTracker:has(subjectId, definitionOrTag) end
+
+--- Lists active status instances attached to one subject and matching all optional filters.
+---@param subjectId number Stable subject/entity id.
+---@param filter? table Optional definitionId, tag, sourceId, and paused filters.
 ---@return table Status instance records.
-function LStatusTracker:list(subjectId) end
+function LStatusTracker:list(subjectId, filter) end
 
 --- Removes one active status instance.
 ---@param instanceId number Runtime status instance id.
 ---@return boolean True when an instance was removed.
 function LStatusTracker:remove(instanceId) end
 
+--- Removes every matching definition instance from one subject.
+---@param subjectId number Stable subject/entity id.
+---@param definitionId string Registered status definition id.
+---@return number Number of removed instances.
+function LStatusTracker:removeByDefinition(subjectId, definitionId) end
+
+--- Removes every instance carrying a copied tag from one subject.
+---@param subjectId number Stable subject/entity id.
+---@param tag string Instance tag to match.
+---@return number Number of removed instances.
+function LStatusTracker:removeByTag(subjectId, tag) end
+
 --- Restores definitions, active instances, and ID allocation from a snapshot.
 ---@param snapshot table Table returned by `snapshot`.
 function LStatusTracker:restore(snapshot) end
+
+--- Pauses or resumes one status instance's lifecycle timers.
+---@param instanceId number Runtime status instance id.
+---@param paused boolean Whether timers should be paused.
+---@return boolean True when the instance exists.
+function LStatusTracker:setPaused(instanceId, paused) end
+
+--- Sets one status instance's remaining duration; nil makes it infinite.
+---@param instanceId number Runtime status instance id.
+---@param seconds? number Finite non-negative seconds, or nil.
+---@return boolean True when the instance exists.
+function LStatusTracker:setRemaining(instanceId, seconds) end
 
 --- Captures definitions, instances, and ID allocation state.
 ---@return table Serializable status tracker snapshot.
@@ -29355,6 +29634,10 @@ function LMultiLevelGrid:isFloorHole(x, y) end
 ---@return number Level count.
 function LMultiLevelGrid:levelCount() end
 
+--- Atomically patches render cells and surface overrides across persistent levels.
+---@param patches table Array of zero-based `{level?, x, y, value?, wallFeature?, floorTexture?, ceilingTexture?, floorHole?, ceilingHole?}`.
+function LMultiLevelGrid:patchCells(patches) end
+
 --- Resolves a screen-space click against this persistent multi-level world and returns the owning level.
 ---@param sx number Screen X in pixels.
 ---@param sy number Screen Y in pixels.
@@ -29662,6 +29945,10 @@ function LRaycaster:height() end
 ---@return boolean True if the cell blocks render rays.
 function LRaycaster:isBlocked(x, y) end
 
+--- Atomically patches render cells, wall features, and per-cell surface overrides.
+---@param patches table Array of zero-based `{x, y, value?, wallFeature?, floorTexture?, ceilingTexture?, floorMaterial?, ceilingMaterial?}`.
+function LRaycaster:patchCells(patches) end
+
 --- Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
 ---@param sx number Screen X in pixels.
 ---@param sy number Screen Y in pixels.
@@ -29766,6 +30053,75 @@ function LRaycaster:typeOf(name) end
 --- Returns the map width in grid cells.
 ---@return number Map width.
 function LRaycaster:width() end
+
+--- Builds an isolated projection from `LRaycaster` or `LMultiLevelGrid`.
+---@param source any Raycaster world source.
+---@param inputs? table Optional lights, sprites, models, and wallTextures.
+---@return number Projected primitive count.
+function LRaycasterView:build(source, inputs) end
+
+--- Builds using inputs resolved from an `LSceneAdapter`.
+---@param source any Raycaster world source.
+---@param adapter LSceneAdapter Explicit scene adapter.
+---@param opts? table Optional wallTextures.
+---@return number Projected primitive count.
+function LRaycasterView:buildFromAdapter(source, adapter, opts) end
+
+--- Clears the last projection without changing view configuration.
+function LRaycasterView:clear() end
+
+--- Returns the current camera values.
+---@return table Camera snapshot.
+function LRaycasterView:getCameraState() end
+
+--- Returns the last-built wall depth for a screen X coordinate.
+---@param screen_x number Screen X coordinate.
+---@return number Depth, or nil outside the viewport.
+function LRaycasterView:getDepthAt(screen_x) end
+
+--- Returns per-view build telemetry.
+---@return table Build time, primitive, ray, depth, particle, and model counts.
+function LRaycasterView:getStats() end
+
+--- Returns the screen composition rectangle.
+---@return table `{x, y, w, h}`.
+function LRaycasterView:getViewport() end
+
+--- Picks against the exact source and depth snapshot retained by the last build.
+---@param screen_x number Screen X coordinate.
+---@param screen_y number Screen Y coordinate.
+---@return table Pick record, or nil outside the viewport/no hit.
+function LRaycasterView:pick(screen_x, screen_y) end
+
+--- Queues this view without changing the legacy global raycaster output.
+---@param opts? table Optional `{canvas=LCanvas}` target.
+---@return number Number of queued render commands.
+function LRaycasterView:queue(opts) end
+
+--- Replaces the camera used by subsequent builds.
+---@param camera table `{x, y, angle, fov, cameraHeight?, horizonOffset?}`.
+function LRaycasterView:setCameraState(camera) end
+
+--- Sets ray count and maximum distance for subsequent builds.
+---@param quality table `{rays?, maxDistance?}`.
+function LRaycasterView:setQuality(quality) end
+
+--- Sets or clears the per-view raycaster shader.
+---@param shader? LShader Raycaster-target shader or nil.
+function LRaycasterView:setShader(shader) end
+
+--- Replaces the screen composition rectangle.
+---@param viewport table `{x, y, w, h}` in pixels.
+function LRaycasterView:setViewport(viewport) end
+
+--- Returns `LRaycasterView`.
+---@return string Handle type.
+function LRaycasterView:type() end
+
+--- Checks the handle type.
+---@param name string Type name.
+---@return boolean Whether it matches.
+function LRaycasterView:typeOf(name) end
 
 --- Adds a static directional billboard sprite entry.
 ---@param x number World X position.
@@ -30034,6 +30390,11 @@ lurek.raycaster.newSceneAdapter = function() end
 --- Creates a new sprite manager for tracking and projecting billboard sprites.
 ---@return LSpriteManager A new empty sprite manager.
 lurek.raycaster.newSpriteManager = function() end
+
+--- Creates an isolated camera projection and picking view.
+---@param opts? table Optional `{viewport={x,y,w,h}, rays?, maxDistance?}`.
+---@return LRaycasterView New empty view.
+lurek.raycaster.newView = function(opts) end
 
 --- Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
 ---@param sx number Screen X in pixels.
@@ -33913,6 +34274,11 @@ function LTileField:isBuildable(x, y, z) end
 ---@param opts table `{from={x,y,z?}, to={x,y,z?}, includeEndpoints?}`.
 function LTileField:line(opts) end
 
+--- Atomically applies cell/profile/modifier/reference patches and returns stable dirty rectangles.
+---@param patches table Array of `{x, y, z?, cell?}` patch tables.
+---@return table Ordered one-cell `{x, y, z, w, h}` dirty rectangles.
+function LTileField:patchCells(patches) end
+
 --- Returns whether a named region contains a one-based tile cell.
 ---@param name string Region name.
 ---@param x number One-based column.
@@ -37282,6 +37648,114 @@ function LTreeView:setSelectedNode(index) end
 ---@return boolean True if the node is now expanded, false if collapsed.
 function LTreeView:toggleNode(index) end
 
+--- Clears all widgets, callbacks, focus, capture, drag, modal, and tooltip state.
+---@return number Removed widget count.
+function LUiContext:clear() end
+
+--- Creates a widget of `widget_type` from optional layout fields.
+---@param widget_type string Canonical widget type such as `button` or `panel`.
+---@param opts? table Widget definition fields.
+---@return LUiWidget Context-owned widget handle.
+function LUiContext:create(widget_type, opts) end
+
+--- Destroys a live widget from this context.
+---@param widget LUiWidget Context-owned widget.
+---@param recursive? boolean Defaults to true.
+---@return number Invalidated widget count.
+function LUiContext:destroy(widget, recursive) end
+
+--- Dispatches a gameplay-neutral UI action.
+---@param action string focus_next, focus_prev, activate, cancel, or direction.
+---@param value? any Optional action value.
+---@return boolean Whether the action was handled.
+function LUiContext:dispatchAction(action, value) end
+
+--- Explicitly dispatches a key press.
+---@param key string Key name.
+---@return boolean Whether consumed.
+function LUiContext:dispatchKey(key) end
+
+--- Explicitly dispatches a pointer event.
+---@param event table "release", x, y, button?}`.
+---@return boolean Whether the context consumed it.
+function LUiContext:dispatchPointer(event) end
+
+--- Explicitly dispatches text input.
+---@param text string Text payload.
+---@return boolean Whether consumed.
+function LUiContext:dispatchText(text) end
+
+--- Explicitly dispatches a wheel delta.
+---@param x number Horizontal delta.
+---@param y number Vertical delta.
+---@return boolean Whether consumed.
+function LUiContext:dispatchWheel(x, y) end
+
+--- Moves focus in a named spatial direction.
+---@param direction string left, right, up, or down.
+---@return boolean Whether focus moved.
+function LUiContext:focusDirection(direction) end
+
+--- Moves focus forward.
+function LUiContext:focusNext() end
+
+--- Moves focus backward.
+function LUiContext:focusPrev() end
+
+--- Finds a widget by id inside this context.
+---@param id string Widget id.
+---@return LUiWidget? Matching widget or nil.
+function LUiContext:getById(id) end
+
+--- Returns isolated runtime counters and UX diagnostics.
+---@return table Context diagnostics.
+function LUiContext:getDiagnostics() end
+
+--- Returns the focused widget handle.
+---@return LUiWidget? Focused widget or nil.
+function LUiContext:getFocus() end
+
+--- Returns this context's screen rectangle.
+---@return table `{x, y, w, h}`.
+function LUiContext:getViewport() end
+
+--- Loads and atomically attaches a TOML layout through GameFS.
+---@param path string GameFS layout path.
+---@param opts? table Reserved layout options.
+---@return LUiWidget New layout root.
+function LUiContext:loadLayout(path, opts) end
+
+--- Queues this context to its viewport or an explicit canvas and restores render state.
+---@param opts? table Optional `{canvas=LCanvas}`.
+---@return number Queued command count.
+function LUiContext:queueDraw(opts) end
+
+--- Renders this context into CPU image data.
+---@param opts? table Optional width and height.
+---@return LImageData Captured image.
+function LUiContext:renderToImage(opts) end
+
+--- Sets focus to a context-owned widget or clears it with nil.
+---@param widget? LUiWidget Widget or nil.
+function LUiContext:setFocus(widget) end
+
+--- Sets this context's screen rectangle.
+---@param viewport table `{x, y, w, h}`.
+function LUiContext:setViewport(viewport) end
+
+--- Returns `LUiContext`.
+---@return string Handle type.
+function LUiContext:type() end
+
+--- Checks this handle type.
+---@param name string Type name.
+---@return boolean Whether it matches.
+function LUiContext:typeOf(name) end
+
+--- Advances this context and dispatches only its callbacks.
+---@param dt number Finite non-negative delta time.
+function LUiContext:update(dt) end
+
 --- Adds a child widget to this widget's hierarchy.
 ---@param child LUiWidget The live child widget handle to add.
 function LUiWidget:addChild(child) end
@@ -37963,6 +38437,11 @@ lurek.ui.newComboBox = function() end
 ---@param target number Compared value.
 ---@return LLayout Horizontal layout with a label and two progress bars.
 lurek.ui.newComparisonBar = function(label, current, target) end
+
+--- Creates an explicitly driven UI context with independent widgets and interaction state.
+---@param opts? table Optional `{viewport={x,y,w,h}}`.
+---@return LUiContext New isolated context.
+lurek.ui.newContext = function(opts) end
 
 --- Creates a new custom widget with optional initial configuration.
 ---@param config? table Optional table with x, y, width, height, id, visible, enabled fields.

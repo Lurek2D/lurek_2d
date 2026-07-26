@@ -19,6 +19,8 @@ pub mod collision_helpers;
 pub mod error;
 /// Authored flow-field definitions and samplers.
 pub mod flow;
+/// Bounded kinematic-circle movement and penetration recovery.
+pub mod kinematic;
 /// Shared sizing and validation limits.
 pub mod limits;
 /// Separate grid-based liquids for leaking-container gameplay.
@@ -54,6 +56,10 @@ pub use flow::{
     combine_contributions, FlowApplicationMode, FlowCombineMode, FlowContribution,
     FlowDirectionMode, FlowFalloff, FlowField, FlowFieldId, FlowGeometry, FlowMedium, FlowSample,
 };
+pub use kinematic::{
+    solve_kinematic_move, solve_kinematic_recovery, KinematicControllerSettings, KinematicHit,
+    KinematicMoveResult, MAX_KINEMATIC_SLIDES,
+};
 pub use limits::PhysicsLimits;
 pub use liquid::{
     LiquidBodyForceOptions, LiquidBodyForceStats, LiquidCell, LiquidKind, LiquidMap,
@@ -70,7 +76,7 @@ pub use world::BodyContact as CollisionEvent;
 pub use world::{
     BeamHit, BeamHitMode, BeamOptions, BeamSegment, BeamTrace, ContactInfo, GravityVector,
     PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsSnapshot, PhysicsSnapshotDiff,
-    PhysicsWorldStats, RaycastHit, RaycastQuery, ShapeSweepHit, World,
+    PhysicsWorldStats, RaycastHit, RaycastQuery, SectorQueryHit, ShapeSweepHit, World,
 };
 pub use zone::{
     PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityFalloff, ZoneGravityMode,

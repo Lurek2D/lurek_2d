@@ -436,11 +436,15 @@ impl InputRecorder {
         if let Some(rec) = &self.playback {
             while self.playback_idx < rec.frames.len()
                 && match self.playback_mode {
-                    PlaybackMode::Frame | PlaybackMode::Fixed => rec.frames[self.playback_idx].frame == self.frame,
-                    PlaybackMode::Realtime => rec.frames[self.playback_idx]
-                        .time_ms
-                        .unwrap_or(rec.frames[self.playback_idx].frame)
-                        <= self.playback_elapsed_ms,
+                    PlaybackMode::Frame | PlaybackMode::Fixed => {
+                        rec.frames[self.playback_idx].frame == self.frame
+                    }
+                    PlaybackMode::Realtime => {
+                        rec.frames[self.playback_idx]
+                            .time_ms
+                            .unwrap_or(rec.frames[self.playback_idx].frame)
+                            <= self.playback_elapsed_ms
+                    }
                 }
             {
                 let source = &rec.frames[self.playback_idx];

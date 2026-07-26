@@ -40,8 +40,8 @@ pub use diagnostics::{UiAccessibilityNode, UiDiagnostic, UiRuntimeStats};
 pub use extras::{
     Accordion, AccordionSection, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget,
     MenuBar, MenuItem, PropertyGroup, PropertyRow, PropertyValueKind, PropertyWidget, Separator,
-    Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton, ToolbarItem, TooltipPanel, TreeNode,
-    TreeView,
+    Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton, ToolbarItem, TooltipPanel,
+    TreeNode, TreeView,
 };
 pub use icons::{has_icon, icon_names, lookup_icon, UiIcon, UiIconPosition, BUILTIN_UI_ICONS};
 pub use limits::UiLimits;

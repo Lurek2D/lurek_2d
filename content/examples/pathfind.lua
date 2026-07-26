@@ -3379,3 +3379,11 @@ do
     local status = ok and "ok" or "error"
     lurek.log.info(status .. " " .. tostring(value))
 end
+--@api: LNavGrid:patchCells
+do
+    local grid = lurek.pathfind.newNavGrid(3, 3)
+    local dirty = grid:patchCells({ { x = 1, y = 1, cost = 4 } })
+    local cost = grid:getCost(1, 1)
+    local blocked = grid:isBlocked(1, 1)
+    lurek.log.info("nav patch cost=" .. tostring(cost) .. " blocked=" .. tostring(blocked) .. " dirty=" .. tostring(#dirty))
+end

@@ -318,6 +318,46 @@ describe("Evidence: lurek.audio synthesized fixtures and timing traces", functio
         decoder:release()
         pool:release()
     end)
+
+    -- Does: Evaluates one spatial source against two listeners under nearest, weighted, and manual policies.
+    -- Shows: The trace records one result per policy, including selected listener ids, gain, pan, and distance.
+    -- Artifact: tests/artifacts/current/audio/audio_multi_listener_spatial_trace.txt
+    -- Why: This proves multi-listener calculation remains one-source/one-result data and does not duplicate playback sinks.
+    it("TXT: multi-listener spatial policy trace", function()
+        local source = lurek.audio.newSource(FIXTURE_WAVE)
+        lurek.audio.setPosition(source, 8, 0, 0)
+        local listeners = {
+            { id = "left", x = -10, y = 0, weight = 1 },
+            { id = "right", x = 10, y = 0, weight = 2 },
+        }
+        local lines = {}
+        for _, policy in ipairs({ "nearest", "weighted" }) do
+            lurek.audio.setListeners(listeners, { policy = policy })
+            local result = lurek.audio.getSourceSpatialResult(source)
+            lines[#lines + 1] = table.concat({
+                policy,
+                tostring(result.listenerId),
+                table.concat(result.listenerIds, ","),
+                tostring(result.gain),
+                tostring(result.pan),
+                tostring(result.distance),
+            }, "|")
+        end
+        lurek.audio.setListeners(listeners, { policy = "manual" })
+        lurek.audio.setSourceListenerMask(source, { "left" })
+        local manual = lurek.audio.getSourceSpatialResult(source)
+        lines[#lines + 1] = table.concat({
+            "manual",
+            tostring(manual.listenerId),
+            table.concat(manual.listenerIds, ","),
+            tostring(manual.gain),
+            tostring(manual.pan),
+            tostring(manual.distance),
+        }, "|")
+        write_text(OUT .. "audio_multi_listener_spatial_trace.txt", table.concat(lines, "\n") .. "\n")
+        lurek.audio.release(source)
+        lurek.audio.setListener(0, 0, 0)
+    end)
 end)
 
 test_summary()

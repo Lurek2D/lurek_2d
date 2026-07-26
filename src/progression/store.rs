@@ -9,6 +9,7 @@
 //! Avoids renderer, network, audio, and Lua conversion concerns so progression state stays fully headless.
 //! Provides mutation plumbing that Rust tests, Lua bindings, changesets, and evidence artifacts rely on.
 //! Retains store-wide helpers for ids, bounds, formulas, deterministic sampling, and population setup.
+//! Status helpers keep copied tags, pause state, filtering, timers, and ordered removals inside tracker ownership.
 //! Open this file when a change touches shared tables, snapshots, transactions, or multi-slice coordination.
 use crate::progression::types::{
     AchievementDefinition, AttributeDefinition, AttributeMode, ChallengeTemplateDefinition,
@@ -105,6 +106,19 @@ impl StatusTracker {
                 "status stacking must be replace, refresh, or add".to_string(),
             ));
         }
+        let mut seen_tags = BTreeSet::new();
+        for tag in &definition.tags {
+            if tag.trim().is_empty() || tag.len() > 128 {
+                return Err(ProgressionError::InvalidValue(
+                    "status tags must contain 1..=128 characters".to_string(),
+                ));
+            }
+            if !seen_tags.insert(tag.as_str()) {
+                return Err(ProgressionError::InvalidValue(format!(
+                    "status tag '{tag}' is duplicated"
+                )));
+            }
+        }
         self.definitions.insert(definition.id.clone(), definition);
         Ok(())
     }
@@ -187,6 +201,8 @@ impl StatusTracker {
             stacks: requested,
             remaining: definition.duration,
             next_tick: definition.tick_interval,
+            tags: definition.tags,
+            paused: false,
         };
         self.instances.insert(instance_id, instance.clone());
         self.events.push_back(StatusEvent {
@@ -214,6 +230,21 @@ impl StatusTracker {
             let Some(instance) = self.instances.get_mut(&id) else {
                 continue;
             };
+            if instance.paused {
+                if instance.remaining.is_some_and(|remaining| remaining <= 0.0) {
+                    self.events.push_back(StatusEvent {
+                        kind: "expired".to_string(),
+                        instance_id: instance.id,
+                        subject_id: instance.subject_id,
+                        definition_id: instance.definition_id.clone(),
+                        stacks: instance.stacks,
+                        remaining: Some(0.0),
+                        tick_count: 0,
+                    });
+                    expired.push(instance.id);
+                }
+                continue;
+            }
             let definition = self
                 .definitions
                 .get(&instance.definition_id)
@@ -267,6 +298,20 @@ impl StatusTracker {
         self.instances.remove(&instance_id).is_some()
     }
 
+    /// Returns one active status instance by stable runtime ID.
+    pub fn get(&self, instance_id: u64) -> Option<StatusInstance> {
+        self.instances.get(&instance_id).cloned()
+    }
+
+    /// Returns whether a subject has a status matching a definition ID or instance tag.
+    pub fn has(&self, subject_id: u64, definition_or_tag: &str) -> bool {
+        self.instances.values().any(|instance| {
+            instance.subject_id == subject_id
+                && (instance.definition_id == definition_or_tag
+                    || instance.tags.iter().any(|tag| tag == definition_or_tag))
+        })
+    }
+
     /// Lists active instances for one subject in stable ID order.
     pub fn list(&self, subject_id: u64) -> Vec<StatusInstance> {
         self.instances
@@ -274,6 +319,84 @@ impl StatusTracker {
             .filter(|instance| instance.subject_id == subject_id)
             .cloned()
             .collect()
+    }
+
+    /// Lists active instances for one subject matching all supplied neutral filters.
+    pub fn list_filtered(
+        &self,
+        subject_id: u64,
+        definition_id: Option<&str>,
+        tag: Option<&str>,
+        source_id: Option<u64>,
+        paused: Option<bool>,
+    ) -> Vec<StatusInstance> {
+        self.instances
+            .values()
+            .filter(|instance| instance.subject_id == subject_id)
+            .filter(|instance| {
+                definition_id.is_none()
+                    || definition_id.is_some_and(|value| instance.definition_id == value)
+            })
+            .filter(|instance| {
+                tag.is_none()
+                    || tag.is_some_and(|value| instance.tags.iter().any(|tag| tag == value))
+            })
+            .filter(|instance| {
+                source_id.is_none()
+                    || source_id.is_some_and(|value| instance.source_id == Some(value))
+            })
+            .filter(|instance| {
+                paused.is_none() || paused.is_some_and(|value| instance.paused == value)
+            })
+            .cloned()
+            .collect()
+    }
+
+    /// Removes all instances for a subject with the requested definition ID.
+    pub fn remove_by_definition(&mut self, subject_id: u64, definition_id: &str) -> usize {
+        let before = self.instances.len();
+        self.instances.retain(|_, instance| {
+            instance.subject_id != subject_id || instance.definition_id != definition_id
+        });
+        before - self.instances.len()
+    }
+
+    /// Removes all instances for a subject carrying the requested copied tag.
+    pub fn remove_by_tag(&mut self, subject_id: u64, tag: &str) -> usize {
+        let before = self.instances.len();
+        self.instances.retain(|_, instance| {
+            instance.subject_id != subject_id || !instance.tags.iter().any(|value| value == tag)
+        });
+        before - self.instances.len()
+    }
+
+    /// Changes one instance's remaining lifetime; `None` makes it infinite.
+    pub fn set_remaining(
+        &mut self,
+        instance_id: u64,
+        remaining: Option<f64>,
+    ) -> Result<bool, ProgressionError> {
+        if let Some(value) = remaining {
+            if !value.is_finite() || value < 0.0 {
+                return Err(ProgressionError::InvalidValue(
+                    "status remaining must be finite and non-negative".to_string(),
+                ));
+            }
+        }
+        let Some(instance) = self.instances.get_mut(&instance_id) else {
+            return Ok(false);
+        };
+        instance.remaining = remaining;
+        Ok(true)
+    }
+
+    /// Pauses or resumes one instance's duration and periodic tick timers.
+    pub fn set_paused(&mut self, instance_id: u64, paused: bool) -> bool {
+        let Some(instance) = self.instances.get_mut(&instance_id) else {
+            return false;
+        };
+        instance.paused = paused;
+        true
     }
 
     /// Takes and clears pending lifecycle events.
@@ -314,6 +437,11 @@ impl StatusTracker {
                     kind: "status",
                     id: instance.definition_id.clone(),
                 });
+            }
+            if instance.tags.iter().any(|tag| tag.trim().is_empty()) {
+                return Err(ProgressionError::InvalidValue(
+                    "status snapshot contains an invalid instance tag".to_string(),
+                ));
             }
         }
         self.definitions = snapshot.definitions;

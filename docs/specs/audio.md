@@ -16,7 +16,7 @@
 - Source path: `src/audio`
 - Binding: `src/lua_api/audio_api.rs`
 - Namespace: `lurek.audio`
-- Lua API surface: `92` functions, `6` types, `108` methods
+- Lua API surface: `96` functions, `6` types, `108` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -36,6 +36,8 @@
 - The module therefore gives projects a stable answer to both "play this now" and "manage the whole current mix." Those are different needs, but they have to coexist if a game wants reactive effects, adaptive music, voiced UI, and ambient layers to remain understandable together.
 - Buses and mixer policy are the main reason the subsystem scales. A small prototype may only play a few sounds, but a larger project needs volume hierarchy, pause semantics, ducking rules, mute groups, and category-level tuning that remain visible rather than being buried in ad hoc script conventions.
 - Listener-facing state broadens the feature from raw playback into world-aware audio behavior. Even when neighboring modules provide the scene, `audio` owns how sources and listener context become heard spatial or positional results.
+- Multi-listener spatialization extends that same listener state without adding another system: up to 64 atomically validated listeners feed `nearest`, `weighted`, or source-mask-driven `manual` policy, while each source still owns exactly one sink and authored volume/pan remain separate from computed spatial gain/pan.
+- Listener masks only filter calculation candidates. They never copy sources or trigger playback, and `getSourceSpatialResult` exposes the deterministic calculation for Lua-side inspection.
 - This is why the module stays useful across both live gameplay and tool-driven verification: it keeps playback, routing, timing, and category policy visible enough to inspect instead of hiding sound behavior behind fire-and-forget calls.
 - It keeps mix policy legible as projects scale.
 - `dsp` specializes lower-level signal processing, but `audio` owns the user-facing contract for how sounds are loaded, instantiated, routed, timed, and heard at runtime.
@@ -101,6 +103,7 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - Spatial helpers own listener and source transforms, doppler scale, distance model, and pan updates from positions.
 - Queueable-source helpers manage push-buffer streaming slots, free-buffer accounting, and queueable lifecycle control.
 - The mixer also owns pool creation and peak metering, making it the integration point for most runtime audio control.
+- Multi-listener policies calculate one bounded spatial result per source without cloning sinks or starting playback.
 - Open this file when playback orchestration changes; decode, pools, buses, and pure timing models live in siblings.
 
 ### mod.rs
@@ -134,6 +137,7 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - This file owns `SpatialState` and `AudioSource`, the basic source metadata used by the audio runtime.
 - It stores source identity, asset path, default volume, looping intent, plus 3D position, velocity, and orientation.
 - The file is purely data-oriented; active playback, sinks, buses, and listener state are owned by the mixer.
+- Listener and spatial-result records remain neutral values that let bindings expose mixer calculations safely.
 - Open it when per-source metadata semantics change; runtime routing and queueing live in sibling audio files.
 
 
@@ -161,6 +165,7 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - `lurek.audio.getJudgementWindows() -> table`: Returns global default timing windows used by beat-clock judgement.
 - `lurek.audio.getListener() -> number, number, number`: Returns the current 3D listener position.
 - `lurek.audio.getListener2D() -> number, number`: Returns the current 2D listener position.
+- `lurek.audio.getListeners() -> table`: Returns the configured listeners in deterministic input order.
 - `lurek.audio.getLowpass(source) -> integer`: Returns the current lowpass filter cutoff of a source.
 - `lurek.audio.getMasterVolume() -> number`: Returns the current global master volume level.
 - `lurek.audio.getMaxSources() -> integer`: Returns the maximum number of simultaneous audio sources supported.
@@ -173,6 +178,7 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - `lurek.audio.getPosition(source) -> number, number, number`: Returns the 3D position of a source.
 - `lurek.audio.getSourceBus(source) -> LBus`: Returns the bus a source is routed through.
 - `lurek.audio.getSourceCount() -> integer`: Returns the total number of loaded audio sources (playing or idle).
+- `lurek.audio.getSourceSpatialResult(source) -> table`: Returns the current bounded spatial result for one source.
 - `lurek.audio.getSourceType(source) -> string`: Returns whether a source is static or streaming.
 - `lurek.audio.getStereoWidth(src_ud) -> number`: Returns the current stereo width factor of an audio source.
 - `lurek.audio.getVelocity(source) -> number, number, number`: Returns the velocity vector of a source.
@@ -213,6 +219,7 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - `lurek.audio.setJudgementWindows(windows) -> nil`: Sets global default timing windows used by beat-clock judgement.
 - `lurek.audio.setListener(x, y, z?) -> nil`: Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games).
 - `lurek.audio.setListener2D(x, y) -> nil`: Sets the 2D listener position for spatial audio calculations.
+- `lurek.audio.setListeners(listeners, opts?) -> nil`: Atomically replaces the neutral spatial listener set.
 - `lurek.audio.setLooping(source, looping) -> nil`: Enables or disables looping for a source.
 - `lurek.audio.setLowpass(source, cutoff_hz) -> nil`: Applies a lowpass filter to a source, attenuating high frequencies.
 - `lurek.audio.setMasterVolume(vol) -> nil`: Sets the global master volume affecting all audio output.
@@ -225,6 +232,7 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 - `lurek.audio.setPosition(source, x, y, z?) -> nil`: Sets the 3D position of a source for spatial audio panning and attenuation.
 - `lurek.audio.setRandomPitch(src_ud, min, max) -> nil`: Sets a random pitch range for a source; each play picks a random pitch between min and max.
 - `lurek.audio.setSourceBus(source, bus) -> nil`: Routes a source through a specific audio bus for grouped mixing.
+- `lurek.audio.setSourceListenerMask(source, listenerIds?) -> nil`: Sets or clears the listener allow-list for one source.
 - `lurek.audio.setStereoWidth(src_ud, width) -> nil`: Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
 - `lurek.audio.setVelocity(source, x, y, z?) -> nil`: Sets the velocity of a source for Doppler effect calculations.
 - `lurek.audio.setVolume(source, vol) -> nil`: Sets the volume of a source by handle.
@@ -431,4 +439,5 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 
 ## Notes
 
-- No additional module-specific notes.
+- Legacy `setListener`, `setListener2D`, `getListener`, and `getListener2D` remain compatible. A legacy setter installs the single `default` listener with nearest policy; legacy getters read the first configured listener or zeroes when the list is empty.
+- Audio does not pull camera, player, ECS, or world state automatically. Lua explicitly supplies listener sets and source masks.

@@ -27,7 +27,7 @@ The current slice includes:
 - initial challenge templates with manual or counter-driven progress, activation windows, status filters, expiry, and reward records;
 - initial rivals with leaderboard-aware delta queries, overtake events, and a bounded local activity feed derived from retained progression events;
 - initial virtual population templates with deterministic identity generation, leaderboard-backed lightweight profiles, logical-time simulation, materialization/dematerialization, and leaderboard participation without a network service;
-- isolated `newStatusTracker()` handles with validated status definitions, replace/refresh/add stacking, finite duration and periodic tick scheduling, snapshots, and neutral lifecycle events;
+- isolated `newStatusTracker()` handles with validated status definitions, copied per-instance tags, replace/refresh/add stacking, finite or infinite duration, pause/resume controls, deterministic filtered queries and bulk removal, backward-compatible snapshots, and neutral lifecycle events;
 - attributes, resources, modifiers, and XP/level tracks;
 - achievements with manual and counter-triggered unlocks;
 - reward records with pending, claimed, applied, and rejected states;
@@ -40,6 +40,8 @@ The current slice includes:
 The module is intentionally headless. It owns data and mutation rules only.
 Status ticks and expiry are emitted as neutral records; Lua gameplay code explicitly decides whether
 to apply damage, healing, animation, audio, ECS changes, or other effects.
+Pausing a status freezes both duration and periodic tick timers. Setting zero remaining duration
+expires it on the next explicit tracker update, including `update(0)`.
 
 ## Notes
 

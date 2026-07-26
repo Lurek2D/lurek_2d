@@ -166,6 +166,12 @@ fn status_instance_to_lua<'lua>(
     table.set("stacks", instance.stacks)?;
     table.set("remaining", instance.remaining)?;
     table.set("nextTick", instance.next_tick)?;
+    let tags = lua.create_table()?;
+    for (index, tag) in instance.tags.iter().enumerate() {
+        tags.set(index + 1, tag.as_str())?;
+    }
+    table.set("tags", tags)?;
+    table.set("paused", instance.paused)?;
     Ok(table)
 }
 
@@ -213,14 +219,31 @@ fn status_snapshot_from_lua(table: LuaTable) -> LuaResult<StatusSnapshot> {
     let mut instances = BTreeMap::new();
     for value in instances_table.sequence_values::<LuaTable>() {
         let row = value?;
+        let definition_id: String = row.get("definitionId")?;
+        let tags = row
+            .get::<_, Option<LuaTable>>("tags")?
+            .map(|values| {
+                values
+                    .sequence_values::<String>()
+                    .collect::<LuaResult<Vec<_>>>()
+            })
+            .transpose()?
+            .unwrap_or_else(|| {
+                definitions
+                    .get(&definition_id)
+                    .map(|definition| definition.tags.clone())
+                    .unwrap_or_default()
+            });
         let instance = StatusInstance {
             id: row.get("id")?,
-            definition_id: row.get("definitionId")?,
+            definition_id,
             subject_id: row.get("subjectId")?,
             source_id: row.get("sourceId")?,
             stacks: row.get("stacks")?,
             remaining: row.get("remaining")?,
             next_tick: row.get("nextTick")?,
+            tags,
+            paused: row.get::<_, Option<bool>>("paused")?.unwrap_or(false),
         };
         instances.insert(instance.id, instance);
     }
@@ -281,18 +304,69 @@ impl UserData for LuaStatusTracker {
             }
             Ok(output)
         });
-        // -- list --
-        /// Lists active status instances attached to one subject.
-        /// @param | subjectId | integer | Stable subject/entity id.
-        /// @return | table | Status instance records.
-        methods.add_method("list", |lua, this, subject_id: u64| {
-            let instances = this.tracker.list(subject_id);
-            let output = lua.create_table()?;
-            for (index, instance) in instances.iter().enumerate() {
-                output.set(index + 1, status_instance_to_lua(lua, instance)?)?;
-            }
-            Ok(output)
+        // -- get --
+        /// Returns one active status instance by runtime id.
+        /// @param | instanceId | integer | Runtime status instance id.
+        /// @return | table? | Status instance record, or nil when missing.
+        methods.add_method("get", |lua, this, instance_id: u64| {
+            this.tracker
+                .get(instance_id)
+                .map(|instance| status_instance_to_lua(lua, &instance))
+                .transpose()
         });
+        // -- has --
+        /// Checks whether a subject has a status with the requested definition id or tag.
+        /// @param | subjectId | integer | Stable subject/entity id.
+        /// @param | definitionOrTag | string | Definition id or copied instance tag.
+        /// @return | boolean | Whether a matching instance exists.
+        methods.add_method(
+            "has",
+            |_, this, (subject_id, definition_or_tag): (u64, String)| {
+                Ok(this.tracker.has(subject_id, &definition_or_tag))
+            },
+        );
+        // -- list --
+        /// Lists active status instances attached to one subject and matching all optional filters.
+        /// @param | subjectId | integer | Stable subject/entity id.
+        /// @param | filter | table? | Optional definitionId, tag, sourceId, and paused filters.
+        /// @return | table | Status instance records.
+        methods.add_method(
+            "list",
+            |lua, this, (subject_id, filter): (u64, Option<LuaTable>)| {
+                let definition_id = filter
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<String>>("definitionId"))
+                    .transpose()?
+                    .flatten();
+                let tag = filter
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<String>>("tag"))
+                    .transpose()?
+                    .flatten();
+                let source_id = filter
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<u64>>("sourceId"))
+                    .transpose()?
+                    .flatten();
+                let paused = filter
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<bool>>("paused"))
+                    .transpose()?
+                    .flatten();
+                let instances = this.tracker.list_filtered(
+                    subject_id,
+                    definition_id.as_deref(),
+                    tag.as_deref(),
+                    source_id,
+                    paused,
+                );
+                let output = lua.create_table()?;
+                for (index, instance) in instances.iter().enumerate() {
+                    output.set(index + 1, status_instance_to_lua(lua, instance)?)?;
+                }
+                Ok(output)
+            },
+        );
         // -- remove --
         /// Removes one active status instance.
         /// @param | instanceId | integer | Runtime status instance id.
@@ -300,6 +374,30 @@ impl UserData for LuaStatusTracker {
         methods.add_method_mut("remove", |_, this, instance_id: u64| {
             Ok(this.tracker.remove(instance_id))
         });
+        // -- removeByDefinition --
+        /// Removes every matching definition instance from one subject.
+        /// @param | subjectId | integer | Stable subject/entity id.
+        /// @param | definitionId | string | Registered status definition id.
+        /// @return | integer | Number of removed instances.
+        methods.add_method_mut(
+            "removeByDefinition",
+            |_, this, (subject_id, definition_id): (u64, String)| {
+                Ok(this
+                    .tracker
+                    .remove_by_definition(subject_id, &definition_id))
+            },
+        );
+        // -- removeByTag --
+        /// Removes every instance carrying a copied tag from one subject.
+        /// @param | subjectId | integer | Stable subject/entity id.
+        /// @param | tag | string | Instance tag to match.
+        /// @return | integer | Number of removed instances.
+        methods.add_method_mut(
+            "removeByTag",
+            |_, this, (subject_id, tag): (u64, String)| {
+                Ok(this.tracker.remove_by_tag(subject_id, &tag))
+            },
+        );
         // -- restore --
         /// Restores definitions, active instances, and ID allocation from a snapshot.
         /// @param | snapshot | table | Table returned by `snapshot`.
@@ -314,6 +412,30 @@ impl UserData for LuaStatusTracker {
         methods.add_method("snapshot", |lua, this, ()| {
             status_snapshot_to_lua(lua, &this.tracker.snapshot())
         });
+        // -- setPaused --
+        /// Pauses or resumes one status instance's lifecycle timers.
+        /// @param | instanceId | integer | Runtime status instance id.
+        /// @param | paused | boolean | Whether timers should be paused.
+        /// @return | boolean | True when the instance exists.
+        methods.add_method_mut(
+            "setPaused",
+            |_, this, (instance_id, paused): (u64, bool)| {
+                Ok(this.tracker.set_paused(instance_id, paused))
+            },
+        );
+        // -- setRemaining --
+        /// Sets one status instance's remaining duration; nil makes it infinite.
+        /// @param | instanceId | integer | Runtime status instance id.
+        /// @param | seconds | number? | Finite non-negative seconds, or nil.
+        /// @return | boolean | True when the instance exists.
+        methods.add_method_mut(
+            "setRemaining",
+            |_, this, (instance_id, seconds): (u64, Option<f64>)| {
+                this.tracker
+                    .set_remaining(instance_id, seconds)
+                    .map_err(|error| progression_error("LStatusTracker.setRemaining", error))
+            },
+        );
         // -- type --
         /// Returns the Lua-visible type name.
         /// @return | string | Always `LStatusTracker`.

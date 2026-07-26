@@ -15,17 +15,19 @@ use crate::procgen::noise::{
 use crate::procgen::noise::{simplex_noise_2d, simplex_noise_3d};
 use crate::procgen::world_graph::generate_world_graph;
 use crate::procgen::{
-    bsp_dungeon, bsp_dungeon_with_prefabs, flood_fill, perlin_noise_periodic,
+    bsp_dungeon, bsp_dungeon_with_prefabs, flood_fill, perlin_noise_periodic, place_constrained,
     rooms_dungeon_with_prefabs, try_cellular_automata, try_generate_noise_map_parallel,
     try_parse_llm_constraints, try_parse_llm_wfc_response, try_poisson_disk, try_rooms_dungeon,
-    try_voronoi_diagram, try_wfc_generate, BspOpts, BspPrefabStamp, CellType, CellularOpts,
-    CellularWorld, DistType, ErosionMode, FractalType, HeightmapOpts, MapGenOptions,
-    NoiseGenerator, NoiseKind, ProcgenGrid, ProcgenLimits, ProcgenScalarGrid, RoomPrefabStamp,
-    RoomsOpts, VoronoiOpts, WfcOpts, WfcRules, WfcTile,
+    try_voronoi_diagram, try_wfc_generate, validate_connectivity, BspOpts, BspPrefabStamp,
+    CellType, CellularOpts, CellularWorld, ConnectivityOptions, ConnectivityPoint,
+    ConnectivitySafePoint, DistType, ErosionMode, FractalType, HeightmapOpts, MapGenOptions,
+    NoiseGenerator, NoiseKind, PlacementCandidate, PlacementRules, ProcgenGrid, ProcgenLimits,
+    ProcgenScalarGrid, RoomPrefabStamp, RoomsOpts, VoronoiOpts, WfcOpts, WfcRules, WfcTile,
 };
 use crate::tilefield::{CellCoord, TileChannel, TileField, TileTopology};
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::{BTreeMap, BTreeSet};
 use std::ops::Deref;
 use std::rc::Rc;
 
@@ -150,6 +152,67 @@ fn procgen_scalar_cells_to_table<'lua>(lua: &'lua Lua, cells: &[f32]) -> LuaResu
         table.set(index + 1, *value)?;
     }
     Ok(table)
+}
+
+fn procgen_string_set(table: Option<LuaTable>) -> LuaResult<BTreeSet<String>> {
+    table
+        .map(|values| {
+            values
+                .sequence_values::<String>()
+                .collect::<LuaResult<BTreeSet<_>>>()
+        })
+        .transpose()
+        .map(Option::unwrap_or_default)
+}
+
+fn procgen_optional_stringish(
+    table: &LuaTable,
+    field: &str,
+    api: &str,
+) -> LuaResult<Option<String>> {
+    match table.get::<_, LuaValue>(field)? {
+        LuaValue::Nil => Ok(None),
+        LuaValue::String(value) => Ok(Some(value.to_str()?.to_string())),
+        LuaValue::Integer(value) => Ok(Some(value.to_string())),
+        value => Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must be a string or integer, got {}",
+            value.type_name()
+        ))),
+    }
+}
+
+fn placement_to_lua<'lua>(
+    lua: &'lua Lua,
+    placement: &crate::procgen::Placement,
+) -> LuaResult<LuaTable<'lua>> {
+    let output = lua.create_table()?;
+    output.set("candidateIndex", placement.candidate_index)?;
+    output.set("id", placement.candidate.id.as_deref())?;
+    output.set("x", placement.candidate.x)?;
+    output.set("y", placement.candidate.y)?;
+    output.set("level", placement.candidate.level.as_deref())?;
+    output.set("region", placement.candidate.region.as_deref())?;
+    output.set("weight", placement.candidate.weight)?;
+    output.set(
+        "uniquenessGroup",
+        placement.candidate.uniqueness_group.as_deref(),
+    )?;
+    let tags = lua.create_table()?;
+    for (index, tag) in placement.candidate.tags.iter().enumerate() {
+        tags.set(index + 1, tag.as_str())?;
+    }
+    output.set("tags", tags)?;
+    Ok(output)
+}
+
+fn connectivity_point_to_lua<'lua>(
+    lua: &'lua Lua,
+    point: ConnectivityPoint,
+) -> LuaResult<LuaTable<'lua>> {
+    let output = lua.create_table()?;
+    output.set("x", point.x)?;
+    output.set("y", point.y)?;
+    Ok(output)
 }
 
 fn procgen_channel_from_name(name: &str, api: &str) -> LuaResult<TileChannel> {
@@ -1348,6 +1411,223 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 procgen_scalar_grid_from_table(width, height, cells_tbl, kind)
             },
         )?,
+    )?;
+    // -- placeConstrained --
+    /// Selects a deterministic weighted subset satisfying neutral spatial and tag constraints.
+    /// @param | candidates | table | Candidate records with x, y, optional id/level/region/tags/weight/uniquenessGroup.
+    /// @param | rules | table | Rules with count, tags, minDistance, and perRegionCapacity.
+    /// @param | opts | table? | Options with seed and bounded maxAttempts.
+    /// @return | table, table | Placements and deterministic report.
+    tbl.set(
+        "placeConstrained",
+        lua.create_function(
+            |lua, (candidate_tables, rules_table, opts): (LuaTable, LuaTable, Option<LuaTable>)| {
+                let api = "lurek.procgen.placeConstrained";
+                let mut candidates = Vec::new();
+                for value in candidate_tables.sequence_values::<LuaTable>() {
+                    let candidate = value?;
+                    candidates.push(PlacementCandidate {
+                        id: procgen_optional_stringish(&candidate, "id", api)?,
+                        x: candidate.get("x")?,
+                        y: candidate.get("y")?,
+                        level: procgen_optional_stringish(&candidate, "level", api)?,
+                        region: procgen_optional_stringish(&candidate, "region", api)?,
+                        tags: procgen_string_set(candidate.get("tags")?)?,
+                        weight: candidate.get::<_, Option<f64>>("weight")?.unwrap_or(1.0),
+                        uniqueness_group: procgen_optional_stringish(
+                            &candidate,
+                            "uniquenessGroup",
+                            api,
+                        )?,
+                    });
+                }
+                let per_region_value = rules_table.get::<_, LuaValue>("perRegionCapacity")?;
+                let mut default_region_capacity = None;
+                let mut region_capacities = BTreeMap::new();
+                match per_region_value {
+                    LuaValue::Nil => {}
+                    LuaValue::Integer(value) if value >= 0 => {
+                        default_region_capacity = Some(value as usize);
+                    }
+                    LuaValue::Table(values) => {
+                        for pair in values.pairs::<String, usize>() {
+                            let (region, capacity) = pair?;
+                            region_capacities.insert(region, capacity);
+                        }
+                    }
+                    _ => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "{api}: perRegionCapacity must be a non-negative integer or table"
+                        )))
+                    }
+                }
+                let rules = PlacementRules {
+                    count: rules_table.get("count")?,
+                    required_tags: procgen_string_set(rules_table.get("requiredTags")?)?,
+                    forbidden_tags: procgen_string_set(rules_table.get("forbiddenTags")?)?,
+                    min_distance: rules_table
+                        .get::<_, Option<f64>>("minDistance")?
+                        .unwrap_or(0.0),
+                    default_region_capacity,
+                    region_capacities,
+                };
+                let limits = procgen_limits();
+                let seed = opts
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<u64>>("seed"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(0);
+                let default_attempts = u32::try_from(rules.count.saturating_mul(16).max(1))
+                    .unwrap_or(u32::MAX)
+                    .min(limits.max_iterations);
+                let max_attempts = opts
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<u32>>("maxAttempts"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(default_attempts);
+                let (placements, report) =
+                    place_constrained(&candidates, &rules, seed, max_attempts, &limits)
+                        .map_err(|error| LuaError::RuntimeError(format!("{api}: {error}")))?;
+                let placement_table = lua.create_table()?;
+                for (index, placement) in placements.iter().enumerate() {
+                    placement_table.set(index + 1, placement_to_lua(lua, placement)?)?;
+                }
+                let report_table = lua.create_table()?;
+                report_table.set("seed", report.seed)?;
+                report_table.set("requested", report.requested)?;
+                report_table.set("placed", report.placed)?;
+                report_table.set("attempts", report.attempts)?;
+                report_table.set("complete", report.complete)?;
+                let rejected = lua.create_table()?;
+                for (reason, count) in &report.rejected {
+                    rejected.set(reason.as_str(), *count)?;
+                }
+                report_table.set("rejected", rejected)?;
+                Ok((placement_table, report_table))
+            },
+        )?,
+    )?;
+    // -- validateConnectivity --
+    /// Reports deterministic connectivity, unreachable goals, isolated regions, and safe-radius failures.
+    /// @param | grid | LProcgenGrid|table | Typed grid or {width,height,cells} table.
+    /// @param | opts | table? | walkableValues, neighbors, starts, goals, and safePoints.
+    /// @return | table | Bounded connectivity report.
+    tbl.set(
+        "validateConnectivity",
+        lua.create_function(|lua, (grid, opts): (LuaValue, Option<LuaTable>)| {
+            let api = "lurek.procgen.validateConnectivity";
+            let (width, height, cells) = match grid {
+                LuaValue::UserData(userdata) => {
+                    let grid = userdata.borrow::<LuaProcgenGrid>().map_err(|_| {
+                        LuaError::RuntimeError(format!("{api}: grid userdata must be LProcgenGrid"))
+                    })?;
+                    (grid.width, grid.height, grid.cells.clone())
+                }
+                LuaValue::Table(table) => {
+                    let width: u32 = table.get("width")?;
+                    let height: u32 = table.get("height")?;
+                    let cells_table: LuaTable = table.get("cells")?;
+                    let cells = cells_table
+                        .sequence_values::<u32>()
+                        .collect::<LuaResult<Vec<_>>>()?;
+                    (width, height, cells)
+                }
+                value => {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api}: grid must be LProcgenGrid or table, got {}",
+                        value.type_name()
+                    )))
+                }
+            };
+            let mut options = ConnectivityOptions::default();
+            if let Some(opts) = opts {
+                if let Some(values) = opts.get::<_, Option<LuaTable>>("walkableValues")? {
+                    options.walkable_values = values
+                        .sequence_values::<u32>()
+                        .collect::<LuaResult<BTreeSet<_>>>()?;
+                }
+                options.neighbors = opts.get::<_, Option<u8>>("neighbors")?.unwrap_or(4);
+                if let Some(values) = opts.get::<_, Option<LuaTable>>("starts")? {
+                    for value in values.sequence_values::<LuaTable>() {
+                        let point = value?;
+                        options.starts.push(ConnectivityPoint {
+                            x: point.get("x")?,
+                            y: point.get("y")?,
+                        });
+                    }
+                }
+                if let Some(values) = opts.get::<_, Option<LuaTable>>("goals")? {
+                    for value in values.sequence_values::<LuaTable>() {
+                        let point = value?;
+                        options.goals.push(ConnectivityPoint {
+                            x: point.get("x")?,
+                            y: point.get("y")?,
+                        });
+                    }
+                }
+                if let Some(values) = opts.get::<_, Option<LuaTable>>("safePoints")? {
+                    for value in values.sequence_values::<LuaTable>() {
+                        let point = value?;
+                        options.safe_points.push(ConnectivitySafePoint {
+                            x: point.get("x")?,
+                            y: point.get("y")?,
+                            radius: point.get("radius")?,
+                        });
+                    }
+                }
+            }
+            let report = validate_connectivity(width, height, &cells, &options, &procgen_limits())
+                .map_err(|error| LuaError::RuntimeError(format!("{api}: {error}")))?;
+            let output = lua.create_table()?;
+            let components = lua.create_table()?;
+            for (index, component) in report.components.iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("id", component.id + 1)?;
+                row.set("size", component.size)?;
+                row.set("min", connectivity_point_to_lua(lua, component.min)?)?;
+                row.set("max", connectivity_point_to_lua(lua, component.max)?)?;
+                components.set(index + 1, row)?;
+            }
+            output.set("components", components)?;
+            output.set(
+                "primaryComponent",
+                report.primary_component.map(|component| component + 1),
+            )?;
+            let unreachable = lua.create_table()?;
+            for (index, goal) in report.unreachable_goals.iter().enumerate() {
+                let row = connectivity_point_to_lua(lua, goal.point)?;
+                row.set("index", goal.index)?;
+                row.set("reason", goal.reason.as_str())?;
+                unreachable.set(index + 1, row)?;
+            }
+            output.set("unreachableGoals", unreachable)?;
+            let isolated_cells = lua.create_table()?;
+            for (index, point) in report.isolated_cells.iter().enumerate() {
+                isolated_cells.set(index + 1, connectivity_point_to_lua(lua, *point)?)?;
+            }
+            output.set("isolatedCells", isolated_cells)?;
+            let isolated_regions = lua.create_table()?;
+            for (index, component) in report.isolated_regions.iter().enumerate() {
+                isolated_regions.set(index + 1, component + 1)?;
+            }
+            output.set("isolatedRegions", isolated_regions)?;
+            let safe_violations = lua.create_table()?;
+            for (index, violation) in report.safe_radius_violations.iter().enumerate() {
+                let row = connectivity_point_to_lua(lua, violation.point)?;
+                row.set("index", violation.index)?;
+                row.set("blockedCells", violation.blocked_cells)?;
+                safe_violations.set(index + 1, row)?;
+            }
+            output.set("safeRadiusViolations", safe_violations)?;
+            let diagnostics = lua.create_table()?;
+            for (index, diagnostic) in report.diagnostics.iter().enumerate() {
+                diagnostics.set(index + 1, diagnostic.as_str())?;
+            }
+            output.set("diagnostics", diagnostics)?;
+            Ok(output)
+        })?,
     )?;
     // -- cellularAutomata --
     /// Generate a cave or organic map using cellular automata rules.

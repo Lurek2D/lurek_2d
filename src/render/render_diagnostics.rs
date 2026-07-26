@@ -176,12 +176,8 @@ impl RenderDiagnostics {
         let collected_edges = u32::try_from(collected_edges).unwrap_or(u32::MAX);
         let culled_edges = u32::try_from(culled_edges).unwrap_or(u32::MAX);
         self.shadow_lights_rendered = self.shadow_lights_rendered.saturating_add(1);
-        self.shadow_edges_collected = self
-            .shadow_edges_collected
-            .saturating_add(collected_edges);
-        self.shadow_edges_culled = self
-            .shadow_edges_culled
-            .saturating_add(culled_edges);
+        self.shadow_edges_collected = self.shadow_edges_collected.saturating_add(collected_edges);
+        self.shadow_edges_culled = self.shadow_edges_culled.saturating_add(culled_edges);
     }
 
     /// Return the number of actual render faults in this snapshot.

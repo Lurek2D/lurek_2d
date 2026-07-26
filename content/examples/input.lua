@@ -1215,53 +1215,102 @@ end
 --- Fighting-game and multi-device input patterns.
 
 --@api: lurek.input.setContextEnabled
---@api: lurek.input.isContextEnabled
---@api: lurek.input.mouse.wasPressed
---@api: lurek.input.mouse.getDelta
---@api: lurek.input.keyboard.wasPressed
---@api: lurek.input.gamepad.assignPlayer
---@api: lurek.input.gamepad.setDeadzone
---@api: lurek.input.gamepad.getStandardAxis
 do
-    lurek.input.define("debug_palette", {
-        { all = { "lctrl", "k" }, within_ms = 60 },
-        "gamepad:any:start",
-    }, "system", "system")
+    lurek.input.define("jump", { "space" }, "gameplay")
     lurek.input.setContextEnabled("gameplay", true)
-    local ctrl_k = lurek.input.isActionDown("debug_palette")
-    local extra_mouse = lurek.input.mouse.wasPressed(6)
-    local dx, dy = lurek.input.mouse.getDelta()
-    local q_pressed = lurek.input.keyboard.wasPressed("q")
-    lurek.input.assignPlayer(1, 0)
-    lurek.input.gamepad.setDeadzone(0, "leftstick", 0.18)
-    local stick_x = lurek.input.gamepad.getStandardAxis(0, "leftx")
-    lurek.log.info("input chord=" .. tostring(ctrl_k) .. " extra_mouse=" .. tostring(extra_mouse))
-    lurek.log.info("input delta=" .. tostring(dx) .. "," .. tostring(dy) .. " q=" .. tostring(q_pressed) .. " stick=" .. tostring(stick_x))
+    local enabled = lurek.input.isContextEnabled("gameplay")
+    lurek.log.info("gameplay enabled=" .. tostring(enabled))
     lurek.input.reset()
 end
 
---@api: lurek.input.newCombo
+--@api: lurek.input.isContextEnabled
+do
+    lurek.input.define("jump", { "space" }, "gameplay")
+    lurek.input.setContextEnabled("gameplay", true)
+    local enabled = lurek.input.isContextEnabled("gameplay")
+    lurek.log.info("context enabled=" .. tostring(enabled))
+    lurek.input.reset()
+end
+
+--@api: lurek.input.mouse.wasPressed
+do
+    local primary = lurek.input.mouse.wasPressed(1)
+    local auxiliary = lurek.input.mouse.wasPressed(4)
+    local combined = primary or auxiliary
+    local state = tostring(primary) .. "," .. tostring(auxiliary)
+    lurek.log.info("mouse pressed=" .. state .. " any=" .. tostring(combined))
+end
+
+--@api: lurek.input.mouse.getDelta
+do
+    local dx, dy = lurek.input.mouse.getDelta()
+    local magnitude = math.sqrt(dx * dx + dy * dy)
+    local horizontal = math.abs(dx)
+    local vertical = math.abs(dy)
+    lurek.log.info("mouse delta=" .. tostring(magnitude) .. " axes=" .. tostring(horizontal) .. "," .. tostring(vertical))
+end
+
+--@api: lurek.input.keyboard.wasPressed
+do
+    local q = lurek.input.keyboard.wasPressed("q")
+    local escape = lurek.input.keyboard.wasPressed("escape")
+    local any = q or escape
+    local state = tostring(q) .. "," .. tostring(escape)
+    lurek.log.info("keyboard pressed=" .. state .. " any=" .. tostring(any))
+end
+
+--@api: lurek.input.gamepad.assignPlayer
+do
+    lurek.input.assignPlayer(1, 0)
+    local id = lurek.input.getPlayerGamepad(1)
+    local connected = lurek.input.gamepad.isConnected(0)
+    lurek.log.info("player gamepad=" .. tostring(id) .. " connected=" .. tostring(connected))
+    lurek.input.assignPlayer(1, 0)
+end
+
+--@api: lurek.input.gamepad.setDeadzone
+do
+    lurek.input.gamepad.setDeadzone(0, "leftstick", 0.18)
+    local x = lurek.input.gamepad.getStandardAxis(0, "leftx")
+    local y = lurek.input.gamepad.getStandardAxis(0, "lefty")
+    local magnitude = math.sqrt(x * x + y * y)
+    lurek.log.info("deadzone stick=" .. tostring(magnitude))
+end
+
+--@api: lurek.input.gamepad.getStandardAxis
+do
+    local x = lurek.input.gamepad.getStandardAxis(0, "leftx")
+    local y = lurek.input.gamepad.getStandardAxis(0, "lefty")
+    local magnitude = math.sqrt(x * x + y * y)
+    local active = magnitude > 0
+    lurek.log.info("standard axis=" .. tostring(x) .. "," .. tostring(y) .. " active=" .. tostring(active))
+end
+
 --@api: LCombo:wasCompleted
+do
+    local combo = lurek.input.newCombo({ { press = "punch" } })
+    combo:update()
+    local complete = combo:wasCompleted()
+    local recent = combo:completedWithin(100)
+    lurek.log.info("combo completed=" .. tostring(complete) .. " recent=" .. tostring(recent))
+end
+
 --@api: LCombo:completedWithin
+do
+    local combo = lurek.input.newCombo({ { press = "punch" } })
+    combo:update()
+    local recent = combo:completedWithin(100)
+    local complete = combo:wasCompleted()
+    lurek.log.info("combo recent=" .. tostring(recent) .. " complete=" .. tostring(complete))
+end
+
 --@api: LCombo:consume
 do
-    local fireball = lurek.input.newCombo({
-        { direction = "down" },
-        { direction = "down_right", leniency_ms = 70 },
-        { direction = "right" },
-        { press = "punch" },
-    }, { source = "player1", total_ms = 550, input_buffer_ms = 100 })
-    local charge = lurek.input.newCombo({
-        { hold = "left", min_hold_ms = 600 },
-        { press = "punch" },
-    })
-    local chord = lurek.input.newCombo({ { chord = { "punch_light", "kick_light" }, within_ms = 50 } })
-    fireball:update()
-    charge:update()
-    chord:update()
-    if fireball:wasCompleted() and fireball:completedWithin(100) then
-        fireball:consume()
-    end
+    local combo = lurek.input.newCombo({ { press = "punch" } })
+    combo:update()
+    local consumed = combo:consume()
+    local complete = combo:wasCompleted()
+    lurek.log.info("combo consumed=" .. tostring(consumed) .. " complete=" .. tostring(complete))
 end
 
 --@api: LCombo:update
@@ -1387,4 +1436,220 @@ do
     local down = lurek.input.mouse.isDown(button)
     lurek.log.info("mouse released=" .. tostring(released))
     lurek.log.info("mouse pressed=" .. tostring(pressed) .. " down=" .. tostring(down))
+end
+--@api: lurek.input.newPlayerContext
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    local down = controls:isDown("attack")
+    local kind = controls:type()
+    lurek.log.info(kind .. " attack=" .. tostring(down))
+end
+
+--@api: LPlayerInputContext:assignKeyboardMouse
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:assignKeyboardMouse()
+    local devices = controls:getAssignedDevices()
+    lurek.log.info("keyboard=" .. tostring(devices.keyboardMouse))
+    controls:unassignKeyboardMouse()
+end
+
+--@api: LPlayerInputContext:unassignKeyboardMouse
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:assignKeyboardMouse()
+    controls:unassignKeyboardMouse()
+    local devices = controls:getAssignedDevices()
+    lurek.log.info("keyboard released=" .. tostring(not devices.keyboardMouse))
+end
+
+--@api: LPlayerInputContext:assignGamepad
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:assignGamepad(101, { shared = true })
+    local devices = controls:getAssignedDevices()
+    lurek.log.info("gamepad=" .. tostring(devices.gamepads[1].id))
+    controls:unassignGamepad(101)
+end
+
+--@api: LPlayerInputContext:unassignGamepad
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:assignGamepad(102, { shared = true })
+    controls:unassignGamepad(102)
+    local devices = controls:getAssignedDevices()
+    lurek.log.info("gamepads=" .. tostring(#devices.gamepads))
+end
+
+--@api: LPlayerInputContext:getAssignedDevices
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:assignGamepad(103, { shared = true })
+    local devices = controls:getAssignedDevices()
+    local count = #devices.gamepads
+    lurek.log.info("assigned=" .. tostring(count))
+    controls:unassignGamepad()
+end
+
+--@api: LPlayerInputContext:defineButton
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    local down = controls:isDown("attack")
+    local conflicts = controls:getConflicts()
+    lurek.log.info("attack=" .. tostring(down) .. " conflicts=" .. tostring(conflicts.space))
+end
+
+--@api: LPlayerInputContext:defineAxis1D
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineAxis1D("move_x", { negative = "a", positive = "d" })
+    local value = controls:getAxis1D("move_x")
+    local active = controls:isDown("move_x")
+    lurek.log.info("move_x=" .. tostring(value) .. " active=" .. tostring(active))
+end
+
+--@api: LPlayerInputContext:defineAxis2D
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineAxis2D("move", { keyboard = { left = "a", right = "d", up = "w", down = "s" } })
+    local x, y = controls:getAxis2D("move")
+    local length = math.sqrt(x * x + y * y)
+    lurek.log.info("move length=" .. tostring(length))
+end
+
+--@api: LPlayerInputContext:removeAction
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    local removed = controls:removeAction("attack")
+    local down = controls:isDown("attack")
+    lurek.log.info("removed=" .. tostring(removed) .. " down=" .. tostring(down))
+end
+
+--@api: LPlayerInputContext:clearActions
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    controls:defineButton("use", { bindings = { "e" } })
+    controls:clearActions()
+    lurek.log.info("cleared attack=" .. tostring(controls:isDown("attack")))
+end
+
+--@api: LPlayerInputContext:isDown
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    local down = controls:isDown("attack")
+    local enabled = controls:isEnabled()
+    lurek.log.info("down=" .. tostring(down) .. " enabled=" .. tostring(enabled))
+end
+
+--@api: LPlayerInputContext:wasPressed
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    local pressed = controls:wasPressed("attack")
+    local down = controls:isDown("attack")
+    lurek.log.info("pressed=" .. tostring(pressed) .. " down=" .. tostring(down))
+end
+
+--@api: LPlayerInputContext:wasReleased
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    local released = controls:wasReleased("attack")
+    local down = controls:isDown("attack")
+    lurek.log.info("released=" .. tostring(released) .. " down=" .. tostring(down))
+end
+
+--@api: LPlayerInputContext:getAxis1D
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineAxis1D("move_x", { negative = "a", positive = "d", sensitivity = 1 })
+    local value = controls:getAxis1D("move_x")
+    local bounded = value >= -1 and value <= 1
+    lurek.log.info("axis1d bounded=" .. tostring(bounded))
+end
+
+--@api: LPlayerInputContext:getAxis2D
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineAxis2D("move", { keyboard = { left = "a", right = "d", up = "w", down = "s" } })
+    local x, y = controls:getAxis2D("move")
+    local length = math.sqrt(x * x + y * y)
+    lurek.log.info("axis2d=" .. tostring(length))
+end
+
+--@api: LPlayerInputContext:setEnabled
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:setEnabled(false)
+    local disabled = not controls:isEnabled()
+    controls:setEnabled(true)
+    lurek.log.info("was disabled=" .. tostring(disabled))
+end
+
+--@api: LPlayerInputContext:isEnabled
+do
+    local controls = lurek.input.newPlayerContext(1)
+    local initial = controls:isEnabled()
+    controls:setEnabled(false)
+    local after = controls:isEnabled()
+    lurek.log.info("enabled=" .. tostring(initial) .. " after=" .. tostring(after))
+end
+
+--@api: LPlayerInputContext:getConflicts
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    controls:defineButton("use", { bindings = { "space" } })
+    local conflicts = controls:getConflicts()
+    lurek.log.info("space conflicts=" .. tostring(#conflicts.space))
+end
+
+--@api: LPlayerInputContext:serializeBindings
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:defineButton("attack", { bindings = { "space" } })
+    local snapshot = controls:serializeBindings()
+    local bytes = #snapshot
+    lurek.log.info("binding bytes=" .. tostring(bytes))
+end
+
+--@api: LPlayerInputContext:restoreBindings
+do
+    local source = lurek.input.newPlayerContext(1)
+    source:defineButton("attack", { bindings = { "space" } })
+    local target = lurek.input.newPlayerContext(2)
+    target:restoreBindings(source:serializeBindings())
+    lurek.log.info("restored attack=" .. tostring(target:isDown("attack")))
+end
+
+--@api: LPlayerInputContext:vibrate
+do
+    local controls = lurek.input.newPlayerContext(1)
+    controls:assignGamepad(104, { shared = true })
+    local supported = controls:vibrate(0.5, 0.25, 20)
+    lurek.log.info("vibration devices=" .. tostring(supported))
+    controls:unassignGamepad()
+end
+
+--@api: LPlayerInputContext:type
+do
+    local controls = lurek.input.newPlayerContext(1)
+    local kind = controls:type()
+    local object = controls:typeOf("LObject")
+    local context = controls:typeOf("LPlayerInputContext")
+    lurek.log.info(kind .. " object=" .. tostring(object) .. " context=" .. tostring(context))
+end
+
+--@api: LPlayerInputContext:typeOf
+do
+    local controls = lurek.input.newPlayerContext(1)
+    local exact = controls:typeOf("LPlayerInputContext")
+    local base = controls:typeOf("LObject")
+    local other = controls:typeOf("LCombo")
+    lurek.log.info("types=" .. tostring(exact) .. "," .. tostring(base) .. "," .. tostring(other))
 end

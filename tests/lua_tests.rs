@@ -482,6 +482,11 @@ fn lua_evidence_pathfind_evidence() {
 }
 
 #[test]
+fn lua_evidence_p0_isolation_evidence() {
+    run_lua_test("evidence/test_p0_isolation_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_physics_evidence() {
     run_lua_test("evidence/test_physics_evidence.lua");
 }
@@ -1262,14 +1267,14 @@ fn lua_integration_workbench_particle_integration() {
 }
 
 #[test]
-    fn lua_integration_workbench_tilemap_integration() {
-        run_lua_test("integration/test_workbench_tilemap_integration.lua");
-    }
+fn lua_integration_workbench_tilemap_integration() {
+    run_lua_test("integration/test_workbench_tilemap_integration.lua");
+}
 
-    #[test]
-    fn lua_integration_workbench_asset_creation_integration() {
-        run_lua_test("integration/test_workbench_asset_creation_integration.lua");
-    }
+#[test]
+fn lua_integration_workbench_asset_creation_integration() {
+    run_lua_test("integration/test_workbench_asset_creation_integration.lua");
+}
 
 #[test]
 fn lua_library_battle_library() {
@@ -1387,6 +1392,21 @@ fn lua_security_ui_security() {
 }
 
 #[test]
+fn lua_security_audio_security() {
+    run_lua_test("security/test_audio_security.lua");
+}
+
+#[test]
+fn lua_security_procgen_security() {
+    run_lua_test("security/test_procgen_security.lua");
+}
+
+#[test]
+fn lua_security_progression_security() {
+    run_lua_test("security/test_progression_security.lua");
+}
+
+#[test]
 fn lua_stress_ai_stress() {
     run_lua_test("stress/test_ai_stress.lua");
 }
@@ -1394,6 +1414,11 @@ fn lua_stress_ai_stress() {
 #[test]
 fn lua_stress_animation_stress() {
     run_lua_test("stress/test_animation_stress.lua");
+}
+
+#[test]
+fn lua_stress_audio_stress() {
+    run_lua_test("stress/test_audio_stress.lua");
 }
 
 #[test]
@@ -1434,6 +1459,11 @@ fn lua_stress_filesystem_stress() {
 #[test]
 fn lua_stress_image_stress() {
     run_lua_test("stress/test_image_stress.lua");
+}
+
+#[test]
+fn lua_stress_input_stress() {
+    run_lua_test("stress/test_input_stress.lua");
 }
 
 #[test]
@@ -1479,6 +1509,11 @@ fn lua_stress_procgen_stress() {
 #[test]
 fn lua_stress_progression_stress() {
     run_lua_test("stress/test_progression_stress.lua");
+}
+
+#[test]
+fn lua_stress_raycaster_stress() {
+    run_lua_test("stress/test_raycaster_stress.lua");
 }
 
 #[test]

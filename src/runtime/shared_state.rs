@@ -16,11 +16,11 @@ use crate::camera::Camera;
 use crate::cursor::CursorManager;
 use crate::event::EventQueue;
 use crate::filesystem::GameFS;
+use crate::input::recorder::InputRecorder;
 use crate::input::{
     GamepadMappings, GamepadState, GamepadVibrationRequest, InputHistory, KeyboardState,
     MouseState, TouchState,
 };
-use crate::input::recorder::InputRecorder;
 use crate::light::LightWorld;
 use crate::log::SinkRegistry;
 use crate::mods::ModSandbox;

@@ -13,7 +13,7 @@
 - Source path: `src/input`
 - Binding: `src/lua_api/input_api.rs`
 - Namespace: `lurek.input`
-- Lua API surface: `107` functions, `8` types, `22` methods
+- Lua API surface: `108` functions, `9` types, `45` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -118,6 +118,13 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - Documents where input callers should change defaults, errors, or lifecycle behavior. with focused crate-local behavior.
 - Use this file when changing mouse defaults, lifecycle handling, validation, or data ownership.
 
+### player_context.rs
+
+- Owns player-scoped action definitions, device assignments, and analog shaping.
+- A context stores only input policy; live keyboard, mouse, and gamepad state remains runtime-owned.
+- Device ownership is coordinated through `PlayerInputRegistry` so Lua contexts cannot silently contend.
+- The module has no dependency on actors, cameras, UI, or any other gameplay-facing subsystem.
+
 ### recorder.rs
 
 - Owns input behavior with explicit state, validation, and crate-local integration boundaries.
@@ -145,7 +152,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `lurek.input.assignPlayer(player, gamepad_id) -> nil`: Assigns a gamepad slot to a positive player number.
 - `lurek.input.bind(action, keys) -> nil`: Adds one or more keyboard/gamepad bindings to an action.
 - `lurek.input.clearBindings() -> nil`: Removes all action bindings from the map.
-- `lurek.input.define(name, bindings, category?, context?) -> nil`: Defines an action with a full set of bindings and an optional category, replacing any prior definition.
+- `lurek.input.define(name, bindings, category?) -> nil`: Defines an action with a full set of bindings and an optional category, replacing any prior definition.
 - `lurek.input.defineActions(defs, defaultCategory?) -> integer`: Defines multiple named actions at once, replacing prior definitions.
 - `lurek.input.deserializeBindings(json) -> boolean`: Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
 - `lurek.input.gamepad.getAssignedPlayer(id) -> integer`: Returns the player assigned to a gamepad, or nil when unassigned.
@@ -228,6 +235,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `lurek.input.mouse.wasReleased(button) -> boolean`: Returns whether a one-based mouse button index transitioned to released this frame.
 - `lurek.input.newCombo(steps, opts?) -> LCombo`: Creates a combo detector from string steps or step tables with optional timing.
 - `lurek.input.newMapping(name, keys) -> table`: Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
+- `lurek.input.newPlayerContext(player_id) -> LPlayerInputContext`: Creates an isolated player-scoped input context with local action names.
 - `lurek.input.onRebind(callback) -> nil`: Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.
 - `lurek.input.reset(name?) -> nil`: Removes bindings for one action by name, or all actions when name is nil.
 - `lurek.input.serializeBindings() -> string`: Serialises all action definitions to a JSON string.
@@ -371,6 +379,40 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `LInputRecording:totalFrames() -> integer`: Returns total frame count stored in this recording.
 - `LInputRecording:type() -> string`: Returns the Lua-visible type name for this input recording handle.
 - `LInputRecording:typeOf(name) -> boolean`: Returns whether this input recording handle matches a supported type name.
+
+#### LPlayerInputContext Type
+
+- Lua handle for one isolated player input context.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LPlayerInputContext:assignGamepad(id, opts?) -> nil`: Assigns a persistent gamepad slot to this context.
+- `LPlayerInputContext:assignKeyboardMouse(opts?) -> nil`: Assigns keyboard and mouse to this context.
+- `LPlayerInputContext:clearActions() -> nil`: Removes every local action.
+- `LPlayerInputContext:defineAxis1D(name, opts) -> nil`: Defines or replaces a continuous one-dimensional action.
+- `LPlayerInputContext:defineAxis2D(name, opts) -> nil`: Defines or replaces a continuous radial two-dimensional action.
+- `LPlayerInputContext:defineButton(name, opts) -> nil`: Defines or replaces a player-local digital action.
+- `LPlayerInputContext:getAssignedDevices() -> table`: Returns keyboard/mouse ownership and deterministic gamepad slot records.
+- `LPlayerInputContext:getAxis1D(name) -> number`: Returns a shaped continuous one-dimensional value.
+- `LPlayerInputContext:getAxis2D(name) -> number`: Returns a shaped continuous vector with length no greater than one.
+- `LPlayerInputContext:getConflicts() -> table`: Returns local binding conflicts in deterministic order.
+- `LPlayerInputContext:isDown(name) -> boolean`: Returns whether a button or thresholded analog action is currently active.
+- `LPlayerInputContext:isEnabled() -> boolean`: Returns whether this context is enabled.
+- `LPlayerInputContext:removeAction(name) -> boolean`: Removes one local action.
+- `LPlayerInputContext:restoreBindings(json) -> nil`: Atomically restores definitions and enabled state from JSON.
+- `LPlayerInputContext:serializeBindings() -> string`: Serializes local definitions and enabled state as versioned JSON.
+- `LPlayerInputContext:setEnabled(enabled) -> nil`: Enables or disables all queries for this context.
+- `LPlayerInputContext:type() -> string`: Returns the Lua-visible handle type.
+- `LPlayerInputContext:typeOf(name) -> boolean`: Checks this handle against `LPlayerInputContext` or `LObject`.
+- `LPlayerInputContext:unassignGamepad(id?) -> nil`: Releases one gamepad slot, or every assigned slot when id is nil.
+- `LPlayerInputContext:unassignKeyboardMouse() -> nil`: Releases keyboard and mouse ownership.
+- `LPlayerInputContext:vibrate(low, high, duration_ms) -> integer`: Queues vibration for every assigned connected gamepad that supports it.
+- `LPlayerInputContext:wasPressed(name) -> boolean`: Returns the current-frame press transition, including analog hysteresis transitions.
+- `LPlayerInputContext:wasReleased(name) -> boolean`: Returns the current-frame release transition, including analog hysteresis transitions.
 
 #### LTouchGetTouchesResult Type
 

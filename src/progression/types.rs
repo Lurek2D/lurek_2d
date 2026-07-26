@@ -6,6 +6,7 @@
 //! Anchors deterministic serde behavior for snapshots, changesets, and debug payloads that cross module boundaries.
 //! Integrates with `store.rs` as the state schema owner while sibling files focus on behavior and mutation rules.
 //! Avoids renderer, filesystem, and Lua-specific adapters so these types stay transport-neutral and domain-focused.
+//! Status snapshots retain copied tags and pause state while serde defaults accept snapshots authored before them.
 //! Open this file when adding stored fields, authored definition shapes, or snapshot-visible progression contracts.
 //! Reach here before changing persistence, docs generation, or Lua serialization that depends on stable type layout.
 use serde::{Deserialize, Serialize};
@@ -962,6 +963,12 @@ pub struct StatusInstance {
     pub remaining: Option<f64>,
     /// Time remaining before the next periodic tick.
     pub next_tick: Option<f64>,
+    /// Tags copied from the definition when the instance was applied.
+    #[serde(default)]
+    pub tags: Vec<String>,
+    /// Whether lifecycle timers are currently paused.
+    #[serde(default)]
+    pub paused: bool,
 }
 
 /// Neutral status lifecycle event for Lua-side integrations.

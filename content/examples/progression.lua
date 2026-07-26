@@ -4541,14 +4541,19 @@ do
     local tracker = lurek.progression.newStatusTracker()
     local type_name = tracker:type()
     local empty = tracker:list(1)
+    local snapshot = tracker:snapshot()
     lurek.log.info("status tracker type=" .. type_name .. " empty=" .. #empty .. " isolated=" .. tostring(tracker ~= nil))
+    lurek.log.info("next status id=" .. tostring(snapshot.nextId))
 end
 
 --@api: LStatusTracker:define
 do
     local tracker = lurek.progression.newStatusTracker()
     tracker:define({ id = "poison", duration = 5, tickInterval = 1, maxStacks = 3, stacking = "add", tags = { "damage_over_time" } })
+    local empty = tracker:list(1)
+    local snapshot = tracker:snapshot()
     lurek.log.info("defined poison statuses=" .. #tracker:list(1) .. " type=" .. tracker:type())
+    lurek.log.info("defined id=" .. snapshot.definitions.poison.id .. " active=" .. tostring(#empty))
 end
 
 --@api: LStatusTracker:apply
@@ -4556,7 +4561,9 @@ do
     local tracker = lurek.progression.newStatusTracker()
     tracker:define({ id = "slow", duration = 4, maxStacks = 2, stacking = "refresh" })
     local instance = tracker:apply(7, "slow", 99, 1)
+    local status = tracker:get(instance)
     lurek.log.info("applied instance=" .. instance .. " subject=" .. tracker:list(7)[1].subjectId .. " source=" .. tracker:list(7)[1].sourceId)
+    lurek.log.info("applied definition=" .. status.definitionId)
 end
 
 --@api: LStatusTracker:clear
@@ -4617,13 +4624,21 @@ end
 --@api: LStatusTracker:type
 do
     local tracker = lurek.progression.newStatusTracker()
+    local kind = tracker:type()
+    local exact = tracker:typeOf("LStatusTracker")
+    local empty = #tracker:list(1)
     lurek.log.info("status tracker type=" .. tracker:type() .. " empty=" .. tostring(#tracker:list(1) == 0) .. " snapshot=" .. tostring(tracker:snapshot() ~= nil))
+    lurek.log.info(kind .. " exact=" .. tostring(exact) .. " count=" .. tostring(empty))
 end
 
 --@api: LStatusTracker:typeOf
 do
     local tracker = lurek.progression.newStatusTracker()
+    local exact = tracker:typeOf("LStatusTracker")
+    local base = tracker:typeOf("LObject")
+    local store = tracker:typeOf("LProgressionStore")
     lurek.log.info("tracker=" .. tostring(tracker:typeOf("LStatusTracker")) .. " object=" .. tostring(tracker:typeOf("LObject")) .. " store=" .. tostring(tracker:typeOf("LProgressionStore")))
+    lurek.log.info("type flags=" .. tostring(exact) .. "," .. tostring(base) .. "," .. tostring(store))
 end
 
 --@api: LStatusTracker:update
@@ -4634,6 +4649,60 @@ do
     local queued = tracker:update(1.1)
     local events = tracker:drainEvents()
     lurek.log.info("update queued=" .. queued .. " tick=" .. tostring(events[#events].kind == "tick") .. " remaining=" .. tracker:list(8)[1].remaining)
+end
+
+--@api: LStatusTracker:get
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", duration = 5, tags = { "helpful" } })
+    local instance_id = tracker:apply(1, "ward")
+    local instance = tracker:get(instance_id)
+    lurek.log.info("status instance=" .. tostring(instance.id))
+end
+
+--@api: LStatusTracker:has
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", tags = { "helpful" } })
+    tracker:apply(1, "ward")
+    local helpful = tracker:has(1, "helpful")
+    lurek.log.info("has helpful=" .. tostring(helpful))
+end
+
+--@api: LStatusTracker:removeByDefinition
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", tags = { "helpful" } })
+    tracker:apply(1, "ward")
+    local removed = tracker:removeByDefinition(1, "ward")
+    lurek.log.info("removed definitions=" .. tostring(removed))
+end
+
+--@api: LStatusTracker:removeByTag
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", tags = { "helpful" } })
+    tracker:apply(1, "ward")
+    local removed = tracker:removeByTag(1, "helpful")
+    lurek.log.info("removed tags=" .. tostring(removed))
+end
+
+--@api: LStatusTracker:setPaused
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", duration = 5 })
+    local instance_id = tracker:apply(1, "ward")
+    tracker:setPaused(instance_id, true)
+    lurek.log.info("paused=" .. tostring(tracker:get(instance_id).paused))
+end
+
+--@api: LStatusTracker:setRemaining
+do
+    local tracker = lurek.progression.newStatusTracker()
+    tracker:define({ id = "ward", duration = 5 })
+    local instance_id = tracker:apply(1, "ward")
+    tracker:setRemaining(instance_id, 2)
+    lurek.log.info("remaining=" .. tostring(tracker:get(instance_id).remaining))
 end
 
 

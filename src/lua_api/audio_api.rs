@@ -2,7 +2,10 @@
 
 use super::SharedState;
 use crate::audio::sound_data::SoundData;
-use crate::audio::{BeatClockOpts, Decoder, JudgementResult, JudgementWindows, SourceType};
+use crate::audio::{
+    BeatClockOpts, Decoder, JudgementResult, JudgementWindows, SourceType, SpatialListener,
+    SpatialListenerPolicy,
+};
 use crate::runtime::resource_keys::{BusKey, QueueableKey, SoundKey};
 use mlua::prelude::*;
 use slotmap::Key;
@@ -1452,6 +1455,143 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| {
             let pos = s.borrow().mixer.get_listener_position();
             Ok((pos[0], pos[1], pos[2]))
+        })?,
+    )?;
+    // -- setListeners --
+    /// Atomically replaces the neutral spatial listener set.
+    /// @param | listeners | table | Ordered listeners with id, x, y, optional z/vx/vy/vz, and positive weight.
+    /// @param | opts | table? | Options with policy: nearest, weighted, or manual.
+    let s = state.clone();
+    tbl.set(
+        "setListeners",
+        lua.create_function(
+            move |_, (listeners, opts): (LuaTable, Option<LuaTable>)| {
+                let policy_name = opts
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<String>>("policy"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or_else(|| "nearest".to_string());
+                let policy = match policy_name.as_str() {
+                    "nearest" => SpatialListenerPolicy::Nearest,
+                    "weighted" => SpatialListenerPolicy::Weighted,
+                    "manual" => SpatialListenerPolicy::Manual,
+                    _ => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "lurek.audio.setListeners: policy must be nearest, weighted, or manual, got '{policy_name}'"
+                        )))
+                    }
+                };
+                let mut parsed = Vec::new();
+                for value in listeners.sequence_values::<LuaTable>() {
+                    let listener = value?;
+                    parsed.push(SpatialListener {
+                        id: listener.get("id")?,
+                        position: [
+                            listener.get("x")?,
+                            listener.get("y")?,
+                            listener.get::<_, Option<f32>>("z")?.unwrap_or(0.0),
+                        ],
+                        velocity: [
+                            listener.get::<_, Option<f32>>("vx")?.unwrap_or(0.0),
+                            listener.get::<_, Option<f32>>("vy")?.unwrap_or(0.0),
+                            listener.get::<_, Option<f32>>("vz")?.unwrap_or(0.0),
+                        ],
+                        weight: listener
+                            .get::<_, Option<f32>>("weight")?
+                            .unwrap_or(1.0),
+                    });
+                }
+                s.borrow_mut()
+                    .mixer
+                    .set_listeners(parsed, policy)
+                    .map_err(|error| {
+                        LuaError::RuntimeError(format!(
+                            "lurek.audio.setListeners: {error}"
+                        ))
+                    })
+            },
+        )?,
+    )?;
+    // -- getListeners --
+    /// Returns the configured listeners in deterministic input order.
+    /// @return | table | Listener records.
+    let s = state.clone();
+    tbl.set(
+        "getListeners",
+        lua.create_function(move |lua, ()| {
+            let state = s.borrow();
+            let output = lua.create_table()?;
+            for (index, listener) in state.mixer.get_listeners().iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("id", listener.id.as_str())?;
+                row.set("x", listener.position[0])?;
+                row.set("y", listener.position[1])?;
+                row.set("z", listener.position[2])?;
+                row.set("vx", listener.velocity[0])?;
+                row.set("vy", listener.velocity[1])?;
+                row.set("vz", listener.velocity[2])?;
+                row.set("weight", listener.weight)?;
+                output.set(index + 1, row)?;
+            }
+            Ok(output)
+        })?,
+    )?;
+    // -- setSourceListenerMask --
+    /// Sets or clears the listener allow-list for one source.
+    /// @param | source | LSource|integer | Audio source or numeric source ID.
+    /// @param | listenerIds | table? | Listener IDs; nil clears the mask.
+    let s = state.clone();
+    tbl.set(
+        "setSourceListenerMask",
+        lua.create_function(
+            move |_, (source, listener_ids): (LuaValue, Option<LuaTable>)| {
+                let mut state = s.borrow_mut();
+                let key = require_sound_key(&state, &source, "lurek.audio.setSourceListenerMask")?;
+                let parsed = listener_ids
+                    .map(|ids| {
+                        ids.sequence_values::<String>()
+                            .collect::<LuaResult<Vec<_>>>()
+                    })
+                    .transpose()?;
+                state
+                    .mixer
+                    .set_source_listener_mask(key, parsed)
+                    .map_err(|error| {
+                        LuaError::RuntimeError(format!(
+                            "lurek.audio.setSourceListenerMask: {error}"
+                        ))
+                    })
+            },
+        )?,
+    )?;
+    // -- getSourceSpatialResult --
+    /// Returns the current bounded spatial result for one source.
+    /// @param | source | LSource|integer | Audio source or numeric source ID.
+    /// @return | table | Effective policy, gain, pan, distance, and contributing listener IDs.
+    let s = state.clone();
+    tbl.set(
+        "getSourceSpatialResult",
+        lua.create_function(move |lua, source: LuaValue| {
+            let state = s.borrow();
+            let key = require_sound_key(&state, &source, "lurek.audio.getSourceSpatialResult")?;
+            let result = state
+                .mixer
+                .get_source_spatial_result(key)
+                .ok_or_else(|| invalid_source_handle("lurek.audio.getSourceSpatialResult"))?;
+            let output = lua.create_table()?;
+            output.set("policy", result.policy.as_str())?;
+            output.set("spatial", result.spatial)?;
+            output.set("gain", result.gain)?;
+            output.set("pan", result.pan)?;
+            output.set("distance", result.distance)?;
+            output.set("listenerId", result.listener_id)?;
+            let ids = lua.create_table()?;
+            for (index, id) in result.listener_ids.iter().enumerate() {
+                ids.set(index + 1, id.as_str())?;
+            }
+            output.set("listenerIds", ids)?;
+            Ok(output)
         })?,
     )?;
     // -- setPosition --

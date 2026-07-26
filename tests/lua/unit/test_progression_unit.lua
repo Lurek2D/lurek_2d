@@ -4130,12 +4130,37 @@ describe("LStatusTracker lifecycle", function()
         expect_equal(7, events[1].subjectId)
     end)
 
-    -- @covers LStatusTracker:list
-    it("list returns active instances for one subject", function()
+    -- @covers LStatusTracker:get
+    it("get returns copied instance tags and nil for missing ids", function()
+        local tracker = new_tracker()
+        local instance_id = tracker:apply(7, "burning")
+        local instance = tracker:get(instance_id)
+        expect_equal(instance_id, instance.id)
+        expect_equal("harmful", instance.tags[1])
+        expect_false(instance.paused)
+        expect_equal(nil, tracker:get(999))
+    end)
+
+    -- @covers LStatusTracker:has
+    it("has matches either a definition id or a copied tag", function()
         local tracker = new_tracker()
         tracker:apply(7, "burning")
+        expect_true(tracker:has(7, "burning"))
+        expect_true(tracker:has(7, "harmful"))
+        expect_false(tracker:has(8, "harmful"))
+    end)
+
+    -- @covers LStatusTracker:list
+    it("list filters one subject with all supplied neutral filters", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning", 4)
         tracker:apply(8, "burning")
-        expect_equal(1, #tracker:list(7))
+        expect_equal(1, #tracker:list(7, {
+            definitionId = "burning",
+            tag = "harmful",
+            sourceId = 4,
+            paused = false,
+        }))
         expect_equal(0, #tracker:list(9))
     end)
 
@@ -4146,6 +4171,25 @@ describe("LStatusTracker lifecycle", function()
         expect_true(tracker:remove(instance_id))
         expect_false(tracker:remove(instance_id))
         expect_equal(0, #tracker:list(7))
+    end)
+
+    -- @covers LStatusTracker:removeByDefinition
+    it("removeByDefinition removes matching instances only from one subject", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning")
+        tracker:apply(8, "burning")
+        expect_equal(1, tracker:removeByDefinition(7, "burning"))
+        expect_equal(1, #tracker:list(8))
+    end)
+
+    -- @covers LStatusTracker:removeByTag
+    it("removeByTag removes every matching copied tag for one subject", function()
+        local tracker = new_tracker()
+        tracker:apply(7, "burning")
+        tracker:apply(8, "burning")
+        expect_equal(1, tracker:removeByTag(7, "harmful"))
+        expect_equal(0, #tracker:list(7))
+        expect_equal(1, #tracker:list(8))
     end)
 
     -- @covers LStatusTracker:restore
@@ -4165,6 +4209,30 @@ describe("LStatusTracker lifecycle", function()
         expect_true(snapshot.definitions.burning ~= nil)
         expect_equal(1, #snapshot.instances)
         expect_equal(2, snapshot.nextId)
+    end)
+
+    -- @covers LStatusTracker:setPaused
+    it("setPaused freezes lifecycle timers until resumed", function()
+        local tracker = new_tracker()
+        local instance_id = tracker:apply(7, "burning")
+        tracker:drainEvents()
+        expect_true(tracker:setPaused(instance_id, true))
+        tracker:update(2)
+        expect_near(2.5, tracker:get(instance_id).remaining, 0.00001)
+        expect_equal(0, #tracker:drainEvents())
+        expect_false(tracker:setPaused(999, true))
+    end)
+
+    -- @covers LStatusTracker:setRemaining
+    it("setRemaining accepts finite durations and nil for infinite lifetime", function()
+        local tracker = new_tracker()
+        local instance_id = tracker:apply(7, "burning")
+        expect_true(tracker:setRemaining(instance_id, nil))
+        expect_equal(nil, tracker:get(instance_id).remaining)
+        expect_true(tracker:setRemaining(instance_id, 0))
+        tracker:update(0)
+        expect_equal(nil, tracker:get(instance_id))
+        expect_false(tracker:setRemaining(999, 1))
     end)
 
     -- @covers LStatusTracker:type

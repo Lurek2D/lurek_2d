@@ -3137,6 +3137,176 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         expect_true(r ~= r2 or g ~= g2)
     end)
 end)
+
+describe("lurek.raycaster isolated views", function()
+    local function new_view()
+        local view = lurek.raycaster.newView({
+            viewport = { x = 10, y = 20, w = 160, h = 100 },
+            rays = 32,
+        })
+        view:setCameraState({
+            x = 2.5, y = 3.5, angle = 0, fov = math.pi / 3,
+            cameraHeight = 0.5,
+        })
+        return view
+    end
+
+    -- @covers lurek.raycaster.newView
+    it("newView returns an isolated explicitly driven view", function()
+        expect_equal("LRaycasterView", new_view():type())
+    end)
+
+    -- @covers LRaycasterView:setViewport
+    it("setViewport validates and replaces composition bounds", function()
+        local view = new_view()
+        view:setViewport({ x = 1, y = 2, w = 80, h = 60 })
+        expect_equal(1, view:getViewport().x)
+    end)
+
+    -- @covers LRaycasterView:getViewport
+    it("getViewport returns the complete rectangle", function()
+        local viewport = new_view():getViewport()
+        expect_equal(10, viewport.x)
+        expect_equal(20, viewport.y)
+        expect_equal(160, viewport.w)
+        expect_equal(100, viewport.h)
+    end)
+
+    -- @covers LRaycasterView:setCameraState
+    it("setCameraState validates camera values", function()
+        local view = new_view()
+        expect_false(pcall(function()
+            view:setCameraState({ x = 0, y = 0, angle = 0, fov = 0 })
+        end))
+    end)
+
+    -- @covers LRaycasterView:getCameraState
+    it("getCameraState returns the local camera snapshot", function()
+        expect_near(2.5, new_view():getCameraState().x, 0.001)
+    end)
+
+    -- @covers LRaycasterView:setQuality
+    it("setQuality changes bounded ray and distance settings", function()
+        local view = new_view()
+        expect_no_error(function()
+            view:setQuality({ rays = 48, maxDistance = 20 })
+        end)
+    end)
+
+    -- @covers LRaycasterView:setShader
+    it("setShader accepts a draw shader and nil", function()
+        local view = new_view()
+        view:setShader(draw_shader())
+        expect_no_error(function() view:setShader(nil) end)
+    end)
+
+    -- @covers LRaycasterView:build
+    it("build retains scene depth picking and projected models locally", function()
+        local view = new_view()
+        local map = make_map(8, 8)
+        expect_true(view:build(map, {
+            models = {
+                { model = load_model(), x = 4, y = 3.5, scale = 0.25, id = 77 },
+            },
+        }) > 0)
+        expect_equal(1, view:getStats().models)
+    end)
+
+    -- @covers LRaycasterView:buildFromAdapter
+    it("buildFromAdapter resolves runtime inputs into only this view", function()
+        local view = new_view()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        expect_true(view:buildFromAdapter(make_map(8, 8), adapter) > 0)
+    end)
+
+    -- @covers LRaycasterView:queue
+    it("queue composes a built view and restores render state", function()
+        local view = new_view()
+        view:build(make_map(8, 8))
+        expect_true(view:queue() > 0)
+    end)
+
+    -- @covers LRaycasterView:pick
+    it("pick rejects outside points and queries the retained scene", function()
+        local view = new_view()
+        view:build(make_map(8, 8))
+        expect_equal(nil, view:pick(0, 0))
+        local hit = view:pick(90, 70)
+        expect_true(hit == nil or type(hit) == "table")
+    end)
+
+    -- @covers LRaycasterView:getDepthAt
+    it("getDepthAt reads only the local retained depth buffer", function()
+        local view = new_view()
+        view:build(make_map(8, 8))
+        local depth = view:getDepthAt(90, 70)
+        expect_true(depth == nil or type(depth) == "number")
+    end)
+
+    -- @covers LRaycasterView:getStats
+    it("getStats reports local build counters and timing", function()
+        local view = new_view()
+        view:build(make_map(8, 8))
+        expect_true(view:getStats().quadCount > 0)
+        expect_true(view:getStats().buildTimeMs >= 0)
+    end)
+
+    -- @covers LRaycasterView:clear
+    it("clear removes retained scene state", function()
+        local view = new_view()
+        view:build(make_map(8, 8))
+        view:clear()
+        expect_equal(0, view:getStats().quadCount)
+    end)
+
+    -- @covers LRaycasterView:type
+    it("type returns the view handle name", function()
+        expect_equal("LRaycasterView", new_view():type())
+    end)
+
+    -- @covers LRaycasterView:typeOf
+    it("typeOf recognizes view and object types", function()
+        local view = new_view()
+        expect_true(view:typeOf("LRaycasterView"))
+        expect_true(view:typeOf("LObject"))
+    end)
+
+    -- @covers LRaycaster:patchCells
+    it("raycaster patchCells atomically applies render-owned cell state", function()
+        local map = lurek.raycaster.new(3, 3)
+        map:patchCells({
+            { x = 1, y = 1, value = 4, wallFeature = { kind = "half", height = 0.5 } },
+            { x = 2, y = 1, value = 5 },
+        })
+        expect_equal(4, map:getCell(1, 1))
+        expect_not_nil(map:getWallFeatureCell(1, 1))
+        expect_false(pcall(function()
+            map:patchCells({
+                { x = 0, y = 0, value = 9 },
+                { x = 99, y = 99, value = 9 },
+            })
+        end))
+        expect_equal(0, map:getCell(0, 0))
+    end)
+
+    -- @covers LMultiLevelGrid:patchCells
+    it("multilevel patchCells preflights all levels and coordinates", function()
+        local grid = lurek.raycaster.newMultiLevelGrid({
+            { width = 3, height = 3, cells = { 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+        })
+        grid:patchCells({
+            { level = 0, x = 1, y = 1, value = 6, floorHole = true },
+        })
+        expect_equal(6, grid:getCell(1, 1))
+        expect_false(pcall(function()
+            grid:patchCells({
+                { x = 0, y = 0, value = 8 },
+                { level = 4, x = 0, y = 0, value = 8 },
+            })
+        end))
+        expect_equal(0, grid:getCell(0, 0))
+    end)
+end)
 end
 -- END test_raycaster_core_unit.lua
 

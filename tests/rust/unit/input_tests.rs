@@ -135,9 +135,17 @@ mod recorder_tests {
     fn fixed_playback_waits_for_fixed_step() {
         let mut recorder = InputRecorder::new();
         recorder.start_recording();
-        recorder.record_frame(vec![InputEvent {
-            kind: "press".into(), name: "a".into(), device: "keyboard".into(), value: None, position: None,
-        }], None, None);
+        recorder.record_frame(
+            vec![InputEvent {
+                kind: "press".into(),
+                name: "a".into(),
+                device: "keyboard".into(),
+                value: None,
+                position: None,
+            }],
+            None,
+            None,
+        );
         let recording = recorder.stop_recording().unwrap();
         recorder.load(recording);
         recorder.set_playback_mode(PlaybackMode::Fixed);
@@ -337,7 +345,10 @@ mod keyboard_tests {
         use winit::keyboard::KeyCode;
         assert_eq!(winit_scancode_to_string(KeyCode::F24), Some("f24"));
         assert_eq!(winit_scancode_to_string(KeyCode::Semicolon), Some(";"));
-        assert_eq!(winit_scancode_to_string(KeyCode::MediaPlayPause), Some("mediaplaypause"));
+        assert_eq!(
+            winit_scancode_to_string(KeyCode::MediaPlayPause),
+            Some("mediaplaypause")
+        );
     }
 
     // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ Key down / up Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
@@ -819,15 +830,25 @@ mod input_history_tests {
     fn named_gamepad_bindings_parse_without_losing_legacy_numbers() {
         assert!(matches!(
             InputBinding::parse("gamepad:any:a"),
-            Ok(InputBinding::GamepadNamed { gamepad_id: None, player: None, .. })
+            Ok(InputBinding::GamepadNamed {
+                gamepad_id: None,
+                player: None,
+                ..
+            })
         ));
         assert!(matches!(
             InputBinding::parse("gamepad:p1:dpad_up"),
-            Ok(InputBinding::GamepadNamed { player: Some(1), .. })
+            Ok(InputBinding::GamepadNamed {
+                player: Some(1),
+                ..
+            })
         ));
         assert!(matches!(
             InputBinding::parse("gamepad:0:1"),
-            Ok(InputBinding::GamepadButton { gamepad_id: 0, button: 1 })
+            Ok(InputBinding::GamepadButton {
+                gamepad_id: 0,
+                button: 1
+            })
         ));
     }
 
@@ -840,5 +861,114 @@ mod input_history_tests {
         .unwrap();
         assert_eq!(bindings[0], "chord|60|lctrl|k");
         assert_eq!(bindings[1], "axis|gamepad:p1:righttrigger|0.5|positive");
+    }
+}
+
+mod player_context_tests {
+    use super::*;
+
+    fn button(binding: &str) -> PlayerAction {
+        PlayerAction::Button {
+            bindings: vec![binding.to_string()],
+        }
+    }
+
+    #[test]
+    fn device_registry_enforces_exclusive_and_explicit_shared_ownership() {
+        let mut registry = PlayerInputRegistry::default();
+        let first = registry.allocate_context_id().unwrap();
+        let second = registry.allocate_context_id().unwrap();
+
+        registry.assign_gamepad(first, 2, false).unwrap();
+        assert!(registry.assign_gamepad(second, 2, false).is_err());
+        assert!(registry.assign_gamepad(second, 2, true).is_err());
+        registry.unassign_gamepad(first, 2);
+
+        registry.assign_gamepad(first, 2, true).unwrap();
+        registry.assign_gamepad(second, 2, true).unwrap();
+        assert!(registry.assign_gamepad(first, 2, false).is_err());
+    }
+
+    #[test]
+    fn action_names_and_conflicts_are_context_local() {
+        let mut first = PlayerInputContext::new(1, 1).unwrap();
+        let mut second = PlayerInputContext::new(2, 2).unwrap();
+        first
+            .define_action("attack".to_string(), button("mouse1"))
+            .unwrap();
+        second
+            .define_action("attack".to_string(), button("gamepad:a"))
+            .unwrap();
+        first
+            .define_action("use".to_string(), button("mouse1"))
+            .unwrap();
+
+        assert_eq!(first.actions.len(), 2);
+        assert_eq!(second.actions.len(), 1);
+        assert_eq!(
+            first.conflicts().get("mouse1").unwrap(),
+            &vec!["attack".to_string(), "use".to_string()]
+        );
+        assert!(second.conflicts().is_empty());
+    }
+
+    #[test]
+    fn radial_deadzone_curve_and_sensitivity_remain_bounded() {
+        let settings = AxisSettings {
+            deadzone: 0.2,
+            curve: AxisCurve::Squared,
+            sensitivity: 2.0,
+            activation_threshold: 0.5,
+            hysteresis: 0.1,
+        };
+        assert_eq!(settings.shape_2d(0.1, 0.1), (0.0, 0.0));
+        let (x, y) = settings.shape_2d(1.0, 1.0);
+        assert!((x.hypot(y) - 1.0).abs() < 1.0e-6);
+        assert_eq!(settings.shape_1d(-1.0), -1.0);
+    }
+
+    #[test]
+    fn analog_transitions_use_hysteresis_once_per_frame() {
+        let mut context = PlayerInputContext::new(1, 1).unwrap();
+        context
+            .define_action(
+                "move".to_string(),
+                PlayerAction::Axis1D {
+                    negative: Vec::new(),
+                    positive: Vec::new(),
+                    gamepad_axis: Some("leftx".to_string()),
+                    invert: false,
+                    settings: AxisSettings::default(),
+                },
+            )
+            .unwrap();
+
+        context.refresh_analog_transition("move", 0.6, 1);
+        assert_eq!(context.analog_pressed_frames.get("move"), Some(&1));
+        context.refresh_analog_transition("move", 0.0, 1);
+        assert_eq!(context.analog_released_frames.get("move"), None);
+        context.refresh_analog_transition("move", 0.45, 2);
+        assert_eq!(context.analog_released_frames.get("move"), None);
+        context.refresh_analog_transition("move", 0.39, 3);
+        assert_eq!(context.analog_released_frames.get("move"), Some(&3));
+    }
+
+    #[test]
+    fn binding_restore_is_atomic_and_preserves_context_identity() {
+        let mut context = PlayerInputContext::new(7, 3).unwrap();
+        context
+            .define_action("attack".to_string(), button("space"))
+            .unwrap();
+        let snapshot = context.serialize_bindings().unwrap();
+        context.clear_actions();
+        context.restore_bindings(&snapshot).unwrap();
+        assert!(context.actions.contains_key("attack"));
+
+        let before = context.serialize_bindings().unwrap();
+        assert!(context
+            .restore_bindings(r#"{"schemaVersion":99,"playerId":3,"enabled":true,"actions":{}}"#,)
+            .is_err());
+        assert_eq!(context.serialize_bindings().unwrap(), before);
+        assert_eq!(context.context_id, 7);
     }
 }

@@ -379,23 +379,38 @@ impl Toolbar {
     /// Add a button with `id` and `tooltip` if not already present; return its index.
     pub fn add_button(&mut self, id: impl Into<String>, tooltip: impl Into<String>) -> usize {
         let id = id.into();
-        if let Some(pos) = self.items.iter().position(|item| matches!(item, ToolbarItem::Button(button) if button.id == id)) {
+        if let Some(pos) = self
+            .items
+            .iter()
+            .position(|item| matches!(item, ToolbarItem::Button(button) if button.id == id))
+        {
             return pos;
         }
-        self.items.push(ToolbarItem::Button(ToolbarButton::new(id, tooltip)));
+        self.items
+            .push(ToolbarItem::Button(ToolbarButton::new(id, tooltip)));
         self.items.len() - 1
     }
     /// Add a visual separator between button groups.
-    pub fn add_separator(&mut self) { self.items.push(ToolbarItem::Separator); }
+    pub fn add_separator(&mut self) {
+        self.items.push(ToolbarItem::Separator);
+    }
     /// Add a fixed spacer when supplied, or a flexible spacer when `None`.
-    pub fn add_spacer(&mut self, size: Option<f32>) { self.items.push(ToolbarItem::Spacer(size)); }
+    pub fn add_spacer(&mut self, size: Option<f32>) {
+        self.items.push(ToolbarItem::Spacer(size));
+    }
     /// Return the index of the button with the given `id`, or `None` if not found.
     pub fn get_button_index(&self, id: &str) -> Option<usize> {
-        self.items.iter().position(|item| matches!(item, ToolbarItem::Button(button) if button.id == id))
+        self.items
+            .iter()
+            .position(|item| matches!(item, ToolbarItem::Button(button) if button.id == id))
     }
     /// Set the enabled state of the button with `id`; return `false` if not found.
     pub fn set_button_enabled(&mut self, id: &str, enabled: bool) -> bool {
-        if let Some(ToolbarItem::Button(b)) = self.items.iter_mut().find(|item| matches!(item, ToolbarItem::Button(button) if button.id == id)) {
+        if let Some(ToolbarItem::Button(b)) = self
+            .items
+            .iter_mut()
+            .find(|item| matches!(item, ToolbarItem::Button(button) if button.id == id))
+        {
             b.enabled = enabled;
             true
         } else {
@@ -404,7 +419,11 @@ impl Toolbar {
     }
     /// Set the toggled state of the button with `id`; return `false` if not found.
     pub fn set_button_toggled(&mut self, id: &str, toggled: bool) -> bool {
-        if let Some(ToolbarItem::Button(b)) = self.items.iter_mut().find(|item| matches!(item, ToolbarItem::Button(button) if button.id == id)) {
+        if let Some(ToolbarItem::Button(b)) = self
+            .items
+            .iter_mut()
+            .find(|item| matches!(item, ToolbarItem::Button(button) if button.id == id))
+        {
             b.toggled = toggled;
             true
         } else {
@@ -413,7 +432,10 @@ impl Toolbar {
     }
     /// Return the toggled state of the button with `id`, or `None` if not found.
     pub fn is_button_toggled(&self, id: &str) -> Option<bool> {
-        self.items.iter().find_map(|item| match item { ToolbarItem::Button(button) if button.id == id => Some(button.toggled), _ => None })
+        self.items.iter().find_map(|item| match item {
+            ToolbarItem::Button(button) if button.id == id => Some(button.toggled),
+            _ => None,
+        })
     }
 }
 /// Top-level application menu bar holding ordered menu indices.

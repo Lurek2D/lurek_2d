@@ -24,6 +24,8 @@
 - The module therefore gives projects a stable answer to both "play this now" and "manage the whole current mix." Those are different needs, but they have to coexist if a game wants reactive effects, adaptive music, voiced UI, and ambient layers to remain understandable together.
 - Buses and mixer policy are the main reason the subsystem scales. A small prototype may only play a few sounds, but a larger project needs volume hierarchy, pause semantics, ducking rules, mute groups, and category-level tuning that remain visible rather than being buried in ad hoc script conventions.
 - Listener-facing state broadens the feature from raw playback into world-aware audio behavior. Even when neighboring modules provide the scene, `audio` owns how sources and listener context become heard spatial or positional results.
+- Multi-listener spatialization extends that same listener state without adding another system: up to 64 atomically validated listeners feed `nearest`, `weighted`, or source-mask-driven `manual` policy, while each source still owns exactly one sink and authored volume/pan remain separate from computed spatial gain/pan.
+- Listener masks only filter calculation candidates. They never copy sources or trigger playback, and `getSourceSpatialResult` exposes the deterministic calculation for Lua-side inspection.
 - This is why the module stays useful across both live gameplay and tool-driven verification: it keeps playback, routing, timing, and category policy visible enough to inspect instead of hiding sound behavior behind fire-and-forget calls.
 - It keeps mix policy legible as projects scale.
 - `dsp` specializes lower-level signal processing, but `audio` owns the user-facing contract for how sounds are loaded, instantiated, routed, timed, and heard at runtime.
@@ -32,7 +34,8 @@ This module primarily collaborates with `dsp`, `image`, `runtime`. Its responsib
 
 ## Notes
 
-- No additional module-specific notes.
+- Legacy `setListener`, `setListener2D`, `getListener`, and `getListener2D` remain compatible. A legacy setter installs the single `default` listener with nearest policy; legacy getters read the first configured listener or zeroes when the list is empty.
+- Audio does not pull camera, player, ECS, or world state automatically. Lua explicitly supplies listener sets and source masks.
 
 ## Architecture Links
 

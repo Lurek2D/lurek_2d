@@ -4193,4 +4193,223 @@ end)
 -- END ui lifecycle contract tests
 end)
 
+-- @describe lurek.ui isolated contexts
+describe("lurek.ui isolated contexts", function()
+    -- @covers lurek.ui.newContext
+    it("newContext creates four independent retained UI owners", function()
+        local contexts = {}
+        for index = 1, 4 do
+            contexts[index] = lurek.ui.newContext({
+                viewport = { x = (index - 1) * 160, y = 0, w = 160, h = 90 },
+            })
+            contexts[index]:create("button", { id = "shared", text = "P" .. index })
+        end
+        expect_equal("P1", contexts[1]:getById("shared"):getText())
+        expect_equal("P4", contexts[4]:getById("shared"):getText())
+    end)
+
+    -- @covers LUiContext:create
+    it("create returns a context-owned typed widget", function()
+        local context = lurek.ui.newContext()
+        local button = context:create("button", { id = "start", text = "Start" })
+        expect_equal("LButton", button:type())
+        expect_equal("Start", button:getText())
+    end)
+
+    -- @covers LUiContext:loadLayout
+    it("loadLayout reads only through GameFS and reports missing paths", function()
+        local context = lurek.ui.newContext()
+        expect_false(pcall(function()
+            context:loadLayout("missing-isolated-layout.toml")
+        end))
+        expect_equal(0, context:getDiagnostics().liveWidgets)
+    end)
+
+    -- @covers LUiContext:getById
+    it("getById searches only the owning context", function()
+        local first = lurek.ui.newContext()
+        local second = lurek.ui.newContext()
+        first:create("label", { id = "status", text = "first" })
+        second:create("label", { id = "status", text = "second" })
+        expect_equal("first", first:getById("status"):getText())
+        expect_equal("second", second:getById("status"):getText())
+    end)
+
+    -- @covers LUiContext:destroy
+    it("destroy rejects a foreign-context handle", function()
+        local first = lurek.ui.newContext()
+        local second = lurek.ui.newContext()
+        local widget = first:create("button", { text = "owned" })
+        expect_false(pcall(function()
+            second:destroy(widget)
+        end))
+        expect_true(widget:isValid())
+    end)
+
+    -- @covers LUiContext:clear
+    it("clear invalidates all handles in only that context", function()
+        local first = lurek.ui.newContext()
+        local second = lurek.ui.newContext()
+        local first_widget = first:create("button", { text = "one" })
+        local second_widget = second:create("button", { text = "two" })
+        expect_equal(1, first:clear())
+        expect_false(first_widget:isValid())
+        expect_true(second_widget:isValid())
+    end)
+
+    -- @covers LUiContext:setViewport
+    it("setViewport changes explicit input and composition bounds", function()
+        local context = lurek.ui.newContext()
+        context:setViewport({ x = 10, y = 20, w = 300, h = 200 })
+        expect_equal(10, context:getViewport().x)
+    end)
+
+    -- @covers LUiContext:getViewport
+    it("getViewport returns all rectangle fields", function()
+        local context = lurek.ui.newContext({
+            viewport = { x = 1, y = 2, w = 3, h = 4 },
+        })
+        local viewport = context:getViewport()
+        expect_equal(1, viewport.x)
+        expect_equal(2, viewport.y)
+        expect_equal(3, viewport.w)
+        expect_equal(4, viewport.h)
+    end)
+
+    -- @covers LUiContext:dispatchPointer
+    it("dispatchPointer ignores coordinates outside its viewport", function()
+        local context = lurek.ui.newContext({
+            viewport = { x = 100, y = 100, w = 100, h = 100 },
+        })
+        expect_false(context:dispatchPointer({ type = "move", x = 0, y = 0 }))
+    end)
+
+    -- @covers LUiContext:dispatchWheel
+    it("dispatchWheel returns a consumption result", function()
+        local context = lurek.ui.newContext()
+        expect_type("boolean", context:dispatchWheel(0, -1))
+    end)
+
+    -- @covers LUiContext:dispatchKey
+    it("dispatchKey navigates only this context", function()
+        local context = lurek.ui.newContext()
+        context:create("button", { id = "one", text = "One" })
+        context:create("button", { id = "two", text = "Two" })
+        local diagnostics = context:getDiagnostics()
+        expect_equal(2, diagnostics.liveWidgets)
+        expect_equal(2, diagnostics.visibleWidgets)
+        expect_equal(2, diagnostics.focusableWidgets)
+        expect_true(context:dispatchKey("tab"))
+        expect_true(context:getFocus() ~= nil)
+    end)
+
+    -- @covers LUiContext:dispatchText
+    it("dispatchText targets the context's focused text widget", function()
+        local context = lurek.ui.newContext()
+        local input = context:create("textinput", { id = "name" })
+        context:setFocus(input)
+        expect_true(context:dispatchText("Ada"))
+        expect_equal("Ada", input:getText())
+    end)
+
+    -- @covers LUiContext:dispatchAction
+    it("dispatchAction accepts neutral focus actions", function()
+        local context = lurek.ui.newContext()
+        context:create("button", { text = "One" })
+        expect_true(context:dispatchAction("focus_next"))
+        expect_true(context:getFocus() ~= nil)
+    end)
+
+    -- @covers LUiContext:setFocus
+    it("setFocus rejects handles from another context", function()
+        local first = lurek.ui.newContext()
+        local second = lurek.ui.newContext()
+        local widget = first:create("button", { text = "One" })
+        expect_false(pcall(function()
+            second:setFocus(widget)
+        end))
+    end)
+
+    -- @covers LUiContext:getFocus
+    it("getFocus returns a typed handle from its owner", function()
+        local context = lurek.ui.newContext()
+        local widget = context:create("button", { text = "One" })
+        context:setFocus(widget)
+        expect_equal("LButton", context:getFocus():type())
+    end)
+
+    -- @covers LUiContext:focusNext
+    it("focusNext advances independent focus state", function()
+        local context = lurek.ui.newContext()
+        context:create("button", { text = "One" })
+        context:focusNext()
+        expect_true(context:getFocus() ~= nil)
+    end)
+
+    -- @covers LUiContext:focusPrev
+    it("focusPrev traverses backward", function()
+        local context = lurek.ui.newContext()
+        context:create("button", { text = "One" })
+        context:focusPrev()
+        expect_true(context:getFocus() ~= nil)
+    end)
+
+    -- @covers LUiContext:focusDirection
+    it("focusDirection returns whether spatial focus moved", function()
+        local context = lurek.ui.newContext()
+        local widget = context:create("button", { text = "One" })
+        context:setFocus(widget)
+        expect_type("boolean", context:focusDirection("right"))
+    end)
+
+    -- @covers LUiContext:update
+    it("update advances only explicitly selected custom contexts", function()
+        local first = lurek.ui.newContext()
+        local second = lurek.ui.newContext()
+        first:create("button", { text = "One" })
+        second:create("button", { text = "Two" })
+        first:update(0.016)
+        expect_equal(1, first:getDiagnostics().liveWidgets)
+        expect_equal(1, second:getDiagnostics().liveWidgets)
+    end)
+
+    -- @covers LUiContext:queueDraw
+    it("queueDraw composes and queues isolated render commands", function()
+        local context = lurek.ui.newContext()
+        context:create("button", { text = "Draw" })
+        expect_true(context:queueDraw() > 0)
+    end)
+
+    -- @covers LUiContext:renderToImage
+    it("renderToImage returns isolated CPU image data", function()
+        local context = lurek.ui.newContext({
+            viewport = { x = 0, y = 0, w = 64, h = 32 },
+        })
+        local image = context:renderToImage()
+        expect_equal(64, image:getWidth())
+        expect_equal(32, image:getHeight())
+    end)
+
+    -- @covers LUiContext:getDiagnostics
+    it("getDiagnostics reports context-local counters and warnings", function()
+        local context = lurek.ui.newContext()
+        context:create("button", { text = "One" })
+        local diagnostics = context:getDiagnostics()
+        expect_equal(1, diagnostics.liveWidgets)
+        expect_type("table", diagnostics.warnings)
+    end)
+
+    -- @covers LUiContext:type
+    it("type returns the context handle name", function()
+        expect_equal("LUiContext", lurek.ui.newContext():type())
+    end)
+
+    -- @covers LUiContext:typeOf
+    it("typeOf recognizes context and object types", function()
+        local context = lurek.ui.newContext()
+        expect_true(context:typeOf("LUiContext"))
+        expect_true(context:typeOf("LObject"))
+    end)
+end)
+
 test_summary()

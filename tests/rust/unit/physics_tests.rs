@@ -75,6 +75,113 @@ mod collision_helpers_tests {
     }
 }
 
+mod kinematic_controller_tests {
+    use super::*;
+
+    fn settings(body_id: BodyId) -> KinematicControllerSettings {
+        KinematicControllerSettings {
+            radius: 0.5,
+            skin: 0.01,
+            max_slides: 4,
+            filter: PhysicsQueryFilter {
+                exclude_body: Some(body_id),
+                ..PhysicsQueryFilter::default()
+            },
+            vertical_span: None,
+        }
+    }
+
+    #[test]
+    fn bounded_sweep_blocks_tunneling_and_preserves_tangent_motion() {
+        let mut world = World::new(0.0, 0.0);
+        let mover = world
+            .try_add_body(Body::try_new_circle(0.0, 0.0, 0.5, BodyType::Kinematic).unwrap())
+            .unwrap();
+        let wall = world
+            .try_add_body(Body::try_new(5.0, 0.0, 1.0, 20.0, BodyType::Static).unwrap())
+            .unwrap();
+        world.step(1.0 / 60.0);
+
+        let result = solve_kinematic_move(&world, mover.0, (100.0, 3.0), settings(mover)).unwrap();
+        assert!(result.collided);
+        assert!(result.applied.0 < 5.0);
+        assert!(result.applied.1 > 0.0);
+        assert_eq!(
+            result.hits.iter().find(|hit| !hit.sensor).unwrap().body_id,
+            wall
+        );
+    }
+
+    #[test]
+    fn sensors_are_reported_without_blocking() {
+        let mut world = World::new(0.0, 0.0);
+        let mover = world
+            .try_add_body(Body::try_new_circle(0.0, 0.0, 0.5, BodyType::Kinematic).unwrap())
+            .unwrap();
+        let sensor = world
+            .try_add_body(Body::try_new(2.0, 0.0, 1.0, 1.0, BodyType::Sensor).unwrap())
+            .unwrap();
+        world.step(1.0 / 60.0);
+
+        let result = solve_kinematic_move(&world, mover.0, (5.0, 0.0), settings(mover)).unwrap();
+        assert!(!result.collided);
+        assert!((result.applied.0 - 5.0).abs() < 0.001);
+        assert!(result
+            .hits
+            .iter()
+            .any(|hit| hit.sensor && hit.body_id == sensor));
+    }
+
+    #[test]
+    fn vertical_span_ignores_separated_body_intervals() {
+        let mut world = World::new(0.0, 0.0);
+        let mover = world
+            .try_add_body(Body::try_new_circle(0.0, 0.0, 0.5, BodyType::Kinematic).unwrap())
+            .unwrap();
+        let wall = world
+            .try_add_body(Body::try_new(3.0, 0.0, 1.0, 4.0, BodyType::Static).unwrap())
+            .unwrap();
+        world.try_set_body_altitude(wall.0, 10.0).unwrap();
+        world
+            .set_body_altitude_mode(wall.0, AltitudeMode::Fixed)
+            .unwrap();
+        world.try_set_body_height_extent(wall.0, 1.0).unwrap();
+        world.step(1.0 / 60.0);
+
+        let mut config = settings(mover);
+        config.vertical_span = Some((0.0, 2.0));
+        let result = solve_kinematic_move(&world, mover.0, (5.0, 0.0), config).unwrap();
+        assert!(!result.collided);
+        assert!((result.applied.0 - 5.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn sector_results_are_stably_sorted() {
+        let mut world = World::new(0.0, 0.0);
+        let near = world
+            .try_add_body(Body::try_new_circle(2.0, 0.0, 0.5, BodyType::Static).unwrap())
+            .unwrap();
+        let far = world
+            .try_add_body(Body::try_new_circle(4.0, 1.0, 0.5, BodyType::Static).unwrap())
+            .unwrap();
+        world.step(1.0 / 60.0);
+        let hits = world
+            .query_sector_filtered(
+                0.0,
+                0.0,
+                10.0,
+                0.0,
+                std::f32::consts::FRAC_PI_2,
+                PhysicsQueryFilter::default(),
+            )
+            .unwrap();
+        assert_eq!(
+            hits.iter().map(|hit| hit.body_id).collect::<Vec<_>>(),
+            vec![near, far]
+        );
+    }
+}
+
 mod p0_limit_tests {
     use super::*;
 

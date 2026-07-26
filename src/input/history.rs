@@ -103,9 +103,10 @@ impl InputHistory {
         frames: u64,
         predicate: impl Fn(&InputHistoryEvent) -> bool,
     ) -> bool {
-        self.events.iter().rev().any(|event| {
-            current_frame.saturating_sub(event.frame) <= frames && predicate(event)
-        })
+        self.events
+            .iter()
+            .rev()
+            .any(|event| current_frame.saturating_sub(event.frame) <= frames && predicate(event))
     }
 
     /// Returns a stable snapshot for replay and diagnostic consumers.

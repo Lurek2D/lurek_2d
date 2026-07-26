@@ -197,4 +197,48 @@ describe("integration: mutable side-view block edit pipeline", function()
     end)
 end)
 
+-- @describe integration: Lua explicitly propagates one door state
+describe("integration: Lua explicitly propagates one door state", function()
+    -- @integration lurek.tilefield.new
+    -- @integration LTileField:patchCells
+    -- @integration lurek.pathfind.newNavGrid
+    -- @integration LNavGrid:patchCells
+    -- @integration lurek.raycaster.new
+    -- @integration LRaycaster:patchCells
+    -- @integration lurek.physics.newWorld
+    -- @integration LWorld:setFixtureEnabled
+    it("updates independent module-owned representations without an engine bridge", function()
+        local field = lurek.tilefield.new({ width = 3, height = 3 })
+        local nav = lurek.pathfind.newNavGrid(3, 3)
+        local ray = lurek.raycaster.new(3, 3)
+        local world = lurek.physics.newWorld(0, 0)
+        local door_body = world:newCircleBody(2, 2, 0.5, "static")
+
+        local function apply_door(closed)
+            field:patchCells({
+                { x = 2, y = 2, blocks = { move = closed } },
+            })
+            nav:patchCells({
+                { x = 2, y = 2, blocked = closed },
+            })
+            ray:patchCells({
+                { x = 1, y = 1, value = closed and 1 or 0 },
+            })
+            world:setFixtureEnabled(door_body:getId(), 0, closed)
+        end
+
+        apply_door(true)
+        expect_true(field:blocks(2, 2, nil, "move"))
+        expect_true(nav:isBlocked(2, 2))
+        expect_equal(1, ray:getCell(1, 1))
+        expect_true(world:isFixtureEnabled(door_body:getId(), 0))
+
+        apply_door(false)
+        expect_false(field:blocks(2, 2, nil, "move"))
+        expect_false(nav:isBlocked(2, 2))
+        expect_equal(0, ray:getCell(1, 1))
+        expect_false(world:isFixtureEnabled(door_body:getId(), 0))
+    end)
+end)
+
 test_summary()

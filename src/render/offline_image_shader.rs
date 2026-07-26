@@ -297,7 +297,9 @@ pub fn apply_image_shader_blocking(
         let _ = device.poll(wgpu::Maintain::Poll);
         match receiver.try_recv() {
             Ok(result) => {
-                result.map_err(|error| format!("offline image shader readback map failed: {error}"))?;
+                result.map_err(|error| {
+                    format!("offline image shader readback map failed: {error}")
+                })?;
                 break;
             }
             Err(TryRecvError::Disconnected) => {

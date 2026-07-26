@@ -771,7 +771,9 @@ fn replay_command(
                 }
             }
         }
-        RenderCommand::Print { text, x, y, scale, .. } => {
+        RenderCommand::Print {
+            text, x, y, scale, ..
+        } => {
             // RenderCommand deliberately carries a font key rather than an image-owned font.
             // Headless capture therefore replays its documented bitmap fallback here, preserving
             // the same deterministic output used when no resolved font is available.

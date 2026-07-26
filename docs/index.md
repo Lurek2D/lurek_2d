@@ -1,8 +1,8 @@
-# Lurek2D API Specs
+# Lurek2D Documentation
 
-<meta http-equiv="refresh" content="0; url=module-guides.html">
+Lurek2D is a Lua-first 2D runtime for games, simulations, visual tools, and interactive desktop apps.
 
-GitHub Pages contains only generated API module specs and runtime callbacks.
-
-- [Module API Specs](module-guides.md)
-- [Callbacks](api/callbacks.md)
+- New to the runtime? Start with the [Guides](guides/index.md).
+- Need an exact `lurek.*` signature? Open the generated [Lua API Reference](api/lurek.md).
+- Contributing to the engine or tooling? Read the [Contributor Documentation](contributing/index.md).
+- Working on a durable system boundary? Use the [Architecture sources](https://github.com/Lurek2D/lurek_2d/tree/main/docs/architecture) together with the module specs.

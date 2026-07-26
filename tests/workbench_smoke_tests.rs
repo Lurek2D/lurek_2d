@@ -105,9 +105,8 @@ fn run_workbench_screenshot() -> PathBuf {
 #[test]
 fn workbench_headless_boots_and_processes() {
     let lua = make_workbench_vm();
-    let code =
-        std::fs::read_to_string(format!("{WORKBENCH_DIR}/main.lua"))
-            .expect("Failed to read workbench/main.lua");
+    let code = std::fs::read_to_string(format!("{WORKBENCH_DIR}/main.lua"))
+        .expect("Failed to read workbench/main.lua");
 
     lua.load(&code)
         .set_name("lurek_2d_workbench/main.lua")
@@ -155,7 +154,11 @@ fn workbench_headless_boots_and_processes() {
             .expect("Failed to remove stale headless workbench render");
     }
     render_to_image
-        .call::<_, ()>((1600_i64, 900_i64, "save/workbench_smoke/headless_ui_smoke.png"))
+        .call::<_, ()>((
+            1600_i64,
+            900_i64,
+            "save/workbench_smoke/headless_ui_smoke.png",
+        ))
         .expect("workbench should render a headless UI screenshot");
 
     assert!(
@@ -283,9 +286,15 @@ return {
         .get("released_curves")
         .expect("Missing released_curves result");
     let curve_mode: String = result.get("curve_mode").expect("Missing curve_mode result");
-    let atlas_editor: String = result.get("atlas_editor").expect("Missing atlas_editor result");
-    let home_editor: String = result.get("home_editor").expect("Missing home_editor result");
-    let compact_menu_height: i64 = result.get("compact_menu_height").expect("Missing compact menu height");
+    let atlas_editor: String = result
+        .get("atlas_editor")
+        .expect("Missing atlas_editor result");
+    let home_editor: String = result
+        .get("home_editor")
+        .expect("Missing home_editor result");
+    let compact_menu_height: i64 = result
+        .get("compact_menu_height")
+        .expect("Missing compact menu height");
 
     assert!(
         pressed_editors,
@@ -297,14 +306,23 @@ return {
     );
     assert!(pressed_home, "home button should receive mouse press");
     assert!(released_home, "home button should receive mouse release");
-    assert!(pressed_curves, "curve mode button should receive mouse press");
-    assert!(released_curves, "curve mode button should receive mouse release");
+    assert!(
+        pressed_curves,
+        "curve mode button should receive mouse press"
+    );
+    assert!(
+        released_curves,
+        "curve mode button should receive mouse release"
+    );
     assert_eq!(curve_mode, "curves");
     assert_eq!(atlas_editor, "sprite_atlas");
     assert_eq!(home_editor, "overview");
     assert_eq!(active_sidebar, "editors");
     assert_eq!(active_editor, "sprite_atlas");
-    assert_eq!(compact_menu_height, 72, "compact layouts use two toolbar rows");
+    assert_eq!(
+        compact_menu_height, 72,
+        "compact layouts use two toolbar rows"
+    );
 }
 
 #[test]
@@ -340,14 +358,20 @@ shell:draw()
 lurek.ui.renderToImage(1600, 900, "save/workbench_smoke/pixel_art_editor.png")
 return { editor = ctx.active_editor }
 "#;
-    let result: mlua::Table = lua.load(script).set_name("workbench_pixel_art_render").eval()
+    let result: mlua::Table = lua
+        .load(script)
+        .set_name("workbench_pixel_art_render")
+        .eval()
         .expect("pixel art headless smoke should execute");
     let editor: String = result.get("editor").expect("Missing pixel editor id");
     assert_eq!(editor, "pixel_art");
     let size = std::fs::metadata(pixel_art_render_path())
         .unwrap_or_else(|error| panic!("Cannot stat pixel art headless artifact: {error}"))
         .len();
-    assert!(size > 2048, "pixel art headless artifact is suspiciously small: {size} bytes");
+    assert!(
+        size > 2048,
+        "pixel art headless artifact is suspiciously small: {size} bytes"
+    );
 }
 
 #[test]

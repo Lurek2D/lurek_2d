@@ -18,9 +18,14 @@ impl LurekApp {
     /// Advance clocks, poll input devices, and update the debug overlay flag.
     pub(super) fn tick_frame(&mut self) {
         enum ReplayCallback {
-            KeyPressed(String), KeyReleased(String), MousePressed(f32, f32, u32, u32),
-            MouseReleased(f32, f32, u32, u32), GamepadPressed(usize, String),
-            GamepadReleased(usize, String), GamepadAxis(usize, String, f32), Text(String),
+            KeyPressed(String),
+            KeyReleased(String),
+            MousePressed(f32, f32, u32, u32),
+            MouseReleased(f32, f32, u32, u32),
+            GamepadPressed(usize, String),
+            GamepadReleased(usize, String),
+            GamepadAxis(usize, String, f32),
+            Text(String),
         }
         let mut replay_callbacks = Vec::new();
         if let Some(state) = &self.state {
@@ -62,8 +67,12 @@ impl LurekApp {
                 let mouse_x = st.mouse.x as f64;
                 let mouse_y = st.mouse.y as f64;
                 let capture_time_ms = (st.clock.total() * 1000.0).max(0.0) as u64;
-                st.input_recorder
-                    .record_frame_at(events, Some(mouse_x), Some(mouse_y), Some(capture_time_ms));
+                st.input_recorder.record_frame_at(
+                    events,
+                    Some(mouse_x),
+                    Some(mouse_y),
+                    Some(capture_time_ms),
+                );
             }
             st.keyboard.begin_frame();
             st.touch.begin_frame();
@@ -98,7 +107,11 @@ impl LurekApp {
                         crate::input::InputDevice::Mouse
                     } else if event.device == "touch" {
                         crate::input::InputDevice::Touch
-                    } else if let Some(id) = event.device.strip_prefix("gamepad:").and_then(|id| id.parse::<usize>().ok()) {
+                    } else if let Some(id) = event
+                        .device
+                        .strip_prefix("gamepad:")
+                        .and_then(|id| id.parse::<usize>().ok())
+                    {
                         while st.gamepads.len() <= id {
                             let new_id = st.gamepads.len() as u32;
                             st.gamepads.push(crate::input::GamepadState::new(new_id));
@@ -108,40 +121,124 @@ impl LurekApp {
                         crate::input::InputDevice::Keyboard
                     };
                     match (&device, &kind) {
-                        (crate::input::InputDevice::Keyboard, crate::input::InputEventKind::Press) => { st.keyboard.set_key_down(&event.name); replay_callbacks.push(ReplayCallback::KeyPressed(event.name.clone())); }
-                        (crate::input::InputDevice::Keyboard, crate::input::InputEventKind::Release) => { st.keyboard.set_key_up(&event.name); replay_callbacks.push(ReplayCallback::KeyReleased(event.name.clone())); }
-                        (crate::input::InputDevice::Keyboard, crate::input::InputEventKind::Text) => { st.keyboard.push_text_input(event.name.clone()); replay_callbacks.push(ReplayCallback::Text(event.name.clone())); }
-                        (crate::input::InputDevice::Mouse, crate::input::InputEventKind::Press | crate::input::InputEventKind::Release) => {
-                            if let Some(button) = event.name.strip_prefix("mouse").and_then(|button| button.parse::<usize>().ok()) {
-                                st.mouse.set_button(button.saturating_sub(1), kind == crate::input::InputEventKind::Press);
+                        (
+                            crate::input::InputDevice::Keyboard,
+                            crate::input::InputEventKind::Press,
+                        ) => {
+                            st.keyboard.set_key_down(&event.name);
+                            replay_callbacks.push(ReplayCallback::KeyPressed(event.name.clone()));
+                        }
+                        (
+                            crate::input::InputDevice::Keyboard,
+                            crate::input::InputEventKind::Release,
+                        ) => {
+                            st.keyboard.set_key_up(&event.name);
+                            replay_callbacks.push(ReplayCallback::KeyReleased(event.name.clone()));
+                        }
+                        (
+                            crate::input::InputDevice::Keyboard,
+                            crate::input::InputEventKind::Text,
+                        ) => {
+                            st.keyboard.push_text_input(event.name.clone());
+                            replay_callbacks.push(ReplayCallback::Text(event.name.clone()));
+                        }
+                        (
+                            crate::input::InputDevice::Mouse,
+                            crate::input::InputEventKind::Press
+                            | crate::input::InputEventKind::Release,
+                        ) => {
+                            if let Some(button) = event
+                                .name
+                                .strip_prefix("mouse")
+                                .and_then(|button| button.parse::<usize>().ok())
+                            {
+                                st.mouse.set_button(
+                                    button.saturating_sub(1),
+                                    kind == crate::input::InputEventKind::Press,
+                                );
                                 let clicks = if kind == crate::input::InputEventKind::Press {
                                     st.mouse.register_click(button.saturating_sub(1), time_ms)
-                                } else { st.mouse.click_count(button.saturating_sub(1)) };
-                                if kind == crate::input::InputEventKind::Press { replay_callbacks.push(ReplayCallback::MousePressed(st.mouse.x, st.mouse.y, button as u32, clicks)); }
-                                else { replay_callbacks.push(ReplayCallback::MouseReleased(st.mouse.x, st.mouse.y, button as u32, clicks)); }
+                                } else {
+                                    st.mouse.click_count(button.saturating_sub(1))
+                                };
+                                if kind == crate::input::InputEventKind::Press {
+                                    replay_callbacks.push(ReplayCallback::MousePressed(
+                                        st.mouse.x,
+                                        st.mouse.y,
+                                        button as u32,
+                                        clicks,
+                                    ));
+                                } else {
+                                    replay_callbacks.push(ReplayCallback::MouseReleased(
+                                        st.mouse.x,
+                                        st.mouse.y,
+                                        button as u32,
+                                        clicks,
+                                    ));
+                                }
                             }
                         }
-                        (crate::input::InputDevice::Mouse, crate::input::InputEventKind::Motion) => {
-                            if let Some((x, y)) = event.position { st.mouse.accumulate_delta(x, y); }
+                        (
+                            crate::input::InputDevice::Mouse,
+                            crate::input::InputEventKind::Motion,
+                        ) => {
+                            if let Some((x, y)) = event.position {
+                                st.mouse.accumulate_delta(x, y);
+                            }
                         }
                         (crate::input::InputDevice::Mouse, crate::input::InputEventKind::Wheel) => {
-                            if let Some((x, y)) = event.position { st.mouse.accumulate_scroll(x as f64, y as f64); }
-                        }
-                        (crate::input::InputDevice::Gamepad(id), crate::input::InputEventKind::Press | crate::input::InputEventKind::Release) => {
-                            if let Some(button) = crate::input::standard_button_code(&event.name).or_else(|| event.name.parse().ok()) {
-                                st.gamepads[*id].update_button(button, kind == crate::input::InputEventKind::Press);
-                                if kind == crate::input::InputEventKind::Press { replay_callbacks.push(ReplayCallback::GamepadPressed(*id, event.name.clone())); }
-                                else { replay_callbacks.push(ReplayCallback::GamepadReleased(*id, event.name.clone())); }
+                            if let Some((x, y)) = event.position {
+                                st.mouse.accumulate_scroll(x as f64, y as f64);
                             }
                         }
-                        (crate::input::InputDevice::Gamepad(id), crate::input::InputEventKind::Axis) => {
-                            if let Some(axis) = crate::input::standard_axis_code(&event.name).or_else(|| event.name.parse().ok()) {
+                        (
+                            crate::input::InputDevice::Gamepad(id),
+                            crate::input::InputEventKind::Press
+                            | crate::input::InputEventKind::Release,
+                        ) => {
+                            if let Some(button) = crate::input::standard_button_code(&event.name)
+                                .or_else(|| event.name.parse().ok())
+                            {
+                                st.gamepads[*id].update_button(
+                                    button,
+                                    kind == crate::input::InputEventKind::Press,
+                                );
+                                if kind == crate::input::InputEventKind::Press {
+                                    replay_callbacks.push(ReplayCallback::GamepadPressed(
+                                        *id,
+                                        event.name.clone(),
+                                    ));
+                                } else {
+                                    replay_callbacks.push(ReplayCallback::GamepadReleased(
+                                        *id,
+                                        event.name.clone(),
+                                    ));
+                                }
+                            }
+                        }
+                        (
+                            crate::input::InputDevice::Gamepad(id),
+                            crate::input::InputEventKind::Axis,
+                        ) => {
+                            if let Some(axis) = crate::input::standard_axis_code(&event.name)
+                                .or_else(|| event.name.parse().ok())
+                            {
                                 st.gamepads[*id].update_axis(axis, event.value.unwrap_or(0.0));
-                                replay_callbacks.push(ReplayCallback::GamepadAxis(*id, event.name.clone(), event.value.unwrap_or(0.0)));
+                                replay_callbacks.push(ReplayCallback::GamepadAxis(
+                                    *id,
+                                    event.name.clone(),
+                                    event.value.unwrap_or(0.0),
+                                ));
                             }
                         }
-                        (crate::input::InputDevice::Gamepad(id), crate::input::InputEventKind::Connect) => st.gamepads[*id].set_connected(true),
-                        (crate::input::InputDevice::Gamepad(id), crate::input::InputEventKind::Disconnect) => st.gamepads[*id].set_connected(false),
+                        (
+                            crate::input::InputDevice::Gamepad(id),
+                            crate::input::InputEventKind::Connect,
+                        ) => st.gamepads[*id].set_connected(true),
+                        (
+                            crate::input::InputDevice::Gamepad(id),
+                            crate::input::InputEventKind::Disconnect,
+                        ) => st.gamepads[*id].set_connected(false),
                         _ => {}
                     }
                     st.input_history.push(crate::input::InputHistoryEvent {
@@ -161,14 +258,64 @@ impl LurekApp {
             if let Some(lua) = &self.lua {
                 for callback in replay_callbacks {
                     match callback {
-                        ReplayCallback::KeyPressed(key) => call_lua_callback_with_timeout(lua, "keypressed", (key, String::new(), false), self.callback_timeout_ms()),
-                        ReplayCallback::KeyReleased(key) => call_lua_callback_with_timeout(lua, "keyreleased", (key, String::new()), self.callback_timeout_ms()),
-                        ReplayCallback::MousePressed(x, y, button, clicks) => call_lua_callback_with_timeout(lua, "mousepressed", (x, y, button, clicks), self.callback_timeout_ms()),
-                        ReplayCallback::MouseReleased(x, y, button, clicks) => call_lua_callback_with_timeout(lua, "mousereleased", (x, y, button, clicks), self.callback_timeout_ms()),
-                        ReplayCallback::GamepadPressed(id, button) => call_lua_callback_with_timeout(lua, "gamepadpressed", (id as u32, button), self.callback_timeout_ms()),
-                        ReplayCallback::GamepadReleased(id, button) => call_lua_callback_with_timeout(lua, "gamepadreleased", (id as u32, button), self.callback_timeout_ms()),
-                        ReplayCallback::GamepadAxis(id, axis, value) => call_lua_callback_with_timeout(lua, "gamepadaxis", (id as u32, axis, value), self.callback_timeout_ms()),
-                        ReplayCallback::Text(text) => call_lua_callback_with_timeout(lua, "textinput", text, self.callback_timeout_ms()),
+                        ReplayCallback::KeyPressed(key) => call_lua_callback_with_timeout(
+                            lua,
+                            "keypressed",
+                            (key, String::new(), false),
+                            self.callback_timeout_ms(),
+                        ),
+                        ReplayCallback::KeyReleased(key) => call_lua_callback_with_timeout(
+                            lua,
+                            "keyreleased",
+                            (key, String::new()),
+                            self.callback_timeout_ms(),
+                        ),
+                        ReplayCallback::MousePressed(x, y, button, clicks) => {
+                            call_lua_callback_with_timeout(
+                                lua,
+                                "mousepressed",
+                                (x, y, button, clicks),
+                                self.callback_timeout_ms(),
+                            )
+                        }
+                        ReplayCallback::MouseReleased(x, y, button, clicks) => {
+                            call_lua_callback_with_timeout(
+                                lua,
+                                "mousereleased",
+                                (x, y, button, clicks),
+                                self.callback_timeout_ms(),
+                            )
+                        }
+                        ReplayCallback::GamepadPressed(id, button) => {
+                            call_lua_callback_with_timeout(
+                                lua,
+                                "gamepadpressed",
+                                (id as u32, button),
+                                self.callback_timeout_ms(),
+                            )
+                        }
+                        ReplayCallback::GamepadReleased(id, button) => {
+                            call_lua_callback_with_timeout(
+                                lua,
+                                "gamepadreleased",
+                                (id as u32, button),
+                                self.callback_timeout_ms(),
+                            )
+                        }
+                        ReplayCallback::GamepadAxis(id, axis, value) => {
+                            call_lua_callback_with_timeout(
+                                lua,
+                                "gamepadaxis",
+                                (id as u32, axis, value),
+                                self.callback_timeout_ms(),
+                            )
+                        }
+                        ReplayCallback::Text(text) => call_lua_callback_with_timeout(
+                            lua,
+                            "textinput",
+                            text,
+                            self.callback_timeout_ms(),
+                        ),
                     }
                 }
             }
@@ -918,11 +1065,13 @@ impl LurekApp {
             st.canvases = canvases;
             st.meshes = meshes;
             if capture_screen_image {
-                st.captured_screen_image = screenshot_pixels.as_ref().and_then(
-                    |(width, height, pixels)| {
-                        crate::image::ImageData::from_bytes(*width, *height, pixels.clone()).ok()
-                    },
-                );
+                st.captured_screen_image =
+                    screenshot_pixels
+                        .as_ref()
+                        .and_then(|(width, height, pixels)| {
+                            crate::image::ImageData::from_bytes(*width, *height, pixels.clone())
+                                .ok()
+                        });
                 if st.captured_screen_image.is_none()
                     && renderer.surface_readback_status
                         == crate::render::gpu_state::SurfaceReadbackStatus::Pending
@@ -1800,7 +1949,11 @@ impl ApplicationHandler for LurekApp {
                         let mut st = state.borrow_mut();
                         st.mouse.set_button(i, pressed);
                         let time_ms = (st.clock.total() * 1000.0).max(0.0) as u64;
-                        let click_count = if pressed { st.mouse.register_click(i, time_ms) } else { st.mouse.click_count(i) };
+                        let click_count = if pressed {
+                            st.mouse.register_click(i, time_ms)
+                        } else {
+                            st.mouse.click_count(i)
+                        };
                         let frame = st.clock.frame_count();
                         st.input_history.push(crate::input::InputHistoryEvent {
                             frame,
@@ -1816,7 +1969,9 @@ impl ApplicationHandler for LurekApp {
                             position: Some((self.mouse_x, self.mouse_y)),
                         });
                         click_count
-                    } else { 0 };
+                    } else {
+                        0
+                    };
                     let mx = self.mouse_x;
                     let my = self.mouse_y;
                     let button_index = (i + 1) as u32;

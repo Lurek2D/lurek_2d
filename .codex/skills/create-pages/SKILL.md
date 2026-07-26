@@ -12,7 +12,7 @@ description: "Load this skill when creating or modifying generated docs site tem
 - Generated docs pages live under `lurek_2d_pages/`.
 - Durable source prose lives under `docs/`.
 - Page generators live under `tools/docs/`.
-- Shared docs templates live under `docs/templates/`.
+- CAG and manual-overlay templates live under `docs/templates/`; MkDocs pages use source prose and generators rather than a separate page-template layer.
 - Generated pages are not hand-edited.
 - Module pages, API pages, Lua docs, indexes, search data, and sitemap are separate outputs.
 - Route names, filenames, anchors, and relative links are public site contracts.

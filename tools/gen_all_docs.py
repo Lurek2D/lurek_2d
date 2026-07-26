@@ -134,7 +134,7 @@ def build_pages_site() -> bool:
         config_path = staging_root / "mkdocs.yml"
         shutil.copytree(ROOT / "docs", staged_docs)
         shutil.copytree(generated_modules, staged_docs / "modules", dirs_exist_ok=True)
-        shutil.copy2(generated_index, staged_docs / "module-guides.md")
+        shutil.copy2(generated_index, staged_docs / "guides" / "module-guides.md")
         config_text = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
         config_text = config_text.replace("docs_dir: docs", "docs_dir: site-input")
         config_text = config_text.replace(

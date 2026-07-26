@@ -340,5 +340,22 @@ describe("physics stress: query and ballistic sidecars", function()
         end
         expect_not_nil(world:getBallisticProjectile(0), "first projectile remains queryable")
     end)
+
+    -- @stress LWorld:newKinematicController
+    it("drives 256 independent kinematic controllers through bounded test moves", function()
+        local world = new_empty_physics_world()
+        local controllers = {}
+        for index = 1, 256 do
+            local body = world:newCircleBody(index * 2, 0, 0.5, "kinematic")
+            controllers[index] = world:newKinematicController(body, {
+                radius = 0.5,
+                maxSlides = 4,
+            })
+        end
+        for _, controller in ipairs(controllers) do
+            local result = controller:testMove(1, 0.25)
+            expect_true(result.appliedX > 0)
+        end
+    end)
 end)
 test_summary()

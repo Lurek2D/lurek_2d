@@ -4090,3 +4090,173 @@ do
     world:step(1 / 60)
     lurek.log.info("[physics] turn body id=" .. tostring(body:getId()))
 end
+--@api: LWorld:newKinematicController
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    local kind = controller:type()
+    lurek.log.info("controller=" .. kind)
+end
+
+--@api: LKinematicController2D:move
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    local result = controller:move(1, 0)
+    lurek.log.info("moved=" .. tostring(result.appliedX))
+end
+
+--@api: LKinematicController2D:testMove
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    local result = controller:testMove(1, 0)
+    lurek.log.info("tested=" .. tostring(result.appliedX))
+end
+
+--@api: LKinematicController2D:setRadius
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    controller:setRadius(0.75)
+    lurek.log.info("controller radius updated")
+end
+
+--@api: LKinematicController2D:setSkin
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    controller:setSkin(0.02)
+    lurek.log.info("controller skin updated")
+end
+
+--@api: LKinematicController2D:setMaxSlides
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    controller:setMaxSlides(6)
+    lurek.log.info("controller slides updated")
+end
+
+--@api: LKinematicController2D:setFilter
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    controller:setFilter({ includeSensors = false, layer = 1, mask = 1 })
+    lurek.log.info("controller filter updated")
+end
+
+--@api: LKinematicController2D:setVerticalSpan
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    controller:setVerticalSpan(0, 2)
+    lurek.log.info("controller vertical span enabled")
+end
+
+--@api: LKinematicController2D:clearVerticalSpan
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5, zMin = 0, zMax = 2 })
+    controller:clearVerticalSpan()
+    lurek.log.info("controller vertical span cleared")
+end
+
+--@api: LKinematicController2D:recover
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    world:newBody(0, 0, 2, 2, "static")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    lurek.log.info("recovery collided=" .. tostring(controller:recover().collided))
+end
+
+--@api: LKinematicController2D:getLastResult
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    controller:testMove(1, 0)
+    lurek.log.info("last request=" .. tostring(controller:getLastResult().requestedX))
+end
+
+--@api: LKinematicController2D:release
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    controller:release()
+    lurek.log.info("controller released")
+end
+
+--@api: LKinematicController2D:type
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    local kind = controller:type()
+    lurek.log.info("controller type=" .. kind)
+end
+
+--@api: LKinematicController2D:typeOf
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(0, 0, 0.5, "kinematic")
+    local controller = world:newKinematicController(body, { radius = 0.5 })
+    local object = controller:typeOf("LObject")
+    lurek.log.info("controller object=" .. tostring(object))
+end
+
+--@api: LWorld:querySector
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:newCircleBody(2, 0, 0.5, "static")
+    world:newCircleBody(4, 1, 0.5, "static")
+    world:step(1 / 60)
+    lurek.log.info("sector hits=" .. tostring(#world:querySector(0, 0, 10, 0, math.pi / 2)))
+end
+
+--@api: LWorld:setBodyEnabled
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(2, 2, 1, "static")
+    world:setBodyEnabled(body:getId(), false)
+    local enabled = world:isBodyEnabled(body:getId())
+    lurek.log.info("body enabled=" .. tostring(enabled))
+end
+
+--@api: LWorld:isBodyEnabled
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(2, 2, 1, "static")
+    local initial = world:isBodyEnabled(body:getId())
+    world:setBodyEnabled(body:getId(), false)
+    lurek.log.info("body initial=" .. tostring(initial) .. " after=" .. tostring(world:isBodyEnabled(body:getId())))
+end
+
+--@api: LWorld:setFixtureEnabled
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(2, 2, 1, "static")
+    world:setFixtureEnabled(body:getId(), 0, false)
+    local enabled = world:isFixtureEnabled(body:getId(), 0)
+    lurek.log.info("fixture enabled=" .. tostring(enabled))
+end
+
+--@api: LWorld:isFixtureEnabled
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(2, 2, 1, "static")
+    local initial = world:isFixtureEnabled(body:getId(), 0)
+    world:setFixtureEnabled(body:getId(), 0, false)
+    lurek.log.info("fixture initial=" .. tostring(initial) .. " after=" .. tostring(world:isFixtureEnabled(body:getId(), 0)))
+end

@@ -153,6 +153,15 @@ pub struct ShapeSweepHit {
     /// Normalized travel fraction in `0.0..=1.0` before the impact.
     pub safe_fraction: f32,
 }
+
+/// One deterministic body-center result from a sector query.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct SectorQueryHit {
+    pub body_id: BodyId,
+    pub point: (f32, f32),
+    pub distance: f32,
+    pub angle: f32,
+}
 /// Beam hit collection mode for instant gameplay beams.
 /// # Variants
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

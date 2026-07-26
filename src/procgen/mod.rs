@@ -17,6 +17,8 @@ pub mod cellular;
 pub mod cellular_world;
 /// Scalar-to-colour RGBA conversion helpers.
 pub mod color;
+/// Deterministic constrained placement and flat-grid connectivity validation.
+pub mod constraints;
 /// Shared procgen validation and resource-limit errors.
 pub mod error;
 /// 4-connected flood fill mask generator.
@@ -62,6 +64,11 @@ pub use cellular_world::{
     default_palette, CellType, CellularWorld, CellularWorldActiveBounds, CellularWorldStepStats,
 };
 pub use color::scalar_map_to_rgba_bytes;
+pub use constraints::{
+    place_constrained, validate_connectivity, ConnectivityComponent, ConnectivityOptions,
+    ConnectivityPoint, ConnectivityReport, ConnectivitySafePoint, Placement, PlacementCandidate,
+    PlacementReport, PlacementRules, SafeRadiusViolation, UnreachableGoal,
+};
 pub use error::ProcgenError;
 pub use flood_fill::flood_fill;
 pub use grid_result::{ProcgenGrid, ProcgenScalarGrid};

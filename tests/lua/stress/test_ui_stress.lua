@@ -32,6 +32,25 @@ describe("stress: retained UI workload", function()
         lurek.ui.renderToImage(64, 64, "save/ui_stress_recovery.png")
         expect_true(button:isValid())
     end)
+
+    -- @stress lurek.ui.newContext
+    it("keeps 64 retained context trees independent", function()
+        local contexts = {}
+        for context_index = 1, 64 do
+            local context = lurek.ui.newContext({
+                viewport = { x = 0, y = 0, w = 320, h = 180 },
+            })
+            for widget_index = 1, 32 do
+                context:create("label", {
+                    id = "label_" .. widget_index,
+                    text = context_index .. ":" .. widget_index,
+                })
+            end
+            contexts[context_index] = context
+        end
+        expect_equal("1:1", contexts[1]:getById("label_1"):getText())
+        expect_equal("64:1", contexts[64]:getById("label_1"):getText())
+    end)
 end)
 
 test_summary()

@@ -13,11 +13,96 @@ use lurek2d::progression::{
     PrestigeDefinition, PrestigePreserveDefinition, PrestigeResetDefinition, ProfileOptions,
     ProfileTemplateDefinition, ProgressionCondition, ProgressionStore, ProgressionStoreOptions,
     QuestDefinition, QuestObjectiveDefinition, QuestStageDefinition, ResourceDefinition,
-    RewardState, SeasonDefinition, SeasonResetDefinition, SkillDefinition, TraitDefinition,
-    TraitModifierDefinition,
+    RewardState, SeasonDefinition, SeasonResetDefinition, SkillDefinition, StatusDefinition,
+    StatusTracker, TraitDefinition, TraitModifierDefinition,
 };
 use serde_json::Value as JsonValue;
 use std::collections::BTreeMap;
+
+fn status_definition(id: &str, tags: &[&str]) -> StatusDefinition {
+    StatusDefinition {
+        id: id.to_string(),
+        duration: Some(4.0),
+        tick_interval: Some(1.0),
+        max_stacks: 3,
+        stacking: "add".to_string(),
+        tags: tags.iter().map(|tag| (*tag).to_string()).collect(),
+    }
+}
+
+#[test]
+fn status_tracker_copies_tags_and_filters_instances_deterministically() {
+    let mut tracker = StatusTracker::new();
+    tracker
+        .define(status_definition("burning", &["harmful", "fire"]))
+        .expect("definition");
+    let first = tracker
+        .apply(7, "burning", Some(2), 1)
+        .expect("first instance");
+    tracker
+        .define(status_definition("burning", &["redefined"]))
+        .expect("redefinition");
+
+    let instance = tracker.get(first).expect("instance");
+    assert_eq!(instance.tags, vec!["harmful", "fire"]);
+    assert!(tracker.has(7, "burning"));
+    assert!(tracker.has(7, "fire"));
+    let filtered = tracker.list_filtered(7, None, Some("fire"), Some(2), Some(false));
+    assert_eq!(filtered.len(), 1);
+    assert_eq!(filtered[0].id, instance.id);
+}
+
+#[test]
+fn status_tracker_pause_remaining_and_snapshot_preserve_lifecycle_state() {
+    let mut tracker = StatusTracker::new();
+    tracker
+        .define(status_definition("shield", &["helpful"]))
+        .expect("definition");
+    let instance_id = tracker.apply(9, "shield", None, 1).expect("instance");
+    tracker.drain_events();
+
+    assert!(tracker.set_paused(instance_id, true));
+    tracker.update(2.0).expect("paused update");
+    assert_eq!(
+        tracker.get(instance_id).expect("paused instance").remaining,
+        Some(4.0)
+    );
+    tracker
+        .set_remaining(instance_id, Some(0.0))
+        .expect("remaining");
+    tracker.update(0.0).expect("expiry update");
+    assert!(tracker.get(instance_id).is_none());
+
+    let restored_id = tracker
+        .apply(9, "shield", None, 1)
+        .expect("restored instance");
+    tracker.set_paused(restored_id, true);
+    let snapshot = tracker.snapshot();
+    let mut restored = StatusTracker::new();
+    restored.restore(snapshot).expect("snapshot restore");
+    let instance = restored.get(restored_id).expect("restored state");
+    assert!(instance.paused);
+    assert_eq!(instance.tags, vec!["helpful"]);
+}
+
+#[test]
+fn status_tracker_bulk_removal_is_subject_scoped() {
+    let mut tracker = StatusTracker::new();
+    tracker
+        .define(status_definition("burning", &["harmful"]))
+        .expect("burning");
+    tracker
+        .define(status_definition("poison", &["harmful"]))
+        .expect("poison");
+    tracker.apply(1, "burning", None, 1).expect("burning one");
+    tracker.apply(1, "poison", None, 1).expect("poison one");
+    tracker.apply(2, "burning", None, 1).expect("burning two");
+
+    assert_eq!(tracker.remove_by_definition(1, "burning"), 1);
+    assert_eq!(tracker.remove_by_tag(1, "harmful"), 1);
+    assert_eq!(tracker.list(1).len(), 0);
+    assert_eq!(tracker.list(2).len(), 1);
+}
 
 #[test]
 fn counter_thresholds_emit_events_in_order() {

@@ -17,6 +17,8 @@ pub mod history;
 pub mod keyboard;
 /// Mouse position, button state, cursor kind, and cursor handle management.
 pub mod mouse;
+/// Player-scoped action definitions, analog shaping, and device ownership.
+pub mod player_context;
 /// Input event recorder for replays and automated testing.
 pub mod recorder;
 /// Touch-point state tracking for multi-touch surfaces.
@@ -24,16 +26,19 @@ pub mod touch;
 
 pub use action_def::{ActionDef, ActionMap};
 pub use combo::{ComboDetector, ComboProgress, ComboStep};
-pub use gamepad::{standard_axis_code, standard_button_code, virtual_dpad};
 pub use gamepad::GamepadMappings;
 pub use gamepad::GamepadState;
 pub use gamepad::GamepadVibrationRequest;
+pub use gamepad::{standard_axis_code, standard_button_code, virtual_dpad};
 pub use history::{InputDevice, InputEventKind, InputHistory, InputHistoryEvent};
 pub use keyboard::winit_scancode_to_string;
 pub use keyboard::KeyboardState;
 pub use mouse::MouseState;
 pub use mouse::SystemCursor;
 pub use mouse::{is_cursor_supported, CursorHandle, CursorKind};
+pub use player_context::{
+    AxisCurve, AxisSettings, PlayerAction, PlayerInputContext, PlayerInputRegistry,
+};
 pub use touch::{TouchPoint, TouchState};
 
 /// Input event name constants for Lua callbacks.

@@ -271,6 +271,77 @@ impl World {
         self.try_cast_circle_25d(options, filter).ok().flatten()
     }
 
+    /// Sweep a circle while requiring strict overlap with an explicit moving vertical span.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_cast_circle_vertical_span(
+        &self,
+        x: f32,
+        y: f32,
+        radius: f32,
+        dx: f32,
+        dy: f32,
+        z_min: f32,
+        z_max: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Result<Option<ShapeSweepHit>, PhysicsError> {
+        validate_positive("radius", f64::from(radius))?;
+        validate_finite("z_min", f64::from(z_min))?;
+        validate_finite("z_max", f64::from(z_max))?;
+        if z_max <= z_min {
+            return Err(PhysicsError::ConfigMismatch {
+                context: "circle vertical span cast",
+                detail: "z_max must be greater than z_min".to_string(),
+            });
+        }
+        let max_dist = dx.hypot(dy);
+        let unit_dir = self.validate_sweep_direction(
+            "physics circle vertical span cast",
+            x,
+            y,
+            dx,
+            dy,
+            max_dist,
+        )?;
+        let end_x = x + dx;
+        let end_y = y + dy;
+        let mut candidates = self.query_aabb_filtered(
+            x.min(end_x) - radius,
+            y.min(end_y) - radius,
+            (end_x - x).abs() + radius * 2.0,
+            (end_y - y).abs() + radius * 2.0,
+            filter,
+        );
+        candidates.sort_unstable();
+        let mut best: Option<ShapeSweepHit> = None;
+        for body_id in candidates {
+            let Some((target_min, target_max)) = self.get_body_world_z_range(body_id) else {
+                continue;
+            };
+            if !self.altitude_intervals_overlap(z_min, z_max, target_min, target_max) {
+                continue;
+            }
+            let Some((toi, point, normal)) =
+                self.approx_circle_body_sweep_toi(body_id, x, y, radius, unit_dir, max_dist)
+            else {
+                continue;
+            };
+            let hit = ShapeSweepHit {
+                body_id: BodyId(body_id),
+                point,
+                normal,
+                toi,
+                safe_fraction: (toi / max_dist).clamp(0.0, 1.0),
+            };
+            match best {
+                Some(current)
+                    if current.toi < hit.toi
+                        || (current.toi == hit.toi && current.body_id.0 < hit.body_id.0) => {}
+                _ => best = Some(hit),
+            }
+        }
+        Ok(best)
+    }
+
     /// Cast a ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.
     pub fn raycast(&self, x1: f32, y1: f32, x2: f32, y2: f32) -> Option<RaycastHit> {
         self.raycast_filtered(x1, y1, x2, y2, PhysicsQueryFilter::default())
@@ -1003,6 +1074,64 @@ impl World {
         results.sort_unstable();
         results.truncate(self.limits.max_query_hits);
         results
+    }
+
+    /// Return body centers inside a radius and angular sector, ordered by distance, angle, then id.
+    pub fn query_sector_filtered(
+        &self,
+        x: f32,
+        y: f32,
+        radius: f32,
+        angle: f32,
+        half_angle: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Result<Vec<SectorQueryHit>, PhysicsError> {
+        validate_positive("radius", f64::from(radius))?;
+        validate_finite("angle", f64::from(angle))?;
+        validate_finite("half_angle", f64::from(half_angle))?;
+        if !(0.0..=std::f32::consts::PI).contains(&half_angle) {
+            return Err(PhysicsError::ValueOutOfRange {
+                field: "half_angle",
+                min: 0.0,
+                max: f64::from(std::f32::consts::PI),
+                value: f64::from(half_angle),
+            });
+        }
+        let mut hits = Vec::new();
+        for body_id in
+            self.query_aabb_filtered(x - radius, y - radius, radius * 2.0, radius * 2.0, filter)
+        {
+            let Some(body) = self.get_body(body_id) else {
+                continue;
+            };
+            let delta_x = body.position.x - x;
+            let delta_y = body.position.y - y;
+            let distance = delta_x.hypot(delta_y);
+            if distance > radius {
+                continue;
+            }
+            let world_angle = delta_y.atan2(delta_x);
+            let signed_angle = (world_angle - angle + std::f32::consts::PI)
+                .rem_euclid(std::f32::consts::TAU)
+                - std::f32::consts::PI;
+            if signed_angle.abs() > half_angle {
+                continue;
+            }
+            hits.push(SectorQueryHit {
+                body_id: BodyId(body_id),
+                point: (body.position.x, body.position.y),
+                distance,
+                angle: signed_angle,
+            });
+        }
+        hits.sort_by(|a, b| {
+            a.distance
+                .total_cmp(&b.distance)
+                .then(a.angle.total_cmp(&b.angle))
+                .then(a.body_id.0.cmp(&b.body_id.0))
+        });
+        hits.truncate(self.limits.max_query_hits);
+        Ok(hits)
     }
     /// Return the first body id whose AABB contains point `(x, y)`, or `None`.
     pub fn get_body_at_point(&self, x: f32, y: f32) -> Option<usize> {

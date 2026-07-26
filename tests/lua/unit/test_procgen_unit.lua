@@ -97,6 +97,49 @@ describe("lurek.procgen", function()
         expect_near(9.0, target:getCost(2, 2, nil, "move"), 0.00001)
     end)
 
+    -- @covers lurek.procgen.placeConstrained
+    it("selects a seeded weighted subset under neutral constraints", function()
+        local candidates = {
+            { id = "a", x = 0, y = 0, level = 1, region = "west", tags = { "floor" }, uniquenessGroup = "pair" },
+            { id = "b", x = 2, y = 0, level = 1, region = "west", tags = { "floor" }, uniquenessGroup = "pair" },
+            { id = "c", x = 10, y = 0, level = 1, region = "east", tags = { "floor" } },
+            { id = "d", x = 20, y = 0, level = 1, region = "east", tags = { "floor" } },
+        }
+        local rules = {
+            count = 3,
+            requiredTags = { "floor" },
+            minDistance = 5,
+            perRegionCapacity = 2,
+        }
+        local first, report = procgen.placeConstrained(candidates, rules, { seed = 42, maxAttempts = 20 })
+        local second = procgen.placeConstrained(candidates, rules, { seed = 42, maxAttempts = 20 })
+        expect_equal(3, #first)
+        expect_true(report.complete)
+        expect_equal(first[1].candidateIndex, second[1].candidateIndex)
+        expect_equal("1", first[1].level)
+    end)
+
+    -- @covers lurek.procgen.validateConnectivity
+    it("reports components goals isolated regions and safe-radius violations", function()
+        local grid = procgen.newGridResult(5, 3, {
+            0, 0, 1, 0, 0,
+            0, 0, 1, 1, 0,
+            1, 1, 1, 1, 0,
+        })
+        local report = procgen.validateConnectivity(grid, {
+            walkableValues = { 0 },
+            neighbors = 4,
+            starts = { { x = 0, y = 0 } },
+            goals = { { x = 1, y = 1 }, { x = 4, y = 2 } },
+            safePoints = { { x = 1, y = 1, radius = 1 } },
+        })
+        expect_equal(2, #report.components)
+        expect_equal(1, report.primaryComponent)
+        expect_equal("different_component", report.unreachableGoals[1].reason)
+        expect_equal(2, report.isolatedRegions[1])
+        expect_equal(1, #report.safeRadiusViolations)
+    end)
+
     -- @covers lurek.procgen.floodFill
     it("fills only the connected cells that satisfy the threshold rule", function()
         local data = {

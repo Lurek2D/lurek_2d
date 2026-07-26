@@ -53,14 +53,17 @@ impl InputBinding {
             return Err("gamepad:any binding requires a standard button name".to_string());
         }
         if let Some(rest) = lowered.strip_prefix("gamepad:p") {
-            let (player, button) = rest
-                .split_once(':')
-                .ok_or_else(|| "gamepad player binding must be in gamepad:pN:button form".to_string())?;
+            let (player, button) = rest.split_once(':').ok_or_else(|| {
+                "gamepad player binding must be in gamepad:pN:button form".to_string()
+            })?;
             let player = player
                 .parse::<u32>()
                 .map_err(|_| "gamepad player must be a positive integer".to_string())?;
             if player == 0 || crate::input::standard_button_code(button).is_none() {
-                return Err("gamepad player binding requires a positive player and standard button name".to_string());
+                return Err(
+                    "gamepad player binding requires a positive player and standard button name"
+                        .to_string(),
+                );
             }
             return Ok(Self::GamepadNamed {
                 gamepad_id: None,
@@ -92,7 +95,9 @@ impl InputBinding {
                     button,
                 });
             }
-            return Err("gamepad binding button must be an integer or standard button name".to_string());
+            return Err(
+                "gamepad binding button must be an integer or standard button name".to_string(),
+            );
         }
         if let Some(rest) = lowered.strip_prefix("gamepadaxis:") {
             let mut parts = rest.split(':');
@@ -262,7 +267,12 @@ fn canonicalize_expression(binding: &str) -> Result<Option<String>, String> {
             {
                 return Err("axis binding is invalid".to_string());
             }
-            Ok(Some(format!("axis|{}|{}|{}", axis.to_ascii_lowercase(), threshold, direction)))
+            Ok(Some(format!(
+                "axis|{}|{}|{}",
+                axis.to_ascii_lowercase(),
+                threshold,
+                direction
+            )))
         }
         _ => Ok(None),
     }

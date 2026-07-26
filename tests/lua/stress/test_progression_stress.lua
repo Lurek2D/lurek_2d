@@ -166,4 +166,29 @@ describe("stress: progression changeset sync throughput", function()
     end)
 end)
 
+-- @describe stress: status filtering by copied tags
+describe("stress: status filtering by copied tags", function()
+    -- @stress LStatusTracker:list
+    it("filters 4096 active statuses by tag in <10s", function()
+        local tracker = lurek.progression.newStatusTracker()
+        tracker:define({
+            id = "stress_status",
+            tags = { "stress", "harmful" },
+            maxStacks = 1,
+            stacking = "replace",
+        })
+        for subject_id = 1, 4096 do
+            tracker:apply(subject_id, "stress_status", subject_id)
+        end
+
+        local elapsed = measure("status list tag filter", 8, function()
+            for subject_id = 1, 4096 do
+                local rows = tracker:list(subject_id, { tag = "stress" })
+                expect_equal(1, #rows)
+            end
+        end)
+        expect_true(elapsed < 10.0, "status tag filter budget: " .. elapsed .. "s")
+    end)
+end)
+
 test_summary()

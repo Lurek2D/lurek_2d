@@ -1452,17 +1452,51 @@ impl GuiContext {
         let button_size = rect.height.min(28.0);
         if toolbar.orientation == "vertical" {
             let button_size = rect.width.min(28.0);
-            let flexible = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Spacer(None))).count();
-            let fixed_spacers: f32 = toolbar.items.iter().map(|item| match item { crate::ui::extras::ToolbarItem::Spacer(Some(size)) => size.max(0.0), _ => 0.0 }).sum();
-            let button_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Button(_))).count() as f32;
-            let separator_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Separator)).count() as f32;
-            let remaining = (rect.height - 8.0 - button_count * (button_size + TOOLBAR_BUTTON_GAP) - separator_count * 9.0 - fixed_spacers).max(0.0);
+            let flexible = toolbar
+                .items
+                .iter()
+                .filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Spacer(None)))
+                .count();
+            let fixed_spacers: f32 = toolbar
+                .items
+                .iter()
+                .map(|item| match item {
+                    crate::ui::extras::ToolbarItem::Spacer(Some(size)) => size.max(0.0),
+                    _ => 0.0,
+                })
+                .sum();
+            let button_count = toolbar
+                .items
+                .iter()
+                .filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Button(_)))
+                .count() as f32;
+            let separator_count = toolbar
+                .items
+                .iter()
+                .filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Separator))
+                .count() as f32;
+            let remaining = (rect.height
+                - 8.0
+                - button_count * (button_size + TOOLBAR_BUTTON_GAP)
+                - separator_count * 9.0
+                - fixed_spacers)
+                .max(0.0);
             let mut button_y = rect.y + TOOLBAR_BUTTON_GAP;
             let button_x = rect.x + (rect.width - button_size) * 0.5;
             for (button_idx, item) in toolbar.items.iter().enumerate() {
                 match item {
                     crate::ui::extras::ToolbarItem::Separator => button_y += 9.0,
-                    crate::ui::extras::ToolbarItem::Spacer(size) => button_y += size.unwrap_or_else(|| if flexible == 0 { 0.0 } else { remaining / flexible as f32 }).max(0.0),
+                    crate::ui::extras::ToolbarItem::Spacer(size) => {
+                        button_y += size
+                            .unwrap_or_else(|| {
+                                if flexible == 0 {
+                                    0.0
+                                } else {
+                                    remaining / flexible as f32
+                                }
+                            })
+                            .max(0.0)
+                    }
                     crate::ui::extras::ToolbarItem::Button(button) => {
                         let button_rect = Rect::new(button_x, button_y, button_size, button_size);
                         if button.enabled && button_rect.contains(x, y) {
@@ -1475,15 +1509,49 @@ impl GuiContext {
         } else {
             let mut button_x = rect.x + TOOLBAR_BUTTON_GAP;
             let button_y = rect.y + (rect.height - button_size) * 0.5;
-            let flexible = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Spacer(None))).count();
-            let fixed_spacers: f32 = toolbar.items.iter().map(|item| match item { crate::ui::extras::ToolbarItem::Spacer(Some(size)) => size.max(0.0), _ => 0.0 }).sum();
-            let button_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Button(_))).count() as f32;
-            let separator_count = toolbar.items.iter().filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Separator)).count() as f32;
-            let remaining = (rect.width - 8.0 - button_count * (button_size + TOOLBAR_BUTTON_GAP) - separator_count * 9.0 - fixed_spacers).max(0.0);
+            let flexible = toolbar
+                .items
+                .iter()
+                .filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Spacer(None)))
+                .count();
+            let fixed_spacers: f32 = toolbar
+                .items
+                .iter()
+                .map(|item| match item {
+                    crate::ui::extras::ToolbarItem::Spacer(Some(size)) => size.max(0.0),
+                    _ => 0.0,
+                })
+                .sum();
+            let button_count = toolbar
+                .items
+                .iter()
+                .filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Button(_)))
+                .count() as f32;
+            let separator_count = toolbar
+                .items
+                .iter()
+                .filter(|item| matches!(item, crate::ui::extras::ToolbarItem::Separator))
+                .count() as f32;
+            let remaining = (rect.width
+                - 8.0
+                - button_count * (button_size + TOOLBAR_BUTTON_GAP)
+                - separator_count * 9.0
+                - fixed_spacers)
+                .max(0.0);
             for (button_idx, item) in toolbar.items.iter().enumerate() {
                 match item {
                     crate::ui::extras::ToolbarItem::Separator => button_x += 9.0,
-                    crate::ui::extras::ToolbarItem::Spacer(size) => button_x += size.unwrap_or_else(|| if flexible == 0 { 0.0 } else { remaining / flexible as f32 }).max(0.0),
+                    crate::ui::extras::ToolbarItem::Spacer(size) => {
+                        button_x += size
+                            .unwrap_or_else(|| {
+                                if flexible == 0 {
+                                    0.0
+                                } else {
+                                    remaining / flexible as f32
+                                }
+                            })
+                            .max(0.0)
+                    }
                     crate::ui::extras::ToolbarItem::Button(button) => {
                         let button_rect = Rect::new(button_x, button_y, button_size, button_size);
                         if button.enabled && button_rect.contains(x, y) {
@@ -1501,7 +1569,9 @@ impl GuiContext {
         let Some(WidgetKind::Toolbar(toolbar)) = self.widgets.get_mut(idx) else {
             return false;
         };
-        let Some(crate::ui::extras::ToolbarItem::Button(button)) = toolbar.items.get_mut(button_idx) else {
+        let Some(crate::ui::extras::ToolbarItem::Button(button)) =
+            toolbar.items.get_mut(button_idx)
+        else {
             return false;
         };
         if !button.enabled {

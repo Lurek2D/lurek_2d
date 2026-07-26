@@ -35,7 +35,7 @@ description: "Load this skill when auditing and fixing module specs, generated s
 - `lua_spec_coverage.py` reports both missing bound functions and stale names present only in a spec.
 - Its fallback binding scan reads direct `tbl.set("name", ...)` registrations.
 - The spec coverage command does not fail by default; a positive `--threshold` enables the coverage gate.
-- `docs/templates/SPEC_TEMPLATE.md` is the structural source for a new module page.
+- `docs/templates/SPEC_TEMPLATE.md` is the structural source for a new manual module-intent overlay.
 - `docs_quality.py` checks the generated spec set after regeneration.
 - Copying generated module prose into Rust docstrings creates a source-output feedback loop.
 

@@ -1241,3 +1241,11 @@ do
     local status = buildable and "allowed" or "blocked"
     lurek.log.info("buildability read=" .. status)
 end
+--@api: LTileField:patchCells
+do
+    local field = lurek.tilefield.new({ width = 3, height = 3 })
+    field:patchCells({ { x = 1, y = 1, costs = { move = 2 }, blocks = { move = true } } })
+    local cost = field:getCost(1, 1, nil, "move")
+    local blocked = field:blocks(1, 1, nil, "move")
+    lurek.log.info("tile patch cost=" .. tostring(cost) .. " blocked=" .. tostring(blocked))
+end

@@ -10,11 +10,11 @@ use crate::physics::{
     BallisticProjectileOptions, BallisticTrace, BeamHit, BeamHitMode, BeamOptions, BeamSegment,
     BeamTrace, Body, BodyId, BodyType, CircleCast25DOptions, FlowApplicationMode, FlowCombineMode,
     FlowDirectionMode, FlowFalloff, FlowField, FlowGeometry, FlowMedium, FlowSample,
-    LiquidBodyForceOptions, LiquidBodyForceStats, LiquidKind, LiquidMap, LiquidStepOptions,
-    LiquidStepStats, MaterialCombineRule, PhysicsError, PhysicsLimits, PhysicsMaterial,
-    PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit, Shape, ShapeSweepHit,
-    TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult, TerrainColliderStrategy,
-    TerrainMap, TerrainSupportRule, World,
+    KinematicControllerSettings, KinematicMoveResult, LiquidBodyForceOptions, LiquidBodyForceStats,
+    LiquidKind, LiquidMap, LiquidStepOptions, LiquidStepStats, MaterialCombineRule, PhysicsError,
+    PhysicsLimits, PhysicsMaterial, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit,
+    Shape, ShapeSweepHit, TerrainCollapseMode, TerrainCollapseOptions, TerrainCollapseResult,
+    TerrainColliderStrategy, TerrainMap, TerrainSupportRule, World, MAX_KINEMATIC_SLIDES,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -1944,8 +1944,325 @@ fn new_lua_liquid_map(
     })
 }
 
+fn kinematic_result_to_table<'lua>(
+    lua: &'lua Lua,
+    result: &KinematicMoveResult,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    out.set("requestedX", result.requested.0)?;
+    out.set("requestedY", result.requested.1)?;
+    out.set("appliedX", result.applied.0)?;
+    out.set("appliedY", result.applied.1)?;
+    out.set("remainingX", result.remaining.0)?;
+    out.set("remainingY", result.remaining.1)?;
+    out.set("collided", result.collided)?;
+    out.set("hitCount", result.hits.len())?;
+    let hits = lua.create_table()?;
+    for (index, hit) in result.hits.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("bodyId", hit.body_id)?;
+        entry.set("fixtureIndex", hit.fixture_index)?;
+        entry.set("pointX", hit.point.0)?;
+        entry.set("pointY", hit.point.1)?;
+        entry.set("normalX", hit.normal.0)?;
+        entry.set("normalY", hit.normal.1)?;
+        entry.set("toi", hit.toi)?;
+        entry.set("sensor", hit.sensor)?;
+        hits.set(index + 1, entry)?;
+    }
+    out.set("hits", hits)?;
+    Ok(out)
+}
+
+fn vertical_span_from_lua(
+    method: &str,
+    opts: Option<&LuaTable>,
+    fallback: Option<(f32, f32)>,
+) -> LuaResult<Option<(f32, f32)>> {
+    let Some(opts) = opts else {
+        return Ok(fallback);
+    };
+    match (
+        opts.get::<_, Option<f32>>("zMin")?,
+        opts.get::<_, Option<f32>>("zMax")?,
+    ) {
+        (None, None) => Ok(fallback),
+        (Some(z_min), Some(z_max)) if z_min.is_finite() && z_max.is_finite() && z_max > z_min => {
+            Ok(Some((z_min, z_max)))
+        }
+        (Some(_), Some(_)) => Err(physics_runtime_error(
+            method,
+            "zMin and zMax must be finite with zMax > zMin",
+        )),
+        _ => Err(physics_runtime_error(
+            method,
+            "zMin and zMax must be provided together",
+        )),
+    }
+}
+
+/// Explicitly driven controller bound to one kinematic body in one world.
+pub struct LuaKinematicController2D {
+    world: Rc<RefCell<World>>,
+    body_id: usize,
+    settings: KinematicControllerSettings,
+    last_result: Option<KinematicMoveResult>,
+    released: bool,
+}
+
+impl LuaKinematicController2D {
+    fn ensure_live(&self, method: &str) -> LuaResult<()> {
+        if self.released {
+            Err(physics_runtime_error(
+                method,
+                "controller has been released",
+            ))
+        } else {
+            Ok(())
+        }
+    }
+
+    fn move_internal(
+        &mut self,
+        method: &str,
+        dx: f32,
+        dy: f32,
+        opts: Option<LuaTable>,
+        mutate: bool,
+    ) -> LuaResult<KinematicMoveResult> {
+        self.ensure_live(method)?;
+        if !dx.is_finite() || !dy.is_finite() {
+            return Err(physics_runtime_error(method, "dx and dy must be finite"));
+        }
+        let mut settings = self.settings;
+        settings.vertical_span =
+            vertical_span_from_lua(method, opts.as_ref(), settings.vertical_span)?;
+        let result = crate::physics::solve_kinematic_move(
+            &self.world.borrow(),
+            self.body_id,
+            (dx, dy),
+            settings,
+        )
+        .map_err(|error| physics_runtime_error(method, error))?;
+        if mutate {
+            let (x, y) = {
+                let world = self.world.borrow();
+                let body = world
+                    .get_body(self.body_id)
+                    .ok_or_else(|| physics_runtime_error(method, "body is no longer active"))?;
+                (
+                    body.position.x + result.applied.0,
+                    body.position.y + result.applied.1,
+                )
+            };
+            self.world
+                .borrow_mut()
+                .set_body_position(self.body_id, x, y);
+        }
+        self.last_result = Some(result.clone());
+        Ok(result)
+    }
+}
+
+impl LuaUserData for LuaKinematicController2D {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- move --
+        /// Sweeps and wall-slides the controlled kinematic body.
+        /// @param | dx | number | Requested X displacement.
+        /// @param | dy | number | Requested Y displacement.
+        /// @param | opts | table? | Optional `{zMin, zMax}` override.
+        /// @return | table | Deterministic movement result and ordered hits.
+        methods.add_method_mut(
+            "move",
+            |lua, this, (dx, dy, opts): (f32, f32, Option<LuaTable>)| {
+                let result =
+                    this.move_internal("LKinematicController2D:move", dx, dy, opts, true)?;
+                kinematic_result_to_table(lua, &result)
+            },
+        );
+        // -- testMove --
+        /// Solves movement without mutating the controlled body.
+        methods.add_method_mut(
+            "testMove",
+            |lua, this, (dx, dy, opts): (f32, f32, Option<LuaTable>)| {
+                let result =
+                    this.move_internal("LKinematicController2D:testMove", dx, dy, opts, false)?;
+                kinematic_result_to_table(lua, &result)
+            },
+        );
+        // -- setRadius --
+        methods.add_method_mut("setRadius", |_, this, radius: f32| {
+            this.ensure_live("LKinematicController2D:setRadius")?;
+            if !radius.is_finite() || radius <= 0.0 {
+                return Err(physics_runtime_error(
+                    "LKinematicController2D:setRadius",
+                    "radius must be finite and positive",
+                ));
+            }
+            this.settings.radius = radius;
+            Ok(())
+        });
+        // -- setSkin --
+        methods.add_method_mut("setSkin", |_, this, skin: f32| {
+            this.ensure_live("LKinematicController2D:setSkin")?;
+            if !skin.is_finite() || skin < 0.0 {
+                return Err(physics_runtime_error(
+                    "LKinematicController2D:setSkin",
+                    "skin must be finite and non-negative",
+                ));
+            }
+            this.settings.skin = skin;
+            Ok(())
+        });
+        // -- setMaxSlides --
+        methods.add_method_mut("setMaxSlides", |_, this, max_slides: usize| {
+            this.ensure_live("LKinematicController2D:setMaxSlides")?;
+            if max_slides == 0 || max_slides > MAX_KINEMATIC_SLIDES {
+                return Err(physics_runtime_error(
+                    "LKinematicController2D:setMaxSlides",
+                    format!("maxSlides must be between 1 and {MAX_KINEMATIC_SLIDES}"),
+                ));
+            }
+            this.settings.max_slides = max_slides;
+            Ok(())
+        });
+        // -- setFilter --
+        methods.add_method_mut("setFilter", |_, this, filter: LuaValue| {
+            this.ensure_live("LKinematicController2D:setFilter")?;
+            let mut filter =
+                query_filter_from_lua("LKinematicController2D:setFilter", Some(filter))?;
+            filter.exclude_body = Some(BodyId(this.body_id));
+            this.settings.filter = filter;
+            Ok(())
+        });
+        // -- setVerticalSpan --
+        methods.add_method_mut("setVerticalSpan", |_, this, (z_min, z_max): (f32, f32)| {
+            this.ensure_live("LKinematicController2D:setVerticalSpan")?;
+            if !z_min.is_finite() || !z_max.is_finite() || z_max <= z_min {
+                return Err(physics_runtime_error(
+                    "LKinematicController2D:setVerticalSpan",
+                    "zMin and zMax must be finite with zMax > zMin",
+                ));
+            }
+            this.settings.vertical_span = Some((z_min, z_max));
+            Ok(())
+        });
+        // -- clearVerticalSpan --
+        methods.add_method_mut("clearVerticalSpan", |_, this, ()| {
+            this.ensure_live("LKinematicController2D:clearVerticalSpan")?;
+            this.settings.vertical_span = None;
+            Ok(())
+        });
+        // -- recover --
+        methods.add_method_mut("recover", |lua, this, opts: Option<LuaTable>| {
+            this.ensure_live("LKinematicController2D:recover")?;
+            let mut settings = this.settings;
+            settings.vertical_span = vertical_span_from_lua(
+                "LKinematicController2D:recover",
+                opts.as_ref(),
+                settings.vertical_span,
+            )?;
+            let result = crate::physics::solve_kinematic_recovery(
+                &this.world.borrow(),
+                this.body_id,
+                settings,
+            )
+            .map_err(|error| physics_runtime_error("LKinematicController2D:recover", error))?;
+            let (x, y) = {
+                let world = this.world.borrow();
+                let body = world.get_body(this.body_id).ok_or_else(|| {
+                    physics_runtime_error(
+                        "LKinematicController2D:recover",
+                        "body is no longer active",
+                    )
+                })?;
+                (
+                    body.position.x + result.applied.0,
+                    body.position.y + result.applied.1,
+                )
+            };
+            this.world
+                .borrow_mut()
+                .set_body_position(this.body_id, x, y);
+            this.last_result = Some(result.clone());
+            kinematic_result_to_table(lua, &result)
+        });
+        // -- getLastResult --
+        methods.add_method("getLastResult", |lua, this, ()| match &this.last_result {
+            Some(result) => Ok(LuaValue::Table(kinematic_result_to_table(lua, result)?)),
+            None => Ok(LuaValue::Nil),
+        });
+        // -- release --
+        methods.add_method_mut("release", |_, this, ()| {
+            this.released = true;
+            this.last_result = None;
+            Ok(())
+        });
+        // -- type --
+        methods.add_method("type", |_, _, ()| Ok("LKinematicController2D"));
+        // -- typeOf --
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LKinematicController2D" || name == "LObject")
+        });
+    }
+}
+
 impl LuaUserData for LuaWorld {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- newKinematicController --
+        /// Creates a bounded circle-sweep controller for one kinematic body.
+        /// @param | body | LBody | Kinematic body owned by this world.
+        /// @param | opts | table | `{radius, skin?, maxSlides?, filter?, zMin?, zMax?}`.
+        /// @return | LKinematicController2D | Explicit controller handle.
+        methods.add_method(
+            "newKinematicController",
+            |_, this, (body_ud, opts): (LuaAnyUserData, LuaTable)| {
+                let body = body_ud.borrow::<LuaBody>().map_err(|_| {
+                    physics_runtime_error("newKinematicController", "body must be an LBody handle")
+                })?;
+                if !Rc::ptr_eq(&this.world, &body.world) {
+                    return Err(physics_runtime_error(
+                        "newKinematicController",
+                        "body belongs to another world",
+                    ));
+                }
+                let radius = opts.get::<_, f32>("radius").map_err(|_| {
+                    physics_runtime_error("newKinematicController", "radius is required")
+                })?;
+                let skin = opts.get::<_, Option<f32>>("skin")?.unwrap_or(0.01);
+                let max_slides = opts.get::<_, Option<usize>>("maxSlides")?.unwrap_or(4);
+                let mut filter = query_filter_from_lua(
+                    "newKinematicController",
+                    opts.get::<_, Option<LuaValue>>("filter")?,
+                )?;
+                filter.exclude_body = Some(body.id);
+                let settings = KinematicControllerSettings {
+                    radius,
+                    skin,
+                    max_slides,
+                    filter,
+                    vertical_span: vertical_span_from_lua(
+                        "newKinematicController",
+                        Some(&opts),
+                        None,
+                    )?,
+                };
+                crate::physics::solve_kinematic_move(
+                    &this.world.borrow(),
+                    body.id.0,
+                    (0.0, 0.0),
+                    settings,
+                )
+                .map_err(|error| physics_runtime_error("newKinematicController", error))?;
+                Ok(LuaKinematicController2D {
+                    world: Rc::clone(&this.world),
+                    body_id: body.id.0,
+                    settings,
+                    last_result: None,
+                    released: false,
+                })
+            },
+        );
         // -- drawDebug --
         /// Renders a debug visualization of all physics bodies onto a software ImageData target.
         /// @param | target | LImageData | The image to draw debug shapes onto.
@@ -3308,6 +3625,81 @@ impl LuaUserData for LuaWorld {
             let filter = query_filter_from_lua("queryAABB", vals.get(4).cloned())?;
             Ok(this.world.borrow().query_aabb_filtered(x, y, w, h, filter))
         });
+        // -- querySector --
+        /// Returns body centers in a radius and angular sector with stable ordering.
+        /// @param | x | number | Sector origin X.
+        /// @param | y | number | Sector origin Y.
+        /// @param | radius | number | Positive query radius.
+        /// @param | angle | number | Sector center angle in radians.
+        /// @param | halfAngle | number | Half width in radians, from 0 through pi.
+        /// @param | filter | table? | Standard physics query filter.
+        /// @return | table | Ordered `{bodyId, x, y, distance, angle}` hits.
+        methods.add_method("querySector", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let radius = required_f32(lua, &vals, 2, "radius")?;
+            let angle = required_f32(lua, &vals, 3, "angle")?;
+            let half_angle = required_f32(lua, &vals, 4, "halfAngle")?;
+            let filter = query_filter_from_lua("querySector", vals.get(5).cloned())?;
+            let hits = this
+                .world
+                .borrow()
+                .query_sector_filtered(x, y, radius, angle, half_angle, filter)
+                .map_err(|error| physics_runtime_error("querySector", error))?;
+            let result = lua.create_table()?;
+            for (index, hit) in hits.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("bodyId", hit.body_id)?;
+                entry.set("x", hit.point.0)?;
+                entry.set("y", hit.point.1)?;
+                entry.set("distance", hit.distance)?;
+                entry.set("angle", hit.angle)?;
+                result.set(index + 1, entry)?;
+            }
+            Ok(result)
+        });
+        // -- setBodyEnabled --
+        /// Enables or disables one body without destroying its stable id.
+        methods.add_method(
+            "setBodyEnabled",
+            |_, this, (body_id, enabled): (usize, bool)| {
+                this.world
+                    .borrow_mut()
+                    .try_set_body_enabled(body_id, enabled)
+                    .map_err(|error| physics_runtime_error("setBodyEnabled", error))
+            },
+        );
+        // -- isBodyEnabled --
+        /// Returns whether one live body participates in simulation and queries.
+        methods.add_method("isBodyEnabled", |_, this, body_id: usize| {
+            this.world
+                .borrow()
+                .is_body_enabled(body_id)
+                .map_err(|error| physics_runtime_error("isBodyEnabled", error))
+        });
+        // -- setFixtureEnabled --
+        /// Enables or disables one zero-based fixture without changing sensor state.
+        methods.add_method(
+            "setFixtureEnabled",
+            |_, this, (body_id, fixture_index, enabled): (usize, usize, bool)| {
+                this.world
+                    .borrow_mut()
+                    .try_set_fixture_enabled(body_id, fixture_index, enabled)
+                    .map_err(|error| physics_runtime_error("setFixtureEnabled", error))
+            },
+        );
+        // -- isFixtureEnabled --
+        /// Returns whether one zero-based fixture participates in simulation and queries.
+        methods.add_method(
+            "isFixtureEnabled",
+            |_, this, (body_id, fixture_index): (usize, usize)| {
+                this.world
+                    .borrow()
+                    .is_fixture_enabled(body_id, fixture_index)
+                    .map_err(|error| physics_runtime_error("isFixtureEnabled", error))
+            },
+        );
         // -- getBodyAtPoint --
         /// Returns the body ID at a specific world point, or nil if no body is there.
         /// @param | x | number | Query point X.

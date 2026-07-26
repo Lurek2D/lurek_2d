@@ -310,8 +310,12 @@ impl GameFS {
     /// intended for desktop authoring tools after the user has selected a workspace.
     pub fn write_workspace_string(&self, path: &str, content: &str) -> EngineResult<()> {
         let resolved = self.resolve_workspace_write_path(path)?;
-        std::fs::write(&resolved, content)
-            .map_err(|e| EngineError::FileSystemError(format!("Failed to write workspace file '{}': {}", path, e)))
+        std::fs::write(&resolved, content).map_err(|e| {
+            EngineError::FileSystemError(format!(
+                "Failed to write workspace file '{}': {}",
+                path, e
+            ))
+        })
     }
     /// Atomically write UTF-8 content to a user-authorized writable workspace mount.
     pub fn write_workspace_string_atomic(&self, path: &str, content: &str) -> EngineResult<()> {
@@ -329,7 +333,11 @@ impl GameFS {
         let file_name = resolved
             .file_name()
             .and_then(|name| name.to_str())
-            .ok_or_else(|| EngineError::FileSystemError("Workspace output path has an invalid file name".into()))?;
+            .ok_or_else(|| {
+                EngineError::FileSystemError(
+                    "Workspace output path has an invalid file name".into(),
+                )
+            })?;
         let temp_path = parent.join(format!(
             ".{file_name}.tmp-{}",
             NEXT_ATOMIC_WRITE_TEMP.fetch_add(1, Ordering::Relaxed)
@@ -339,13 +347,18 @@ impl GameFS {
                 .write(true)
                 .create_new(true)
                 .open(&temp_path)
-                .map_err(|e| EngineError::FileSystemError(format!("Failed to create workspace output: {e}")))?;
-            file.write_all(bytes)
-                .map_err(|e| EngineError::FileSystemError(format!("Failed to write workspace output: {e}")))?;
-            file.sync_all()
-                .map_err(|e| EngineError::FileSystemError(format!("Failed to flush workspace output: {e}")))?;
-            std::fs::rename(&temp_path, &resolved)
-                .map_err(|e| EngineError::FileSystemError(format!("Failed to commit workspace output: {e}")))
+                .map_err(|e| {
+                    EngineError::FileSystemError(format!("Failed to create workspace output: {e}"))
+                })?;
+            file.write_all(bytes).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to write workspace output: {e}"))
+            })?;
+            file.sync_all().map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to flush workspace output: {e}"))
+            })?;
+            std::fs::rename(&temp_path, &resolved).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to commit workspace output: {e}"))
+            })
         })();
         if result.is_err() {
             let _ = std::fs::remove_file(&temp_path);

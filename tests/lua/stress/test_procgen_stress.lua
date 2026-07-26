@@ -194,4 +194,56 @@ describe("pathfinding stress: hexGrid large map", function()
         expect_true(#r.cells > 0, "expected reachable cells")
     end)
 end)
+
+-- @describe procgen stress: bounded constrained placement
+describe("procgen stress: bounded constrained placement", function()
+    -- @stress lurek.procgen.placeConstrained
+    it("places from 5000 candidates with bounded attempts", function()
+        local candidates = {}
+        for i = 1, 5000 do
+            candidates[i] = {
+                id = "candidate_" .. i,
+                x = i * 2,
+                y = i % 31,
+                level = i % 3,
+                region = "region_" .. (i % 16),
+                tags = { "floor" },
+                weight = 1 + (i % 5),
+            }
+        end
+        local placements, report = lurek.procgen.placeConstrained(candidates, {
+            count = 256,
+            requiredTags = { "floor" },
+            minDistance = 1,
+            perRegionCapacity = 32,
+        }, {
+            seed = 991,
+            maxAttempts = 4096,
+        })
+        expect_equal(256, #placements)
+        expect_true(report.complete)
+        expect_true(report.attempts <= 4096)
+    end)
+
+    -- @stress lurek.procgen.validateConnectivity
+    it("validates a 256 by 256 grid iteratively", function()
+        local width, height = 256, 256
+        local cells = {}
+        for i = 1, width * height do
+            cells[i] = 0
+        end
+        local report = lurek.procgen.validateConnectivity({
+            width = width,
+            height = height,
+            cells = cells,
+        }, {
+            starts = { { x = 0, y = 0 } },
+            goals = { { x = width - 1, y = height - 1 } },
+        })
+        expect_equal(1, #report.components)
+        expect_equal(width * height, report.components[1].size)
+        expect_equal(0, #report.unreachableGoals)
+    end)
+end)
+
 test_summary()

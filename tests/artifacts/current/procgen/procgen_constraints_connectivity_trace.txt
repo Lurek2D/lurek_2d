@@ -1,0 +1,7 @@
+seed=2026
+complete=true
+attempts=5
+placements=point_10,point_12,point_15,point_6,point_5
+components=2
+primary_component=1
+unreachable_goals=1

@@ -20,6 +20,9 @@ pub use mixer::PlayState;
 pub use mixer::QueueableSource;
 pub use mixer::SourceType;
 pub use source::AudioSource;
+pub use source::SourceSpatialResult;
+pub use source::SpatialListener;
+pub use source::SpatialListenerPolicy;
 pub use source::SpatialState;
 /// `SoundData`: in-memory PCM sample buffer with WAV encode, sine-wave generation, and Lua interop.
 pub mod sound_data;
