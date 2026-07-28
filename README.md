@@ -16,6 +16,16 @@ The workflow is code-first: write Lua, call `lurek.*`, run the runtime, iterate 
 
 The project is also AI-assisted and agent-friendly. Generated API docs, LuaCATS stubs, specs, examples, tests, and repeatable repo structure are designed to be readable by humans and coding agents. Runtime AI modules are separate features for games, simulations, automation, and learning experiments.
 
+## AI-First Development
+
+Lurek2D is built to be understandable and productive for both people and AI agents:
+
+- **Codex and CAG:** repository contracts, registered agents, skills, and quality gates encode the architecture, ownership, and expected workflow close to the code.
+- **RAG and MCP:** indexed source, specs, documentation, examples, and tests give Codex grounded context; the local MCP server exposes structured repository search, audits, and coverage tools.
+- **AI-first architecture and API:** each public `lurek.*` surface has an explicit owner, generated reference, LuaCATS stub, specification, runnable example, and test path.
+- **Documentation quality:** source docs, generated API pages, specs, examples, and validation keep the user-facing contract synchronized instead of leaving guidance scattered or stale.
+- **Coverage as a contract:** 100% public API unit-test coverage is the project standard, with audits making any gaps visible and actionable. The example corpus is intentionally massive and consistent: it serves as a practical training set for users, coding agents, and future tooling.
+
 ## Best Fit
 
 Use Lurek when you want to build:
