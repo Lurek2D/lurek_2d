@@ -21,7 +21,7 @@
 - Source path: `src/physics`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `28` functions, `27` types, `319` methods
+- Lua API surface: `28` functions, `27` types, `323` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -679,6 +679,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:addWeldJoint(bodyA, bodyB, anchorX, anchorY) -> integer`: Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
 - `LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) -> integer`: Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
 - `LWorld:addZone(x, y, w, h) -> LZone`: Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
+- `LWorld:applyForces(forces) -> nil`: Applies many continuous forces through one validated world borrow.
 - `LWorld:beamAll(x, y, dx, dy, range, filter?) -> table`: Returns all instant beam hits in deterministic distance order.
 - `LWorld:beamClosest(x, y, dx, dy, range, filter?) -> table`: Returns only the closest instant beam hit, or nil if nothing blocks the beam.
 - `LWorld:castBallisticArc(opts) -> table`: Traces a deterministic ballistic arc without spawning a persistent projectile.
@@ -711,6 +712,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getBodyData(id) -> table`: Retrieves the Lua data previously attached to a body, or nil if none was set.
 - `LWorld:getBodyIds() -> integer[]`: Returns a sequential table of all body IDs currently in the world.
 - `LWorld:getBodyOneWay(id) -> number`: Returns the one-way platform normal for a body, or nil,nil if not set.
+- `LWorld:getBodyStates(ids) -> table`: Reads compact position, angle, and velocity state for many bodies in one Lua boundary crossing.
 - `LWorld:getBodyType(id) -> string`: Returns the type name of a body as a string.
 - `LWorld:getCcdSubsteps() -> integer`: Returns the maximum number of CCD substeps used for bullet bodies in this world.
 - `LWorld:getCollisionEvents() -> table`: Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
@@ -731,6 +733,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getMeter() -> number`: Returns the current pixels-per-meter scale.
 - `LWorld:getSolverIterations() -> integer`: Returns the current number of velocity solver iterations.
 - `LWorld:getStats() -> table`: Returns active counts and slot diagnostics for the world.
+- `LWorld:getWrapBounds() -> table?`: Returns the current explicit toroidal wrap bounds, or nil when wrapping is disabled.
 - `LWorld:getZoneEvents() -> table`: Returns all zone enter/leave events from the last step.
 - `LWorld:hasBody(id) -> boolean`: Returns true when a body ID still refers to a live body slot.
 - `LWorld:hasJoint(id) -> boolean`: Returns true when a joint ID still refers to a live joint slot.
@@ -765,6 +768,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
 - `LWorld:setBodyEnabled(body_id, enabled) -> nil`: Enables or disables one body without destroying its stable id.
 - `LWorld:setBodyOneWay(id, nx, ny) -> nil`: Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
+- `LWorld:setBodyStates(states) -> nil`: Applies complete transform and velocity updates atomically after validating every state record.
 - `LWorld:setBodyType(id, bodyType) -> nil`: Changes the type of an existing body (e.g. from "dynamic" to "static").
 - `LWorld:setCcdSubsteps(n) -> nil`: Sets the maximum number of CCD substeps. Increase this when fast bullet bodies still need more reliable thin-wall resolution.
 - `LWorld:setCollisionGroupMask(group, mask) -> nil`: Replaces one row of the 16-group collision matrix.

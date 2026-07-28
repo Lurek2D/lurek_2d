@@ -17,8 +17,6 @@ pub mod distance_field;
 pub mod events;
 /// GPU record builder: packs province styles into upload-ready structs.
 pub mod gpu_bridge;
-/// GPU texture upload helpers for province id, border index, and distance field maps.
-pub mod gpu_upload;
 /// Metadata import pipeline: colour-map PNG + CSV/TOML → ProvinceRegistry.
 pub mod import;
 /// Label centroid computation from province span runs.
@@ -31,6 +29,8 @@ pub mod properties;
 pub mod registry;
 /// RenderCommand generation for fills, borders, capitals, and text labels.
 pub mod render;
+/// CPU-only snapshot bridge from province semantics to renderer uploads.
+pub mod render_snapshot;
 /// Province routing adapters plus owner-attribute aggregation.
 pub mod routing;
 /// Province adjacency graph built from pixel-scan output.
@@ -52,6 +52,7 @@ pub use import::{
 };
 pub use properties::ProvinceProperties;
 pub use registry::ProvinceRegistry;
+pub use render_snapshot::ProvinceRenderSnapshot;
 pub use types::{
     parse_province_effect_flag_token, BorderPairFlags, BorderPairStyle, BorderType,
     BorderTypeConfig, ProvinceClimateKind, ProvinceId, ProvinceSnapshot, ProvinceStyle,

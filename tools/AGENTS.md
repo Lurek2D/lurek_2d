@@ -16,6 +16,7 @@
 - Tools must run locally on Windows; avoid CI-only flows.
 - Keep dependencies minimal and explicitly documented.
 - Code generators must write relative paths inside the workspace.
+- The Lua API parser merges `render_*_api.rs` registration children into the canonical `render` namespace; do not register them as independent public modules.
 - If a tool encodes canonical markers, paths, registry fields, or filename patterns, update the owning `AGENTS.md` and skill guidance in the same change.
 - Run light syntax and link checks before heavy Cargo compiles.
 

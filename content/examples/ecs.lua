@@ -1511,3 +1511,103 @@ do
     world:applyChangeSet(changes:toTable())
     lurek.log.info("ecs changeset hp=" .. tostring(world:get(entity, "hp")))
 end
+--@api: LUniverse:getVersion
+do
+    local world = lurek.ecs.newUniverse()
+    local before = world:getVersion()
+    local entity = world:spawn()
+    world:set(entity, "hp", 10)
+    local after = world:getVersion()
+    local advanced = after > before
+    lurek.log.info("ecs version advanced=" .. tostring(advanced))
+end
+
+--@api: LUniverse:prepareChangeSet
+do
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    changes:append(entity, "hp", "set", 20)
+    local batch = world:prepareChangeSet(changes:toTable(), world:getVersion())
+    local preview = batch:preview()
+    lurek.log.info("prepared records=" .. tostring(preview.recordCount))
+end
+
+--@api: LUniverse:readComponents
+do
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    world:set(entity, "hp", 20)
+    world:set(entity, "position", { x = 3, y = 4 })
+    local rows = world:readComponents({ { id = entity, names = { "hp", "position" } } })
+    local hp = rows[1].components.hp
+    lurek.log.info("bulk-read hp=" .. tostring(hp))
+end
+
+--@api: LEcsBatch:preview
+do
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    changes:append(entity, "hp", "set", 20)
+    local batch = world:prepareChangeSet(changes:toTable())
+    local preview = batch:preview()
+    lurek.log.info("batch records=" .. tostring(preview.recordCount))
+end
+
+--@api: LEcsBatch:commit
+do
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    changes:append(entity, "hp", "set", 20)
+    local batch = world:prepareChangeSet(changes:toTable())
+    local count = batch:commit()
+    lurek.log.info("committed records=" .. tostring(count) .. " hp=" .. tostring(world:get(entity, "hp")))
+end
+
+--@api: LEcsBatch:discard
+do
+    local world = lurek.ecs.newUniverse()
+    local entity = world:spawn()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    changes:append(entity, "hp", "set", 20)
+    local batch = world:prepareChangeSet(changes:toTable())
+    local discarded = batch:discard()
+    lurek.log.info("discarded=" .. tostring(discarded) .. " hp=" .. tostring(world:get(entity, "hp")))
+end
+
+--@api: LEcsBatch:isPending
+do
+    local world = lurek.ecs.newUniverse()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    local batch = world:prepareChangeSet(changes:toTable())
+    local before = batch:isPending()
+    batch:discard()
+    local after = batch:isPending()
+    lurek.log.info("pending before=" .. tostring(before) .. " after=" .. tostring(after))
+end
+
+--@api: LEcsBatch:type
+do
+    local world = lurek.ecs.newUniverse()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    local batch = world:prepareChangeSet(changes:toTable())
+    local type_name = batch:type()
+    local pending = batch:isPending()
+    local preview = batch:preview()
+    lurek.log.info("ecs batch type=" .. type_name)
+    lurek.log.info("pending=" .. tostring(pending) .. " records=" .. tostring(preview.recordCount))
+end
+
+--@api: LEcsBatch:typeOf
+do
+    local world = lurek.ecs.newUniverse()
+    local changes = lurek.event.newChangeSet({ schema = "ecs", revision = 1 })
+    local batch = world:prepareChangeSet(changes:toTable())
+    local exact = batch:typeOf("LEcsBatch")
+    local object = batch:typeOf("LObject")
+    local other = batch:typeOf("LUniverse")
+    lurek.log.info("ecs batch exact=" .. tostring(exact))
+    lurek.log.info("object=" .. tostring(object) .. " other=" .. tostring(other))
+end

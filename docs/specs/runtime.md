@@ -14,7 +14,7 @@
 - Source path: `src/runtime`
 - Binding: `src/lua_api/system_api.rs`
 - Namespace: `lurek.runtime`
-- Lua API surface: `41` functions, `8` types, `0` methods
+- Lua API surface: `43` functions, `8` types, `0` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -193,7 +193,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `lurek.engine.isDebug() -> boolean`: Returns whether the engine binary was built with debug assertions.
 - `lurek.engine.memoryUsage() -> table`: Returns Lua VM memory usage as bytes and rounded kilobytes.
 - `lurek.engine.platform() -> string`: Returns the current desktop operating system name.
-- `lurek.engine.setResourceBudget(budget_bytes) -> nil`: Sets the resource memory budget used by resource statistics reporting.
+- `lurek.engine.setResourceBudget(budget_bytes) -> nil`: Sets the hard resource budget used by public resource allocation and reporting.
 - `lurek.engine.uptime() -> number`: Returns total engine runtime accumulated by the main loop.
 - `lurek.runtime.errorSnapshot(msg) -> string`: Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
 - `lurek.runtime.getArch() -> string`: Returns the CPU architecture of the host system.
@@ -203,6 +203,8 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `lurek.runtime.getConfig() -> table`: Returns a table containing the current engine runtime configuration values.
 - `lurek.runtime.getDebugOverlay() -> boolean`: Returns whether the on-screen debug overlay is currently enabled.
 - `lurek.runtime.getEnv(name) -> string`: Reads an environment variable by name. Returns `nil` if the variable is not set.
+- `lurek.runtime.getFixedStepInfo() -> table`: Returns fixed-step timing and counters for deterministic Lua simulation orchestration.
+- `lurek.runtime.getFixedTick() -> integer`: Returns the monotonic `process_physics` simulation tick.
 - `lurek.runtime.getInfo() -> table`: Returns a table with comprehensive engine and host information.
 - `lurek.runtime.getLastError() -> table`: Returns the most recent engine error as a table, or `nil` if no error has occurred.
 - `lurek.runtime.getLogLevel() -> string`: Returns the current engine log verbosity level as a string.
@@ -393,4 +395,5 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 ## Notes
 
-- No additional module-specific notes.
+- `getFixedTick` increments immediately before each fixed physics callback in interactive and headless execution.
+- `getFixedStepInfo` exposes the current tick, effective/configured step delta, catch-up ceiling, render frame, and fixed-update delta. It is introspection for Lua-owned simulation scheduling, not a cross-module coordinator.

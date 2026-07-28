@@ -29,8 +29,7 @@ use lurek2d::province::{
     },
     distance_field::compute_distance_field_from_registry,
     gpu_bridge::{build_border_style_gpu_records, build_dense_gpu_records},
-    gpu_upload::{pack_u16_pixels_le, pack_u32_pixels_le},
-    ProvinceGrid,
+    ProvinceGrid, ProvinceRenderSnapshot,
 };
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::runtime::resource_keys::FontKey;
@@ -798,7 +797,10 @@ fn test_import_metadata_from_files_uses_label_marker_cluster_centers() {
     let ((ax, ay), (bx, by)) = reg
         .label_line_for(ProvinceId(1))
         .expect("explicit label line");
-    assert!((ax - 1.0).abs() < 0.001);
+    assert!(
+        (ax - 1.0).abs() < 0.001,
+        "expected left marker centroid 1.0, got ({ax}, {ay}) to ({bx}, {by})"
+    );
     assert!((ay - 1.5).abs() < 0.001);
     assert!((bx - 7.0).abs() < 0.001);
     assert!((by - 1.5).abs() < 0.001);
@@ -1277,17 +1279,26 @@ fn test_styled_border_index_uses_border_type_thickness() {
 }
 
 #[test]
-fn test_gpu_upload_pack_u32_pixels_le_is_little_endian_and_dense() {
-    let bytes = pack_u32_pixels_le(&[0x1122_3344, 0xAABB_CCDD]);
-    assert_eq!(bytes.len(), 8);
-    assert_eq!(bytes, vec![0x44, 0x33, 0x22, 0x11, 0xDD, 0xCC, 0xBB, 0xAA]);
-}
+fn test_render_snapshot_is_cpu_only_and_versions_style_changes_independently() {
+    let grid = sample_grid();
+    let mut registry = ProvinceRegistry::from_grid(&grid);
+    let before = ProvinceRenderSnapshot::from_registry(&registry);
 
-#[test]
-fn test_gpu_upload_pack_u16_pixels_le_is_little_endian_and_dense() {
-    let bytes = pack_u16_pixels_le(&[0x1122, 0xAABB, 0x00FF]);
-    assert_eq!(bytes.len(), 6);
-    assert_eq!(bytes, vec![0x22, 0x11, 0xBB, 0xAA, 0xFF, 0x00]);
+    assert_eq!(before.province_ids.len(), 8);
+    assert_eq!(before.border_index.len(), 8);
+    assert_eq!(before.distance_field.len(), 8);
+    assert!(before.province_records.len() >= 3);
+
+    registry.set_political_color(ProvinceId(2), [0.25, 0.5, 0.75, 1.0]);
+    let after = ProvinceRenderSnapshot::from_registry(&registry);
+
+    assert_eq!(before.province_ids_version, after.province_ids_version);
+    assert_eq!(before.border_index_version, after.border_index_version);
+    assert_eq!(before.distance_field_version, after.distance_field_version);
+    assert_ne!(
+        before.province_records_version,
+        after.province_records_version
+    );
 }
 
 #[test]

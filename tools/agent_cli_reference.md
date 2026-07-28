@@ -46,6 +46,8 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/parse_test_log.py` - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary. [durable; mcp:no]
 - `audit/perf_regression_gate.py` - perf_regression_gate.py — lightweight perf/stress regression gate for CI. [durable; mcp:no]
 - `audit/quality_report.py` - quality_report.py — Lurek2D master quality report. [durable; mcp:candidate]
+- `audit/render_dependency_check.py` - Enforce the province/render GPU ownership boundary. [durable; mcp:no]
+- `audit/render_perf_gate.py` - Run deterministic release-mode render scenarios against a checked-in baseline. [durable; mcp:no]
 - `audit/reseed_lua_artifacts.py` - Rebuild Lua golden baselines from current evidence artifacts. [durable; mcp:no]
 - `audit/scan_api_names.py` - Extract all registered function names from Rust API files. [durable; mcp:no]
 - `audit/scan_exact.py` - Scan specific Rust API files for exact function signatures. [durable; mcp:no]

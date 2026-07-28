@@ -35,3 +35,7 @@
 ## Lua API
 
 - Tilefield light metadata uses `radius`, `intensity`, and RGB `color` fields when a cell or modifier describes an authored emitter for `tilelight`.
+- `inspectCells`, `inspectFootprint`, and `summarizeResources` are bounded read-side aggregation helpers. They report tilefield facts only and do not infer building, economy, or ECS policy.
+- `setFootprintOccupant` validates the whole footprint before mutation and advances the field version once. Occupant ids are opaque values chosen and interpreted by Lua.
+- `preparePatch` stages a cloned, validated field mutation with preview/commit/discard semantics. Commit checks the live field version and never coordinates another module.
+- `snapshotRegion` and `hashRegion` provide deterministic regional evidence for Lua-owned saves, caches, and replay checks.

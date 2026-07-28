@@ -26,13 +26,18 @@ pub mod supply_demand;
 /// Type-safe identifiers for nodes, edges, and items.
 pub mod types;
 /// Core graph container and stats.
-pub use core::{Graph, GraphStats};
+pub use core::{
+    Graph, GraphInventorySummary, GraphStats, PreparedTopologyBatch, RecipeExecution, TopologyEdit,
+    TopologyNodeRef,
+};
 /// Edge data type.
 pub use edge::Edge;
 /// Item data types.
 pub use item::{GraphItem, ItemPosition};
 /// Node data and flow configuration types.
-pub use node::{ConversionRule, Demand, FlowMode, Node, OverflowPolicy, Supply};
+pub use node::{
+    ConversionRule, Demand, FlowMode, Node, OverflowPolicy, RecipeRule, RecipeStack, Supply,
+};
 /// Graph simulation event type.
 pub use simulation::GraphEvent;
 /// Type-safe identifiers.

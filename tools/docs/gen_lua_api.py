@@ -696,6 +696,12 @@ def _collect_module_doc(api_file: Path) -> str:
 
 def _determine_module_name(api_file: Path) -> str:
     stem = api_file.stem.replace("_api", "")
+    # Render registration is split by command/resource family while preserving
+    # one public `lurek.render` namespace and its single docs/test/example
+    # owner.  A child such as render_resources_api.rs therefore contributes to
+    # the render inventory instead of creating a phantom render_resources API.
+    if stem.startswith("render_"):
+        return "render"
     return {
         "progression_objects": "progression",
     }.get(stem, stem)

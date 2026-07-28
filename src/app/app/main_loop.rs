@@ -584,6 +584,11 @@ impl LurekApp {
             while self.physics_accumulator >= fixed_dt && steps < max_steps {
                 self.physics_accumulator -= fixed_dt;
                 steps += 1;
+                {
+                    let mut shared = state.borrow_mut();
+                    shared.physics_run.tick = shared.physics_run.tick.wrapping_add(1);
+                    shared.physics_run.last_step_dt = fixed_dt;
+                }
                 let error = {
                     let lua = self.lua.as_ref().expect("lua checked above");
                     call_lua_callback_checked_with_timeout(
@@ -991,11 +996,20 @@ impl LurekApp {
             && self.auto_screenshot_path.is_some()
             && auto_screenshot_ready;
         let screenshot_pixels = {
+            if std::mem::take(&mut state.borrow_mut().cancel_surface_readback_requested) {
+                renderer.cancel_surface_readback();
+            }
+            state.borrow_mut().refresh_province_render_snapshots();
+            let prewarm_work = state.borrow_mut().take_shader_prewarm_work(2);
+            let prewarm_results = renderer.prewarm_scheduled_shader_cache(&shaders, &prewarm_work);
+            state
+                .borrow_mut()
+                .finish_shader_prewarm_work(&prewarm_results);
             let s_ref = state.borrow();
             renderer.render_frame(
                 surface,
                 final_commands,
-                &s_ref.province_registries,
+                &s_ref.province_render_snapshots,
                 &textures,
                 &mut fonts,
                 &s_ref.light_world,
@@ -1065,13 +1079,39 @@ impl LurekApp {
             st.canvases = canvases;
             st.meshes = meshes;
             if capture_screen_image {
-                st.captured_screen_image =
-                    screenshot_pixels
-                        .as_ref()
-                        .and_then(|(width, height, pixels)| {
-                            crate::image::ImageData::from_bytes(*width, *height, pixels.clone())
-                                .ok()
-                        });
+                let image = screenshot_pixels
+                    .as_ref()
+                    .and_then(|(width, height, pixels)| {
+                        crate::image::ImageData::from_bytes(*width, *height, pixels.clone()).ok()
+                    });
+                st.captured_screen_image = image.clone();
+                if let Some(request) = st.surface_readback_request.as_mut() {
+                    if request.state == crate::runtime::SurfaceReadbackRequestState::Pending {
+                        if let Some(image) = image {
+                            request.image = Some(image);
+                            request.state = crate::runtime::SurfaceReadbackRequestState::Ready;
+                        } else {
+                            request.state = match renderer.surface_readback_status {
+                                crate::render::gpu_state::SurfaceReadbackStatus::Pending
+                                | crate::render::gpu_state::SurfaceReadbackStatus::Idle => {
+                                    crate::runtime::SurfaceReadbackRequestState::Pending
+                                }
+                                crate::render::gpu_state::SurfaceReadbackStatus::TimedOut => {
+                                    crate::runtime::SurfaceReadbackRequestState::TimedOut
+                                }
+                                crate::render::gpu_state::SurfaceReadbackStatus::Cancelled => {
+                                    crate::runtime::SurfaceReadbackRequestState::Cancelled
+                                }
+                                crate::render::gpu_state::SurfaceReadbackStatus::Failed => {
+                                    crate::runtime::SurfaceReadbackRequestState::Failed
+                                }
+                                crate::render::gpu_state::SurfaceReadbackStatus::Ready => {
+                                    crate::runtime::SurfaceReadbackRequestState::Failed
+                                }
+                            };
+                        }
+                    }
+                }
                 if st.captured_screen_image.is_none()
                     && renderer.surface_readback_status
                         == crate::render::gpu_state::SurfaceReadbackStatus::Pending

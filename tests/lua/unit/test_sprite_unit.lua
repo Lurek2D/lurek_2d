@@ -15,6 +15,15 @@ end
 
 -- @describe module interface
 describe("module interface", function()
+    -- @covers lurek.sprite.newBatch
+    it("creates the canonical sprite-owned batch from a render texture", function()
+        local batch = lurek.sprite.newBatch(SPRITE_TEXTURE, 8)
+        expect_type("userdata", batch)
+        expect_equal("LSpriteBatch", batch:type())
+        expect_equal(0, batch:getCount())
+        expect_true(batch:release())
+    end)
+
     -- @covers lurek.sprite.newSprite
     it("exposes newSprite for lit sprite normal map workflows", function()
         expect_type("function", lurek.sprite.newSprite)

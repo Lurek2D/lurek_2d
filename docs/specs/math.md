@@ -14,7 +14,7 @@
 - Source path: `src/math`
 - Binding: `src/lua_api/math_api.rs`
 - Namespace: `lurek.math`
-- Lua API surface: `99` functions, `19` types, `164` methods
+- Lua API surface: `100` functions, `20` types, `169` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -286,6 +286,7 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 - `lurek.math.newSpatialHash(cell_size) -> LSpatialHash`: Creates a spatial hash index with a cell size.
 - `lurek.math.newTransform(x?, y?, angle?, sx?, sy?, ox?, oy?, kx?, ky?) -> LTransform`: Creates a 2D transform. All components are optional; omitting all returns an identity transform.
 - `lurek.math.newTween(duration, easing_name?) -> LTween`: Creates a tween with a duration and optional easing name.
+- `lurek.math.newWrapSpace(min_x, min_y, width, height) -> LWrapSpace`: Creates a pure toroidal-coordinate helper without changing world, ECS, or physics state.
 - `lurek.math.outBack(t) -> number`: Applies back ease-out. This function is exposed to Lua scripts.
 - `lurek.math.outBounce(t) -> number`: Applies bounce ease-out. This function is exposed to Lua scripts.
 - `lurek.math.outCubic(t) -> number`: Applies cubic ease-out. This function is exposed to Lua scripts.
@@ -718,6 +719,22 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 - `LVec3:sub(other) -> LVec3`: Returns the difference from another vector.
 - `LVec3:type() -> string`: Returns the Lua-visible type name for this vector handle.
 - `LVec3:typeOf(name) -> boolean`: Returns whether this vector handle matches a supported type name.
+
+#### LWrapSpace Type
+
+- Reusable toroidal-coordinate helper for Lua games that choose wraparound world rules.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LWrapSpace:delta(ax, ay, bx, by) -> number`: Returns the shortest signed toroidal displacement from point A to point B.
+- `LWrapSpace:distance(ax, ay, bx, by) -> number`: Returns the shortest toroidal distance between two points.
+- `LWrapSpace:type() -> string`: Returns this helper's type name.
+- `LWrapSpace:typeOf(name) -> boolean`: Checks this helper against its public type names.
+- `LWrapSpace:wrap(x, y) -> number`: Wraps a point into this half-open toroidal domain.
 
 ## Examples
 

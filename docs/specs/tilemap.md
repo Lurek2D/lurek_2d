@@ -16,7 +16,7 @@
 - Source path: `src/tilemap`
 - Binding: `src/lua_api/tilemap_api.rs`
 - Namespace: `lurek.tilemap`
-- Lua API surface: `14` functions, `11` types, `121` methods
+- Lua API surface: `14` functions, `12` types, `134` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -263,13 +263,35 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LChunkMap:getDirtyChunks() -> table`: Returns loaded chunk coordinates with tile changes pending downstream updates.
 - `LChunkMap:getLoadedChunks() -> table`: Returns a list of all currently loaded chunk coordinates.
 - `LChunkMap:getTile(x, y) -> integer`: Returns the tile GID at the given world-tile coordinate.
+- `LChunkMap:getVersion() -> integer`: Returns the monotonic logical tile-content version.
+- `LChunkMap:hashRegion(x0, y0, x1, y1) -> string`: Returns a deterministic hash of one bounded half-open tile rectangle.
 - `LChunkMap:loadChunk(cx, cy) -> nil`: Loads a chunk into memory at the given chunk coordinates.
 - `LChunkMap:loadChunkFromBytes(cx, cy, data) -> nil`: Loads one chunk from bytes previously returned by `chunkToBytes`.
+- `LChunkMap:prepareBatch(edits, expectedVersion?) -> LChunkMapBatch`: Validates and stages tile edits without mutating the live map.
+- `LChunkMap:readTiles(coords) -> table`: Reads many tile coordinates while crossing the Lua boundary only once.
 - `LChunkMap:setTile(x, y, gid) -> nil`: Sets the tile GID at the given world-tile coordinate.
 - `LChunkMap:setTiles(edits) -> table`: Applies multiple `{x, y, gid}` tile edits and returns the chunks dirtied by this batch.
+- `LChunkMap:snapshotRegion(x0, y0, x1, y1) -> table`: Captures a bounded half-open rectangle as a deterministic row-major tile array.
 - `LChunkMap:type() -> string`: Returns the type name of this userdata.
 - `LChunkMap:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LChunkMap:unloadChunk(cx, cy) -> nil`: Unloads a chunk from memory at the given chunk coordinates.
+
+#### LChunkMapBatch Type
+
+- Prepared, version-checked mutation for one existing `LChunkMap`.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LChunkMapBatch:commit() -> table`: Commits this prepared mutation if the map version is unchanged.
+- `LChunkMapBatch:discard() -> boolean`: Discards this prepared mutation without changing the map.
+- `LChunkMapBatch:isPending() -> boolean`: Returns whether this batch can still be committed or discarded.
+- `LChunkMapBatch:preview() -> table`: Returns deterministic metadata for this prepared chunk-map mutation.
+- `LChunkMapBatch:type() -> string`: Returns the type name of this prepared batch.
+- `LChunkMapBatch:typeOf(name) -> boolean`: Checks whether this object matches the requested type.
 
 #### LChunkMapGetChunksInViewResult Type
 
@@ -343,6 +365,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LLargeMapRenderer:getTile(x, y) -> integer`: Returns the tile GID at a given position.
 - `LLargeMapRenderer:getTilesetColumns() -> integer`: Returns the tileset column count used for UV calculation.
 - `LLargeMapRenderer:getTotalChunks() -> integer`: Returns the total number of chunks in the map.
+- `LLargeMapRenderer:getVersion() -> integer`: Returns the monotonic version of this renderer's tile snapshot.
 - `LLargeMapRenderer:getVisibleChunks() -> integer`: Returns the number of chunks currently visible in the viewport.
 - `LLargeMapRenderer:invalidateAll() -> nil`: Marks all chunks as dirty, forcing a full rebuild on the next render.
 - `LLargeMapRenderer:invalidateChunk(cx, cy) -> nil`: Marks a specific chunk as dirty so it will be rebuilt on the next render.
@@ -353,6 +376,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LLargeMapRenderer:setLodThresholds(levels) -> nil`: Sets the zoom thresholds at which LOD levels change.
 - `LLargeMapRenderer:setMapData(data, width, height) -> nil`: Replaces all tile data with a flat array of GIDs for the given dimensions.
 - `LLargeMapRenderer:setTile(x, y, tileId) -> nil`: Sets a single tile GID at a given position.
+- `LLargeMapRenderer:setTiles(edits) -> integer`: Applies a bounded list of tile edits atomically and increments the data version once.
 - `LLargeMapRenderer:setTilesetColumns(cols) -> nil`: Sets the column count of the associated tileset atlas for UV calculation.
 - `LLargeMapRenderer:setViewport(w, h) -> nil`: Sets the viewport rectangle used for render-command culling.
 - `LLargeMapRenderer:type() -> string`: Returns the type name of this userdata.

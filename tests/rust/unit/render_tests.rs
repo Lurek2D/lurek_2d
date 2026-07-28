@@ -1580,6 +1580,48 @@ mod render_budget_tests {
     }
 
     #[test]
+    fn frame_budget_counts_glyphs_and_polygon_indices_atomically() {
+        let mut budget = RenderBudget::default();
+        let glyph_limits = RenderBudgetLimits {
+            max_glyphs: 3,
+            ..RenderBudgetLimits::default()
+        };
+        let text = RenderCommand::Print {
+            font_key: dummy_font_key(),
+            text: "ab".into(),
+            x: 0.0,
+            y: 0.0,
+            scale: 1.0,
+        };
+        assert!(budget.try_accept(&text, &glyph_limits).is_ok());
+        assert!(matches!(
+            budget.try_accept(&text, &glyph_limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "glyphs",
+                ..
+            })
+        ));
+
+        let mut budget = RenderBudget::default();
+        let index_limits = RenderBudgetLimits {
+            max_geometry_indices: 5,
+            ..RenderBudgetLimits::default()
+        };
+        let triangle = RenderCommand::Polygon {
+            vertices: vec![0.0, 0.0, 1.0, 0.0, 0.0, 1.0],
+            mode: lurek2d::render::DrawMode::Fill,
+        };
+        assert!(budget.try_accept(&triangle, &index_limits).is_ok());
+        assert!(matches!(
+            budget.try_accept(&triangle, &index_limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "geometry indices",
+                ..
+            })
+        ));
+    }
+
+    #[test]
     fn frame_budget_counts_resolved_sprite_batch_items_atomically() {
         let mut budget = RenderBudget::default();
         let limits = RenderBudgetLimits {
@@ -1624,6 +1666,32 @@ mod render_budget_tests {
                 max: 1,
             })
         );
+    }
+
+    #[test]
+    fn frame_budget_rejects_upload_bytes_before_the_upload_is_committed() {
+        let mut budget = RenderBudget::default();
+        let limits = RenderBudgetLimits {
+            max_uploads: 1,
+            max_upload_bytes: 4,
+            ..RenderBudgetLimits::default()
+        };
+        assert!(budget.try_accept_upload(4, &limits).is_ok());
+        assert!(matches!(
+            budget.try_accept_upload(1, &limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "uploads",
+                ..
+            })
+        ));
+        budget.reset();
+        assert!(matches!(
+            budget.try_accept_upload(5, &limits),
+            Err(RenderBudgetError::Exceeded {
+                field: "upload bytes",
+                ..
+            })
+        ));
     }
 
     #[test]
@@ -1746,7 +1814,7 @@ mod gpu_shadow_tests {
             0.0,
             f32::INFINITY,
             0xFFFF,
-            std::iter::repeat(&occluder).take(MAX_SHADOW_EDGES_PER_DISPATCH / 4 + 1),
+            std::iter::repeat_n(&occluder, MAX_SHADOW_EDGES_PER_DISPATCH / 4 + 1),
         );
 
         assert_eq!(collection.edges.len(), MAX_SHADOW_EDGES_PER_DISPATCH);
@@ -2252,7 +2320,9 @@ mod gpu_renderer_tests {
     use lurek2d::render::shader::{
         validate_uniform_name, MAX_SHADER_SOURCE_BYTES, MAX_SHADER_SOURCE_TOKENS,
     };
-    use lurek2d::render::{BlendMode, Shader, ShaderTarget, TextureData, UniformValue};
+    use lurek2d::render::{
+        BlendMode, Shader, ShaderTarget, ShaderTrust, TextureData, UniformValue,
+    };
     use lurek2d::runtime::resource_keys::StaticGeometryKey;
 
     const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
@@ -2575,6 +2645,23 @@ mod gpu_renderer_tests {
             .send("gain".into(), UniformValue::Float(f32::NAN))
             .unwrap_err()
             .contains("finite"));
+    }
+
+    #[test]
+    fn untrusted_runtime_shader_text_is_rejected_before_wgsl_parsing() {
+        assert!(Shader::new_for_trust(
+            VALID_WGSL_FRAGMENT_SHADER.to_string(),
+            ShaderTarget::Draw,
+            ShaderTrust::UntrustedRuntime,
+        )
+        .unwrap_err()
+        .contains("untrusted runtime"));
+        assert_eq!(
+            Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+                .expect("trusted project shader")
+                .trust(),
+            ShaderTrust::TrustedProject
+        );
     }
 
     #[test]

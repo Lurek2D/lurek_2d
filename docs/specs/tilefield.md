@@ -12,7 +12,7 @@
 - Source path: `src/tilefield`
 - Binding: `src/lua_api/tilefield_api.rs`
 - Namespace: `lurek.tilefield`
-- Lua API surface: `6` functions, `2` types, `95` methods
+- Lua API surface: `6` functions, `3` types, `108` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -233,10 +233,14 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:getTopology() -> string`: Returns the field topology name used for coordinate interpretation.
 - `LTileField:getVersion() -> integer`: Returns the current tilefield data version.
 - `LTileField:hasSlot(slot) -> boolean`: Returns true when a named object slot is declared.
+- `LTileField:hashRegion(opts) -> string`: Returns a deterministic hash of gameplay facts inside one rectangular region.
 - `LTileField:inBounds(x, y, z?) -> boolean`: Returns whether one-based coordinates are inside the field.
+- `LTileField:inspectCells(coords) -> table`: Reads many one-based cells and common placement facts in one boundary crossing.
+- `LTileField:inspectFootprint(opts) -> table`: Summarizes occupancy, buildability, resources, and blockers for one rectangle.
 - `LTileField:isBuildable(x, y, z?) -> boolean`: Returns whether one tile cell accepts build placement.
 - `LTileField:line(opts) -> nil`: Returns topology-aware one-based cells between `from` and `to` tables.
 - `LTileField:patchCells(patches) -> table`: Atomically applies cell/profile/modifier/reference patches and returns stable dirty rectangles.
+- `LTileField:preparePatch(patches, expectedVersion?) -> LTileFieldBatch`: Validates and stages cell/profile/modifier/reference patches without mutating the field.
 - `LTileField:regionContains(name, x, y, z?) -> boolean`: Returns whether a named region contains a one-based tile cell.
 - `LTileField:regionsAt(x, y, z?) -> table`: Returns all region names that contain the addressed one-based tile cell.
 - `LTileField:removeCategory(name) -> boolean`: Removes a custom category and clears dependent cell/modifier data.
@@ -253,6 +257,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:setCategoryTransmission(x, y, z?, category, value) -> nil`: Sets one category transmission multiplier on one cell.
 - `LTileField:setCell(x, y, z?, cell) -> nil`: Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
 - `LTileField:setCost(x, y, z?, channel, cost) -> nil`: Sets the cost for one cell/channel.
+- `LTileField:setFootprintOccupant(opts) -> integer`: Atomically assigns one occupant id to every cell in a rectangular footprint.
 - `LTileField:setModifier(name, modifier) -> nil`: Registers or replaces a named tile modifier.
 - `LTileField:setOccupant(x, y, z?, occupant) -> nil`: Stores an occupant id on one tile cell.
 - `LTileField:setProfile(name, profile) -> nil`: Registers or replaces a legacy tilefield profile.
@@ -263,11 +268,30 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileField:setResource(x, y, z?, resource?) -> nil`: Sets or clears a resource label on one tile cell.
 - `LTileField:setSunOcclusion(x, y, z?, value) -> nil`: Sets top-light occlusion in the inclusive range 0..1.
 - `LTileField:snapshot() -> table`: Captures block/cost/ref layers plus resource, buildable, and occupant cell facts.
+- `LTileField:snapshotRegion(opts) -> table`: Captures a deterministic, bounded region snapshot for Lua-side save or diff logic.
+- `LTileField:summarizeResources(opts) -> table`: Counts resource labels inside one rectangular footprint.
 - `LTileField:type() -> string`: Returns the Lua-visible type name for this tilefield handle.
 - `LTileField:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
 - `LTileField:writeBlockLayer(channel, z?, values) -> nil`: Writes one full blocker channel layer from a row-major boolean array.
 - `LTileField:writeCostLayer(channel, z?, values) -> nil`: Writes one full cost channel layer from a row-major number array.
 - `LTileField:writeRefLayer(slot, z?, values) -> nil`: Writes one full named ref layer from a row-major integer-or-nil array.
+
+#### LTileFieldBatch Type
+
+- Prepared, version-checked replacement for an existing tilefield.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LTileFieldBatch:commit() -> table`: Commits this patch when the live field version still matches.
+- `LTileFieldBatch:discard() -> boolean`: Discards this prepared field patch.
+- `LTileFieldBatch:isPending() -> boolean`: Returns whether this prepared field patch can still be committed.
+- `LTileFieldBatch:preview() -> table`: Returns immutable metadata for this prepared field patch.
+- `LTileFieldBatch:type() -> string`: Returns this userdata type name.
+- `LTileFieldBatch:typeOf(name) -> boolean`: Checks this userdata against `LTileFieldBatch` or `LObject`.
 
 #### LTileFieldMap Type
 

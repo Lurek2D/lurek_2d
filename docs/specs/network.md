@@ -14,7 +14,7 @@
 - Source path: `src/network`
 - Binding: `src/lua_api/network_api.rs`
 - Namespace: `lurek.network`
-- Lua API surface: `27` functions, `14` types, `34` methods
+- Lua API surface: `29` functions, `16` types, `46` methods
 - User-facing: `true`
 - Plugin tier: `tier_1_plugin`
 
@@ -110,11 +110,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### netstate.rs
 
-- This file owns the Rust userdata wrapper around the Lua netstate library used for replicated keyed game state.
-- `LNetworkState` stores a registry key and forwards set, get, poll, turn, and callback methods into Lua tables.
-- Registry access stays here because the lifetime boundary between Rust userdata and Lua netstate is this owner.
-- It is a binding shim, not the sync algorithm itself, nor the transport runtime that delivers packets.
-- Open it when Lua-facing state-sync methods change; snapshot policies and socket work live in siblings.
+- Provides a bounded, transport-neutral replicated key/value state handle for Lua games.
+- `LNetworkState` owns only serializable state, change notifications, and deterministic payloads.
+- Lua decides when and how to send `takeDirty` or `takeRequest` payloads through a network host.
+- This module deliberately does not bind ECS, physics, or game-specific state to networking.
+- Callbacks are dispatched after mutable state borrows have been released.
 
 ### relay.rs
 
@@ -124,11 +124,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### rpc.rs
 
-- This file owns the Rust userdata wrapper around the Lua RPC manager used for remote function invocation.
-- `LNetworkRpc` stores a registry key and forwards register, call, notify, broadcast, and timeout methods.
-- Registry-table retrieval stays here because the Rust-to-Lua lifetime boundary is this file's core contract.
-- It is a binding layer for RPC scripting, not the socket transport, host ownership, or auth runtime.
-- Open it when Lua-facing RPC controls change; transport workers and wire values live in sibling modules.
+- Provides a bounded, transport-neutral RPC protocol handle for Lua games.
+- `LNetworkRpc` serializes calls, notifications, and responses but never selects peers or sends packets.
+- Lua routes `takeOutgoing` payloads through an `LNetworkHost` and feeds received payloads to `process`.
+- The handle owns handlers, pending completion callbacks, and timeout policy only.
+- It intentionally does not bridge RPC calls to ECS, physics, or gameplay systems.
 
 
 
@@ -148,10 +148,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `lurek.network.makePunchProbe(peer_id) -> string`: Creates a relay punch probe payload for a peer id.
 - `lurek.network.newClient(opts) -> LNetworkHost`: Creates a client host and connects to an address.
 - `lurek.network.newHost(opts) -> LNetworkHost`: Creates a network host from an options table.
-- `lurek.network.newNetState(host?, opts?) -> LNetworkState`: Creates a network state synchronization manager.
+- `lurek.network.newInputBuffer(opts?) -> LNetworkInputBuffer`: Creates a bounded input-reordering buffer for Lua-owned fixed-step simulation.
+- `lurek.network.newNetState(host?, opts?) -> LNetworkState`: Creates a transport-neutral replicated state manager.
 - `lurek.network.newRelayTicket(room_id, peer_id) -> string`: Creates an encoded relay ticket. This function is exposed to Lua scripts.
-- `lurek.network.newRpc(host, channel?, timeout_ms?) -> LNetworkRpc`: Creates a network RPC manager attached to a host.
+- `lurek.network.newRpc(host?, channel?, timeout_seconds?) -> LNetworkRpc`: Creates a transport-neutral RPC protocol manager.
 - `lurek.network.newServer(opts) -> LNetworkHost`: Creates a server host from an options table.
+- `lurek.network.newSnapshotStore(opts?) -> LNetworkSnapshotStore`: Creates a bounded resolved snapshot history for explicit Lua interpolation and correction.
 - `lurek.network.pack(value) -> string`: Packs a supported Lua value into a binary network message string.
 - `lurek.network.packSnapshot(snapshot) -> string`: Packs a sync snapshot table into a binary network message string.
 - `lurek.network.parsePunchProbe(payload) -> string`: Parses a relay punch probe payload.
@@ -311,6 +313,22 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented methods.
 
+#### LNetworkInputBuffer Type
+
+- Lua-side wrapper for a bounded, deterministic remote-input buffer.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LNetworkInputBuffer:drainThrough(tick) -> table`: Drains accepted inputs through a simulation tick in stable tick, peer, and sequence order.
+- `LNetworkInputBuffer:getStats() -> table`: Reports the buffer's finite capacity and current deterministic drain state.
+- `LNetworkInputBuffer:push(peer_id, tick, sequence, payload) -> boolean`: Stores one serializable remote input and reports its deterministic acceptance result.
+- `LNetworkInputBuffer:type() -> string`: Returns the Lua-visible type name of this bounded input-buffer handle.
+- `LNetworkInputBuffer:typeOf(name) -> boolean`: Checks this userdata against the public input-buffer type names.
+
 #### LNetworkJoinRoomResult Type
 
 - Generated result shape from @field tags.
@@ -411,6 +429,24 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - No documented methods.
 
+#### LNetworkSnapshotStore Type
+
+- Lua-side wrapper for a bounded resolved snapshot history.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LNetworkSnapshotStore:get(tick) -> table`: Returns one resolved full snapshot frame, or nil when its tick is not retained.
+- `LNetworkSnapshotStore:getStats() -> table`: Returns bounded history capacity, retained ticks, and current frame count.
+- `LNetworkSnapshotStore:interpolate(id, from_tick, to_tick, alpha) -> table`: Interpolates one entity between two retained resolved frames.
+- `LNetworkSnapshotStore:latest() -> table`: Returns the latest resolved full snapshot frame, or nil when no frame is retained.
+- `LNetworkSnapshotStore:push(snapshot) -> nil`: Resolves and retains one full, corrective, or delta snapshot.
+- `LNetworkSnapshotStore:type() -> string`: Returns the Lua-visible type name of this resolved snapshot-store handle.
+- `LNetworkSnapshotStore:typeOf(name) -> boolean`: Checks this userdata against its public type names.
+
 #### LNetworkUnpackResult Type
 
 - Generated result shape from @field tags.
@@ -437,4 +473,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- Replication composition stays in Lua. `newInputBuffer` only retains ordered, bounded input payloads; Lua decides how a drained input updates ECS, physics, or gameplay state.
+- `newNetState` is an explicit serializable key/value protocol. Lua routes `takeDirty` and `takeRequest` payloads through an `LNetworkHost` (or another chosen transport path), then supplies received state with `apply` and delivers queued callbacks through `poll`.
+- `newRpc` is likewise protocol-only. Lua routes `takeOutgoing` bytes and passes received bytes to `process`; RPC does not choose peers, own a match loop, or bridge into game modules.
+- Wraparound, prediction, loadouts, and minimap presentation remain separate specialist surfaces. A game composes them in Lua rather than enabling a built-in MOBA or fleet framework.

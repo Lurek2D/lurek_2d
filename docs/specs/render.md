@@ -15,7 +15,7 @@
 - Source path: `src/render`
 - Binding: `src/lua_api/render_api.rs`
 - Namespace: `lurek.render`
-- Lua API surface: `125` functions, `15` types, `95` methods
+- Lua API surface: `131` functions, `17` types, `116` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -56,15 +56,23 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Shader uniform names must be valid, non-reserved WGSL identifiers before they can participate in wrapper-source generation.
 - Render commands and registered compound shapes pass through a central input sanitizer before backend work; non-finite floats, invalid sizes, out-of-range colors, excessive segments, and malformed point arrays are rejected and counted.
 - Particle commands accept at most 16,384 snapshots, and their worst-case 40-vertex ring expansion is charged to the cumulative geometry budget before allocation or tessellation.
-- A trusted engine-owned cumulative frame budget caps command families, source geometry, resolved sprite-batch instances, text bytes/spans, post-fx passes, light quads, and shadow-atlas rows before tessellation or encoding. Geometry and batch ceilings are additionally clamped to the active device's buffer limit; Lua can observe effective behavior but cannot raise those limits.
+- A trusted engine-owned cumulative frame budget caps command families, source geometry vertices and indices, resolved sprite-batch instances, text bytes/spans/glyphs, post-fx passes, light quads, shadow-atlas rows, and upload count/bytes before tessellation or encoding. Geometry and batch ceilings are additionally clamped to the active device's buffer limit; `lurek.render.getBudgetLimits()` exposes the effective read-only values and Lua cannot raise them.
+- Retained GPU canvases and static meshes have independent byte ceilings in addition to their count ceilings. Replacements are validated before allocation and are published only after their descriptors and buffers are complete.
+- Texture uploads are additionally charged against trusted per-frame upload-count and upload-byte limits before `wgpu` receives the source data.
+- Shader source authority is explicit: engine WGSL is built-in, project WGSL is parsed only through the restricted fragment interface, and mod/runtime-provided shader text is rejected before parsing. Restricted project WGSL cannot declare resource bindings and is bounded by source, line, token, uniform, cache-entry, and specialized-pipeline limits.
+- `lurek.render.getStats()` exposes per-frame shader-cache hits, misses, negative-cache hits, bounded-cache rejections, and cache evictions alongside draw statistics. Compiled and negative caches each enforce entry and retained-source-byte budgets; eviction only drops GPU cache state and never invalidates a Lua shader handle.
 - Sprite batches are independently bounded to 65,536 retained entries; Lua cannot request a higher cap, and each insertion uses fallible reservation before accepting the entry.
+- Sprite-batch bulk add, replacement, indexed update, and indexed removal validate their complete input before mutation. Each successful logical batch advances one batch-local version, while `getDiagnostics` exposes capacity, retained count, and remaining slots.
 - Fullscreen postfx capture textures are capped at 128 game-controlled stack IDs and are discarded whenever the surface extent changes, preventing stale or unbounded retained targets.
 - Transform, stencil, post-fx, sort-group, and layer scopes are validated as balanced at the frame boundary. An invalid stream is rejected as a frame rather than leaking state into the next frame.
 - Arc tessellation clamps zero segment counts to a safe minimum before vertex generation.
 - Draw-layer ordering uses total floating-point ordering and callback ID tie-breaks, so NaN and equal depths flush deterministically.
 - `RenderDiagnostics` separates faults from activity: dropped/rejected work and resource failures are faults, while shadow work and buffer growth remain normal telemetry and cannot double-count a dropped command. The renderer keeps independent last-frame and saturating cumulative snapshots, so resetting a new frame never erases aggregate observability.
 - Frame-local color, texture, draw, instance, merge, and command scratch buffers clear between frames; normal capacity is retained for steady-state work, while exceptional retained capacity is reclaimed at the next frame boundary.
-- Surface screenshot readback uses a bounded staging layout (at most 64 MiB) and asynchronous device polling. Only one interactive request may be pending; requests expose `idle`, `pending`, `ready`, `failed`, `timed_out`, or `cancelled` internal lifecycle states, remain pending only while a map is active, then complete or fail/cancel deterministically without blocking the interactive loop.
+- Surface screenshot readback uses a bounded staging layout (at most 64 MiB) and asynchronous device polling. Only one interactive request may be retained; a public `LReadbackRequest` exposes non-blocking `poll`/`status`, `cancel`, single-consumption `result`, and `release`, with `pending`, `ready`, `failed`, `timed_out`, and `cancelled` states. Releasing a pending handle cancels its scheduled copy exactly once, so a stale readback cannot complete into a later request. `saveScreenshot` uses the same single active surface-capture slot and rejects concurrent requests.
+- Shader prewarming is explicit rather than a hidden loading-time spike. `lurek.render.prewarmShaders({ LShader, ... })` deduplicates at most 64 live shaders into an `LShaderPrewarmRequest`; the app drains only two entries at each renderer frame boundary through the ordinary bounded shader cache. Its non-blocking `status`/`poll`, `progress`, `cancel`, and `release` operations expose `pending`, `ready`, `failed`, and `cancelled` outcomes. Prewarm shares normal cache eviction, device-limit rejection, source-byte limits, and negative-cache suppression, so it cannot bypass renderer resource budgets.
+- Resource-budget pressure never silently releases live `LImage`/`LTexture` or `LCanvas` handles. Public-resource accounting reports those bytes as non-evictable pressure; only render-owned, reconstructible caches can evict their own entries. This makes over-budget behavior deterministic and keeps stale handles a caller-controlled release concern.
+- Canonical owner migration keeps render focused on execution: `lurek.font.load` handles are accepted everywhere render consumes fonts, `lurek.render.newTexture` is the canonical render-residency constructor while `newImage` remains a compatibility alias, and `lurek.sprite.newBatch` owns batch construction while `render.newSpriteBatch` remains compatible during the migration window.
 - Surface loss/outdating requests reconfiguration, surface OOM requests controlled shutdown, and uncaptured wgpu OOM/validation/internal callbacks are propagated to the app loop without driver text. The current app does not own device recreation, so an uncaptured validation/internal failure follows the documented controlled-stop path rather than submitting more work to an invalid device.
 - Shadow edge collection filters disabled, masked-out, and out-of-radius occluders before GPU upload, reuses per-occluder world-space edge caches for shadow lights in the same frame, and records rendered shadow rows plus collected and culled edge counts. Each light dispatch accepts at most 65,536 caster edges; collection and dynamic-buffer growth are fallible, and growth is rejected when checked byte size exceeds the active device buffer limit.
 - `SoftwareCaptureDiagnostics` records unsupported capture commands and bounded polygon fill behavior; software capture is evidence-oriented and does not promise pixel parity for GPU-only texture, shader, post-fx, layer, batch, or registered-resource commands.
@@ -419,11 +427,24 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Use this file when changing render province map pipeline defaults, lifecycle handling, validation, or data rules.
 - Keeps failure paths and edge cases near render province map pipeline state that explains them instead of outward.
 
+### province_upload.rs
+
+- Owns GPU texture creation and uploads for renderer-neutral province packets.
+- This is the sole `wgpu` owner for province-map texture residency. Province
+- prepares CPU payloads; this module selects formats and writes them to the queue.
+
 ### render_budget.rs
 
 - Owns cumulative, backend-independent limits for one accepted render frame.
 - It is deliberately checked before tessellation, allocation, or command encoding so
 - Lua command streams cannot turn individually valid requests into unbounded work.
+
+### render_capabilities.rs
+
+- Defines the stable render-capability snapshot exposed to scripts and tools.
+- The renderer translates mutable backend limits and feature bits into this
+- narrow, backend-neutral data model. Lua receives only this snapshot and
+- never a raw `wgpu` object or backend-specific adapter string.
 
 ### render_diagnostics.rs
 
@@ -499,7 +520,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 ### Functions
 
 - `lurek.render.applyEffectToCanvas(sourceCanvas, targetCanvas, effectOrStack) -> LCanvas`: Applies a post-processing effect or stack from one canvas into another canvas.
-- `lurek.render.applyShaderToCanvas(canvas, shader, opts?) -> LCanvas`: Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
+- `lurek.render.applyShaderToCanvas(canvas, shader, opts?) -> LCanvas`: Queues a postfx shader pass that mutates a canvas after queued draws in the current frame.
 - `lurek.render.applyTransform(mat) -> nil`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 - `lurek.render.arc(mode, x, y, radius, angle1, angle2, segments?) -> nil`: Draws a filled or outlined circular arc segment.
 - `lurek.render.beginSortGroup(id) -> nil`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
@@ -527,12 +548,14 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.flushSortGroup(id) -> nil`: Ends a sort group and emits all accumulated draw calls in sorted order.
 - `lurek.render.getBackgroundColor() -> number, number, number, number`: Returns the current background clear color.
 - `lurek.render.getBlendMode() -> string`: Returns the current blend mode name.
+- `lurek.render.getBudgetLimits() -> table`: Returns the effective, read-only aggregate render limits selected by the engine and active GPU.
 - `lurek.render.getBuiltInFontNames() -> string[]`: Returns all stable built-in font names.
-- `lurek.render.getCanvas() -> LCanvas`: Returns the currently active canvas, or nil if drawing to the screen.
-- `lurek.render.getCanvasSize(canvas) -> number, number`: Returns the pixel dimensions of a canvas.
+- `lurek.render.getCanvas() -> nil`: Returns the active canvas, or nil when drawing to the screen.
+- `lurek.render.getCanvasSize(ud) -> nil`: Returns the pixel dimensions of a canvas.
+- `lurek.render.getCapabilities() -> table`: Returns stable, read-only capabilities and normalized active-device limits.
 - `lurek.render.getColor() -> number, number, number, number`: Returns the current drawing color.
 - `lurek.render.getColorMask() -> boolean, boolean, boolean, boolean`: Returns the current color write mask.
-- `lurek.render.getDebugShader() -> LShader`: Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
+- `lurek.render.getDebugShader() -> LShader`: Returns the active debug shader, or nil when debug draws use the normal/default path.
 - `lurek.render.getDefaultFilter() -> string, string, number`: Returns the current default texture filtering settings.
 - `lurek.render.getDefaultFont(pointSize?, bold?) -> LFont`: Returns a built-in default font at the nearest available bundled point size.
 - `lurek.render.getDepthMode() -> string, boolean`: Returns the current depth comparison mode and write-enable flag.
@@ -550,11 +573,12 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.getLayerZOrder(name) -> number`: Returns the z-order value of a named rendering layer.
 - `lurek.render.getLineWidth() -> number`: Returns the current line width used for line-mode drawing.
 - `lurek.render.getPointSize() -> number`: Returns the current point diameter used for point drawing.
+- `lurek.render.getResourceStats() -> table`: Returns render-resource residency and pressure counters without mutating ownership.
 - `lurek.render.getScissor() -> number, number, number, number`: Returns the current scissor rectangle, or nothing if no scissor is set.
-- `lurek.render.getShader() -> LShader`: Returns the currently active shader, or nil if using the default.
+- `lurek.render.getShader() -> LShader`: Returns the currently active draw shader, or nil for the default.
 - `lurek.render.getStats() -> table`: Returns a table of rendering statistics for the current frame.
 - `lurek.render.getStencilMode() -> string, string, number`: Returns the current stencil action, compare mode, and reference value.
-- `lurek.render.getTextShader() -> LShader`: Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
+- `lurek.render.getTextShader() -> LShader`: Returns the active text shader, or nil when the default/fallback path is active.
 - `lurek.render.getWidth() -> number`: Returns the current window width in pixels.
 - `lurek.render.intersectScissor(x, y, w, h) -> nil`: Intersects the given rectangle with the current scissor, narrowing the drawable region.
 - `lurek.render.isBold() -> boolean`: Returns true if the current default font selection uses the bold variant.
@@ -567,19 +591,21 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.newCanvas(width, height) -> LCanvas`: Creates a new off-screen render target with the given dimensions.
 - `lurek.render.newDepthSorter() -> LDepthSorter`: Registers the depth-sorted drawing helper constructor in the render module.
 - `lurek.render.newDrawLayer() -> LDrawLayer`: Creates a new z-ordered draw layer for sorting draw callbacks by depth.
-- `lurek.render.newFont(pathOrSize, size?) -> LFont`: Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
-- `lurek.render.newImage(pathOrData, colorSpace?) -> LImage`: Loads a texture from a file path or creates one from an ImageData object.
+- `lurek.render.newFont(pathOrSize, size?) -> LFont`: Compatibility alias for the canonical `lurek.font.load` and built-in font APIs.
+- `lurek.render.newImage(pathOrData, colorSpace?) -> LImage`: Compatibility alias for `lurek.render.newTexture`.
 - `lurek.render.newLayer(name, zOrder?) -> nil`: Creates a named rendering layer with an optional z-order for draw call organization.
 - `lurek.render.newMesh(verts, mode?) -> LMesh`: Creates a custom vertex mesh from an array of vertex data tables.
 - `lurek.render.newQuad(x, y, w, h, sw, sh) -> LQuad`: Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
 - `lurek.render.newShader(code, opts?) -> LShader`: Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.
 - `lurek.render.newShape() -> LShape`: Creates a new retained compound shape for accumulating draw commands.
-- `lurek.render.newSpriteBatch(image, max?) -> LSpriteBatch`: Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
+- `lurek.render.newSpriteBatch(image, max?) -> LSpriteBatch`: Compatibility alias for `lurek.sprite.newBatch`.
+- `lurek.render.newTexture(pathOrData, colorSpace?) -> LImage`: Creates a render texture from a GameFS path or CPU-owned ImageData.
 - `lurek.render.origin() -> nil`: Resets the current transformation matrix to the identity (no transform).
 - `lurek.render.points(...) -> nil`: Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
 - `lurek.render.polygon(mode, ...) -> nil`: Draws a polygon from a flat list of x,y vertex coordinates.
 - `lurek.render.pop() -> nil`: Pops the top transformation matrix from the transform stack, restoring the previous one.
 - `lurek.render.popLayer(id) -> nil`: Ends a compositing layer and composites it with the previous content.
+- `lurek.render.prewarmShaders(shaders) -> LShaderPrewarmRequest`: Queues up to 64 live shaders for bounded frame-boundary cache preparation.
 - `lurek.render.print(text, x?, y?, scale?) -> nil`: Draws text using the active font at the given position.
 - `lurek.render.printRich(spans, x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Draws rich text composed of individually styled spans at the given position.
 - `lurek.render.printRichWithFont(font, spans, x, y, rotation?, sx?, sy?, ox?, oy?) -> nil`: Draws rich text using a specific font without changing the global active font.
@@ -592,17 +618,18 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.pushLayer(id, alpha?, blendMode?) -> nil`: Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
 - `lurek.render.pushSortKey(depth) -> nil`: Sets the depth sort key for subsequent draw calls within the current sort group.
 - `lurek.render.rectangle(mode, x, y, w, h, rx?, ry?) -> nil`: Draws a rectangle. If rx is provided, draws a rounded rectangle.
-- `lurek.render.resetCanvas(canvas) -> nil`: Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
+- `lurek.render.requestReadback() -> LReadbackRequest`: Requests one bounded asynchronous GPU surface readback. The returned handle advances during normal frame polling and never blocks Lua.
+- `lurek.render.resetCanvas(canvas) -> nil`: Marks a canvas as needing a full clear before its next render pass.
 - `lurek.render.rotate(angle) -> nil`: Applies a rotation to the current transformation matrix.
 - `lurek.render.saveScreenshot(path) -> nil`: Saves a screenshot of the current frame to a file under the save/ directory.
 - `lurek.render.scale(sx, sy?) -> nil`: Applies scaling to the current transformation matrix.
 - `lurek.render.setBackgroundColor(r, g, b) -> nil`: Sets the background clear color used at the start of each frame.
 - `lurek.render.setBlendMode(mode) -> nil`: Sets the blend mode for subsequent draw operations.
 - `lurek.render.setBold(bold) -> nil`: Sets whether subsequent font size lookups use the bold Courier New variant.
-- `lurek.render.setCanvas(canvas?) -> nil`: Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
+- `lurek.render.setCanvas(ud?) -> nil`: Redirects subsequent drawing to a canvas, or nil for the screen.
 - `lurek.render.setColor(r, g, b, a?) -> nil`: Sets the active drawing color for all subsequent draw operations.
-- `lurek.render.setColorMask(r?, g?, b?, a?) -> nil`: Sets which color channels are written during draw calls. Call with no args to enable all.
-- `lurek.render.setDebugShader(shader?) -> nil`: Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
+- `lurek.render.setColorMask(...) -> nil`: Sets which color channels are written during draw calls. Call with no args to enable all.
+- `lurek.render.setDebugShader(shader?) -> nil`: Activates a debugviz-target shader, or restores the normal draw shader with nil.
 - `lurek.render.setDefaultFilter(min, mag, anisotropy?) -> nil`: Sets the default texture filtering mode for newly created images.
 - `lurek.render.setDefaultFont(pointSize?, bold?) -> LFont`: Selects a built-in default font by bundled point size and makes it the active render font.
 - `lurek.render.setDepthMode(mode, write?) -> nil`: Sets the depth comparison mode and whether depth writes are enabled.
@@ -614,10 +641,10 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.setLineWidth(w) -> nil`: Sets the line width for subsequent line-mode draw calls.
 - `lurek.render.setPointSize(size) -> nil`: Sets the point size for subsequent point draw calls.
 - `lurek.render.setScissor(x?, y?, w?, h?) -> nil`: Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.
-- `lurek.render.setShader(shader?) -> nil`: Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
+- `lurek.render.setShader(shader?) -> nil`: Activates a draw-target shader for subsequent draw calls, or restores the default with nil.
 - `lurek.render.setStencilMode(action, compare?, value?) -> nil`: Sets the stencil write action, compare function, and reference value at once.
 - `lurek.render.setStencilTest(compare?, value?) -> nil`: Configures the stencil comparison test for subsequent draws. Pass nil to disable.
-- `lurek.render.setTextShader(shader?) -> nil`: Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
+- `lurek.render.setTextShader(shader?) -> nil`: Activates a text-target shader for font-atlas text, or restores default text rendering with nil.
 - `lurek.render.setWireframe(enabled) -> nil`: Enables or disables wireframe rendering mode.
 - `lurek.render.shear(kx, ky) -> nil`: Applies a shear (skew) to the current transformation matrix.
 - `lurek.render.stencil(action?, value?) -> nil`: Begins a stencil write pass with the given action and reference value.
@@ -815,6 +842,25 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `LQuad:type() -> string`: Returns the type name string for this quad object.
 - `LQuad:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
+#### LReadbackRequest Type
+
+- Lua handle for one non-blocking surface readback request.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LReadbackRequest:cancel() -> boolean`: Cancels an unfinished request and releases any later result.
+- `LReadbackRequest:isReady() -> boolean`: Returns whether the result can be consumed.
+- `LReadbackRequest:poll() -> string`: Observes the current non-blocking lifecycle state after normal frame polling.
+- `LReadbackRequest:release() -> boolean`: Releases this request handle and any completed but unconsumed image.
+- `LReadbackRequest:result() -> LImageData|nil`: Consumes and returns a completed image, or nil before completion and after consumption.
+- `LReadbackRequest:status() -> string`: Returns `pending`, `ready`, `failed`, `timed_out`, or `cancelled`.
+- `LReadbackRequest:type() -> string`: Returns the userdata type name.
+- `LReadbackRequest:typeOf(name) -> boolean`: Returns whether this object matches a supported type name.
+
 #### LRenderGetStatsResult Type
 
 - Generated result shape from @field tags.
@@ -828,6 +874,11 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `drawcalls` (`integer`): Total draw call count.
 - `fonts` (`integer`): Loaded font count.
 - `gpu_draw_calls` (`integer`): GPU-side draw call count.
+- `shader_cache_evictions` (`integer`): Shader cache entries evicted to stay within source-memory limits this frame.
+- `shader_cache_hits` (`integer`): Reused user-shader cache entries this frame.
+- `shader_cache_misses` (`integer`): User-shader cache rebuilds this frame.
+- `shader_cache_rejections` (`integer`): Shader or pipeline cache limit rejections this frame.
+- `shader_negative_cache_hits` (`integer`): Repeated invalid shader signatures skipped this frame.
 - `shader_switches` (`integer`): Shader switch count.
 - `texture_memory` (`integer`): Texture memory in bytes.
 - `texture_switches` (`integer`): Texture switch count.
@@ -855,6 +906,24 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `LShader:send(name, value) -> nil`: Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
 - `LShader:type() -> string`: Returns the type name string for this shader object.
 - `LShader:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LShaderPrewarmRequest Type
+
+- Lua handle for one bounded shader-cache prewarm request.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LShaderPrewarmRequest:cancel() -> boolean`: Cancels unfinished cache work before a later frame can submit it.
+- `LShaderPrewarmRequest:poll() -> string`: Observes the current non-blocking lifecycle state after frame-boundary work.
+- `LShaderPrewarmRequest:progress() -> integer, integer`: Returns the number of completed shader keys and the immutable requested total.
+- `LShaderPrewarmRequest:release() -> boolean`: Releases this request handle and cancels its outstanding cache work.
+- `LShaderPrewarmRequest:status() -> string`: Returns `pending`, `ready`, `failed`, or `cancelled`.
+- `LShaderPrewarmRequest:type() -> string`: Returns the userdata type name.
+- `LShaderPrewarmRequest:typeOf(name) -> boolean`: Returns whether this object matches a supported type name.
 
 #### LShape Type
 
@@ -895,12 +964,18 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 - `LSpriteBatch:add(x, y, r?, sx?, sy?, ox?, oy?) -> number`: Adds a sprite entry to the batch at the given position with optional transform.
 - `LSpriteBatch:addComposite(parts) -> number`: Adds multiple part entries to the batch for one modular composite visual.
+- `LSpriteBatch:addMany(entries) -> integer`: Atomically appends an array of sprite entries after validating the whole input.
 - `LSpriteBatch:clear() -> nil`: Removes all entries from the sprite batch.
 - `LSpriteBatch:getBufferSize() -> number`: Returns the maximum number of entries this batch can hold.
 - `LSpriteBatch:getCount() -> number`: Returns the number of sprite entries currently in the batch.
+- `LSpriteBatch:getDiagnostics() -> table`: Returns deterministic capacity and mutation diagnostics for this batch.
+- `LSpriteBatch:getVersion() -> integer`: Returns the monotonic sprite-entry content version.
 - `LSpriteBatch:release() -> boolean`: Releases the sprite batch resource.
+- `LSpriteBatch:removeEntries(indices) -> integer`: Atomically removes selected one-based sprite entries.
+- `LSpriteBatch:setEntries(entries) -> integer`: Atomically replaces all sprite entries after validating the whole input.
 - `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+- `LSpriteBatch:updateEntries(updates) -> integer`: Atomically replaces selected one-based sprite entries.
 
 #### LVoxelModel Type
 
@@ -926,7 +1001,10 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 ## Notes
 
 - Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua/unit/`.
+- `lurek.render.getCapabilities()` returns only normalized adapter limits and stable booleans. It intentionally excludes raw `wgpu` types, adapter names, driver strings, and mutable device state; `getBudgetLimits()` remains the source for effective engine work ceilings.
+- `lurek.render.getResourceStats()` reports tracked retained bytes and counts without exposing or destroying live handles. Under pressure, only reconstructible cache data is eligible for eviction; live public resources remain non-evictable and the pressure is observable.
 - `src/render/mod.rs` stays export-only; implementation logic belongs in peer files.
+- Province map execution consumes immutable `ProvinceRenderSnapshot` packets prepared by the province owner through app orchestration. Render does not access `ProvinceRegistry`; it recreates only the GPU texture or buffer whose packet version changed.
 - Renderer reliability changes should prefer recoverable errors or skipped invalid draws over panics in frame submission.
 - Shader API:
   `lurek.render.newShader(code, opts?)` is the canonical public constructor for WGSL fragment shaders. `opts.target` defaults to `draw` and may be `draw`, `postfx`, `image`, `overlay`, `particle`, `light`, `sprite`, `tilemap`, `mapviz`, `text`, `ui`, or `debugviz`. There is no public `lurek.shader` module; shaders are render resources bound by other modules through `LShader` handles.

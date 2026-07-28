@@ -29,9 +29,12 @@ use crate::particle::ParticleSystem;
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::ProvinceId;
 use crate::province::ProvinceProperties;
+use crate::province::ProvinceRenderSnapshot;
 use crate::raycaster::{RaycasterLastBuildContext, RaycasterScene};
 use crate::render::gpu_state::RenderStats;
+use crate::render::render_budget::RenderBudgetLimits;
 use crate::render::renderer::{BlendMode, DepthMode, RenderCommand, StencilMode, TextureData};
+use crate::render::RenderCapabilities;
 use crate::render::{Canvas, CompoundShape, Mesh, Shader};
 use crate::runtime::mode::RuntimeMode;
 use crate::runtime::resource_keys::{
@@ -210,6 +213,86 @@ pub struct ScreenshotRequest {
     /// Stores path state.
     pub path: String,
 }
+/// Observable state of one bounded interactive GPU surface readback.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SurfaceReadbackRequestState {
+    /// The request is waiting for an async GPU map callback.
+    Pending,
+    /// The image result can be consumed exactly once.
+    Ready,
+    /// The GPU map or image conversion failed.
+    Failed,
+    /// The asynchronous request exceeded its trusted deadline.
+    TimedOut,
+    /// The Lua request was cancelled or the surface was torn down.
+    Cancelled,
+}
+
+impl SurfaceReadbackRequestState {
+    /// Return the stable Lua-facing lifecycle name.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Pending => "pending",
+            Self::Ready => "ready",
+            Self::Failed => "failed",
+            Self::TimedOut => "timed_out",
+            Self::Cancelled => "cancelled",
+        }
+    }
+}
+
+/// Runtime-owned readback result and its request identity.
+#[derive(Debug)]
+pub struct SurfaceReadbackRequest {
+    /// Monotonic identity used to make released Lua handles stale deterministically.
+    pub id: u64,
+    /// Current lifecycle state.
+    pub state: SurfaceReadbackRequestState,
+    /// Completed CPU image; `result()` consumes this allocation.
+    pub image: Option<crate::image::ImageData>,
+}
+
+/// Lifecycle state for a bounded shader prewarm request.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ShaderPrewarmRequestState {
+    /// Shader keys await a renderer frame-boundary compilation slot.
+    Pending,
+    /// Every requested shader entered the normal compiled cache.
+    Ready,
+    /// A requested shader was stale or rejected by the normal cache policy.
+    Failed,
+    /// The request was cancelled before all keys were compiled.
+    Cancelled,
+}
+
+impl ShaderPrewarmRequestState {
+    /// Return the stable Lua lifecycle name.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Pending => "pending",
+            Self::Ready => "ready",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+        }
+    }
+}
+
+/// Runtime-owned prewarm request drained under the renderer's per-frame compilation budget.
+#[derive(Debug)]
+pub struct ShaderPrewarmRequest {
+    /// Monotonic identity used by Lua request handles.
+    pub id: u64,
+    /// Current lifecycle state.
+    pub state: ShaderPrewarmRequestState,
+    /// Shader keys not yet submitted to the renderer cache.
+    pub remaining: VecDeque<ShaderKey>,
+    /// Shader keys submitted to the renderer but awaiting their cache outcome.
+    pub in_flight: usize,
+    /// Number of successfully submitted shader keys.
+    pub completed: usize,
+    /// Original requested shader-key count.
+    pub total: usize,
+}
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 /// Runtime data model for per-frame timing buckets captured by the runtime.
 /// # Fields
@@ -288,9 +371,9 @@ pub struct ResourceMemoryStats {
     pub canvas_bytes: u64,
     /// Stores shader_bytes state.
     pub shader_bytes: u64,
-    /// Stores evictable_bytes state.
+    /// Bytes held by renderer-owned reconstructible caches; this public-resource snapshot has none.
     pub evictable_bytes: u64,
-    /// Stores non_evictable_bytes state.
+    /// Bytes held by live public handles and therefore never reclaimed implicitly.
     pub non_evictable_bytes: u64,
     /// Stores total_bytes state.
     pub total_bytes: u64,
@@ -307,19 +390,19 @@ pub struct ResourceMemoryStats {
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-/// Summary of one resource-budget enforcement pass.
+/// Summary of one non-destructive resource-budget pressure check.
 pub struct ResourceBudgetReport {
-    /// Resource stats before evictions started.
+    /// Resource stats before the pressure check.
     pub before: ResourceMemoryStats,
-    /// Resource stats after evictions completed.
+    /// Resource stats after the pressure check.
     pub after: ResourceMemoryStats,
-    /// Texture bytes evicted during the pass.
+    /// Texture bytes evicted by a future renderer-owned cache pass; public resources remain zero.
     pub evicted_texture_bytes: u64,
-    /// Texture count evicted during the pass.
+    /// Texture count evicted by a future renderer-owned cache pass; public resources remain zero.
     pub evicted_texture_count: u64,
-    /// Canvas bytes evicted during the pass.
+    /// Canvas bytes evicted by a future renderer-owned cache pass; public resources remain zero.
     pub evicted_canvas_bytes: u64,
-    /// Canvas count evicted during the pass.
+    /// Canvas count evicted by a future renderer-owned cache pass; public resources remain zero.
     pub evicted_canvas_count: u64,
     /// Bytes still over budget after the pass.
     pub remaining_over_budget_bytes: u64,
@@ -365,6 +448,10 @@ pub struct PhysicsRunConfig {
     pub debug_draw: bool,
     /// Stores fixed_update_dt state.
     pub fixed_update_dt: f64,
+    /// Monotonic count of completed or currently executing `process_physics` steps.
+    pub tick: u64,
+    /// Delta passed to the most recent `process_physics` step.
+    pub last_step_dt: f64,
 }
 /// Provide default 60 Hz physics stepping configuration.
 impl Default for PhysicsRunConfig {
@@ -375,6 +462,8 @@ impl Default for PhysicsRunConfig {
             max_steps: 8,
             debug_draw: false,
             fixed_update_dt: 0.0,
+            tick: 0,
+            last_step_dt: 0.0,
         }
     }
 }
@@ -477,6 +566,10 @@ pub struct SharedState {
     pub active_canvas: Option<CanvasKey>,
     /// Stores render_stats state.
     pub render_stats: RenderStats,
+    /// Engine-owned effective aggregate render limits; Lua may inspect but never mutate them.
+    pub render_budget_limits: RenderBudgetLimits,
+    /// Stable renderer-owned device capabilities visible to Lua.
+    pub render_capabilities: RenderCapabilities,
     /// Stores scissor state.
     pub scissor: Option<(f32, f32, f32, f32)>,
     /// Stores color_mask state.
@@ -535,6 +628,16 @@ pub struct SharedState {
     pub pending_screen_capture: bool,
     /// Stores captured_screen_image state.
     pub captured_screen_image: Option<crate::image::ImageData>,
+    /// One bounded public GPU readback request; concurrent requests are rejected.
+    pub surface_readback_request: Option<SurfaceReadbackRequest>,
+    /// Set by a Lua handle cancellation and consumed by the app before the next GPU frame.
+    pub cancel_surface_readback_requested: bool,
+    /// Monotonic identity allocated to the next public readback request.
+    pub next_surface_readback_request_id: u64,
+    /// Bounded shader prewarm requests awaiting renderer frame-boundary work.
+    pub shader_prewarm_requests: HashMap<u64, ShaderPrewarmRequest>,
+    /// Monotonic identity allocated to the next shader prewarm request.
+    pub next_shader_prewarm_request_id: u64,
     /// Stores stencil_mode state.
     pub stencil_mode: StencilMode,
     /// Stores depth_mode state.
@@ -587,6 +690,8 @@ pub struct SharedState {
     pub pending_config_reload: bool,
     /// Stores province_registries state.
     pub province_registries: HashMap<String, ProvinceRegistry>,
+    /// CPU-only province packets prepared by the domain owner for the next render frame.
+    pub province_render_snapshots: HashMap<String, ProvinceRenderSnapshot>,
     /// Stores active_province_registry state.
     pub active_province_registry: Option<String>,
     /// Generic per-province property store for game-defined key-value data.
@@ -648,6 +753,8 @@ impl SharedState {
             transform_stack_depth: 1,
             active_canvas: None,
             render_stats: RenderStats::default(),
+            render_budget_limits: RenderBudgetLimits::default(),
+            render_capabilities: RenderCapabilities::default(),
             scissor: None,
             color_mask: (true, true, true, true),
             wireframe: false,
@@ -677,6 +784,11 @@ impl SharedState {
             pending_screenshot: None,
             pending_screen_capture: false,
             captured_screen_image: None,
+            surface_readback_request: None,
+            cancel_surface_readback_requested: false,
+            next_surface_readback_request_id: 1,
+            shader_prewarm_requests: HashMap::new(),
+            next_shader_prewarm_request_id: 1,
             stencil_mode: StencilMode::default(),
             depth_mode: (DepthMode::Always, false),
             light_world: LightWorld::new(),
@@ -703,6 +815,7 @@ impl SharedState {
             lua_callback_timeout_ms: None,
             pending_config_reload: false,
             province_registries: HashMap::new(),
+            province_render_snapshots: HashMap::new(),
             active_province_registry: None,
             province_properties: ProvinceProperties::new(),
             province_segment_texture_cache: HashMap::new(),
@@ -719,6 +832,80 @@ impl SharedState {
             self.evict_lru_resources();
         }
         dt
+    }
+
+    /// Refresh immutable province render packets only when a registry revision changed.
+    pub fn refresh_province_render_snapshots(&mut self) {
+        self.province_render_snapshots
+            .retain(|name, _| self.province_registries.contains_key(name));
+        for (name, registry) in &self.province_registries {
+            let stale = match self.province_render_snapshots.get(name) {
+                Some(snapshot) => snapshot.revision != registry.revision(),
+                None => true,
+            };
+            if stale {
+                self.province_render_snapshots.insert(
+                    name.clone(),
+                    ProvinceRenderSnapshot::from_registry(registry),
+                );
+            }
+        }
+    }
+
+    /// Take a deterministic, bounded batch of pending shader-cache work.
+    ///
+    /// The application must return one result per tuple through
+    /// [`Self::finish_shader_prewarm_work`] after the renderer reaches its
+    /// frame boundary. Keeping the queue here prevents the Lua API from
+    /// creating a second, unbounded compilation path.
+    pub fn take_shader_prewarm_work(&mut self, limit: usize) -> Vec<(u64, ShaderKey)> {
+        let mut request_ids: Vec<u64> = self.shader_prewarm_requests.keys().copied().collect();
+        request_ids.sort_unstable();
+        let mut work = Vec::with_capacity(limit);
+        for request_id in request_ids {
+            while work.len() < limit {
+                let Some(request) = self.shader_prewarm_requests.get_mut(&request_id) else {
+                    break;
+                };
+                if request.state != ShaderPrewarmRequestState::Pending {
+                    break;
+                }
+                let Some(shader_key) = request.remaining.pop_front() else {
+                    if request.in_flight == 0 {
+                        request.state = ShaderPrewarmRequestState::Ready;
+                    }
+                    break;
+                };
+                request.in_flight = request.in_flight.saturating_add(1);
+                work.push((request_id, shader_key));
+            }
+            if work.len() == limit {
+                break;
+            }
+        }
+        work
+    }
+
+    /// Record the outcome of a previously drained bounded prewarm batch.
+    pub fn finish_shader_prewarm_work(&mut self, results: &[(u64, bool)]) {
+        for (request_id, succeeded) in results {
+            let Some(request) = self.shader_prewarm_requests.get_mut(request_id) else {
+                continue;
+            };
+            if request.state != ShaderPrewarmRequestState::Pending {
+                continue;
+            }
+            request.in_flight = request.in_flight.saturating_sub(1);
+            if *succeeded {
+                request.completed = request.completed.saturating_add(1);
+                if request.remaining.is_empty() && request.in_flight == 0 {
+                    request.state = ShaderPrewarmRequestState::Ready;
+                }
+            } else {
+                request.remaining.clear();
+                request.state = ShaderPrewarmRequestState::Failed;
+            }
+        }
     }
     /// Mark a texture as recently used for LRU eviction tracking.
     pub fn touch_texture(&mut self, key: TextureKey) {
@@ -775,70 +962,21 @@ impl SharedState {
         false
     }
 
-    /// Evict least-recently-used textures and canvases until memory usage is within budget.
+    /// Report resource-budget pressure without invalidating public resource handles.
+    ///
+    /// Textures and canvases are live Lua-visible resources, so this shared-state
+    /// owner must not reclaim them behind their handles. Renderer-owned caches
+    /// (such as the shader cache) evict only their own reconstructible entries.
+    /// The returned report keeps hard-limit pressure observable to callers that
+    /// decide whether to reject a new allocation or release a resource.
     pub fn evict_lru_resources(&mut self) -> ResourceBudgetReport {
         let before = self.resource_memory_stats();
-        let mut report = ResourceBudgetReport {
+        ResourceBudgetReport {
             before,
             after: before,
             ..ResourceBudgetReport::default()
-        };
-        if self.resource_budget_bytes == 0 || before.total_bytes <= self.resource_budget_bytes {
-            return report.finalize(self.resource_budget_bytes);
         }
-        let mut over = before.total_bytes - self.resource_budget_bytes;
-        let mut texture_candidates: Vec<(TextureKey, u64, u64)> = self
-            .textures
-            .iter()
-            .map(|(key, texture)| {
-                (
-                    key,
-                    self.texture_last_used.get(&key).copied().unwrap_or(0),
-                    (texture.width as u64) * (texture.height as u64) * 4,
-                )
-            })
-            .collect();
-        texture_candidates.sort_unstable_by_key(|(_, last_used, _)| *last_used);
-        for (key, _, size) in texture_candidates {
-            if over == 0 {
-                break;
-            }
-            if self.release_texture(key) {
-                report.evicted_texture_count += 1;
-                report.evicted_texture_bytes += size;
-                over = over.saturating_sub(size);
-            }
-        }
-        if over > 0 {
-            let mut canvas_candidates: Vec<(CanvasKey, u64, u64)> = self
-                .canvases
-                .iter()
-                .map(|(key, canvas)| {
-                    (
-                        key,
-                        self.canvas_last_used.get(&key).copied().unwrap_or(0),
-                        (canvas.width as u64) * (canvas.height as u64) * 4,
-                    )
-                })
-                .collect();
-            canvas_candidates.sort_unstable_by_key(|(_, last_used, _)| *last_used);
-            for (key, _, size) in canvas_candidates {
-                if over == 0 {
-                    break;
-                }
-                if self.canvases.remove(key).is_some() {
-                    self.canvas_last_used.remove(&key);
-                    if self.active_canvas == Some(key) {
-                        self.active_canvas = None;
-                    }
-                    report.evicted_canvas_count += 1;
-                    report.evicted_canvas_bytes += size;
-                    over = over.saturating_sub(size);
-                }
-            }
-        }
-        report.after = self.resource_memory_stats();
-        report.finalize(self.resource_budget_bytes)
+        .finalize(self.resource_budget_bytes)
     }
 
     /// Compute current resource memory usage across all asset types.
@@ -868,9 +1006,11 @@ impl SharedState {
                 src + wrapper + uniforms_overhead
             })
             .sum();
-        let evictable_bytes = texture_bytes + canvas_bytes;
-        let non_evictable_bytes = font_bytes + shader_bytes;
-        let total_bytes = evictable_bytes + non_evictable_bytes;
+        let total_bytes = texture_bytes + font_bytes + canvas_bytes + shader_bytes;
+        // All resources counted here are live public handles. The GPU cache has
+        // its own bounded accounting and eviction policy in render ownership.
+        let evictable_bytes = 0;
+        let non_evictable_bytes = total_bytes;
         ResourceMemoryStats {
             texture_bytes,
             font_bytes,
@@ -885,6 +1025,19 @@ impl SharedState {
             canvas_count: self.canvases.len() as u64,
             shader_count: self.shaders.len() as u64,
         }
+    }
+
+    /// Return whether a new live public resource can fit the configured hard budget.
+    ///
+    /// A zero budget disables enforcement. This check never evicts or invalidates
+    /// existing handles; callers must reject the requested allocation instead.
+    pub fn can_allocate_public_resource(&self, additional_bytes: u64) -> bool {
+        self.resource_budget_bytes == 0
+            || self
+                .resource_memory_stats()
+                .total_bytes
+                .saturating_add(additional_bytes)
+                <= self.resource_budget_bytes
     }
 
     /// Validate high-risk runtime invariants for diagnostics and tests.

@@ -42,7 +42,7 @@
 -- @covers lurek.ui.setViewport
 -- @covers lurek.ui.update
 
-﻿local ShaderEvidence = {}
+local ShaderEvidence = {}
 
 local SPRITE_TEXTURE = lurek.render.newImage("assets/icon.png")
 local function sprite_texture_id()

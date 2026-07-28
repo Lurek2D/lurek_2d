@@ -26,6 +26,19 @@ pub const MAX_SHADER_SOURCE_TOKENS: usize = 65_536;
 /// Bound the number of independently allocated uniform bindings in the current layout.
 pub const MAX_SHADER_UNIFORMS: usize = 64;
 
+/// Authority attached to shader source before WGSL parsing.  Engine code may use
+/// built-in shaders, games may submit trusted project shaders, and mod/runtime text
+/// is deliberately not a supported execution surface.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ShaderTrust {
+    /// Static engine-owned WGSL compiled by Rust code.
+    EngineBuiltin,
+    /// Game-project WGSL validated through the restricted fragment interface.
+    TrustedProject,
+    /// Arbitrary runtime or mod-provided WGSL, which is rejected before parsing.
+    UntrustedRuntime,
+}
+
 const RESERVED_SHADER_UNIFORM_NAMES: &[&str] = &[
     "lurek",
     "t_diffuse",
@@ -197,6 +210,8 @@ pub struct Shader {
     pub source: String,
     /// Target pipeline family this shader was validated for.
     pub target: ShaderTarget,
+    /// Origin authority enforced at construction time.
+    pub trust: ShaderTrust,
     /// Rewritten source with `@fragment` stripped for pipeline wrapper injection.
     pub wrapper_source: String,
     /// Name of the fragment entry function in the rewritten source.
@@ -231,18 +246,38 @@ impl Shader {
     }
     /// Parse, validate, and prepare `source` for a specific shader target.
     pub fn new_for_target(source: String, target: ShaderTarget) -> Result<Self, String> {
+        Self::new_for_trust(source, target, ShaderTrust::TrustedProject)
+    }
+
+    /// Parse trusted project source for one supported target.  Untrusted runtime
+    /// text is intentionally rejected: bounded WGSL parsing cannot prove shader
+    /// execution termination or driver-level resource safety.
+    pub fn new_for_trust(
+        source: String,
+        target: ShaderTarget,
+        trust: ShaderTrust,
+    ) -> Result<Self, String> {
+        if trust == ShaderTrust::UntrustedRuntime {
+            return Err("untrusted runtime shader source is not supported".to_string());
+        }
         validate_wgsl(&source, target)?;
         let prepared = prepare_fragment_source_for_wrapper(&source, target)?;
         log_msg!(info, SH01_SHADER_OK);
         Ok(Self {
             source,
             target,
+            trust,
             wrapper_source: prepared.source,
             fragment_entry_name: prepared.entry_name,
             fragment_inputs: prepared.inputs,
             uniforms: HashMap::new(),
             diagnostics: vec![format!("validated for {} shader target", target.as_str())],
         })
+    }
+
+    /// Return the authority that admitted this shader source.
+    pub fn trust(&self) -> ShaderTrust {
+        self.trust
     }
     /// Set or replace the named uniform value used on subsequent frames.
     pub fn send(&mut self, name: String, value: UniformValue) -> Result<(), String> {

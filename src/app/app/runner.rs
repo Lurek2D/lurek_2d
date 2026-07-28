@@ -320,6 +320,10 @@ impl LurekApp {
             &window_title,
             self.game_dir.clone(),
         );
+        if let Some(renderer) = self.renderer.as_ref() {
+            shared_state.render_budget_limits = renderer.effective_render_budget_limits();
+            shared_state.render_capabilities = renderer.render_capabilities();
+        }
         shared_state.runtime_mode = self.config.runtime.mode;
         if let Some(identity) = &self.config.identity {
             shared_state.filesystem_identity = identity.clone();
@@ -734,8 +738,15 @@ impl LurekApp {
         }
         surface.configure(&device, &self.surface_configuration(cw, ch));
         let renderer = GpuRenderer::new(device, queue, surface_format, cw, ch);
+        let render_budget_limits = renderer.effective_render_budget_limits();
+        let render_capabilities = renderer.render_capabilities();
         self.surface = Some(surface);
         self.renderer = Some(renderer);
+        if let Some(state) = self.state.as_ref() {
+            let mut shared_state = state.borrow_mut();
+            shared_state.render_budget_limits = render_budget_limits;
+            shared_state.render_capabilities = render_capabilities;
+        }
         self.window = Some(window);
         log_msg!(
             info,

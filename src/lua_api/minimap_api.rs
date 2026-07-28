@@ -1066,6 +1066,36 @@ impl LuaUserData for LuaMinimap {
                 }
             },
         );
+        // -- setObjects --
+        /// Applies object icon updates atomically for one Lua-owned minimap refresh.
+        /// This does not inspect ECS or network state; Lua prepares the compact update records.
+        /// @param | updates | table | Array of `{ id, x, y, type_idx, owner? }` object records.
+        /// @return | boolean | True when every update was accepted and committed together.
+        methods.add_method_mut("setObjects", |_, this, updates: LuaTable| {
+            let mut parsed = Vec::with_capacity(updates.raw_len());
+            for entry in updates.sequence_values::<LuaTable>() {
+                let entry = entry?;
+                let id: u32 = entry.get("id")?;
+                let x: f32 = validate_finite_number("object x", entry.get("x")?)?;
+                let y: f32 = validate_finite_number("object y", entry.get("y")?)?;
+                let type_idx: usize = entry.get("type_idx")?;
+                if type_idx == 0 {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.minimap.LMinimap:setObjects: type_idx is 1-based".to_string(),
+                    ));
+                }
+                let owner = entry.get::<_, Option<u32>>("owner")?.unwrap_or(0);
+                parsed.push((id, x, y, type_idx - 1, owner));
+            }
+            if this.inner.set_objects_atomic(&parsed) {
+                Ok(true)
+            } else {
+                Err(LuaError::RuntimeError(
+                    "lurek.minimap.LMinimap:setObjects: batch has duplicate ids, invalid types, non-finite coordinates, or exceeds object capacity"
+                        .to_string(),
+                ))
+            }
+        });
         // -- removeObject --
         /// Removes a minimap object by its unique id.
         /// @param | id | integer | Object id.

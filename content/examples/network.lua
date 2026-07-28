@@ -1388,47 +1388,154 @@ end
 
 --@api: lurek.network.newRpc
 do
-
-    local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local ok, rpc = pcall(function()
-        return lurek.network.newRpc(host, 0, 30.0)
+    local rpc = lurek.network.newRpc(nil, 0, 30.0)
+    rpc:register("sum", function(args) return args.left + args.right end)
+    rpc:call("sum", { left = 4, right = 9 }, function(result, err)
+        lurek.log.info("rpc result=" .. tostring(result) .. " err=" .. tostring(err))
     end)
-    lurek.log.info("newRpc ok=" .. tostring(ok))
-    if ok then
-        rpc:register("ping", function(peer_id)
-            return "pong"
-        end)
-        local responses = rpc:poll()
-        lurek.log.info("rpc_responses=" .. #responses)
-    end
+    rpc:process(rpc:takeOutgoing()) -- In a game, Lua sends this string to the chosen peer.
+    rpc:process(rpc:takeOutgoing()) -- The peer's reply follows the same explicit routing path.
 end
 
 --@api: lurek.network.newNetState
 do
-
-    local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local ok, state = pcall(function()
-        return lurek.network.newNetState(host, { authority = true })
+    local authority = lurek.network.newNetState(nil, { authority = true })
+    local replica = lurek.network.newNetState(nil, { authority = false })
+    replica:onChange("score", function(key, value)
+        lurek.log.info(key .. " changed to " .. tostring(value))
     end)
-    lurek.log.info("newNetState ok=" .. tostring(ok))
-    if ok then
-        state:set("player_x", 100)
-        state:set("player_y", 50)
+    authority:set("score", 3)
+    replica:apply(authority:takeDirty()) -- Lua decides which host/peer transports this payload.
+    replica:poll()
+end
 
-        local x = state:get("player_x")
-        lurek.log.info("player_x=" .. x)
+--@api: lurek.network.newSnapshotStore
+do
+    local snapshots = lurek.network.newSnapshotStore({ capacity = 16 })
+    snapshots:push({ type = "full", tick = 1, entities = { { id = 1, tick = 1, x = 0, y = 0, vx = 1, vy = 0 } } })
+    snapshots:push({ type = "delta", tick = 2, base_tick = 1, updates = { { id = 1, tick = 2, x = 1, y = 0, vx = 1, vy = 0 } }, removals = {} })
+    lurek.log.info("interpolated x=" .. snapshots:interpolate(1, 1, 2, 0.5).x)
+    lurek.log.info("retained frames=" .. tostring(snapshots:getStats().frames))
+end
 
-        state:onChange("player_x", function(value, old_value, peer_id)
-            lurek.log.info("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
-        end)
+--@api: LNetworkSnapshotStore:push
+do
+    local snapshots = lurek.network.newSnapshotStore()
+    snapshots:push({ type = "full", tick = 4, entities = {} })
+    local latest = snapshots:latest()
+    lurek.log.info("stored tick=" .. tostring(latest.tick))
+    lurek.log.info("stored frames=" .. tostring(snapshots:getStats().frames))
+end
 
-        local all_state = state:getAll()
-        lurek.log.info("state_keys=" .. #all_state)
+--@api: LNetworkSnapshotStore:get
+do
+    local snapshots = lurek.network.newSnapshotStore()
+    snapshots:push({ type = "full", tick = 4, entities = {} })
+    local frame = snapshots:get(4)
+    lurek.log.info("loaded frame tick=" .. tostring(frame.tick))
+    lurek.log.info("missing frame=" .. tostring(snapshots:get(99) == nil))
+end
 
-        state:poll()
-    end
+--@api: LNetworkSnapshotStore:latest
+do
+    local snapshots = lurek.network.newSnapshotStore()
+    snapshots:push({ type = "full", tick = 4, entities = {} })
+    snapshots:push({ type = "full", tick = 5, entities = {} })
+    lurek.log.info("latest tick=" .. tostring(snapshots:latest().tick))
+    lurek.log.info("retained=" .. tostring(snapshots:getStats().frames))
+end
 
-    host:destroy()
+--@api: LNetworkSnapshotStore:interpolate
+do
+    local snapshots = lurek.network.newSnapshotStore()
+    snapshots:push({ type = "full", tick = 4, entities = { { id = 1, tick = 4, x = 0, y = 0, vx = 1, vy = 0 } } })
+    snapshots:push({ type = "full", tick = 6, entities = { { id = 1, tick = 6, x = 2, y = 0, vx = 1, vy = 0 } } })
+    local entity = snapshots:interpolate(1, 4, 6, 0.5)
+    lurek.log.info("interpolated x=" .. tostring(entity.x))
+end
+
+--@api: LNetworkSnapshotStore:getStats
+do
+    local snapshots = lurek.network.newSnapshotStore({ capacity = 8 })
+    local stats = snapshots:getStats()
+    lurek.log.info("snapshot capacity=" .. tostring(stats.capacity))
+    lurek.log.info("snapshot frames=" .. tostring(stats.frames))
+    lurek.log.info("retained ticks=" .. tostring(#stats.ticks))
+end
+
+--@api: LNetworkSnapshotStore:type
+do
+    local snapshots = lurek.network.newSnapshotStore()
+    local kind = snapshots:type()
+    lurek.log.info("snapshot store type=" .. tostring(kind))
+    lurek.log.info("snapshot capacity=" .. tostring(snapshots:getStats().capacity))
+    lurek.log.info("snapshot frames=" .. tostring(snapshots:getStats().frames))
+end
+
+--@api: LNetworkSnapshotStore:typeOf
+do
+    local snapshots = lurek.network.newSnapshotStore()
+    local is_store = snapshots:typeOf("LNetworkSnapshotStore")
+    local is_object = snapshots:typeOf("LObject")
+    lurek.log.info("is snapshot store=" .. tostring(is_store))
+    lurek.log.info("is object=" .. tostring(is_object))
+    lurek.log.info("type=" .. tostring(snapshots:type()))
+end
+
+--@api: lurek.network.newInputBuffer
+do
+    local inputs = lurek.network.newInputBuffer({ maxPeers = 4, maxInputsPerPeer = 16 })
+    local accepted, reason = inputs:push(2, 12, 1, { thrust = 0.8, fire = true })
+    lurek.log.info("input accepted=" .. tostring(accepted) .. " reason=" .. reason)
+    local ready = inputs:drainThrough(12)
+    lurek.log.info("drained inputs=" .. tostring(#ready))
+    lurek.log.info("queued inputs=" .. tostring(inputs:getStats().queued))
+end
+
+--@api: LNetworkInputBuffer:push
+do
+    local inputs = lurek.network.newInputBuffer()
+    local accepted, reason = inputs:push(1, 4, 1, { move_x = 1 })
+    lurek.log.info("accepted=" .. tostring(accepted))
+    lurek.log.info("push reason=" .. tostring(reason))
+    lurek.log.info("queued=" .. tostring(inputs:getStats().queued))
+end
+
+--@api: LNetworkInputBuffer:drainThrough
+do
+    local inputs = lurek.network.newInputBuffer()
+    inputs:push(1, 4, 1, { move_y = -1 })
+    local drained = inputs:drainThrough(4)
+    lurek.log.info("drained count=" .. tostring(#drained))
+    lurek.log.info("first peer=" .. tostring(drained[1] and drained[1].peer_id))
+end
+
+--@api: LNetworkInputBuffer:getStats
+do
+    local inputs = lurek.network.newInputBuffer({ maxPeers = 4, maxInputsPerPeer = 32 })
+    local stats = inputs:getStats()
+    lurek.log.info("peer ceiling=" .. tostring(stats.max_peers))
+    lurek.log.info("per-peer ceiling=" .. tostring(stats.max_inputs_per_peer))
+    lurek.log.info("drained through=" .. tostring(stats.drained_through))
+end
+
+--@api: LNetworkInputBuffer:type
+do
+    local inputs = lurek.network.newInputBuffer()
+    local kind = inputs:type()
+    lurek.log.info("input buffer type=" .. tostring(kind))
+    lurek.log.info("queued=" .. tostring(inputs:getStats().queued))
+    lurek.log.info("peers=" .. tostring(inputs:getStats().peers))
+end
+
+--@api: LNetworkInputBuffer:typeOf
+do
+    local inputs = lurek.network.newInputBuffer()
+    local is_buffer = inputs:typeOf("LNetworkInputBuffer")
+    local is_object = inputs:typeOf("LObject")
+    lurek.log.info("is input buffer=" .. tostring(is_buffer))
+    lurek.log.info("is object=" .. tostring(is_object))
+    lurek.log.info("type=" .. tostring(inputs:type()))
 end
 
 

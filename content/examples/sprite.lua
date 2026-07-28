@@ -13,6 +13,18 @@ local function sprite_texture_id()
     return SPRITE_TEXTURE:getId()
 end
 
+--@api: lurek.sprite.newBatch
+do
+
+    local texture = lurek.render.newTexture("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.sprite.newBatch(texture, 32)
+    batch:add(12, 18)
+    local count = batch:getCount()
+    lurek.log.info("sprite-owned batch entries=" .. count)
+    batch:release()
+    texture:release()
+end
+
 --@api: lurek.sprite.newNineSlice
 do
 

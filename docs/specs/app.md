@@ -211,7 +211,7 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 - `lurek.engine.isDebug() -> boolean`: Returns whether the engine binary was built with debug assertions.
 - `lurek.engine.memoryUsage() -> table`: Returns Lua VM memory usage as bytes and rounded kilobytes.
 - `lurek.engine.platform() -> string`: Returns the current desktop operating system name.
-- `lurek.engine.setResourceBudget(budget_bytes) -> nil`: Sets the resource memory budget used by resource statistics reporting.
+- `lurek.engine.setResourceBudget(budget_bytes) -> nil`: Sets the hard resource budget used by public resource allocation and reporting.
 - `lurek.engine.uptime() -> number`: Returns total engine runtime accumulated by the main loop.
 
 ### Callbacks

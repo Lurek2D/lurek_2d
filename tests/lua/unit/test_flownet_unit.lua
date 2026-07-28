@@ -135,6 +135,110 @@ describe("module entrypoints", function()
     end)
 end)
 
+-- @describe prepared topology batches
+describe("prepared topology batches", function()
+    -- @covers LGraph:prepareBatch
+    it("resolves Lua-owned external keys and commits once", function()
+        local g = make_graph()
+        local version = g:getVersion()
+        local batch = g:prepareBatch({
+            { op = "addNode", key = "source", nodeType = "source", capacity = 8 },
+            { op = "addNode", key = "sink", nodeType = "sink", capacity = 8 },
+            { op = "addEdge", from = "source", to = "sink", edgeType = "belt" },
+        }, version)
+
+        local preview = batch:preview()
+        expect_equal(version, preview.baseVersion)
+        expect_equal(3, preview.operationCount)
+        expect_equal(3, preview.changedCount)
+        expect_equal(2, #preview.createdNodes)
+        expect_equal(1, #preview.createdEdges)
+        expect_true(batch:isPending())
+        expect_equal(0, g:getNodeCount())
+
+        local ids = batch:commit()
+        expect_false(batch:isPending())
+        expect_equal(version + 1, g:getVersion())
+        expect_equal(2, g:getNodeCount())
+        expect_true(type(ids.source) == "number")
+        expect_true(type(ids.sink) == "number")
+    end)
+
+    -- @covers LGraphTopologyBatch:commit
+    it("rejects invalid and conflicted work without partial mutation", function()
+        local g = make_graph()
+        local ok = pcall(function()
+            g:prepareBatch({
+                { op = "addNode", key = "source", nodeType = "source" },
+                { op = "addEdge", from = "source", to = "missing" },
+            })
+        end)
+        expect_false(ok)
+        expect_equal(0, g:getNodeCount())
+
+        local batch = g:prepareBatch({
+            { op = "addNode", key = "staged", nodeType = "source" },
+        })
+        g:addNode("concurrent", 1)
+        ok = pcall(function()
+            batch:commit()
+        end)
+        expect_false(ok)
+        expect_true(batch:isPending())
+        expect_equal(1, g:getNodeCount())
+    end)
+
+    -- @covers LGraph:getVersion
+    it("reports a monotonic topology version", function()
+        local g = make_graph()
+        local version = g:getVersion()
+        g:addNode("source", 1)
+        expect_equal(version + 1, g:getVersion())
+    end)
+
+    -- @covers LGraphTopologyBatch:preview
+    it("previews created ids without mutating the graph", function()
+        local g = make_graph()
+        local preview = g:prepareBatch({
+            { op = "addNode", key = "source", nodeType = "source" },
+        }):preview()
+        expect_equal(1, preview.operationCount)
+        expect_equal(1, #preview.createdNodes)
+        expect_equal(0, g:getNodeCount())
+    end)
+
+    -- @covers LGraphTopologyBatch:isPending
+    it("reports whether a topology batch remains pending", function()
+        local batch = make_graph():prepareBatch({})
+        expect_true(batch:isPending())
+        batch:discard()
+        expect_false(batch:isPending())
+    end)
+
+    -- @covers LGraphTopologyBatch:discard
+    it("can be identified and discarded", function()
+        local batch = make_graph():prepareBatch({})
+        expect_equal("LGraphTopologyBatch", batch:type())
+        expect_true(batch:typeOf("LGraphTopologyBatch"))
+        expect_true(batch:typeOf("LObject"))
+        expect_true(batch:discard())
+        expect_false(batch:isPending())
+        expect_false(batch:discard())
+    end)
+
+    -- @covers LGraphTopologyBatch:type
+    it("reports its concrete userdata type", function()
+        expect_equal("LGraphTopologyBatch", make_graph():prepareBatch({}):type())
+    end)
+
+    -- @covers LGraphTopologyBatch:typeOf
+    it("participates in the LObject type hierarchy", function()
+        local batch = make_graph():prepareBatch({})
+        expect_true(batch:typeOf("LGraphTopologyBatch"))
+        expect_true(batch:typeOf("LObject"))
+    end)
+end)
+
 -- @describe graph core
 describe("graph core", function()
     -- @covers LGraph:addNode
@@ -153,6 +257,37 @@ describe("graph core", function()
     it("hasNode returns true for an inserted node", function()
         local g, n = graph_with_node()
         expect_true(g:hasNode(n))
+    end)
+
+    -- @covers LGraph:getNodeById
+    it("resolves numeric ids published by prepared topology batches", function()
+        local g = make_graph()
+        local batch = g:prepareBatch({
+            { op = "addNode", key = "a", nodeType = "source" },
+            { op = "addNode", key = "b", nodeType = "sink" },
+            { op = "addEdge", from = "a", to = "b" },
+        })
+        local preview = batch:preview()
+        local ids = batch:commit()
+        expect_type("userdata", g:getNodeById(ids.a))
+        expect_type("userdata", g:getNodeById(ids.b))
+        expect_type("userdata", g:getEdgeById(preview.createdEdges[1]))
+        expect_nil(g:getNodeById(999999))
+        expect_nil(g:getEdgeById(999999))
+    end)
+
+    -- @covers LGraph:getEdgeById
+    it("resolves an edge by its numeric id", function()
+        local g = make_graph()
+        local batch = g:prepareBatch({
+            { op = "addNode", key = "a", nodeType = "source" },
+            { op = "addNode", key = "b", nodeType = "sink" },
+            { op = "addEdge", from = "a", to = "b" },
+        })
+        local edge_id = batch:preview().createdEdges[1]
+        batch:commit()
+        expect_type("userdata", g:getEdgeById(edge_id))
+        expect_nil(g:getEdgeById(999999))
     end)
 
     -- @covers LGraph:removeNode
@@ -484,6 +619,56 @@ describe("node handles", function()
         n:clearAllConversions()
         call_method(g, "addItem", call_method(g, "createItem", "ore"), n)
         expect_equal("ore", node_item_types_after_update(g, n)[1])
+    end)
+
+    -- @covers LGraphNode:runRecipe
+    it("runs explicit multi-input recipes while Lua owns scheduling", function()
+        local g, n = graph_with_node("assembler", 32)
+        n:setRecipe("gear", { ore = 2, coal = 1 }, {
+            { itemType = "gear", count = 1 },
+            { itemType = "slag", count = 1 },
+        })
+        local recipes = n:getRecipes()
+        expect_equal(1, #recipes)
+        expect_equal("gear", recipes[1].name)
+        for _, item_type in ipairs({ "ore", "coal", "ore", "coal", "ore", "ore" }) do
+            g:addItem(g:createItem(item_type), n)
+        end
+        local execution = n:runRecipe("gear", 10)
+        expect_equal(2, execution.runs)
+        expect_equal(6, #execution.consumedIds)
+        expect_equal(4, #execution.producedIds)
+        local summary = g:summarizeInventory()
+        expect_equal(2, summary.byType.gear)
+        expect_equal(2, summary.byType.slag)
+        expect_nil(summary.byType.ore)
+        expect_nil(summary.byType.coal)
+    end)
+
+    -- @covers LGraphNode:setRecipe
+    it("stores an explicit multi-input and multi-output recipe", function()
+        local _, n = graph_with_node("assembler", 8)
+        n:setRecipe("gear", { ore = 2, coal = 1 }, { gear = 1, slag = 1 })
+        expect_equal(1, #n:getRecipes())
+    end)
+
+    -- @covers LGraphNode:getRecipes
+    it("returns deterministic recipe descriptions", function()
+        local _, n = graph_with_node("assembler", 8)
+        n:setRecipe("gear", { ore = 2 }, { gear = 1 })
+        local recipes = n:getRecipes()
+        expect_equal("gear", recipes[1].name)
+        expect_equal("ore", recipes[1].inputs[1].itemType)
+        expect_equal(2, recipes[1].inputs[1].count)
+    end)
+
+    -- @covers LGraphNode:removeRecipe
+    it("removes recipes explicitly", function()
+        local _, n = graph_with_node("assembler", 8)
+        n:setRecipe("single", { ore = 1 }, { bar = 1 })
+        expect_true(n:removeRecipe("single"))
+        expect_false(n:removeRecipe("single"))
+        expect_equal(0, #n:getRecipes())
     end)
 
     -- @covers LGraphNode:addSupply
@@ -832,6 +1017,19 @@ describe("items and algorithms", function()
         expect_type("userdata", g:createItem("ore", 5.0))
     end)
 
+    -- @covers LGraph:spawnItems
+    it("spawns a bounded item group directly into one inventory", function()
+        local g, node = graph_with_node("storage", 8)
+        local ids = g:spawnItems(node, "ore", 4)
+        expect_equal(4, #ids)
+        expect_equal(4, node:getItemCount())
+        expect_type("userdata", g:getItemById(ids[1]))
+        expect_error(function()
+            g:spawnItems(node, "ore", 5)
+        end)
+        expect_equal(4, node:getItemCount())
+    end)
+
     -- @covers LGraphItem:getDecayTime
     it("getDecayTime returns the configured decay time", function()
         local item = item_with_decay(5.0)
@@ -857,6 +1055,19 @@ describe("items and algorithms", function()
     it("hasItem reports whether an item exists in the graph", function()
         local g, item = graph_with_item("ore")
         expect_true(g:hasItem(item))
+    end)
+
+    -- @covers LGraph:getItemById
+    it("resolves numeric ids returned by recipe execution", function()
+        local g, node = graph_with_node("assembler", 8)
+        node:setRecipe("bar", { ore = 1 }, { bar = 1 })
+        g:addItem(g:createItem("ore"), node)
+        local execution = node:runRecipe("bar")
+        expect_type("userdata", g:getItemById(execution.producedIds[1]))
+        local consumed = g:getItemById(execution.consumedIds[1])
+        expect_type("userdata", consumed)
+        expect_false(consumed:isAlive())
+        expect_nil(g:getItemById(999999))
     end)
 
     -- @covers LGraph:removeItem
@@ -1037,12 +1248,123 @@ describe("items and algorithms", function()
         end)
     end)
 
+    -- @covers LGraph:drainEvents
+    it("offers deterministic pull-based event delivery for Lua integration", function()
+        local g = make_graph()
+        local item = g:createItem("ore", 0.1)
+        g:setEventMode("queue")
+        expect_equal("queue", g:getEventMode())
+        g:update(1.0)
+        local stats = g:getEventQueueStats()
+        expect_equal(1, stats.pending)
+        expect_equal(0, stats.dropped)
+        local events = g:drainEvents()
+        expect_equal(1, #events)
+        expect_equal("itemDecay", events[1].event)
+        expect_type("number", events[1].itemId)
+        expect_equal(0, g:getEventQueueStats().pending)
+        expect_not_nil(item)
+    end)
+
+    -- @covers LGraph:setEventMode
+    it("selects pull-based event delivery", function()
+        local g = make_graph()
+        g:setEventMode("queue")
+        expect_equal("queue", g:getEventMode())
+    end)
+
+    -- @covers LGraph:getEventMode
+    it("reports the active event delivery mode", function()
+        local g = make_graph()
+        expect_equal("callback", g:getEventMode())
+    end)
+
+    -- @covers LGraph:getEventQueueStats
+    it("reports pending and dropped queue counts", function()
+        local g = make_graph()
+        local stats = g:getEventQueueStats()
+        expect_equal(0, stats.pending)
+        expect_equal(0, stats.dropped)
+    end)
+
+    -- @covers LGraph:setEventQueueLimit
+    it("bounds queued events and reports oldest-record drops", function()
+        local g = make_graph()
+        g:setEventMode("queue")
+        g:setEventQueueLimit(1)
+        g:createItem("ore", 0.1)
+        g:createItem("coal", 0.1)
+        g:update(1.0)
+        local stats = g:getEventQueueStats()
+        expect_equal(1, stats.pending)
+        expect_equal(1, stats.dropped)
+        expect_equal(1, g:clearEvents())
+        expect_equal(0, g:getEventQueueStats().pending)
+    end)
+
+    -- @covers LGraph:clearEvents
+    it("clears queued event records", function()
+        local g = make_graph()
+        g:setEventMode("queue")
+        g:createItem("ore", 0.1)
+        g:update(1.0)
+        expect_equal(1, g:clearEvents())
+        expect_equal(0, g:getEventQueueStats().pending)
+    end)
+
     -- @covers LGraph:getStats
     it("getStats returns graph statistics", function()
         local g = make_graph()
         local stats = g:getStats()
         expect_type("table", stats)
         expect_type("number", stats.nodes)
+    end)
+
+    -- @covers LGraph:summarizeInventory
+    it("summarizes item ownership and types for Lua-side economy logic", function()
+        local g, node = graph_with_node("storage", 8)
+        local ore = g:createItem("ore")
+        g:createItem("coal")
+        g:addItem(ore, node)
+        local summary = g:summarizeInventory()
+        expect_equal(2, summary.total)
+        expect_equal(2, summary.alive)
+        expect_equal(1, summary.atNodes)
+        expect_equal(1, summary.unplaced)
+        expect_equal(1, summary.byType.ore)
+        expect_equal(1, summary.byType.coal)
+    end)
+
+    -- @covers LGraph:restoreSnapshot
+    it("round-trips complete state through a deterministic checkpoint", function()
+        local g, source, _, _ = make_simple_graph("belt")
+        local item = g:createItem("ore")
+        g:addItem(item, source)
+        local snapshot = g:snapshot()
+        local hash = g:stateHash()
+        local version = g:getVersion()
+        g:removeNode(source)
+        expect_not_equal(hash, g:stateHash())
+        local changed_version = g:getVersion()
+        g:restoreSnapshot(snapshot, changed_version)
+        expect_equal(hash, g:stateHash())
+        expect_equal(changed_version + 1, g:getVersion())
+        expect_true(g:getVersion() > version)
+    end)
+
+    -- @covers LGraph:snapshot
+    it("captures complete graph state as a deterministic string", function()
+        local g = graph_with_node("storage", 8)
+        expect_type("string", g:snapshot())
+        expect_equal(g:snapshot(), g:snapshot())
+    end)
+
+    -- @covers LGraph:stateHash
+    it("changes its state hash when graph content changes", function()
+        local g = make_graph()
+        local before = g:stateHash()
+        g:addNode("storage", 8)
+        expect_not_equal(before, g:stateHash())
     end)
 
     -- @covers LGraph:tickParallel

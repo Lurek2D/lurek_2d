@@ -1522,3 +1522,302 @@ do
     lurek.log.info("node count = " .. g:getNodeCount())
     lurek.log.info("edge count = " .. g:getEdgeCount())
 end
+--@api: LGraph:getVersion
+do
+    local graph = lurek.graph.newGraph()
+    local before = graph:getVersion()
+    graph:batchAddNodes(2, { node_type = "storage", capacity = 4 })
+    local after = graph:getVersion()
+    local once = after == before + 1
+    lurek.log.info("graph version advanced once=" .. tostring(once))
+end
+
+--@api: LGraph:prepareBatch
+do
+    local graph = lurek.graph.newGraph()
+    local batch = graph:prepareBatch({
+        { op = "addNode", key = "source", nodeType = "source", capacity = 8 },
+        { op = "addNode", key = "sink", nodeType = "sink", capacity = 8 },
+        { op = "addEdge", from = "source", to = "sink", edgeType = "belt" },
+    }, graph:getVersion())
+    local preview = batch:preview()
+    local pending = batch:isPending()
+    lurek.log.info("prepared topology ops=" .. tostring(preview.operationCount))
+    lurek.log.info("pending=" .. tostring(pending))
+end
+
+--@api: LGraph:getNodeById
+do
+    local graph = lurek.graph.newGraph()
+    local batch = graph:prepareBatch({ { op = "addNode", key = "store", nodeType = "storage" } })
+    local ids = batch:commit()
+    local node = graph:getNodeById(ids.store)
+    local missing = graph:getNodeById(999999)
+    lurek.log.info("resolved node=" .. tostring(node ~= nil))
+    lurek.log.info("missing node=" .. tostring(missing == nil))
+end
+
+--@api: LGraph:getEdgeById
+do
+    local graph = lurek.graph.newGraph()
+    local ids = graph:batchAddNodes(2, { node_type = "router" })
+    local edge_ids = graph:batchAddEdges({ { ids[1], ids[2], "belt" } })
+    local edge = graph:getEdgeById(edge_ids[1])
+    local missing = graph:getEdgeById(999999)
+    lurek.log.info("resolved edge=" .. tostring(edge ~= nil))
+    lurek.log.info("missing edge=" .. tostring(missing == nil))
+end
+
+--@api: LGraph:spawnItems
+do
+    local graph = lurek.graph.newGraph()
+    local storage = graph:addNode("storage", 8)
+    local ids = graph:spawnItems(storage, "ore", 4)
+    local count = storage:getItemCount()
+    local first = graph:getItemById(ids[1])
+    lurek.log.info("spawned items=" .. tostring(#ids) .. " stored=" .. tostring(count))
+    lurek.log.info("first resolved=" .. tostring(first ~= nil))
+end
+
+--@api: LGraph:getItemById
+do
+    local graph = lurek.graph.newGraph()
+    local storage = graph:addNode("storage", 4)
+    local ids = graph:spawnItems(storage, "ore", 1)
+    local item = graph:getItemById(ids[1])
+    local missing = graph:getItemById(999999)
+    lurek.log.info("resolved item=" .. tostring(item ~= nil))
+    lurek.log.info("missing item=" .. tostring(missing == nil))
+end
+
+--@api: LGraph:summarizeInventory
+do
+    local graph = lurek.graph.newGraph()
+    local storage = graph:addNode("storage", 8)
+    graph:spawnItems(storage, "ore", 3)
+    graph:createItem("coal")
+    local summary = graph:summarizeInventory()
+    local ore = summary.byType.ore
+    lurek.log.info("inventory total=" .. tostring(summary.total) .. " ore=" .. tostring(ore))
+end
+
+--@api: LGraph:snapshot
+do
+    local graph = lurek.graph.newGraph()
+    local storage = graph:addNode("storage", 8)
+    graph:spawnItems(storage, "ore", 2)
+    local snapshot = graph:snapshot()
+    local bytes = #snapshot
+    local hash = graph:stateHash()
+    lurek.log.info("graph snapshot bytes=" .. tostring(bytes))
+    lurek.log.info("graph hash=" .. hash)
+end
+
+--@api: LGraph:restoreSnapshot
+do
+    local graph = lurek.graph.newGraph()
+    graph:addNode("storage", 8)
+    local snapshot = graph:snapshot()
+    graph:addNode("temporary", 8)
+    local before_restore = graph:getNodeCount()
+    graph:restoreSnapshot(snapshot, graph:getVersion())
+    local after_restore = graph:getNodeCount()
+    lurek.log.info("nodes before restore=" .. tostring(before_restore))
+    lurek.log.info("nodes after restore=" .. tostring(after_restore))
+end
+
+--@api: LGraph:stateHash
+do
+    local graph = lurek.graph.newGraph()
+    local storage = graph:addNode("storage", 8)
+    graph:spawnItems(storage, "ore", 2)
+    local first = graph:stateHash()
+    local second = graph:stateHash()
+    local stable = first == second
+    lurek.log.info("graph state hash=" .. first)
+    lurek.log.info("stable=" .. tostring(stable))
+end
+
+--@api: LGraph:setEventMode
+do
+    local graph = lurek.graph.newGraph()
+    graph:setEventMode("queue")
+    graph:createItem("ore", 0.01)
+    graph:update(1.0)
+    local mode = graph:getEventMode()
+    local pending = graph:getEventQueueStats().pending
+    lurek.log.info("event mode=" .. mode)
+    lurek.log.info("queued events=" .. tostring(pending))
+end
+
+--@api: LGraph:getEventMode
+do
+    local graph = lurek.graph.newGraph()
+    local initial = graph:getEventMode()
+    graph:setEventMode("both")
+    local changed = graph:getEventMode()
+    local callback_initial = initial == "callback"
+    lurek.log.info("initial callback mode=" .. tostring(callback_initial))
+    lurek.log.info("changed mode=" .. changed)
+end
+
+--@api: LGraph:setEventQueueLimit
+do
+    local graph = lurek.graph.newGraph()
+    graph:setEventMode("queue")
+    graph:setEventQueueLimit(2)
+    graph:createItem("ore", 0.01)
+    graph:createItem("coal", 0.01)
+    graph:createItem("stone", 0.01)
+    graph:update(1.0)
+    lurek.log.info("queue pending=" .. tostring(graph:getEventQueueStats().pending))
+end
+
+--@api: LGraph:getEventQueueStats
+do
+    local graph = lurek.graph.newGraph()
+    graph:setEventMode("queue")
+    graph:setEventQueueLimit(4)
+    graph:createItem("ore", 0.01)
+    graph:update(1.0)
+    local stats = graph:getEventQueueStats()
+    lurek.log.info("queue pending=" .. tostring(stats.pending))
+    lurek.log.info("queue limit=" .. tostring(stats.limit))
+end
+
+--@api: LGraph:drainEvents
+do
+    local graph = lurek.graph.newGraph()
+    graph:setEventMode("queue")
+    graph:createItem("ore", 0.01)
+    graph:update(1.0)
+    local events = graph:drainEvents()
+    local event_name = events[1] and events[1].event or "none"
+    lurek.log.info("drained events=" .. tostring(#events))
+    lurek.log.info("first event=" .. event_name)
+end
+
+--@api: LGraph:clearEvents
+do
+    local graph = lurek.graph.newGraph()
+    graph:setEventMode("queue")
+    graph:createItem("ore", 0.01)
+    graph:update(1.0)
+    local removed = graph:clearEvents()
+    local pending = graph:getEventQueueStats().pending
+    lurek.log.info("cleared events=" .. tostring(removed))
+    lurek.log.info("pending after clear=" .. tostring(pending))
+end
+
+--@api: LGraphNode:setRecipe
+do
+    local graph = lurek.graph.newGraph()
+    local assembler = graph:addNode("assembler", 16)
+    assembler:setRecipe("gear", { ore = 2, coal = 1 }, { gear = 1 })
+    local recipes = assembler:getRecipes()
+    local name = recipes[1].name
+    local inputs = #recipes[1].inputs
+    lurek.log.info("recipe=" .. name .. " input types=" .. tostring(inputs))
+end
+
+--@api: LGraphNode:getRecipes
+do
+    local graph = lurek.graph.newGraph()
+    local assembler = graph:addNode("assembler", 16)
+    assembler:setRecipe("plate", { ore = 1 }, { plate = 1 })
+    assembler:setRecipe("wire", { plate = 1 }, { wire = 2 })
+    local recipes = assembler:getRecipes()
+    local first = recipes[1].name
+    local second = recipes[2].name
+    lurek.log.info("recipes=" .. first .. "," .. second)
+end
+
+--@api: LGraphNode:runRecipe
+do
+    local graph = lurek.graph.newGraph()
+    local assembler = graph:addNode("assembler", 16)
+    assembler:setRecipe("gear", { ore = 2, coal = 1 }, { gear = 1 })
+    graph:spawnItems(assembler, "ore", 2)
+    graph:spawnItems(assembler, "coal", 1)
+    local result = assembler:runRecipe("gear", 1)
+    lurek.log.info("recipe runs=" .. tostring(result.runs))
+    lurek.log.info("produced ids=" .. tostring(#result.producedIds))
+end
+
+--@api: LGraphNode:removeRecipe
+do
+    local graph = lurek.graph.newGraph()
+    local assembler = graph:addNode("assembler", 16)
+    assembler:setRecipe("plate", { ore = 1 }, { plate = 1 })
+    local removed = assembler:removeRecipe("plate")
+    local remaining = #assembler:getRecipes()
+    local missing = assembler:removeRecipe("plate")
+    lurek.log.info("removed=" .. tostring(removed) .. " remaining=" .. tostring(remaining))
+    lurek.log.info("second remove=" .. tostring(missing))
+end
+
+--@api: LGraphTopologyBatch:preview
+do
+    local graph = lurek.graph.newGraph()
+    local batch = graph:prepareBatch({ { op = "addNode", key = "source", nodeType = "source" } })
+    local preview = batch:preview()
+    local operations = preview.operationCount
+    local created = #preview.createdNodes
+    lurek.log.info("topology operations=" .. tostring(operations))
+    lurek.log.info("created nodes=" .. tostring(created))
+end
+
+--@api: LGraphTopologyBatch:commit
+do
+    local graph = lurek.graph.newGraph()
+    local before = graph:getVersion()
+    local batch = graph:prepareBatch({ { op = "addNode", key = "source", nodeType = "source" } })
+    local ids = batch:commit()
+    local node = graph:getNodeById(ids.source)
+    lurek.log.info("committed node=" .. tostring(node ~= nil))
+    lurek.log.info("version advanced=" .. tostring(graph:getVersion() == before + 1))
+end
+
+--@api: LGraphTopologyBatch:discard
+do
+    local graph = lurek.graph.newGraph()
+    local batch = graph:prepareBatch({ { op = "addNode", key = "source", nodeType = "source" } })
+    local discarded = batch:discard()
+    local pending = batch:isPending()
+    local nodes = graph:getNodeCount()
+    lurek.log.info("discarded=" .. tostring(discarded))
+    lurek.log.info("pending=" .. tostring(pending) .. " nodes=" .. tostring(nodes))
+end
+
+--@api: LGraphTopologyBatch:isPending
+do
+    local graph = lurek.graph.newGraph()
+    local batch = graph:prepareBatch({})
+    local before = batch:isPending()
+    batch:discard()
+    local after = batch:isPending()
+    lurek.log.info("pending before=" .. tostring(before))
+    lurek.log.info("pending after=" .. tostring(after))
+end
+
+--@api: LGraphTopologyBatch:type
+do
+    local graph = lurek.graph.newGraph()
+    local batch = graph:prepareBatch({})
+    local type_name = batch:type()
+    local pending = batch:isPending()
+    local preview = batch:preview()
+    lurek.log.info("topology batch type=" .. type_name)
+    lurek.log.info("pending=" .. tostring(pending) .. " operations=" .. tostring(preview.operationCount))
+end
+
+--@api: LGraphTopologyBatch:typeOf
+do
+    local graph = lurek.graph.newGraph()
+    local batch = graph:prepareBatch({})
+    local exact = batch:typeOf("LGraphTopologyBatch")
+    local object = batch:typeOf("LObject")
+    local other = batch:typeOf("LGraph")
+    lurek.log.info("topology batch exact=" .. tostring(exact))
+    lurek.log.info("object=" .. tostring(object) .. " other=" .. tostring(other))
+end

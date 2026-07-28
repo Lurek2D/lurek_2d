@@ -97,15 +97,6 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - Documents the boundary where province code accepts inputs, reports errors, allocates state, or emits outputs.
 - Use this file when changing province GPU bridge defaults, lifecycle handling, validation, or data ownership rules.
 
-### gpu_upload.rs
-
-- Creates province-related GPU textures so shaders can sample ownership, pair IDs, and distance fields by map pixel.
-- Owns upload helpers for R32Uint, R16Uint, and R8Unorm texture creation plus byte-packing for integer cell arrays.
-- Provides the renderer-facing resource boundary between CPU province structures and wgpu texture initialization calls.
-- This file is where texture dimensions, formats, and upload staging logic for province data are coordinated together.
-- Neighboring edits usually come from ProvinceGrid, ProvinceBorderIndex, or ProvinceDistanceField layout adjustments.
-- Open this owner when a shader needs new province lookup textures or existing upload formats stop matching consumers.
-
 ### import.rs
 
 - Implements the province metadata import pipeline that turns marker art, CSV tables, and TOML into registry state.
@@ -185,6 +176,13 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - Provides the local adaptation layer that lets callers reuse province render rules without duplicating engine decisions.
 - Open this owner before sibling files when a regression centers on province render state, helpers, or integration rules.
 - Works with neighboring province owners while keeping the main province render responsibility anchored in one file.
+
+### render_snapshot.rs
+
+- Defines the CPU-only render snapshot exported by the province domain.
+- Province owns construction from `ProvinceRegistry`, topology, and semantic
+- style records. Render consumes this immutable packet without accessing a
+- registry or any `wgpu` type.
 
 ### routing.rs
 
@@ -433,4 +431,5 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - Flow simulation over graph nodes, items, queues, capacity, and supply/demand belongs to `flownet`/`lurek.graph`; province adjacency can feed it but should not implement transport semantics.
 - `province` may expose `fitCamera`, `screenToProvince`, and `zoomCameraAt` for strategy-map ergonomics, but generic viewport and zoom-anchor math belongs to `camera`.
 - `province` owns semantic visual state such as climate, weather, fog amount, and visual seeds. `render` still owns WGSL code, bind-group layout, validation, and actual water, border-noise, fog, and weather composition in `DrawProvinceMap`.
+- `province` exports a bounded `ProvinceRenderSnapshot` when registry revision changes. The snapshot contains only CPU pixels and semantic style records; it has no device, queue, texture, or other `wgpu` handle. The app forwards it to render, which owns upload formats, GPU residency, and incremental resource replacement.
 - `LProvinceRegistry:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The registry stores the semantic shader binding, then the command backend wraps generated render commands in render-owned shader state. The specialized `backend = "gpu"` province map pipeline and segment raster cache do not yet execute custom user shaders; richer province-id and heatmap inputs belong in a later render-owned `DrawProvinceMap` shader contract.

@@ -9,7 +9,7 @@ use crate::render::ShaderTarget;
 use crate::tilemap::autotile_sheet::{
     layout_from_name, layout_name, supported_layouts, AutoTileSheet,
 };
-use crate::tilemap::chunk::ChunkMap;
+use crate::tilemap::chunk::{ChunkMap, PreparedChunkBatch};
 use crate::tilemap::coords;
 use crate::tilemap::isomap::IsoMap;
 use crate::tilemap::large_map_renderer::LargeMapRenderer;
@@ -1337,6 +1337,115 @@ impl LuaUserData for LuaAutoTileSheet {
 pub struct LuaChunkMap {
     inner: Rc<RefCell<ChunkMap>>,
 }
+
+fn chunk_map_error(api: &str, error: impl std::fmt::Display) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.tilemap.{api}: {error}"))
+}
+
+fn chunk_edits_from_table(
+    edits: LuaTable,
+    max_edits: u64,
+    api: &str,
+) -> LuaResult<Vec<(i32, i32, u32)>> {
+    let raw_len = edits.raw_len();
+    if raw_len as u64 > max_edits {
+        return Err(chunk_map_error(
+            api,
+            format!("edit count {raw_len} exceeds limit {max_edits}"),
+        ));
+    }
+    let mut parsed = Vec::new();
+    parsed
+        .try_reserve_exact(raw_len)
+        .map_err(|_| chunk_map_error(api, "could not allocate edit staging"))?;
+    for (index, value) in edits.sequence_values::<LuaTable>().enumerate() {
+        let edit =
+            value.map_err(|err| chunk_map_error(api, format!("edit {}: {err}", index + 1)))?;
+        let x: i32 = edit
+            .get("x")
+            .or_else(|_| edit.get(1))
+            .map_err(|err| chunk_map_error(api, format!("edit {} missing x: {err}", index + 1)))?;
+        let y: i32 = edit
+            .get("y")
+            .or_else(|_| edit.get(2))
+            .map_err(|err| chunk_map_error(api, format!("edit {} missing y: {err}", index + 1)))?;
+        let gid: u32 = edit.get("gid").or_else(|_| edit.get(3)).map_err(|err| {
+            chunk_map_error(api, format!("edit {} missing gid: {err}", index + 1))
+        })?;
+        parsed.push((x, y, gid));
+    }
+    Ok(parsed)
+}
+
+/// Prepared, version-checked mutation for one existing `LChunkMap`.
+#[derive(Clone)]
+pub struct LuaChunkMapBatch {
+    map: Rc<RefCell<ChunkMap>>,
+    prepared: Rc<RefCell<Option<PreparedChunkBatch>>>,
+}
+
+impl LuaUserData for LuaChunkMapBatch {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- preview --
+        /// Returns deterministic metadata for this prepared chunk-map mutation.
+        /// @return | table | Base version, edit count, changed tile count, and changed chunks.
+        methods.add_method("preview", |lua, this, ()| {
+            let prepared = this.prepared.borrow();
+            let batch = prepared
+                .as_ref()
+                .ok_or_else(|| chunk_map_error("LChunkMapBatch:preview", "batch is not pending"))?;
+            let out = lua.create_table()?;
+            out.set("baseVersion", batch.base_version())?;
+            out.set("editCount", batch.edit_count())?;
+            out.set("changedTileCount", batch.changed_tile_count())?;
+            out.set(
+                "changedChunks",
+                chunk_pairs_to_lua(lua, batch.changed_chunks().to_vec())?,
+            )?;
+            Ok(out)
+        });
+        // -- commit --
+        /// Commits this prepared mutation if the map version is unchanged.
+        /// @return | table | Deterministically ordered changed chunk coordinates.
+        methods.add_method("commit", |lua, this, ()| {
+            let batch =
+                this.prepared.borrow().as_ref().cloned().ok_or_else(|| {
+                    chunk_map_error("LChunkMapBatch:commit", "batch is not pending")
+                })?;
+            let changed = this
+                .map
+                .borrow_mut()
+                .commit_prepared(batch)
+                .map_err(|error| chunk_map_error("LChunkMapBatch:commit", error))?;
+            *this.prepared.borrow_mut() = None;
+            chunk_pairs_to_lua(lua, changed)
+        });
+        // -- discard --
+        /// Discards this prepared mutation without changing the map.
+        /// @return | boolean | True when a pending mutation was discarded.
+        methods.add_method("discard", |_, this, ()| {
+            Ok(this.prepared.borrow_mut().take().is_some())
+        });
+        // -- isPending --
+        /// Returns whether this batch can still be committed or discarded.
+        /// @return | boolean | True while the batch remains pending.
+        methods.add_method("isPending", |_, this, ()| {
+            Ok(this.prepared.borrow().is_some())
+        });
+        // -- type --
+        /// Returns the type name of this prepared batch.
+        /// @return | string | Always `"LChunkMapBatch"`.
+        methods.add_method("type", |_, _, ()| Ok("LChunkMapBatch"));
+        // -- typeOf --
+        /// Checks whether this object matches the requested type.
+        /// @param | name | string | Type name.
+        /// @return | boolean | True for `LChunkMapBatch` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LChunkMapBatch" || name == "LObject")
+        });
+    }
+}
+
 impl LuaUserData for LuaChunkMap {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getTile --
@@ -1364,28 +1473,140 @@ impl LuaUserData for LuaChunkMap {
         /// @param | edits | table | Array of `{x, y, gid}` tables or `{x, y, gid}` arrays.
         /// @return | table | Array of `{cx, cy}` chunks changed by the batch.
         methods.add_method("setTiles", |lua, this, edits: LuaTable| {
-            let mut parsed = Vec::with_capacity(edits.raw_len());
-            for value in edits.sequence_values::<LuaTable>() {
-                let edit = value
-                    .map_err(|err| LuaError::RuntimeError(format!("LChunkMap:setTiles: {err}")))?;
-                let x: i32 = edit.get("x").or_else(|_| edit.get(1)).map_err(|err| {
-                    LuaError::RuntimeError(format!("LChunkMap:setTiles: missing edit x: {err}"))
-                })?;
-                let y: i32 = edit.get("y").or_else(|_| edit.get(2)).map_err(|err| {
-                    LuaError::RuntimeError(format!("LChunkMap:setTiles: missing edit y: {err}"))
-                })?;
-                let gid: u32 = edit.get("gid").or_else(|_| edit.get(3)).map_err(|err| {
-                    LuaError::RuntimeError(format!("LChunkMap:setTiles: missing edit gid: {err}"))
-                })?;
-                parsed.push((x, y, gid));
-            }
+            let max_edits = this.inner.borrow().limits().max_tile_operation_cells;
+            let parsed = chunk_edits_from_table(edits, max_edits, "LChunkMap:setTiles")?;
             let dirty = this
                 .inner
                 .borrow_mut()
                 .try_set_tiles(&parsed)
-                .map_err(|err| LuaError::RuntimeError(format!("LChunkMap:setTiles: {err}")))?;
+                .map_err(|err| chunk_map_error("LChunkMap:setTiles", err))?;
             chunk_pairs_to_lua(lua, dirty)
         });
+        // -- prepareBatch --
+        /// Validates and stages tile edits without mutating the live map.
+        /// @param | edits | table | Array of `{x, y, gid}` tables or arrays.
+        /// @param | expectedVersion | integer? | Optional required current map version.
+        /// @return | LChunkMapBatch | Prepared mutation with preview, commit, and discard.
+        methods.add_method(
+            "prepareBatch",
+            |lua, this, (edits, expected_version): (LuaTable, Option<u64>)| {
+                let map = this.inner.borrow();
+                if let Some(expected) = expected_version {
+                    if expected != map.version() {
+                        return Err(chunk_map_error(
+                            "LChunkMap:prepareBatch",
+                            format!(
+                                "version conflict: expected {expected}, current version is {}",
+                                map.version()
+                            ),
+                        ));
+                    }
+                }
+                let parsed = chunk_edits_from_table(
+                    edits,
+                    map.limits().max_tile_operation_cells,
+                    "LChunkMap:prepareBatch",
+                )?;
+                let prepared = map
+                    .prepare_tiles(&parsed)
+                    .map_err(|error| chunk_map_error("LChunkMap:prepareBatch", error))?;
+                drop(map);
+                lua.create_userdata(LuaChunkMapBatch {
+                    map: this.inner.clone(),
+                    prepared: Rc::new(RefCell::new(Some(prepared))),
+                })
+            },
+        );
+        // -- getVersion --
+        /// Returns the monotonic logical tile-content version.
+        /// @return | integer | Version incremented once per successful content mutation.
+        methods.add_method("getVersion", |_, this, ()| {
+            Ok(this.inner.borrow().version())
+        });
+        // -- readTiles --
+        /// Reads many tile coordinates while crossing the Lua boundary only once.
+        /// @param | coords | table | Array of `{x, y}` tables or arrays.
+        /// @return | table | Array of `{x, y,gid}` records in input order.
+        methods.add_method("readTiles", |lua, this, coords: LuaTable| {
+            let map = this.inner.borrow();
+            let raw_len = coords.raw_len();
+            let limit = map.limits().max_tile_operation_cells;
+            if raw_len as u64 > limit {
+                return Err(chunk_map_error(
+                    "LChunkMap:readTiles",
+                    format!("coordinate count {raw_len} exceeds limit {limit}"),
+                ));
+            }
+            let out = lua.create_table_with_capacity(raw_len, 0)?;
+            for (index, value) in coords.sequence_values::<LuaTable>().enumerate() {
+                let coord = value.map_err(|error| {
+                    chunk_map_error(
+                        "LChunkMap:readTiles",
+                        format!("coord {}: {error}", index + 1),
+                    )
+                })?;
+                let x: i32 = coord.get("x").or_else(|_| coord.get(1)).map_err(|error| {
+                    chunk_map_error(
+                        "LChunkMap:readTiles",
+                        format!("coord {} missing x: {error}", index + 1),
+                    )
+                })?;
+                let y: i32 = coord.get("y").or_else(|_| coord.get(2)).map_err(|error| {
+                    chunk_map_error(
+                        "LChunkMap:readTiles",
+                        format!("coord {} missing y: {error}", index + 1),
+                    )
+                })?;
+                let row = lua.create_table_with_capacity(0, 3)?;
+                row.set("x", x)?;
+                row.set("y", y)?;
+                row.set("gid", map.get_tile(x, y))?;
+                out.set(index + 1, row)?;
+            }
+            Ok(out)
+        });
+        // -- snapshotRegion --
+        /// Captures a bounded half-open rectangle as a deterministic row-major tile array.
+        /// @param | x0 | integer | Inclusive left coordinate.
+        /// @param | y0 | integer | Inclusive top coordinate.
+        /// @param | x1 | integer | Exclusive right coordinate.
+        /// @param | y1 | integer | Exclusive bottom coordinate.
+        /// @return | table | Snapshot containing bounds, dimensions, version, and flat `tiles`.
+        methods.add_method(
+            "snapshotRegion",
+            |lua, this, (x0, y0, x1, y1): (i32, i32, i32, i32)| {
+                let map = this.inner.borrow();
+                let tiles = map
+                    .read_region(x0, y0, x1, y1)
+                    .map_err(|error| chunk_map_error("LChunkMap:snapshotRegion", error))?;
+                let out = lua.create_table_with_capacity(0, 8)?;
+                out.set("x0", x0)?;
+                out.set("y0", y0)?;
+                out.set("x1", x1)?;
+                out.set("y1", y1)?;
+                out.set("width", i64::from(x1).saturating_sub(i64::from(x0)).max(0))?;
+                out.set("height", i64::from(y1).saturating_sub(i64::from(y0)).max(0))?;
+                out.set("version", map.version())?;
+                out.set("tiles", tiles)?;
+                Ok(out)
+            },
+        );
+        // -- hashRegion --
+        /// Returns a deterministic hash of one bounded half-open tile rectangle.
+        /// @param | x0 | integer | Inclusive left coordinate.
+        /// @param | y0 | integer | Inclusive top coordinate.
+        /// @param | x1 | integer | Exclusive right coordinate.
+        /// @param | y1 | integer | Exclusive bottom coordinate.
+        /// @return | string | Lowercase 64-bit FNV-1a hash.
+        methods.add_method(
+            "hashRegion",
+            |_, this, (x0, y0, x1, y1): (i32, i32, i32, i32)| {
+                this.inner
+                    .borrow()
+                    .hash_region(x0, y0, x1, y1)
+                    .map_err(|error| chunk_map_error("LChunkMap:hashRegion", error))
+            },
+        );
         // -- clearTile --
         /// Removes the tile at the given world-tile coordinate.
         /// @param | x | integer | Tile X coordinate.
@@ -1590,6 +1811,50 @@ impl LuaUserData for LuaLargeMapRenderer {
                     LuaError::RuntimeError(format!("LLargeMapRenderer:setTile: {err}"))
                 })?;
             Ok(())
+        });
+        // -- setTiles --
+        /// Applies a bounded list of tile edits atomically and increments the data version once.
+        /// @param | edits | table | Array of `{x, y, tileId}` edit tables using zero-based coordinates.
+        /// @return | integer | Number of submitted writes whose value changed.
+        methods.add_method_mut("setTiles", |_, this, edits: LuaTable| {
+            let raw_len = edits.raw_len();
+            let limit = this.inner.borrow().max_tile_operation_cells();
+            if raw_len as u64 > limit {
+                return Err(LuaError::RuntimeError(format!(
+                    "LLargeMapRenderer:setTiles: edit count {raw_len} exceeds limit {limit}"
+                )));
+            }
+            let mut parsed = Vec::new();
+            parsed.try_reserve_exact(raw_len).map_err(|_| {
+                LuaError::RuntimeError(
+                    "LLargeMapRenderer:setTiles: could not allocate edit staging".to_string(),
+                )
+            })?;
+            for (index, value) in edits.sequence_values::<LuaTable>().enumerate() {
+                let edit = value.map_err(|error| {
+                    LuaError::RuntimeError(format!(
+                        "LLargeMapRenderer:setTiles: edit {}: {error}",
+                        index + 1
+                    ))
+                })?;
+                let x = edit.get::<_, u32>("x").or_else(|_| edit.get(1))?;
+                let y = edit.get::<_, u32>("y").or_else(|_| edit.get(2))?;
+                let tile_id = edit
+                    .get::<_, u32>("tileId")
+                    .or_else(|_| edit.get("gid"))
+                    .or_else(|_| edit.get(3))?;
+                parsed.push((x, y, tile_id));
+            }
+            this.inner
+                .borrow_mut()
+                .try_set_tiles(&parsed)
+                .map_err(|err| LuaError::RuntimeError(format!("LLargeMapRenderer:setTiles: {err}")))
+        });
+        // -- getVersion --
+        /// Returns the monotonic version of this renderer's tile snapshot.
+        /// @return | integer | Tile-data version.
+        methods.add_method("getVersion", |_, this, ()| {
+            Ok(this.inner.borrow().version())
         });
         // -- getTile --
         /// Returns the tile GID at a given position.

@@ -201,12 +201,17 @@ end)
 describe("integration: Lua explicitly propagates one door state", function()
     -- @integration lurek.tilefield.new
     -- @integration LTileField:patchCells
+    -- @integration LTileField:blocks
     -- @integration lurek.pathfind.newNavGrid
     -- @integration LNavGrid:patchCells
+    -- @integration LNavGrid:isBlocked
     -- @integration lurek.raycaster.new
     -- @integration LRaycaster:patchCells
+    -- @integration LRaycaster:getCell
     -- @integration lurek.physics.newWorld
+    -- @integration LWorld:newCircleBody
     -- @integration LWorld:setFixtureEnabled
+    -- @integration LWorld:isFixtureEnabled
     it("updates independent module-owned representations without an engine bridge", function()
         local field = lurek.tilefield.new({ width = 3, height = 3 })
         local nav = lurek.pathfind.newNavGrid(3, 3)

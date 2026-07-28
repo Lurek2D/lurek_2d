@@ -62,6 +62,8 @@ pub struct LargeMapRenderer {
     pub lod_thresholds: Vec<f32>,
     /// Shared allocation and input ceilings for this snapshot.
     limits: TileMapLimits,
+    /// Monotonic version of tile-data mutations.
+    version: u64,
 }
 
 impl LargeMapRenderer {
@@ -87,6 +89,7 @@ impl LargeMapRenderer {
                 lod_enabled: false,
                 lod_thresholds: Vec::new(),
                 limits: TileMapLimits::default(),
+                version: 1,
             },
         }
     }
@@ -118,6 +121,7 @@ impl LargeMapRenderer {
             lod_enabled: false,
             lod_thresholds: Vec::new(),
             limits: *limits,
+            version: 1,
         })
     }
 
@@ -146,6 +150,7 @@ impl LargeMapRenderer {
         self.map_height = height;
         self.tile_data = data;
         self.rebuild_chunks();
+        self.version = self.version.saturating_add(1);
         Ok(())
     }
 
@@ -181,7 +186,67 @@ impl LargeMapRenderer {
             }
             chunk.dirty = true;
         }
+        self.version = self.version.saturating_add(1);
         Ok(())
+    }
+
+    /// Apply a validated tile edit list atomically and advance the data version once.
+    ///
+    /// Every coordinate is checked before the first mutation. Repeated coordinates are
+    /// accepted and follow normal ordered-write semantics, so the final occurrence wins.
+    pub fn try_set_tiles(&mut self, edits: &[(u32, u32, u32)]) -> Result<usize, TileMapError> {
+        if edits.len() as u64 > self.limits.max_tile_operation_cells {
+            return Err(TileMapError::TileOperationLimitExceeded {
+                cells: edits.len() as u64,
+                max_cells: self.limits.max_tile_operation_cells,
+            });
+        }
+        for &(x, y, _) in edits {
+            if x >= self.map_width || y >= self.map_height {
+                return Err(TileMapError::InvalidTileCoord {
+                    layer: 0,
+                    x,
+                    y,
+                    width: self.map_width,
+                    height: self.map_height,
+                });
+            }
+            if checked_flat_index(self.map_width, x, y, self.tile_data.len()).is_none() {
+                return Err(TileMapError::InvalidTileCoord {
+                    layer: 0,
+                    x,
+                    y,
+                    width: self.map_width,
+                    height: self.map_height,
+                });
+            }
+        }
+
+        let base_version = self.version;
+        let mut changed = 0usize;
+        for &(x, y, tile_id) in edits {
+            let before = self.get_tile(x, y);
+            self.try_set_tile(x, y, tile_id)?;
+            if before != Some(tile_id) {
+                changed += 1;
+            }
+        }
+        self.version = if changed == 0 {
+            base_version
+        } else {
+            base_version.saturating_add(1)
+        };
+        Ok(changed)
+    }
+
+    /// Return the current tile-data version.
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
+    /// Return the configured maximum number of cells in one tile operation.
+    pub fn max_tile_operation_cells(&self) -> u64 {
+        self.limits.max_tile_operation_cells
     }
 
     /// Return the tile ID at `(x, y)`, or `None` for out-of-bounds.

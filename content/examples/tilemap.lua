@@ -1920,3 +1920,143 @@ do
     local status = ok and "ok" or "error"
     lurek.log.info(status .. " " .. tostring(value))
 end
+--@api: LChunkMap:getVersion
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local before = map:getVersion()
+    map:setTiles({ { x = 0, y = 0, gid = 4 }, { x = 1, y = 0, gid = 5 } })
+    local after = map:getVersion()
+    local advanced = after == before + 1
+    lurek.log.info("chunk map version advanced once=" .. tostring(advanced))
+end
+
+--@api: LChunkMap:readTiles
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    map:setTiles({ { x = -1, y = 2, gid = 7 }, { x = 8, y = 2, gid = 9 } })
+    local rows = map:readTiles({ { x = 8, y = 2 }, { x = -1, y = 2 } })
+    local first = rows[1].gid
+    local second = rows[2].gid
+    lurek.log.info("read gids=" .. tostring(first) .. "," .. tostring(second))
+end
+
+--@api: LChunkMap:snapshotRegion
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    map:setTiles({ { x = 0, y = 0, gid = 3 }, { x = 1, y = 1, gid = 4 } })
+    local snapshot = map:snapshotRegion(0, 0, 2, 2)
+    local cells = #snapshot.tiles
+    local version = snapshot.version
+    lurek.log.info("snapshot cells=" .. tostring(cells))
+    lurek.log.info("snapshot version=" .. tostring(version))
+end
+
+--@api: LChunkMap:hashRegion
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    map:setTiles({ { x = 0, y = 0, gid = 3 }, { x = 1, y = 1, gid = 4 } })
+    local first = map:hashRegion(0, 0, 2, 2)
+    local second = map:hashRegion(0, 0, 2, 2)
+    local stable = first == second
+    lurek.log.info("chunk region hash=" .. first)
+    lurek.log.info("stable=" .. tostring(stable))
+end
+
+--@api: LChunkMap:prepareBatch
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local before = map:getVersion()
+    local batch = map:prepareBatch({ { x = 0, y = 0, gid = 5 } }, before)
+    local preview = batch:preview()
+    local pending = batch:isPending()
+    lurek.log.info("prepared edits=" .. tostring(preview.editCount))
+    lurek.log.info("pending=" .. tostring(pending))
+end
+
+--@api: LChunkMapBatch:preview
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local batch = map:prepareBatch({ { x = 0, y = 0, gid = 5 } })
+    local preview = batch:preview()
+    local edits = preview.editCount
+    local changed = preview.changedTileCount
+    lurek.log.info("preview edits=" .. tostring(edits))
+    lurek.log.info("preview changed=" .. tostring(changed))
+end
+
+--@api: LChunkMapBatch:commit
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local before = map:getVersion()
+    local batch = map:prepareBatch({ { x = 2, y = 3, gid = 7 } })
+    local dirty = batch:commit()
+    local value = map:getTile(2, 3)
+    lurek.log.info("committed gid=" .. tostring(value))
+    lurek.log.info("dirty chunks=" .. tostring(#dirty) .. " version=" .. tostring(before + 1))
+end
+
+--@api: LChunkMapBatch:discard
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local batch = map:prepareBatch({ { x = 2, y = 3, gid = 7 } })
+    local discarded = batch:discard()
+    local pending = batch:isPending()
+    local value = map:getTile(2, 3)
+    lurek.log.info("discarded=" .. tostring(discarded))
+    lurek.log.info("pending=" .. tostring(pending) .. " gid=" .. tostring(value))
+end
+
+--@api: LChunkMapBatch:isPending
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local batch = map:prepareBatch({ { x = 2, y = 3, gid = 7 } })
+    local before = batch:isPending()
+    batch:discard()
+    local after = batch:isPending()
+    lurek.log.info("pending before=" .. tostring(before))
+    lurek.log.info("pending after=" .. tostring(after))
+end
+
+--@api: LChunkMapBatch:type
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local batch = map:prepareBatch({})
+    local type_name = batch:type()
+    local pending = batch:isPending()
+    local preview = batch:preview()
+    lurek.log.info("batch type=" .. type_name)
+    lurek.log.info("pending=" .. tostring(pending) .. " edits=" .. tostring(preview.editCount))
+end
+
+--@api: LChunkMapBatch:typeOf
+do
+    local map = lurek.tilemap.newChunkMap(8)
+    local batch = map:prepareBatch({})
+    local exact = batch:typeOf("LChunkMapBatch")
+    local object = batch:typeOf("LObject")
+    local other = batch:typeOf("LChunkMap")
+    lurek.log.info("batch exact=" .. tostring(exact))
+    lurek.log.info("object=" .. tostring(object) .. " other=" .. tostring(other))
+end
+
+--@api: LLargeMapRenderer:setTiles
+do
+    local renderer = lurek.tilemap.newLargeMapRenderer(16, 16)
+    renderer:setMapData({ 0, 0, 0, 0 }, 2, 2)
+    local changed = renderer:setTiles({ { x = 0, y = 0, tileId = 4 }, { 1, 1, 7 } })
+    local first = renderer:getTile(0, 0)
+    local second = renderer:getTile(1, 1)
+    lurek.log.info("renderer changed=" .. tostring(changed))
+    lurek.log.info("renderer gids=" .. tostring(first) .. "," .. tostring(second))
+end
+
+--@api: LLargeMapRenderer:getVersion
+do
+    local renderer = lurek.tilemap.newLargeMapRenderer(16, 16)
+    renderer:setMapData({ 0, 0, 0, 0 }, 2, 2)
+    local before = renderer:getVersion()
+    renderer:setTiles({ { x = 0, y = 0, tileId = 4 }, { x = 1, y = 1, tileId = 7 } })
+    local after = renderer:getVersion()
+    local once = after == before + 1
+    lurek.log.info("renderer version advanced once=" .. tostring(once))
+end

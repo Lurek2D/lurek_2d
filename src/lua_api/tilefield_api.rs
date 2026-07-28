@@ -47,6 +47,16 @@ pub struct LuaTileField {
     pub(crate) inner: Rc<RefCell<TileField>>,
 }
 
+/// Prepared, version-checked replacement for an existing tilefield.
+pub struct LuaTileFieldBatch {
+    field: Rc<RefCell<TileField>>,
+    staged: Rc<RefCell<Option<TileField>>>,
+    base_version: u64,
+    patch_count: usize,
+    affected: Vec<CellCoord>,
+    changed: bool,
+}
+
 /// Lua-side handle wrapping a grid of shared tilefields.
 pub struct LuaTileFieldMap {
     inner: Rc<RefCell<TileFieldMap>>,
@@ -54,6 +64,135 @@ pub struct LuaTileFieldMap {
 
 fn lua_err(api: &str, err: impl std::fmt::Display) -> LuaError {
     LuaError::RuntimeError(format!("lurek.tilefield.{api}: {err}"))
+}
+
+fn dirty_coords_to_lua<'lua>(lua: &'lua Lua, dirty: &[CellCoord]) -> LuaResult<LuaTable<'lua>> {
+    let result = lua.create_table_with_capacity(dirty.len(), 0)?;
+    for (index, coord) in dirty.iter().enumerate() {
+        let rect = lua.create_table_with_capacity(0, 5)?;
+        rect.set("x", coord.x + 1)?;
+        rect.set("y", coord.y + 1)?;
+        rect.set("z", coord.z + 1)?;
+        rect.set("w", 1)?;
+        rect.set("h", 1)?;
+        result.set(index + 1, rect)?;
+    }
+    Ok(result)
+}
+
+fn prepare_field_patch_batch(
+    field: &TileField,
+    patches: LuaTable,
+    api: &str,
+) -> LuaResult<(TileField, Vec<CellCoord>, bool, usize)> {
+    let patch_count = patches.raw_len();
+    let base_version = field.version();
+    let mut staged = field.clone();
+    if patch_count as u64 > staged.limits().max_cells_per_field {
+        return Err(lua_err(api, "patch count exceeds the field cell limit"));
+    }
+    let mut dirty = HashSet::with_capacity(patch_count);
+    for index in 1..=patch_count {
+        let patch: LuaTable = patches
+            .raw_get(index)
+            .map_err(|error| lua_err(api, error))?;
+        let coord = coord_from_values(
+            patch
+                .get("x")
+                .map_err(|_| lua_err(api, format!("patch {index}.x is required")))?,
+            patch
+                .get("y")
+                .map_err(|_| lua_err(api, format!("patch {index}.y is required")))?,
+            patch.get::<_, Option<u32>>("z")?,
+        )?;
+        if !staged.in_bounds(coord) {
+            return Err(lua_err(
+                api,
+                format!("patch {index} coordinate is out of bounds"),
+            ));
+        }
+        if patch.get::<_, Option<bool>>("clear")?.unwrap_or(false) {
+            staged
+                .clear_cell(coord)
+                .map_err(|error| lua_err(api, error))?;
+        }
+        let cell = patch
+            .get::<_, Option<LuaTable>>("cell")?
+            .unwrap_or_else(|| patch.clone());
+        TileFieldLuaParser::apply_provider_cell(&mut staged, coord, cell, api)?;
+        dirty.insert(coord);
+    }
+    let changed = staged.version() != base_version;
+    staged
+        .normalize_batch_version(base_version, changed)
+        .map_err(|error| lua_err(api, error))?;
+    let mut dirty: Vec<_> = dirty.into_iter().collect();
+    dirty.sort_by_key(|coord| (coord.z, coord.y, coord.x));
+    Ok((staged, dirty, changed, patch_count))
+}
+
+impl LuaUserData for LuaTileFieldBatch {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- preview --
+        /// Returns immutable metadata for this prepared field patch.
+        /// @return | table | Base version, submitted count, affected count, and changed flag.
+        methods.add_method("preview", |lua, this, ()| {
+            if this.staged.borrow().is_none() {
+                return Err(lua_err("LTileFieldBatch:preview", "batch is not pending"));
+            }
+            let out = lua.create_table_with_capacity(0, 4)?;
+            out.set("baseVersion", this.base_version)?;
+            out.set("patchCount", this.patch_count)?;
+            out.set("affectedCellCount", this.affected.len())?;
+            out.set("changed", this.changed)?;
+            Ok(out)
+        });
+        // -- commit --
+        /// Commits this patch when the live field version still matches.
+        /// @return | table | Stable one-cell dirty rectangles.
+        methods.add_method("commit", |lua, this, ()| {
+            let current = this.field.borrow().version();
+            if current != this.base_version {
+                return Err(lua_err(
+                    "LTileFieldBatch:commit",
+                    format!(
+                        "version conflict: prepared for {}, current version is {current}",
+                        this.base_version
+                    ),
+                ));
+            }
+            let staged = this
+                .staged
+                .borrow_mut()
+                .take()
+                .ok_or_else(|| lua_err("LTileFieldBatch:commit", "batch is not pending"))?;
+            *this.field.borrow_mut() = staged;
+            dirty_coords_to_lua(lua, &this.affected)
+        });
+        // -- discard --
+        /// Discards this prepared field patch.
+        /// @return | boolean | True when a pending patch was discarded.
+        methods.add_method("discard", |_, this, ()| {
+            Ok(this.staged.borrow_mut().take().is_some())
+        });
+        // -- isPending --
+        /// Returns whether this prepared field patch can still be committed.
+        /// @return | boolean | True before commit or discard.
+        methods.add_method("isPending", |_, this, ()| {
+            Ok(this.staged.borrow().is_some())
+        });
+        // -- type --
+        /// Returns this userdata type name.
+        /// @return | string | Always `"LTileFieldBatch"`.
+        methods.add_method("type", |_, _, ()| Ok("LTileFieldBatch"));
+        // -- typeOf --
+        /// Checks this userdata against `LTileFieldBatch` or `LObject`.
+        /// @param | name | string | Type name.
+        /// @return | boolean | Whether the type matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LTileFieldBatch" || name == "LObject")
+        });
+    }
 }
 
 fn optional_limit(
@@ -1703,6 +1842,27 @@ where
     Ok(row)
 }
 
+fn footprint_from_table(opts: &LuaTable, api: &str) -> LuaResult<(CellCoord, u32, u32)> {
+    let x = opts
+        .get::<_, u32>("x")
+        .map_err(|error| lua_err(api, format!("x is required: {error}")))?;
+    let y = opts
+        .get::<_, u32>("y")
+        .map_err(|error| lua_err(api, format!("y is required: {error}")))?;
+    let z = opts
+        .get::<_, Option<u32>>("z")
+        .map_err(|error| lua_err(api, error))?;
+    let width = opts
+        .get::<_, u32>("w")
+        .or_else(|_| opts.get("width"))
+        .map_err(|error| lua_err(api, format!("w is required: {error}")))?;
+    let height = opts
+        .get::<_, u32>("h")
+        .or_else(|_| opts.get("height"))
+        .map_err(|error| lua_err(api, format!("h is required: {error}")))?;
+    Ok((coord_from_values(x, y, z)?, width, height))
+}
+
 impl LuaUserData for LuaTileField {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getSize --
@@ -2079,6 +2239,202 @@ impl LuaUserData for LuaTileField {
             },
         );
 
+        // -- inspectCells --
+        /// Reads many one-based cells and common placement facts in one boundary crossing.
+        /// @param | coords | table | Array of `{x, y, z?}` tables or arrays.
+        /// @return | table | Input-ordered records with cell, occupant, resource, and buildable fields.
+        methods.add_method("inspectCells", |lua, this, coords: LuaTable| {
+            let field = this.inner.borrow();
+            let raw_len = coords.raw_len();
+            if raw_len as u64 > field.limits().max_cells_per_field {
+                return Err(lua_err(
+                    "inspectCells",
+                    "coordinate count exceeds the field cell limit",
+                ));
+            }
+            let out = lua.create_table_with_capacity(raw_len, 0)?;
+            for (index, value) in coords.sequence_values::<LuaTable>().enumerate() {
+                let value = value.map_err(|error| {
+                    lua_err("inspectCells", format!("coord {}: {error}", index + 1))
+                })?;
+                let x = value
+                    .get::<_, u32>("x")
+                    .or_else(|_| value.get(1))
+                    .map_err(|error| {
+                        lua_err(
+                            "inspectCells",
+                            format!("coord {} missing x: {error}", index + 1),
+                        )
+                    })?;
+                let y = value
+                    .get::<_, u32>("y")
+                    .or_else(|_| value.get(2))
+                    .map_err(|error| {
+                        lua_err(
+                            "inspectCells",
+                            format!("coord {} missing y: {error}", index + 1),
+                        )
+                    })?;
+                let z = value
+                    .get::<_, Option<u32>>("z")
+                    .or_else(|_| value.get(3))
+                    .map_err(|error| lua_err("inspectCells", error))?;
+                let coord = coord_from_values(x, y, z)?;
+                if !field.in_bounds(coord) {
+                    return Err(lua_err(
+                        "inspectCells",
+                        format!("coord {} is out of bounds", index + 1),
+                    ));
+                }
+                let row = lua.create_table_with_capacity(0, 7)?;
+                row.set("x", coord.x + 1)?;
+                row.set("y", coord.y + 1)?;
+                row.set("z", coord.z + 1)?;
+                row.set("cell", cell_to_lua(lua, &field, coord)?)?;
+                row.set("occupant", field.occupant(coord))?;
+                row.set("resource", field.resource(coord))?;
+                row.set("buildable", field.is_buildable(coord))?;
+                out.set(index + 1, row)?;
+            }
+            Ok(out)
+        });
+
+        // -- inspectFootprint --
+        /// Summarizes occupancy, buildability, resources, and blockers for one rectangle.
+        /// @param | opts | table | `{x, y, z?, w|width, h|height}` using one-based coordinates.
+        /// @return | table | Aggregate footprint facts without per-cell allocation.
+        methods.add_method("inspectFootprint", |lua, this, opts: LuaTable| {
+            let (origin, width, height) = footprint_from_table(&opts, "inspectFootprint")?;
+            let summary = this
+                .inner
+                .borrow()
+                .inspect_footprint(origin.x, origin.y, origin.z, width, height)
+                .map_err(|error| lua_err("inspectFootprint", error))?;
+            let out = lua.create_table()?;
+            out.set("cellCount", summary.cell_count)?;
+            out.set("occupiedCount", summary.occupied_count)?;
+            out.set("buildableCount", summary.buildable_count)?;
+            out.set(
+                "canPlace",
+                summary.occupied_count == 0 && summary.buildable_count == summary.cell_count,
+            )?;
+            let resources = lua.create_table()?;
+            for (name, count) in summary.resources {
+                resources.set(name, count)?;
+            }
+            out.set("resources", resources)?;
+            let blockers = lua.create_table()?;
+            for (index, name) in ["move", "vision", "action", "light", "sun"]
+                .iter()
+                .enumerate()
+            {
+                blockers.set(*name, summary.blocker_counts[index])?;
+            }
+            out.set("blockers", blockers)?;
+            Ok(out)
+        });
+
+        // -- summarizeResources --
+        /// Counts resource labels inside one rectangular footprint.
+        /// @param | opts | table | `{x, y, z?, w|width, h|height}` using one-based coordinates.
+        /// @return | table | Resource-name keys mapped to cell counts.
+        methods.add_method("summarizeResources", |lua, this, opts: LuaTable| {
+            let (origin, width, height) = footprint_from_table(&opts, "summarizeResources")?;
+            let summary = this
+                .inner
+                .borrow()
+                .summarize_resources(origin.x, origin.y, origin.z, width, height)
+                .map_err(|error| lua_err("summarizeResources", error))?;
+            let out = lua.create_table()?;
+            for (name, count) in summary {
+                out.set(name, count)?;
+            }
+            Ok(out)
+        });
+
+        // -- setFootprintOccupant --
+        /// Atomically assigns one occupant id to every cell in a rectangular footprint.
+        /// @param | opts | table | Footprint fields plus `occupant` and optional `requireEmpty` (default true).
+        /// @return | integer | Number of cell occupant values changed.
+        methods.add_method("setFootprintOccupant", |_, this, opts: LuaTable| {
+            let (origin, width, height) = footprint_from_table(&opts, "setFootprintOccupant")?;
+            let occupant = opts
+                .get::<_, u64>("occupant")
+                .map_err(|error| lua_err("setFootprintOccupant", error))?;
+            let require_empty = opts
+                .get::<_, Option<bool>>("requireEmpty")
+                .map_err(|error| lua_err("setFootprintOccupant", error))?
+                .unwrap_or(true);
+            this.inner
+                .borrow_mut()
+                .set_footprint_occupant(origin, width, height, occupant, require_empty)
+                .map_err(|error| lua_err("setFootprintOccupant", error))
+        });
+
+        // -- hashRegion --
+        /// Returns a deterministic hash of gameplay facts inside one rectangular region.
+        /// @param | opts | table | `{x, y, z?, w|width, h|height}` using one-based coordinates.
+        /// @return | string | Lowercase 64-bit FNV-1a hash.
+        methods.add_method("hashRegion", |_, this, opts: LuaTable| {
+            let (origin, width, height) = footprint_from_table(&opts, "hashRegion")?;
+            this.inner
+                .borrow()
+                .hash_region(origin.x, origin.y, origin.z, width, height)
+                .map_err(|error| lua_err("hashRegion", error))
+        });
+
+        // -- snapshotRegion --
+        /// Captures a deterministic, bounded region snapshot for Lua-side save or diff logic.
+        /// @param | opts | table | `{x, y, z?, w|width, h|height}` using one-based coordinates.
+        /// @return | table | Region metadata, hash, version, and row-major cell records.
+        methods.add_method("snapshotRegion", |lua, this, opts: LuaTable| {
+            let (origin, width, height) = footprint_from_table(&opts, "snapshotRegion")?;
+            let field = this.inner.borrow();
+            field
+                .inspect_footprint(origin.x, origin.y, origin.z, width, height)
+                .map_err(|error| lua_err("snapshotRegion", error))?;
+            let snapshot = lua.create_table()?;
+            snapshot.set("x", origin.x + 1)?;
+            snapshot.set("y", origin.y + 1)?;
+            snapshot.set("z", origin.z + 1)?;
+            snapshot.set("w", width)?;
+            snapshot.set("h", height)?;
+            snapshot.set("version", field.version())?;
+            snapshot.set(
+                "hash",
+                field
+                    .hash_region(origin.x, origin.y, origin.z, width, height)
+                    .map_err(|error| lua_err("snapshotRegion", error))?,
+            )?;
+            let cell_count = u64::from(width)
+                .checked_mul(u64::from(height))
+                .and_then(|count| usize::try_from(count).ok())
+                .ok_or_else(|| lua_err("snapshotRegion", "region cell count is not addressable"))?;
+            let cells = lua.create_table_with_capacity(cell_count, 0)?;
+            let mut index = 1usize;
+            for row in origin.y..origin.y + height {
+                for column in origin.x..origin.x + width {
+                    let coord = CellCoord {
+                        x: column,
+                        y: row,
+                        z: origin.z,
+                    };
+                    let entry = lua.create_table_with_capacity(0, 7)?;
+                    entry.set("x", coord.x + 1)?;
+                    entry.set("y", coord.y + 1)?;
+                    entry.set("z", coord.z + 1)?;
+                    entry.set("cell", cell_to_lua(lua, &field, coord)?)?;
+                    entry.set("occupant", field.occupant(coord))?;
+                    entry.set("resource", field.resource(coord))?;
+                    entry.set("buildable", field.is_buildable(coord))?;
+                    cells.set(index, entry)?;
+                    index += 1;
+                }
+            }
+            snapshot.set("cells", cells)?;
+            Ok(snapshot)
+        });
+
         // -- setCell --
         /// Sets cell state from a table with optional `blocks`, `costs`, `sunOcclusion`, `refs`, and `modifiers`.
         /// @param | x | integer | One-based column.
@@ -2196,65 +2552,49 @@ impl LuaUserData for LuaTileField {
             },
         );
 
+        // -- preparePatch --
+        /// Validates and stages cell/profile/modifier/reference patches without mutating the field.
+        /// @param | patches | table | Array of `{x, y, z?, cell?}` patch tables.
+        /// @param | expectedVersion | integer? | Optional required current field version.
+        /// @return | LTileFieldBatch | Prepared patch with preview, commit, and discard.
+        methods.add_method(
+            "preparePatch",
+            |_, this, (patches, expected_version): (LuaTable, Option<u64>)| {
+                let field = this.inner.borrow();
+                let base_version = field.version();
+                if expected_version.is_some_and(|expected| expected != base_version) {
+                    return Err(lua_err(
+                        "preparePatch",
+                        format!(
+                            "version conflict: expected {}, current version is {base_version}",
+                            expected_version.unwrap_or(base_version)
+                        ),
+                    ));
+                }
+                let (staged, affected, changed, patch_count) =
+                    prepare_field_patch_batch(&field, patches, "preparePatch")?;
+                drop(field);
+                Ok(LuaTileFieldBatch {
+                    field: this.inner.clone(),
+                    staged: Rc::new(RefCell::new(Some(staged))),
+                    base_version,
+                    patch_count,
+                    affected,
+                    changed,
+                })
+            },
+        );
+
         // -- patchCells --
         /// Atomically applies cell/profile/modifier/reference patches and returns stable dirty rectangles.
         /// @param | patches | table | Array of `{x, y, z?, cell?}` patch tables.
         /// @return | table | Ordered one-cell `{x, y, z, w, h}` dirty rectangles.
         methods.add_method("patchCells", |lua, this, patches: LuaTable| {
-            let patch_count = patches.raw_len();
-            let mut staged = this.inner.borrow().clone();
-            if patch_count as u64 > staged.limits().max_cells_per_field {
-                return Err(lua_err(
-                    "patchCells",
-                    "patch count exceeds the field cell limit",
-                ));
-            }
-            let mut dirty = HashSet::with_capacity(patch_count);
-            for index in 1..=patch_count {
-                let patch: LuaTable = patches
-                    .raw_get(index)
-                    .map_err(|error| lua_err("patchCells", error))?;
-                let coord = coord_from_values(
-                    patch.get("x").map_err(|_| {
-                        lua_err("patchCells", format!("patch {index}.x is required"))
-                    })?,
-                    patch.get("y").map_err(|_| {
-                        lua_err("patchCells", format!("patch {index}.y is required"))
-                    })?,
-                    patch.get::<_, Option<u32>>("z")?,
-                )?;
-                if !staged.in_bounds(coord) {
-                    return Err(lua_err(
-                        "patchCells",
-                        format!("patch {index} coordinate is out of bounds"),
-                    ));
-                }
-                if patch.get::<_, Option<bool>>("clear")?.unwrap_or(false) {
-                    staged
-                        .clear_cell(coord)
-                        .map_err(|error| lua_err("patchCells", error))?;
-                }
-                let cell = patch
-                    .get::<_, Option<LuaTable>>("cell")?
-                    .unwrap_or_else(|| patch.clone());
-                TileFieldLuaParser::apply_provider_cell(&mut staged, coord, cell, "patchCells")?;
-                dirty.insert(coord);
-            }
+            let field = this.inner.borrow();
+            let (staged, dirty, _, _) = prepare_field_patch_batch(&field, patches, "patchCells")?;
+            drop(field);
             *this.inner.borrow_mut() = staged;
-
-            let mut dirty: Vec<_> = dirty.into_iter().collect();
-            dirty.sort_by_key(|coord| (coord.z, coord.y, coord.x));
-            let result = lua.create_table()?;
-            for (index, coord) in dirty.into_iter().enumerate() {
-                let rect = lua.create_table()?;
-                rect.set("x", coord.x + 1)?;
-                rect.set("y", coord.y + 1)?;
-                rect.set("z", coord.z + 1)?;
-                rect.set("w", 1)?;
-                rect.set("h", 1)?;
-                result.set(index + 1, rect)?;
-            }
-            Ok(result)
+            dirty_coords_to_lua(lua, &dirty)
         });
 
         // -- setBlock --

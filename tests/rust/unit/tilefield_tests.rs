@@ -75,6 +75,73 @@ fn snapshot_support_lists_are_deterministic() {
 }
 
 #[test]
+fn footprint_summary_keeps_specialized_facts_separate() {
+    let mut field = TileField::new(4, 4, 1, TileTopology::Square).unwrap();
+    field
+        .set_resource(CellCoord { x: 0, y: 0, z: 0 }, Some("copper".to_string()))
+        .unwrap();
+    field
+        .set_resource(CellCoord { x: 1, y: 0, z: 0 }, Some("copper".to_string()))
+        .unwrap();
+    field
+        .set_buildable(CellCoord { x: 1, y: 1, z: 0 }, false)
+        .unwrap();
+    field
+        .set_block(CellCoord { x: 0, y: 1, z: 0 }, TileChannel::Move, true)
+        .unwrap();
+    field
+        .set_occupant(CellCoord { x: 1, y: 0, z: 0 }, 7)
+        .unwrap();
+
+    let summary = field.inspect_footprint(0, 0, 0, 2, 2).unwrap();
+    assert_eq!(summary.cell_count, 4);
+    assert_eq!(summary.occupied_count, 1);
+    assert_eq!(summary.buildable_count, 3);
+    assert_eq!(summary.resources.get("copper"), Some(&2));
+    assert_eq!(summary.blocker_counts[0], 1);
+    assert_eq!(summary.blocker_counts[1], 0);
+}
+
+#[test]
+fn footprint_occupant_write_is_atomic_and_versioned_once() {
+    let mut field = TileField::new(4, 4, 1, TileTopology::Square).unwrap();
+    let version = field.version();
+    assert_eq!(
+        field
+            .set_footprint_occupant(CellCoord { x: 0, y: 0, z: 0 }, 2, 2, 99, true)
+            .unwrap(),
+        4
+    );
+    assert_eq!(field.version(), version + 1);
+    assert_eq!(field.dirty_rects(), &[(0, 0, 0, 2, 2)]);
+    for y in 0..2 {
+        for x in 0..2 {
+            assert_eq!(field.occupant(CellCoord { x, y, z: 0 }), Some(99));
+        }
+    }
+
+    let version = field.version();
+    assert!(field
+        .set_footprint_occupant(CellCoord { x: 1, y: 1, z: 0 }, 2, 2, 100, true)
+        .is_err());
+    assert_eq!(field.version(), version);
+    assert_eq!(field.occupant(CellCoord { x: 2, y: 2, z: 0 }), None);
+}
+
+#[test]
+fn region_hash_is_deterministic_and_sensitive_to_gameplay_facts() {
+    let mut field = TileField::new(3, 3, 1, TileTopology::Square).unwrap();
+    let initial = field.hash_region(0, 0, 0, 3, 3).unwrap();
+    assert_eq!(initial, field.hash_region(0, 0, 0, 3, 3).unwrap());
+    field
+        .set_resource(CellCoord { x: 2, y: 1, z: 0 }, Some("lead".to_string()))
+        .unwrap();
+    let changed = field.hash_region(0, 0, 0, 3, 3).unwrap();
+    assert_ne!(initial, changed);
+    assert_eq!(changed, field.hash_region(0, 0, 0, 3, 3).unwrap());
+}
+
+#[test]
 fn hex_line_uses_hex_topology() {
     let field = TileField::new(8, 8, 1, TileTopology::Hex).unwrap();
     let cells = field

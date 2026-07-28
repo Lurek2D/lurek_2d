@@ -13,6 +13,7 @@ The renderer turns ordered, validated render commands into a presented frame. It
 | Command representation and validation | `render` | Defines `RenderCommand`, validates balanced frame state, and classifies commands. |
 | GPU textures, buffers, pipelines, canvases, and submission | `render` / `GpuRenderer` | Only this layer creates, mutates, or submits backend resources. |
 | UI layout, scene policy, and gameplay effects | Their domain owners | They emit commands/data; they do not acquire renderer ownership. |
+| Province registry/topology/style | `province` | Builds versioned CPU `ProvinceRenderSnapshot` packets; it does not create GPU resources. |
 
 ## Per-frame data flow
 
@@ -67,6 +68,7 @@ Not every visual subsystem should encode all of its state as a generic command v
 - `image` owns CPU image data and codecs; GPU upload/effect execution belongs to renderer paths.
 - `particle`, `tilemap`, `parallax`, `raycaster`, and similar modules own their simulation/data and emit draw-ready output.
 - `effect` owns user-facing effect configuration; the renderer owns shader/pipeline execution.
+- `province` owns registry access, topology, border extraction, semantic styles, and snapshot change tracking. `app` refreshes snapshots at the frame boundary; `render` accepts snapshots and owns their upload formats, textures, buffers, bind groups, and residency.
 
 Detailed pair rules live in [Module Scope Boundaries](module-scope-boundaries.md).
 

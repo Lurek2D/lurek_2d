@@ -2952,6 +2952,41 @@ describe("batch body creation integration", function()
         expect_false(ok)
     end)
 
+    -- @covers LWorld:getBodyStates
+    it("reads body states in the caller's stable id order", function()
+        local ids = world:newBodies({ { 10, 20, "dynamic" }, { 30, 40, "dynamic" } })
+        local states = world:getBodyStates({ ids[2], ids[1] })
+        expect_equal(ids[2], states[1].id)
+        expect_near(30, states[1].x, 0.0001)
+        expect_equal(ids[1], states[2].id)
+        expect_near(20, states[2].y, 0.0001)
+    end)
+
+    -- @covers LWorld:setBodyStates
+    it("sets a validated group of body states together", function()
+        local ids = world:newBodies({ { 0, 0, "dynamic" }, { 1, 1, "dynamic" } })
+        world:setBodyStates({
+            { id = ids[1], x = 10, y = 20, angle = 0.5, vx = 4, vy = 5 },
+            { id = ids[2], x = 30, y = 40 },
+        })
+        local states = world:getBodyStates(ids)
+        expect_near(10, states[1].x, 0.0001)
+        expect_near(5, states[1].vy, 0.0001)
+        expect_near(40, states[2].y, 0.0001)
+    end)
+
+    -- @covers LWorld:applyForces
+    it("validates all batch force targets before mutation", function()
+        local ids = world:newBodies({ { 0, 0, "dynamic" } })
+        expect_no_error(function()
+            world:applyForces({ { id = ids[1], fx = 10, fy = 0 } })
+        end)
+        local ok = pcall(function()
+            world:applyForces({ { id = ids[1], fx = 1, fy = 0 }, { id = 99999, fx = 1, fy = 0 } })
+        end)
+        expect_false(ok)
+    end)
+
 end)
 end
 -- END test_physics_platformer_unit.lua

@@ -1063,6 +1063,26 @@ describe("minimap missing explicit coverage", function()
         expect_equal(1, mm:getObjectCount())
     end)
 
+    -- @covers LMinimap:setObjects
+    it("setObjects commits a whole icon refresh or leaves the previous map untouched", function()
+        local mm = new_mm()
+        local type_idx = mm:addObjectType("unit", 1, 0, 0)
+        mm:setObject(99, 1, 1, type_idx, 0)
+        expect_true(mm:setObjects({
+            { id = 1, x = 3, y = 4, type_idx = type_idx, owner = 2 },
+            { id = 2, x = 9, y = 10, type_idx = type_idx, owner = 3 },
+        }))
+        expect_equal(3, mm:getObjectCount())
+        local ok = pcall(function()
+            mm:setObjects({
+                { id = 3, x = 2, y = 2, type_idx = type_idx },
+                { id = 3, x = 4, y = 4, type_idx = type_idx },
+            })
+        end)
+        expect_false(ok)
+        expect_equal(3, mm:getObjectCount())
+    end)
+
     -- @covers LMinimap:getOwnerColor
     it("getOwnerColor returns the owner swatch", function()
         local mm = new_mm()

@@ -1186,6 +1186,11 @@ LRectPackerGetPackedResult = {}
 ---@field drawcalls number Total draw call count.
 ---@field fonts number Loaded font count.
 ---@field gpu_draw_calls number GPU-side draw call count.
+---@field shader_cache_evictions number Shader cache entries evicted to stay within source-memory limits this frame.
+---@field shader_cache_hits number Reused user-shader cache entries this frame.
+---@field shader_cache_misses number User-shader cache rebuilds this frame.
+---@field shader_cache_rejections number Shader or pipeline cache limit rejections this frame.
+---@field shader_negative_cache_hits number Repeated invalid shader signatures skipped this frame.
 ---@field shader_switches number Shader switch count.
 ---@field texture_memory number Texture memory in bytes.
 ---@field texture_switches number Texture switch count.
@@ -2318,6 +2323,10 @@ LSynthesizer = {}
 ---@class LWaveform
 LWaveform = {}
 
+--- Prepared, version-checked ECS ChangeSet owned by an existing universe.
+---@class LEcsBatch
+LEcsBatch = {}
+
 --- Lua-side handle for one modular loadout.
 ---@class LLoadout
 LLoadout = {}
@@ -2389,6 +2398,10 @@ LGraphItem = {}
 --- Lua-side node handle referencing one node id inside a graph.
 ---@class LGraphNode
 LGraphNode = {}
+
+--- Prepared, version-checked topology mutation for one existing graph.
+---@class LGraphTopologyBatch
+LGraphTopologyBatch = {}
 
 --- Lua-visible font handle storing the slot key and cached metadata.
 ---@class LFont
@@ -2634,6 +2647,10 @@ LVec2 = {}
 ---@field z any
 LVec3 = {}
 
+--- Reusable toroidal-coordinate helper for Lua games that choose wraparound world rules.
+---@class LWrapSpace
+LWrapSpace = {}
+
 --- Lua-side wrapper for a minimap instance and access to render command state.
 ---@class LMinimap
 LMinimap = {}
@@ -2653,6 +2670,14 @@ LModManager = {}
 --- Lua-side wrapper for a network host.
 ---@class LNetworkHost
 LNetworkHost = {}
+
+--- Lua-side wrapper for a bounded, deterministic remote-input buffer.
+---@class LNetworkInputBuffer
+LNetworkInputBuffer = {}
+
+--- Lua-side wrapper for a bounded resolved snapshot history.
+---@class LNetworkSnapshotStore
+LNetworkSnapshotStore = {}
 
 --- Lua-side handle for screen overlay, ambient, weather, and transition visual state.
 ---@class LOverlay
@@ -3033,9 +3058,17 @@ LObjModel = {}
 ---@class LQuad
 LQuad = {}
 
+--- Lua handle for one non-blocking surface readback request.
+---@class LReadbackRequest
+LReadbackRequest = {}
+
 --- GPU shader program for custom rendering effects (post-processing, distortion, etc.).
 ---@class LShader
 LShader = {}
+
+--- Lua handle for one bounded shader-cache prewarm request.
+---@class LShaderPrewarmRequest
+LShaderPrewarmRequest = {}
 
 --- Retained compound shape that accumulates drawing commands and can be rendered in one call.
 ---@class LShape
@@ -3129,6 +3162,10 @@ LThreadPool = {}
 ---@class LTileField
 LTileField = {}
 
+--- Prepared, version-checked replacement for an existing tilefield.
+---@class LTileFieldBatch
+LTileFieldBatch = {}
+
 --- Lua-side handle wrapping a grid of shared tilefields.
 ---@class LTileFieldMap
 LTileFieldMap = {}
@@ -3144,6 +3181,10 @@ LAutoTileSheet = {}
 --- Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
 ---@class LChunkMap
 LChunkMap = {}
+
+--- Prepared, version-checked mutation for one existing `LChunkMap`.
+---@class LChunkMapBatch
+LChunkMapBatch = {}
 
 --- Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
 ---@class LIsoMap
@@ -12107,6 +12148,31 @@ lurek.dsp.spectrogramToPng = function(input, output, width, height, options) end
 ---@return boolean True when the output image was written successfully.
 lurek.dsp.waveformToPng = function(input, output, width, height) end
 
+--- Applies the prepared ChangeSet if the universe version is unchanged.
+---@return number Number of records applied as one logical mutation.
+function LEcsBatch:commit() end
+
+--- Discards the prepared ChangeSet without mutating the universe.
+---@return boolean True when a pending ChangeSet was discarded.
+function LEcsBatch:discard() end
+
+--- Returns whether this prepared ChangeSet remains usable.
+---@return boolean True before successful commit or discard.
+function LEcsBatch:isPending() end
+
+--- Returns immutable metadata for this prepared ECS ChangeSet.
+---@return table Base version, record count, and pending state.
+function LEcsBatch:preview() end
+
+--- Returns this userdata type name.
+---@return string Always `"LEcsBatch"`.
+function LEcsBatch:type() end
+
+--- Checks whether this userdata matches a requested type.
+---@param name string Type name.
+---@return boolean True for `LEcsBatch` or `LObject`.
+function LEcsBatch:typeOf(name) end
+
 --- Adds or replaces one slot definition on this loadout.
 ---@param slot LSlotDef Slot definition to add.
 function LLoadout:addSlot(slot) end
@@ -12485,6 +12551,10 @@ function LUniverse:getSystemCount() end
 ---@return string[] Tag names.
 function LUniverse:getTags(id) end
 
+--- Returns the monotonic universe mutation version.
+---@return number Version used by prepared batches and Lua-side caches.
+function LUniverse:getVersion() end
+
 --- Returns whether an entity has a named component.
 ---@param id number Entity id to inspect.
 ---@param name string Component name to check.
@@ -12548,6 +12618,12 @@ function LUniverse:onComponentAdded(name, cb) end
 ---@param cb function Callback receiving entity id and component name.
 function LUniverse:onComponentRemoved(name, cb) end
 
+--- Validates and stores an ECS ChangeSet without mutating this universe.
+---@param changeset table Table returned by `LChangeSet:toTable()` or decodeChangeSet.
+---@param expectedVersion? number Optional required current universe version.
+---@return LEcsBatch Prepared ChangeSet with preview, commit, and discard.
+function LUniverse:prepareChangeSet(changeset, expectedVersion) end
+
 --- Returns entities that have all component names passed as varargs.
 ---@param ... string Component names that every returned entity must have.
 ---@return number[] Array table of matching entity ids.
@@ -12578,6 +12654,11 @@ function LUniverse:queryMulti(names_table, callback) end
 ---@param without_tbl table Array table of forbidden component names.
 ---@return number[] Array table of matching entity ids.
 function LUniverse:queryNot(with_tbl, without_tbl) end
+
+--- Reads many entity/component selections with one Lua-to-Rust boundary crossing.
+---@param requests table Array of `{id, names={...}}` request tables.
+---@return table Input-ordered records with id, alive, and component values.
+function LUniverse:readComponents(requests) end
 
 --- Releases universe contents by clearing all ECS state.
 function LUniverse:release() end
@@ -13147,7 +13228,7 @@ lurek.engine.memoryUsage = function() end
 ---@return string `windows`, `linux`, `macos`, or `unknown`.
 lurek.engine.platform = function() end
 
---- Sets the resource memory budget used by resource statistics reporting.
+--- Sets the hard resource budget used by public resource allocation and reporting.
 ---@param budget_bytes number Resource budget in bytes.
 lurek.engine.setResourceBudget = function(budget_bytes) end
 
@@ -13696,6 +13777,10 @@ function LGraph:batchAddNodes(count, config) end
 ---@param iterations number Number of steps to run.
 function LGraph:batchStep(dt, iterations) end
 
+--- Discards all queued pull events.
+---@return number Number of queued records removed.
+function LGraph:clearEvents() end
+
 --- Computes graph coloring and returns color indices by node id.
 ---@return table Map table from node id (integer key) to color index (integer).
 function LGraph:colorGraph() end
@@ -13705,6 +13790,11 @@ function LGraph:colorGraph() end
 ---@param decay_time? number Decay lifetime, defaulting to -1.0.
 ---@return LGraphItem New graph item handle.
 function LGraph:createItem(item_type, decay_time) end
+
+--- Removes and returns queued graph events in deterministic emission order.
+---@param maxCount? number Optional maximum number of records to drain.
+---@return table Array of plain Lua event records containing stable numeric ids.
+function LGraph:drainEvents(maxCount) end
 
 --- Finds a path between two graph nodes.
 ---@param from_ud LGraphNode Start node handle.
@@ -13735,6 +13825,11 @@ function LGraph:getDistance(from_ud, to_ud) end
 ---@return LGraphEdge Edge handle connecting the two nodes, or nil when no edge connects the nodes.
 function LGraph:getEdgeBetween(from_ud, to_ud) end
 
+--- Resolves a stable numeric edge id to a graph-local handle.
+---@param id number Numeric edge id from a batch preview, event, or snapshot.
+---@return LGraphEdge? Edge handle, or nil when the id is absent.
+function LGraph:getEdgeById(id) end
+
 --- Returns the number of edges in this graph.
 ---@return number Edge count.
 function LGraph:getEdgeCount() end
@@ -13742,6 +13837,19 @@ function LGraph:getEdgeCount() end
 --- Returns all edges in this logistics graph.
 ---@return LGraphEdge[] `LGraphEdge` handles.
 function LGraph:getEdges() end
+
+--- Returns the current event delivery mode.
+---@return string `"callback"`, `"queue"`, `"both"`, or `"none"`.
+function LGraph:getEventMode() end
+
+--- Returns queue diagnostics without draining events.
+---@return table Mode, pending count, capacity, and cumulative dropped count.
+function LGraph:getEventQueueStats() end
+
+--- Resolves a stable numeric item id to a graph-local handle.
+---@param id number Numeric item id from an event, recipe result, or snapshot.
+---@return LGraphItem? Item handle, or nil when the id is absent.
+function LGraph:getItemById(id) end
 
 --- Returns the number of items in this graph.
 ---@return number Item count.
@@ -13755,6 +13863,11 @@ function LGraph:getItems() end
 ---@param node_ud LGraphNode Node handle to inspect.
 ---@return LGraphNode[] Neighboring `LGraphNode` handles.
 function LGraph:getNeighbors(node_ud) end
+
+--- Resolves a stable numeric node id to a graph-local handle.
+---@param id number Numeric node id from a batch mapping, event, or snapshot.
+---@return LGraphNode? Node handle, or nil when the id is absent.
+function LGraph:getNodeById(id) end
 
 --- Returns the number of nodes in this graph.
 ---@return number Node count.
@@ -13773,6 +13886,10 @@ function LGraph:getReachable(from_ud, max_dist) end
 --- Returns graph counts and aggregate supply-demand statistics.
 ---@return LGraphGetStatsResult Table with node, edge, item, activity, transit, demand, supply, and queue counts.
 function LGraph:getStats() end
+
+--- Returns the monotonic graph topology version.
+---@return number Version incremented once per committed topology mutation.
+function LGraph:getVersion() end
 
 --- Returns whether this graph contains a cycle.
 ---@return boolean True when the graph has a cycle.
@@ -13806,6 +13923,12 @@ function LGraph:mst() end
 ---@param func function Lua callback invoked with event-specific handles and values.
 function LGraph:on(event_name, func) end
 
+--- Validates and stages graph topology edits without mutating the live graph.
+---@param edits table Array of addNode, removeNode, addEdge, and removeEdge operations.
+---@param expectedVersion? number Optional required current topology version.
+---@return LGraphTopologyBatch Prepared mutation with preview, commit, and discard.
+function LGraph:prepareBatch(edits, expectedVersion) end
+
 --- Processes graph supply and demand once and dispatches generated callbacks.
 function LGraph:processDemand() end
 
@@ -13824,10 +13947,39 @@ function LGraph:removeItem(item_ud) end
 ---@return boolean True when the node was removed.
 function LGraph:removeNode(node_ud) end
 
+--- Replaces graph state from a versioned snapshot without changing Lua callbacks.
+---@param snapshot string Snapshot returned by `snapshot`.
+---@param expectedVersion? number Optional required current topology version.
+function LGraph:restoreSnapshot(snapshot, expectedVersion) end
+
 --- Starts moving an item along an edge.
 ---@param item_ud LGraphItem Item handle to send.
 ---@param edge_ud LGraphEdge Edge handle to traverse.
 function LGraph:sendItem(item_ud, edge_ud) end
+
+--- Selects callback delivery, pull-queue delivery, both, or no delivery.
+---@param mode string One of `"callback"`, `"queue"`, `"both"`, or `"none"`.
+function LGraph:setEventMode(mode) end
+
+--- Sets the bounded pull-event queue capacity, dropping oldest queued records if needed.
+---@param limit number Capacity in the range 1..=1000000.
+function LGraph:setEventQueueLimit(limit) end
+
+--- Serializes complete graph state to deterministic compact JSON.
+---@return string Versioned graph snapshot suitable for save or replay checkpoints.
+function LGraph:snapshot() end
+
+--- Creates many same-type items directly in one node inventory.
+---@param node LGraphNode Destination node owned by this graph.
+---@param itemType string Item type.
+---@param count number Number to create, bounded to 100000.
+---@param decayTime? number Decay lifetime, defaulting to -1.
+---@return number[] Created numeric item ids in creation order.
+function LGraph:spawnItems(node, itemType, count, decayTime) end
+
+--- Returns a deterministic hash of complete graph simulation state.
+---@return string Lowercase sixteen-character hexadecimal FNV-1a hash.
+function LGraph:stateHash() end
 
 --- Runs one discrete graph simulation step and dispatches generated callbacks.
 function LGraph:step() end
@@ -13836,6 +13988,10 @@ function LGraph:step() end
 ---@param nodes table Array table of `LGraphNode` handles to include.
 ---@return LGraph New subgraph handle.
 function LGraph:subgraph(nodes) end
+
+--- Returns aggregate item ownership and alive counts by item type.
+---@return table Total, alive, location counts, queue count, and deterministic `byType`.
+function LGraph:summarizeInventory() end
 
 --- Advances graph simulation through the parallel update path and dispatches generated callbacks.
 ---@param dt number Delta time in seconds.
@@ -14146,6 +14302,10 @@ function LGraphNode:getQueueCapacity() end
 ---@return number Queue size.
 function LGraphNode:getQueueSize() end
 
+--- Returns stored recipes in deterministic name order.
+---@return table Array of `{name, inputs, outputs}` records.
+function LGraphNode:getRecipes() end
+
 --- Returns the total item capacity reserved on this node across all reservation keys.
 ---@return number Reserved node slot count.
 function LGraphNode:getReservedCapacity() end
@@ -14186,6 +14346,11 @@ function LGraphNode:releaseCapacityReservation(key, slots) end
 ---@return boolean True when demand existed.
 function LGraphNode:removeDemand(item_type) end
 
+--- Removes one named explicit recipe.
+---@param name string Node-local recipe name.
+---@return boolean True when the recipe existed.
+function LGraphNode:removeRecipe(name) end
+
 --- Removes supply entry for an item type from this node.
 ---@param item_type string Item type supply entry to remove.
 ---@return boolean True when supply existed.
@@ -14201,6 +14366,12 @@ function LGraphNode:removeTag(tag) end
 ---@param slots? number Number of slots to reserve, defaulting to 1.
 ---@return boolean True when the reservation fit within currently available capacity.
 function LGraphNode:reserveCapacity(key, slots) end
+
+--- Executes a stored recipe as a bounded inventory operation.
+---@param name string Node-local recipe name.
+---@param maxRuns? number Maximum complete runs, defaulting to one.
+---@return table Completed run count plus consumed and produced numeric item ids.
+function LGraphNode:runRecipe(name, maxRuns) end
 
 --- Enables or disables this node for graph simulation.
 ---@param a boolean New active flag.
@@ -14253,6 +14424,12 @@ function LGraphNode:setQueueCapacity(c) end
 ---@param e boolean New queue enabled flag.
 function LGraphNode:setQueueEnabled(e) end
 
+--- Stores a named multi-input, multi-output recipe without scheduling it.
+---@param name string Node-local recipe name.
+---@param inputs table Item-count map or array of `{itemType, count}` records.
+---@param outputs table Item-count map or array of `{itemType, count}` records.
+function LGraphNode:setRecipe(name, inputs, outputs) end
+
 --- Sets this node's type string for this object.
 ---@param t string New node type.
 function LGraphNode:setType(t) end
@@ -14265,6 +14442,31 @@ function LGraphNode:type() end
 ---@param name string Type name to compare against `LGraphNode`, `GraphNode`, and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LGraphNode:typeOf(name) end
+
+--- Commits this topology batch if the graph topology version is unchanged.
+---@return table External node keys mapped to committed numeric ids.
+function LGraphTopologyBatch:commit() end
+
+--- Discards this prepared topology mutation.
+---@return boolean True when a pending mutation was discarded.
+function LGraphTopologyBatch:discard() end
+
+--- Returns whether this topology batch remains pending.
+---@return boolean True before commit or discard.
+function LGraphTopologyBatch:isPending() end
+
+--- Returns deterministic metadata and created-id previews for this topology batch.
+---@return table Base version, operation counts, external nodes, and created ids.
+function LGraphTopologyBatch:preview() end
+
+--- Returns this userdata type name.
+---@return string Always `"LGraphTopologyBatch"`.
+function LGraphTopologyBatch:type() end
+
+--- Checks whether this userdata matches a requested type.
+---@param name string Type name.
+---@return boolean True for `LGraphTopologyBatch` or `LObject`.
+function LGraphTopologyBatch:typeOf(name) end
 
 --- Creates an empty logistics graph with no nodes, edges, items, or callbacks.
 ---@return LGraph New graph handle.
@@ -19281,6 +19483,39 @@ function LVec3:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LVec3:typeOf(name) end
 
+--- Returns the shortest signed toroidal displacement from point A to point B.
+---@param ax number Source X coordinate.
+---@param ay number Source Y coordinate.
+---@param bx number Target X coordinate.
+---@param by number Target Y coordinate.
+---@return number Shortest X displacement.
+---@return number Shortest Y displacement.
+function LWrapSpace:delta(ax, ay, bx, by) end
+
+--- Returns the shortest toroidal distance between two points.
+---@param ax number First X coordinate.
+---@param ay number First Y coordinate.
+---@param bx number Second X coordinate.
+---@param by number Second Y coordinate.
+---@return number Shortest Euclidean distance.
+function LWrapSpace:distance(ax, ay, bx, by) end
+
+--- Returns this helper's type name.
+---@return string The string `LWrapSpace`.
+function LWrapSpace:type() end
+
+--- Checks this helper against its public type names.
+---@param name string Type name to check.
+---@return boolean True for `LWrapSpace` or `LObject`.
+function LWrapSpace:typeOf(name) end
+
+--- Wraps a point into this half-open toroidal domain.
+---@param x number Point X coordinate.
+---@param y number Point Y coordinate.
+---@return number Wrapped X coordinate.
+---@return number Wrapped Y coordinate.
+function LWrapSpace:wrap(x, y) end
+
 --- Creates a 2D vector. This function is exposed to Lua scripts.
 ---@param x number X component.
 ---@param y number Y component.
@@ -19702,6 +19937,14 @@ lurek.math.newTransform = function(x, y, angle, sx, sy, ox, oy, kx, ky) end
 ---@param easing_name? string Easing name (default `linear`).
 ---@return LTween New tween handle.
 lurek.math.newTween = function(duration, easing_name) end
+
+--- Creates a pure toroidal-coordinate helper without changing world, ECS, or physics state.
+---@param min_x number Inclusive lower X boundary.
+---@param min_y number Inclusive lower Y boundary.
+---@param width number Positive horizontal wrap period.
+---@param height number Positive vertical wrap period.
+---@return LWrapSpace Pure coordinate helper for explicit Lua gameplay rules.
+lurek.math.newWrapSpace = function(min_x, min_y, width, height) end
 
 --- Applies back ease-out. This function is exposed to Lua scripts.
 ---@param t number Normalized input value.
@@ -20360,6 +20603,11 @@ function LMinimap:setObjectTypeTexture(type_idx, image_ud, width, height) end
 ---@param visible boolean Visibility flag.
 function LMinimap:setObjectTypeVisible(type_idx, visible) end
 
+--- Applies object icon updates atomically for one Lua-owned minimap refresh.
+---@param updates table Array of `{ id, x, y, type_idx, owner? }` object records.
+---@return boolean True when every update was accepted and committed together.
+function LMinimap:setObjects(updates) end
+
 --- Sets the RGBA display color for an owner id.
 ---@param owner number Owner id.
 ---@param r number Red channel.
@@ -20933,6 +21181,67 @@ function LNetworkHost:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNetworkHost:typeOf(name) end
 
+--- Drains accepted inputs through a simulation tick in stable tick, peer, and sequence order.
+---@param tick number Inclusive simulation tick to drain.
+---@return table Array of `{ peer_id, tick, sequence, payload }` input records.
+function LNetworkInputBuffer:drainThrough(tick) end
+
+--- Reports the buffer's finite capacity and current deterministic drain state.
+---@return table Queue, peer, limits, and drained-through fields.
+function LNetworkInputBuffer:getStats() end
+
+--- Stores one serializable remote input and reports its deterministic acceptance result.
+---@param peer_id number Remote peer identifier.
+---@param tick number Simulation tick the input belongs to.
+---@param sequence number Monotonically increasing sequence for that peer.
+---@param payload any Serializable game-defined input data.
+---@return boolean True when the input was accepted.
+---@return string Result code such as `accepted`; `duplicate`; or `too_old`.
+function LNetworkInputBuffer:push(peer_id, tick, sequence, payload) end
+
+--- Returns the Lua-visible type name of this bounded input-buffer handle.
+---@return string The string `LNetworkInputBuffer`.
+function LNetworkInputBuffer:type() end
+
+--- Checks this userdata against the public input-buffer type names.
+---@param name string Type name to check.
+---@return boolean True for `LNetworkInputBuffer` or `LObject`.
+function LNetworkInputBuffer:typeOf(name) end
+
+--- Returns one resolved full snapshot frame, or nil when its tick is not retained.
+---@param tick number Snapshot tick to read.
+---@return table Full resolved snapshot table, or nil.
+function LNetworkSnapshotStore:get(tick) end
+
+--- Returns bounded history capacity, retained ticks, and current frame count.
+---@return table Snapshot-history statistics.
+function LNetworkSnapshotStore:getStats() end
+
+--- Interpolates one entity between two retained resolved frames.
+---@param id number Entity identifier.
+---@param from_tick number Earlier retained tick.
+---@param to_tick number Later retained tick.
+---@param alpha number Interpolation factor clamped to `[0, 1]`.
+---@return table Interpolated entity snapshot, or nil when either frame lacks it.
+function LNetworkSnapshotStore:interpolate(id, from_tick, to_tick, alpha) end
+
+--- Returns the latest resolved full snapshot frame, or nil when no frame is retained.
+---@return table Latest full resolved snapshot table, or nil.
+function LNetworkSnapshotStore:latest() end
+
+--- Resolves and retains one full, corrective, or delta snapshot.
+---@param snapshot table Snapshot in the existing `packSnapshot` table format.
+function LNetworkSnapshotStore:push(snapshot) end
+
+--- Returns the Lua-visible type name of this resolved snapshot-store handle.
+---@return string The string `LNetworkSnapshotStore`.
+function LNetworkSnapshotStore:type() end
+
+--- Checks this userdata against its public type names.
+---@param name string Type name to check.
+---@return boolean True for `LNetworkSnapshotStore` or `LObject`.
+function LNetworkSnapshotStore:typeOf(name) end
+
 --- Broadcasts lobby information and returns it as a table.
 ---@param name string Lobby name.
 ---@param port number Lobby port.
@@ -20997,10 +21306,15 @@ lurek.network.newClient = function(opts) end
 ---@return LNetworkHost New network host handle.
 lurek.network.newHost = function(opts) end
 
---- Creates a network state synchronization manager.
----@param host? LNetworkHost Network host for state transport, or nil for offline mode.
----@param opts? table Configuration table with `channel`, `authority`, `turnBased`, `maxDirtyKeys`.
----@return LNetworkState New state manager handle.
+--- Creates a bounded input-reordering buffer for Lua-owned fixed-step simulation.
+---@param opts? table Limits: `maxPeers`, `maxInputsPerPeer`, `maxFutureTicks`, `maxPastTicks`.
+---@return LNetworkInputBuffer New deterministic remote-input buffer.
+lurek.network.newInputBuffer = function(opts) end
+
+--- Creates a transport-neutral replicated state manager.
+---@param host? LNetworkHost Accepted for compatibility; Lua owns the actual host routing.
+---@param opts? table Configuration table with `authority`, `turnBased`, and `maxDirtyKeys`.
+---@return LNetworkState New explicit-state replication handle.
 lurek.network.newNetState = function(host, opts) end
 
 --- Creates an encoded relay ticket. This function is exposed to Lua scripts.
@@ -21009,17 +21323,22 @@ lurek.network.newNetState = function(host, opts) end
 ---@return string Encoded relay ticket.
 lurek.network.newRelayTicket = function(room_id, peer_id) end
 
---- Creates a network RPC manager attached to a host.
----@param host LNetworkHost Network host for RPC transport.
----@param channel? number Optional ENet channel for RPC traffic, defaults to 0.
----@param timeout_ms? number Optional timeout in milliseconds for pending calls, defaults to 30s.
----@return LNetworkRpc New RPC manager handle.
-lurek.network.newRpc = function(host, channel, timeout_ms) end
+--- Creates a transport-neutral RPC protocol manager.
+---@param host? LNetworkHost Accepted for compatibility; Lua owns the actual host routing.
+---@param channel? number Routing metadata reserved for the game, defaults to 0.
+---@param timeout_seconds? number Pending call timeout in seconds, defaults to 30.
+---@return LNetworkRpc New explicit RPC protocol handle.
+lurek.network.newRpc = function(host, channel, timeout_seconds) end
 
 --- Creates a server host from an options table.
 ---@param opts table Options with required `port`, optional `maxPeers`/`peers`, and `channels`.
 ---@return LNetworkHost New server host handle.
 lurek.network.newServer = function(opts) end
+
+--- Creates a bounded resolved snapshot history for explicit Lua interpolation and correction.
+---@param opts? table Optional `{ capacity = integer }` retention capacity, defaulting to 64 frames.
+---@return LNetworkSnapshotStore New bounded snapshot history.
+lurek.network.newSnapshotStore = function(opts) end
 
 --- Packs a supported Lua value into a binary network message string.
 ---@param value any Lua value to pack (table, number, string, or boolean).
@@ -25780,6 +26099,10 @@ function LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) end
 ---@return LZone The zone handle.
 function LWorld:addZone(x, y, w, h) end
 
+--- Applies many continuous forces through one validated world borrow.
+---@param forces table Array of `{ id, fx, fy }` force records.
+function LWorld:applyForces(forces) end
+
 --- Returns all instant beam hits in deterministic distance order.
 ---@param x number Beam origin X.
 ---@param y number Beam origin Y.
@@ -25949,6 +26272,11 @@ function LWorld:getBodyIds() end
 ---@return number Normal Y; or nil if not a one-way body.
 function LWorld:getBodyOneWay(id) end
 
+--- Reads compact position, angle, and velocity state for many bodies in one Lua boundary crossing.
+---@param ids number[] Array of active body ids.
+---@return table Array of `{ id, x, y, angle, vx, vy }` state records in input order.
+function LWorld:getBodyStates(ids) end
+
 --- Returns the type name of a body as a string.
 ---@param id number The body ID.
 ---@return string Body type: "static", "dynamic", "kinematic", or "sensor".
@@ -26044,6 +26372,10 @@ function LWorld:getSolverIterations() end
 --- Returns active counts and slot diagnostics for the world.
 ---@return LWorldGetStatsResult Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, gravityVectors, sleepingBodies.
 function LWorld:getStats() end
+
+--- Returns the current explicit toroidal wrap bounds, or nil when wrapping is disabled.
+---@return table? Bounds with `min_x`, `min_y`, `max_x`, and `max_y`, or nil.
+function LWorld:getWrapBounds() end
 
 --- Returns all zone enter/leave events from the last step.
 ---@return LWorldGetZoneEventsResult Array of {zone_id, body_id, kind} tables where kind is "enter" or "leave".
@@ -26263,6 +26595,10 @@ function LWorld:setBodyEnabled(body_id, enabled) end
 ---@param nx number One-way normal X (points toward the blocking side).
 ---@param ny number One-way normal Y.
 function LWorld:setBodyOneWay(id, nx, ny) end
+
+--- Applies complete transform and velocity updates atomically after validating every state record.
+---@param states table Array of `{ id, x, y, angle?, vx?, vy? }` state records.
+function LWorld:setBodyStates(states) end
 
 --- Changes the type of an existing body (e.g. from "dynamic" to "static").
 ---@param id number The body ID.
@@ -30722,6 +31058,39 @@ function LQuad:type() end
 ---@return boolean True if the name matches.
 function LQuad:typeOf(name) end
 
+--- Cancels an unfinished request and releases any later result.
+---@return boolean True when this call changed a pending request.
+function LReadbackRequest:cancel() end
+
+--- Returns whether the result can be consumed.
+---@return boolean True only after a successful GPU readback.
+function LReadbackRequest:isReady() end
+
+--- Observes the current non-blocking lifecycle state after normal frame polling.
+---@return string Stable request lifecycle state; this never blocks Lua.
+function LReadbackRequest:poll() end
+
+--- Releases this request handle and any completed but unconsumed image.
+---@return boolean True when the handle owned the live request.
+function LReadbackRequest:release() end
+
+--- Consumes and returns a completed image, or nil before completion and after consumption.
+---@return LImageData nil | Completed image data when available.
+function LReadbackRequest:result() end
+
+--- Returns `pending`, `ready`, `failed`, `timed_out`, or `cancelled`.
+---@return string Stable request lifecycle state.
+function LReadbackRequest:status() end
+
+--- Returns the userdata type name.
+---@return string `LReadbackRequest`.
+function LReadbackRequest:type() end
+
+--- Returns whether this object matches a supported type name.
+---@param name string Type name to test.
+---@return boolean Whether the type matches.
+function LReadbackRequest:typeOf(name) end
+
 --- Returns shader validation diagnostics.
 ---@return table Array of diagnostic strings.
 function LShader:getDiagnostics() end
@@ -30756,6 +31125,36 @@ function LShader:type() end
 ---@param name string Type name to check ("Shader" or "Object").
 ---@return boolean True if the name matches.
 function LShader:typeOf(name) end
+
+--- Cancels unfinished cache work before a later frame can submit it.
+---@return boolean True when this call changed a pending request.
+function LShaderPrewarmRequest:cancel() end
+
+--- Observes the current non-blocking lifecycle state after frame-boundary work.
+---@return string Stable request lifecycle state; this never blocks Lua.
+function LShaderPrewarmRequest:poll() end
+
+--- Returns the number of completed shader keys and the immutable requested total.
+---@return number Completed key count and requested key count. (value 1).
+---@return number Completed key count and requested key count. (value 2).
+function LShaderPrewarmRequest:progress() end
+
+--- Releases this request handle and cancels its outstanding cache work.
+---@return boolean True when the handle owned a live request.
+function LShaderPrewarmRequest:release() end
+
+--- Returns `pending`, `ready`, `failed`, or `cancelled`.
+---@return string Stable request lifecycle state.
+function LShaderPrewarmRequest:status() end
+
+--- Returns the userdata type name.
+---@return string `LShaderPrewarmRequest`.
+function LShaderPrewarmRequest:type() end
+
+--- Returns whether this object matches a supported type name.
+---@param name string Type name to test.
+---@return boolean Whether the type matches.
+function LShaderPrewarmRequest:typeOf(name) end
 
 --- Adds a filled or outlined arc command to the shape.
 ---@param mode string "fill" or "line".
@@ -30879,6 +31278,11 @@ function LSpriteBatch:add(x, y, r, sx, sy, ox, oy) end
 ---@return number Number of entries added.
 function LSpriteBatch:addComposite(parts) end
 
+--- Atomically appends an array of sprite entries after validating the whole input.
+---@param entries table Array of entries with x, y, r, sx, sy, ox, oy, and optional quad fields.
+---@return number Number of entries added.
+function LSpriteBatch:addMany(entries) end
+
 --- Removes all entries from the sprite batch.
 function LSpriteBatch:clear() end
 
@@ -30890,9 +31294,27 @@ function LSpriteBatch:getBufferSize() end
 ---@return number Entry count.
 function LSpriteBatch:getCount() end
 
+--- Returns deterministic capacity and mutation diagnostics for this batch.
+---@return table Table with count, capacity, remaining, and version.
+function LSpriteBatch:getDiagnostics() end
+
+--- Returns the monotonic sprite-entry content version.
+---@return number Version incremented once per successful content mutation.
+function LSpriteBatch:getVersion() end
+
 --- Releases the sprite batch resource.
 ---@return boolean True if the batch was valid and was released.
 function LSpriteBatch:release() end
+
+--- Atomically removes selected one-based sprite entries.
+---@param indices table Array of unique one-based entry indices.
+---@return number Number of removed entries.
+function LSpriteBatch:removeEntries(indices) end
+
+--- Atomically replaces all sprite entries after validating the whole input.
+---@param entries table Array of sprite entry tables.
+---@return number New entry count.
+function LSpriteBatch:setEntries(entries) end
 
 --- Returns the type name string for this sprite batch.
 ---@return string Always "LSpriteBatch".
@@ -30902,6 +31324,11 @@ function LSpriteBatch:type() end
 ---@param name string Type name to check ("SpriteBatch" or "Object").
 ---@return boolean True if the name matches.
 function LSpriteBatch:typeOf(name) end
+
+--- Atomically replaces selected one-based sprite entries.
+---@param updates table Array of entry tables with a required one-based `index` field.
+---@return number Number of entries whose values changed.
+function LSpriteBatch:updateEntries(updates) end
 
 --- Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.
 function LVoxelModel:getBounds() end
@@ -30916,9 +31343,9 @@ function LVoxelModel:getVoxelCount() end
 ---@return LCanvas The target canvas handle.
 lurek.render.applyEffectToCanvas = function(sourceCanvas, targetCanvas, effectOrStack) end
 
---- Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
+--- Queues a postfx shader pass that mutates a canvas after queued draws in the current frame.
 ---@param canvas LCanvas Canvas render target to process.
----@param shader LShader Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
+---@param shader LShader Shader created with the `postfx` target.
 ---@param opts? table Reserved options table for future pass parameters.
 ---@return LCanvas The processed canvas handle.
 lurek.render.applyShaderToCanvas = function(canvas, shader, opts) end
@@ -31122,19 +31549,24 @@ lurek.render.getBackgroundColor = function() end
 ---@return string Current blend mode: "alpha", "add", "multiply", "replace", or "screen".
 lurek.render.getBlendMode = function() end
 
+--- Returns the effective, read-only aggregate render limits selected by the engine and active GPU.
+---@return table Effective render budget limits. These values cannot be changed from Lua.
+lurek.render.getBudgetLimits = function() end
+
 --- Returns all stable built-in font names.
 ---@return string[] Array of bundled font names such as font_8 and fontb_8.
 lurek.render.getBuiltInFontNames = function() end
 
---- Returns the currently active canvas, or nil if drawing to the screen.
----@return LCanvas The active canvas handle.
+--- Returns the active canvas, or nil when drawing to the screen.
 lurek.render.getCanvas = function() end
 
 --- Returns the pixel dimensions of a canvas.
----@param canvas LCanvas Canvas handle to query.
----@return number Width and height in pixels. (value 1).
----@return number Width and height in pixels. (value 2).
-lurek.render.getCanvasSize = function(canvas) end
+---@param ud any
+lurek.render.getCanvasSize = function(ud) end
+
+--- Returns stable, read-only capabilities and normalized active-device limits.
+---@return table Capability snapshot; no raw backend identifiers or GPU objects are exposed.
+lurek.render.getCapabilities = function() end
 
 --- Returns the current drawing color.
 ---@return number Red; green; blue; alpha channels (0â€“1). (value 1).
@@ -31150,8 +31582,8 @@ lurek.render.getColor = function() end
 ---@return boolean Red; green; blue; alpha channel write states. (value 4).
 lurek.render.getColorMask = function() end
 
---- Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
----@return LShader The active debug visualization shader handle.
+--- Returns the active debug shader, or nil when debug draws use the normal/default path.
+---@return LShader The active debug shader handle.
 lurek.render.getDebugShader = function() end
 
 --- Returns the current default texture filtering settings.
@@ -31239,6 +31671,10 @@ lurek.render.getLineWidth = function() end
 ---@return number Point diameter in pixels.
 lurek.render.getPointSize = function() end
 
+--- Returns render-resource residency and pressure counters without mutating ownership.
+---@return table Current retained bytes, counts, and effective resource budget.
+lurek.render.getResourceStats = function() end
+
 --- Returns the current scissor rectangle, or nothing if no scissor is set.
 ---@return number x; y; w; h of the scissor rect (empty if none). (value 1).
 ---@return number x; y; w; h of the scissor rect (empty if none). (value 2).
@@ -31246,7 +31682,7 @@ lurek.render.getPointSize = function() end
 ---@return number x; y; w; h of the scissor rect (empty if none). (value 4).
 lurek.render.getScissor = function() end
 
---- Returns the currently active shader, or nil if using the default.
+--- Returns the currently active draw shader, or nil for the default.
 ---@return LShader The active shader handle.
 lurek.render.getShader = function() end
 
@@ -31260,7 +31696,7 @@ lurek.render.getStats = function() end
 ---@return number Action name; compare mode name; and reference value. (value 3).
 lurek.render.getStencilMode = function() end
 
---- Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
+--- Returns the active text shader, or nil when the default/fallback path is active.
 ---@return LShader The active text shader handle.
 lurek.render.getTextShader = function() end
 
@@ -31322,13 +31758,13 @@ lurek.render.newDepthSorter = function() end
 ---@return LDrawLayer The created draw layer.
 lurek.render.newDrawLayer = function() end
 
---- Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
+--- Compatibility alias for the canonical `lurek.font.load` and built-in font APIs.
 ---@param pathOrSize any Built-in font name, font file path, or numeric built-in point-size selector.
 ---@param size? number Point size for TTF/OTF files, or cell height for PNG atlases.
 ---@return LFont The created font handle.
 lurek.render.newFont = function(pathOrSize, size) end
 
---- Loads a texture from a file path or creates one from an ImageData object.
+--- Compatibility alias for `lurek.render.newTexture`.
 ---@param pathOrData string|LImageData File path to an image, or an ImageData object.
 ---@param colorSpace? string Color space: "srgb" (default) or "linear".
 ---@return LImage The loaded image handle.
@@ -31365,11 +31801,17 @@ lurek.render.newShader = function(code, opts) end
 ---@return LShape The created shape handle.
 lurek.render.newShape = function() end
 
---- Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
+--- Compatibility alias for `lurek.sprite.newBatch`.
 ---@param image LImage Source texture for all sprites in the batch.
 ---@param max? number Maximum number of entries (default 1000).
 ---@return LSpriteBatch The created sprite batch handle.
 lurek.render.newSpriteBatch = function(image, max) end
+
+--- Creates a render texture from a GameFS path or CPU-owned ImageData.
+---@param pathOrData string|LImageData File path to an image, or ImageData to upload.
+---@param colorSpace? string Color space: `srgb` (default) or `linear`.
+---@return LImage Legacy-compatible render texture handle.
+lurek.render.newTexture = function(pathOrData, colorSpace) end
 
 --- Resets the current transformation matrix to the identity (no transform).
 lurek.render.origin = function() end
@@ -31389,6 +31831,11 @@ lurek.render.pop = function() end
 --- Ends a compositing layer and composites it with the previous content.
 ---@param id number Layer identifier matching the pushLayer call.
 lurek.render.popLayer = function(id) end
+
+--- Queues up to 64 live shaders for bounded frame-boundary cache preparation.
+---@param shaders table One-based array of LShader handles from this runtime.
+---@return LShaderPrewarmRequest Non-blocking request with progress, cancel, and release methods.
+lurek.render.prewarmShaders = function(shaders) end
 
 --- Draws text using the active font at the given position.
 ---@param text string Text to render.
@@ -31485,7 +31932,11 @@ lurek.render.pushSortKey = function(depth) end
 ---@param ry? number Vertical corner radius (defaults to rx).
 lurek.render.rectangle = function(mode, x, y, w, h, rx, ry) end
 
---- Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
+--- Requests one bounded asynchronous GPU surface readback. The returned handle advances during normal frame polling and never blocks Lua.
+---@return LReadbackRequest Handle with status, cancel, result, and release methods.
+lurek.render.requestReadback = function() end
+
+--- Marks a canvas as needing a full clear before its next render pass.
 ---@param canvas LCanvas Canvas to reset.
 ---@return nil No return value.
 lurek.render.resetCanvas = function(canvas) end
@@ -31517,9 +31968,9 @@ lurek.render.setBlendMode = function(mode) end
 ---@param bold boolean True to enable bold, false for regular.
 lurek.render.setBold = function(bold) end
 
---- Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
----@param canvas? LCanvas Canvas to draw to, or nil for the main screen.
-lurek.render.setCanvas = function(canvas) end
+--- Redirects subsequent drawing to a canvas, or nil for the screen.
+---@param ud? any
+lurek.render.setCanvas = function(ud) end
 
 --- Sets the active drawing color for all subsequent draw operations.
 ---@param r number Red channel (0â€“1).
@@ -31529,14 +31980,11 @@ lurek.render.setCanvas = function(canvas) end
 lurek.render.setColor = function(r, g, b, a) end
 
 --- Sets which color channels are written during draw calls. Call with no args to enable all.
----@param r? boolean Enable red channel.
----@param g? boolean Enable green channel.
----@param b? boolean Enable blue channel.
----@param a? boolean Enable alpha channel.
-lurek.render.setColorMask = function(r, g, b, a) end
+---@param ... any
+lurek.render.setColorMask = function(...) end
 
---- Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
----@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "debugviz" })`, or nil for default debug rendering.
+--- Activates a debugviz-target shader, or restores the normal draw shader with nil.
+---@param shader? LShader Debug-target shader handle or nil.
 lurek.render.setDebugShader = function(shader) end
 
 --- Sets the default texture filtering mode for newly created images.
@@ -31594,8 +32042,8 @@ lurek.render.setPointSize = function(size) end
 ---@param h? number Height.
 lurek.render.setScissor = function(x, y, w, h) end
 
---- Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
----@param shader? LShader Shader handle to activate, or nil for default.
+--- Activates a draw-target shader for subsequent draw calls, or restores the default with nil.
+---@param shader? LShader Draw-target shader handle or nil.
 lurek.render.setShader = function(shader) end
 
 --- Sets the stencil write action, compare function, and reference value at once.
@@ -31609,8 +32057,8 @@ lurek.render.setStencilMode = function(action, compare, value) end
 ---@param value? number Reference value to compare against (default 1).
 lurek.render.setStencilTest = function(compare, value) end
 
---- Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
----@param shader? LShader Shader created with `lurek.render.newShader(code, { target = "text" })`, or nil for default.
+--- Activates a text-target shader for font-atlas text, or restores default text rendering with nil.
+---@param shader? LShader Text-target shader handle or nil.
 lurek.render.setTextShader = function(shader) end
 
 --- Enables or disables wireframe rendering mode.
@@ -32242,6 +32690,18 @@ lurek.scene.transitions.wipe = function(duration) end
 ---@param schema table A schema table containing `default` entries for fields.
 ---@return table A new table with defaults applied for any absent fields.
 lurek.serialize.applyDefaults = function(value, schema) end
+
+--- Encodes any supported Lua value as compact canonical JSON with recursively sorted map keys.
+---@param value any Supported scalar, sequence, or string-keyed table.
+---@param opts? table Standard serialization depth, node, string, and collection limits.
+---@return string Deterministic canonical JSON text.
+lurek.serialize.canonicalEncode = function(value, opts) end
+
+--- Returns a deterministic 64-bit FNV-1a hash of the canonical value encoding.
+---@param value any Supported scalar, sequence, or string-keyed table.
+---@param opts? table Standard serialization depth, node, string, and collection limits.
+---@return string Lowercase sixteen-character hexadecimal hash.
+lurek.serialize.canonicalHash = function(value, opts) end
 
 --- Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
 ---@param payload string The raw string (or binary for msgpack) to decode.
@@ -32913,6 +33373,10 @@ lurek.sprite.newAtlasSheet = function(atlas, sw, sh) end
 ---@return LSpriteAutoTileSheet Autotile sheet descriptor.
 lurek.sprite.newAutoTileSheet = function(image, layout, opts) end
 
+---@param texture any
+---@param max? any
+lurek.sprite.newBatch = function(texture, max) end
+
 --- Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 ---@param image LImage Source texture.
 ---@param top number Top border inset in pixels.
@@ -33141,6 +33605,14 @@ lurek.runtime.getDebugOverlay = function() end
 ---@param name string The environment variable name.
 ---@return string The variable value. Returns `nil` when the variable is not set.
 lurek.runtime.getEnv = function(name) end
+
+--- Returns fixed-step timing and counters for deterministic Lua simulation orchestration.
+---@return table Tick, step delta, configured delta, catch-up ceiling, and render frame.
+lurek.runtime.getFixedStepInfo = function() end
+
+--- Returns the monotonic `process_physics` simulation tick.
+---@return number Tick count incremented immediately before each fixed physics callback.
+lurek.runtime.getFixedTick = function() end
 
 --- Returns a table with comprehensive engine and host information.
 ---@return LRuntimeGetInfoResult Table with fields: `engine` (string), `version` (string), `lua_version` (string), `renderer` (string), `os` (string), `processors` (number), `memory` (number).
@@ -34256,12 +34728,27 @@ function LTileField:getVersion() end
 ---@return boolean True when declared.
 function LTileField:hasSlot(slot) end
 
+--- Returns a deterministic hash of gameplay facts inside one rectangular region.
+---@param opts table height}` using one-based coordinates.
+---@return string Lowercase 64-bit FNV-1a hash.
+function LTileField:hashRegion(opts) end
+
 --- Returns whether one-based coordinates are inside the field.
 ---@param x number One-based column.
 ---@param y number One-based row.
 ---@param z? number One-based level, default 1.
 ---@return boolean True when coordinates are in bounds.
 function LTileField:inBounds(x, y, z) end
+
+--- Reads many one-based cells and common placement facts in one boundary crossing.
+---@param coords table Array of `{x, y, z?}` tables or arrays.
+---@return table Input-ordered records with cell, occupant, resource, and buildable fields.
+function LTileField:inspectCells(coords) end
+
+--- Summarizes occupancy, buildability, resources, and blockers for one rectangle.
+---@param opts table height}` using one-based coordinates.
+---@return table Aggregate footprint facts without per-cell allocation.
+function LTileField:inspectFootprint(opts) end
 
 --- Returns whether one tile cell accepts build placement.
 ---@param x number One-based column.
@@ -34278,6 +34765,12 @@ function LTileField:line(opts) end
 ---@param patches table Array of `{x, y, z?, cell?}` patch tables.
 ---@return table Ordered one-cell `{x, y, z, w, h}` dirty rectangles.
 function LTileField:patchCells(patches) end
+
+--- Validates and stages cell/profile/modifier/reference patches without mutating the field.
+---@param patches table Array of `{x, y, z?, cell?}` patch tables.
+---@param expectedVersion? number Optional required current field version.
+---@return LTileFieldBatch Prepared patch with preview, commit, and discard.
+function LTileField:preparePatch(patches, expectedVersion) end
 
 --- Returns whether a named region contains a one-based tile cell.
 ---@param name string Region name.
@@ -34385,6 +34878,11 @@ function LTileField:setCell(x, y, z, cell) end
 ---@param cost number Movement or traversal cost value.
 function LTileField:setCost(x, y, z, channel, cost) end
 
+--- Atomically assigns one occupant id to every cell in a rectangular footprint.
+---@param opts table Footprint fields plus `occupant` and optional `requireEmpty` (default true).
+---@return number Number of cell occupant values changed.
+function LTileField:setFootprintOccupant(opts) end
+
 --- Registers or replaces a named tile modifier.
 ---@param name string Modifier name.
 ---@param modifier table Modifier table with blocks, costAdd, costMul, sunOcclusionAdd, light, properties.
@@ -34448,6 +34946,16 @@ function LTileField:setSunOcclusion(x, y, z, value) end
 ---@return table Snapshot table suitable for `restore`.
 function LTileField:snapshot() end
 
+--- Captures a deterministic, bounded region snapshot for Lua-side save or diff logic.
+---@param opts table height}` using one-based coordinates.
+---@return table Region metadata, hash, version, and row-major cell records.
+function LTileField:snapshotRegion(opts) end
+
+--- Counts resource labels inside one rectangular footprint.
+---@param opts table height}` using one-based coordinates.
+---@return table Resource-name keys mapped to cell counts.
+function LTileField:summarizeResources(opts) end
+
 --- Returns the Lua-visible type name for this tilefield handle.
 ---@return string The string `LTileField`.
 function LTileField:type() end
@@ -34474,6 +34982,31 @@ function LTileField:writeCostLayer(channel, z, values) end
 ---@param z? number One-based level, default 1.
 ---@param values table Row-major integer-or-nil array with width*height entries.
 function LTileField:writeRefLayer(slot, z, values) end
+
+--- Commits this patch when the live field version still matches.
+---@return table Stable one-cell dirty rectangles.
+function LTileFieldBatch:commit() end
+
+--- Discards this prepared field patch.
+---@return boolean True when a pending patch was discarded.
+function LTileFieldBatch:discard() end
+
+--- Returns whether this prepared field patch can still be committed.
+---@return boolean True before commit or discard.
+function LTileFieldBatch:isPending() end
+
+--- Returns immutable metadata for this prepared field patch.
+---@return table Base version, submitted count, affected count, and changed flag.
+function LTileFieldBatch:preview() end
+
+--- Returns this userdata type name.
+---@return string Always `"LTileFieldBatch"`.
+function LTileFieldBatch:type() end
+
+--- Checks this userdata against `LTileFieldBatch` or `LObject`.
+---@param name string Type name.
+---@return boolean Whether the type matches.
+function LTileFieldBatch:typeOf(name) end
 
 --- Returns the shared tilefield at one field-map coordinate.
 ---@param mapX number One-based field-map column.
@@ -34805,6 +35338,18 @@ function LChunkMap:getLoadedChunks() end
 ---@return number Global tile ID.
 function LChunkMap:getTile(x, y) end
 
+--- Returns the monotonic logical tile-content version.
+---@return number Version incremented once per successful content mutation.
+function LChunkMap:getVersion() end
+
+--- Returns a deterministic hash of one bounded half-open tile rectangle.
+---@param x0 number Inclusive left coordinate.
+---@param y0 number Inclusive top coordinate.
+---@param x1 number Exclusive right coordinate.
+---@param y1 number Exclusive bottom coordinate.
+---@return string Lowercase 64-bit FNV-1a hash.
+function LChunkMap:hashRegion(x0, y0, x1, y1) end
+
 --- Loads a chunk into memory at the given chunk coordinates.
 ---@param cx number Chunk X coordinate.
 ---@param cy number Chunk Y coordinate.
@@ -34816,6 +35361,17 @@ function LChunkMap:loadChunk(cx, cy) end
 ---@param data string Binary chunk data.
 function LChunkMap:loadChunkFromBytes(cx, cy, data) end
 
+--- Validates and stages tile edits without mutating the live map.
+---@param edits table Array of `{x, y, gid}` tables or arrays.
+---@param expectedVersion? number Optional required current map version.
+---@return LChunkMapBatch Prepared mutation with preview, commit, and discard.
+function LChunkMap:prepareBatch(edits, expectedVersion) end
+
+--- Reads many tile coordinates while crossing the Lua boundary only once.
+---@param coords table Array of `{x, y}` tables or arrays.
+---@return table Array of `{x, y,gid}` records in input order.
+function LChunkMap:readTiles(coords) end
+
 --- Sets the tile GID at the given world-tile coordinate.
 ---@param x number Tile X coordinate.
 ---@param y number Tile Y coordinate.
@@ -34826,6 +35382,14 @@ function LChunkMap:setTile(x, y, gid) end
 ---@param edits table Array of `{x, y, gid}` tables or `{x, y, gid}` arrays.
 ---@return table Array of `{cx, cy}` chunks changed by the batch.
 function LChunkMap:setTiles(edits) end
+
+--- Captures a bounded half-open rectangle as a deterministic row-major tile array.
+---@param x0 number Inclusive left coordinate.
+---@param y0 number Inclusive top coordinate.
+---@param x1 number Exclusive right coordinate.
+---@param y1 number Exclusive bottom coordinate.
+---@return table Snapshot containing bounds, dimensions, version, and flat `tiles`.
+function LChunkMap:snapshotRegion(x0, y0, x1, y1) end
 
 --- Returns the type name of this userdata.
 ---@return string Always `"LChunkMap"`.
@@ -34840,6 +35404,31 @@ function LChunkMap:typeOf(name) end
 ---@param cx number Chunk X coordinate.
 ---@param cy number Chunk Y coordinate.
 function LChunkMap:unloadChunk(cx, cy) end
+
+--- Commits this prepared mutation if the map version is unchanged.
+---@return table Deterministically ordered changed chunk coordinates.
+function LChunkMapBatch:commit() end
+
+--- Discards this prepared mutation without changing the map.
+---@return boolean True when a pending mutation was discarded.
+function LChunkMapBatch:discard() end
+
+--- Returns whether this batch can still be committed or discarded.
+---@return boolean True while the batch remains pending.
+function LChunkMapBatch:isPending() end
+
+--- Returns deterministic metadata for this prepared chunk-map mutation.
+---@return table Base version, edit count, changed tile count, and changed chunks.
+function LChunkMapBatch:preview() end
+
+--- Returns the type name of this prepared batch.
+---@return string Always `"LChunkMapBatch"`.
+function LChunkMapBatch:type() end
+
+--- Checks whether this object matches the requested type.
+---@param name string Type name.
+---@return boolean True for `LChunkMapBatch` or `LObject`.
+function LChunkMapBatch:typeOf(name) end
 
 --- Adds a new vertical level to the isometric map and returns its index.
 ---@return number Index of the new level (1-based).
@@ -34965,6 +35554,10 @@ function LLargeMapRenderer:getTilesetColumns() end
 ---@return number Total chunk count.
 function LLargeMapRenderer:getTotalChunks() end
 
+--- Returns the monotonic version of this renderer's tile snapshot.
+---@return number Tile-data version.
+function LLargeMapRenderer:getVersion() end
+
 --- Returns the number of chunks currently visible in the viewport.
 ---@return number Visible chunk count.
 function LLargeMapRenderer:getVisibleChunks() end
@@ -35010,6 +35603,11 @@ function LLargeMapRenderer:setMapData(data, width, height) end
 ---@param y number Row.
 ---@param tileId number Tile GID to place.
 function LLargeMapRenderer:setTile(x, y, tileId) end
+
+--- Applies a bounded list of tile edits atomically and increments the data version once.
+---@param edits table Array of `{x, y, tileId}` edit tables using zero-based coordinates.
+---@return number Number of submitted writes whose value changed.
+function LLargeMapRenderer:setTiles(edits) end
 
 --- Sets the column count of the associated tileset atlas for UV calculation.
 ---@param cols number Number of columns in the tileset image.

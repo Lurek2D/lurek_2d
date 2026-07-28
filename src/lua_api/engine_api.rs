@@ -74,7 +74,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- setResourceBudget --
-    /// Sets the resource memory budget used by resource statistics reporting.
+    /// Sets the hard resource budget used by public resource allocation and reporting.
     /// @param | budget_bytes | integer | Resource budget in bytes.
     tbl.set(
         "setResourceBudget",

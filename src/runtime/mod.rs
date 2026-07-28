@@ -36,6 +36,7 @@ pub use messages::MessageCatalog;
 pub use mode::{RuntimeMode, RuntimeModeParseError};
 pub use shared_state::{
     ErrorInfo, FrameProfile, FullscreenType, PhysicsRunConfig, ReleasedTextureHandle,
-    RendererStats, ResourceBudgetReport, ResourceMemoryStats, ScreenshotRequest, SharedState,
-    SharedStateValidationReport, WindowState,
+    RendererStats, ResourceBudgetReport, ResourceMemoryStats, ScreenshotRequest,
+    ShaderPrewarmRequest, ShaderPrewarmRequestState, SharedState, SharedStateValidationReport,
+    SurfaceReadbackRequest, SurfaceReadbackRequestState, WindowState,
 };

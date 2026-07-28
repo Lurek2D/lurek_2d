@@ -18,7 +18,10 @@ use crate::render::{
     RenderCommand, Shader, ShaderTarget, StencilAction, StencilMode, TextAlign, UniformValue,
 };
 use crate::runtime::resource_keys::*;
-use crate::runtime::ScreenshotRequest;
+use crate::runtime::{
+    ScreenshotRequest, ShaderPrewarmRequest, ShaderPrewarmRequestState, SurfaceReadbackRequest,
+    SurfaceReadbackRequestState,
+};
 use crate::sprite::sprite_batch::BatchEntry;
 use crate::sprite::SpriteBatch;
 use mlua::prelude::*;
@@ -27,9 +30,232 @@ use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
 use std::str::FromStr;
+
+#[path = "render_canvas_api.rs"]
+mod render_canvas_api;
+#[path = "render_diagnostics_api.rs"]
+mod render_diagnostics_api;
+#[path = "render_mesh_api.rs"]
+mod render_mesh_api;
+#[path = "render_primitive_api.rs"]
+mod render_primitive_api;
+#[path = "render_resources_api.rs"]
+mod render_resources_api;
+#[path = "render_shader_api.rs"]
+mod render_shader_api;
+#[path = "render_state_api.rs"]
+mod render_state_api;
+#[path = "render_text_api.rs"]
+mod render_text_api;
 /// Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
 pub struct LuaImageData {
     pub(crate) inner: ImageData,
+}
+
+/// Lua handle for one non-blocking surface readback request.
+pub struct LuaSurfaceReadbackRequest {
+    state: Rc<RefCell<SharedState>>,
+    id: u64,
+}
+
+/// Lua handle for one bounded shader-cache prewarm request.
+pub struct LuaShaderPrewarmRequest {
+    state: Rc<RefCell<SharedState>>,
+    id: u64,
+}
+
+impl LuaShaderPrewarmRequest {
+    fn request_mut(&self) -> LuaResult<std::cell::RefMut<'_, ShaderPrewarmRequest>> {
+        std::cell::RefMut::filter_map(self.state.borrow_mut(), |state| {
+            state.shader_prewarm_requests.get_mut(&self.id)
+        })
+        .map_err(|_| {
+            LuaError::RuntimeError(
+                "lurek.render.LShaderPrewarmRequest: handle is stale or released".into(),
+            )
+        })
+    }
+
+    fn request(&self) -> LuaResult<std::cell::Ref<'_, ShaderPrewarmRequest>> {
+        std::cell::Ref::filter_map(self.state.borrow(), |state| {
+            state.shader_prewarm_requests.get(&self.id)
+        })
+        .map_err(|_| {
+            LuaError::RuntimeError(
+                "lurek.render.LShaderPrewarmRequest: handle is stale or released".into(),
+            )
+        })
+    }
+}
+
+impl LuaUserData for LuaShaderPrewarmRequest {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- status --
+        /// Returns `pending`, `ready`, `failed`, or `cancelled`.
+        /// @return | string | Stable request lifecycle state.
+        methods.add_method("status", |_, this, ()| Ok(this.request()?.state.as_str()));
+        // -- poll --
+        /// Observes the current non-blocking lifecycle state after frame-boundary work.
+        /// @return | string | Stable request lifecycle state; this never blocks Lua.
+        methods.add_method("poll", |_, this, ()| Ok(this.request()?.state.as_str()));
+        // -- progress --
+        /// Returns the number of completed shader keys and the immutable requested total.
+        /// @return | integer, integer | Completed key count and requested key count.
+        methods.add_method("progress", |_, this, ()| {
+            let request = this.request()?;
+            Ok((request.completed, request.total))
+        });
+        // -- cancel --
+        /// Cancels unfinished cache work before a later frame can submit it.
+        /// @return | boolean | True when this call changed a pending request.
+        methods.add_method("cancel", |_, this, ()| {
+            let mut request = this.request_mut()?;
+            if request.state == ShaderPrewarmRequestState::Pending {
+                request.remaining.clear();
+                request.state = ShaderPrewarmRequestState::Cancelled;
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        });
+        // -- release --
+        /// Releases this request handle and cancels its outstanding cache work.
+        /// @return | boolean | True when the handle owned a live request.
+        methods.add_method("release", |_, this, ()| {
+            Ok(this
+                .state
+                .borrow_mut()
+                .shader_prewarm_requests
+                .remove(&this.id)
+                .is_some())
+        });
+        // -- type --
+        /// Returns the userdata type name.
+        /// @return | string | `LShaderPrewarmRequest`.
+        methods.add_method("type", |_, _, ()| Ok("LShaderPrewarmRequest"));
+        // -- typeOf --
+        /// Returns whether this object matches a supported type name.
+        /// @param | name | string | Type name to test.
+        /// @return | boolean | Whether the type matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LShaderPrewarmRequest" || name == "LObject")
+        });
+    }
+}
+
+impl LuaSurfaceReadbackRequest {
+    fn request_mut(&self) -> LuaResult<std::cell::RefMut<'_, SurfaceReadbackRequest>> {
+        std::cell::RefMut::filter_map(self.state.borrow_mut(), |state| {
+            state
+                .surface_readback_request
+                .as_mut()
+                .filter(|request| request.id == self.id)
+        })
+        .map_err(|_| {
+            LuaError::RuntimeError(
+                "lurek.render.LReadbackRequest: handle is stale or released".into(),
+            )
+        })
+    }
+
+    fn request(&self) -> LuaResult<std::cell::Ref<'_, SurfaceReadbackRequest>> {
+        std::cell::Ref::filter_map(self.state.borrow(), |state| {
+            state
+                .surface_readback_request
+                .as_ref()
+                .filter(|request| request.id == self.id)
+        })
+        .map_err(|_| {
+            LuaError::RuntimeError(
+                "lurek.render.LReadbackRequest: handle is stale or released".into(),
+            )
+        })
+    }
+}
+
+impl LuaUserData for LuaSurfaceReadbackRequest {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- status --
+        /// Returns `pending`, `ready`, `failed`, `timed_out`, or `cancelled`.
+        /// @return | string | Stable request lifecycle state.
+        methods.add_method("status", |_, this, ()| Ok(this.request()?.state.as_str()));
+        // -- poll --
+        /// Observes the current non-blocking lifecycle state after normal frame polling.
+        /// @return | string | Stable request lifecycle state; this never blocks Lua.
+        methods.add_method("poll", |_, this, ()| Ok(this.request()?.state.as_str()));
+        // -- isReady --
+        /// Returns whether the result can be consumed.
+        /// @return | boolean | True only after a successful GPU readback.
+        methods.add_method("isReady", |_, this, ()| {
+            Ok(this.request()?.state == SurfaceReadbackRequestState::Ready)
+        });
+        // -- cancel --
+        /// Cancels an unfinished request and releases any later result.
+        /// @return | boolean | True when this call changed a pending request.
+        methods.add_method("cancel", |_, this, ()| {
+            let mut request = this.request_mut()?;
+            if request.state == SurfaceReadbackRequestState::Pending {
+                request.state = SurfaceReadbackRequestState::Cancelled;
+                request.image = None;
+                drop(request);
+                let mut state = this.state.borrow_mut();
+                state.cancel_surface_readback_requested = true;
+                state.pending_screen_capture = false;
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        });
+        // -- result --
+        /// Consumes and returns a completed image, or nil before completion and after consumption.
+        /// @return | LImageData|nil | Completed image data when available.
+        methods.add_method("result", |lua, this, ()| {
+            let mut request = this.request_mut()?;
+            match request.image.take() {
+                Some(image) => Ok(LuaValue::UserData(
+                    lua.create_userdata(LuaImageData { inner: image })?,
+                )),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+        // -- release --
+        /// Releases this request handle and any completed but unconsumed image.
+        /// @return | boolean | True when the handle owned the live request.
+        methods.add_method("release", |_, this, ()| {
+            let mut state = this.state.borrow_mut();
+            let was_pending = state
+                .surface_readback_request
+                .as_ref()
+                .is_some_and(|request| {
+                    request.id == this.id && request.state == SurfaceReadbackRequestState::Pending
+                });
+            if state
+                .surface_readback_request
+                .as_ref()
+                .is_some_and(|request| request.id == this.id)
+            {
+                state.surface_readback_request = None;
+                if was_pending {
+                    state.cancel_surface_readback_requested = true;
+                    state.pending_screen_capture = false;
+                }
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        });
+        // -- type --
+        /// Returns the userdata type name.
+        /// @return | string | `LReadbackRequest`.
+        methods.add_method("type", |_, _, ()| Ok("LReadbackRequest"));
+        // -- typeOf --
+        /// Returns whether this object matches a supported type name.
+        /// @param | name | string | Type name to test.
+        /// @return | boolean | Whether the type matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LReadbackRequest" || name == "LObject")
+        });
+    }
 }
 impl LuaUserData for LuaImageData {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -562,6 +788,62 @@ pub struct LuaSpriteBatch {
     pub(crate) state: Rc<RefCell<SharedState>>,
     pub(crate) key: SpriteBatchKey,
 }
+
+fn sprite_batch_error(method: &str, message: impl std::fmt::Display) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.render.LSpriteBatch:{method}: {message}"))
+}
+
+fn validate_batch_number(method: &str, field: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(sprite_batch_error(
+            method,
+            format!("{field} must be finite"),
+        ))
+    }
+}
+
+fn batch_entry_from_table(table: LuaTable, method: &str) -> LuaResult<BatchEntry> {
+    let x = table.get::<_, Option<f32>>("x")?.unwrap_or(0.0);
+    let y = table.get::<_, Option<f32>>("y")?.unwrap_or(0.0);
+    let quad_x = table.get::<_, Option<f32>>("quadX")?.unwrap_or(0.0);
+    let quad_y = table.get::<_, Option<f32>>("quadY")?.unwrap_or(0.0);
+    let quad_w = table.get::<_, Option<f32>>("quadW")?.unwrap_or(0.0);
+    let quad_h = table.get::<_, Option<f32>>("quadH")?.unwrap_or(0.0);
+    let rotation = table.get::<_, Option<f32>>("r")?.unwrap_or(0.0);
+    let sx = table.get::<_, Option<f32>>("sx")?.unwrap_or(1.0);
+    let sy = table.get::<_, Option<f32>>("sy")?.unwrap_or(1.0);
+    let ox = table.get::<_, Option<f32>>("ox")?.unwrap_or(0.0);
+    let oy = table.get::<_, Option<f32>>("oy")?.unwrap_or(0.0);
+    Ok(BatchEntry {
+        x: validate_batch_number(method, "x", x)?,
+        y: validate_batch_number(method, "y", y)?,
+        quad_x: validate_batch_number(method, "quadX", quad_x)?,
+        quad_y: validate_batch_number(method, "quadY", quad_y)?,
+        quad_w: validate_batch_number(method, "quadW", quad_w)?,
+        quad_h: validate_batch_number(method, "quadH", quad_h)?,
+        rotation: validate_batch_number(method, "r", rotation)?,
+        sx: validate_batch_number(method, "sx", sx)?,
+        sy: validate_batch_number(method, "sy", sy)?,
+        ox: validate_batch_number(method, "ox", ox)?,
+        oy: validate_batch_number(method, "oy", oy)?,
+    })
+}
+
+fn batch_entries_from_table(entries: LuaTable, method: &str) -> LuaResult<Vec<BatchEntry>> {
+    let mut parsed = Vec::new();
+    for (index, entry) in entries.sequence_values::<LuaTable>().enumerate() {
+        parsed.push(batch_entry_from_table(
+            entry.map_err(|error| {
+                sprite_batch_error(method, format!("entry {}: {error}", index + 1))
+            })?,
+            method,
+        )?);
+    }
+    Ok(parsed)
+}
+
 impl LuaUserData for LuaSpriteBatch {
     #[allow(clippy::type_complexity)]
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -588,9 +870,20 @@ impl LuaUserData for LuaSpriteBatch {
                 Option<f32>,
                 Option<f32>,
             )| {
+                for (field, value) in [
+                    ("x", x),
+                    ("y", y),
+                    ("r", r.unwrap_or(0.0)),
+                    ("sx", sx.unwrap_or(1.0)),
+                    ("sy", sy.unwrap_or(1.0)),
+                    ("ox", ox.unwrap_or(0.0)),
+                    ("oy", oy.unwrap_or(0.0)),
+                ] {
+                    validate_batch_number("add", field, value)?;
+                }
                 let mut st = this.state.borrow_mut();
                 let batch = st.sprite_batches.get_mut(this.key).ok_or_else(|| {
-                    LuaError::RuntimeError("SpriteBatch handle is not valid or was released".into())
+                    sprite_batch_error("add", "handle is not valid or was released")
                 })?;
                 let entry = BatchEntry {
                     x,
@@ -605,7 +898,10 @@ impl LuaUserData for LuaSpriteBatch {
                     ox: ox.unwrap_or(0.0),
                     oy: oy.unwrap_or(0.0),
                 };
-                Ok(batch.add(entry))
+                batch
+                    .add(entry)
+                    .map(|index| index + 1)
+                    .ok_or_else(|| sprite_batch_error("add", "batch capacity exceeded"))
             },
         );
         // -- addComposite --
@@ -613,31 +909,104 @@ impl LuaUserData for LuaSpriteBatch {
         /// @param | parts | table | Array of part tables with x, y, r, sx, sy, ox, oy, and optional quad fields.
         /// @return | number | Number of entries added.
         methods.add_method("addComposite", |_, this, parts: LuaTable| {
+            let entries = batch_entries_from_table(parts, "addComposite")?;
             let mut st = this.state.borrow_mut();
             let batch = st.sprite_batches.get_mut(this.key).ok_or_else(|| {
-                LuaError::RuntimeError("SpriteBatch handle is not valid or was released".into())
+                sprite_batch_error("addComposite", "handle is not valid or was released")
             })?;
-            let mut added = 0usize;
-            for part in parts.sequence_values::<LuaTable>() {
-                let part = part?;
-                let entry = BatchEntry {
-                    x: part.get::<_, Option<f32>>("x")?.unwrap_or(0.0),
-                    y: part.get::<_, Option<f32>>("y")?.unwrap_or(0.0),
-                    quad_x: part.get::<_, Option<f32>>("quadX")?.unwrap_or(0.0),
-                    quad_y: part.get::<_, Option<f32>>("quadY")?.unwrap_or(0.0),
-                    quad_w: part.get::<_, Option<f32>>("quadW")?.unwrap_or(0.0),
-                    quad_h: part.get::<_, Option<f32>>("quadH")?.unwrap_or(0.0),
-                    rotation: part.get::<_, Option<f32>>("r")?.unwrap_or(0.0),
-                    sx: part.get::<_, Option<f32>>("sx")?.unwrap_or(1.0),
-                    sy: part.get::<_, Option<f32>>("sy")?.unwrap_or(1.0),
-                    ox: part.get::<_, Option<f32>>("ox")?.unwrap_or(0.0),
-                    oy: part.get::<_, Option<f32>>("oy")?.unwrap_or(0.0),
-                };
-                if batch.add(entry).is_some() {
-                    added += 1;
-                }
-            }
+            let added = entries.len();
+            batch
+                .add_many(entries)
+                .map_err(|error| sprite_batch_error("addComposite", error))?;
             Ok(added)
+        });
+        // -- addMany --
+        /// Atomically appends an array of sprite entries after validating the whole input.
+        /// @param | entries | table | Array of entries with x, y, r, sx, sy, ox, oy, and optional quad fields.
+        /// @return | integer | Number of entries added.
+        methods.add_method("addMany", |_, this, entries: LuaTable| {
+            let entries = batch_entries_from_table(entries, "addMany")?;
+            let count = entries.len();
+            let mut st = this.state.borrow_mut();
+            let batch = st.sprite_batches.get_mut(this.key).ok_or_else(|| {
+                sprite_batch_error("addMany", "handle is not valid or was released")
+            })?;
+            batch
+                .add_many(entries)
+                .map_err(|error| sprite_batch_error("addMany", error))?;
+            Ok(count)
+        });
+        // -- setEntries --
+        /// Atomically replaces all sprite entries after validating the whole input.
+        /// @param | entries | table | Array of sprite entry tables.
+        /// @return | integer | New entry count.
+        methods.add_method("setEntries", |_, this, entries: LuaTable| {
+            let entries = batch_entries_from_table(entries, "setEntries")?;
+            let mut st = this.state.borrow_mut();
+            let batch = st.sprite_batches.get_mut(this.key).ok_or_else(|| {
+                sprite_batch_error("setEntries", "handle is not valid or was released")
+            })?;
+            batch
+                .set_entries(entries)
+                .map_err(|error| sprite_batch_error("setEntries", error))
+        });
+        // -- updateEntries --
+        /// Atomically replaces selected one-based sprite entries.
+        /// @param | updates | table | Array of entry tables with a required one-based `index` field.
+        /// @return | integer | Number of entries whose values changed.
+        methods.add_method("updateEntries", |_, this, updates: LuaTable| {
+            let mut parsed = Vec::new();
+            for (position, update) in updates.sequence_values::<LuaTable>().enumerate() {
+                let update = update.map_err(|error| {
+                    sprite_batch_error("updateEntries", format!("entry {}: {error}", position + 1))
+                })?;
+                let index = update.get::<_, usize>("index").map_err(|error| {
+                    sprite_batch_error(
+                        "updateEntries",
+                        format!("entry {} index: {error}", position + 1),
+                    )
+                })?;
+                if index == 0 {
+                    return Err(sprite_batch_error(
+                        "updateEntries",
+                        format!("entry {} index must be one-based", position + 1),
+                    ));
+                }
+                parsed.push((index - 1, batch_entry_from_table(update, "updateEntries")?));
+            }
+            let mut st = this.state.borrow_mut();
+            let batch = st.sprite_batches.get_mut(this.key).ok_or_else(|| {
+                sprite_batch_error("updateEntries", "handle is not valid or was released")
+            })?;
+            batch
+                .update_entries(parsed)
+                .map_err(|error| sprite_batch_error("updateEntries", error))
+        });
+        // -- removeEntries --
+        /// Atomically removes selected one-based sprite entries.
+        /// @param | indices | table | Array of unique one-based entry indices.
+        /// @return | integer | Number of removed entries.
+        methods.add_method("removeEntries", |_, this, indices: LuaTable| {
+            let mut parsed = Vec::new();
+            for (position, index) in indices.sequence_values::<usize>().enumerate() {
+                let index = index.map_err(|error| {
+                    sprite_batch_error("removeEntries", format!("index {}: {error}", position + 1))
+                })?;
+                if index == 0 {
+                    return Err(sprite_batch_error(
+                        "removeEntries",
+                        format!("index {} must be one-based", position + 1),
+                    ));
+                }
+                parsed.push(index - 1);
+            }
+            let mut st = this.state.borrow_mut();
+            let batch = st.sprite_batches.get_mut(this.key).ok_or_else(|| {
+                sprite_batch_error("removeEntries", "handle is not valid or was released")
+            })?;
+            batch
+                .remove_entries(parsed)
+                .map_err(|error| sprite_batch_error("removeEntries", error))
         });
         // -- clear --
         /// Removes all entries from the sprite batch.
@@ -667,6 +1036,31 @@ impl LuaUserData for LuaSpriteBatch {
                 LuaError::RuntimeError("SpriteBatch handle is not valid or was released".into())
             })?;
             Ok(batch.buffer_size())
+        });
+        // -- getVersion --
+        /// Returns the monotonic sprite-entry content version.
+        /// @return | integer | Version incremented once per successful content mutation.
+        methods.add_method("getVersion", |_, this, ()| {
+            let st = this.state.borrow();
+            let batch = st.sprite_batches.get(this.key).ok_or_else(|| {
+                sprite_batch_error("getVersion", "handle is not valid or was released")
+            })?;
+            Ok(batch.version())
+        });
+        // -- getDiagnostics --
+        /// Returns deterministic capacity and mutation diagnostics for this batch.
+        /// @return | table | Table with count, capacity, remaining, and version.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            let st = this.state.borrow();
+            let batch = st.sprite_batches.get(this.key).ok_or_else(|| {
+                sprite_batch_error("getDiagnostics", "handle is not valid or was released")
+            })?;
+            let diagnostics = lua.create_table()?;
+            diagnostics.set("count", batch.len())?;
+            diagnostics.set("capacity", batch.buffer_size())?;
+            diagnostics.set("remaining", batch.remaining())?;
+            diagnostics.set("version", batch.version())?;
+            Ok(diagnostics)
         });
         // -- release --
         /// Releases the sprite batch resource.
@@ -1090,6 +1484,144 @@ fn parse_text_align(align: Option<&str>) -> TextAlign {
         Some("justify") => TextAlign::Justify,
         _ => TextAlign::Left,
     }
+}
+
+/// Create one render texture from a GameFS path or CPU-owned image data.
+///
+/// Both the canonical `newTexture` constructor and its `newImage` compatibility
+/// alias use this one conversion path so path policy, color-space validation,
+/// and release bookkeeping remain identical during the migration.
+fn create_texture_from_args(
+    state: &Rc<RefCell<SharedState>>,
+    args: LuaMultiValue,
+    api: &str,
+) -> LuaResult<LuaImage> {
+    let mut iter = args.into_iter();
+    let arg = iter.next().ok_or_else(|| {
+        LuaError::RuntimeError(format!("{api}: expected a file path string or ImageData"))
+    })?;
+    let color_space = match iter.next() {
+        Some(LuaValue::String(mode)) => {
+            let mode = mode.to_str().map_err(|error| {
+                LuaError::RuntimeError(format!("{api}: invalid color space string: {error}"))
+            })?;
+            Texture::parse_color_space(mode).ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "{api}: invalid color space '{mode}', expected 'srgb' or 'linear'"
+                ))
+            })?
+        }
+        Some(other) => {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: second argument must be color space string, got {}",
+                other.type_name()
+            )));
+        }
+        None => TextureColorSpace::Srgb,
+    };
+    match arg {
+        LuaValue::String(path_str) => {
+            let path = path_str
+                .to_str()
+                .map_err(|error| LuaError::RuntimeError(format!("{api}: invalid path: {error}")))?;
+            let mut runtime = state.borrow_mut();
+            let full_path = runtime
+                .fs
+                .resolve_read_path(path)
+                .map_err(|error| LuaError::RuntimeError(format!("{api}: {error}")))?;
+            let texture =
+                Texture::load_with_color_space(&full_path, &mut runtime.textures, color_space)
+                    .map_err(|error| {
+                        LuaError::RuntimeError(format!("{api}: failed to load '{path}': {error}"))
+                    })?;
+            let texture_bytes = u64::from(texture.width)
+                .saturating_mul(u64::from(texture.height))
+                .saturating_mul(4);
+            if runtime.resource_budget_bytes > 0
+                && runtime.resource_memory_stats().total_bytes > runtime.resource_budget_bytes
+            {
+                runtime.textures.remove(texture.key);
+                runtime.texture_last_used.remove(&texture.key);
+                return Err(LuaError::RuntimeError(format!(
+                    "{api}: texture allocation of {texture_bytes} bytes exceeds the configured resource budget"
+                )));
+            }
+            runtime.clear_released_texture_handle(texture.key.data().as_ffi());
+            Ok(LuaImage {
+                state: state.clone(),
+                key: texture.key,
+            })
+        }
+        LuaValue::UserData(ud) => {
+            let image_data = ud.borrow::<ImageData>()?;
+            let pixels = image_data.as_bytes().to_vec();
+            let (width, height) = image_data.dimensions();
+            drop(image_data);
+            let texture_bytes = u64::from(width)
+                .saturating_mul(u64::from(height))
+                .saturating_mul(4);
+            let mut runtime = state.borrow_mut();
+            if !runtime.can_allocate_public_resource(texture_bytes) {
+                return Err(LuaError::RuntimeError(format!(
+                    "{api}: texture allocation of {texture_bytes} bytes exceeds the configured resource budget"
+                )));
+            }
+            let texture = Texture::from_rgba_with_color_space(
+                width,
+                height,
+                pixels,
+                &mut runtime.textures,
+                color_space,
+            )
+            .map_err(|error| {
+                LuaError::RuntimeError(format!("{api}: failed to create from ImageData: {error}"))
+            })?;
+            runtime.clear_released_texture_handle(texture.key.data().as_ffi());
+            Ok(LuaImage {
+                state: state.clone(),
+                key: texture.key,
+            })
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "{api}: expected a file path string or ImageData"
+        ))),
+    }
+}
+
+/// Create one sprite-owned batch using a live render texture handle.
+///
+/// Sprite owns batch semantics and lifetime; render only supplies the shared
+/// texture residency table and later instancing backend. The render alias and
+/// canonical sprite constructor delegate here to keep their validation equal.
+pub(crate) fn create_sprite_batch(
+    state: &Rc<RefCell<SharedState>>,
+    image: &LuaAnyUserData,
+    max: Option<usize>,
+    api: &str,
+) -> LuaResult<LuaSpriteBatch> {
+    let image = image.borrow::<LuaImage>()?;
+    let image_key = image.key;
+    drop(image);
+    let max_entries = max.unwrap_or(1000);
+    if max_entries > crate::sprite::limits::SpriteLimits::MAX_BATCH_ENTRIES {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: max entries {max_entries} exceeds maximum of {}",
+            crate::sprite::limits::SpriteLimits::MAX_BATCH_ENTRIES
+        )));
+    }
+    let mut runtime = state.borrow_mut();
+    if !runtime.textures.contains_key(image_key) {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: texture handle is not valid"
+        )));
+    }
+    let key = runtime
+        .sprite_batches
+        .insert(SpriteBatch::new(image_key, max_entries));
+    Ok(LuaSpriteBatch {
+        state: state.clone(),
+        key,
+    })
 }
 
 fn queue_print_formatted(
@@ -2316,98 +2848,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, list: LuaTable| queue_draw_many(&mut s.borrow_mut(), list))?,
     )?;
     let s = state.clone();
-    // -- drawText --
-    /// Draws text using the active font with image-like transform parameters on the GPU.
-    /// @param | text | string | Text to render.
-    /// @param | x | number | X position.
-    /// @param | y | number | Y position.
-    /// @param | rotation | number? | Rotation in radians (default 0).
-    /// @param | sx | number? | X scale factor (default 1).
-    /// @param | sy | number? | Y scale factor (defaults to sx).
-    /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
-    /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
-    #[allow(clippy::type_complexity)]
-    graphics.set(
-        "drawText",
-        lua.create_function(
-            move |_,
-                  (text, x, y, rotation, sx, sy, ox, oy): (
-                String,
-                f32,
-                f32,
-                Option<f32>,
-                Option<f32>,
-                Option<f32>,
-                Option<f32>,
-                Option<f32>,
-            )| {
-                let font_key = {
-                    let st = s.borrow();
-                    active_font_key(&st)
-                };
-                let Some(font_key) = font_key else {
-                    return Ok(());
-                };
-                let sx = sx.unwrap_or(1.0);
-                let transform = RenderDrawTransform {
-                    x,
-                    y,
-                    rotation: rotation.unwrap_or(0.0),
-                    sx,
-                    sy: sy.unwrap_or(sx),
-                    ox: ox.unwrap_or(0.0),
-                    oy: oy.unwrap_or(0.0),
-                };
-                queue_draw_text(&mut s.borrow_mut(), font_key, text, transform);
-                Ok(())
-            },
-        )?,
-    )?;
-    let s = state.clone();
-    // -- drawTextWithFont --
-    /// Draws text using a specific font with image-like transform parameters on the GPU.
-    /// @param | font | LFont | Font handle to use for this draw.
-    /// @param | text | string | Text to render.
-    /// @param | x | number | X position.
-    /// @param | y | number | Y position.
-    /// @param | rotation | number? | Rotation in radians (default 0).
-    /// @param | sx | number? | X scale factor (default 1).
-    /// @param | sy | number? | Y scale factor (defaults to sx).
-    /// @param | ox | number? | Origin offset X in text-local pixels (default 0).
-    /// @param | oy | number? | Origin offset Y in text-local pixels (default 0).
-    #[allow(clippy::type_complexity)]
-    graphics.set(
-        "drawTextWithFont",
-        lua.create_function(
-            move |_,
-                  (font_ud, text, x, y, rotation, sx, sy, ox, oy): (
-                LuaAnyUserData<'_>,
-                String,
-                f32,
-                f32,
-                Option<f32>,
-                Option<f32>,
-                Option<f32>,
-                Option<f32>,
-                Option<f32>,
-            )| {
-                let key = resolve_font_key(&font_ud)?;
-                let sx = sx.unwrap_or(1.0);
-                let transform = RenderDrawTransform {
-                    x,
-                    y,
-                    rotation: rotation.unwrap_or(0.0),
-                    sx,
-                    sy: sy.unwrap_or(sx),
-                    ox: ox.unwrap_or(0.0),
-                    oy: oy.unwrap_or(0.0),
-                };
-                queue_draw_text(&mut s.borrow_mut(), key, text, transform);
-                Ok(())
-            },
-        )?,
-    )?;
-    let s = state.clone();
     // -- printRotated --
     /// Draws text centered and rotated around its midpoint.
     /// @param | text | string | Text to render.
@@ -2769,7 +3209,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- newFont --
-    /// Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
+    /// Compatibility alias for the canonical `lurek.font.load` and built-in font APIs.
+    /// @deprecated Use `lurek.font.load` for path-based fonts; this alias is supported through 1.x and targets removal in 2.0.
     /// @param | pathOrSize | any | Built-in font name, font file path, or numeric built-in point-size selector.
     /// @param | size | number? | Point size for TTF/OTF files, or cell height for PNG atlases.
     /// @return | LFont | The created font handle.
@@ -2965,9 +3406,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "getFontCellWidth",
         lua.create_function(move |_, ud: LuaAnyUserData| {
-            let font = ud.borrow::<LuaFont>()?;
-            let key = font.key;
-            drop(font);
+            let key = resolve_font_key(&ud).map_err(|_| {
+                LuaError::RuntimeError(
+                    "lurek.render.getFontCellWidth: font handle is not valid".into(),
+                )
+            })?;
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
@@ -2986,9 +3429,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "getFontWidth",
         lua.create_function(move |_, (ud, text): (LuaAnyUserData, String)| {
-            let font = ud.borrow::<LuaFont>()?;
-            let key = font.key;
-            drop(font);
+            let key = resolve_font_key(&ud).map_err(|_| {
+                LuaError::RuntimeError("lurek.render.getFontWidth: font handle is not valid".into())
+            })?;
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError("lurek.render.getFontWidth: font handle is not valid".into())
@@ -3004,9 +3447,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "getFontHeight",
         lua.create_function(move |_, ud: LuaAnyUserData| {
-            let font = ud.borrow::<LuaFont>()?;
-            let key = font.key;
-            drop(font);
+            let key = resolve_font_key(&ud).map_err(|_| {
+                LuaError::RuntimeError(
+                    "lurek.render.getFontHeight: font handle is not valid".into(),
+                )
+            })?;
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
@@ -3024,9 +3469,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "getFontLineHeight",
         lua.create_function(move |_, ud: LuaAnyUserData| {
-            let font = ud.borrow::<LuaFont>()?;
-            let key = font.key;
-            drop(font);
+            let key = resolve_font_key(&ud).map_err(|_| {
+                LuaError::RuntimeError(
+                    "lurek.render.getFontLineHeight: font handle is not valid".into(),
+                )
+            })?;
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
@@ -3067,9 +3514,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "getFontAscent",
         lua.create_function(move |_, ud: LuaAnyUserData| {
-            let font = ud.borrow::<LuaFont>()?;
-            let key = font.key;
-            drop(font);
+            let key = resolve_font_key(&ud).map_err(|_| {
+                LuaError::RuntimeError(
+                    "lurek.render.getFontAscent: font handle is not valid".into(),
+                )
+            })?;
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
@@ -3087,9 +3536,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "getFontDescent",
         lua.create_function(move |_, ud: LuaAnyUserData| {
-            let font = ud.borrow::<LuaFont>()?;
-            let key = font.key;
-            drop(font);
+            let key = resolve_font_key(&ud).map_err(|_| {
+                LuaError::RuntimeError(
+                    "lurek.render.getFontDescent: font handle is not valid".into(),
+                )
+            })?;
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
@@ -3129,839 +3580,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok((LuaValue::Nil, LuaValue::Number(0.0)))
         })?,
     )?;
-    let s = state.clone();
-    // -- newImage --
-    /// Loads a texture from a file path or creates one from an ImageData object.
-    /// @param | pathOrData | string|LImageData | File path to an image, or an ImageData object.
-    /// @param | colorSpace | string? | Color space: "srgb" (default) or "linear".
-    /// @return | LImage | The loaded image handle.
-    graphics.set(
-        "newImage",
-        lua.create_function(move |_, args: LuaMultiValue| {
-            let mut iter = args.into_iter();
-            let arg = iter.next().ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "lurek.render.newImage: expected a file path string or ImageData".into(),
-                )
-            })?;
-            let color_space = match iter.next() {
-                Some(LuaValue::String(mode)) => {
-                    let mode = mode.to_str().map_err(|e| {
-                        LuaError::RuntimeError(format!(
-                            "lurek.render.newImage: invalid color space string: {}",
-                            e
-                        ))
-                    })?;
-                    Texture::parse_color_space(mode).ok_or_else(|| {
-                        LuaError::RuntimeError(format!(
-                            "lurek.render.newImage: invalid color space '{}', expected 'srgb' or 'linear'",
-                            mode
-                        ))
-                    })?
-                }
-                Some(other) => {
-                    return Err(LuaError::RuntimeError(format!(
-                        "lurek.render.newImage: second argument must be color space string, got {}",
-                        other.type_name()
-                    )));
-                }
-                None => TextureColorSpace::Srgb,
-            };
-            match arg {
-            LuaValue::String(path_str) => {
-                let path = path_str.to_str().map_err(|e| {
-                    LuaError::RuntimeError(format!("lurek.render.newImage: invalid path: {}", e))
-                })?;
-                let mut st = s.borrow_mut();
-                let full_path = st.fs.resolve_read_path(path).map_err(|error| {
-                    LuaError::RuntimeError(format!("lurek.render.newImage: {error}"))
-                })?;
-                match Texture::load_with_color_space(&full_path, &mut st.textures, color_space) {
-                    Ok(tex) => {
-                        st.clear_released_texture_handle(tex.key.data().as_ffi());
-                        Ok(LuaImage {
-                            state: s.clone(),
-                            key: tex.key,
-                        })
-                    }
-                    Err(e) => Err(LuaError::RuntimeError(format!(
-                        "lurek.render.newImage: failed to load '{}': {}",
-                        path, e
-                    ))),
-                }
-            }
-            LuaValue::UserData(ud) => {
-                let img_data = ud.borrow::<ImageData>()?;
-                let pixels = img_data.as_bytes().to_vec();
-                let (w, h) = img_data.dimensions();
-                let mut st = s.borrow_mut();
-                match Texture::from_rgba_with_color_space(
-                    w,
-                    h,
-                    pixels,
-                    &mut st.textures,
-                    color_space,
-                ) {
-                    Ok(tex) => {
-                        st.clear_released_texture_handle(tex.key.data().as_ffi());
-                        Ok(LuaImage {
-                            state: s.clone(),
-                            key: tex.key,
-                        })
-                    }
-                    Err(e) => Err(LuaError::RuntimeError(format!(
-                        "lurek.render.newImage: failed to create from ImageData: {}",
-                        e
-                    ))),
-                }
-            }
-            _ => Err(LuaError::RuntimeError(
-                "lurek.render.newImage: expected a file path string or ImageData".into(),
-            )),
-        }
-        })?,
-    )?;
-    let s = state.clone();
-    // -- newCanvas --
-    /// Creates a new off-screen render target with the given dimensions.
-    /// @param | width | integer | Canvas width in pixels (must be > 0).
-    /// @param | height | integer | Canvas height in pixels (must be > 0).
-    /// @return | LCanvas | The created canvas handle.
-    graphics.set(
-        "newCanvas",
-        lua.create_function(move |_, (width, height): (u32, u32)| {
-            if width == 0 || height == 0 {
-                return Err(LuaError::RuntimeError(
-                    "lurek.render.newCanvas: width and height must be greater than zero".into(),
-                ));
-            }
-            let mut st = s.borrow_mut();
-            let key = st.canvases.insert(Canvas::new(width, height));
-            st.render_commands.push(RenderCommand::RegisterCanvas {
-                canvas_key: key,
-                width,
-                height,
-            });
-            Ok(LuaCanvas {
-                state: s.clone(),
-                key,
-            })
-        })?,
-    )?;
-    let s = state.clone();
-    // -- resetCanvas --
-    /// Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
-    /// @param | canvas | LCanvas | Canvas to reset.
-    /// @return | nil | No return value.
-    graphics.set(
-        "resetCanvas",
-        lua.create_function(move |_, ud: LuaAnyUserData| {
-            let c = ud.borrow::<LuaCanvas>()?;
-            let key = c.key;
-            drop(c);
-            let mut st = s.borrow_mut();
-            if !st.canvases.contains_key(key) {
-                return Err(LuaError::RuntimeError(
-                    "lurek.render.resetCanvas: canvas handle is not valid".into(),
-                ));
-            }
-            st.render_commands.push(RenderCommand::ResetCanvas(key));
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- applyShaderToCanvas --
-    /// Queues a postfx shader pass that mutates a canvas render target after queued canvas draws in the current frame.
-    /// @param | canvas | LCanvas | Canvas render target to process.
-    /// @param | shader | LShader | Shader created with `lurek.render.newShader(code, { target = "postfx" })`.
-    /// @param | opts | table? | Reserved options table for future pass parameters.
-    /// @return | LCanvas | The processed canvas handle.
-    graphics.set(
-        "applyShaderToCanvas",
-        lua.create_function(
-            move |_,
-                  (canvas_ud, shader_ud, _opts): (
-                LuaAnyUserData,
-                LuaAnyUserData,
-                Option<LuaTable>,
-            )| {
-                let canvas = canvas_ud.borrow::<LuaCanvas>()?;
-                let canvas_key = canvas.key;
-                drop(canvas);
-                let shader_key = shader_key_from_userdata(&shader_ud)?;
-                let mut st = s.borrow_mut();
-                if !st.canvases.contains_key(canvas_key) {
-                    return Err(LuaError::RuntimeError(
-                        "lurek.render.applyShaderToCanvas: canvas handle is not valid".into(),
-                    ));
-                }
-                ensure_shader_target(
-                    &st,
-                    shader_key,
-                    ShaderTarget::PostFx,
-                    "lurek.render.applyShaderToCanvas",
-                )?;
-                let shader_id = shader_key.data().as_ffi() as usize;
-                st.render_commands.push(RenderCommand::ApplyShaderToCanvas {
-                    canvas_key,
-                    passes: vec![PostFxPass {
-                        effect_name: format!("canvas_shader_{shader_id}"),
-                        params: std::collections::HashMap::new(),
-                        shader_id: Some(shader_id),
-                        auto_uniforms: true,
-                    }],
-                });
-                Ok(LuaCanvas {
-                    state: s.clone(),
-                    key: canvas_key,
-                })
-            },
-        )?,
-    )?;
-    let s = state.clone();
-    // -- applyEffectToCanvas --
-    /// Applies a post-processing effect or stack from one canvas into another canvas.
-    /// @param | sourceCanvas | LCanvas | Canvas used as the source texture.
-    /// @param | targetCanvas | LCanvas | Canvas receiving the processed output.
-    /// @param | effectOrStack | LPostFxEffect|LPostFxStack | Effect or stack created through `lurek.effect`.
-    /// @return | LCanvas | The target canvas handle.
-    graphics.set(
-        "applyEffectToCanvas",
-        lua.create_function(
-            move |_,
-                  (source_ud, target_ud, effect_ud): (
-                LuaAnyUserData,
-                LuaAnyUserData,
-                LuaAnyUserData,
-            )| {
-                let source = source_ud.borrow::<LuaCanvas>()?;
-                let source_canvas_key = source.key;
-                drop(source);
-                let target = target_ud.borrow::<LuaCanvas>()?;
-                let target_canvas_key = target.key;
-                drop(target);
-                let passes = {
-                    let st = s.borrow();
-                    if !st.canvases.contains_key(source_canvas_key) {
-                        return Err(LuaError::RuntimeError(
-                            "lurek.render.applyEffectToCanvas: source canvas handle is not valid"
-                                .into(),
-                        ));
-                    }
-                    if !st.canvases.contains_key(target_canvas_key) {
-                        return Err(LuaError::RuntimeError(
-                            "lurek.render.applyEffectToCanvas: target canvas handle is not valid"
-                                .into(),
-                        ));
-                    }
-                    postfx_passes_from_userdata(&st, &effect_ud, "applyEffectToCanvas")?
-                };
-                if !passes.is_empty() {
-                    s.borrow_mut()
-                        .render_commands
-                        .push(RenderCommand::ApplyEffectToCanvas {
-                            source_canvas_key,
-                            target_canvas_key,
-                            passes,
-                        });
-                }
-                Ok(LuaCanvas {
-                    state: s.clone(),
-                    key: target_canvas_key,
-                })
-            },
-        )?,
-    )?;
-    let s = state.clone();
-    // -- setCanvas --
-    /// Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
-    /// @param | canvas | LCanvas? | Canvas to draw to, or nil for the main screen.
-    graphics.set(
-        "setCanvas",
-        lua.create_function(move |_, ud: Option<LuaAnyUserData>| {
-            let mut st = s.borrow_mut();
-            match ud {
-                Some(u) => {
-                    let c = u.borrow::<LuaCanvas>()?;
-                    let key = c.key;
-                    drop(c);
-                    if !st.canvases.contains_key(key) {
-                        return Err(LuaError::RuntimeError(
-                            "lurek.render.setCanvas: canvas handle is not valid".into(),
-                        ));
-                    }
-                    st.active_canvas = Some(key);
-                    st.render_commands.push(RenderCommand::SetCanvas(Some(key)));
-                }
-                None => {
-                    st.active_canvas = None;
-                    st.render_commands.push(RenderCommand::SetCanvas(None));
-                }
-            }
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- getCanvas --
-    /// Returns the currently active canvas, or nil if drawing to the screen.
-    /// @return | LCanvas | The active canvas handle.
-    graphics.set(
-        "getCanvas",
-        lua.create_function(move |_, ()| match s.borrow().active_canvas {
-            Some(key) => Ok(Some(LuaCanvas {
-                state: s.clone(),
-                key,
-            })),
-            None => Ok(None),
-        })?,
-    )?;
-    let s = state.clone();
-    // -- getCanvasSize --
-    /// Returns the pixel dimensions of a canvas.
-    /// @param | canvas | LCanvas | Canvas handle to query.
-    /// @return | number, number | Width and height in pixels.
-    graphics.set(
-        "getCanvasSize",
-        lua.create_function(move |_, ud: LuaAnyUserData| {
-            let canvas = ud.borrow::<LuaCanvas>()?;
-            let key = canvas.key;
-            drop(canvas);
-            let st = s.borrow();
-            let c = st.canvases.get(key).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "lurek.render.getCanvasSize: canvas handle is not valid".into(),
-                )
-            })?;
-            Ok((c.width, c.height))
-        })?,
-    )?;
-    let s = state.clone();
-    // -- newSpriteBatch --
-    /// Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
-    /// @param | image | LImage | Source texture for all sprites in the batch.
-    /// @param | max | integer? | Maximum number of entries (default 1000).
-    /// @return | LSpriteBatch | The created sprite batch handle.
-    graphics.set(
-        "newSpriteBatch",
-        lua.create_function(move |_, (ud, max): (LuaAnyUserData, Option<usize>)| {
-            let img = ud.borrow::<LuaImage>()?;
-            let img_key = img.key;
-            drop(img);
-            let max_entries = max.unwrap_or(1000);
-            if max_entries > crate::sprite::limits::SpriteLimits::MAX_BATCH_ENTRIES {
-                return Err(LuaError::RuntimeError(format!(
-                    "lurek.render.newSpriteBatch: max entries {max_entries} exceeds maximum of {}",
-                    crate::sprite::limits::SpriteLimits::MAX_BATCH_ENTRIES
-                )));
-            }
-            let mut st = s.borrow_mut();
-            if !st.textures.contains_key(img_key) {
-                return Err(LuaError::RuntimeError(
-                    "lurek.render.newSpriteBatch: image handle is not valid".into(),
-                ));
-            }
-            let batch = SpriteBatch::new(img_key, max_entries);
-            let key = st.sprite_batches.insert(batch);
-            Ok(LuaSpriteBatch {
-                state: s.clone(),
-                key,
-            })
-        })?,
-    )?;
-    let s = state.clone();
-    // -- newMesh --
-    /// Creates a custom vertex mesh from an array of vertex data tables.
-    /// @param | verts | table | Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}.
-    /// @param | mode | string? | Draw mode: "triangles" (default), "fan", or "strip".
-    /// @return | LMesh | The created mesh handle.
-    graphics.set(
-        "newMesh",
-        lua.create_function(move |_, (verts, mode): (LuaTable, Option<String>)| {
-            let vertex_count = verts.raw_len();
-            if vertex_count > crate::render::mesh::MAX_MESH_VERTICES {
-                return Err(LuaError::RuntimeError(format!(
-                    "lurek.render.newMesh: mesh vertices has {vertex_count} entries, maximum is {}",
-                    crate::render::mesh::MAX_MESH_VERTICES
-                )));
-            }
-            let draw_mode = match mode.as_deref() {
-                Some("fan") => MeshDrawMode::Fan,
-                Some("strip") => MeshDrawMode::Strip,
-                _ => MeshDrawMode::Triangles,
-            };
-            let rows: Vec<[f32; 8]> = verts
-                .sequence_values::<LuaTable>()
-                .map(|vert| {
-                    let v = vert?;
-                    Ok([
-                        v.get(1).unwrap_or(0.0),
-                        v.get(2).unwrap_or(0.0),
-                        v.get(3).unwrap_or(0.0),
-                        v.get(4).unwrap_or(0.0),
-                        v.get(5).unwrap_or(1.0),
-                        v.get(6).unwrap_or(1.0),
-                        v.get(7).unwrap_or(1.0),
-                        v.get(8).unwrap_or(1.0),
-                    ])
-                })
-                .collect::<LuaResult<_>>()?;
-            let mesh = Mesh::from_vertex_rows(&rows, draw_mode);
-            mesh.validate()
-                .map_err(|err| LuaError::RuntimeError(format!("lurek.render.newMesh: {err}")))?;
-            let mut st = s.borrow_mut();
-            let mesh_clone = mesh.clone();
-            let key = st.meshes.insert(mesh);
-            st.render_commands.push(RenderCommand::SyncMesh {
-                mesh_key: key,
-                mesh: mesh_clone,
-            });
-            Ok(LuaMesh {
-                state: s.clone(),
-                key,
-            })
-        })?,
-    )?;
-    let s = state.clone();
-    // -- newShader --
-    /// Compiles a target-aware WGSL fragment shader through the render module and returns a shader handle.
-    /// @param | code | string | WGSL fragment shader source.
-    /// @param | opts | table? | Options table with optional `target` string: draw, postfx, image, overlay, particle, light, sprite, tilemap, mapviz, text, ui, or debugviz. Defaults to draw.
-    /// @return | LShader | The compiled shader handle.
-    graphics.set(
-        "newShader",
-        lua.create_function(move |_, (code, opts): (String, Option<LuaTable>)| {
-            let target = parse_shader_target_opts(opts)?;
-            let shader = match Shader::new_for_target(code, target) {
-                Ok(shader) => shader,
-                Err(err) => {
-                    let msg = format!("lurek.render.newShader: {}", err);
-                    s.borrow_mut().last_shader_compile_error = Some(msg.clone());
-                    return Err(LuaError::RuntimeError(msg));
-                }
-            };
-            let key = {
-                let mut st = s.borrow_mut();
-                st.last_shader_compile_error = None;
-                st.shaders.insert(shader)
-            };
-            Ok(LuaShader {
-                state: s.clone(),
-                key,
-            })
-        })?,
-    )?;
-    let s = state.clone();
-    // -- setShader --
-    /// Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
-    /// @param | shader | LShader? | Shader handle to activate, or nil for default.
-    graphics.set(
-        "setShader",
-        lua.create_function(move |_, ud: Option<LuaAnyUserData>| {
-            let mut st = s.borrow_mut();
-            match ud {
-                Some(u) => {
-                    let sh = u.borrow::<LuaShader>()?;
-                    let key = sh.key;
-                    drop(sh);
-                    if !st.shaders.contains_key(key) {
-                        return Err(LuaError::RuntimeError(
-                            "lurek.render.setShader: shader handle is not valid".into(),
-                        ));
-                    }
-                    ensure_shader_target(&st, key, ShaderTarget::Draw, "lurek.render.setShader")?;
-                    st.active_shader = Some(key);
-                    st.render_commands.push(RenderCommand::SetShader(Some(key)));
-                }
-                None => {
-                    st.active_shader = None;
-                    st.render_commands.push(RenderCommand::SetShader(None));
-                }
-            }
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- getShader --
-    /// Returns the currently active shader, or nil if using the default.
-    /// @return | LShader | The active shader handle.
-    graphics.set(
-        "getShader",
-        lua.create_function(move |_, ()| {
-            let st = s.borrow();
-            match st.active_shader {
-                Some(key) => Ok(Some(LuaShader {
-                    state: s.clone(),
-                    key,
-                })),
-                None => Ok(None),
-            }
-        })?,
-    )?;
-    let s = state.clone();
-    // -- setTextShader --
-    /// Activates a text-target WGSL shader for subsequent font-atlas text draws. Pass nil to restore default text rendering.
-    /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "text" })`, or nil for default.
-    graphics.set(
-        "setTextShader",
-        lua.create_function(move |_, ud: Option<LuaAnyUserData>| {
-            let mut st = s.borrow_mut();
-            match ud {
-                Some(u) => {
-                    let sh = u.borrow::<LuaShader>()?;
-                    let key = sh.key;
-                    drop(sh);
-                    if !st.shaders.contains_key(key) {
-                        return Err(LuaError::RuntimeError(
-                            "lurek.render.setTextShader: shader handle is not valid".into(),
-                        ));
-                    }
-                    ensure_shader_target(
-                        &st,
-                        key,
-                        ShaderTarget::Text,
-                        "lurek.render.setTextShader",
-                    )?;
-                    st.active_text_shader = Some(key);
-                    st.render_commands
-                        .push(RenderCommand::SetTextShader(Some(key)));
-                }
-                None => {
-                    st.active_text_shader = None;
-                    st.render_commands.push(RenderCommand::SetTextShader(None));
-                }
-            }
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- getTextShader --
-    /// Returns the active text shader, or nil if font-atlas text uses the default/fallback shader path.
-    /// @return | LShader | The active text shader handle.
-    graphics.set(
-        "getTextShader",
-        lua.create_function(move |_, ()| {
-            let st = s.borrow();
-            match st.active_text_shader {
-                Some(key) => Ok(Some(LuaShader {
-                    state: s.clone(),
-                    key,
-                })),
-                None => Ok(None),
-            }
-        })?,
-    )?;
-    let s = state.clone();
-    // -- setDebugShader --
-    /// Activates a debugviz-target WGSL shader for subsequent diagnostic/debug draw commands. Pass nil to restore the normal draw shader state.
-    /// @param | shader | LShader? | Shader created with `lurek.render.newShader(code, { target = "debugviz" })`, or nil for default debug rendering.
-    graphics.set(
-        "setDebugShader",
-        lua.create_function(move |_, ud: Option<LuaAnyUserData>| {
-            let mut st = s.borrow_mut();
-            match ud {
-                Some(u) => {
-                    let sh = u.borrow::<LuaShader>()?;
-                    let key = sh.key;
-                    drop(sh);
-                    if !st.shaders.contains_key(key) {
-                        return Err(LuaError::RuntimeError(
-                            "lurek.render.setDebugShader: shader handle is not valid".into(),
-                        ));
-                    }
-                    ensure_shader_target(
-                        &st,
-                        key,
-                        ShaderTarget::DebugViz,
-                        "lurek.render.setDebugShader",
-                    )?;
-                    st.active_debug_shader = Some(key);
-                    st.render_commands.push(RenderCommand::SetShader(Some(key)));
-                }
-                None => {
-                    st.active_debug_shader = None;
-                    let restore_shader = st.active_shader;
-                    st.render_commands
-                        .push(RenderCommand::SetShader(restore_shader));
-                }
-            }
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- getDebugShader --
-    /// Returns the active debug visualization shader, or nil if debug draws use the normal/default render shader path.
-    /// @return | LShader | The active debug visualization shader handle.
-    graphics.set(
-        "getDebugShader",
-        lua.create_function(move |_, ()| {
-            let st = s.borrow();
-            match st.active_debug_shader {
-                Some(key) => Ok(Some(LuaShader {
-                    state: s.clone(),
-                    key,
-                })),
-                None => Ok(None),
-            }
-        })?,
-    )?;
-    #[allow(clippy::type_complexity)]
-    // -- newQuad --
-    /// Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
-    /// @param | x | number | Left edge in texture pixels.
-    /// @param | y | number | Top edge in texture pixels.
-    /// @param | w | number | Width in texture pixels.
-    /// @param | h | number | Height in texture pixels.
-    /// @param | sw | number | Full source texture width.
-    /// @param | sh | number | Full source texture height.
-    /// @return | LQuad | The created quad.
-    graphics.set(
-        "newQuad",
-        lua.create_function(
-            move |_, (x, y, w, h, sw, sh): (f32, f32, f32, f32, f32, f32)| {
-                Ok(LuaQuad { x, y, w, h, sw, sh })
-            },
-        )?,
-    )?;
-    let s = state.clone();
-    // -- push --
-    /// Pushes the current transformation matrix onto the transform stack.
-    graphics.set(
-        "push",
-        lua.create_function(move |_, ()| {
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::PushTransform);
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- pop --
-    /// Pops the top transformation matrix from the transform stack, restoring the previous one.
-    graphics.set(
-        "pop",
-        lua.create_function(move |_, ()| {
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::PopTransform);
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- translate --
-    /// Applies a translation to the current transformation matrix.
-    /// @param | x | number | Horizontal translation in pixels.
-    /// @param | y | number | Vertical translation in pixels.
-    graphics.set(
-        "translate",
-        lua.create_function(move |_, (x, y): (f32, f32)| {
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::Translate { x, y });
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- rotate --
-    /// Applies a rotation to the current transformation matrix.
-    /// @param | angle | number | Rotation angle in radians.
-    graphics.set(
-        "rotate",
-        lua.create_function(move |_, angle: f32| {
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::Rotate { angle });
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- scale --
-    /// Applies scaling to the current transformation matrix.
-    /// @param | sx | number | Horizontal scale factor.
-    /// @param | sy | number? | Vertical scale factor (defaults to sx for uniform scaling).
-    graphics.set(
-        "scale",
-        lua.create_function(move |_, (sx, sy): (f32, Option<f32>)| {
-            let sy = sy.unwrap_or(sx);
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::Scale { sx, sy });
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- shear --
-    /// Applies a shear (skew) to the current transformation matrix.
-    /// @param | kx | number | Horizontal shear factor.
-    /// @param | ky | number | Vertical shear factor.
-    graphics.set(
-        "shear",
-        lua.create_function(move |_, (kx, ky): (f32, f32)| {
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::Shear { kx, ky });
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- origin --
-    /// Resets the current transformation matrix to the identity (no transform).
-    graphics.set(
-        "origin",
-        lua.create_function(move |_, ()| {
-            s.borrow_mut().render_commands.push(RenderCommand::Origin);
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- applyTransform --
-    /// Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
-    /// @param | mat | table | Flat table of 9 numbers representing a 3x3 transform matrix.
-    graphics.set(
-        "applyTransform",
-        lua.create_function(move |_, mat: LuaTable| {
-            let mut m = [0.0f32; 9];
-            for (i, item) in m.iter_mut().enumerate() {
-                *item = mat
-                    .get::<_, f32>(i + 1)
-                    .unwrap_or(if i == 0 || i == 4 || i == 8 { 1.0 } else { 0.0 });
-            }
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::ApplyTransform { matrix: m });
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- setScissor --
-    /// Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.
-    /// @param | x | number? | Left edge of the scissor rectangle.
-    /// @param | y | number? | Top edge.
-    /// @param | w | number? | Width.
-    /// @param | h | number? | Height.
-    graphics.set(
-        "setScissor",
-        lua.create_function(move |_, args: LuaMultiValue| {
-            let mut st = s.borrow_mut();
-            if args.len() >= 4 {
-                let to_f32 = |v: &LuaValue| match v {
-                    LuaValue::Number(n) => *n as f32,
-                    LuaValue::Integer(n) => *n as f32,
-                    _ => 0.0,
-                };
-                let x = to_f32(&args[0]);
-                let y = to_f32(&args[1]);
-                let w = to_f32(&args[2]);
-                let h = to_f32(&args[3]);
-                st.scissor = Some((x, y, w, h));
-                st.render_commands
-                    .push(RenderCommand::SetScissor(Some((x, y, w, h))));
-            } else {
-                st.scissor = None;
-                st.render_commands.push(RenderCommand::SetScissor(None));
-            }
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- getScissor --
-    /// Returns the current scissor rectangle, or nothing if no scissor is set.
-    /// @return | number, number, number, number | x, y, w, h of the scissor rect (empty if none).
-    graphics.set(
-        "getScissor",
-        lua.create_function(move |_, ()| {
-            let st = s.borrow();
-            Ok(match st.scissor {
-                Some((x, y, w, h)) => LuaMultiValue::from_vec(vec![
-                    LuaValue::Number(x as f64),
-                    LuaValue::Number(y as f64),
-                    LuaValue::Number(w as f64),
-                    LuaValue::Number(h as f64),
-                ]),
-                None => LuaMultiValue::new(),
-            })
-        })?,
-    )?;
-    let s = state.clone();
-    // -- intersectScissor --
-    /// Intersects the given rectangle with the current scissor, narrowing the drawable region.
-    /// @param | x | number | Left edge.
-    /// @param | y | number | Top edge.
-    /// @param | w | number | Width.
-    /// @param | h | number | Height.
-    graphics.set(
-        "intersectScissor",
-        lua.create_function(move |_, (x, y, w, h): (f32, f32, f32, f32)| {
-            let mut st = s.borrow_mut();
-            let new = Rect::new(x, y, w, h);
-            let result = st
-                .scissor
-                .map(|(cx, cy, cw, ch)| Rect::new(cx, cy, cw, ch).intersect(&new));
-            let tuple = result
-                .map(|r| (r.x, r.y, r.width, r.height))
-                .or(Some((x, y, w, h)));
-            st.scissor = tuple;
-            st.render_commands.push(RenderCommand::SetScissor(tuple));
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- setColorMask --
-    /// Sets which color channels are written during draw calls. Call with no args to enable all.
-    /// @param | r | boolean? | Enable red channel.
-    /// @param | g | boolean? | Enable green channel.
-    /// @param | b | boolean? | Enable blue channel.
-    /// @param | a | boolean? | Enable alpha channel.
-    graphics.set(
-        "setColorMask",
-        lua.create_function(move |_, args: LuaMultiValue| {
-            let mut st = s.borrow_mut();
-            if args.len() >= 4 {
-                let to_bool = |v: &LuaValue| matches!(v, LuaValue::Boolean(true));
-                let r = to_bool(&args[0]);
-                let g = to_bool(&args[1]);
-                let b = to_bool(&args[2]);
-                let a = to_bool(&args[3]);
-                st.color_mask = (r, g, b, a);
-                st.render_commands
-                    .push(RenderCommand::SetColorMask(r, g, b, a));
-            } else {
-                st.color_mask = (true, true, true, true);
-                st.render_commands
-                    .push(RenderCommand::SetColorMask(true, true, true, true));
-            }
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- getColorMask --
-    /// Returns the current color write mask.
-    /// @return | boolean, boolean, boolean, boolean | Red, green, blue, alpha channel write states.
-    graphics.set(
-        "getColorMask",
-        lua.create_function(move |_, ()| Ok(s.borrow().color_mask))?,
-    )?;
-    let s = state.clone();
-    // -- setWireframe --
-    /// Enables or disables wireframe rendering mode.
-    /// @param | enabled | boolean | True for wireframe, false for solid.
-    graphics.set(
-        "setWireframe",
-        lua.create_function(move |_, enabled: bool| {
-            let mut st = s.borrow_mut();
-            st.wireframe = enabled;
-            st.render_commands
-                .push(RenderCommand::SetWireframe(enabled));
-            Ok(())
-        })?,
-    )?;
-    let s = state.clone();
-    // -- isWireframe --
-    /// Returns whether wireframe rendering is currently active.
-    /// @return | boolean | True if wireframe mode is on.
-    graphics.set(
-        "isWireframe",
-        lua.create_function(move |_, ()| Ok(s.borrow().wireframe))?,
-    )?;
+    render_resources_api::register_resources_api(lua, &graphics, state.clone())?;
+    render_diagnostics_api::register_diagnostics_api(lua, &graphics, state.clone())?;
+    render_canvas_api::register_canvas_api(lua, &graphics, state.clone())?;
+    render_shader_api::register_shader_api(lua, &graphics, state.clone())?;
+    render_mesh_api::register_mesh_api(lua, &graphics, state.clone())?;
+    render_state_api::register_state_api(lua, &graphics, state.clone())?;
+    render_text_api::register_text_api(lua, &graphics, state.clone())?;
+    render_primitive_api::register_primitive_api(lua, &graphics, state.clone())?;
     let s = state.clone();
     // -- stencil --
     /// Begins a stencil write pass with the given action and reference value.
@@ -4230,6 +3856,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | texture_switches | integer | Texture switch count.
     /// @field | canvas_switches | integer | Canvas switch count.
     /// @field | shader_switches | integer | Shader switch count.
+    /// @field | shader_cache_hits | integer | Reused user-shader cache entries this frame.
+    /// @field | shader_cache_misses | integer | User-shader cache rebuilds this frame.
+    /// @field | shader_negative_cache_hits | integer | Repeated invalid shader signatures skipped this frame.
+    /// @field | shader_cache_rejections | integer | Shader or pipeline cache limit rejections this frame.
+    /// @field | shader_cache_evictions | integer | Shader cache entries evicted to stay within source-memory limits this frame.
     /// @field | cpu_render_ms | number | CPU render time in milliseconds.
     graphics.set(
         "getStats",
@@ -4257,6 +3888,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             stats.set("canvas_switches", st.render_stats.canvas_switches)?;
             /// Performs the 'shader_switches' operation.
             stats.set("shader_switches", st.render_stats.shader_switches)?;
+            stats.set("shader_cache_hits", st.render_stats.shader_cache_hits)?;
+            stats.set("shader_cache_misses", st.render_stats.shader_cache_misses)?;
+            stats.set(
+                "shader_negative_cache_hits",
+                st.render_stats.shader_negative_cache_hits,
+            )?;
+            stats.set(
+                "shader_cache_rejections",
+                st.render_stats.shader_cache_rejections,
+            )?;
+            stats.set(
+                "shader_cache_evictions",
+                st.render_stats.shader_cache_evictions,
+            )?;
             /// Performs the 'cpu_render_ms' operation.
             stats.set("cpu_render_ms", st.render_stats.cpu_render_ms)?;
             Ok(stats)
@@ -4275,8 +3920,122 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     path
                 )));
             }
-            s.borrow_mut().pending_screenshot = Some(ScreenshotRequest { path });
+            let mut state = s.borrow_mut();
+            if state.pending_screenshot.is_some() || state.surface_readback_request.is_some() {
+                return Err(LuaError::RuntimeError(
+                    "saveScreenshot: another surface readback request is active; wait for it to finish or release it first".into(),
+                ));
+            }
+            state.pending_screenshot = Some(ScreenshotRequest { path });
             Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- requestReadback --
+    /// Requests one bounded asynchronous GPU surface readback. The returned handle advances during normal frame polling and never blocks Lua.
+    /// @return | LReadbackRequest | Handle with status, cancel, result, and release methods.
+    graphics.set(
+        "requestReadback",
+        lua.create_function(move |_, ()| {
+            let mut state = s.borrow_mut();
+            if state.surface_readback_request.is_some() || state.pending_screenshot.is_some() {
+                return Err(LuaError::RuntimeError(
+                    "lurek.render.requestReadback: another surface readback request is active; consume or release it first".into(),
+                ));
+            }
+            let id = state.next_surface_readback_request_id;
+            state.next_surface_readback_request_id = state
+                .next_surface_readback_request_id
+                .checked_add(1)
+                .unwrap_or(1);
+            state.surface_readback_request = Some(SurfaceReadbackRequest {
+                id,
+                state: SurfaceReadbackRequestState::Pending,
+                image: None,
+            });
+            state.pending_screen_capture = true;
+            Ok(LuaSurfaceReadbackRequest {
+                state: s.clone(),
+                id,
+            })
+        })?,
+    )?;
+    let s = state.clone();
+    // -- prewarmShaders --
+    /// Queues up to 64 live shaders for bounded frame-boundary cache preparation.
+    /// @param | shaders | table | One-based array of LShader handles from this runtime.
+    /// @return | LShaderPrewarmRequest | Non-blocking request with progress, cancel, and release methods.
+    graphics.set(
+        "prewarmShaders",
+        lua.create_function(move |_, shaders: LuaTable| {
+            const MAX_PREWARM_SHADERS: usize = 64;
+            let mut shader_keys = Vec::new();
+            for (index, value) in shaders.sequence_values::<LuaAnyUserData>().enumerate() {
+                let shader = value.map_err(|error| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.render.prewarmShaders: entry {} must be an LShader: {error}",
+                        index + 1
+                    ))
+                })?;
+                let shader = shader.borrow::<LuaShader>().map_err(|_| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.render.prewarmShaders: entry {} must be an LShader",
+                        index + 1
+                    ))
+                })?;
+                if !Rc::ptr_eq(&shader.state, &s) {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.render.prewarmShaders: entry {} belongs to another runtime",
+                        index + 1
+                    )));
+                }
+                let shader_key = shader.key;
+                drop(shader);
+                if !shader_keys.contains(&shader_key) {
+                    shader_keys.push(shader_key);
+                }
+                if shader_keys.len() > MAX_PREWARM_SHADERS {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.render.prewarmShaders: accepts at most {MAX_PREWARM_SHADERS} unique shaders"
+                    )));
+                }
+            }
+            if shader_keys.is_empty() {
+                return Err(LuaError::RuntimeError(
+                    "lurek.render.prewarmShaders: expected a non-empty array of LShader handles"
+                        .into(),
+                ));
+            }
+            let mut state = s.borrow_mut();
+            if shader_keys
+                .iter()
+                .any(|shader_key| !state.shaders.contains_key(*shader_key))
+            {
+                return Err(LuaError::RuntimeError(
+                    "lurek.render.prewarmShaders: shader handle is not valid or was released".into(),
+                ));
+            }
+            let id = state.next_shader_prewarm_request_id;
+            state.next_shader_prewarm_request_id = state
+                .next_shader_prewarm_request_id
+                .checked_add(1)
+                .unwrap_or(1);
+            let total = shader_keys.len();
+            state.shader_prewarm_requests.insert(
+                id,
+                ShaderPrewarmRequest {
+                    id,
+                    state: ShaderPrewarmRequestState::Pending,
+                    remaining: shader_keys.into(),
+                    in_flight: 0,
+                    completed: 0,
+                    total,
+                },
+            );
+            Ok(LuaShaderPrewarmRequest {
+                state: s.clone(),
+                id,
+            })
         })?,
     )?;
     let s = state.clone();

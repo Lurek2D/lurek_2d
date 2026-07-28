@@ -1,11 +1,14 @@
 //! Registers the `lurek.flownet` Lua API for graph routing, simulation, validation, and flow-network userdata.
 
 use crate::flownet::pathfinding::PathResult;
-use crate::flownet::{ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy};
+use crate::flownet::{
+    ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy,
+    PreparedTopologyBatch, RecipeRule, RecipeStack, TopologyEdit, TopologyNodeRef,
+};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 use std::str::FromStr;
 const VALID_EVENTS: &[&str] = &[
@@ -21,6 +24,7 @@ const VALID_EVENTS: &[&str] = &[
     "itemQueued",
     "itemDequeued",
 ];
+const MAX_GRAPH_SNAPSHOT_BYTES: usize = 64 * 1024 * 1024;
 
 fn graph_api_error(method: &str, message: impl Into<String>) -> LuaError {
     LuaError::RuntimeError(format!("lurek.graph.{method}: {}", message.into()))
@@ -103,6 +107,63 @@ struct LuaGraph {
     inner: Rc<RefCell<Graph>>,
     /// Lua callback registry keys keyed by graph event name.
     callbacks: Rc<RefCell<HashMap<String, LuaRegistryKey>>>,
+    /// Per-graph event delivery policy and bounded pull queue.
+    event_state: Rc<RefCell<GraphEventState>>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum GraphEventMode {
+    Callback,
+    Queue,
+    Both,
+    None,
+}
+
+impl GraphEventMode {
+    fn parse(value: &str) -> Option<Self> {
+        match value {
+            "callback" => Some(Self::Callback),
+            "queue" => Some(Self::Queue),
+            "both" => Some(Self::Both),
+            "none" => Some(Self::None),
+            _ => None,
+        }
+    }
+
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Callback => "callback",
+            Self::Queue => "queue",
+            Self::Both => "both",
+            Self::None => "none",
+        }
+    }
+
+    fn queues(self) -> bool {
+        matches!(self, Self::Queue | Self::Both)
+    }
+
+    fn calls_back(self) -> bool {
+        matches!(self, Self::Callback | Self::Both)
+    }
+}
+
+struct GraphEventState {
+    mode: GraphEventMode,
+    queue: VecDeque<GraphEvent>,
+    limit: usize,
+    dropped: u64,
+}
+
+impl Default for GraphEventState {
+    fn default() -> Self {
+        Self {
+            mode: GraphEventMode::Callback,
+            queue: VecDeque::new(),
+            limit: 65_536,
+            dropped: 0,
+        }
+    }
 }
 #[derive(Clone)]
 /// Lua-side node handle referencing one node id inside a graph.
@@ -128,6 +189,258 @@ struct LuaGraphItem {
     /// Item identifier inside the graph.
     id: u64,
 }
+
+/// Prepared, version-checked topology mutation for one existing graph.
+#[derive(Clone)]
+struct LuaGraphTopologyBatch {
+    /// Graph that will receive the prepared replacement.
+    graph: Rc<RefCell<Graph>>,
+    /// Prepared replacement, consumed by commit or discard.
+    prepared: Rc<RefCell<Option<PreparedTopologyBatch>>>,
+}
+
+fn topology_node_ref(value: LuaValue, method: &str) -> LuaResult<TopologyNodeRef> {
+    const MAX_SAFE_LUA_NUMBER_ID: f64 = 9_007_199_254_740_991.0;
+    match value {
+        LuaValue::Integer(id) if id > 0 => Ok(TopologyNodeRef::Existing(id as u64)),
+        LuaValue::Number(id) if id > 0.0 && id.fract() == 0.0 && id <= MAX_SAFE_LUA_NUMBER_ID => {
+            Ok(TopologyNodeRef::Existing(id as u64))
+        }
+        LuaValue::String(key) => Ok(TopologyNodeRef::External(key.to_str()?.to_string())),
+        LuaValue::UserData(node) => {
+            let node = node.borrow::<LuaNode>().map_err(|error| {
+                graph_api_error(method, format!("expected graph node reference: {error}"))
+            })?;
+            Ok(TopologyNodeRef::Existing(node.id))
+        }
+        other => Err(graph_api_error(
+            method,
+            format!(
+                "node reference must be id, external key, or LGraphNode, got {}",
+                other.type_name()
+            ),
+        )),
+    }
+}
+
+fn topology_edits_from_table(edits: LuaTable) -> LuaResult<Vec<TopologyEdit>> {
+    if edits.raw_len() > 100_000 {
+        return Err(graph_api_error(
+            "prepareBatch",
+            "operation count exceeds 100000",
+        ));
+    }
+    let mut parsed = Vec::new();
+    parsed
+        .try_reserve_exact(edits.raw_len())
+        .map_err(|_| graph_api_error("prepareBatch", "could not allocate operation staging"))?;
+    for (index, value) in edits.sequence_values::<LuaTable>().enumerate() {
+        let edit = value.map_err(|error| {
+            graph_api_error("prepareBatch", format!("operation {}: {error}", index + 1))
+        })?;
+        let operation = edit.get::<_, String>("op").map_err(|error| {
+            graph_api_error(
+                "prepareBatch",
+                format!("operation {} missing op: {error}", index + 1),
+            )
+        })?;
+        let parsed_edit = match operation.as_str() {
+            "addNode" => TopologyEdit::AddNode {
+                external_key: edit.get::<_, Option<String>>("key")?,
+                node_type: edit
+                    .get::<_, Option<String>>("nodeType")?
+                    .or(edit.get::<_, Option<String>>("type")?)
+                    .unwrap_or_else(|| "default".to_string()),
+                capacity: ensure_capacity_like(
+                    "prepareBatch",
+                    "capacity",
+                    edit.get::<_, Option<i32>>("capacity")?.unwrap_or(-1),
+                )?,
+            },
+            "removeNode" => TopologyEdit::RemoveNode {
+                node: topology_node_ref(edit.get("node")?, "prepareBatch")?,
+            },
+            "addEdge" => TopologyEdit::AddEdge {
+                from: topology_node_ref(edit.get("from")?, "prepareBatch")?,
+                to: topology_node_ref(edit.get("to")?, "prepareBatch")?,
+                edge_type: edit.get::<_, Option<String>>("edgeType")?,
+            },
+            "removeEdge" => {
+                const MAX_SAFE_LUA_NUMBER_ID: f64 = 9_007_199_254_740_991.0;
+                let edge_value = edit.get::<_, LuaValue>("edge")?;
+                let edge_id = match edge_value {
+                    LuaValue::Integer(id) if id > 0 => id as u64,
+                    LuaValue::Number(id)
+                        if id > 0.0 && id.fract() == 0.0 && id <= MAX_SAFE_LUA_NUMBER_ID =>
+                    {
+                        id as u64
+                    }
+                    LuaValue::UserData(edge) => edge.borrow::<LuaEdge>()?.id,
+                    other => {
+                        return Err(graph_api_error(
+                            "prepareBatch",
+                            format!(
+                                "operation {} edge must be id or LGraphEdge, got {}",
+                                index + 1,
+                                other.type_name()
+                            ),
+                        ))
+                    }
+                };
+                TopologyEdit::RemoveEdge { edge_id }
+            }
+            other => {
+                return Err(graph_api_error(
+                    "prepareBatch",
+                    format!("operation {} has unsupported op '{other}'", index + 1),
+                ))
+            }
+        };
+        parsed.push(parsed_edit);
+    }
+    Ok(parsed)
+}
+
+fn recipe_stacks_from_table(table: LuaTable, field: &str) -> LuaResult<Vec<RecipeStack>> {
+    let mut normalized = std::collections::BTreeMap::<String, u32>::new();
+    if table.raw_len() > 0 {
+        if table.raw_len() > 64 {
+            return Err(graph_api_error(
+                "LGraphNode:setRecipe",
+                format!("{field} has more than 64 entries"),
+            ));
+        }
+        for (index, value) in table.sequence_values::<LuaTable>().enumerate() {
+            let stack = value.map_err(|error| {
+                graph_api_error(
+                    "LGraphNode:setRecipe",
+                    format!("{field} entry {}: {error}", index + 1),
+                )
+            })?;
+            let item_type = stack
+                .get::<_, String>("itemType")
+                .or_else(|_| stack.get("type"))
+                .or_else(|_| stack.get(1))?;
+            let count = stack.get::<_, u32>("count").or_else(|_| stack.get(2))?;
+            if item_type.trim().is_empty() || item_type.len() > 128 || count == 0 {
+                return Err(graph_api_error(
+                    "LGraphNode:setRecipe",
+                    format!(
+                        "{field} entry {} requires a 1..=128 character type and positive count",
+                        index + 1
+                    ),
+                ));
+            }
+            let total = normalized.entry(item_type).or_insert(0);
+            *total = total.checked_add(count).ok_or_else(|| {
+                graph_api_error("LGraphNode:setRecipe", format!("{field} count overflow"))
+            })?;
+        }
+    } else {
+        let mut count = 0usize;
+        for pair in table.pairs::<String, u32>() {
+            let (item_type, quantity) = pair?;
+            count += 1;
+            if count > 64 {
+                return Err(graph_api_error(
+                    "LGraphNode:setRecipe",
+                    format!("{field} has more than 64 entries"),
+                ));
+            }
+            if item_type.trim().is_empty() || item_type.len() > 128 || quantity == 0 {
+                return Err(graph_api_error(
+                    "LGraphNode:setRecipe",
+                    format!("{field} requires 1..=128 character keys and positive counts"),
+                ));
+            }
+            normalized.insert(item_type, quantity);
+        }
+    }
+    Ok(normalized
+        .into_iter()
+        .map(|(item_type, count)| RecipeStack { item_type, count })
+        .collect())
+}
+
+fn recipe_stacks_to_lua<'lua>(lua: &'lua Lua, stacks: &[RecipeStack]) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table_with_capacity(stacks.len(), 0)?;
+    for (index, stack) in stacks.iter().enumerate() {
+        let entry = lua.create_table_with_capacity(0, 2)?;
+        entry.set("itemType", stack.item_type.as_str())?;
+        entry.set("count", stack.count)?;
+        out.set(index + 1, entry)?;
+    }
+    Ok(out)
+}
+
+impl LuaUserData for LuaGraphTopologyBatch {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- preview --
+        /// Returns deterministic metadata and created-id previews for this topology batch.
+        /// @return | table | Base version, operation counts, external nodes, and created ids.
+        methods.add_method("preview", |lua, this, ()| {
+            let prepared = this.prepared.borrow();
+            let batch = prepared.as_ref().ok_or_else(|| {
+                graph_api_error("LGraphTopologyBatch:preview", "batch is not pending")
+            })?;
+            let out = lua.create_table()?;
+            out.set("baseVersion", batch.base_version())?;
+            out.set("operationCount", batch.operation_count())?;
+            out.set("changedCount", batch.changed_count())?;
+            let external = lua.create_table()?;
+            for (key, id) in batch.external_nodes() {
+                external.set(key.as_str(), *id)?;
+            }
+            out.set("externalNodes", external)?;
+            out.set("createdNodes", batch.created_nodes().to_vec())?;
+            out.set("createdEdges", batch.created_edges().to_vec())?;
+            Ok(out)
+        });
+        // -- commit --
+        /// Commits this topology batch if the graph topology version is unchanged.
+        /// @return | table | External node keys mapped to committed numeric ids.
+        methods.add_method("commit", |lua, this, ()| {
+            let batch = this.prepared.borrow().as_ref().cloned().ok_or_else(|| {
+                graph_api_error("LGraphTopologyBatch:commit", "batch is not pending")
+            })?;
+            let mappings = this
+                .graph
+                .borrow_mut()
+                .commit_topology_batch(batch)
+                .map_err(|error| graph_api_error("LGraphTopologyBatch:commit", error))?;
+            *this.prepared.borrow_mut() = None;
+            let out = lua.create_table()?;
+            for (key, id) in mappings {
+                out.set(key, id)?;
+            }
+            Ok(out)
+        });
+        // -- discard --
+        /// Discards this prepared topology mutation.
+        /// @return | boolean | True when a pending mutation was discarded.
+        methods.add_method("discard", |_, this, ()| {
+            Ok(this.prepared.borrow_mut().take().is_some())
+        });
+        // -- isPending --
+        /// Returns whether this topology batch remains pending.
+        /// @return | boolean | True before commit or discard.
+        methods.add_method("isPending", |_, this, ()| {
+            Ok(this.prepared.borrow().is_some())
+        });
+        // -- type --
+        /// Returns this userdata type name.
+        /// @return | string | Always `"LGraphTopologyBatch"`.
+        methods.add_method("type", |_, _, ()| Ok("LGraphTopologyBatch"));
+        // -- typeOf --
+        /// Checks whether this userdata matches a requested type.
+        /// @param | name | string | Type name.
+        /// @return | boolean | True for `LGraphTopologyBatch` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LGraphTopologyBatch" || name == "LObject")
+        });
+    }
+}
+
 macro_rules! with_node {
     ($this:expr, $g:ident, $node:ident, $body:expr) => {{
         let $g = $this.graph.borrow();
@@ -1000,6 +1313,69 @@ impl LuaUserData for LuaNode {
                 Ok(())
             })
         });
+        // -- setRecipe --
+        /// Stores a named multi-input, multi-output recipe without scheduling it.
+        /// @param | name | string | Node-local recipe name.
+        /// @param | inputs | table | Item-count map or array of `{itemType, count}` records.
+        /// @param | outputs | table | Item-count map or array of `{itemType, count}` records.
+        methods.add_method(
+            "setRecipe",
+            |_, this, (name, inputs, outputs): (String, LuaTable, LuaTable)| {
+                let recipe = RecipeRule {
+                    name,
+                    inputs: recipe_stacks_from_table(inputs, "inputs")?,
+                    outputs: recipe_stacks_from_table(outputs, "outputs")?,
+                };
+                with_node_mut!(this, g, node, {
+                    node.set_recipe(recipe)
+                        .map_err(|error| graph_api_error("LGraphNode:setRecipe", error))
+                })
+            },
+        );
+        // -- removeRecipe --
+        /// Removes one named explicit recipe.
+        /// @param | name | string | Node-local recipe name.
+        /// @return | boolean | True when the recipe existed.
+        methods.add_method("removeRecipe", |_, this, name: String| {
+            with_node_mut!(this, g, node, Ok(node.remove_recipe(&name)))
+        });
+        // -- getRecipes --
+        /// Returns stored recipes in deterministic name order.
+        /// @return | table | Array of `{name, inputs, outputs}` records.
+        methods.add_method("getRecipes", |lua, this, ()| {
+            with_node!(this, g, node, {
+                let out = lua.create_table_with_capacity(node.recipes.len(), 0)?;
+                for (index, recipe) in node.recipes.values().enumerate() {
+                    let entry = lua.create_table_with_capacity(0, 3)?;
+                    entry.set("name", recipe.name.as_str())?;
+                    entry.set("inputs", recipe_stacks_to_lua(lua, &recipe.inputs)?)?;
+                    entry.set("outputs", recipe_stacks_to_lua(lua, &recipe.outputs)?)?;
+                    out.set(index + 1, entry)?;
+                }
+                Ok(out)
+            })
+        });
+        // -- runRecipe --
+        /// Executes a stored recipe as a bounded inventory operation.
+        /// Scheduling and elapsed-time policy remain owned by the calling Lua game.
+        /// @param | name | string | Node-local recipe name.
+        /// @param | maxRuns | integer? | Maximum complete runs, defaulting to one.
+        /// @return | table | Completed run count plus consumed and produced numeric item ids.
+        methods.add_method(
+            "runRecipe",
+            |lua, this, (name, max_runs): (String, Option<u32>)| {
+                let execution = this
+                    .graph
+                    .borrow_mut()
+                    .run_recipe(this.id, &name, max_runs.unwrap_or(1))
+                    .map_err(|error| graph_api_error("LGraphNode:runRecipe", error))?;
+                let out = lua.create_table_with_capacity(0, 3)?;
+                out.set("runs", execution.runs)?;
+                out.set("consumedIds", execution.consumed)?;
+                out.set("producedIds", execution.produced)?;
+                Ok(out)
+            },
+        );
         // -- addTag --
         /// Adds a tag to this node on this object.
         /// @param | tag | string | Tag to add.
@@ -1197,6 +1573,20 @@ impl LuaUserData for LuaGraph {
             let node = node_ud.borrow::<LuaNode>()?;
             Ok(this.inner.borrow().has_node(node.id))
         });
+        // -- getNodeById --
+        /// Resolves a stable numeric node id to a graph-local handle.
+        /// @param | id | integer | Numeric node id from a batch mapping, event, or snapshot.
+        /// @return | LGraphNode? | Node handle, or nil when the id is absent.
+        methods.add_method("getNodeById", |lua, this, id: u64| {
+            if this.inner.borrow().has_node(id) {
+                Ok(LuaValue::UserData(lua.create_userdata(LuaNode {
+                    graph: this.inner.clone(),
+                    id,
+                })?))
+            } else {
+                Ok(LuaValue::Nil)
+            }
+        });
         // -- getNodes --
         /// Returns all nodes in this logistics graph.
         /// @return | LGraphNode[] | `LGraphNode` handles.
@@ -1220,6 +1610,12 @@ impl LuaUserData for LuaGraph {
         /// @return | integer | Node count.
         methods.add_method("getNodeCount", |_, this, ()| {
             Ok(this.inner.borrow().get_node_count())
+        });
+        // -- getVersion --
+        /// Returns the monotonic graph topology version.
+        /// @return | integer | Version incremented once per committed topology mutation.
+        methods.add_method("getVersion", |_, this, ()| {
+            Ok(this.inner.borrow().version())
         });
         // -- addEdge --
         /// Creates an edge between two nodes with an optional edge type.
@@ -1276,6 +1672,20 @@ impl LuaUserData for LuaGraph {
         methods.add_method("hasEdge", |_, this, edge_ud: LuaAnyUserData| {
             let edge = edge_ud.borrow::<LuaEdge>()?;
             Ok(this.inner.borrow().has_edge(edge.id))
+        });
+        // -- getEdgeById --
+        /// Resolves a stable numeric edge id to a graph-local handle.
+        /// @param | id | integer | Numeric edge id from a batch preview, event, or snapshot.
+        /// @return | LGraphEdge? | Edge handle, or nil when the id is absent.
+        methods.add_method("getEdgeById", |lua, this, id: u64| {
+            if this.inner.borrow().has_edge(id) {
+                Ok(LuaValue::UserData(lua.create_userdata(LuaEdge {
+                    graph: this.inner.clone(),
+                    id,
+                })?))
+            } else {
+                Ok(LuaValue::Nil)
+            }
         });
         // -- getEdges --
         /// Returns all edges in this logistics graph.
@@ -1338,6 +1748,36 @@ impl LuaUserData for LuaGraph {
                 })
             },
         );
+        // -- spawnItems --
+        /// Creates many same-type items directly in one node inventory.
+        /// @param | node | LGraphNode | Destination node owned by this graph.
+        /// @param | itemType | string | Item type.
+        /// @param | count | integer | Number to create, bounded to 100000.
+        /// @param | decayTime | number? | Decay lifetime, defaulting to -1.
+        /// @return | integer[] | Created numeric item ids in creation order.
+        methods.add_method(
+            "spawnItems",
+            |_, this, (node, item_type, count, decay_time): (
+                LuaAnyUserData,
+                String,
+                u32,
+                Option<f64>,
+            )| {
+                let node = node.borrow::<LuaNode>()?;
+                if !Rc::ptr_eq(&node.graph, &this.inner) {
+                    return Err(graph_api_error(
+                        "spawnItems",
+                        "destination node belongs to another graph",
+                    ));
+                }
+                let decay_time =
+                    ensure_decay_time("spawnItems", decay_time.unwrap_or(-1.0))?;
+                this.inner
+                    .borrow_mut()
+                    .spawn_items_at_node(node.id, &item_type, count, decay_time)
+                    .map_err(|error| graph_api_error("spawnItems", error))
+            },
+        );
         // -- addItem --
         /// Places an item onto a destination node.
         /// @param | item_ud | LGraphItem | Item handle to place.
@@ -1368,6 +1808,20 @@ impl LuaUserData for LuaGraph {
         methods.add_method("hasItem", |_, this, item_ud: LuaAnyUserData| {
             let item = item_ud.borrow::<LuaGraphItem>()?;
             Ok(this.inner.borrow().has_item(item.id))
+        });
+        // -- getItemById --
+        /// Resolves a stable numeric item id to a graph-local handle.
+        /// @param | id | integer | Numeric item id from an event, recipe result, or snapshot.
+        /// @return | LGraphItem? | Item handle, or nil when the id is absent.
+        methods.add_method("getItemById", |lua, this, id: u64| {
+            if this.inner.borrow().has_item(id) {
+                Ok(LuaValue::UserData(lua.create_userdata(LuaGraphItem {
+                    graph: this.inner.clone(),
+                    id,
+                })?))
+            } else {
+                Ok(LuaValue::Nil)
+            }
         });
         // -- getItems --
         /// Returns all items in this logistics graph.
@@ -1414,15 +1868,13 @@ impl LuaUserData for LuaGraph {
         methods.add_method("update", |lua, this, dt: f64| {
             let dt = ensure_non_negative_finite("update", "dt", dt)?;
             let events = this.inner.borrow_mut().update(dt);
-            let cbs = this.callbacks.borrow();
-            dispatch_events(lua, &this.inner, &cbs, events)
+            handle_graph_events(lua, this, events)
         });
         // -- step --
         /// Runs one discrete graph simulation step and dispatches generated callbacks.
         methods.add_method("step", |lua, this, ()| {
             let events = this.inner.borrow_mut().step();
-            let cbs = this.callbacks.borrow();
-            dispatch_events(lua, &this.inner, &cbs, events)
+            handle_graph_events(lua, this, events)
         });
         // -- tickParallel --
         /// Advances graph simulation through the parallel update path and dispatches generated callbacks.
@@ -1430,8 +1882,7 @@ impl LuaUserData for LuaGraph {
         methods.add_method("tickParallel", |lua, this, dt: f64| {
             let dt = ensure_non_negative_finite("tickParallel", "dt", dt)?;
             let events = this.inner.borrow_mut().update_parallel(dt);
-            let cbs = this.callbacks.borrow();
-            dispatch_events(lua, &this.inner, &cbs, events)
+            handle_graph_events(lua, this, events)
         });
         // -- findPath --
         /// Finds a path between two graph nodes.
@@ -1565,6 +2016,7 @@ impl LuaUserData for LuaGraph {
             Ok(LuaGraph {
                 inner: Rc::new(RefCell::new(sub)),
                 callbacks: Rc::new(RefCell::new(HashMap::new())),
+                event_state: Rc::new(RefCell::new(GraphEventState::default())),
             })
         });
         // -- hasCycle --
@@ -1656,8 +2108,7 @@ impl LuaUserData for LuaGraph {
         /// Processes graph supply and demand once and dispatches generated callbacks.
         methods.add_method("processDemand", |lua, this, ()| {
             let events = this.inner.borrow_mut().process_demand();
-            let cbs = this.callbacks.borrow();
-            dispatch_events(lua, &this.inner, &cbs, events)
+            handle_graph_events(lua, this, events)
         });
         // -- getStats --
         /// Returns graph counts and aggregate supply-demand statistics.
@@ -1697,6 +2148,79 @@ impl LuaUserData for LuaGraph {
             table.set("queuedItems", stats.queued_items)?;
             Ok(table)
         });
+        // -- summarizeInventory --
+        /// Returns aggregate item ownership and alive counts by item type.
+        /// @return | table | Total, alive, location counts, queue count, and deterministic `byType`.
+        methods.add_method("summarizeInventory", |lua, this, ()| {
+            let summary = this.inner.borrow().summarize_inventory();
+            let out = lua.create_table_with_capacity(0, 7)?;
+            out.set("total", summary.total)?;
+            out.set("alive", summary.alive)?;
+            out.set("atNodes", summary.at_nodes)?;
+            out.set("inTransit", summary.in_transit)?;
+            out.set("unplaced", summary.unplaced)?;
+            out.set("queued", summary.queued)?;
+            let by_type = lua.create_table()?;
+            for (item_type, count) in summary.by_type {
+                by_type.set(item_type, count)?;
+            }
+            out.set("byType", by_type)?;
+            Ok(out)
+        });
+        // -- snapshot --
+        /// Serializes complete graph state to deterministic compact JSON.
+        /// @return | string | Versioned graph snapshot suitable for save or replay checkpoints.
+        methods.add_method("snapshot", |lua, this, ()| {
+            let snapshot = this
+                .inner
+                .borrow()
+                .snapshot_json()
+                .map_err(|error| graph_api_error("snapshot", error))?;
+            if snapshot.len() > MAX_GRAPH_SNAPSHOT_BYTES {
+                return Err(graph_api_error(
+                    "snapshot",
+                    format!(
+                        "snapshot uses {} bytes, exceeding limit {MAX_GRAPH_SNAPSHOT_BYTES}",
+                        snapshot.len()
+                    ),
+                ));
+            }
+            lua.create_string(snapshot.as_bytes())
+        });
+        // -- restoreSnapshot --
+        /// Replaces graph state from a versioned snapshot without changing Lua callbacks.
+        /// @param | snapshot | string | Snapshot returned by `snapshot`.
+        /// @param | expectedVersion | integer? | Optional required current topology version.
+        methods.add_method(
+            "restoreSnapshot",
+            |_, this, (snapshot, expected_version): (LuaString, Option<u64>)| {
+                if snapshot.as_bytes().len() > MAX_GRAPH_SNAPSHOT_BYTES {
+                    return Err(graph_api_error(
+                        "restoreSnapshot",
+                        format!(
+                            "snapshot uses {} bytes, exceeding limit {MAX_GRAPH_SNAPSHOT_BYTES}",
+                            snapshot.as_bytes().len()
+                        ),
+                    ));
+                }
+                let snapshot = snapshot.to_str()?;
+                this.inner
+                    .borrow_mut()
+                    .restore_snapshot_json(snapshot.as_ref(), expected_version)
+                    .map_err(|error| graph_api_error("restoreSnapshot", error))?;
+                this.event_state.borrow_mut().queue.clear();
+                Ok(())
+            },
+        );
+        // -- stateHash --
+        /// Returns a deterministic hash of complete graph simulation state.
+        /// @return | string | Lowercase sixteen-character hexadecimal FNV-1a hash.
+        methods.add_method("stateHash", |_, this, ()| {
+            this.inner
+                .borrow()
+                .state_hash()
+                .map_err(|error| graph_api_error("stateHash", error))
+        });
         // -- on --
         /// Registers a callback for a named graph event generated during simulation.
         /// @param | event_name | string | Event name from the valid graph event list.
@@ -1716,6 +2240,111 @@ impl LuaUserData for LuaGraph {
                 Ok(())
             },
         );
+        // -- setEventMode --
+        /// Selects callback delivery, pull-queue delivery, both, or no delivery.
+        /// @param | mode | string | One of `"callback"`, `"queue"`, `"both"`, or `"none"`.
+        methods.add_method("setEventMode", |_, this, mode: String| {
+            let mode = GraphEventMode::parse(mode.as_str()).ok_or_else(|| {
+                graph_api_error(
+                    "setEventMode",
+                    "mode must be 'callback', 'queue', 'both', or 'none'",
+                )
+            })?;
+            this.event_state.borrow_mut().mode = mode;
+            Ok(())
+        });
+        // -- getEventMode --
+        /// Returns the current event delivery mode.
+        /// @return | string | `"callback"`, `"queue"`, `"both"`, or `"none"`.
+        methods.add_method("getEventMode", |_, this, ()| {
+            Ok(this.event_state.borrow().mode.as_str())
+        });
+        // -- setEventQueueLimit --
+        /// Sets the bounded pull-event queue capacity, dropping oldest queued records if needed.
+        /// @param | limit | integer | Capacity in the range 1..=1000000.
+        methods.add_method("setEventQueueLimit", |_, this, limit: usize| {
+            if !(1..=1_000_000).contains(&limit) {
+                return Err(graph_api_error(
+                    "setEventQueueLimit",
+                    "limit must be in the range 1..=1000000",
+                ));
+            }
+            let mut state = this.event_state.borrow_mut();
+            state.limit = limit;
+            while state.queue.len() > limit {
+                state.queue.pop_front();
+                state.dropped = state.dropped.saturating_add(1);
+            }
+            Ok(())
+        });
+        // -- drainEvents --
+        /// Removes and returns queued graph events in deterministic emission order.
+        /// @param | maxCount | integer? | Optional maximum number of records to drain.
+        /// @return | table | Array of plain Lua event records containing stable numeric ids.
+        methods.add_method("drainEvents", |lua, this, max_count: Option<usize>| {
+            let mut state = this.event_state.borrow_mut();
+            let count = max_count
+                .unwrap_or(state.queue.len())
+                .min(state.queue.len());
+            let out = lua.create_table_with_capacity(count, 0)?;
+            for index in 1..=count {
+                if let Some(event) = state.queue.pop_front() {
+                    out.set(index, graph_event_to_table(lua, event)?)?;
+                }
+            }
+            Ok(out)
+        });
+        // -- clearEvents --
+        /// Discards all queued pull events.
+        /// @return | integer | Number of queued records removed.
+        methods.add_method("clearEvents", |_, this, ()| {
+            let mut state = this.event_state.borrow_mut();
+            let count = state.queue.len();
+            state.queue.clear();
+            Ok(count)
+        });
+        // -- getEventQueueStats --
+        /// Returns queue diagnostics without draining events.
+        /// @return | table | Mode, pending count, capacity, and cumulative dropped count.
+        methods.add_method("getEventQueueStats", |lua, this, ()| {
+            let state = this.event_state.borrow();
+            let out = lua.create_table_with_capacity(0, 4)?;
+            out.set("mode", state.mode.as_str())?;
+            out.set("pending", state.queue.len())?;
+            out.set("limit", state.limit)?;
+            out.set("dropped", state.dropped)?;
+            Ok(out)
+        });
+        // -- prepareBatch --
+        /// Validates and stages graph topology edits without mutating the live graph.
+        /// @param | edits | table | Array of addNode, removeNode, addEdge, and removeEdge operations.
+        /// @param | expectedVersion | integer? | Optional required current topology version.
+        /// @return | LGraphTopologyBatch | Prepared mutation with preview, commit, and discard.
+        methods.add_method(
+            "prepareBatch",
+            |_, this, (edits, expected_version): (LuaTable, Option<u64>)| {
+                let graph = this.inner.borrow();
+                if expected_version.is_some_and(|expected| expected != graph.version()) {
+                    return Err(graph_api_error(
+                        "prepareBatch",
+                        format!(
+                            "version conflict: expected {}, current version is {}",
+                            expected_version.unwrap_or(graph.version()),
+                            graph.version()
+                        ),
+                    ));
+                }
+                let edits = topology_edits_from_table(edits)?;
+                let prepared = graph
+                    .prepare_topology_batch(&edits)
+                    .map_err(|error| graph_api_error("prepareBatch", error))?;
+                drop(graph);
+                Ok(LuaGraphTopologyBatch {
+                    graph: this.inner.clone(),
+                    prepared: Rc::new(RefCell::new(Some(prepared))),
+                })
+            },
+        );
         // -- batchAddNodes --
         /// Creates multiple nodes at once, returning their IDs as a table.
         /// @param | count | integer | Number of nodes to create.
@@ -1724,6 +2353,9 @@ impl LuaUserData for LuaGraph {
         methods.add_method(
             "batchAddNodes",
             |lua, this, (count, config): (u32, Option<LuaTable>)| {
+                if count > 100_000 {
+                    return Err(graph_api_error("batchAddNodes", "count exceeds 100000"));
+                }
                 let node_type: String = config
                     .as_ref()
                     .and_then(|c| c.get::<_, Option<String>>("node_type").ok().flatten())
@@ -1733,11 +2365,26 @@ impl LuaUserData for LuaGraph {
                     .and_then(|c| c.get::<_, Option<i32>>("capacity").ok().flatten())
                     .unwrap_or(-1);
                 let capacity = ensure_capacity_like("batchAddNodes", "capacity", capacity)?;
+                let edits = (0..count)
+                    .map(|_| TopologyEdit::AddNode {
+                        external_key: None,
+                        node_type: node_type.clone(),
+                        capacity,
+                    })
+                    .collect::<Vec<_>>();
+                let prepared = this
+                    .inner
+                    .borrow()
+                    .prepare_topology_batch(&edits)
+                    .map_err(|error| graph_api_error("batchAddNodes", error))?;
+                let created = prepared.created_nodes().to_vec();
+                this.inner
+                    .borrow_mut()
+                    .commit_topology_batch(prepared)
+                    .map_err(|error| graph_api_error("batchAddNodes", error))?;
                 let ids = lua.create_table()?;
-                let mut graph = this.inner.borrow_mut();
-                for i in 1..=count {
-                    let node_id = graph.add_node(&node_type, capacity);
-                    ids.set(i, node_id)?;
+                for (index, node_id) in created.into_iter().enumerate() {
+                    ids.set(index + 1, node_id)?;
                 }
                 Ok(ids)
             },
@@ -1747,20 +2394,42 @@ impl LuaUserData for LuaGraph {
         /// @param | edges | table | Array of sub-tables with node IDs and optional edge type.
         /// @return | integer[] | Array of new edge IDs.
         methods.add_method("batchAddEdges", |lua, this, edges: LuaTable| {
-            let result = lua.create_table()?;
-            let mut idx = 1u32;
-            let mut graph = this.inner.borrow_mut();
-            for pair in edges.sequence_values::<LuaTable>() {
-                let entry = pair?;
+            if edges.raw_len() > 100_000 {
+                return Err(graph_api_error(
+                    "batchAddEdges",
+                    "edge count exceeds 100000",
+                ));
+            }
+            let mut edits = Vec::new();
+            edits
+                .try_reserve_exact(edges.raw_len())
+                .map_err(|_| graph_api_error("batchAddEdges", "could not allocate staging"))?;
+            for (index, pair) in edges.sequence_values::<LuaTable>().enumerate() {
+                let entry = pair.map_err(|error| {
+                    graph_api_error("batchAddEdges", format!("edge {}: {error}", index + 1))
+                })?;
                 let from: u64 = entry.get(1)?;
                 let to: u64 = entry.get(2)?;
                 let edge_type: Option<String> = entry.get(3).ok();
-                let edge_id = map_graph_error(
-                    "batchAddEdges",
-                    graph.add_edge(from, to, edge_type.as_deref()),
-                )?;
-                result.set(idx, edge_id)?;
-                idx += 1;
+                edits.push(TopologyEdit::AddEdge {
+                    from: TopologyNodeRef::Existing(from),
+                    to: TopologyNodeRef::Existing(to),
+                    edge_type,
+                });
+            }
+            let prepared = this
+                .inner
+                .borrow()
+                .prepare_topology_batch(&edits)
+                .map_err(|error| graph_api_error("batchAddEdges", error))?;
+            let created = prepared.created_edges().to_vec();
+            this.inner
+                .borrow_mut()
+                .commit_topology_batch(prepared)
+                .map_err(|error| graph_api_error("batchAddEdges", error))?;
+            let result = lua.create_table()?;
+            for (index, edge_id) in created.into_iter().enumerate() {
+                result.set(index + 1, edge_id)?;
             }
             Ok(result)
         });
@@ -1778,8 +2447,7 @@ impl LuaUserData for LuaGraph {
                     all_events.extend(events);
                 }
             }
-            let cbs = this.callbacks.borrow();
-            dispatch_events(lua, &this.inner, &cbs, all_events)
+            handle_graph_events(lua, this, all_events)
         });
         // -- type --
         /// Returns the Lua-visible type name for this graph handle.
@@ -1794,6 +2462,101 @@ impl LuaUserData for LuaGraph {
         });
     }
 }
+/// Routes generated events through the graph's independently configurable delivery modes.
+fn handle_graph_events(lua: &Lua, graph: &LuaGraph, events: Vec<GraphEvent>) -> LuaResult<()> {
+    let mode = graph.event_state.borrow().mode;
+    if mode.queues() {
+        let mut state = graph.event_state.borrow_mut();
+        for event in &events {
+            if state.queue.len() == state.limit {
+                state.queue.pop_front();
+                state.dropped = state.dropped.saturating_add(1);
+            }
+            state.queue.push_back(event.clone());
+        }
+    }
+    if mode.calls_back() {
+        let callbacks = graph.callbacks.borrow();
+        dispatch_events(lua, &graph.inner, &callbacks, events)
+    } else {
+        Ok(())
+    }
+}
+
+/// Converts one generated event into a module-local, transport-friendly Lua record.
+fn graph_event_to_table<'lua>(lua: &'lua Lua, event: GraphEvent) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    match event {
+        GraphEvent::ItemEnter { item_id, node_id } => {
+            out.set("event", "itemEnter")?;
+            out.set("itemId", item_id)?;
+            out.set("nodeId", node_id)?;
+        }
+        GraphEvent::ItemLeave { item_id, node_id } => {
+            out.set("event", "itemLeave")?;
+            out.set("itemId", item_id)?;
+            out.set("nodeId", node_id)?;
+        }
+        GraphEvent::ItemDecay { item_id } => {
+            out.set("event", "itemDecay")?;
+            out.set("itemId", item_id)?;
+        }
+        GraphEvent::ItemConvert {
+            node_id,
+            consumed,
+            produced,
+        } => {
+            out.set("event", "itemConvert")?;
+            out.set("nodeId", node_id)?;
+            out.set("consumed", consumed)?;
+            out.set("produced", produced)?;
+        }
+        GraphEvent::ItemLost { item_id, node_id } => {
+            out.set("event", "itemLost")?;
+            out.set("itemId", item_id)?;
+            out.set("nodeId", node_id)?;
+        }
+        GraphEvent::EdgeEnter { item_id, edge_id } => {
+            out.set("event", "edgeEnter")?;
+            out.set("itemId", item_id)?;
+            out.set("edgeId", edge_id)?;
+        }
+        GraphEvent::EdgeLeave { item_id, edge_id } => {
+            out.set("event", "edgeLeave")?;
+            out.set("itemId", item_id)?;
+            out.set("edgeId", edge_id)?;
+        }
+        GraphEvent::DemandFulfilled {
+            demand_node,
+            supply_node,
+            item_type,
+            count,
+        } => {
+            out.set("event", "demandFulfilled")?;
+            out.set("demandNodeId", demand_node)?;
+            out.set("supplyNodeId", supply_node)?;
+            out.set("itemType", item_type)?;
+            out.set("count", count)?;
+        }
+        GraphEvent::SupplyDepleted { node_id, item_type } => {
+            out.set("event", "supplyDepleted")?;
+            out.set("nodeId", node_id)?;
+            out.set("itemType", item_type)?;
+        }
+        GraphEvent::ItemQueued { item_id, node_id } => {
+            out.set("event", "itemQueued")?;
+            out.set("itemId", item_id)?;
+            out.set("nodeId", node_id)?;
+        }
+        GraphEvent::ItemDequeued { item_id, node_id } => {
+            out.set("event", "itemDequeued")?;
+            out.set("itemId", item_id)?;
+            out.set("nodeId", node_id)?;
+        }
+    }
+    Ok(out)
+}
+
 /// Dispatches generated graph events to Lua callbacks registered on the graph.
 fn dispatch_events(
     lua: &Lua,
@@ -1985,6 +2748,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaGraph {
                 inner: Rc::new(RefCell::new(Graph::new())),
                 callbacks: Rc::new(RefCell::new(HashMap::new())),
+                event_state: Rc::new(RefCell::new(GraphEventState::default())),
             })
         })?,
     )?;

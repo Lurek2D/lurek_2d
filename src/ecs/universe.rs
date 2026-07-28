@@ -23,6 +23,7 @@ mod ext;
 #[path = "universe_systems.rs"]
 mod systems;
 const MAX_BITMAP_TAGS: usize = 63;
+type EcsChangeOperation<'lua> = (u32, String, String, LuaValue<'lua>);
 #[derive(Debug, Default, Clone)]
 /// Captures component and entity changes accumulated since the previous diff read.
 ///
@@ -203,6 +204,11 @@ impl Universe {
 
     /// Returns the coarse invalidation tick used by cached ECS query views.
     pub fn get_query_change_tick(&self) -> u64 {
+        self.query_change_tick
+    }
+
+    /// Returns the monotonic universe mutation version.
+    pub fn version(&self) -> u64 {
         self.query_change_tick
     }
 
@@ -541,7 +547,10 @@ impl Universe {
     /// `remove` (component removal), and `kill`/`despawn` (entity deletion). The
     /// table is validated in order before any mutation is performed so a stale or
     /// unsupported operation cannot leave a partially applied batch.
-    pub fn apply_changeset(&mut self, lua: &Lua, changeset: Table) -> LuaResult<usize> {
+    fn parse_changeset<'lua>(
+        &self,
+        changeset: Table<'lua>,
+    ) -> LuaResult<Vec<EcsChangeOperation<'lua>>> {
         let schema: String = changeset.get("schema")?;
         if schema.trim().is_empty() || schema.len() > 128 {
             return Err(mlua::Error::runtime(
@@ -552,7 +561,6 @@ impl Universe {
         if changes.raw_len() > 100_000 {
             return Err(mlua::Error::runtime("ECS ChangeSet exceeds 100000 records"));
         }
-        let change_count = changes.raw_len();
         let mut operations = Vec::new();
         let mut simulated_alive: HashSet<u32> = self.get_entities().into_iter().collect();
         for value in changes.sequence_values::<Table>() {
@@ -606,6 +614,20 @@ impl Universe {
                 }
             }
         }
+        Ok(operations)
+    }
+
+    /// Validates a neutral ECS ChangeSet without mutating this universe.
+    pub fn validate_changeset(&self, changeset: Table) -> LuaResult<usize> {
+        self.parse_changeset(changeset)
+            .map(|operations| operations.len())
+    }
+
+    /// Applies a validated neutral ChangeSet as one versioned logical mutation.
+    pub fn apply_changeset(&mut self, lua: &Lua, changeset: Table) -> LuaResult<usize> {
+        let operations = self.parse_changeset(changeset)?;
+        let change_count = operations.len();
+        let base_version = self.query_change_tick;
         for (id, component, operation, payload) in operations {
             match operation.as_str() {
                 "set" | "replace" | "upsert" => {
@@ -619,6 +641,9 @@ impl Universe {
                 }
                 _ => unreachable!("operation was validated above"),
             }
+        }
+        if change_count > 0 {
+            self.query_change_tick = base_version.wrapping_add(1);
         }
         Ok(change_count)
     }

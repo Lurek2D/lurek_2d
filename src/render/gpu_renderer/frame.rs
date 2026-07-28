@@ -65,7 +65,10 @@ impl GpuRenderer {
         &mut self,
         surface: &wgpu::Surface<'static>,
         commands: &[RenderCommand],
-        province_registries: &HashMap<String, crate::province::registry::ProvinceRegistry>,
+        province_snapshots: &HashMap<
+            String,
+            crate::province::render_snapshot::ProvinceRenderSnapshot,
+        >,
         textures: &SlotMap<TextureKey, TextureData>,
         fonts: &mut SlotMap<FontKey, crate::font::Font>,
         light_world: &crate::light::light_world::LightWorld,
@@ -86,6 +89,9 @@ impl GpuRenderer {
         self.render_diagnostics_total
             .accumulate(&self.render_diagnostics);
         self.render_diagnostics.reset();
+        self.render_stats = RenderStats::default();
+        let render_budget_limits = RenderBudgetLimits::for_device(&self.device.limits());
+        let mut render_budget = RenderBudget::default();
         self.prune_released_resources(textures, fonts, canvases, shaders, meshes);
         for (key, tex_data) in textures.iter() {
             let existing = self
@@ -93,6 +99,17 @@ impl GpuRenderer {
                 .get(key)
                 .map(|texture| (texture.width, texture.height, texture.source_revision));
             if texture_needs_upload(existing, tex_data) {
+                if let Err(err) =
+                    render_budget.try_accept_upload(tex_data.pixels.len(), &render_budget_limits)
+                {
+                    self.render_diagnostics.record_invalid_texture_upload();
+                    log::warn!(
+                        "Skipping texture upload that exceeds the frame budget for {:?}: {}",
+                        key,
+                        err
+                    );
+                    continue;
+                }
                 if let Err(err) = self.upload_texture(key, tex_data, default_filter) {
                     self.render_diagnostics.record_invalid_texture_upload();
                     log::warn!("Skipping invalid texture upload for {:?}: {}", key, err);
@@ -100,7 +117,6 @@ impl GpuRenderer {
             }
         }
         self.sync_canvas_targets(canvases, default_filter);
-        self.render_stats = RenderStats::default();
         let mut frame_buffers = std::mem::take(&mut self.frame_buffers);
         frame_buffers.clear_for_frame();
         let FrameRenderBuffers {
@@ -132,8 +148,6 @@ impl GpuRenderer {
         let mut active_shader: Option<ShaderKey> = None;
         let mut active_text_shader: Option<ShaderKey> = None;
         let render_input_limits = RenderInputLimits::default();
-        let render_budget_limits = RenderBudgetLimits::for_device(&self.device.limits());
-        let mut render_budget = RenderBudget::default();
         let mut pending_postfx: Vec<(u64, Vec<crate::render::renderer::PostFxPass>, u32, u32)> =
             Vec::new();
         let mut pending_canvas_postfx: Vec<(CanvasKey, Vec<crate::render::renderer::PostFxPass>)> =
@@ -410,7 +424,7 @@ impl GpuRenderer {
                 &mut encoder,
                 &view,
                 &pending_province_maps,
-                province_registries,
+                province_snapshots,
                 background_color,
                 &mut screen_started,
             );

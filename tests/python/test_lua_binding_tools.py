@@ -60,6 +60,17 @@ class LuaBindingToolTests(unittest.TestCase):
         self.assertEqual(cancel.parameters, [])
         self.assertEqual(cancel.returns[0].lua_type, "nil")
 
+    def test_render_registration_children_merge_into_the_render_namespace(self) -> None:
+        parser = _load("gen_lua_api_parser_test", REPO / "tools" / "docs" / "gen_lua_api.py")
+
+        self.assertEqual(
+            parser._determine_module_name(Path("render_resources_api.rs")), "render"
+        )
+        self.assertEqual(
+            parser._determine_module_name(Path("render_primitives_api.rs")), "render"
+        )
+        self.assertEqual(parser._determine_module_name(Path("sprite_api.rs")), "sprite")
+
     def test_doc_snapshot_reads_selected_entries_from_source_files(self) -> None:
         graph = self.doc_snapshot.get_entry("lurek.graph.newGraph")
         self.assertIsNotNone(graph)

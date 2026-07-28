@@ -2651,3 +2651,58 @@ do
     lurek.log.info(tostring("counter = " .. tostring(pity:counter())))
     lurek.log.info(tostring("primed = " .. tostring(pity:isPrimed())))
 end
+
+--@api: lurek.math.newWrapSpace
+do
+    local space = lurek.math.newWrapSpace(0, 0, 100, 80)
+    local x, y = space:wrap(103, -2)
+    lurek.log.info("wrapped=" .. x .. "," .. y)
+    lurek.log.info("wrap type=" .. space:type())
+    lurek.log.info("period example x=" .. select(1, space:wrap(203, 0)))
+end
+
+--@api: LWrapSpace:delta
+do
+    local space = lurek.math.newWrapSpace(0, 0, 100, 80)
+    local dx, dy = space:delta(98, 4, 2, 78)
+    lurek.log.info("shortest delta=" .. dx .. "," .. dy)
+    lurek.log.info("distance=" .. space:distance(98, 4, 2, 78))
+    lurek.log.info("delta is shorter than direct x=" .. tostring(math.abs(dx) < 96))
+end
+
+--@api: LWrapSpace:wrap
+do
+    local space = lurek.math.newWrapSpace(-50, 10, 100, 40)
+    local x, y = space:wrap(-151, 91)
+    lurek.log.info("bounded point=" .. x .. "," .. y)
+    lurek.log.info("wrap-space is object=" .. tostring(space:typeOf("LObject")))
+    lurek.log.info("wrapped y range starts at=" .. tostring(10))
+end
+
+--@api: LWrapSpace:distance
+do
+    local space = lurek.math.newWrapSpace(0, 0, 100, 80)
+    local distance = space:distance(98, 40, 2, 43)
+    lurek.log.info("toroidal distance=" .. distance)
+    lurek.log.info("wrap-space type=" .. space:type())
+    lurek.log.info("distance is wrapped=" .. tostring(distance < 10))
+end
+
+--@api: LWrapSpace:type
+do
+    local space = lurek.math.newWrapSpace(0, 0, 32, 32)
+    local kind = space:type()
+    lurek.log.info("wrap-space type=" .. tostring(kind))
+    lurek.log.info("wrapped x=" .. tostring(select(1, space:wrap(33, 0))))
+    lurek.log.info("wrapped y=" .. tostring(select(2, space:wrap(0, 33))))
+end
+
+--@api: LWrapSpace:typeOf
+do
+    local space = lurek.math.newWrapSpace(0, 0, 32, 32)
+    local is_wrap_space = space:typeOf("LWrapSpace")
+    local is_object = space:typeOf("LObject")
+    lurek.log.info("is wrap space=" .. tostring(is_wrap_space))
+    lurek.log.info("is object=" .. tostring(is_object))
+    lurek.log.info("type=" .. tostring(space:type()))
+end

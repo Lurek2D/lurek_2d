@@ -1211,6 +1211,53 @@ end)
 
 -- @describe math geometry utilities
 describe("math geometry utilities", function()
+    -- @covers lurek.math.newWrapSpace
+    it("wraps coordinates and takes shortest paths across a toroidal arena", function()
+        local space = lurek.math.newWrapSpace(0, 0, 100, 80)
+        local x, y = space:wrap(103, -2)
+        expect_near(3, x, 0.0001)
+        expect_near(78, y, 0.0001)
+        local dx, dy = space:delta(98, 40, 2, 40)
+        expect_near(4, dx, 0.0001)
+        expect_near(0, dy, 0.0001)
+        expect_near(4, space:distance(98, 40, 2, 40), 0.0001)
+    end)
+
+    -- @covers LWrapSpace:wrap
+    it("wrap keeps every coordinate in the configured half-open range", function()
+        local space = lurek.math.newWrapSpace(-50, 10, 100, 40)
+        local x, y = space:wrap(-151, 91)
+        expect_near(49, x, 0.0001)
+        expect_near(11, y, 0.0001)
+    end)
+
+    -- @covers LWrapSpace:delta
+    it("delta chooses a stable signed shortest route", function()
+        local space = lurek.math.newWrapSpace(0, 0, 100, 80)
+        local dx, dy = space:delta(2, 2, 98, 78)
+        expect_near(-4, dx, 0.0001)
+        expect_near(-4, dy, 0.0001)
+    end)
+
+    -- @covers LWrapSpace:distance
+    it("distance is based on the toroidal shortest displacement", function()
+        local space = lurek.math.newWrapSpace(0, 0, 100, 80)
+        expect_near(5, space:distance(98, 40, 2, 43), 0.0001)
+    end)
+
+    -- @covers LWrapSpace:type
+    it("wrap-space reports its userdata type", function()
+        local space = lurek.math.newWrapSpace(0, 0, 1, 1)
+        expect_equal("LWrapSpace", space:type())
+    end)
+
+    -- @covers LWrapSpace:typeOf
+    it("wrap-space recognizes its own public type", function()
+        local space = lurek.math.newWrapSpace(0, 0, 1, 1)
+        expect_true(space:typeOf("LWrapSpace"))
+        expect_true(space:typeOf("LObject"))
+    end)
+
     -- @covers lurek.math.rectFromCenter
     it("point inside rectangle", function()
         local px, py = 5, 5

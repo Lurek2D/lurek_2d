@@ -919,6 +919,7 @@ describe("LChunkMap methods", function()
     -- @covers LChunkMap:setTiles
     it("setTiles applies a batch and returns dirty chunks", function()
         local cm = lurek.tilemap.newChunkMap(4)
+        local version = cm:getVersion()
         local dirty = cm:setTiles({
             { x = 0, y = 0, gid = 2 },
             { 4, 0, 3 },
@@ -929,6 +930,70 @@ describe("LChunkMap methods", function()
         expect_equal(3, cm:getTile(4, 0))
         expect_equal(4, cm:getTile(-1, -1))
         expect_equal(3, #dirty)
+        expect_equal(version + 1, cm:getVersion())
+    end)
+
+    -- @covers LChunkMap:prepareBatch
+    it("prepareBatch stages edits without mutating the live map", function()
+        local cm = lurek.tilemap.newChunkMap(4)
+        local batch = cm:prepareBatch({
+            { x = 0, y = 0, gid = 2 },
+            { x = 4, y = 0, gid = 3 },
+        }, cm:getVersion())
+        expect_equal("LChunkMapBatch", batch:type())
+        expect_equal(0, cm:getTile(0, 0))
+        local preview = batch:preview()
+        expect_equal(2, preview.editCount)
+        expect_equal(2, preview.changedTileCount)
+        expect_equal(2, #preview.changedChunks)
+    end)
+
+    -- @covers LChunkMap:getVersion
+    it("getVersion advances once per logical tile mutation", function()
+        local cm = lurek.tilemap.newChunkMap(4)
+        local version = cm:getVersion()
+        cm:setTiles({ { x = 0, y = 0, gid = 1 }, { x = 1, y = 0, gid = 2 } })
+        expect_equal(version + 1, cm:getVersion())
+        cm:setTiles({ { x = 0, y = 0, gid = 1 } })
+        expect_equal(version + 1, cm:getVersion())
+    end)
+
+    -- @covers LChunkMap:readTiles
+    it("readTiles returns values in input order with one boundary crossing", function()
+        local cm = lurek.tilemap.newChunkMap(4)
+        cm:setTiles({ { x = -1, y = 2, gid = 7 }, { x = 8, y = 9, gid = 11 } })
+        local rows = cm:readTiles({ { x = 8, y = 9 }, { -1, 2 }, { 99, 99 } })
+        expect_equal(11, rows[1].gid)
+        expect_equal(7, rows[2].gid)
+        expect_equal(0, rows[3].gid)
+    end)
+
+    -- @covers LChunkMap:snapshotRegion
+    it("snapshots and hashes bounded regions deterministically", function()
+        local cm = new_chunkmap()
+        cm:setTiles({
+            { x = -1, y = 0, gid = 3 },
+            { x = 0, y = 0, gid = 4 },
+            { x = 1, y = 1, gid = 9 },
+        })
+        local snapshot = cm:snapshotRegion(-1, 0, 2, 2)
+        expect_equal(3, snapshot.width)
+        expect_equal(2, snapshot.height)
+        expect_equal(6, #snapshot.tiles)
+        expect_equal(3, snapshot.tiles[1])
+        expect_equal(9, snapshot.tiles[6])
+        local hash = cm:hashRegion(-1, 0, 2, 2)
+        expect_equal(hash, cm:hashRegion(-1, 0, 2, 2))
+        cm:setTile(1, 1, 10)
+        expect_not_equal(hash, cm:hashRegion(-1, 0, 2, 2))
+    end)
+
+    -- @covers LChunkMap:hashRegion
+    it("hashes region content deterministically", function()
+        local cm = new_chunkmap()
+        local before = cm:hashRegion(0, 0, 1, 1)
+        cm:setTile(0, 0, 9)
+        expect_not_equal(before, cm:hashRegion(0, 0, 1, 1))
     end)
 
     -- @covers LChunkMap:drainDirtyChunks
@@ -977,6 +1042,73 @@ describe("LChunkMap methods", function()
         local cm = new_chunkmap()
         expect_true(cm:typeOf("LChunkMap"))
         expect_true(cm:typeOf("LObject"))
+    end)
+end)
+
+-- @describe LChunkMapBatch methods
+describe("LChunkMapBatch methods", function()
+    local function prepared_batch()
+        local cm = lurek.tilemap.newChunkMap(4)
+        local batch = cm:prepareBatch({ { x = 0, y = 0, gid = 5 } })
+        return cm, batch
+    end
+
+    -- @covers LChunkMapBatch:preview
+    it("preview returns stable prepared-mutation metadata", function()
+        local cm, batch = prepared_batch()
+        local preview = batch:preview()
+        expect_equal(cm:getVersion(), preview.baseVersion)
+        expect_equal(1, preview.editCount)
+        expect_equal(1, preview.changedTileCount)
+    end)
+
+    -- @covers LChunkMapBatch:commit
+    it("commit applies all staged tiles and consumes the batch", function()
+        local cm, batch = prepared_batch()
+        local dirty = batch:commit()
+        expect_equal(5, cm:getTile(0, 0))
+        expect_equal(1, #dirty)
+        expect_false(batch:isPending())
+
+        local conflicted = cm:prepareBatch({ { x = 4, y = 0, gid = 8 } })
+        cm:setTile(8, 0, 9)
+        local version = cm:getVersion()
+        local ok, err = pcall(function() conflicted:commit() end)
+        expect_false(ok)
+        expect_true(tostring(err):find("lurek.tilemap.LChunkMapBatch:commit", 1, true) ~= nil)
+        expect_true(conflicted:isPending())
+        expect_equal(0, cm:getTile(4, 0))
+        expect_equal(version, cm:getVersion())
+    end)
+
+    -- @covers LChunkMapBatch:discard
+    it("discard consumes the batch without changing the map", function()
+        local cm, batch = prepared_batch()
+        expect_true(batch:discard())
+        expect_equal(0, cm:getTile(0, 0))
+        expect_false(batch:discard())
+    end)
+
+    -- @covers LChunkMapBatch:isPending
+    it("isPending tracks whether the prepared mutation remains usable", function()
+        local _, batch = prepared_batch()
+        expect_true(batch:isPending())
+        batch:discard()
+        expect_false(batch:isPending())
+    end)
+
+    -- @covers LChunkMapBatch:type
+    it("type returns LChunkMapBatch", function()
+        local _, batch = prepared_batch()
+        expect_equal("LChunkMapBatch", batch:type())
+    end)
+
+    -- @covers LChunkMapBatch:typeOf
+    it("typeOf recognizes prepared chunk-map batches and objects", function()
+        local _, batch = prepared_batch()
+        expect_true(batch:typeOf("LChunkMapBatch"))
+        expect_true(batch:typeOf("LObject"))
+        expect_false(batch:typeOf("LChunkMap"))
     end)
 end)
 
@@ -1139,6 +1271,39 @@ describe("LLargeMapRenderer methods", function()
         lmr:setMapData({0, 0, 0, 0}, 2, 2)
         lmr:setTile(0, 0, 42)
         expect_equal(42, lmr:getTile(0, 0))
+    end)
+
+    -- @covers LLargeMapRenderer:setTiles
+    it("setTiles is atomic and advances its version once", function()
+        local lmr = new_large_map_renderer()
+        lmr:setMapData({0, 0, 0, 0}, 2, 2)
+        local version = lmr:getVersion()
+        expect_equal(2, lmr:setTiles({
+            { x = 0, y = 0, tileId = 4 },
+            { x = 1, y = 1, tileId = 7 },
+        }))
+        expect_equal(version + 1, lmr:getVersion())
+        expect_equal(4, lmr:getTile(0, 0))
+        expect_equal(7, lmr:getTile(1, 1))
+
+        version = lmr:getVersion()
+        local ok = pcall(function()
+            lmr:setTiles({
+                { x = 0, y = 1, tileId = 8 },
+                { x = 2, y = 0, tileId = 9 },
+            })
+        end)
+        expect_false(ok)
+        expect_equal(0, lmr:getTile(0, 1))
+        expect_equal(version, lmr:getVersion())
+    end)
+
+    -- @covers LLargeMapRenderer:getVersion
+    it("reports the renderer map mutation version", function()
+        local lmr = new_large_map_renderer()
+        local version = lmr:getVersion()
+        lmr:setMapData({0, 0, 0, 0}, 2, 2)
+        expect_equal(version + 1, lmr:getVersion())
     end)
 
     -- @covers LLargeMapRenderer:getTile

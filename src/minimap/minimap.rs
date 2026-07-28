@@ -21,7 +21,7 @@ use crate::camera::Camera2D;
 use crate::log_msg;
 use crate::runtime::log_messages::MM01_MINIMAP_INIT;
 use crate::runtime::resource_keys::{ShaderKey, TextureKey};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Cached icon dimensions for one object type or marker texture slot.
 #[derive(Debug, Clone, Copy)]
@@ -688,6 +688,42 @@ impl Minimap {
                 owner,
             },
         );
+        true
+    }
+
+    /// Applies a finite object update batch atomically after validating every entry.
+    ///
+    /// Each entry is `(id, x, y, type_index, owner)`. Duplicate ids are rejected so callers get
+    /// deterministic all-or-nothing semantics instead of depending on table iteration order.
+    pub fn set_objects_atomic(&mut self, updates: &[(u32, f32, f32, usize, u32)]) -> bool {
+        let mut ids = HashSet::with_capacity(updates.len());
+        let mut new_objects = 0usize;
+        for (id, x, y, type_index, _) in updates {
+            if !ids.insert(*id)
+                || self.object_types.get(*type_index).is_none()
+                || self.validate_finite("object x", *x).is_err()
+                || self.validate_finite("object y", *y).is_err()
+            {
+                return false;
+            }
+            if !self.objects.contains_key(id) {
+                new_objects += 1;
+            }
+        }
+        if self.objects.len().saturating_add(new_objects) > self.limits.max_objects {
+            return false;
+        }
+        for (id, x, y, type_index, owner) in updates {
+            self.objects.insert(
+                *id,
+                MinimapObject {
+                    x: *x,
+                    y: *y,
+                    type_index: *type_index,
+                    owner: *owner,
+                },
+            );
+        }
         true
     }
 

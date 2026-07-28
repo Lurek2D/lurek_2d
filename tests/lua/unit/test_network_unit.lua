@@ -293,25 +293,186 @@ describe("lurek.network constructors and helpers", function()
   end)
 
   -- @covers lurek.network.newNetState
-  it("currently reports constructor failure when the embedded library is unavailable", function()
+  it("creates transport-neutral state that Lua can explicitly replicate", function()
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local ok, err = pcall(function()
-      return lurek.network.newNetState(host, { authority = true })
-    end)
-    expect_false(ok)
-    expect_not_nil(err)
+    local state = lurek.network.newNetState(host, { authority = true, turnBased = true })
+    expect_equal("LNetworkState", state:type())
+    state:set("ship", { hull = 120, x = 4.5 })
+    expect_equal(120, state:get("ship").hull)
+    expect_equal("table", type(state:getAll()))
+    expect_equal("string", type(state:takeDirty()))
+    expect_equal(nil, state:takeDirty())
     host:destroy()
   end)
 
-  -- @covers lurek.network.newRpc
-  it("currently reports constructor failure when the embedded library is unavailable", function()
-    local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local ok, err = pcall(function()
-      return lurek.network.newRpc(host, 0, 30.0)
+  -- @covers lurek.network.newInputBuffer
+  it("keeps remote inputs ordered and bounded without applying game commands", function()
+    local buffer = lurek.network.newInputBuffer({ maxPeers = 2, maxInputsPerPeer = 4 })
+    local ok_a, result_a = buffer:push(2, 8, 1, { thrust = 1 })
+    local ok_b, result_b = buffer:push(1, 8, 1, { fire = true })
+    expect_true(ok_a)
+    expect_true(ok_b)
+    expect_equal("accepted", result_a)
+    expect_equal("accepted", result_b)
+    local inputs = buffer:drainThrough(8)
+    expect_equal(2, #inputs)
+    expect_equal(1, inputs[1].peer_id)
+    expect_equal(true, inputs[1].payload.fire)
+    expect_equal(2, inputs[2].peer_id)
+    expect_equal(1, inputs[2].payload.thrust)
+    expect_equal(0, buffer:getStats().queued)
+    expect_equal("LNetworkInputBuffer", buffer:type())
+    expect_true(buffer:typeOf("LNetworkInputBuffer"))
+  end)
+
+  -- @covers LNetworkInputBuffer:push
+  it("reports duplicate input sequences", function()
+    local buffer = lurek.network.newInputBuffer()
+    expect_equal(true, buffer:push(1, 2, 1, { fire = true }))
+    local ok, reason = buffer:push(1, 2, 1, { fire = true })
+    expect_equal(false, ok)
+    expect_equal("duplicate", reason)
+  end)
+
+  -- @covers LNetworkInputBuffer:drainThrough
+  it("drains only inputs at or before the supplied tick", function()
+    local buffer = lurek.network.newInputBuffer()
+    buffer:push(1, 3, 1, {})
+    buffer:push(1, 4, 2, {})
+    expect_equal(1, #buffer:drainThrough(3))
+    expect_equal(1, #buffer:drainThrough(4))
+  end)
+
+  -- @covers LNetworkInputBuffer:getStats
+  it("reports configured input capacity", function()
+    local buffer = lurek.network.newInputBuffer({ maxPeers = 3, maxInputsPerPeer = 5 })
+    local stats = buffer:getStats()
+    expect_equal(3, stats.max_peers)
+    expect_equal(5, stats.max_inputs_per_peer)
+  end)
+
+  -- @covers LNetworkInputBuffer:type
+  it("reports its input-buffer type", function()
+    expect_equal("LNetworkInputBuffer", lurek.network.newInputBuffer():type())
+  end)
+
+  -- @covers LNetworkInputBuffer:typeOf
+  it("matches the input-buffer type name", function()
+    expect_true(lurek.network.newInputBuffer():typeOf("LNetworkInputBuffer"))
+  end)
+
+  -- @covers lurek.network.newSnapshotStore
+  it("resolves full and delta snapshot frames for Lua-owned interpolation", function()
+    local store = lurek.network.newSnapshotStore({ capacity = 3 })
+    store:push({
+      type = "full", tick = 10,
+      entities = { { id = 1, tick = 10, x = 0, y = 0, vx = 2, vy = 0 } },
+    })
+    store:push({
+      type = "delta", tick = 12, base_tick = 10,
+      updates = { { id = 1, tick = 12, x = 4, y = 0, vx = 2, vy = 0 } }, removals = {},
+    })
+    local middle = store:interpolate(1, 10, 12, 0.5)
+    expect_near(2, middle.x, 0.0001)
+    expect_equal(12, store:latest().tick)
+    expect_equal(2, store:getStats().frames)
+  end)
+
+  -- @covers LNetworkSnapshotStore:push
+  it("rejects a delta whose base frame is not retained", function()
+    local store = lurek.network.newSnapshotStore()
+    local ok = pcall(function()
+      store:push({ type = "delta", tick = 2, base_tick = 1, updates = {}, removals = {} })
     end)
     expect_false(ok)
-    expect_not_nil(err)
-    host:destroy()
+  end)
+
+  -- @covers LNetworkSnapshotStore:get
+  it("returns nil for a frame that is not retained", function()
+    expect_equal(nil, lurek.network.newSnapshotStore():get(42))
+  end)
+
+  -- @covers LNetworkSnapshotStore:latest
+  it("returns nil until a frame has been pushed", function()
+    expect_equal(nil, lurek.network.newSnapshotStore():latest())
+  end)
+
+  -- @covers LNetworkSnapshotStore:interpolate
+  it("returns nil when an entity is unavailable in either frame", function()
+    local store = lurek.network.newSnapshotStore()
+    store:push({ type = "full", tick = 1, entities = {} })
+    store:push({ type = "full", tick = 2, entities = {} })
+    expect_equal(nil, store:interpolate(1, 1, 2, 0.5))
+  end)
+
+  -- @covers LNetworkSnapshotStore:getStats
+  it("reports the configured snapshot capacity", function()
+    local stats = lurek.network.newSnapshotStore({ capacity = 4 }):getStats()
+    expect_equal(4, stats.capacity)
+    expect_equal(0, stats.frames)
+  end)
+
+  -- @covers LNetworkSnapshotStore:type
+  it("reports its snapshot-store type", function()
+    expect_equal("LNetworkSnapshotStore", lurek.network.newSnapshotStore():type())
+  end)
+
+  -- @covers LNetworkSnapshotStore:typeOf
+  it("matches its snapshot-store type name", function()
+    expect_true(lurek.network.newSnapshotStore():typeOf("LNetworkSnapshotStore"))
+  end)
+
+  it("applies explicit state payloads and dispatches callbacks when polled", function()
+    local authority = lurek.network.newNetState(nil, { authority = true })
+    authority:set("score", 7)
+    local payload = authority:takeDirty()
+    local replica = lurek.network.newNetState(nil, { authority = false })
+    local observed_key, observed_value = nil, nil
+    replica:onChange("score", function(key, value)
+      observed_key, observed_value = key, value
+    end)
+    replica:apply(payload)
+    replica:poll()
+    expect_equal(7, replica:get("score"))
+    expect_equal("score", observed_key)
+    expect_equal(7, observed_value)
+    expect_equal(authority:hashState(), replica:hashState())
+  end)
+
+  it("exposes full-state requests as explicit Lua-routable payloads", function()
+    local state = lurek.network.newNetState(nil, { authority = false })
+    expect_equal(nil, state:takeRequest())
+    state:requestFullState()
+    expect_equal("string", type(state:takeRequest()))
+    expect_equal(nil, state:takeRequest())
+  end)
+
+  it("advances authority turn state and notifies on poll", function()
+    local state = lurek.network.newNetState(nil, { authority = true, turnBased = true })
+    local observed_turn = nil
+    state:onTurn(function(turn) observed_turn = turn end)
+    state:beginTurn()
+    state:poll()
+    expect_equal(1, state:getCurrentTurn())
+    expect_equal(1, observed_turn)
+  end)
+
+  -- @covers lurek.network.newRpc
+  it("creates an explicit RPC protocol that Lua can route", function()
+    local rpc = lurek.network.newRpc(nil, 0, 30.0)
+    local reply = nil
+    rpc:register("add", function(args) return args.left + args.right end)
+    local id = rpc:call("add", { left = 2, right = 5 }, function(result, err)
+      reply = { result = result, err = err }
+    end)
+    expect_equal(1, id)
+    local request = rpc:takeOutgoing()
+    expect_equal("string", type(request))
+    rpc:process(request)
+    rpc:process(rpc:takeOutgoing())
+    expect_equal(7, reply.result)
+    expect_equal(nil, reply.err)
+    expect_equal(0, rpc:getPendingCount())
   end)
 end)
 

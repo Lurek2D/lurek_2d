@@ -2,7 +2,181 @@
 
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
-use lurek2d::flownet::{Graph, ItemPosition, OverflowPolicy};
+use lurek2d::flownet::{
+    Graph, ItemPosition, OverflowPolicy, RecipeRule, RecipeStack, TopologyEdit, TopologyNodeRef,
+};
+
+mod topology_batch_tests {
+    use super::*;
+
+    #[test]
+    fn prepared_topology_resolves_external_keys_and_commits_once() {
+        let mut graph = Graph::new();
+        let version = graph.version();
+        let batch = graph
+            .prepare_topology_batch(&[
+                TopologyEdit::AddNode {
+                    external_key: Some("source".to_string()),
+                    node_type: "source".to_string(),
+                    capacity: 8,
+                },
+                TopologyEdit::AddNode {
+                    external_key: Some("sink".to_string()),
+                    node_type: "sink".to_string(),
+                    capacity: 8,
+                },
+                TopologyEdit::AddEdge {
+                    from: TopologyNodeRef::External("source".to_string()),
+                    to: TopologyNodeRef::External("sink".to_string()),
+                    edge_type: Some("belt".to_string()),
+                },
+            ])
+            .unwrap();
+
+        assert_eq!(batch.base_version(), version);
+        assert_eq!(batch.operation_count(), 3);
+        assert_eq!(batch.changed_count(), 3);
+        assert_eq!(batch.created_nodes().len(), 2);
+        assert_eq!(batch.created_edges().len(), 1);
+        assert_eq!(graph.get_node_count(), 0);
+
+        let keys = graph.commit_topology_batch(batch).unwrap();
+        assert_eq!(graph.version(), version + 1);
+        assert_eq!(graph.get_node_count(), 2);
+        assert_eq!(graph.get_edge_count(), 1);
+        assert!(graph.has_node(keys["source"]));
+        assert!(graph.has_node(keys["sink"]));
+    }
+
+    #[test]
+    fn invalid_or_conflicted_topology_batch_never_partially_mutates() {
+        let mut graph = Graph::new();
+        let version = graph.version();
+        assert!(graph
+            .prepare_topology_batch(&[
+                TopologyEdit::AddNode {
+                    external_key: Some("valid".to_string()),
+                    node_type: "source".to_string(),
+                    capacity: 8,
+                },
+                TopologyEdit::AddEdge {
+                    from: TopologyNodeRef::External("valid".to_string()),
+                    to: TopologyNodeRef::External("missing".to_string()),
+                    edge_type: None,
+                },
+            ])
+            .is_err());
+        assert_eq!(graph.get_node_count(), 0);
+        assert_eq!(graph.version(), version);
+
+        let batch = graph
+            .prepare_topology_batch(&[TopologyEdit::AddNode {
+                external_key: Some("staged".to_string()),
+                node_type: "source".to_string(),
+                capacity: 8,
+            }])
+            .unwrap();
+        graph.add_node("concurrent", 8);
+        let concurrent_version = graph.version();
+        assert!(graph.commit_topology_batch(batch).is_err());
+        assert_eq!(graph.get_node_count(), 1);
+        assert_eq!(graph.version(), concurrent_version);
+    }
+}
+
+mod graph_snapshot_tests {
+    use super::*;
+
+    #[test]
+    fn snapshot_hash_roundtrips_complete_state() {
+        let mut graph = Graph::new();
+        let source = graph.add_node("source", 8);
+        let sink = graph.add_node("sink", 8);
+        graph.add_edge(source, sink, Some("belt")).unwrap();
+        let item = graph.create_item("ore", -1.0);
+        graph.add_item_to_node(item, source).unwrap();
+
+        let snapshot = graph.snapshot_json().unwrap();
+        let hash = graph.state_hash().unwrap();
+        graph.remove_node(source);
+        assert_ne!(hash, graph.state_hash().unwrap());
+        let version = graph.version();
+        graph
+            .restore_snapshot_json(&snapshot, Some(version))
+            .unwrap();
+        assert_eq!(hash, graph.state_hash().unwrap());
+        assert_eq!(graph.version(), version + 1);
+    }
+
+    #[test]
+    fn inventory_summary_counts_locations_and_types() {
+        let mut graph = Graph::new();
+        let node = graph.add_node("storage", 8);
+        let ore = graph.create_item("ore", -1.0);
+        graph.create_item("coal", -1.0);
+        graph.add_item_to_node(ore, node).unwrap();
+        let summary = graph.summarize_inventory();
+
+        assert_eq!(summary.total, 2);
+        assert_eq!(summary.alive, 2);
+        assert_eq!(summary.at_nodes, 1);
+        assert_eq!(summary.unplaced, 1);
+        assert_eq!(summary.by_type["ore"], 1);
+        assert_eq!(summary.by_type["coal"], 1);
+    }
+}
+
+mod explicit_recipe_tests {
+    use super::*;
+
+    #[test]
+    fn multi_input_recipe_runs_in_one_bounded_operation() {
+        let mut graph = Graph::new();
+        let node_id = graph.add_node("assembler", 32);
+        graph
+            .nodes
+            .get_mut(&node_id)
+            .unwrap()
+            .set_recipe(RecipeRule {
+                name: "gear".to_string(),
+                inputs: vec![
+                    RecipeStack {
+                        item_type: "coal".to_string(),
+                        count: 1,
+                    },
+                    RecipeStack {
+                        item_type: "ore".to_string(),
+                        count: 2,
+                    },
+                ],
+                outputs: vec![
+                    RecipeStack {
+                        item_type: "gear".to_string(),
+                        count: 1,
+                    },
+                    RecipeStack {
+                        item_type: "slag".to_string(),
+                        count: 1,
+                    },
+                ],
+            })
+            .unwrap();
+        for item_type in ["ore", "coal", "ore", "coal", "ore", "ore"] {
+            let item = graph.create_item(item_type, -1.0);
+            graph.add_item_to_node(item, node_id).unwrap();
+        }
+
+        let result = graph.run_recipe(node_id, "gear", 10).unwrap();
+        assert_eq!(result.runs, 2);
+        assert_eq!(result.consumed.len(), 6);
+        assert_eq!(result.produced.len(), 4);
+        let summary = graph.summarize_inventory();
+        assert_eq!(summary.by_type["gear"], 2);
+        assert_eq!(summary.by_type["slag"], 2);
+        assert!(!summary.by_type.contains_key("ore"));
+        assert!(!summary.by_type.contains_key("coal"));
+    }
+}
 
 // â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 

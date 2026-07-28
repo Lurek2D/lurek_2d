@@ -84,6 +84,12 @@ pub enum TileMapError {
     NonPositiveFloat { context: &'static str, value: f32 },
     /// A list of LOD thresholds was empty, non-finite, or not strictly increasing.
     InvalidLodThresholds,
+    /// A bounded operation could not reserve its required memory before mutation.
+    AllocationFailed { context: &'static str },
+    /// A prepared mutation was committed against a different live data version.
+    VersionConflict { expected: u64, actual: u64 },
+    /// Logical tile-content version reached its integer ceiling.
+    VersionOverflow,
 }
 
 impl fmt::Display for TileMapError {
@@ -225,6 +231,14 @@ impl fmt::Display for TileMapError {
                 f,
                 "tilemap LOD thresholds must be finite, positive, and strictly increasing"
             ),
+            Self::AllocationFailed { context } => {
+                write!(f, "tilemap could not allocate memory for {context}")
+            }
+            Self::VersionConflict { expected, actual } => write!(
+                f,
+                "tilemap version conflict: prepared for {expected}, current version is {actual}"
+            ),
+            Self::VersionOverflow => write!(f, "tilemap content version overflowed"),
         }
     }
 }

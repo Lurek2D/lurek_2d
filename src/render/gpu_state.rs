@@ -97,6 +97,16 @@ pub struct RenderStats {
     pub canvas_switches: u32,
     /// Number of shader pipeline switches this frame.
     pub shader_switches: u32,
+    /// User-shader cache lookups that reused a compiled GPU entry this frame.
+    pub shader_cache_hits: u32,
+    /// User-shader cache lookups that compiled or rebuilt an entry this frame.
+    pub shader_cache_misses: u32,
+    /// Repeated known-invalid shader signatures skipped without another compilation attempt.
+    pub shader_negative_cache_hits: u32,
+    /// Shader or pipeline allocations rejected by a bounded cache limit this frame.
+    pub shader_cache_rejections: u32,
+    /// User-shader or negative-cache entries evicted to keep the retained source budget bounded.
+    pub shader_cache_evictions: u32,
     /// Number of draw calls merged into batches this frame.
     pub batched_draws: u32,
     /// CPU time spent in `render_frame` this frame in milliseconds.
@@ -287,6 +297,8 @@ pub struct StaticGeometryCacheEntry {
     pub geometry_kind: crate::render::gpu_pipeline::GeometryKind,
     /// Optional texture key for textured static geometry.
     pub texture: Option<crate::runtime::resource_keys::TextureKey>,
+    /// Checked total byte size of the vertex and index buffers retained by this entry.
+    pub byte_size: u64,
 }
 
 /// Cache entry for uploaded instance transforms.

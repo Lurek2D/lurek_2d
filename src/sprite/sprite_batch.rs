@@ -5,6 +5,8 @@
 
 use crate::runtime::resource_keys::TextureKey;
 use crate::sprite::limits::SpriteLimits;
+use std::collections::BTreeSet;
+use std::ops::Range;
 
 /// # Fields
 ///
@@ -16,10 +18,13 @@ pub struct SpriteBatch {
     entries: Vec<BatchEntry>,
     /// Trusted upper bound on entries; add() returns `None` when full or allocation fails.
     max_entries: usize,
+    /// Monotonic content version used by Lua-side caches and synchronization code.
+    version: u64,
 }
 /// # Fields
 ///
 /// A single sprite draw entry with world position, source quad, transform, and origin offset.
+#[derive(Debug, Clone, PartialEq)]
 pub struct BatchEntry {
     /// World-space X position of this sprite.
     pub x: f32,
@@ -54,6 +59,7 @@ impl SpriteBatch {
             texture_key,
             entries: Vec::new(),
             max_entries: cap,
+            version: 1,
         }
     }
     /// Append a BatchEntry; returns `None` when the limit or allocator rejects the entry.
@@ -63,11 +69,103 @@ impl SpriteBatch {
         }
         let idx = self.entries.len();
         self.entries.push(entry);
+        self.bump_version();
         Some(idx)
+    }
+    /// Atomically append many entries and return their zero-based index range.
+    pub fn add_many(&mut self, entries: Vec<BatchEntry>) -> Result<Range<usize>, String> {
+        let start = self.entries.len();
+        let end = start
+            .checked_add(entries.len())
+            .ok_or_else(|| "sprite batch entry count overflow".to_string())?;
+        if end > self.max_entries {
+            return Err(format!(
+                "sprite batch capacity {} exceeded by {} entries",
+                self.max_entries, end
+            ));
+        }
+        self.entries
+            .try_reserve(entries.len())
+            .map_err(|_| "sprite batch allocation failed".to_string())?;
+        if !entries.is_empty() {
+            self.entries.extend(entries);
+            self.bump_version();
+        }
+        Ok(start..end)
+    }
+    /// Atomically replace every entry, preserving the configured capacity.
+    pub fn set_entries(&mut self, entries: Vec<BatchEntry>) -> Result<usize, String> {
+        if entries.len() > self.max_entries {
+            return Err(format!(
+                "sprite batch capacity {} exceeded by {} entries",
+                self.max_entries,
+                entries.len()
+            ));
+        }
+        let count = entries.len();
+        if self.entries != entries {
+            self.entries = entries;
+            self.bump_version();
+        }
+        Ok(count)
+    }
+    /// Atomically replace selected zero-based entries.
+    pub fn update_entries(&mut self, updates: Vec<(usize, BatchEntry)>) -> Result<usize, String> {
+        let mut seen = BTreeSet::new();
+        for (index, _) in &updates {
+            if *index >= self.entries.len() {
+                return Err(format!(
+                    "sprite batch entry index {} is out of bounds for {} entries",
+                    index,
+                    self.entries.len()
+                ));
+            }
+            if !seen.insert(*index) {
+                return Err(format!("sprite batch entry index {index} is duplicated"));
+            }
+        }
+        let changed = updates
+            .iter()
+            .filter(|(index, entry)| self.entries[*index] != *entry)
+            .count();
+        if changed > 0 {
+            for (index, entry) in updates {
+                self.entries[index] = entry;
+            }
+            self.bump_version();
+        }
+        Ok(changed)
+    }
+    /// Atomically remove selected zero-based entries.
+    pub fn remove_entries(&mut self, indices: Vec<usize>) -> Result<usize, String> {
+        let mut unique = BTreeSet::new();
+        for index in indices {
+            if index >= self.entries.len() {
+                return Err(format!(
+                    "sprite batch entry index {} is out of bounds for {} entries",
+                    index,
+                    self.entries.len()
+                ));
+            }
+            if !unique.insert(index) {
+                return Err(format!("sprite batch entry index {index} is duplicated"));
+            }
+        }
+        let removed = unique.len();
+        for index in unique.into_iter().rev() {
+            self.entries.remove(index);
+        }
+        if removed > 0 {
+            self.bump_version();
+        }
+        Ok(removed)
     }
     /// Remove all entries without releasing the underlying allocation.
     pub fn clear(&mut self) {
-        self.entries.clear();
+        if !self.entries.is_empty() {
+            self.entries.clear();
+            self.bump_version();
+        }
     }
     /// Return the TextureKey this batch is bound to.
     pub fn texture_key(&self) -> TextureKey {
@@ -88,5 +186,17 @@ impl SpriteBatch {
     /// Return the trusted effective entry cap.
     pub fn buffer_size(&self) -> usize {
         self.max_entries
+    }
+    /// Return the remaining entry capacity.
+    pub fn remaining(&self) -> usize {
+        self.max_entries.saturating_sub(self.entries.len())
+    }
+    /// Return the monotonic content version.
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
+    fn bump_version(&mut self) {
+        self.version = self.version.saturating_add(1);
     }
 }

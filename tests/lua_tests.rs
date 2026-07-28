@@ -18,6 +18,16 @@ fn create_test_vm() -> mlua::Lua {
     state.borrow_mut().load_default_fonts();
     let lua = create_lua_vm(state, &Config::default().modules).expect("Failed to create Lua VM");
 
+    // Pure-Lua libraries live in the adjacent content repository and expose
+    // names such as `library.combat`. Add the repository root so Lua replaces
+    // `?` with `library/combat` instead of duplicating the `library` segment.
+    lua.load(
+        r#"package.path = "./lurek_2d_content/?.lua;./lurek_2d_content/?/init.lua;" .. package.path"#,
+    )
+    .set_name("content_library_package_path")
+    .exec()
+    .expect("Failed to configure content library package path");
+
     // On Windows `os.clock()` is process-wide CPU time, so parallel Rust tests
     // inflate Lua stress measurements with unrelated work. Supply every VM with
     // an independent monotonic wall clock for attributable stress timing.
@@ -1057,6 +1067,11 @@ fn lua_integration_image_physics_integration() {
 }
 
 #[test]
+fn lua_integration_factory_dataflow_integration() {
+    run_lua_test("integration/test_factory_dataflow_integration.lua");
+}
+
+#[test]
 fn lua_integration_math_pathfind_integration() {
     run_lua_test("integration/test_math_pathfind_integration.lua");
 }
@@ -1454,6 +1469,11 @@ fn lua_stress_event_stress() {
 #[test]
 fn lua_stress_filesystem_stress() {
     run_lua_test("stress/test_filesystem_stress.lua");
+}
+
+#[test]
+fn lua_stress_flownet_stress() {
+    run_lua_test("stress/test_flownet_stress.lua");
 }
 
 #[test]

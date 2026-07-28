@@ -90,6 +90,32 @@ describe("lurek.runtime.getInfo", function()
     end)
 end)
 
+-- @describe lurek.runtime fixed-step introspection
+describe("lurek.runtime fixed-step introspection", function()
+    -- @covers lurek.runtime.getFixedTick
+    it("returns a monotonic integer tick counter", function()
+        local tick = lurek.runtime.getFixedTick()
+        expect_type("number", tick)
+        expect_true(tick >= 0)
+        expect_equal(math.floor(tick), tick)
+    end)
+
+    -- @covers lurek.runtime.getFixedStepInfo
+    it("returns the Lua-owned simulation scheduling inputs", function()
+        local info = lurek.runtime.getFixedStepInfo()
+        expect_type("table", info)
+        expect_equal(lurek.runtime.getFixedTick(), info.tick)
+        expect_type("number", info.dt)
+        expect_true(info.dt > 0)
+        expect_type("number", info.configuredDt)
+        expect_true(info.configuredDt > 0)
+        expect_type("number", info.maxCatchUpSteps)
+        expect_true(info.maxCatchUpSteps >= 1)
+        expect_type("number", info.frame)
+        expect_type("number", info.fixedUpdateDt)
+    end)
+end)
+
 -- @describe lurek.runtime.setClipboardText
 describe("lurek.runtime.setClipboardText", function()
     -- @covers lurek.runtime.setClipboardText

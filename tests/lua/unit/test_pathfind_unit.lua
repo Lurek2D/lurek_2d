@@ -2157,6 +2157,7 @@ describe("pathfind movement and tactical APIs", function()
     end)
 end)
 
+-- @describe LNavGrid atomic patches
 describe("LNavGrid atomic patches", function()
     -- @covers LNavGrid:patchCells
     it("patchCells validates all entries before replacing navigation state", function()

@@ -31,7 +31,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- `getVersion`, `prepareChangeSet`, and `LEcsBatch` provide optimistic, Lua-controlled ChangeSet commits. Validation happens before mutation and one successful ChangeSet advances the world version once.
+- Component observers remain queued during mutations and run only when Lua calls `flushObservers`, preventing callbacks from re-entering a half-applied game transaction.
+- `readComponents` returns selected entity/component rows in request order with one Lua/Rust boundary crossing.
+- `spawnBulk` pre-stages independent blueprint component rows, is bounded to 100,000 entities, and advances the universe version once for the successful group.
+- ECS does not resolve graph ids, tile occupants, renderer entries, or save records. Those references are ordinary component data whose meaning and synchronization remain Lua-owned.
 
 ## Architecture Links
 

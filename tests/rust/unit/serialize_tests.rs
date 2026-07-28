@@ -3,9 +3,10 @@
 
 use indexmap::IndexMap;
 use lurek2d::serialize::{
-    decode_bytes_with_options, decode_text, decode_text_with_schema, detect_format_detailed,
-    encode, from_lua_with_limits, to_msgpack, CsvComplexCellPolicy, CsvOptions, DecodeOptions,
-    EncodeOptions, SerialFormat, SerialValue, SerializeError, SerializeLimitKind, SerializeLimits,
+    canonical_encode, canonical_hash, decode_bytes_with_options, decode_text,
+    decode_text_with_schema, detect_format_detailed, encode, from_lua_with_limits, to_msgpack,
+    CsvComplexCellPolicy, CsvOptions, DecodeOptions, EncodeOptions, SerialFormat, SerialValue,
+    SerializeError, SerializeLimitKind, SerializeLimits,
 };
 use mlua::{Lua, Value as LuaValue};
 
@@ -26,6 +27,24 @@ fn serialize_schema() -> SerialValue {
     schema.insert("type".to_string(), SerialValue::Str("table".to_string()));
     schema.insert("fields".to_string(), SerialValue::Map(fields));
     SerialValue::Map(schema)
+}
+
+#[test]
+fn canonical_encoding_sorts_nested_keys_and_hashes_stably() {
+    let mut nested = IndexMap::new();
+    nested.insert("z".to_string(), SerialValue::Int(2));
+    nested.insert("a".to_string(), SerialValue::Int(1));
+    let mut value = IndexMap::new();
+    value.insert("nested".to_string(), SerialValue::Map(nested));
+    value.insert("before".to_string(), SerialValue::Bool(true));
+    let value = SerialValue::Map(value);
+    let limits = SerializeLimits::default();
+
+    let encoded = canonical_encode(&value, &limits).unwrap();
+    assert_eq!(encoded, r#"{"before":true,"nested":{"a":1,"z":2}}"#);
+    let hash = canonical_hash(&value, &limits).unwrap();
+    assert_eq!(hash.len(), 16);
+    assert_eq!(hash, canonical_hash(&value, &limits).unwrap());
 }
 
 #[test]

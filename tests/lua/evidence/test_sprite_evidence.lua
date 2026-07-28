@@ -8,7 +8,7 @@
 -- @covers lurek.sprite.newSprite
 -- @covers lurek.sprite.parseAtlas
 
-﻿-- Canonical evidence file for lurek.sprite visual artifacts.
+-- Canonical evidence file for lurek.sprite visual artifacts.
 
 local OUT = evidence_output_dir("sprite")
 

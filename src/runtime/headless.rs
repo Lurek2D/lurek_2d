@@ -73,6 +73,8 @@ pub fn run_headless_checked(config: Config, options: HeadlessOptions) -> EngineR
             shared.delta_time = dt;
             shared.total_time += dt;
             shared.frame_counter = shared.frame_counter.wrapping_add(1);
+            shared.physics_run.tick = shared.physics_run.tick.wrapping_add(1);
+            shared.physics_run.last_step_dt = dt;
         }
         call_lurek_callback(&lua, "process_physics", dt, timeout_ms)?;
         call_lurek_callback(&lua, "fixedUpdate", dt, timeout_ms)?;

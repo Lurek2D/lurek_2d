@@ -20,7 +20,10 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- Replication composition stays in Lua. `newInputBuffer` only retains ordered, bounded input payloads; Lua decides how a drained input updates ECS, physics, or gameplay state.
+- `newNetState` is an explicit serializable key/value protocol. Lua routes `takeDirty` and `takeRequest` payloads through an `LNetworkHost` (or another chosen transport path), then supplies received state with `apply` and delivers queued callbacks through `poll`.
+- `newRpc` is likewise protocol-only. Lua routes `takeOutgoing` bytes and passes received bytes to `process`; RPC does not choose peers, own a match loop, or bridge into game modules.
+- Wraparound, prediction, loadouts, and minimap presentation remain separate specialist surfaces. A game composes them in Lua rather than enabling a built-in MOBA or fleet framework.
 
 ## Architecture Links
 

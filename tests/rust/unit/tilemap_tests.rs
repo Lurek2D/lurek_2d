@@ -678,12 +678,71 @@ mod chunk_tests {
     fn dirty_chunks_track_tile_batches() {
         let mut m = ChunkMap::new(4);
 
+        let version = m.version();
         let dirty = m.set_tiles(&[(0, 0, 1), (4, 0, 2), (-1, -1, 3)]);
 
         assert_eq!(dirty, vec![(-1, -1), (0, 0), (1, 0)]);
+        assert_eq!(m.version(), version + 1);
         assert_eq!(m.get_dirty_chunks(), dirty);
         assert_eq!(m.drain_dirty_chunks(), dirty);
         assert!(m.get_dirty_chunks().is_empty());
+    }
+
+    #[test]
+    fn prepared_chunk_batch_previews_and_commits_atomically() {
+        let mut map = ChunkMap::new(2);
+        let version = map.version();
+        let batch = map
+            .prepare_tiles(&[(0, 0, 1), (1, 0, 2), (2, 0, 3)])
+            .unwrap();
+        assert_eq!(batch.base_version(), version);
+        assert_eq!(batch.edit_count(), 3);
+        assert_eq!(batch.changed_tile_count(), 3);
+        assert_eq!(batch.changed_chunks(), &[(0, 0), (1, 0)]);
+        assert_eq!(map.get_tile(0, 0), 0);
+
+        let dirty = map.commit_prepared(batch).unwrap();
+        assert_eq!(dirty, vec![(0, 0), (1, 0)]);
+        assert_eq!(map.get_tile(0, 0), 1);
+        assert_eq!(map.get_tile(2, 0), 3);
+        assert_eq!(map.version(), version + 1);
+    }
+
+    #[test]
+    fn prepared_chunk_batch_rejects_version_conflict_without_partial_state() {
+        let mut map = ChunkMap::new(2);
+        let batch = map.prepare_tiles(&[(0, 0, 1), (2, 0, 2)]).unwrap();
+        map.try_set_tile(8, 8, 9).unwrap();
+        let version = map.version();
+
+        assert!(matches!(
+            map.commit_prepared(batch),
+            Err(TileMapError::VersionConflict { .. })
+        ));
+        assert_eq!(map.get_tile(0, 0), 0);
+        assert_eq!(map.get_tile(2, 0), 0);
+        assert_eq!(map.get_tile(8, 8), 9);
+        assert_eq!(map.version(), version);
+    }
+
+    #[test]
+    fn rejected_chunk_batch_does_not_allocate_or_write_any_chunk() {
+        let limits = TileMapLimits {
+            max_chunks: 1,
+            max_tile_operation_cells: 8,
+            ..TileMapLimits::default()
+        };
+        let mut map = ChunkMap::try_new_with_limits(2, &limits).unwrap();
+        let version = map.version();
+
+        assert!(matches!(
+            map.try_set_tiles(&[(0, 0, 1), (2, 0, 2)]),
+            Err(TileMapError::MaxChunksExceeded { .. })
+        ));
+        assert_eq!(map.get_loaded_chunk_count(), 0);
+        assert_eq!(map.get_tile(0, 0), 0);
+        assert_eq!(map.get_tile(2, 0), 0);
+        assert_eq!(map.version(), version);
     }
 
     #[test]
@@ -702,6 +761,21 @@ mod chunk_tests {
 
         let mut wrong_size = ChunkMap::new(8);
         assert!(wrong_size.load_chunk_from_bytes(0, 0, &bytes).is_err());
+    }
+
+    #[test]
+    fn chunk_region_snapshots_and_hashes_are_deterministic() {
+        let mut map = ChunkMap::new(4);
+        map.try_set_tiles(&[(-1, 0, 3), (0, 0, 4), (1, 1, 9)])
+            .unwrap();
+        assert_eq!(
+            map.read_region(-1, 0, 2, 2).unwrap(),
+            vec![3, 4, 0, 0, 0, 9]
+        );
+        let hash = map.hash_region(-1, 0, 2, 2).unwrap();
+        assert_eq!(hash, map.hash_region(-1, 0, 2, 2).unwrap());
+        map.set_tile(1, 1, 10);
+        assert_ne!(hash, map.hash_region(-1, 0, 2, 2).unwrap());
     }
 }
 
@@ -730,6 +804,23 @@ mod large_map_renderer_tests {
         renderer.set_camera(-512.0, -512.0, 1.0);
 
         assert_eq!(renderer.get_visible_chunks(), 0);
+    }
+
+    #[test]
+    fn batch_tile_edits_are_atomic_and_advance_version_once() {
+        let mut renderer = make_renderer();
+        let version = renderer.version();
+
+        let changed = renderer.try_set_tiles(&[(0, 0, 7), (31, 31, 9)]).unwrap();
+        assert_eq!(changed, 2);
+        assert_eq!(renderer.get_tile(0, 0), Some(7));
+        assert_eq!(renderer.get_tile(31, 31), Some(9));
+        assert_eq!(renderer.version(), version + 1);
+
+        let version = renderer.version();
+        assert!(renderer.try_set_tiles(&[(1, 1, 5), (32, 1, 6)]).is_err());
+        assert_eq!(renderer.get_tile(1, 1), Some(1));
+        assert_eq!(renderer.version(), version);
     }
 }
 

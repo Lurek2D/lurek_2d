@@ -293,3 +293,23 @@ do
     local changed = tostring(after ~= before)
     lurek.log.info("reloadConfig before=" .. tostring(before) .. " after=" .. tostring(after) .. " changed_now=" .. changed)
 end
+--@api: lurek.runtime.getFixedTick
+do
+    local before = lurek.runtime.getFixedTick()
+    local after = lurek.runtime.getFixedTick()
+    local monotonic = after >= before
+    local whole = after == math.floor(after)
+    lurek.log.info("fixed tick=" .. tostring(after) .. " monotonic=" .. tostring(monotonic))
+    lurek.log.info("fixed tick is integer=" .. tostring(whole))
+end
+
+--@api: lurek.runtime.getFixedStepInfo
+do
+    local info = lurek.runtime.getFixedStepInfo()
+    local tick = info.tick
+    local dt = info.dt
+    local catch_up = info.maxCatchUpSteps
+    local frame = info.frame
+    lurek.log.info("fixed step tick=" .. tostring(tick) .. " dt=" .. tostring(dt))
+    lurek.log.info("catch-up=" .. tostring(catch_up) .. " frame=" .. tostring(frame))
+end

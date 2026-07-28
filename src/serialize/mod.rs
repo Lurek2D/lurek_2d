@@ -32,7 +32,9 @@ pub use codec::{
 pub use csv::{from_csv, to_csv, CsvComplexCellPolicy, CsvOptions};
 pub use ini::from_ini;
 pub use json::{from_json, to_json};
-pub use lua_table::{from_lua_with_limits, validate_serial_value, SerialValue};
+pub use lua_table::{
+    canonical_encode, canonical_hash, from_lua_with_limits, validate_serial_value, SerialValue,
+};
 pub use msgpack::{decode as from_msgpack, decode_json, encode as to_msgpack, encode_json};
 pub use schema::{
     apply_defaults as apply_schema_defaults, apply_defaults_with_report,

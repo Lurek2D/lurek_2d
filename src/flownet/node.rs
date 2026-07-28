@@ -6,7 +6,7 @@
 //! This file does not move items between containers; `core.rs` owns graph mutation and `simulation.rs` owns tick execution.
 //! Open it when node behavior changes; edges, items, pathfinding, and graph serialization are implemented elsewhere.
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};
 use std::str::FromStr;
 
 use crate::flownet::types::NodeId;
@@ -92,6 +92,26 @@ pub struct ConversionRule {
     /// Number of output items produced.
     pub out_count: u32,
 }
+
+/// One typed quantity used by an explicitly invoked multi-input recipe.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecipeStack {
+    /// Item type name.
+    pub item_type: String,
+    /// Number consumed or produced per recipe run.
+    pub count: u32,
+}
+
+/// Named multi-input, multi-output recipe stored on one graph node.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecipeRule {
+    /// Stable node-local recipe name.
+    pub name: String,
+    /// Required item quantities in deterministic item-type order.
+    pub inputs: Vec<RecipeStack>,
+    /// Produced item quantities in deterministic item-type order.
+    pub outputs: Vec<RecipeStack>,
+}
 /// Available item supply stored on a node.
 #[derive(Debug, Clone)]
 pub struct Supply {
@@ -111,6 +131,7 @@ pub struct Demand {
     pub priority: i32,
 }
 /// Graph node with inventory, flow settings, and local processing state.
+#[derive(Clone)]
 pub struct Node {
     /// Stable node identifier.
     pub id: NodeId,
@@ -144,6 +165,8 @@ pub struct Node {
     pub items: Vec<u64>,
     /// Conversion rules keyed by input item type.
     pub conversions: HashMap<String, ConversionRule>,
+    /// Explicit multi-input recipes keyed by name.
+    pub recipes: BTreeMap<String, RecipeRule>,
     /// Current demands stored on the node.
     pub demands: Vec<Demand>,
     /// Current supplies stored on the node.
@@ -179,6 +202,7 @@ impl Node {
             queue: VecDeque::new(),
             items: Vec::new(),
             conversions: HashMap::new(),
+            recipes: BTreeMap::new(),
             demands: Vec::new(),
             supplies: Vec::new(),
             tags: HashSet::new(),
@@ -351,6 +375,42 @@ impl Node {
     /// Remove all conversion rules.
     pub fn clear_all_conversions(&mut self) {
         self.conversions.clear();
+    }
+    /// Validate and store a named explicit recipe.
+    pub fn set_recipe(&mut self, mut recipe: RecipeRule) -> Result<(), String> {
+        if recipe.name.trim().is_empty() || recipe.name.len() > 128 {
+            return Err("recipe name must contain 1..=128 characters".to_string());
+        }
+        if recipe.inputs.is_empty() {
+            return Err("recipe must contain at least one input".to_string());
+        }
+        if recipe.outputs.is_empty() {
+            return Err("recipe must contain at least one output".to_string());
+        }
+        for stack in recipe.inputs.iter().chain(recipe.outputs.iter()) {
+            if stack.item_type.trim().is_empty() || stack.item_type.len() > 128 {
+                return Err("recipe item type must contain 1..=128 characters".to_string());
+            }
+            if stack.count == 0 {
+                return Err("recipe item count must be greater than zero".to_string());
+            }
+        }
+        recipe
+            .inputs
+            .sort_by(|left, right| left.item_type.cmp(&right.item_type));
+        recipe
+            .outputs
+            .sort_by(|left, right| left.item_type.cmp(&right.item_type));
+        self.recipes.insert(recipe.name.clone(), recipe);
+        Ok(())
+    }
+    /// Remove one named explicit recipe.
+    pub fn remove_recipe(&mut self, name: &str) -> bool {
+        self.recipes.remove(name).is_some()
+    }
+    /// Return one named explicit recipe.
+    pub fn get_recipe(&self, name: &str) -> Option<&RecipeRule> {
+        self.recipes.get(name)
     }
     /// Enqueue an item id and return false when the queue is full.
     pub fn enqueue(&mut self, item_id: u64) -> bool {

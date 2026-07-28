@@ -14,10 +14,14 @@ pub struct RenderBudgetLimits {
     pub max_commands_per_family: usize,
     /// Maximum source geometry vertices across shape commands.
     pub max_geometry_vertices: usize,
+    /// Maximum source geometry indices across mesh-like commands.
+    pub max_geometry_indices: usize,
     /// Maximum UTF-8 bytes accepted by text commands.
     pub max_text_bytes: usize,
     /// Maximum rich-text spans accepted across a frame.
     pub max_text_spans: usize,
+    /// Maximum glyphs accepted across text commands before font lookup or tessellation.
+    pub max_glyphs: usize,
     /// Maximum post-processing passes accepted across a frame.
     pub max_postfx_passes: usize,
     /// Maximum sprite instances expanded by batch draw commands across a frame.
@@ -26,6 +30,10 @@ pub struct RenderBudgetLimits {
     pub max_light_quads: usize,
     /// Maximum shadow-atlas rows dispatched across a frame.
     pub max_shadow_lights: usize,
+    /// Maximum dynamic GPU uploads accepted across one frame.
+    pub max_uploads: usize,
+    /// Maximum source bytes accepted for dynamic GPU uploads across one frame.
+    pub max_upload_bytes: usize,
 }
 
 impl Default for RenderBudgetLimits {
@@ -34,12 +42,16 @@ impl Default for RenderBudgetLimits {
             max_commands: 65_536,
             max_commands_per_family: 32_768,
             max_geometry_vertices: 1_000_000,
+            max_geometry_indices: 3_000_000,
             max_text_bytes: 1_048_576,
             max_text_spans: 16_384,
+            max_glyphs: 262_144,
             max_postfx_passes: 1_024,
             max_sprite_batch_items: 250_000,
             max_light_quads: crate::render::gpu_types::MAX_LIGHT_QUADS,
             max_shadow_lights: crate::render::gpu_light::MAX_SHADOW_LIGHTS,
+            max_uploads: 4_096,
+            max_upload_bytes: 128 * 1024 * 1024,
         }
     }
 }
@@ -79,12 +91,16 @@ pub struct RenderBudget {
     commands: usize,
     family_commands: [usize; 13],
     geometry_vertices: usize,
+    geometry_indices: usize,
     text_bytes: usize,
     text_spans: usize,
+    glyphs: usize,
     postfx_passes: usize,
     sprite_batch_items: usize,
     light_quads: usize,
     shadow_lights: usize,
+    uploads: usize,
+    upload_bytes: usize,
 }
 
 /// A deterministic aggregate-budget rejection.
@@ -141,7 +157,7 @@ impl RenderBudget {
     ) -> Result<(), RenderBudgetError> {
         let category = command.category();
         let family_index = category_index(category);
-        let (vertices, text_bytes, spans, passes) = command_cost(command);
+        let (vertices, indices, text_bytes, spans, glyphs, passes) = command_cost(command);
         let commands = checked_next(self.commands, 1, limits.max_commands, "commands")?;
         let family_commands = checked_next(
             self.family_commands[family_index],
@@ -155,6 +171,12 @@ impl RenderBudget {
             limits.max_geometry_vertices,
             "geometry vertices",
         )?;
+        let geometry_indices = checked_next(
+            self.geometry_indices,
+            indices,
+            limits.max_geometry_indices,
+            "geometry indices",
+        )?;
         let text_bytes = checked_next(
             self.text_bytes,
             text_bytes,
@@ -162,6 +184,7 @@ impl RenderBudget {
             "text bytes",
         )?;
         let text_spans = checked_next(self.text_spans, spans, limits.max_text_spans, "text spans")?;
+        let glyphs = checked_next(self.glyphs, glyphs, limits.max_glyphs, "glyphs")?;
         let postfx_passes = checked_next(
             self.postfx_passes,
             passes,
@@ -177,8 +200,10 @@ impl RenderBudget {
         self.commands = commands;
         self.family_commands[family_index] = family_commands;
         self.geometry_vertices = geometry_vertices;
+        self.geometry_indices = geometry_indices;
         self.text_bytes = text_bytes;
         self.text_spans = text_spans;
+        self.glyphs = glyphs;
         self.postfx_passes = postfx_passes;
         self.sprite_batch_items = sprite_batch_items;
         Ok(())
@@ -205,6 +230,24 @@ impl RenderBudget {
         )?;
         self.light_quads = next_light_quads;
         self.shadow_lights = next_shadow_lights;
+        Ok(())
+    }
+
+    /// Validate one dynamic upload before its source is handed to wgpu.
+    pub fn try_accept_upload(
+        &mut self,
+        byte_len: usize,
+        limits: &RenderBudgetLimits,
+    ) -> Result<(), RenderBudgetError> {
+        let uploads = checked_next(self.uploads, 1, limits.max_uploads, "uploads")?;
+        let upload_bytes = checked_next(
+            self.upload_bytes,
+            byte_len,
+            limits.max_upload_bytes,
+            "upload bytes",
+        )?;
+        self.uploads = uploads;
+        self.upload_bytes = upload_bytes;
         Ok(())
     }
 }
@@ -244,30 +287,42 @@ fn category_index(category: RenderCommandCategory) -> usize {
     }
 }
 
-fn command_cost(command: &RenderCommand) -> (usize, usize, usize, usize) {
+fn command_cost(command: &RenderCommand) -> (usize, usize, usize, usize, usize, usize) {
     use RenderCommand::*;
     match command {
-        Polygon { vertices, .. } | Polyline { points: vertices } => (vertices.len() / 2, 0, 0, 0),
-        Points { points } => (points.len(), 0, 0, 0),
-        DrawColoredPolygon { vertices, .. } => (vertices.len(), 0, 0, 0),
+        Polygon { vertices, .. } => {
+            let count = vertices.len() / 2;
+            (count, count.saturating_sub(2).saturating_mul(3), 0, 0, 0, 0)
+        }
+        Polyline { points } => (points.len() / 2, points.len(), 0, 0, 0, 0),
+        Points { points } => (points.len(), points.len(), 0, 0, 0, 0),
+        DrawColoredPolygon { vertices, .. } => {
+            let count = vertices.len();
+            (count, count.saturating_sub(2).saturating_mul(3), 0, 0, 0, 0)
+        }
         Print { text, .. } | PrintTransformed { text, .. } | PrintFormatted { text, .. } => {
-            (0, text.len(), 0, 0)
+            (0, 0, text.len(), 0, text.chars().count(), 0)
         }
         DrawRichText { spans, .. } | DrawRichTextTransformed { spans, .. } => (
             0,
+            0,
             spans.iter().map(|span| span.text.len()).sum(),
             spans.len(),
+            spans.iter().map(|span| span.text.chars().count()).sum(),
             0,
         ),
         // Ring particles produce 40 source vertices; charge that worst case before tessellation.
-        DrawParticleSystem { particles, .. } => (particles.len().saturating_mul(40), 0, 0, 0),
-        ApplyPostFx { passes, .. } => (0, 0, 0, passes.len()),
+        DrawParticleSystem { particles, .. } => {
+            let count = particles.len().saturating_mul(40);
+            (count, count.saturating_mul(3), 0, 0, 0, 0)
+        }
+        ApplyPostFx { passes, .. } => (0, 0, 0, 0, 0, passes.len()),
         ApplyShaderToCanvas { passes, .. } | ApplyEffectToCanvas { passes, .. } => {
-            (0, 0, 0, passes.len())
+            (0, 0, 0, 0, 0, passes.len())
         }
         DrawImage { effect, .. } | DrawImageEx { effect, .. } | DrawQuad { effect, .. } => {
-            (0, 0, 0, effect.as_ref().map_or(0, Vec::len))
+            (0, 0, 0, 0, 0, effect.as_ref().map_or(0, Vec::len))
         }
-        _ => (0, 0, 0, 0),
+        _ => (0, 0, 0, 0, 0, 0),
     }
 }

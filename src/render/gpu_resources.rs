@@ -24,8 +24,10 @@ use super::GpuRenderer;
 /// Trusted process-wide ceilings for renderer-owned persistent texture resources.
 const MAX_LIVE_TEXTURES: usize = 4_096;
 const MAX_LIVE_CANVASES: usize = 256;
+const MAX_LIVE_CANVAS_BYTES: u64 = 512 * 1024 * 1024;
 const MAX_LIVE_TEXTURE_BYTES: u64 = 512 * 1024 * 1024;
 const MAX_LIVE_STATIC_MESHES: usize = 4_096;
+const MAX_LIVE_STATIC_MESH_BYTES: u64 = 512 * 1024 * 1024;
 const MAX_LIVE_FONT_ATLASES: usize = 256;
 const MAX_LIVE_FONT_ATLAS_BYTES: u64 = 256 * 1024 * 1024;
 
@@ -128,6 +130,103 @@ pub fn is_builtin_static_geometry_key(key: StaticGeometryKey) -> bool {
 }
 
 impl GpuRenderer {
+    /// Validate a canvas replacement before allocating its color attachment.  The old
+    /// allocation remains counted until the new attachment is fully constructed.
+    fn validate_canvas_resource_budget(
+        &self,
+        replacing: Option<CanvasKey>,
+        width: u32,
+        height: u32,
+    ) -> Result<(), String> {
+        let requested = u64::from(width)
+            .checked_mul(u64::from(height))
+            .and_then(|pixels| pixels.checked_mul(4))
+            .ok_or_else(|| "canvas resource byte count overflow".to_string())?;
+        let mut count = 0usize;
+        let mut bytes = 0u64;
+        for (key, canvas) in self.canvas_gpu_textures.iter() {
+            if Some(key) == replacing {
+                continue;
+            }
+            count = count
+                .checked_add(1)
+                .ok_or_else(|| "canvas count overflow".to_string())?;
+            let size = u64::from(canvas.width)
+                .checked_mul(u64::from(canvas.height))
+                .and_then(|pixels| pixels.checked_mul(4))
+                .ok_or_else(|| "tracked canvas resource byte count overflow".to_string())?;
+            bytes = bytes
+                .checked_add(size)
+                .ok_or_else(|| "tracked canvas resource total overflow".to_string())?;
+        }
+        if count >= MAX_LIVE_CANVASES {
+            return Err(format!(
+                "live canvas count exceeds maximum of {MAX_LIVE_CANVASES}"
+            ));
+        }
+        if bytes
+            .checked_add(requested)
+            .is_none_or(|total| total > MAX_LIVE_CANVAS_BYTES)
+        {
+            return Err(format!(
+                "live canvas bytes exceed maximum of {MAX_LIVE_CANVAS_BYTES}"
+            ));
+        }
+        Ok(())
+    }
+
+    /// Validate a static mesh replacement against the retained GPU mesh byte ceiling.
+    fn validate_static_mesh_resource_budget(
+        &self,
+        replacing: StaticGeometryKey,
+        requested: u64,
+    ) -> Result<(), crate::render::mesh::MeshError> {
+        let mut bytes = 0u64;
+        for (key, entry) in &self.mesh_cache.static_geometry {
+            if *key != replacing {
+                bytes = bytes.checked_add(entry.byte_size).ok_or(
+                    crate::render::mesh::MeshError::TooLarge {
+                        field: "live GPU mesh bytes",
+                        count: usize::MAX,
+                        max: MAX_LIVE_STATIC_MESH_BYTES as usize,
+                    },
+                )?;
+            }
+        }
+        if bytes
+            .checked_add(requested)
+            .is_none_or(|total| total > MAX_LIVE_STATIC_MESH_BYTES)
+        {
+            return Err(crate::render::mesh::MeshError::TooLarge {
+                field: "live GPU mesh bytes",
+                count: usize::MAX,
+                max: MAX_LIVE_STATIC_MESH_BYTES as usize,
+            });
+        }
+        Ok(())
+    }
+
+    /// Calculate both static mesh buffers with checked arithmetic before any GPU object is created.
+    fn static_mesh_byte_size(
+        vertex_len: usize,
+        vertex_stride: usize,
+        index_len: usize,
+    ) -> Result<u64, crate::render::mesh::MeshError> {
+        let vertex_bytes = u64::try_from(vertex_len)
+            .ok()
+            .and_then(|count| count.checked_mul(u64::try_from(vertex_stride).ok()?));
+        let index_bytes = u64::try_from(index_len)
+            .ok()
+            .and_then(|count| count.checked_mul(u64::try_from(std::mem::size_of::<u32>()).ok()?));
+        vertex_bytes
+            .zip(index_bytes)
+            .and_then(|(vertices, indices)| vertices.checked_add(indices))
+            .ok_or(crate::render::mesh::MeshError::TooLarge {
+                field: "GPU mesh bytes",
+                count: vertex_len.saturating_add(index_len),
+                max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
+            })
+    }
     /// Verify that a replacement or insertion stays within retained texture limits.
     fn validate_texture_resource_budget(
         &self,
@@ -556,13 +655,7 @@ impl GpuRenderer {
         default_filter: &(String, String, u32),
     ) -> Result<(), String> {
         validate_canvas_size(width, height, &self.device.limits())?;
-        if !self.canvas_gpu_textures.contains_key(key)
-            && self.canvas_gpu_textures.len() >= MAX_LIVE_CANVASES
-        {
-            return Err(format!(
-                "live canvas count exceeds maximum of {MAX_LIVE_CANVASES}"
-            ));
-        }
+        self.validate_canvas_resource_budget(None, width, height)?;
         let texture = self.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("canvas_texture"),
             size: wgpu::Extent3d {
@@ -804,6 +897,12 @@ impl GpuRenderer {
                 count: tri_indices.len(),
                 max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
             })?;
+            let byte_size = Self::static_mesh_byte_size(
+                verts.len(),
+                std::mem::size_of::<TexVertex>(),
+                idxs.len(),
+            )?;
+            self.validate_static_mesh_resource_budget(static_key, byte_size)?;
 
             let v_buf = self
                 .device
@@ -831,6 +930,7 @@ impl GpuRenderer {
                 })?,
                 geometry_kind: crate::render::gpu_pipeline::GeometryKind::TextureInstanced,
                 texture: mesh.texture,
+                byte_size,
             }
         } else {
             let mut verts = Vec::new();
@@ -876,6 +976,12 @@ impl GpuRenderer {
                 count: tri_indices.len(),
                 max: crate::render::mesh::MAX_MESH_TRIANGULATED_INDICES,
             })?;
+            let byte_size = Self::static_mesh_byte_size(
+                verts.len(),
+                std::mem::size_of::<ColorVertex>(),
+                idxs.len(),
+            )?;
+            self.validate_static_mesh_resource_budget(static_key, byte_size)?;
 
             let v_buf = self
                 .device
@@ -903,6 +1009,7 @@ impl GpuRenderer {
                 })?,
                 geometry_kind: crate::render::gpu_pipeline::GeometryKind::ColorInstanced,
                 texture: None,
+                byte_size,
             }
         };
 

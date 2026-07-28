@@ -12,7 +12,7 @@
 - Source path: `src/minimap`
 - Binding: `src/lua_api/minimap_api.rs`
 - Namespace: `lurek.minimap`
-- Lua API surface: `1` functions, `1` types, `106` methods
+- Lua API surface: `1` functions, `1` types, `107` methods
 - User-facing: `true`
 - Plugin tier: `tier_2_plugin`
 
@@ -217,6 +217,7 @@ The broader integration map is split by role:
 - `LMinimap:setObject(id, x, y, type_idx, owner?) -> nil`: Adds or updates an object on the minimap.
 - `LMinimap:setObjectTypeTexture(type_idx, image_ud, width?, height?) -> nil`: Assigns an image texture to an object type.
 - `LMinimap:setObjectTypeVisible(type_idx, visible) -> nil`: Sets visibility for an object type by one-based index.
+- `LMinimap:setObjects(updates) -> boolean`: Applies object icon updates atomically for one Lua-owned minimap refresh.
 - `LMinimap:setOwnerColor(owner, r, g, b, a?) -> nil`: Sets the RGBA display color for an owner id.
 - `LMinimap:setShader(shader?) -> nil`: Binds or clears a `mapviz` shader for command-rendered minimap visualization.
 - `LMinimap:setTerrain(x, y, terrain_type) -> nil`: Sets terrain type for a one-based grid cell.

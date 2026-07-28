@@ -13,7 +13,7 @@
 - Source path: `src/sprite`
 - Binding: `src/lua_api/sprite_api.rs`
 - Namespace: `lurek.sprite`
-- Lua API surface: `12` functions, `14` types, `67` methods
+- Lua API surface: `13` functions, `14` types, `67` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -127,6 +127,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `lurek.sprite.newAtlasPacker(width, height, padding) -> LAtlasPacker`: Creates a runtime atlas packer for dynamically allocating named sprite regions.
 - `lurek.sprite.newAtlasSheet(atlas, sw, sh) -> LSpriteSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
 - `lurek.sprite.newAutoTileSheet(image, layout, opts) -> LSpriteAutoTileSheet`: Creates an autotile sheet descriptor from an image source, layout, and tile options.
+- `lurek.sprite.newBatch(texture, max?) -> nil`: Lua-facing function documented in the binding source.
 - `lurek.sprite.newNineSlice(image, top, right, bottom, left) -> LNineSlice`: Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 - `lurek.sprite.newRPGMakerSheet(tw, th) -> LSpriteSheet`: Creates a sprite sheet using RPG Maker's standard character layout (3 columns by 4 rows per character block).
 - `lurek.sprite.newSheet(tw, th, fw, fh) -> LSpriteSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.

@@ -20,6 +20,77 @@ use crate::tween::Tween;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+/// Reusable toroidal-coordinate helper for Lua games that choose wraparound world rules.
+pub struct LuaWrapSpace {
+    /// Inclusive lower X boundary of the wrapped domain.
+    min_x: f64,
+    /// Inclusive lower Y boundary of the wrapped domain.
+    min_y: f64,
+    /// Positive horizontal period of the wrapped domain.
+    width: f64,
+    /// Positive vertical period of the wrapped domain.
+    height: f64,
+}
+/// Provides pure coordinate wrapping and shortest-path helpers without changing physics behavior.
+impl LuaUserData for LuaWrapSpace {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Wraps a point into this half-open toroidal domain.
+        /// @param | x | number | Point X coordinate.
+        /// @param | y | number | Point Y coordinate.
+        /// @return | number | Wrapped X coordinate.
+        /// @return | number | Wrapped Y coordinate.
+        methods.add_method("wrap", |_lua, this, (x, y): (f64, f64)| {
+            let wrap = |value: f64, min: f64, size: f64| (value - min).rem_euclid(size) + min;
+            Ok((
+                wrap(x, this.min_x, this.width),
+                wrap(y, this.min_y, this.height),
+            ))
+        });
+        /// Returns the shortest signed toroidal displacement from point A to point B.
+        /// @param | ax | number | Source X coordinate.
+        /// @param | ay | number | Source Y coordinate.
+        /// @param | bx | number | Target X coordinate.
+        /// @param | by | number | Target Y coordinate.
+        /// @return | number | Shortest X displacement.
+        /// @return | number | Shortest Y displacement.
+        methods.add_method(
+            "delta",
+            |_lua, this, (ax, ay, bx, by): (f64, f64, f64, f64)| {
+                let shortest =
+                    |delta: f64, size: f64| (delta + size * 0.5).rem_euclid(size) - size * 0.5;
+                Ok((
+                    shortest(bx - ax, this.width),
+                    shortest(by - ay, this.height),
+                ))
+            },
+        );
+        /// Returns the shortest toroidal distance between two points.
+        /// @param | ax | number | First X coordinate.
+        /// @param | ay | number | First Y coordinate.
+        /// @param | bx | number | Second X coordinate.
+        /// @param | by | number | Second Y coordinate.
+        /// @return | number | Shortest Euclidean distance.
+        methods.add_method(
+            "distance",
+            |_lua, this, (ax, ay, bx, by): (f64, f64, f64, f64)| {
+                let shortest =
+                    |delta: f64, size: f64| (delta + size * 0.5).rem_euclid(size) - size * 0.5;
+                let dx = shortest(bx - ax, this.width);
+                let dy = shortest(by - ay, this.height);
+                Ok((dx * dx + dy * dy).sqrt())
+            },
+        );
+        /// Returns this helper's type name.
+        /// @return | string | The string `LWrapSpace`.
+        methods.add_method("type", |_lua, _this, ()| Ok("LWrapSpace"));
+        /// Checks this helper against its public type names.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True for `LWrapSpace` or `LObject`.
+        methods.add_method("typeOf", |_lua, _this, name: String| {
+            Ok(name == "LWrapSpace" || name == "LObject")
+        });
+    }
+}
 /// Represents the Lua-visible LVec2 object exposed by this module.
 pub struct LuaVec2 {
     /// Wrapped 2D vector value exposed by the lurek engine.
@@ -2555,6 +2626,36 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, (x, y, z): (f32, f32, f32)| {
             lua.create_userdata(LuaVec3 {
                 inner: Vec3::new(x, y, z),
+            })
+        })?,
+    )?;
+    // -- newWrapSpace --
+    /// Creates a pure toroidal-coordinate helper without changing world, ECS, or physics state.
+    /// @param | min_x | number | Inclusive lower X boundary.
+    /// @param | min_y | number | Inclusive lower Y boundary.
+    /// @param | width | number | Positive horizontal wrap period.
+    /// @param | height | number | Positive vertical wrap period.
+    /// @return | LWrapSpace | Pure coordinate helper for explicit Lua gameplay rules.
+    tbl.set(
+        "newWrapSpace",
+        lua.create_function(|lua, (min_x, min_y, width, height): (f64, f64, f64, f64)| {
+            if !min_x.is_finite()
+                || !min_y.is_finite()
+                || !width.is_finite()
+                || !height.is_finite()
+                || width <= 0.0
+                || height <= 0.0
+            {
+                return Err(LuaError::RuntimeError(
+                    "lurek.math.newWrapSpace: bounds must be finite and width/height must be positive"
+                        .to_string(),
+                ));
+            }
+            lua.create_userdata(LuaWrapSpace {
+                min_x,
+                min_y,
+                width,
+                height,
             })
         })?,
     )?;

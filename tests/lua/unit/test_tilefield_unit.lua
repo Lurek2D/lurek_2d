@@ -212,6 +212,92 @@ describe("LTileField cell state", function()
         expect_true(cell.blocks.action)
     end)
 
+    -- @covers LTileField:inspectCells
+    it("inspectCells returns common cell and placement facts in input order", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setResource(2, 2, 1, "copper")
+        field:setOccupant(3, 2, 1, 44)
+        field:setBuildable(3, 2, 1, false)
+        local rows = field:inspectCells({ { x = 3, y = 2 }, { 2, 2, 1 } })
+        expect_equal(44, rows[1].occupant)
+        expect_false(rows[1].buildable)
+        expect_equal("copper", rows[2].resource)
+        expect_equal(2, rows[2].x)
+    end)
+
+    -- @covers LTileField:inspectFootprint
+    it("inspectFootprint summarizes placement facts without integrating game rules", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setResource(1, 1, 1, "copper")
+        field:setResource(2, 1, 1, "copper")
+        field:setOccupant(2, 2, 1, 9)
+        field:setBuildable(1, 2, 1, false)
+        field:setBlock(1, 1, 1, "move", true)
+        local summary = field:inspectFootprint({ x = 1, y = 1, w = 2, h = 2 })
+        expect_equal(4, summary.cellCount)
+        expect_equal(1, summary.occupiedCount)
+        expect_equal(3, summary.buildableCount)
+        expect_equal(2, summary.resources.copper)
+        expect_equal(1, summary.blockers.move)
+        expect_false(summary.canPlace)
+    end)
+
+    -- @covers LTileField:summarizeResources
+    it("summarizeResources returns deterministic resource counts", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setResource(1, 1, 1, "lead")
+        field:setResource(2, 1, 1, "lead")
+        field:setResource(3, 1, 1, "sand")
+        local summary = field:summarizeResources({ x = 1, y = 1, width = 3, height = 1 })
+        expect_equal(2, summary.lead)
+        expect_equal(1, summary.sand)
+    end)
+
+    -- @covers LTileField:setFootprintOccupant
+    it("setFootprintOccupant writes atomically and bumps version once", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        local version = field:getVersion()
+        expect_equal(4, field:setFootprintOccupant({
+            x = 1, y = 1, w = 2, h = 2, occupant = 77,
+        }))
+        expect_equal(version + 1, field:getVersion())
+        expect_equal(77, field:getOccupant(2, 2, 1))
+
+        local stable = field:getVersion()
+        expect_error(function()
+            field:setFootprintOccupant({
+                x = 2, y = 2, w = 2, h = 2, occupant = 88,
+            })
+        end)
+        expect_equal(stable, field:getVersion())
+        expect_nil(field:getOccupant(3, 3, 1))
+    end)
+
+    -- @covers LTileField:hashRegion
+    it("hashRegion is deterministic and changes with region gameplay facts", function()
+        local field = lurek.tilefield.new({ width = 3, height = 3 })
+        local before = field:hashRegion({ x = 1, y = 1, w = 3, h = 3 })
+        expect_equal(before, field:hashRegion({ x = 1, y = 1, w = 3, h = 3 }))
+        field:setResource(2, 2, 1, "lead")
+        local after = field:hashRegion({ x = 1, y = 1, w = 3, h = 3 })
+        expect_true(before ~= after)
+        expect_equal(16, #after)
+    end)
+
+    -- @covers LTileField:snapshotRegion
+    it("snapshotRegion captures bounded row-major facts with a matching hash", function()
+        local field = lurek.tilefield.new({ width = 4, height = 4 })
+        field:setResource(2, 1, 1, "coal")
+        local snapshot = field:snapshotRegion({ x = 1, y = 1, w = 2, h = 2 })
+        expect_equal(4, #snapshot.cells)
+        expect_equal("coal", snapshot.cells[2].resource)
+        expect_equal(
+            field:hashRegion({ x = 1, y = 1, w = 2, h = 2 }),
+            snapshot.hash
+        )
+        expect_equal(field:getVersion(), snapshot.version)
+    end)
+
     -- @covers LTileField:setCell
     it("sets cell table", function()
         local field = lurek.tilefield.new({ width = 3, height = 3 })
@@ -507,11 +593,13 @@ describe("LTileField atomic patches", function()
     -- @covers LTileField:patchCells
     it("patchCells commits the whole batch or leaves the field unchanged", function()
         local field = lurek.tilefield.new({ width = 3, height = 3 })
+        local version = field:getVersion()
         local dirty = field:patchCells({
             { x = 2, y = 1, blocks = { move = true } },
             { x = 1, y = 2, costs = { move = 4 } },
         })
         expect_equal(2, #dirty)
+        expect_equal(version + 1, field:getVersion())
         expect_true(field:blocks(2, 1, nil, "move"))
         expect_near(4, field:getCost(1, 2, nil, "move"), 0.001)
 
@@ -522,6 +610,91 @@ describe("LTileField atomic patches", function()
             })
         end))
         expect_false(field:blocks(1, 1, nil, "move"))
+    end)
+
+    -- @covers LTileField:preparePatch
+    it("prepares a version-checked field mutation without touching live data", function()
+        local field = lurek.tilefield.new({ width = 3, height = 3 })
+        local version = field:getVersion()
+        local batch = field:preparePatch({
+            { x = 1, y = 1, blocks = { move = true, vision = true } },
+            { x = 2, y = 1, costs = { move = 3 } },
+        }, version)
+        local preview = batch:preview()
+        expect_equal(version, preview.baseVersion)
+        expect_equal(2, preview.patchCount)
+        expect_equal(2, preview.affectedCellCount)
+        expect_true(preview.changed)
+        expect_false(field:blocks(1, 1, nil, "move"))
+        expect_true(batch:isPending())
+
+        local dirty = batch:commit()
+        expect_equal(2, #dirty)
+        expect_false(batch:isPending())
+        expect_equal(version + 1, field:getVersion())
+        expect_true(field:blocks(1, 1, nil, "move"))
+        expect_true(field:blocks(1, 1, nil, "vision"))
+        expect_near(3, field:getCost(2, 1, nil, "move"), 0.001)
+    end)
+
+    -- @covers LTileFieldBatch:preview
+    it("previews affected cells without changing live field data", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        local batch = field:preparePatch({
+            { x = 1, y = 1, blocks = { move = true } },
+        })
+        local preview = batch:preview()
+        expect_equal(1, preview.patchCount)
+        expect_equal(1, preview.affectedCellCount)
+        expect_false(field:blocks(1, 1, nil, "move"))
+    end)
+
+    -- @covers LTileFieldBatch:isPending
+    it("reports whether a prepared patch remains pending", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        local batch = field:preparePatch({})
+        expect_true(batch:isPending())
+        batch:discard()
+        expect_false(batch:isPending())
+    end)
+
+    -- @covers LTileFieldBatch:commit
+    it("keeps conflicted prepared data pending and live state unchanged", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        local batch = field:preparePatch({
+            { x = 1, y = 1, blocks = { move = true } },
+        })
+        field:setBlock(2, 2, nil, "move", true)
+        expect_false(pcall(function() batch:commit() end))
+        expect_true(batch:isPending())
+        expect_false(field:blocks(1, 1, nil, "move"))
+        expect_true(field:blocks(2, 2, nil, "move"))
+    end)
+
+    -- @covers LTileFieldBatch:discard
+    it("supports explicit discard and type checks", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        local batch = field:preparePatch({})
+        expect_equal("LTileFieldBatch", batch:type())
+        expect_true(batch:typeOf("LTileFieldBatch"))
+        expect_true(batch:typeOf("LObject"))
+        expect_true(batch:discard())
+        expect_false(batch:isPending())
+        expect_false(batch:discard())
+    end)
+
+    -- @covers LTileFieldBatch:type
+    it("reports its concrete userdata type", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        expect_equal("LTileFieldBatch", field:preparePatch({}):type())
+    end)
+
+    -- @covers LTileFieldBatch:typeOf
+    it("participates in the LObject type hierarchy", function()
+        local field = lurek.tilefield.new({ width = 2, height = 2 })
+        local batch = field:preparePatch({})
+        expect_true(batch:typeOf("LTileFieldBatch"))
+        expect_true(batch:typeOf("LObject"))
     end)
 end)
 

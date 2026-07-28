@@ -39,6 +39,18 @@ fn physics_runtime_error(method: &str, message: impl std::fmt::Display) -> LuaEr
     LuaError::RuntimeError(format!("lurek.physics.{}: {}", method, message))
 }
 
+/// Validates a finite scalar supplied to one of the compact physics batch APIs.
+fn finite_batch_value(method: &str, field: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(physics_runtime_error(
+            method,
+            format!("{field} must be finite"),
+        ))
+    }
+}
+
 fn lua_collision_group(method: &str, group: i64) -> LuaResult<usize> {
     if !(0..COLLISION_GROUP_COUNT as i64).contains(&group) {
         return Err(physics_runtime_error(
@@ -2536,6 +2548,21 @@ impl LuaUserData for LuaWorld {
                 Ok(())
             },
         );
+        // -- getWrapBounds --
+        /// Returns the current explicit toroidal wrap bounds, or nil when wrapping is disabled.
+        /// The caller decides when bodies are wrapped; this method does not alter simulation state.
+        /// @return | table? | Bounds with `min_x`, `min_y`, `max_x`, and `max_y`, or nil.
+        methods.add_method("getWrapBounds", |lua, this, ()| {
+            let Some((min_x, min_y, max_x, max_y)) = this.world.borrow().get_wrap_bounds() else {
+                return Ok(LuaValue::Nil);
+            };
+            let bounds = lua.create_table()?;
+            bounds.raw_set("min_x", min_x)?;
+            bounds.raw_set("min_y", min_y)?;
+            bounds.raw_set("max_x", max_x)?;
+            bounds.raw_set("max_y", max_y)?;
+            Ok(LuaValue::Table(bounds))
+        });
         // -- wrapBody --
         /// Wraps one body through the current toroidal bounds and returns its final position.
         /// @param | bodyId | integer | Body id to wrap.
@@ -2668,6 +2695,106 @@ impl LuaUserData for LuaWorld {
         /// @return | integer[] | Body ID numbers.
         methods.add_method("getBodyIds", |_, this, ()| {
             Ok(this.world.borrow().get_body_ids())
+        });
+        // -- getBodyStates --
+        /// Reads compact position, angle, and velocity state for many bodies in one Lua boundary crossing.
+        /// @param | ids | integer[] | Array of active body ids.
+        /// @return | table | Array of `{ id, x, y, angle, vx, vy }` state records in input order.
+        methods.add_method("getBodyStates", |lua, this, ids: LuaTable| {
+            let ids = ids
+                .sequence_values::<usize>()
+                .collect::<LuaResult<Vec<_>>>()?;
+            let world = this.world.borrow();
+            let states = lua.create_table()?;
+            for (index, id) in ids.iter().enumerate() {
+                let body = world.get_body(*id).ok_or_else(|| {
+                    physics_runtime_error("getBodyStates", format!("body {id} does not exist"))
+                })?;
+                let state = lua.create_table()?;
+                state.raw_set("id", *id)?;
+                state.raw_set("x", body.position.x)?;
+                state.raw_set("y", body.position.y)?;
+                state.raw_set("angle", body.angle)?;
+                state.raw_set("vx", body.velocity.x)?;
+                state.raw_set("vy", body.velocity.y)?;
+                states.raw_set(index + 1, state)?;
+            }
+            Ok(states)
+        });
+        // -- setBodyStates --
+        /// Applies complete transform and velocity updates atomically after validating every state record.
+        /// @param | states | table | Array of `{ id, x, y, angle?, vx?, vy? }` state records.
+        methods.add_method_mut("setBodyStates", |_, this, states: LuaTable| {
+            let mut parsed = Vec::with_capacity(states.raw_len());
+            for entry in states.sequence_values::<LuaTable>() {
+                let entry = entry?;
+                let id: usize = entry.get("id")?;
+                let x = finite_batch_value("setBodyStates", "x", entry.get("x")?)?;
+                let y = finite_batch_value("setBodyStates", "y", entry.get("y")?)?;
+                let angle = entry
+                    .get::<_, Option<f32>>("angle")?
+                    .map(|value| finite_batch_value("setBodyStates", "angle", value))
+                    .transpose()?;
+                let vx = entry
+                    .get::<_, Option<f32>>("vx")?
+                    .map(|value| finite_batch_value("setBodyStates", "vx", value))
+                    .transpose()?;
+                let vy = entry
+                    .get::<_, Option<f32>>("vy")?
+                    .map(|value| finite_batch_value("setBodyStates", "vy", value))
+                    .transpose()?;
+                if vx.is_some() != vy.is_some() {
+                    return Err(physics_runtime_error(
+                        "setBodyStates",
+                        "vx and vy must be supplied together",
+                    ));
+                }
+                parsed.push((id, x, y, angle, vx, vy));
+            }
+            let mut world = this.world.borrow_mut();
+            if parsed
+                .iter()
+                .any(|(id, _, _, _, _, _)| !world.has_body(*id))
+            {
+                return Err(physics_runtime_error(
+                    "setBodyStates",
+                    "one or more bodies do not exist",
+                ));
+            }
+            for (id, x, y, angle, vx, vy) in parsed {
+                world.set_body_position(id, x, y);
+                if let Some(angle) = angle {
+                    world.set_body_angle(id, angle);
+                }
+                if let (Some(vx), Some(vy)) = (vx, vy) {
+                    world.set_body_velocity(id, vx, vy);
+                }
+            }
+            Ok(())
+        });
+        // -- applyForces --
+        /// Applies many continuous forces through one validated world borrow.
+        /// @param | forces | table | Array of `{ id, fx, fy }` force records.
+        methods.add_method_mut("applyForces", |_, this, forces: LuaTable| {
+            let mut parsed = Vec::with_capacity(forces.raw_len());
+            for entry in forces.sequence_values::<LuaTable>() {
+                let entry = entry?;
+                let id: usize = entry.get("id")?;
+                let fx = finite_batch_value("applyForces", "fx", entry.get("fx")?)?;
+                let fy = finite_batch_value("applyForces", "fy", entry.get("fy")?)?;
+                parsed.push((id, fx, fy));
+            }
+            let mut world = this.world.borrow_mut();
+            if parsed.iter().any(|(id, _, _)| !world.has_body(*id)) {
+                return Err(physics_runtime_error(
+                    "applyForces",
+                    "one or more bodies do not exist",
+                ));
+            }
+            for (id, fx, fy) in parsed {
+                world.apply_force(id, fx, fy);
+            }
+            Ok(())
         });
         // -- hasJoint --
         /// Returns true when a joint ID still refers to a live joint slot.

@@ -26,7 +26,8 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 ## Notes
 
-- No additional module-specific notes.
+- `getFixedTick` increments immediately before each fixed physics callback in interactive and headless execution.
+- `getFixedStepInfo` exposes the current tick, effective/configured step delta, catch-up ceiling, render frame, and fixed-update delta. It is introspection for Lua-owned simulation scheduling, not a cross-module coordinator.
 
 ## Architecture Links
 

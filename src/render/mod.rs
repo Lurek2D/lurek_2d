@@ -60,8 +60,12 @@ pub mod offline_image_shader;
 pub mod postfx_pipeline;
 /// Fullscreen province map shader pipeline and bind-group setup.
 pub mod province_map_pipeline;
+/// Renderer-owned GPU texture upload for CPU province render snapshots.
+pub(crate) mod province_upload;
 /// Aggregate frame budgets applied before expensive render work.
 pub mod render_budget;
+/// Stable public snapshot of normalized active-device capabilities.
+pub mod render_capabilities;
 /// Per-frame diagnostics for skipped render commands and invalid render resources.
 pub mod render_diagnostics;
 /// Surface and device failure classification for app-owned recovery orchestration.
@@ -87,6 +91,7 @@ pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
 pub use postfx_pipeline::PostFxPipeline;
 pub use province_map_pipeline::ProvinceMapPipeline;
 pub use render_budget::{RenderBudget, RenderBudgetError, RenderBudgetLimits};
+pub use render_capabilities::RenderCapabilities;
 pub use render_diagnostics::RenderDiagnostics;
 pub use render_recovery::{
     surface_error_action, RenderRecoveryAction, RenderRecoveryEvent, RenderRecoveryState,
@@ -96,5 +101,5 @@ pub use renderer::{
     BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand,
     RenderCommandCategory, StencilAction, TextAlign, TextureData,
 };
-pub use shader::{Shader, ShaderTarget, UniformValue};
+pub use shader::{Shader, ShaderTarget, ShaderTrust, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};

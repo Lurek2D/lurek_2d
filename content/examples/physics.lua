@@ -1261,6 +1261,35 @@ do
     lurek.log.info("body_count=" .. tostring(world:getBodyCount()))
 end
 
+--@api: LWorld:getBodyStates
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local ids = world:newBodies({ { 10, 20, "dynamic" }, { 30, 40, "dynamic" } })
+    local states = world:getBodyStates(ids)
+    lurek.log.info("first body=" .. states[1].id .. " at " .. states[1].x .. "," .. states[1].y)
+    lurek.log.info("state records=" .. tostring(#states))
+end
+
+--@api: LWorld:setBodyStates
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local ids = world:newBodies({ { 0, 0, "dynamic" } })
+    world:setBodyStates({ { id = ids[1], x = 12, y = 24, vx = 3, vy = 0 } })
+    local state = world:getBodyStates(ids)[1]
+    lurek.log.info("updated x=" .. state.x)
+    lurek.log.info("updated velocity=" .. state.vx .. "," .. state.vy)
+end
+
+--@api: LWorld:applyForces
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local ids = world:newBodies({ { 0, 0, "dynamic" } })
+    world:applyForces({ { id = ids[1], fx = 100, fy = 0 } })
+    local state = world:getBodyStates(ids)[1]
+    lurek.log.info("forces queued for body=" .. ids[1])
+    lurek.log.info("body remains at x=" .. state.x .. " before a step")
+end
+
 --@api: LWorld:getBodyIds
 do
 
@@ -4062,6 +4091,16 @@ do
     local body = world:newBody(120, 50, "dynamic")
     world:wrapBody(body)
     lurek.log.info("[physics] wrapBody x=" .. tostring(body:getX()))
+end
+
+--@api: LWorld:getWrapBounds
+do
+    local world = lurek.physics.newWorld(0, 0)
+    world:setWrapBounds(0, 0, 100, 100)
+    local bounds = world:getWrapBounds()
+    lurek.log.info("wrap min=" .. bounds.min_x .. "," .. bounds.min_y)
+    lurek.log.info("wrap max=" .. bounds.max_x .. "," .. bounds.max_y)
+    world:setWrapBounds(nil)
 end
 
 --@api: LWorld:setTopDownDamping

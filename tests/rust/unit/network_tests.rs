@@ -286,7 +286,11 @@ mod message_tests {
 
 mod relay_and_sync_tests {
     use lurek2d::network::lobby;
-    use lurek2d::network::net_sync::{predict_linear, reconcile, EntitySnapshot};
+    use lurek2d::network::message::NetValue;
+    use lurek2d::network::net_sync::{
+        predict_linear, reconcile, BufferedInput, EntitySnapshot, InputBuffer, InputBufferLimits,
+        InputPushResult,
+    };
     use lurek2d::network::relay::{
         decode_ticket, encode_ticket, make_punch_probe, parse_punch_probe, RelayTicket,
     };
@@ -334,6 +338,95 @@ mod relay_and_sync_tests {
         let merged = reconcile(&predicted, &auth, 0.5);
         assert!(merged.x >= predicted.x.min(auth.x));
         assert!(merged.x <= predicted.x.max(auth.x));
+    }
+
+    #[test]
+    fn input_buffer_orders_by_tick_peer_and_sequence_and_rejects_duplicates() {
+        let mut buffer = InputBuffer::new(InputBufferLimits {
+            max_peers: 2,
+            max_inputs_per_peer: 2,
+            max_future_ticks: 8,
+            max_past_ticks: 2,
+        });
+        assert_eq!(
+            buffer.push(BufferedInput {
+                peer_id: 2,
+                tick: 5,
+                sequence: 1,
+                payload: NetValue::String("peer-two".to_string()),
+            }),
+            InputPushResult::Accepted
+        );
+        assert_eq!(
+            buffer.push(BufferedInput {
+                peer_id: 1,
+                tick: 5,
+                sequence: 1,
+                payload: NetValue::String("peer-one".to_string()),
+            }),
+            InputPushResult::Accepted
+        );
+        assert_eq!(
+            buffer.push(BufferedInput {
+                peer_id: 1,
+                tick: 5,
+                sequence: 1,
+                payload: NetValue::Nil,
+            }),
+            InputPushResult::Duplicate
+        );
+        let drained = buffer.drain_through(5);
+        assert_eq!(drained.len(), 2);
+        assert_eq!(drained[0].peer_id, 1);
+        assert_eq!(drained[1].peer_id, 2);
+        assert_eq!(
+            buffer.push(BufferedInput {
+                peer_id: 1,
+                tick: 2,
+                sequence: 2,
+                payload: NetValue::Nil,
+            }),
+            InputPushResult::TooOld
+        );
+    }
+
+    #[test]
+    fn snapshot_store_resolves_deltas_and_interpolates_without_gameplay_bridges() {
+        use lurek2d::network::net_sync::{SnapshotStore, SyncSnapshot};
+
+        let entity = |tick, x| EntitySnapshot {
+            id: 7,
+            tick,
+            x,
+            y: 0.0,
+            vx: 2.0,
+            vy: 0.0,
+        };
+        let mut store = SnapshotStore::new(2);
+        store
+            .push(&SyncSnapshot::Full {
+                tick: 10,
+                entities: vec![entity(10, 0.0)],
+            })
+            .expect("full frame");
+        store
+            .push(&SyncSnapshot::Delta {
+                tick: 12,
+                base_tick: 10,
+                updates: vec![entity(12, 4.0)],
+                removals: vec![],
+            })
+            .expect("delta frame");
+        assert_eq!(store.frame(12).expect("frame")[0].x, 4.0);
+        assert_eq!(store.interpolate(7, 10, 12, 0.5).expect("entity").x, 2.0);
+        assert!(store
+            .push(&SyncSnapshot::Delta {
+                tick: 13,
+                base_tick: 99,
+                updates: vec![],
+                removals: vec![],
+            })
+            .is_err());
     }
 
     #[test]

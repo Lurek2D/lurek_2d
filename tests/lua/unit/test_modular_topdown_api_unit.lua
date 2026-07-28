@@ -241,6 +241,16 @@ describe("physics top-down combat helpers", function()
         end)
     end)
 
+    -- @covers LWorld:getWrapBounds
+    it("reports configured wrap bounds without applying a wrap", function()
+        local world = lurek.physics.newWorld(0, 0)
+        expect_equal(nil, world:getWrapBounds())
+        world:setWrapBounds(0, 0, 100, 80)
+        local bounds = world:getWrapBounds()
+        expect_equal(0, bounds.min_x)
+        expect_equal(80, bounds.max_y)
+    end)
+
     -- @covers LWorld:wrapBody
     it("wraps bodies into configured bounds", function()
         local world, body = world_and_body()

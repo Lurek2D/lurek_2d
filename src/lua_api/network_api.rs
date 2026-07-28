@@ -328,6 +328,214 @@ fn role_to_string(role: HostRole) -> &'static str {
         HostRole::Host => "host",
     }
 }
+/// Lua-side wrapper for a bounded, deterministic remote-input buffer.
+struct LuaNetworkInputBuffer {
+    /// Input storage uses interior mutability because Lua methods push and drain independently.
+    inner: RefCell<crate::network::net_sync::InputBuffer>,
+}
+
+/// Parses bounded input-buffer options at the public Lua boundary.
+fn input_buffer_limits(
+    opts: Option<LuaTable>,
+) -> LuaResult<crate::network::net_sync::InputBufferLimits> {
+    let mut limits = crate::network::net_sync::InputBufferLimits::default();
+    if let Some(opts) = opts {
+        if let Some(value) = opts.get::<_, Option<usize>>("maxPeers")? {
+            limits.max_peers = value;
+        }
+        if let Some(value) = opts.get::<_, Option<usize>>("maxInputsPerPeer")? {
+            limits.max_inputs_per_peer = value;
+        }
+        if let Some(value) = opts.get::<_, Option<u32>>("maxFutureTicks")? {
+            limits.max_future_ticks = value;
+        }
+        if let Some(value) = opts.get::<_, Option<u32>>("maxPastTicks")? {
+            limits.max_past_ticks = value;
+        }
+    }
+    if limits.max_peers == 0 || limits.max_peers > 256 {
+        return Err(LuaError::RuntimeError(
+            "lurek.network.newInputBuffer: maxPeers must be in 1..=256".to_string(),
+        ));
+    }
+    if limits.max_inputs_per_peer == 0 || limits.max_inputs_per_peer > 4096 {
+        return Err(LuaError::RuntimeError(
+            "lurek.network.newInputBuffer: maxInputsPerPeer must be in 1..=4096".to_string(),
+        ));
+    }
+    Ok(limits)
+}
+
+/// Exposes input buffering only; games decide how drained commands affect their own simulation.
+impl LuaUserData for LuaNetworkInputBuffer {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Stores one serializable remote input and reports its deterministic acceptance result.
+        /// @param | peer_id | integer | Remote peer identifier.
+        /// @param | tick | integer | Simulation tick the input belongs to.
+        /// @param | sequence | integer | Monotonically increasing sequence for that peer.
+        /// @param | payload | any | Serializable game-defined input data.
+        /// @return | boolean | True when the input was accepted.
+        /// @return | string | Result code such as `accepted`, `duplicate`, or `too_old`.
+        methods.add_method(
+            "push",
+            |_, this, (peer_id, tick, sequence, payload): (u32, u32, u32, LuaValue)| {
+                let result =
+                    this.inner
+                        .borrow_mut()
+                        .push(crate::network::net_sync::BufferedInput {
+                            peer_id,
+                            tick,
+                            sequence,
+                            payload: lua_to_netvalue(&payload)?,
+                        });
+                Ok((
+                    matches!(result, crate::network::net_sync::InputPushResult::Accepted),
+                    result.as_str(),
+                ))
+            },
+        );
+
+        /// Drains accepted inputs through a simulation tick in stable tick, peer, and sequence order.
+        /// @param | tick | integer | Inclusive simulation tick to drain.
+        /// @return | table | Array of `{ peer_id, tick, sequence, payload }` input records.
+        methods.add_method("drainThrough", |lua, this, tick: u32| {
+            let inputs = this.inner.borrow_mut().drain_through(tick);
+            let table = lua.create_table()?;
+            for (index, input) in inputs.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.raw_set("peer_id", input.peer_id)?;
+                entry.raw_set("tick", input.tick)?;
+                entry.raw_set("sequence", input.sequence)?;
+                entry.raw_set("payload", netvalue_to_lua(lua, &input.payload)?)?;
+                table.raw_set(index + 1, entry)?;
+            }
+            Ok(table)
+        });
+
+        /// Reports the buffer's finite capacity and current deterministic drain state.
+        /// @return | table | Queue, peer, limits, and drained-through fields.
+        methods.add_method("getStats", |lua, this, ()| {
+            let input = this.inner.borrow();
+            let limits = input.limits();
+            let table = lua.create_table()?;
+            table.raw_set("queued", input.len())?;
+            table.raw_set("peers", input.peer_count())?;
+            table.raw_set("drained_through", input.drained_through())?;
+            table.raw_set("max_peers", limits.max_peers)?;
+            table.raw_set("max_inputs_per_peer", limits.max_inputs_per_peer)?;
+            table.raw_set("max_future_ticks", limits.max_future_ticks)?;
+            table.raw_set("max_past_ticks", limits.max_past_ticks)?;
+            Ok(table)
+        });
+
+        /// Returns the Lua-visible type name of this bounded input-buffer handle.
+        /// @return | string | The string `LNetworkInputBuffer`.
+        methods.add_method("type", |_lua, _this, ()| Ok("LNetworkInputBuffer"));
+        /// Checks this userdata against the public input-buffer type names.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True for `LNetworkInputBuffer` or `LObject`.
+        methods.add_method("typeOf", |_lua, _this, name: String| {
+            Ok(name == "LNetworkInputBuffer" || name == "LObject")
+        });
+    }
+}
+/// Lua-side wrapper for a bounded resolved snapshot history.
+struct LuaNetworkSnapshotStore {
+    /// Snapshot history uses interior mutability because Lua receives and reads frames independently.
+    inner: RefCell<crate::network::net_sync::SnapshotStore>,
+}
+
+/// Exposes snapshot retention and interpolation without connecting snapshots to game subsystems.
+impl LuaUserData for LuaNetworkSnapshotStore {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Resolves and retains one full, corrective, or delta snapshot.
+        /// @param | snapshot | table | Snapshot in the existing `packSnapshot` table format.
+        methods.add_method_mut("push", |_, this, snapshot: LuaTable| {
+            let snapshot = lua_to_sync_snapshot(&snapshot)?;
+            this.inner.borrow_mut().push(&snapshot).map_err(|error| {
+                LuaError::RuntimeError(format!(
+                    "lurek.network.LNetworkSnapshotStore:push: {error:?}; request a full snapshot before retrying"
+                ))
+            })
+        });
+
+        /// Returns one resolved full snapshot frame, or nil when its tick is not retained.
+        /// @param | tick | integer | Snapshot tick to read.
+        /// @return | table | Full resolved snapshot table, or nil.
+        methods.add_method("get", |lua, this, tick: u32| {
+            let Some(entities) = this.inner.borrow().frame(tick) else {
+                return Ok(LuaValue::Nil);
+            };
+            Ok(LuaValue::Table(sync_snapshot_to_lua(
+                lua,
+                &crate::network::net_sync::SyncSnapshot::Full { tick, entities },
+            )?))
+        });
+
+        /// Returns the latest resolved full snapshot frame, or nil when no frame is retained.
+        /// @return | table | Latest full resolved snapshot table, or nil.
+        methods.add_method("latest", |lua, this, ()| {
+            let Some((tick, entities)) = this.inner.borrow().latest() else {
+                return Ok(LuaValue::Nil);
+            };
+            Ok(LuaValue::Table(sync_snapshot_to_lua(
+                lua,
+                &crate::network::net_sync::SyncSnapshot::Full { tick, entities },
+            )?))
+        });
+
+        /// Interpolates one entity between two retained resolved frames.
+        /// @param | id | integer | Entity identifier.
+        /// @param | from_tick | integer | Earlier retained tick.
+        /// @param | to_tick | integer | Later retained tick.
+        /// @param | alpha | number | Interpolation factor clamped to `[0, 1]`.
+        /// @return | table | Interpolated entity snapshot, or nil when either frame lacks it.
+        methods.add_method(
+            "interpolate",
+            |lua, this, (id, from_tick, to_tick, alpha): (u32, u32, u32, f32)| {
+                if !alpha.is_finite() {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.network.LNetworkSnapshotStore:interpolate: alpha must be finite"
+                            .to_string(),
+                    ));
+                }
+                match this
+                    .inner
+                    .borrow()
+                    .interpolate(id, from_tick, to_tick, alpha)
+                {
+                    Some(entity) => Ok(LuaValue::Table(entity_snapshot_to_lua(lua, &entity)?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+
+        /// Returns bounded history capacity, retained ticks, and current frame count.
+        /// @return | table | Snapshot-history statistics.
+        methods.add_method("getStats", |lua, this, ()| {
+            let store = this.inner.borrow();
+            let stats = lua.create_table()?;
+            stats.raw_set("frames", store.len())?;
+            stats.raw_set("capacity", store.capacity())?;
+            let ticks = lua.create_table()?;
+            for (index, tick) in store.ticks().into_iter().enumerate() {
+                ticks.raw_set(index + 1, tick)?;
+            }
+            stats.raw_set("ticks", ticks)?;
+            Ok(stats)
+        });
+
+        /// Returns the Lua-visible type name of this resolved snapshot-store handle.
+        /// @return | string | The string `LNetworkSnapshotStore`.
+        methods.add_method("type", |_lua, _this, ()| Ok("LNetworkSnapshotStore"));
+        /// Checks this userdata against its public type names.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True for `LNetworkSnapshotStore` or `LObject`.
+        methods.add_method("typeOf", |_lua, _this, name: String| {
+            Ok(name == "LNetworkSnapshotStore" || name == "LObject")
+        });
+    }
+}
 /// Lua-side wrapper for a network host.
 pub struct LuaNetworkHost {
     /// Wrapped host inside interior mutability for Lua method calls.
@@ -1262,11 +1470,51 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(arr)
         })?,
     )?;
+    // -- newInputBuffer --
+    /// Creates a bounded input-reordering buffer for Lua-owned fixed-step simulation.
+    /// The game chooses which peers to send to and how drained payloads update gameplay state.
+    /// @param | opts | table? | Limits: `maxPeers`, `maxInputsPerPeer`, `maxFutureTicks`, `maxPastTicks`.
+    /// @return | LNetworkInputBuffer | New deterministic remote-input buffer.
+    tbl.set(
+        "newInputBuffer",
+        lua.create_function(|_, opts: Option<LuaTable>| {
+            Ok(LuaNetworkInputBuffer {
+                inner: RefCell::new(crate::network::net_sync::InputBuffer::new(
+                    input_buffer_limits(opts)?,
+                )),
+            })
+        })?,
+    )?;
+    // -- newSnapshotStore --
+    /// Creates a bounded resolved snapshot history for explicit Lua interpolation and correction.
+    /// It only stores network snapshots; Lua decides how a selected result updates gameplay state.
+    /// @param | opts | table? | Optional `{ capacity = integer }` retention capacity, defaulting to 64 frames.
+    /// @return | LNetworkSnapshotStore | New bounded snapshot history.
+    tbl.set(
+        "newSnapshotStore",
+        lua.create_function(|_, opts: Option<LuaTable>| {
+            let capacity = opts
+                .as_ref()
+                .map(|opts| opts.get::<_, Option<usize>>("capacity"))
+                .transpose()?
+                .flatten()
+                .unwrap_or(64);
+            if !(1..=512).contains(&capacity) {
+                return Err(LuaError::RuntimeError(
+                    "lurek.network.newSnapshotStore: capacity must be in 1..=512".to_string(),
+                ));
+            }
+            Ok(LuaNetworkSnapshotStore {
+                inner: RefCell::new(crate::network::net_sync::SnapshotStore::new(capacity)),
+            })
+        })?,
+    )?;
     // -- newNetState --
-    /// Creates a network state synchronization manager.
-    /// @param | host | LNetworkHost? | Network host for state transport, or nil for offline mode.
-    /// @param | opts | table? | Configuration table with `channel`, `authority`, `turnBased`, `maxDirtyKeys`.
-    /// @return | LNetworkState | New state manager handle.
+    /// Creates a transport-neutral replicated state manager.
+    /// Lua sends payloads from `takeDirty` and `takeRequest`, then passes received payloads to `apply`.
+    /// @param | host | LNetworkHost? | Accepted for compatibility; Lua owns the actual host routing.
+    /// @param | opts | table? | Configuration table with `authority`, `turnBased`, and `maxDirtyKeys`.
+    /// @return | LNetworkState | New explicit-state replication handle.
     tbl.set(
         "newNetState",
         lua.create_function(|lua, (host, opts): (LuaValue, Option<LuaTable>)| {
@@ -1274,16 +1522,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     // -- newRpc --
-    /// Creates a network RPC manager attached to a host.
-    /// @param | host | LNetworkHost | Network host for RPC transport.
-    /// @param | channel | integer? | Optional ENet channel for RPC traffic, defaults to 0.
-    /// @param | timeout_ms | number? | Optional timeout in milliseconds for pending calls, defaults to 30s.
-    /// @return | LNetworkRpc | New RPC manager handle.
+    /// Creates a transport-neutral RPC protocol manager.
+    /// Lua routes packed messages from `takeOutgoing` and supplies received messages to `process`.
+    /// @param | host | LNetworkHost? | Accepted for compatibility; Lua owns the actual host routing.
+    /// @param | channel | integer? | Routing metadata reserved for the game, defaults to 0.
+    /// @param | timeout_seconds | number? | Pending call timeout in seconds, defaults to 30.
+    /// @return | LNetworkRpc | New explicit RPC protocol handle.
     tbl.set(
         "newRpc",
         lua.create_function(
-            |lua, (host, channel, timeout_ms): (LuaValue, Option<u8>, Option<f64>)| {
-                LNetworkRpc::new(lua, host, channel, timeout_ms)
+            |lua, (host, channel, timeout_seconds): (LuaValue, Option<u8>, Option<f64>)| {
+                LNetworkRpc::new(lua, host, channel, timeout_seconds)
             },
         )?,
     )?;

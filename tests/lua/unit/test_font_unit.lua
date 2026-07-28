@@ -242,13 +242,15 @@ describe("lurek.render font functions", function()
   end)
 
   -- @covers lurek.render.getFontWidth
-  it("getFontWidth is a function", function()
-    expect_type("function", lurek.render.getFontWidth)
+  it("accepts a canonical font.load handle", function()
+    local font = lurek.font.load("content/examples/assets/fonts/sample_font.ttf", 14)
+    expect_true(lurek.render.getFontWidth(font, "owner bridge") > 0)
   end)
 
   -- @covers lurek.render.getFontHeight
-  it("getFontHeight is a function", function()
-    expect_type("function", lurek.render.getFontHeight)
+  it("measures a canonical font.load handle", function()
+    local font = lurek.font.load("content/examples/assets/fonts/sample_font.ttf", 14)
+    expect_true(lurek.render.getFontHeight(font) > 0)
   end)
 
   -- @covers lurek.render.getBuiltInFontNames

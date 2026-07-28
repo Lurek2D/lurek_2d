@@ -52,6 +52,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 ## Safety and Ownership Contract
 
 - `TileMap` and `ChunkMap` are the authoritative stores for their respective data. `LargeMapRenderer` owns only an explicitly supplied dense snapshot and its chunk/culling cache; changing a `TileMap` does not silently update a renderer snapshot, and renderer edits do not mutate a `TileMap`.
+- `LChunkMap` exposes a logical tile-content version, prepared batches, bulk reads, regional snapshots, and deterministic regional hashes. Prepared commits validate the whole edit list and advance the version once.
+- `LLargeMapRenderer:setTiles` validates every zero-based dense-snapshot coordinate before the first write and advances its independent snapshot version once. It remains a render snapshot, not a bridge back to `TileMap` or `ChunkMap`.
 - `TileMapLimits` defaults are `maxLayers=256`, `maxTiles=16,777,216`, `maxImportBytes=8 MiB`, `maxDecodedBytes=64 MiB`, `maxChunkCells=1,048,576`, `maxChunks=1,048,576`, and `maxTileOperationCells=1,048,576`. Option tables may lower or raise these ceilings only when the resulting configuration is non-zero and addressable.
 - Fallible constructors and mutators reject invalid limits, zero dimensions, overflowing cell/chunk counts, excessive operations, and mismatched dense payload lengths before allocating. Legacy infallible wrappers retain compatibility by clamping constructor inputs or ignoring typed mutation errors; security-sensitive Lua constructors use the fallible path and return a runtime error.
 - Public Lua indices for layers, tilesets, and autotile operations are one-based. Zero or underflowing indices are rejected rather than wrapping to the final Rust element.

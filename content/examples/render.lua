@@ -509,6 +509,38 @@ do
     lurek.log.info("stats drawcalls=" .. draws .. " textures=" .. textures .. " gpu=" .. gpu)
 end
 
+--@api: lurek.render.getBudgetLimits
+do
+
+    local limits = lurek.render.getBudgetLimits()
+    local commands = limits.commands
+    local indices = limits.geometry_indices
+    local uploads = limits.uploads
+    local upload_bytes = limits.upload_bytes
+    lurek.log.info("render commands=" .. tostring(commands) .. " indices=" .. tostring(indices))
+    lurek.log.info("render uploads=" .. tostring(uploads) .. " bytes=" .. tostring(upload_bytes))
+end
+
+--@api: lurek.render.getCapabilities
+do
+
+    local caps = lurek.render.getCapabilities()
+    lurek.log.info("render max texture dimension = " .. tostring(caps.max_texture_dimension_2d))
+    lurek.log.info("render max buffer bytes = " .. tostring(caps.max_buffer_size))
+    lurek.log.info("timestamp queries = " .. tostring(caps.timestamp_queries))
+    lurek.log.info("shader trust mode = " .. caps.shader_trust_mode)
+end
+
+--@api: lurek.render.getResourceStats
+do
+
+    local resources = lurek.render.getResourceStats()
+    lurek.log.info("render retained bytes = " .. tostring(resources.total_bytes))
+    lurek.log.info("render evictable bytes = " .. tostring(resources.evictable_bytes))
+    lurek.log.info("render live texture count = " .. tostring(resources.texture_count))
+    lurek.log.info("render budget bytes = " .. tostring(resources.budget_bytes))
+end
+
 
 --- Render Module Part 3: images, canvases, quads, sprite batches, draw, drawq, drawMany, nine-slice
 
@@ -521,6 +553,17 @@ do
     lurek.render.draw(image, 90, 10, math.pi / 8, 0.5, 0.5)
     lurek.log.info("image size = " .. w .. "x" .. h)
     lurek.log.info("newImage handle ready")
+end
+
+--@api: lurek.render.newTexture
+do
+    local texture = lurek.render.newTexture("content/examples/assets/images/sample_texture.png", "srgb")
+    local width, height = texture:getDimensions()
+    lurek.render.draw(texture, 20, 70)
+    lurek.log.info("canonical texture size = " .. width .. "x" .. height)
+    local texture_id = texture:getId()
+    lurek.log.info("canonical texture id = " .. texture_id)
+    texture:release()
 end
 
 --@api: LImage:getId
@@ -1325,13 +1368,12 @@ end
 
 --@api: lurek.render.captureScreenshot
 do
-
+    local captured = false
     lurek.render.captureScreenshot(function(data)
+        captured = data:getWidth() > 0 and data:getHeight() > 0
         lurek.log.info("captureScreenshot size = " .. data:getWidth() .. "x" .. data:getHeight())
     end)
-    lurek.render.saveScreenshot("save/render_capture.png")
-    lurek.log.info("captureScreenshot callback invoked")
-    lurek.log.info("saveScreenshot requested")
+    lurek.log.info("captureScreenshot callback invoked=" .. tostring(captured))
 end
 
 --@api: lurek.render.setCanvas
@@ -2163,16 +2205,6 @@ do
     canvas:release()
 end
 
---@api: lurek.render.saveScreenshot
-do
-
-    lurek.render.saveScreenshot("save/test_screenshot.png")
-    local width = lurek.render.getWidth()
-    local height = lurek.render.getHeight()
-    local path = "save/test_screenshot.png"
-    lurek.log.info("saveScreenshot requested for " .. path .. " from " .. width .. "x" .. height)
-end
-
 --@api: lurek.render.setFontLineHeight
 do
 
@@ -2391,4 +2423,256 @@ fn fs(@location(0) color: vec4<f32>, @location(3) resolution: vec2<f32>) -> @loc
     lurek.render.line(8, 96, 128, 96)
     lurek.log.info("active debug shader=" .. tostring(active and active:getTarget() or "nil"))
     lurek.render.setDebugShader(nil)
+end
+--@api: LSpriteBatch:addMany
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    local added = batch:addMany({ { x = 8, y = 8 }, { x = 24, y = 8 } })
+    local count = batch:getCount()
+    local version = batch:getVersion()
+    lurek.log.info("batch added=" .. tostring(added) .. " count=" .. tostring(count))
+    lurek.log.info("batch version=" .. tostring(version))
+end
+
+--@api: LSpriteBatch:setEntries
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    batch:addMany({ { x = 0, y = 0 }, { x = 16, y = 0 } })
+    local changed = batch:setEntries({ { x = 4, y = 4 }, { x = 20, y = 4 } })
+    local diagnostics = batch:getDiagnostics()
+    lurek.log.info("set entries=" .. tostring(changed))
+    lurek.log.info("remaining=" .. tostring(diagnostics.remaining))
+end
+
+--@api: LSpriteBatch:updateEntries
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    batch:addMany({ { x = 0, y = 0 }, { x = 16, y = 0 } })
+    local changed = batch:updateEntries({ { index = 2, x = 24, y = 8 } })
+    local version = batch:getVersion()
+    lurek.log.info("updated entries=" .. tostring(changed))
+    lurek.log.info("version=" .. tostring(version))
+end
+
+--@api: LSpriteBatch:removeEntries
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    batch:addMany({ { x = 0 }, { x = 16 }, { x = 32 } })
+    local removed = batch:removeEntries({ 2 })
+    local count = batch:getCount()
+    lurek.log.info("removed entries=" .. tostring(removed))
+    lurek.log.info("remaining count=" .. tostring(count))
+end
+
+--@api: LSpriteBatch:getVersion
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 4)
+    local before = batch:getVersion()
+    batch:addMany({ { x = 0, y = 0 }, { x = 16, y = 0 } })
+    local after = batch:getVersion()
+    local advanced = after == before + 1
+    lurek.log.info("version advanced once=" .. tostring(advanced))
+end
+
+--@api: LSpriteBatch:getDiagnostics
+do
+    local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local batch = lurek.render.newSpriteBatch(image, 4)
+    batch:addMany({ { x = 0 }, { x = 16 } })
+    local diagnostics = batch:getDiagnostics()
+    local used = diagnostics.count
+    local free = diagnostics.remaining
+    lurek.log.info("batch used=" .. tostring(used))
+    lurek.log.info("batch free=" .. tostring(free))
+end
+
+--@api: lurek.render.requestReadback
+do
+    local request = lurek.render.requestReadback()
+    local status = request:status()
+    local ready = request:isReady()
+    local image = request:result()
+    lurek.log.info("readback status=" .. status .. " ready=" .. tostring(ready))
+    if image ~= nil then
+        lurek.log.info("readback width=" .. tostring(image:getWidth()))
+    end
+    request:release()
+end
+
+--@api: lurek.render.prewarmShaders
+do
+    local code = "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0, 0.0, 1.0, 1.0); }"
+    local shader = lurek.render.newShader(code)
+    local request = lurek.render.prewarmShaders({ shader })
+    local completed, total = request:progress()
+    lurek.log.info("queued shader prewarm " .. completed .. "/" .. total)
+    request:release()
+    shader:release()
+end
+
+--@api: LShaderPrewarmRequest:status
+do
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local request = lurek.render.prewarmShaders({ shader })
+    local status = request:status()
+    lurek.log.info("shader prewarm status=" .. status)
+    request:release()
+    shader:release()
+end
+
+--@api: LShaderPrewarmRequest:poll
+do
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local request = lurek.render.prewarmShaders({ shader })
+    local status = request:poll()
+    lurek.log.info("shader prewarm poll=" .. status)
+    request:release()
+    shader:release()
+end
+
+--@api: LShaderPrewarmRequest:progress
+do
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local request = lurek.render.prewarmShaders({ shader })
+    local completed, total = request:progress()
+    lurek.log.info("shader prewarm progress=" .. completed .. "/" .. total)
+    request:release()
+    shader:release()
+end
+
+--@api: LShaderPrewarmRequest:cancel
+do
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local request = lurek.render.prewarmShaders({ shader })
+    local cancelled = request:cancel()
+    local status = request:status()
+    lurek.log.info("shader prewarm cancelled=" .. tostring(cancelled) .. " status=" .. status)
+    request:release()
+    shader:release()
+end
+
+--@api: LShaderPrewarmRequest:release
+do
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local request = lurek.render.prewarmShaders({ shader })
+    local type_name = request:type()
+    local released = request:release()
+    lurek.log.info("released " .. type_name .. "=" .. tostring(released))
+    shader:release()
+end
+
+--@api: LShaderPrewarmRequest:type
+do
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local request = lurek.render.prewarmShaders({ shader })
+    local type_name = request:type()
+    local is_object = request:typeOf("LObject")
+    lurek.log.info("prewarm type=" .. type_name .. " object=" .. tostring(is_object))
+    request:release()
+    shader:release()
+end
+
+--@api: LShaderPrewarmRequest:typeOf
+do
+    local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
+    local request = lurek.render.prewarmShaders({ shader })
+    local matches = request:typeOf("LShaderPrewarmRequest")
+    local type_name = request:type()
+    lurek.log.info("prewarm typeOf=" .. tostring(matches) .. " type=" .. type_name)
+    request:release()
+    shader:release()
+end
+
+--@api: LReadbackRequest:status
+do
+    local request = lurek.render.requestReadback()
+    local status = request:status()
+    local is_pending = status == "pending"
+    lurek.log.info("readback state=" .. status)
+    lurek.log.info("readback pending=" .. tostring(is_pending))
+    request:release()
+end
+
+--@api: LReadbackRequest:poll
+do
+    local request = lurek.render.requestReadback()
+    local status = request:poll()
+    local pending = status == "pending"
+    local ready = request:isReady()
+    request:release()
+    lurek.log.info("readback poll=" .. status)
+    lurek.log.info("readback pending=" .. tostring(pending) .. " ready=" .. tostring(ready))
+end
+
+--@api: LReadbackRequest:isReady
+do
+    local request = lurek.render.requestReadback()
+    local ready = request:isReady()
+    local status = request:status()
+    lurek.log.info("readback ready=" .. tostring(ready))
+    lurek.log.info("readback status=" .. status)
+    request:release()
+end
+
+--@api: LReadbackRequest:cancel
+do
+    local request = lurek.render.requestReadback()
+    local cancelled = request:cancel()
+    local status = request:status()
+    lurek.log.info("readback cancelled=" .. tostring(cancelled))
+    lurek.log.info("readback status=" .. status)
+    request:release()
+end
+
+--@api: LReadbackRequest:result
+do
+    local request = lurek.render.requestReadback()
+    local image = request:result()
+    local status = request:status()
+    lurek.log.info("readback result=" .. tostring(image ~= nil))
+    lurek.log.info("readback status=" .. status)
+    request:release()
+end
+
+--@api: LReadbackRequest:release
+do
+    local request = lurek.render.requestReadback()
+    local type_name = request:type()
+    local released = request:release()
+    lurek.log.info("readback released=" .. tostring(released))
+    lurek.log.info("readback type=" .. type_name)
+end
+
+--@api: LReadbackRequest:type
+do
+    local request = lurek.render.requestReadback()
+    local type_name = request:type()
+    local is_object = request:typeOf("LObject")
+    lurek.log.info("readback type=" .. type_name)
+    lurek.log.info("readback object=" .. tostring(is_object))
+    request:release()
+end
+
+--@api: LReadbackRequest:typeOf
+do
+    local request = lurek.render.requestReadback()
+    local is_request = request:typeOf("LReadbackRequest")
+    local type_name = request:type()
+    lurek.log.info("is readback request=" .. tostring(is_request))
+    lurek.log.info("readback type=" .. type_name)
+    request:release()
+end
+
+--@api: lurek.render.saveScreenshot
+do
+    lurek.render.saveScreenshot("save/test_screenshot.png")
+    local width = lurek.render.getWidth()
+    local height = lurek.render.getHeight()
+    local path = "save/test_screenshot.png"
+    lurek.log.info("saveScreenshot requested for " .. path .. " from " .. width .. "x" .. height)
 end

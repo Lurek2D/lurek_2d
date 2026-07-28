@@ -1249,3 +1249,145 @@ do
     local blocked = field:blocks(1, 1, nil, "move")
     lurek.log.info("tile patch cost=" .. tostring(cost) .. " blocked=" .. tostring(blocked))
 end
+--@api: LTileField:inspectCells
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setOccupant(2, 2, 1, 41)
+    local rows = field:inspectCells({ { x = 2, y = 2 }, { x = 3, y = 2 } })
+    local first = rows[1].occupant
+    local second = rows[2].occupant
+    lurek.log.info("inspected occupants=" .. tostring(first) .. "," .. tostring(second))
+end
+
+--@api: LTileField:inspectFootprint
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setResource(1, 1, 1, "ore")
+    field:setOccupant(2, 1, 1, 9)
+    local summary = field:inspectFootprint({ x = 1, y = 1, w = 2, h = 2 })
+    local occupied = summary.occupiedCount
+    local resources = summary.resources.ore
+    lurek.log.info("footprint occupied=" .. tostring(occupied))
+    lurek.log.info("footprint resource cells=" .. tostring(resources))
+end
+
+--@api: LTileField:summarizeResources
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setResource(1, 1, 1, "ore")
+    field:setResource(2, 1, 1, "ore")
+    field:setResource(3, 1, 1, "coal")
+    local resources = field:summarizeResources({ x = 1, y = 1, w = 3, h = 1 })
+    lurek.log.info("ore cells=" .. tostring(resources.ore))
+    lurek.log.info("coal cells=" .. tostring(resources.coal))
+end
+
+--@api: LTileField:setFootprintOccupant
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local before = field:getVersion()
+    local changed = field:setFootprintOccupant({ x = 1, y = 1, w = 2, h = 2, occupant = 77 })
+    local occupant = field:getOccupant(2, 2, 1)
+    local after = field:getVersion()
+    lurek.log.info("footprint changed=" .. tostring(changed) .. " occupant=" .. tostring(occupant))
+    lurek.log.info("version advanced once=" .. tostring(after == before + 1))
+end
+
+--@api: LTileField:hashRegion
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setOccupant(2, 2, 1, 77)
+    local first = field:hashRegion({ x = 1, y = 1, w = 3, h = 3 })
+    local second = field:hashRegion({ x = 1, y = 1, w = 3, h = 3 })
+    local stable = first == second
+    lurek.log.info("field region hash=" .. first)
+    lurek.log.info("stable=" .. tostring(stable))
+end
+
+--@api: LTileField:snapshotRegion
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    field:setOccupant(2, 2, 1, 77)
+    local snapshot = field:snapshotRegion({ x = 1, y = 1, w = 3, h = 3 })
+    local cells = #snapshot.cells
+    local hash = snapshot.hash
+    lurek.log.info("snapshot cells=" .. tostring(cells))
+    lurek.log.info("snapshot hash=" .. hash)
+end
+
+--@api: LTileField:preparePatch
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local before = field:getVersion()
+    local batch = field:preparePatch({ { x = 1, y = 1, blocks = { move = true } } }, before)
+    local preview = batch:preview()
+    local pending = batch:isPending()
+    lurek.log.info("prepared patches=" .. tostring(preview.patchCount))
+    lurek.log.info("pending=" .. tostring(pending))
+end
+
+--@api: LTileFieldBatch:preview
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local batch = field:preparePatch({ { x = 1, y = 1, costs = { move = 3 } } })
+    local preview = batch:preview()
+    local affected = preview.affectedCellCount
+    local changed = preview.changed
+    lurek.log.info("affected cells=" .. tostring(affected))
+    lurek.log.info("changed=" .. tostring(changed))
+end
+
+--@api: LTileFieldBatch:commit
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local before = field:getVersion()
+    local batch = field:preparePatch({ { x = 1, y = 1, blocks = { move = true } } })
+    local dirty = batch:commit()
+    local blocked = field:blocks(1, 1, 1, "move")
+    lurek.log.info("dirty cells=" .. tostring(#dirty) .. " blocked=" .. tostring(blocked))
+    lurek.log.info("version=" .. tostring(before + 1))
+end
+
+--@api: LTileFieldBatch:discard
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local batch = field:preparePatch({ { x = 1, y = 1, blocks = { move = true } } })
+    local discarded = batch:discard()
+    local pending = batch:isPending()
+    local blocked = field:blocks(1, 1, 1, "move")
+    lurek.log.info("discarded=" .. tostring(discarded))
+    lurek.log.info("pending=" .. tostring(pending) .. " blocked=" .. tostring(blocked))
+end
+
+--@api: LTileFieldBatch:isPending
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local batch = field:preparePatch({})
+    local before = batch:isPending()
+    batch:discard()
+    local after = batch:isPending()
+    lurek.log.info("pending before=" .. tostring(before))
+    lurek.log.info("pending after=" .. tostring(after))
+end
+
+--@api: LTileFieldBatch:type
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local batch = field:preparePatch({})
+    local type_name = batch:type()
+    local pending = batch:isPending()
+    local preview = batch:preview()
+    lurek.log.info("field batch type=" .. type_name)
+    lurek.log.info("pending=" .. tostring(pending) .. " patches=" .. tostring(preview.patchCount))
+end
+
+--@api: LTileFieldBatch:typeOf
+do
+    local field = lurek.tilefield.new({ width = 4, height = 4 })
+    local batch = field:preparePatch({})
+    local exact = batch:typeOf("LTileFieldBatch")
+    local object = batch:typeOf("LObject")
+    local other = batch:typeOf("LTileField")
+    lurek.log.info("field batch exact=" .. tostring(exact))
+    lurek.log.info("object=" .. tostring(object) .. " other=" .. tostring(other))
+end

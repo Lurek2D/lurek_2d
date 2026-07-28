@@ -533,6 +533,42 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
 
+    // -- canonicalEncode --
+    /// Encodes any supported Lua value as compact canonical JSON with recursively sorted map keys.
+    /// @param | value | any | Supported scalar, sequence, or string-keyed table.
+    /// @param | opts | table? | Standard serialization depth, node, string, and collection limits.
+    /// @return | string | Deterministic canonical JSON text.
+    tbl.set(
+        "canonicalEncode",
+        lua.create_function(|_, (value, opts): (LuaValue, Option<LuaTable>)| {
+            let options = encode_options_from_table(opts)?;
+            let serial = from_lua_with_limits(&value, &options.limits).map_err(|error| {
+                LuaError::RuntimeError(format!("lurek.serialize.canonicalEncode: {error}"))
+            })?;
+            crate::serialize::canonical_encode(&serial, &options.limits).map_err(|error| {
+                LuaError::RuntimeError(format!("lurek.serialize.canonicalEncode: {error}"))
+            })
+        })?,
+    )?;
+
+    // -- canonicalHash --
+    /// Returns a deterministic 64-bit FNV-1a hash of the canonical value encoding.
+    /// @param | value | any | Supported scalar, sequence, or string-keyed table.
+    /// @param | opts | table? | Standard serialization depth, node, string, and collection limits.
+    /// @return | string | Lowercase sixteen-character hexadecimal hash.
+    tbl.set(
+        "canonicalHash",
+        lua.create_function(|_, (value, opts): (LuaValue, Option<LuaTable>)| {
+            let options = encode_options_from_table(opts)?;
+            let serial = from_lua_with_limits(&value, &options.limits).map_err(|error| {
+                LuaError::RuntimeError(format!("lurek.serialize.canonicalHash: {error}"))
+            })?;
+            crate::serialize::canonical_hash(&serial, &options.limits).map_err(|error| {
+                LuaError::RuntimeError(format!("lurek.serialize.canonicalHash: {error}"))
+            })
+        })?,
+    )?;
+
     // -- encodeChangeSet --
     /// Encodes a validated `lurek.event` ChangeSet table for save or network transport.
     /// @param | value | table | Table returned by `LChangeSet:toTable()`.

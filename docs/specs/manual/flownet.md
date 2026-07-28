@@ -25,7 +25,12 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ## Notes
 
-- No additional module-specific notes.
+- `getVersion` and `prepareBatch` cover graph topology only. A prepared topology batch validates every operation, resolves Lua-owned external node keys, and commits exactly once when the live topology version still matches.
+- Numeric ids returned by topology batches, recipe results, and queued events can be resolved with `getNodeById`, `getEdgeById`, and `getItemById`. This keeps cross-module identity maps in Lua without adding an engine bridge.
+- Event delivery is graph-local and explicitly selectable: `callback`, `queue`, `both`, or `none`. The pull queue is bounded, drops the oldest record on overflow, reports cumulative drops, and returns plain records with numeric ids.
+- `snapshot`, `restoreSnapshot`, and `stateHash` own only graph state. Lua is responsible for combining their output with ECS, tile, save, or network state.
+- Named recipes support multiple typed inputs and outputs. `runRecipe` performs bounded inventory matching and item mutation, but it does not own clocks, building state, power, animation, or scheduling; the Lua game decides when to call it.
+- `spawnItems` and `summarizeInventory` are bounded bulk inventory helpers intended to avoid thousands of Lua/Rust crossings without turning flownet into an economy coordinator.
 
 ## Architecture Links
 

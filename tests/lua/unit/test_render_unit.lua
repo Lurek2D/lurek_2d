@@ -435,6 +435,180 @@ describe("lurek.render.captureScreenshot", function()
   end)
 end)
 
+-- @describe lurek.render.requestReadback
+describe("lurek.render.requestReadback", function()
+    -- @covers lurek.render.requestReadback
+    it("creates one pending bounded request and rejects concurrent requests", function()
+        local request = lurek.render.requestReadback()
+        expect_equal("pending", request:status())
+        expect_error(function()
+            lurek.render.requestReadback()
+        end, "lurek.render.requestReadback")
+        expect_true(request:release())
+    end)
+
+    -- @covers LReadbackRequest:status
+    it("status exposes the stable pending lifecycle value", function()
+        local request = lurek.render.requestReadback()
+        expect_equal("pending", request:status())
+        request:release()
+    end)
+
+    -- @covers LReadbackRequest:poll
+    it("poll is non-blocking and reports the current state", function()
+        local request = lurek.render.requestReadback()
+        expect_equal("pending", request:poll())
+        request:release()
+    end)
+
+    -- @covers LReadbackRequest:isReady
+    it("isReady stays false until a frame completes the GPU readback", function()
+        local request = lurek.render.requestReadback()
+        expect_false(request:isReady())
+        request:release()
+    end)
+
+    -- @covers LReadbackRequest:cancel
+    it("cancel transitions a pending request once", function()
+        local request = lurek.render.requestReadback()
+        expect_true(request:cancel())
+        expect_equal("cancelled", request:status())
+        expect_false(request:cancel())
+        request:release()
+    end)
+
+    -- @covers LReadbackRequest:result
+    it("result is nil before completion and does not mutate pending state", function()
+        local request = lurek.render.requestReadback()
+        expect_equal(nil, request:result())
+        expect_equal("pending", request:status())
+        request:release()
+    end)
+
+    -- @covers LReadbackRequest:release
+    it("release invalidates the request handle deterministically", function()
+        local request = lurek.render.requestReadback()
+        expect_true(request:release())
+        expect_false(request:release())
+    end)
+
+    -- @covers lurek.render.saveScreenshot
+    it("readback reserves the one active surface-capture slot", function()
+        local request = lurek.render.requestReadback()
+        expect_error(function()
+            lurek.render.saveScreenshot("save/readback_conflict.png")
+        end, "active")
+        request:release()
+    end)
+
+    -- @covers LReadbackRequest:type
+    it("type returns the readback request name", function()
+        local request = lurek.render.requestReadback()
+        expect_equal("LReadbackRequest", request:type())
+        request:release()
+    end)
+
+    -- @covers LReadbackRequest:typeOf
+    it("typeOf recognizes request and object identities", function()
+        local request = lurek.render.requestReadback()
+        expect_true(request:typeOf("LReadbackRequest"))
+        expect_true(request:typeOf("LObject"))
+        expect_false(request:typeOf("LImageData"))
+        request:release()
+    end)
+end)
+
+-- @describe lurek.render.prewarmShaders
+describe("lurek.render.prewarmShaders", function()
+    -- @covers lurek.render.prewarmShaders
+    it("queues unique live shaders and validates the bounded input array", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        local request = lurek.render.prewarmShaders({ shader, shader })
+        local completed, total = request:progress()
+        expect_equal(0, completed)
+        expect_equal(1, total)
+        expect_error(function()
+            lurek.render.prewarmShaders({})
+        end, "lurek.render.prewarmShaders")
+        request:release()
+        shader:release()
+    end)
+
+    -- @covers LShaderPrewarmRequest:status
+    it("status starts pending before the renderer reaches a frame boundary", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        local request = lurek.render.prewarmShaders({ shader })
+        expect_equal("pending", request:status())
+        request:release()
+        shader:release()
+    end)
+
+    -- @covers LShaderPrewarmRequest:poll
+    it("poll observes the same non-blocking pending state", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        local request = lurek.render.prewarmShaders({ shader })
+        expect_equal("pending", request:poll())
+        request:release()
+        shader:release()
+    end)
+
+    -- @covers LShaderPrewarmRequest:progress
+    it("progress reports completed and total key counts", function()
+        local first = lurek.render.newShader(minimal_shader_code())
+        local second = lurek.render.newShader(draw_shader_code())
+        local request = lurek.render.prewarmShaders({ first, second })
+        local completed, total = request:progress()
+        expect_equal(0, completed)
+        expect_equal(2, total)
+        request:release()
+        first:release()
+        second:release()
+    end)
+
+    -- @covers LShaderPrewarmRequest:cancel
+    it("cancel stops outstanding prewarm work exactly once", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        local request = lurek.render.prewarmShaders({ shader })
+        expect_true(request:cancel())
+        expect_equal("cancelled", request:status())
+        expect_false(request:cancel())
+        request:release()
+        shader:release()
+    end)
+
+    -- @covers LShaderPrewarmRequest:release
+    it("release removes the request and makes later lifecycle reads stale", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        local request = lurek.render.prewarmShaders({ shader })
+        expect_true(request:release())
+        expect_false(request:release())
+        expect_error(function()
+            request:status()
+        end, "lurek.render.LShaderPrewarmRequest")
+        shader:release()
+    end)
+
+    -- @covers LShaderPrewarmRequest:type
+    it("type returns the prewarm request name", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        local request = lurek.render.prewarmShaders({ shader })
+        expect_equal("LShaderPrewarmRequest", request:type())
+        request:release()
+        shader:release()
+    end)
+
+    -- @covers LShaderPrewarmRequest:typeOf
+    it("typeOf recognizes prewarm request and object identities", function()
+        local shader = lurek.render.newShader(minimal_shader_code())
+        local request = lurek.render.prewarmShaders({ shader })
+        expect_true(request:typeOf("LShaderPrewarmRequest"))
+        expect_true(request:typeOf("LObject"))
+        expect_false(request:typeOf("LShader"))
+        request:release()
+        shader:release()
+    end)
+end)
+
 -- @describe lurek.render.saveScreenshot
 describe("lurek.render.saveScreenshot", function()
     -- @covers lurek.render.saveScreenshot
@@ -722,6 +896,41 @@ describe("render strict: screen globals", function()
         expect_type("table", stats)
     end)
 
+    -- @covers lurek.render.getBudgetLimits
+    it("getBudgetLimits exposes positive read-only engine limits", function()
+        local limits = lurek.render.getBudgetLimits()
+        expect_type("table", limits)
+        expect_type("number", limits.commands)
+        expect_type("number", limits.geometry_indices)
+        expect_type("number", limits.glyphs)
+        expect_type("number", limits.upload_bytes)
+        expect_true(limits.commands > 0)
+        expect_true(limits.upload_bytes > 0)
+    end)
+
+    -- @covers lurek.render.getCapabilities
+    it("getCapabilities exposes normalized read-only render capabilities", function()
+        local capabilities = lurek.render.getCapabilities()
+        expect_type("table", capabilities)
+        expect_type("number", capabilities.max_texture_dimension_2d)
+        expect_type("number", capabilities.max_buffer_size)
+        expect_type("boolean", capabilities.timestamp_queries)
+        expect_type("boolean", capabilities.asynchronous_readback)
+        expect_type("boolean", capabilities.deterministic_software_replay)
+        expect_equal("project_fragment_only", capabilities.shader_trust_mode)
+    end)
+
+    -- @covers lurek.render.getResourceStats
+    it("getResourceStats exposes retained bytes and resource counts", function()
+        local stats = lurek.render.getResourceStats()
+        expect_type("table", stats)
+        expect_type("number", stats.total_bytes)
+        expect_type("number", stats.evictable_bytes)
+        expect_type("number", stats.non_evictable_bytes)
+        expect_type("number", stats.texture_count)
+        expect_true(stats.total_bytes >= 0)
+    end)
+
     -- @covers lurek.render.setLayerVisible
     it("setLayerVisible is callable with a name and bool", function()
         local ok = pcall(lurek.render.setLayerVisible, "hud", false)
@@ -823,6 +1032,11 @@ describe("render strict: canvas and shader", function()
 
     -- @covers lurek.render.newCanvas
     it("newCanvas creates a canvas userdata with requested dimensions", function()
+        lurek.engine.setResourceBudget(1)
+        expect_error(function()
+            lurek.render.newCanvas(12, 9)
+        end, "lurek.render.newCanvas")
+        lurek.engine.setResourceBudget(0)
         local canvas = lurek.render.newCanvas(12, 9)
         expect_type("userdata", canvas)
         expect_equal(12, canvas:getWidth())
@@ -1420,8 +1634,92 @@ describe("render strict: LSpriteBatch methods", function()
     it("LSpriteBatch add returns the inserted sprite index", function()
         local sb = lurek.render.newSpriteBatch(icon_image(), 8)
         local idx = sb:add(10, 20, 0, 1, 1, 0, 0)
-        expect_type("number", idx)
+        expect_equal(1, idx)
         expect_equal(1, sb:getCount())
+    end)
+
+    -- @covers LSpriteBatch:addComposite
+    it("LSpriteBatch addComposite validates and appends atomically", function()
+        local sb = lurek.render.newSpriteBatch(icon_image(), 2)
+        expect_equal(2, sb:addComposite({
+            { x = 1, y = 2 },
+            { x = 3, y = 4, quadX = 0, quadY = 0, quadW = 8, quadH = 8 },
+        }))
+        expect_equal(2, sb:getCount())
+        local ok, err = pcall(function()
+            sb:addComposite({ { x = 5, y = 6 } })
+        end)
+        expect_false(ok)
+        expect_true(tostring(err):find("lurek.render.LSpriteBatch:addComposite", 1, true) ~= nil)
+        expect_equal(2, sb:getCount())
+    end)
+
+    -- @covers LSpriteBatch:addMany
+    it("LSpriteBatch addMany appends a validated entry array in one mutation", function()
+        local sb = lurek.render.newSpriteBatch(icon_image(), 4)
+        local version = sb:getVersion()
+        expect_equal(2, sb:addMany({ { x = 1, y = 2 }, { x = 3, y = 4 } }))
+        expect_equal(2, sb:getCount())
+        expect_equal(version + 1, sb:getVersion())
+    end)
+
+    -- @covers LSpriteBatch:setEntries
+    it("LSpriteBatch setEntries replaces content and rejects oversized input atomically", function()
+        local sb = lurek.render.newSpriteBatch(icon_image(), 2)
+        expect_equal(2, sb:setEntries({ { x = 1, y = 2 }, { x = 3, y = 4 } }))
+        local version = sb:getVersion()
+        expect_error(function()
+            sb:setEntries({ { x = 5 }, { x = 6 }, { x = 7 } })
+        end)
+        expect_equal(2, sb:getCount())
+        expect_equal(version, sb:getVersion())
+    end)
+
+    -- @covers LSpriteBatch:updateEntries
+    it("LSpriteBatch updateEntries uses one-based indices and validates before mutation", function()
+        local sb = lurek.render.newSpriteBatch(icon_image(), 3)
+        sb:setEntries({ { x = 1 }, { x = 2 }, { x = 3 } })
+        local version = sb:getVersion()
+        expect_equal(1, sb:updateEntries({ { index = 2, x = 20, y = 5 } }))
+        expect_equal(version + 1, sb:getVersion())
+        local stable = sb:getVersion()
+        expect_error(function()
+            sb:updateEntries({ { index = 1, x = 10 }, { index = 8, x = 80 } })
+        end)
+        expect_equal(stable, sb:getVersion())
+    end)
+
+    -- @covers LSpriteBatch:removeEntries
+    it("LSpriteBatch removeEntries removes unique one-based positions atomically", function()
+        local sb = lurek.render.newSpriteBatch(icon_image(), 3)
+        sb:setEntries({ { x = 1 }, { x = 2 }, { x = 3 } })
+        expect_error(function()
+            sb:removeEntries({ 1, 1 })
+        end)
+        expect_equal(3, sb:getCount())
+        expect_equal(2, sb:removeEntries({ 1, 3 }))
+        expect_equal(1, sb:getCount())
+    end)
+
+    -- @covers LSpriteBatch:getVersion
+    it("LSpriteBatch getVersion changes once for each successful content mutation", function()
+        local sb = lurek.render.newSpriteBatch(icon_image(), 4)
+        local version = sb:getVersion()
+        sb:addMany({ { x = 1 }, { x = 2 } })
+        expect_equal(version + 1, sb:getVersion())
+        sb:clear()
+        expect_equal(version + 2, sb:getVersion())
+    end)
+
+    -- @covers LSpriteBatch:getDiagnostics
+    it("LSpriteBatch getDiagnostics reports deterministic capacity state", function()
+        local sb = lurek.render.newSpriteBatch(icon_image(), 4)
+        sb:addMany({ { x = 1 }, { x = 2 } })
+        local diagnostics = sb:getDiagnostics()
+        expect_equal(2, diagnostics.count)
+        expect_equal(4, diagnostics.capacity)
+        expect_equal(2, diagnostics.remaining)
+        expect_equal(sb:getVersion(), diagnostics.version)
     end)
 
     -- @covers LSpriteBatch:getBufferSize
@@ -1723,6 +2021,25 @@ describe("render strict: batch text and OBJ APIs", function()
             lurek.render.newImage("assets/icon.png", "gamma")
         end)
         expect_equal(false, ok)
+    end)
+
+    -- @covers lurek.render.newTexture
+    it("newTexture preserves the image alias validation and returns a texture handle", function()
+        local srgb = lurek.render.newTexture("assets/icon.png", "srgb")
+        local linear = lurek.render.newTexture("assets/icon.png", "linear")
+        expect_type("userdata", srgb)
+        expect_type("userdata", linear)
+        expect_type("number", srgb:getId())
+        expect_error(function()
+            lurek.render.newTexture("assets/icon.png", "gamma")
+        end, "lurek.render.newTexture")
+        srgb:release()
+        linear:release()
+        lurek.engine.setResourceBudget(1)
+        expect_error(function()
+            lurek.render.newTexture("assets/icon.png", "srgb")
+        end, "lurek.render.newTexture")
+        lurek.engine.setResourceBudget(0)
     end)
 
     -- @covers lurek.render.loadObj

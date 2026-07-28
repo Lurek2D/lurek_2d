@@ -5,7 +5,7 @@ use lurek2d::render::{Canvas, Shader, TextureData};
 use lurek2d::runtime::config::{ConfigLoadOptions, ConfigValidationMode, ModulesConfig};
 use lurek2d::runtime::{
     call_function_with_policy, run_headless_checked, Config, EngineError, HeadlessOptions,
-    LuaExecutionPolicy, RuntimeMode, SharedState,
+    LuaExecutionPolicy, RuntimeMode, ShaderPrewarmRequest, ShaderPrewarmRequestState, SharedState,
 };
 use lurek2d::window;
 use mlua::Lua;
@@ -336,7 +336,79 @@ fn fs_main(
     }
 
     #[test]
-    fn evict_lru_resources_removes_oldest_textures_until_budget_fits() {
+    fn public_resource_budget_rejects_only_new_allocations() {
+        let mut st = SharedState::new(800, 600, "Test", PathBuf::from("."));
+        st.resource_budget_bytes = 64;
+
+        assert!(st.can_allocate_public_resource(64));
+        assert!(!st.can_allocate_public_resource(65));
+
+        let texture = insert_texture(&mut st, 4, 4);
+        assert!(st.textures.get(texture).is_some());
+        assert!(!st.can_allocate_public_resource(1));
+        assert!(st.textures.get(texture).is_some());
+    }
+
+    #[test]
+    fn shader_prewarm_scheduler_drains_in_order_under_the_requested_budget() {
+        let mut st = SharedState::new(800, 600, "Test", PathBuf::from("."));
+        let first = st.shaders.insert(sample_shader());
+        let second = st.shaders.insert(sample_shader());
+        let third = st.shaders.insert(sample_shader());
+        st.shader_prewarm_requests.insert(
+            7,
+            ShaderPrewarmRequest {
+                id: 7,
+                state: ShaderPrewarmRequestState::Pending,
+                remaining: vec![first, second, third].into(),
+                in_flight: 0,
+                completed: 0,
+                total: 3,
+            },
+        );
+
+        let first_batch = st.take_shader_prewarm_work(2);
+        assert_eq!(first_batch, vec![(7, first), (7, second)]);
+        st.finish_shader_prewarm_work(&[(7, true), (7, true)]);
+        let request = st.shader_prewarm_requests.get(&7).expect("request");
+        assert_eq!(request.completed, 2);
+        assert_eq!(request.state, ShaderPrewarmRequestState::Pending);
+
+        let second_batch = st.take_shader_prewarm_work(2);
+        assert_eq!(second_batch, vec![(7, third)]);
+        st.finish_shader_prewarm_work(&[(7, true)]);
+        let request = st.shader_prewarm_requests.get(&7).expect("request");
+        assert_eq!(request.completed, 3);
+        assert_eq!(request.state, ShaderPrewarmRequestState::Ready);
+    }
+
+    #[test]
+    fn shader_prewarm_scheduler_marks_a_rejected_entry_failed() {
+        let mut st = SharedState::new(800, 600, "Test", PathBuf::from("."));
+        let shader = st.shaders.insert(sample_shader());
+        st.shader_prewarm_requests.insert(
+            9,
+            ShaderPrewarmRequest {
+                id: 9,
+                state: ShaderPrewarmRequestState::Pending,
+                remaining: vec![shader].into(),
+                in_flight: 0,
+                completed: 0,
+                total: 1,
+            },
+        );
+
+        let batch = st.take_shader_prewarm_work(1);
+        assert_eq!(batch, vec![(9, shader)]);
+        st.finish_shader_prewarm_work(&[(9, false)]);
+        let request = st.shader_prewarm_requests.get(&9).expect("request");
+        assert_eq!(request.completed, 0);
+        assert!(request.remaining.is_empty());
+        assert_eq!(request.state, ShaderPrewarmRequestState::Failed);
+    }
+
+    #[test]
+    fn resource_budget_pressure_preserves_live_texture_handles() {
         let mut st = SharedState::new(800, 600, "Test", PathBuf::from("."));
         let oldest = insert_texture(&mut st, 4, 4);
         let newest = insert_texture(&mut st, 2, 2);
@@ -346,14 +418,16 @@ fn fs_main(
         st.frame_counter = 10;
         st.touch_texture(newest);
 
-        st.evict_lru_resources();
+        let report = st.evict_lru_resources();
 
-        assert!(st.textures.get(oldest).is_none());
+        assert!(st.textures.get(oldest).is_some());
         assert!(st.textures.get(newest).is_some());
-        assert!(!st.texture_last_used.contains_key(&oldest));
+        assert!(st.texture_last_used.contains_key(&oldest));
         assert!(st.texture_last_used.contains_key(&newest));
-        assert_eq!(st.resource_memory_stats().total_bytes, 16);
-        assert!(!st.released_texture_handles.is_empty());
+        assert_eq!(st.resource_memory_stats().total_bytes, 80);
+        assert_eq!(report.evicted_texture_count, 0);
+        assert_eq!(report.remaining_over_budget_bytes, 48);
+        assert!(st.released_texture_handles.is_empty());
     }
 
     #[test]
@@ -391,10 +465,10 @@ fn fs_main(
 
         let report = st.evict_lru_resources();
 
-        assert_eq!(report.evicted_texture_count, 1);
-        assert!(report.evicted_texture_bytes > 0);
+        assert_eq!(report.evicted_texture_count, 0);
+        assert_eq!(report.evicted_texture_bytes, 0);
         assert!(report.non_evictable_over_budget_bytes > 0);
-        assert_eq!(report.after.texture_count, 0);
+        assert_eq!(report.after.texture_count, 1);
     }
 
     #[test]

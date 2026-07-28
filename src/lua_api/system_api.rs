@@ -225,6 +225,41 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- getFixedTick --
+    /// Returns the monotonic `process_physics` simulation tick.
+    /// @return | integer | Tick count incremented immediately before each fixed physics callback.
+    let fixed_tick_state = state.clone();
+    system.set(
+        "getFixedTick",
+        lua.create_function(move |_, ()| Ok(fixed_tick_state.borrow().physics_run.tick))?,
+    )?;
+
+    // -- getFixedStepInfo --
+    /// Returns fixed-step timing and counters for deterministic Lua simulation orchestration.
+    /// @return | table | Tick, step delta, configured delta, catch-up ceiling, and render frame.
+    let fixed_step_state = state.clone();
+    system.set(
+        "getFixedStepInfo",
+        lua.create_function(move |lua, ()| {
+            let state = fixed_step_state.borrow();
+            let info = lua.create_table()?;
+            info.set("tick", state.physics_run.tick)?;
+            info.set(
+                "dt",
+                if state.physics_run.last_step_dt > 0.0 {
+                    state.physics_run.last_step_dt
+                } else {
+                    state.physics_run.fixed_dt
+                },
+            )?;
+            info.set("configuredDt", state.physics_run.fixed_dt)?;
+            info.set("maxCatchUpSteps", state.physics_run.max_steps)?;
+            info.set("frame", state.frame_counter)?;
+            info.set("fixedUpdateDt", state.physics_run.fixed_update_dt)?;
+            Ok(info)
+        })?,
+    )?;
+
     let s = state.clone();
 
     // -- setDebugOverlay --

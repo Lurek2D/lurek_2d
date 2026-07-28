@@ -13,7 +13,7 @@
 - Source path: `src/flownet`
 - Binding: `src/lua_api/flownet_api.rs`
 - Namespace: `lurek.graph`
-- Lua API surface: `1` functions, `7` types, `140` methods
+- Lua API surface: `1` functions, `8` types, `166` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -190,22 +190,30 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraph:batchAddEdges(edges) -> integer[]`: Creates multiple edges from a table of {from_id, to_id} or {from_id, to_id, edge_type} entries.
 - `LGraph:batchAddNodes(count, config?) -> integer[]`: Creates multiple nodes at once, returning their IDs as a table.
 - `LGraph:batchStep(dt, iterations) -> nil`: Runs multiple simulation steps in sequence. More efficient than calling step() in a loop from Lua.
+- `LGraph:clearEvents() -> integer`: Discards all queued pull events.
 - `LGraph:colorGraph() -> table`: Computes graph coloring and returns color indices by node id.
 - `LGraph:createItem(item_type?, decay_time?) -> LGraphItem`: Creates an unplaced graph item with optional type and decay time.
+- `LGraph:drainEvents(maxCount?) -> table`: Removes and returns queued graph events in deterministic emission order.
 - `LGraph:findPath(from_ud, to_ud) -> table`: Finds a path between two graph nodes.
 - `LGraph:findPathForItem(item_ud, from_ud, to_ud) -> table`: Finds a path for a specific item between two nodes while respecting item constraints.
 - `LGraph:getComponents() -> LGraphNode[]`: Returns connected components as arrays of node handles.
 - `LGraph:getDistance(from_ud, to_ud) -> number`: Returns graph distance between two nodes when reachable.
 - `LGraph:getEdgeBetween(from_ud, to_ud) -> LGraphEdge`: Returns the edge connecting two nodes when one exists.
+- `LGraph:getEdgeById(id) -> LGraphEdge?`: Resolves a stable numeric edge id to a graph-local handle.
 - `LGraph:getEdgeCount() -> integer`: Returns the number of edges in this graph.
 - `LGraph:getEdges() -> LGraphEdge[]`: Returns all edges in this logistics graph.
+- `LGraph:getEventMode() -> string`: Returns the current event delivery mode.
+- `LGraph:getEventQueueStats() -> table`: Returns queue diagnostics without draining events.
+- `LGraph:getItemById(id) -> LGraphItem?`: Resolves a stable numeric item id to a graph-local handle.
 - `LGraph:getItemCount() -> integer`: Returns the number of items in this graph.
 - `LGraph:getItems() -> LGraphItem[]`: Returns all items in this logistics graph.
 - `LGraph:getNeighbors(node_ud) -> LGraphNode[]`: Returns neighbor nodes connected to a node.
+- `LGraph:getNodeById(id) -> LGraphNode?`: Resolves a stable numeric node id to a graph-local handle.
 - `LGraph:getNodeCount() -> integer`: Returns the number of nodes in this graph.
 - `LGraph:getNodes() -> LGraphNode[]`: Returns all nodes in this logistics graph.
 - `LGraph:getReachable(from_ud, max_dist?) -> LGraphNode[]`: Returns nodes reachable from a start node within an optional maximum distance.
 - `LGraph:getStats() -> table`: Returns graph counts and aggregate supply-demand statistics.
+- `LGraph:getVersion() -> integer`: Returns the monotonic graph topology version.
 - `LGraph:hasCycle() -> boolean`: Returns whether this graph contains a cycle.
 - `LGraph:hasEdge(edge_ud) -> boolean`: Returns whether an edge handle still exists in this graph.
 - `LGraph:hasItem(item_ud) -> boolean`: Returns whether an item handle still exists in this graph.
@@ -213,13 +221,21 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraph:isBipartite() -> boolean`: Returns whether this graph is bipartite.
 - `LGraph:mst() -> integer[]`: Computes a minimum spanning tree using Kruskal and returns edge ids.
 - `LGraph:on(event_name, func) -> nil`: Registers a callback for a named graph event generated during simulation.
+- `LGraph:prepareBatch(edits, expectedVersion?) -> LGraphTopologyBatch`: Validates and stages graph topology edits without mutating the live graph.
 - `LGraph:processDemand() -> nil`: Processes graph supply and demand once and dispatches generated callbacks.
 - `LGraph:removeEdge(edge_ud) -> boolean`: Removes an edge by handle on this object.
 - `LGraph:removeItem(item_ud) -> boolean`: Removes an item from this logistics graph.
 - `LGraph:removeNode(node_ud) -> boolean`: Removes a node and graph links associated with it.
+- `LGraph:restoreSnapshot(snapshot, expectedVersion?) -> nil`: Replaces graph state from a versioned snapshot without changing Lua callbacks.
 - `LGraph:sendItem(item_ud, edge_ud) -> nil`: Starts moving an item along an edge.
+- `LGraph:setEventMode(mode) -> nil`: Selects callback delivery, pull-queue delivery, both, or no delivery.
+- `LGraph:setEventQueueLimit(limit) -> nil`: Sets the bounded pull-event queue capacity, dropping oldest queued records if needed.
+- `LGraph:snapshot() -> string`: Serializes complete graph state to deterministic compact JSON.
+- `LGraph:spawnItems(node, itemType, count, decayTime?) -> integer[]`: Creates many same-type items directly in one node inventory.
+- `LGraph:stateHash() -> string`: Returns a deterministic hash of complete graph simulation state.
 - `LGraph:step() -> nil`: Runs one discrete graph simulation step and dispatches generated callbacks.
 - `LGraph:subgraph(nodes) -> LGraph`: Creates a new graph containing a subset of nodes.
+- `LGraph:summarizeInventory() -> table`: Returns aggregate item ownership and alive counts by item type.
 - `LGraph:tickParallel(dt) -> nil`: Advances graph simulation through the parallel update path and dispatches generated callbacks.
 - `LGraph:topologicalSort() -> LGraphNode[]`: Returns nodes in topological order when the graph is acyclic.
 - `LGraph:type() -> string`: Returns the Lua-visible type name for this graph handle.
@@ -377,6 +393,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphNode:getPushRate() -> number`: Returns this node's push rate value.
 - `LGraphNode:getQueueCapacity() -> integer`: Returns this node's queue capacity.
 - `LGraphNode:getQueueSize() -> integer`: Returns the number of item ids currently queued at this node.
+- `LGraphNode:getRecipes() -> table`: Returns stored recipes in deterministic name order.
 - `LGraphNode:getReservedCapacity() -> integer`: Returns the total item capacity reserved on this node across all reservation keys.
 - `LGraphNode:getTags() -> string[]`: Returns all tags assigned to this node.
 - `LGraphNode:getType() -> string`: Returns this node's type classification string.
@@ -386,9 +403,11 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphNode:isQueueEnabled() -> boolean`: Returns whether this node's explicit queue is enabled.
 - `LGraphNode:releaseCapacityReservation(key, slots?) -> integer`: Releases reserved node capacity for a key and returns the number of slots removed.
 - `LGraphNode:removeDemand(item_type) -> boolean`: Removes demand entry for an item type from this node.
+- `LGraphNode:removeRecipe(name) -> boolean`: Removes one named explicit recipe.
 - `LGraphNode:removeSupply(item_type) -> boolean`: Removes supply entry for an item type from this node.
 - `LGraphNode:removeTag(tag) -> boolean`: Removes a tag from this node on this object.
 - `LGraphNode:reserveCapacity(key, slots?) -> boolean`: Reserves node inventory capacity under a caller-provided key for planning and coordination.
+- `LGraphNode:runRecipe(name, maxRuns?) -> table`: Executes a stored recipe as a bounded inventory operation.
 - `LGraphNode:setActive(a) -> nil`: Enables or disables this node for graph simulation.
 - `LGraphNode:setCapacity(c) -> nil`: Sets this node's item capacity value.
 - `LGraphNode:setConversion(in_type, out_type, in_count?, out_count?) -> nil`: Configures an item conversion rule on this node.
@@ -401,9 +420,27 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphNode:setPushRate(r) -> nil`: Sets this node's push rate for this object.
 - `LGraphNode:setQueueCapacity(c) -> nil`: Sets this node's queue capacity value.
 - `LGraphNode:setQueueEnabled(e) -> nil`: Enables or disables this node's explicit queue.
+- `LGraphNode:setRecipe(name, inputs, outputs) -> nil`: Stores a named multi-input, multi-output recipe without scheduling it.
 - `LGraphNode:setType(t) -> nil`: Sets this node's type string for this object.
 - `LGraphNode:type() -> string`: Returns the Lua-visible type name for this graph node handle.
 - `LGraphNode:typeOf(name) -> boolean`: Returns whether this graph node handle matches a supported type name.
+
+#### LGraphTopologyBatch Type
+
+- Prepared, version-checked topology mutation for one existing graph.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LGraphTopologyBatch:commit() -> table`: Commits this topology batch if the graph topology version is unchanged.
+- `LGraphTopologyBatch:discard() -> boolean`: Discards this prepared topology mutation.
+- `LGraphTopologyBatch:isPending() -> boolean`: Returns whether this topology batch remains pending.
+- `LGraphTopologyBatch:preview() -> table`: Returns deterministic metadata and created-id previews for this topology batch.
+- `LGraphTopologyBatch:type() -> string`: Returns this userdata type name.
+- `LGraphTopologyBatch:typeOf(name) -> boolean`: Checks whether this userdata matches a requested type.
 
 ## Examples
 
@@ -415,4 +452,9 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ## Notes
 
-- No additional module-specific notes.
+- `getVersion` and `prepareBatch` cover graph topology only. A prepared topology batch validates every operation, resolves Lua-owned external node keys, and commits exactly once when the live topology version still matches.
+- Numeric ids returned by topology batches, recipe results, and queued events can be resolved with `getNodeById`, `getEdgeById`, and `getItemById`. This keeps cross-module identity maps in Lua without adding an engine bridge.
+- Event delivery is graph-local and explicitly selectable: `callback`, `queue`, `both`, or `none`. The pull queue is bounded, drops the oldest record on overflow, reports cumulative drops, and returns plain records with numeric ids.
+- `snapshot`, `restoreSnapshot`, and `stateHash` own only graph state. Lua is responsible for combining their output with ECS, tile, save, or network state.
+- Named recipes support multiple typed inputs and outputs. `runRecipe` performs bounded inventory matching and item mutation, but it does not own clocks, building state, power, animation, or scheduling; the Lua game decides when to call it.
+- `spawnItems` and `summarizeInventory` are bounded bulk inventory helpers intended to avoid thousands of Lua/Rust crossings without turning flownet into an economy coordinator.

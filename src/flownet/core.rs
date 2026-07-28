@@ -16,9 +16,22 @@ use super::item::{GraphItem, ItemPosition};
 use super::node::{Node, OverflowPolicy};
 use crate::log_msg;
 use crate::runtime::log_messages::{GC01, GC02, GC03, GC04};
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 const FLOWNET_SERIALIZE_VERSION: u64 = 2;
+
+fn resolve_topology_node(
+    node: &TopologyNodeRef,
+    external_nodes: &BTreeMap<String, u64>,
+) -> Result<u64, String> {
+    match node {
+        TopologyNodeRef::Existing(id) => Ok(*id),
+        TopologyNodeRef::External(key) => external_nodes
+            .get(key)
+            .copied()
+            .ok_or_else(|| format!("unknown external node key '{key}'")),
+    }
+}
 /// Aggregate counts derived from the current graph state.
 #[derive(Debug, Clone)]
 pub struct GraphStats {
@@ -43,7 +56,38 @@ pub struct GraphStats {
     /// Number of queued items across all nodes.
     pub queued_items: usize,
 }
+
+/// Aggregate inventory counts for Lua-side economy and UI orchestration.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GraphInventorySummary {
+    /// Total stored item records.
+    pub total: usize,
+    /// Items whose alive flag is set.
+    pub alive: usize,
+    /// Items currently owned by node inventories or queues.
+    pub at_nodes: usize,
+    /// Items currently traveling on edges.
+    pub in_transit: usize,
+    /// Items with no current container.
+    pub unplaced: usize,
+    /// Items specifically waiting in node queues.
+    pub queued: usize,
+    /// Alive item counts keyed by item type in deterministic order.
+    pub by_type: BTreeMap<String, usize>,
+}
+
+/// Result of one bounded explicit multi-input recipe execution.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecipeExecution {
+    /// Number of complete recipe runs performed.
+    pub runs: u32,
+    /// Consumed item ids in deterministic type and inventory order.
+    pub consumed: Vec<u64>,
+    /// Produced item ids in deterministic output order.
+    pub produced: Vec<u64>,
+}
 /// Main graph container with nodes, edges, items, and adjacency indexes.
+#[derive(Clone)]
 pub struct Graph {
     /// Stored nodes by id.
     pub nodes: HashMap<u64, Node>,
@@ -61,6 +105,82 @@ pub struct Graph {
     next_edge_id: u64,
     /// Next item id to assign.
     next_item_id: u64,
+    /// Monotonic topology version used by prepared graph edits.
+    topology_version: u64,
+}
+
+/// Node target used by prepared topology edits.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TopologyNodeRef {
+    /// Existing numeric graph node id.
+    Existing(u64),
+    /// External key assigned by an earlier add-node edit in the same batch.
+    External(String),
+}
+
+/// One topology-only edit for a prepared graph batch.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TopologyEdit {
+    /// Add a node and optionally publish its id under an external key.
+    AddNode {
+        external_key: Option<String>,
+        node_type: String,
+        capacity: i32,
+    },
+    /// Remove an existing or same-batch node.
+    RemoveNode { node: TopologyNodeRef },
+    /// Add an edge between existing or same-batch nodes.
+    AddEdge {
+        from: TopologyNodeRef,
+        to: TopologyNodeRef,
+        edge_type: Option<String>,
+    },
+    /// Remove an existing edge id.
+    RemoveEdge { edge_id: u64 },
+}
+
+/// Fully validated graph topology replacement awaiting a version-checked commit.
+#[derive(Clone)]
+pub struct PreparedTopologyBatch {
+    base_version: u64,
+    staged: Box<Graph>,
+    external_nodes: BTreeMap<String, u64>,
+    created_nodes: Vec<u64>,
+    created_edges: Vec<u64>,
+    operation_count: usize,
+    changed_count: usize,
+}
+
+impl PreparedTopologyBatch {
+    /// Return the topology version observed during preparation.
+    pub fn base_version(&self) -> u64 {
+        self.base_version
+    }
+
+    /// Return the number of submitted operations.
+    pub fn operation_count(&self) -> usize {
+        self.operation_count
+    }
+
+    /// Return the number of topology mutations that changed state.
+    pub fn changed_count(&self) -> usize {
+        self.changed_count
+    }
+
+    /// Return external node-key mappings in deterministic key order.
+    pub fn external_nodes(&self) -> &BTreeMap<String, u64> {
+        &self.external_nodes
+    }
+
+    /// Return node ids created by this batch in operation order.
+    pub fn created_nodes(&self) -> &[u64] {
+        &self.created_nodes
+    }
+
+    /// Return edge ids created by this batch in operation order.
+    pub fn created_edges(&self) -> &[u64] {
+        &self.created_edges
+    }
 }
 /// Create an empty graph with fresh id counters.
 impl Default for Graph {
@@ -81,7 +201,134 @@ impl Graph {
             next_node_id: 1,
             next_edge_id: 1,
             next_item_id: 1,
+            topology_version: 1,
         }
+    }
+
+    /// Return the monotonic topology version.
+    pub fn version(&self) -> u64 {
+        self.topology_version
+    }
+
+    /// Validate and stage topology edits without mutating this graph.
+    pub fn prepare_topology_batch(
+        &self,
+        edits: &[TopologyEdit],
+    ) -> Result<PreparedTopologyBatch, String> {
+        const MAX_TOPOLOGY_BATCH_OPS: usize = 100_000;
+        if edits.len() > MAX_TOPOLOGY_BATCH_OPS {
+            return Err(format!(
+                "topology batch has {} operations, exceeding limit {MAX_TOPOLOGY_BATCH_OPS}",
+                edits.len()
+            ));
+        }
+        let mut staged = self.clone();
+        let mut external_nodes = BTreeMap::new();
+        let mut created_nodes = Vec::new();
+        let mut created_edges = Vec::new();
+        let mut changed_count = 0usize;
+        for (index, edit) in edits.iter().enumerate() {
+            match edit {
+                TopologyEdit::AddNode {
+                    external_key,
+                    node_type,
+                    capacity,
+                } => {
+                    if node_type.trim().is_empty() {
+                        return Err(format!(
+                            "topology operation {} has empty node type",
+                            index + 1
+                        ));
+                    }
+                    if let Some(key) = external_key {
+                        if key.trim().is_empty() {
+                            return Err(format!(
+                                "topology operation {} has empty external key",
+                                index + 1
+                            ));
+                        }
+                        if external_nodes.contains_key(key) {
+                            return Err(format!(
+                                "topology operation {} duplicates external key '{key}'",
+                                index + 1
+                            ));
+                        }
+                    }
+                    let id = staged.add_node(node_type, *capacity);
+                    created_nodes.push(id);
+                    if let Some(key) = external_key {
+                        external_nodes.insert(key.clone(), id);
+                    }
+                    changed_count += 1;
+                }
+                TopologyEdit::RemoveNode { node } => {
+                    let id = resolve_topology_node(node, &external_nodes)
+                        .map_err(|error| format!("topology operation {}: {error}", index + 1))?;
+                    if !staged.remove_node(id) {
+                        return Err(format!(
+                            "topology operation {} targets missing node {id}",
+                            index + 1
+                        ));
+                    }
+                    changed_count += 1;
+                }
+                TopologyEdit::AddEdge {
+                    from,
+                    to,
+                    edge_type,
+                } => {
+                    let from = resolve_topology_node(from, &external_nodes).map_err(|error| {
+                        format!("topology operation {} from: {error}", index + 1)
+                    })?;
+                    let to = resolve_topology_node(to, &external_nodes)
+                        .map_err(|error| format!("topology operation {} to: {error}", index + 1))?;
+                    let edge_id = staged.add_edge(from, to, edge_type.as_deref())?;
+                    created_edges.push(edge_id);
+                    changed_count += 1;
+                }
+                TopologyEdit::RemoveEdge { edge_id } => {
+                    if !staged.remove_edge(*edge_id) {
+                        return Err(format!(
+                            "topology operation {} targets missing edge {edge_id}",
+                            index + 1
+                        ));
+                    }
+                    changed_count += 1;
+                }
+            }
+        }
+        staged.topology_version = if changed_count == 0 {
+            self.topology_version
+        } else {
+            self.topology_version
+                .checked_add(1)
+                .ok_or_else(|| "graph topology version overflow".to_string())?
+        };
+        Ok(PreparedTopologyBatch {
+            base_version: self.topology_version,
+            staged: Box::new(staged),
+            external_nodes,
+            created_nodes,
+            created_edges,
+            operation_count: edits.len(),
+            changed_count,
+        })
+    }
+
+    /// Commit a prepared topology replacement when its base version still matches.
+    pub fn commit_topology_batch(
+        &mut self,
+        batch: PreparedTopologyBatch,
+    ) -> Result<BTreeMap<String, u64>, String> {
+        if self.topology_version != batch.base_version {
+            return Err(format!(
+                "graph topology version conflict: prepared for {}, current version is {}",
+                batch.base_version, self.topology_version
+            ));
+        }
+        let external_nodes = batch.external_nodes;
+        *self = *batch.staged;
+        Ok(external_nodes)
     }
     /// Return an immutable node reference or a descriptive error.
     fn require_node(&self, node_id: u64) -> Result<&Node, String> {
@@ -293,10 +540,12 @@ impl Graph {
         self.nodes.insert(id, Node::new(id, node_type, capacity));
         self.outgoing_index.entry(id).or_default();
         self.incoming_index.entry(id).or_default();
+        self.bump_topology_version();
         id
     }
     /// Remove a node and all connected edges, returning true when it existed.
     pub fn remove_node(&mut self, node_id: u64) -> bool {
+        let base_version = self.topology_version;
         let Some(node) = self.nodes.get(&node_id) else {
             return false;
         };
@@ -318,6 +567,7 @@ impl Graph {
         self.outgoing_index.remove(&node_id);
         self.incoming_index.remove(&node_id);
         log_msg!(debug, GC02, "{}", node_id);
+        self.topology_version = base_version.saturating_add(1);
         true
     }
     /// Return true when the node id exists.
@@ -347,6 +597,7 @@ impl Graph {
         let e = Edge::new(id, from, to, edge_type.unwrap_or("default"));
         self.edges.insert(id, e);
         self.index_edge(id, from, to);
+        self.bump_topology_version();
         log_msg!(debug, GC03, "{} -> {} (id={})", from, to, id);
         Ok(id)
     }
@@ -358,6 +609,7 @@ impl Graph {
         let e = Edge::new(id, from, to, edge_type.unwrap_or("default"));
         self.edges.insert(id, e);
         self.index_edge(id, from, to);
+        self.bump_topology_version();
         id
     }
     /// Remove an edge and detach any items in transit, returning true when it existed.
@@ -375,6 +627,7 @@ impl Graph {
         if let Some(edge) = self.edges.remove(&edge_id) {
             self.unindex_edge(edge_id, edge.from_node, edge.to_node);
             log_msg!(debug, GC04, "{}", edge_id);
+            self.bump_topology_version();
             true
         } else {
             false
@@ -596,6 +849,10 @@ impl Graph {
     pub fn get_item_count(&self) -> usize {
         self.items.len()
     }
+
+    fn bump_topology_version(&mut self) {
+        self.topology_version = self.topology_version.saturating_add(1);
+    }
     /// Send an item onto an edge and return whether the transfer succeeded.
     pub fn send_item(&mut self, item_id: u64, edge_id: u64) -> Result<bool, String> {
         let item_type = self.require_item(item_id)?.item_type.clone();
@@ -650,6 +907,234 @@ impl Graph {
             stats.items_in_transit += edge.items_in_transit.len();
         }
         stats
+    }
+
+    /// Return graph-wide item ownership and type counts without crossing into game policy.
+    pub fn summarize_inventory(&self) -> GraphInventorySummary {
+        let queued_ids: HashSet<u64> = self
+            .nodes
+            .values()
+            .flat_map(|node| node.queue.iter().copied())
+            .collect();
+        let mut summary = GraphInventorySummary {
+            total: self.items.len(),
+            alive: 0,
+            at_nodes: 0,
+            in_transit: 0,
+            unplaced: 0,
+            queued: queued_ids.len(),
+            by_type: BTreeMap::new(),
+        };
+        for item in self.items.values() {
+            if item.alive {
+                summary.alive += 1;
+                *summary.by_type.entry(item.item_type.clone()).or_insert(0) += 1;
+            }
+            match item.position {
+                ItemPosition::AtNode(_) => summary.at_nodes += 1,
+                ItemPosition::InTransit { .. } => summary.in_transit += 1,
+                ItemPosition::Unplaced => summary.unplaced += 1,
+            }
+        }
+        summary
+    }
+
+    /// Execute a named node recipe up to `max_runs` times as one bounded Rust operation.
+    ///
+    /// Timing and scheduling remain Lua-owned: this method only performs inventory
+    /// matching, capacity checks, consumption, and production.
+    pub fn run_recipe(
+        &mut self,
+        node_id: u64,
+        name: &str,
+        max_runs: u32,
+    ) -> Result<RecipeExecution, String> {
+        const MAX_RECIPE_ITEM_OPS: u64 = 100_000;
+        if max_runs == 0 {
+            return Ok(RecipeExecution {
+                runs: 0,
+                consumed: Vec::new(),
+                produced: Vec::new(),
+            });
+        }
+        let node = self.require_node(node_id)?;
+        let recipe = node
+            .get_recipe(name)
+            .cloned()
+            .ok_or_else(|| format!("recipe '{name}' does not exist on node {node_id}"))?;
+
+        let mut available = BTreeMap::<String, u32>::new();
+        for item_id in &node.items {
+            if let Some(item) = self.items.get(item_id) {
+                if item.alive {
+                    *available.entry(item.item_type.clone()).or_insert(0) += 1;
+                }
+            }
+        }
+        let mut runs = max_runs;
+        for input in &recipe.inputs {
+            runs = runs.min(available.get(&input.item_type).copied().unwrap_or(0) / input.count);
+        }
+        let input_count: u64 = recipe
+            .inputs
+            .iter()
+            .map(|stack| u64::from(stack.count))
+            .sum();
+        let output_count: u64 = recipe
+            .outputs
+            .iter()
+            .map(|stack| u64::from(stack.count))
+            .sum();
+        let work_per_run = input_count.saturating_add(output_count);
+        if work_per_run > 0 {
+            runs = runs.min((MAX_RECIPE_ITEM_OPS / work_per_run) as u32);
+        }
+        if node.capacity >= 0 && output_count > input_count {
+            let free = (node.capacity as usize).saturating_sub(node.items.len()) as u64;
+            runs = runs.min((free / (output_count - input_count)) as u32);
+        }
+        if runs == 0 {
+            return Ok(RecipeExecution {
+                runs: 0,
+                consumed: Vec::new(),
+                produced: Vec::new(),
+            });
+        }
+
+        let consumed_capacity = usize::try_from(input_count.saturating_mul(u64::from(runs)))
+            .map_err(|_| "recipe consumed-item count exceeds addressable memory".to_string())?;
+        let produced_capacity = usize::try_from(output_count.saturating_mul(u64::from(runs)))
+            .map_err(|_| "recipe produced-item count exceeds addressable memory".to_string())?;
+        self.next_item_id
+            .checked_add(produced_capacity as u64)
+            .ok_or_else(|| "graph item id overflow".to_string())?;
+        let mut consumed = Vec::new();
+        consumed
+            .try_reserve_exact(consumed_capacity)
+            .map_err(|_| "could not allocate recipe consumption staging".to_string())?;
+        for input in &recipe.inputs {
+            let needed = input.count as usize * runs as usize;
+            consumed.extend(
+                node.items
+                    .iter()
+                    .filter(|item_id| {
+                        self.items
+                            .get(item_id)
+                            .is_some_and(|item| item.alive && item.item_type == input.item_type)
+                    })
+                    .copied()
+                    .take(needed),
+            );
+        }
+        if consumed.len() != consumed_capacity {
+            return Err("recipe inventory changed during preparation".to_string());
+        }
+        let mut produced = Vec::new();
+        produced
+            .try_reserve_exact(produced_capacity)
+            .map_err(|_| "could not allocate recipe production staging".to_string())?;
+        for item_id in &consumed {
+            self.kill_item_and_detach(*item_id)?;
+        }
+        for _ in 0..runs {
+            for output in &recipe.outputs {
+                for _ in 0..output.count {
+                    let item_id = self.create_item(&output.item_type, -1.0);
+                    self.move_item_to_node_inventory(item_id, node_id)?;
+                    produced.push(item_id);
+                }
+            }
+        }
+        Ok(RecipeExecution {
+            runs,
+            consumed,
+            produced,
+        })
+    }
+
+    /// Create many same-type items directly in one node inventory.
+    pub fn spawn_items_at_node(
+        &mut self,
+        node_id: u64,
+        item_type: &str,
+        count: u32,
+        decay_time: f64,
+    ) -> Result<Vec<u64>, String> {
+        const MAX_SPAWN_ITEMS: u32 = 100_000;
+        if count > MAX_SPAWN_ITEMS {
+            return Err(format!(
+                "item count {count} exceeds limit {MAX_SPAWN_ITEMS}"
+            ));
+        }
+        if item_type.trim().is_empty() || item_type.len() > 128 {
+            return Err("item type must contain 1..=128 characters".to_string());
+        }
+        if !decay_time.is_finite() || decay_time < -1.0 {
+            return Err("decay time must be finite and at least -1".to_string());
+        }
+        let node = self.require_node(node_id)?;
+        if node.capacity >= 0
+            && node.items.len().saturating_add(count as usize) > node.capacity as usize
+        {
+            return Err(format!(
+                "node {node_id} does not have capacity for {count} additional items"
+            ));
+        }
+        self.next_item_id
+            .checked_add(u64::from(count))
+            .ok_or_else(|| "graph item id overflow".to_string())?;
+        let mut ids = Vec::new();
+        ids.try_reserve_exact(count as usize)
+            .map_err(|_| "could not allocate item spawn result".to_string())?;
+        for _ in 0..count {
+            let item_id = self.create_item(item_type, decay_time);
+            self.move_item_to_node_inventory(item_id, node_id)?;
+            ids.push(item_id);
+        }
+        Ok(ids)
+    }
+
+    /// Serialize the complete graph state to stable compact JSON.
+    pub fn snapshot_json(&self) -> Result<String, String> {
+        let ordered: BTreeMap<String, serde_json::Value> = self.serialize().into_iter().collect();
+        serde_json::to_string(&ordered).map_err(|error| error.to_string())
+    }
+
+    /// Return a deterministic FNV-1a hash of the complete graph snapshot.
+    pub fn state_hash(&self) -> Result<String, String> {
+        let snapshot = self.snapshot_json()?;
+        let mut hash = 0xcbf29ce484222325u64;
+        for byte in snapshot.as_bytes() {
+            hash ^= u64::from(*byte);
+            hash = hash.wrapping_mul(0x100000001b3);
+        }
+        Ok(format!("{hash:016x}"))
+    }
+
+    /// Replace graph state from a snapshot after an optional topology-version check.
+    pub fn restore_snapshot_json(
+        &mut self,
+        snapshot: &str,
+        expected_version: Option<u64>,
+    ) -> Result<(), String> {
+        if let Some(expected) = expected_version {
+            if expected != self.topology_version {
+                return Err(format!(
+                    "version conflict: expected {expected}, current version is {}",
+                    self.topology_version
+                ));
+            }
+        }
+        let values: BTreeMap<String, serde_json::Value> =
+            serde_json::from_str(snapshot).map_err(|error| error.to_string())?;
+        let values: HashMap<String, serde_json::Value> = values.into_iter().collect();
+        let mut replacement = Self::deserialize(&values)?;
+        replacement.topology_version = self
+            .topology_version
+            .checked_add(1)
+            .ok_or_else(|| "graph topology version overflow".to_string())?;
+        *self = replacement;
+        Ok(())
     }
     /// Return outgoing edge ids for a node.
     pub fn get_outgoing_edges(&self, node_id: u64) -> Vec<u64> {
@@ -758,6 +1243,23 @@ impl Graph {
                         .unwrap_or_default()
                         .cmp(b["in_type"].as_str().unwrap_or_default())
                 });
+                let recipes: Vec<Value> = n
+                    .recipes
+                    .values()
+                    .map(|recipe| {
+                        json!({
+                            "name": recipe.name,
+                            "inputs": recipe.inputs.iter().map(|stack| json!({
+                                "item_type": stack.item_type,
+                                "count": stack.count
+                            })).collect::<Vec<_>>(),
+                            "outputs": recipe.outputs.iter().map(|stack| json!({
+                                "item_type": stack.item_type,
+                                "count": stack.count
+                            })).collect::<Vec<_>>()
+                        })
+                    })
+                    .collect();
                 let demands: Vec<Value> = n
                     .demands
                     .iter()
@@ -807,6 +1309,7 @@ impl Graph {
                     "queue": n.queue.iter().copied().collect::<Vec<u64>>(),
                     "items": n.items,
                     "conversions": conversions,
+                    "recipes": recipes,
                     "demands": demands,
                     "supplies": supplies,
                     "tags": tags,
@@ -939,7 +1442,7 @@ impl Graph {
     }
     /// Deserialize the versioned full-state payload and validate cross-references.
     fn deserialize_full_state(data: &HashMap<String, serde_json::Value>) -> Result<Self, String> {
-        use super::node::{ConversionRule, Demand, FlowMode, Supply};
+        use super::node::{ConversionRule, Demand, FlowMode, RecipeRule, RecipeStack, Supply};
         use serde_json::Value;
 
         fn parse_u64_array(value: &Value, label: &str) -> Result<Vec<u64>, String> {
@@ -1017,6 +1520,41 @@ impl Graph {
                         out_count: conversion["out_count"].as_u64().unwrap_or(1) as u32,
                     };
                     node.set_conversion(rule);
+                }
+            }
+            if let Some(recipes) = node_value["recipes"].as_array() {
+                for recipe in recipes {
+                    let parse_stacks = |field: &str| -> Result<Vec<RecipeStack>, String> {
+                        recipe[field]
+                            .as_array()
+                            .ok_or_else(|| format!("recipe.{field} must be an array"))?
+                            .iter()
+                            .map(|stack| {
+                                Ok(RecipeStack {
+                                    item_type: stack["item_type"]
+                                        .as_str()
+                                        .ok_or_else(|| {
+                                            format!("recipe.{field}.item_type must be a string")
+                                        })?
+                                        .to_string(),
+                                    count: u32::try_from(stack["count"].as_u64().ok_or_else(
+                                        || format!("recipe.{field}.count must be an integer"),
+                                    )?)
+                                    .map_err(|_| {
+                                        format!("recipe.{field}.count exceeds 32-bit range")
+                                    })?,
+                                })
+                            })
+                            .collect()
+                    };
+                    node.set_recipe(RecipeRule {
+                        name: recipe["name"]
+                            .as_str()
+                            .ok_or("recipe.name must be a string")?
+                            .to_string(),
+                        inputs: parse_stacks("inputs")?,
+                        outputs: parse_stacks("outputs")?,
+                    })?;
                 }
             }
             if let Some(demands) = node_value["demands"].as_array() {

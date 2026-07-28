@@ -172,6 +172,73 @@ mod sprite_batch_tests {
     }
 
     #[test]
+    fn bulk_mutations_are_atomic_and_versioned_once() {
+        let mut batch = SpriteBatch::new(dummy_key(), 3);
+        let initial_version = batch.version();
+        let inserted = batch
+            .add_many(vec![make_entry(1.0, 2.0), make_entry(3.0, 4.0)])
+            .unwrap();
+        assert_eq!(inserted, 0..2);
+        assert_eq!(batch.version(), initial_version + 1);
+        assert_eq!(batch.remaining(), 1);
+
+        let version_before_rejection = batch.version();
+        assert!(batch
+            .add_many(vec![make_entry(5.0, 6.0), make_entry(7.0, 8.0)])
+            .is_err());
+        assert_eq!(batch.len(), 2);
+        assert_eq!(batch.version(), version_before_rejection);
+
+        let changed = batch
+            .update_entries(vec![(1, make_entry(9.0, 10.0))])
+            .unwrap();
+        assert_eq!(changed, 1);
+        assert_eq!(batch.version(), version_before_rejection + 1);
+        assert_eq!(batch.entries()[1].x, 9.0);
+
+        let version_before_invalid_update = batch.version();
+        assert!(batch
+            .update_entries(vec![(0, make_entry(11.0, 12.0)), (9, make_entry(0.0, 0.0))])
+            .is_err());
+        assert_eq!(batch.entries()[0].x, 1.0);
+        assert_eq!(batch.version(), version_before_invalid_update);
+    }
+
+    #[test]
+    fn set_and_remove_entries_validate_before_mutation() {
+        let mut batch = SpriteBatch::new(dummy_key(), 3);
+        batch
+            .set_entries(vec![
+                make_entry(1.0, 0.0),
+                make_entry(2.0, 0.0),
+                make_entry(3.0, 0.0),
+            ])
+            .unwrap();
+        let version = batch.version();
+
+        assert!(batch.remove_entries(vec![0, 0]).is_err());
+        assert_eq!(batch.len(), 3);
+        assert_eq!(batch.version(), version);
+
+        assert_eq!(batch.remove_entries(vec![0, 2]).unwrap(), 2);
+        assert_eq!(batch.len(), 1);
+        assert_eq!(batch.entries()[0].x, 2.0);
+        assert_eq!(batch.version(), version + 1);
+
+        let version = batch.version();
+        assert!(batch
+            .set_entries(vec![
+                make_entry(1.0, 0.0),
+                make_entry(2.0, 0.0),
+                make_entry(3.0, 0.0),
+                make_entry(4.0, 0.0),
+            ])
+            .is_err());
+        assert_eq!(batch.len(), 1);
+        assert_eq!(batch.version(), version);
+    }
+
+    #[test]
     fn clear_empties_batch() {
         let mut batch = SpriteBatch::new(dummy_key(), 0);
         batch.add(make_entry(0.0, 0.0));

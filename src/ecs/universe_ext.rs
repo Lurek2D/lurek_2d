@@ -59,14 +59,43 @@ impl Universe {
         count: usize,
         overrides: Option<Table>,
     ) -> LuaResult<Vec<u32>> {
-        let mut ids = Vec::with_capacity(count);
+        if count > 100_000 {
+            return Err(mlua::Error::runtime(
+                "lurek.ecs.spawnBulk: count exceeds 100000",
+            ));
+        }
+        self.ensure_stores(lua)?;
+        let bp_store = self.get_blueprint_store(lua)?;
+        let blueprint: Table = bp_store
+            .get(name)
+            .map_err(|_| mlua::Error::runtime(format!("Blueprint '{name}' not defined")))?;
+        let mut rows = Vec::new();
+        rows.try_reserve_exact(count)
+            .map_err(|_| mlua::Error::runtime("lurek.ecs.spawnBulk: staging allocation failed"))?;
         for _ in 0..count {
-            let ov_copy = if let Some(ref ov) = overrides {
-                Some(deep_copy_table(lua, ov)?)
-            } else {
-                None
-            };
-            ids.push(self.spawn_blueprint(lua, name, ov_copy)?);
+            let row = deep_copy_table(lua, &blueprint)?;
+            if let Some(ref values) = overrides {
+                let values = deep_copy_table(lua, values)?;
+                for pair in values.pairs::<LuaValue, LuaValue>() {
+                    let (key, value) = pair?;
+                    row.set(key, value)?;
+                }
+            }
+            rows.push(row);
+        }
+
+        let base_version = self.query_change_tick;
+        let store = self.get_component_store(lua)?;
+        let mut ids = Vec::new();
+        ids.try_reserve_exact(count)
+            .map_err(|_| mlua::Error::runtime("lurek.ecs.spawnBulk: id allocation failed"))?;
+        for row in rows {
+            let id = self.spawn().raw();
+            store.set(Self::unpack_slot(id), row)?;
+            ids.push(id);
+        }
+        if count > 0 {
+            self.query_change_tick = base_version.wrapping_add(1);
         }
         Ok(ids)
     }

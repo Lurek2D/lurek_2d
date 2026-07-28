@@ -3138,6 +3138,7 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
     end)
 end)
 
+-- @describe lurek.raycaster isolated views
 describe("lurek.raycaster isolated views", function()
     local function new_view()
         local view = lurek.raycaster.newView({

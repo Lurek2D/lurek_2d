@@ -127,7 +127,7 @@ impl Graph {
                 item.remaining_life -= dt;
             }
         });
-        let dead_ids: Vec<u64> = self
+        let mut dead_ids: Vec<u64> = self
             .items
             .iter()
             .filter_map(|(id, item)| {
@@ -138,6 +138,7 @@ impl Graph {
                 }
             })
             .collect();
+        dead_ids.sort_unstable();
         for id in dead_ids {
             let _ = self.kill_item_and_detach(id);
             events.push(GraphEvent::ItemDecay { item_id: id });
@@ -159,7 +160,10 @@ impl Graph {
     /// Apply item decay and emit decay events.
     fn process_decay(&mut self, dt: f64, events: &mut Vec<GraphEvent>) {
         let mut dead_ids = Vec::new();
-        for item in self.items.values_mut() {
+        for item_id in self.get_item_ids() {
+            let Some(item) = self.items.get_mut(&item_id) else {
+                continue;
+            };
             if !item.alive || item.decay_time < 0.0 {
                 continue;
             }
@@ -177,7 +181,7 @@ impl Graph {
     /// Advance edge transit progress and resolve arrivals.
     fn process_transit(&mut self, dt: f64, events: &mut Vec<GraphEvent>) {
         let mut arrivals: Vec<(u64, u64, u64)> = Vec::new();
-        let edge_info: Vec<(u64, u64, f64, f64, Vec<u64>)> = self
+        let mut edge_info: Vec<(u64, u64, f64, f64, Vec<u64>)> = self
             .edges
             .values()
             .filter(|e| e.active)
@@ -197,6 +201,7 @@ impl Graph {
                 )
             })
             .collect();
+        edge_info.sort_by_key(|entry| entry.0);
         for (edge_id, dest_node, progress_delta, _travel_time, transit_items) in &edge_info {
             for &iid in transit_items {
                 if let Some(item) = self.items.get_mut(&iid) {
@@ -422,7 +427,7 @@ impl Graph {
     fn process_conversions(&mut self, events: &mut Vec<GraphEvent>) {
         let node_ids = self.get_node_ids();
         for nid in node_ids {
-            let conversions: Vec<(String, String, u32, u32)> = match self.nodes.get(&nid) {
+            let mut conversions: Vec<(String, String, u32, u32)> = match self.nodes.get(&nid) {
                 Some(node) if node.active && !node.conversions.is_empty() => node
                     .conversions
                     .values()
@@ -437,6 +442,13 @@ impl Graph {
                     .collect(),
                 _ => continue,
             };
+            conversions.sort_by(|left, right| {
+                left.0
+                    .cmp(&right.0)
+                    .then_with(|| left.1.cmp(&right.1))
+                    .then_with(|| left.2.cmp(&right.2))
+                    .then_with(|| left.3.cmp(&right.3))
+            });
             for (in_type, out_type, in_count, out_count) in conversions {
                 loop {
                     let matching: Vec<u64> = {

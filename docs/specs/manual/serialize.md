@@ -25,6 +25,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `SerializeLimits` are part of the module contract for untrusted or generated data. Depth, node, string, input-byte, and CSV budgets should stay explicit.
 - Lua table cycles and non-finite numbers are rejected rather than coerced or silently serialized.
 - `SerialFormat` exposes capability flags so tooling can discover whether a format can encode, decode text, or decode bytes before attempting the operation.
+- `canonicalEncode` recursively sorts map keys while preserving sequence order and emits compact JSON.
+- `canonicalHash` applies deterministic 64-bit FNV-1a to that canonical encoding. Games can combine independent module snapshots in Lua and hash the resulting table without adding engine-level integration.
 
 ## Architecture Links
 

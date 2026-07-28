@@ -33,6 +33,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - Flow simulation over graph nodes, items, queues, capacity, and supply/demand belongs to `flownet`/`lurek.graph`; province adjacency can feed it but should not implement transport semantics.
 - `province` may expose `fitCamera`, `screenToProvince`, and `zoomCameraAt` for strategy-map ergonomics, but generic viewport and zoom-anchor math belongs to `camera`.
 - `province` owns semantic visual state such as climate, weather, fog amount, and visual seeds. `render` still owns WGSL code, bind-group layout, validation, and actual water, border-noise, fog, and weather composition in `DrawProvinceMap`.
+- `province` exports a bounded `ProvinceRenderSnapshot` when registry revision changes. The snapshot contains only CPU pixels and semantic style records; it has no device, queue, texture, or other `wgpu` handle. The app forwards it to render, which owns upload formats, GPU residency, and incremental resource replacement.
 - `LProvinceRegistry:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The registry stores the semantic shader binding, then the command backend wraps generated render commands in render-owned shader state. The specialized `backend = "gpu"` province map pipeline and segment raster cache do not yet execute custom user shaders; richer province-id and heatmap inputs belong in a later render-owned `DrawProvinceMap` shader contract.
 
 ## Architecture Links

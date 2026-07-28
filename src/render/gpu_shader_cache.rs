@@ -23,6 +23,12 @@ use crate::runtime::resource_keys::ShaderKey;
 
 /// Hard ceiling for live user pipeline cache entries retained by one renderer.
 const MAX_CACHED_USER_SHADERS: usize = 256;
+/// Bounded CPU source retained by compiled user shader entries.
+const MAX_CACHED_USER_SHADER_SOURCE_BYTES: usize = 16 * 1024 * 1024;
+/// Bounded number of rejected shader signatures retained to suppress repeat work.
+const MAX_NEGATIVE_CACHED_USER_SHADERS: usize = 256;
+/// Bounded CPU source retained by rejected shader signatures.
+const MAX_NEGATIVE_SHADER_SOURCE_BYTES: usize = 4 * 1024 * 1024;
 /// Total specialized render pipelines retained by one user shader cache entry.
 const MAX_PIPELINES_PER_USER_SHADER: usize = 64;
 
@@ -37,6 +43,112 @@ fn cached_pipeline_count(cache: &GpuShader) -> usize {
 }
 
 impl GpuRenderer {
+    /// Compile at most `limit` known shaders through the normal bounded cache path.
+    ///
+    /// Callers schedule this only at a frame boundary. Prewarming deliberately
+    /// shares eviction, source-byte, binding, and negative-cache policy with
+    /// ordinary draw-time preparation, so it cannot create an unbounded second
+    /// compilation path.
+    pub fn prewarm_shader_cache(
+        &mut self,
+        shaders: &slotmap::SlotMap<ShaderKey, Shader>,
+        shader_keys: &[ShaderKey],
+        limit: usize,
+    ) -> usize {
+        let mut completed: usize = 0;
+        for shader_key in shader_keys.iter().copied().take(limit) {
+            let Some(shader) = shaders.get(shader_key) else {
+                continue;
+            };
+            self.ensure_shader_cache(shader_key, shader);
+            completed = completed.saturating_add(1);
+        }
+        completed
+    }
+
+    /// Compile the scheduled prewarm keys and report one cache outcome per request.
+    ///
+    /// This is intentionally frame-boundary-only orchestration; it delegates every
+    /// allocation, eviction, and rejection decision to [`Self::ensure_shader_cache`].
+    pub fn prewarm_scheduled_shader_cache(
+        &mut self,
+        shaders: &slotmap::SlotMap<ShaderKey, Shader>,
+        scheduled: &[(u64, ShaderKey)],
+    ) -> Vec<(u64, bool)> {
+        scheduled
+            .iter()
+            .map(|(request_id, shader_key)| {
+                let Some(shader) = shaders.get(*shader_key) else {
+                    return (*request_id, false);
+                };
+                self.ensure_shader_cache(*shader_key, shader);
+                (*request_id, self.shader_cache.get(*shader_key).is_some())
+            })
+            .collect()
+    }
+
+    fn shader_cache_source_bytes(&self) -> usize {
+        self.shader_cache
+            .iter()
+            .map(|(_, cached)| cached.source.len())
+            .sum()
+    }
+
+    fn negative_shader_cache_source_bytes(&self) -> usize {
+        self.shader_negative_cache
+            .iter()
+            .map(|(_, (source, _))| source.len())
+            .sum()
+    }
+
+    /// Evict one unrelated compiled entry before creating another GPU allocation.
+    ///
+    /// Entries are not user-visible objects, so deterministic key order is sufficient here;
+    /// the owning Lua shader remains valid and is lazily rebuilt on its next use.
+    fn evict_compiled_shader_entry(&mut self, protected: ShaderKey) -> bool {
+        let candidate = self
+            .shader_cache
+            .iter()
+            .map(|(key, _)| key)
+            .find(|key| *key != protected);
+        let Some(candidate) = candidate else {
+            return false;
+        };
+        self.shader_cache.remove(candidate);
+        self.render_stats.shader_cache_evictions =
+            self.render_stats.shader_cache_evictions.saturating_add(1);
+        true
+    }
+
+    /// Insert a known-invalid signature while bounding both count and retained source bytes.
+    fn cache_shader_rejection(
+        &mut self,
+        shader_key: ShaderKey,
+        source: String,
+        signature: Vec<(String, ShaderUniformKind)>,
+    ) {
+        let source_bytes = source.len();
+        if source_bytes > MAX_NEGATIVE_SHADER_SOURCE_BYTES {
+            return;
+        }
+        while self.shader_negative_cache.len() >= MAX_NEGATIVE_CACHED_USER_SHADERS
+            || self
+                .negative_shader_cache_source_bytes()
+                .saturating_add(source_bytes)
+                > MAX_NEGATIVE_SHADER_SOURCE_BYTES
+        {
+            let candidate = self.shader_negative_cache.iter().map(|(key, _)| key).next();
+            let Some(candidate) = candidate else {
+                return;
+            };
+            self.shader_negative_cache.remove(candidate);
+            self.render_stats.shader_cache_evictions =
+                self.render_stats.shader_cache_evictions.saturating_add(1);
+        }
+        self.shader_negative_cache
+            .insert(shader_key, (source, signature));
+    }
+
     /// Compile and cache a user shader if its source or uniform signature changed.
     fn ensure_shader_cache(&mut self, shader_key: ShaderKey, shader: &Shader) {
         let ordered_uniforms = shader.ordered_uniforms();
@@ -51,6 +163,10 @@ impl GpuRenderer {
                 source == &shader.source && signature == &uniform_signature
             })
         {
+            self.render_stats.shader_negative_cache_hits = self
+                .render_stats
+                .shader_negative_cache_hits
+                .saturating_add(1);
             // The same device-limit rejection was already reported.  Avoid both
             // repeat preparation work and per-frame diagnostic/log spam.
             return;
@@ -63,12 +179,22 @@ impl GpuRenderer {
             })
             .unwrap_or(true);
         if needs_rebuild {
+            self.render_stats.shader_cache_misses =
+                self.render_stats.shader_cache_misses.saturating_add(1);
+        } else {
+            self.render_stats.shader_cache_hits =
+                self.render_stats.shader_cache_hits.saturating_add(1);
+        }
+        if needs_rebuild {
             let device_limits = self.device.limits();
             if uniform_signature.len() > device_limits.max_bindings_per_bind_group as usize {
                 self.render_diagnostics.record_shader_pipeline_failure();
-                self.shader_negative_cache.insert(
+                self.render_stats.shader_cache_rejections =
+                    self.render_stats.shader_cache_rejections.saturating_add(1);
+                self.cache_shader_rejection(
                     shader_key,
-                    (shader.source.clone(), uniform_signature.clone()),
+                    shader.source.clone(),
+                    uniform_signature.clone(),
                 );
                 log::warn!(
                     "Skipping user shader whose {} uniforms exceed the device binding limit {}",
@@ -77,15 +203,33 @@ impl GpuRenderer {
                 );
                 return;
             }
-            if self.shader_cache.get(shader_key).is_none()
-                && self.shader_cache.len() >= MAX_CACHED_USER_SHADERS
-            {
+            let source_bytes = shader.source.len();
+            if source_bytes > MAX_CACHED_USER_SHADER_SOURCE_BYTES {
                 self.render_diagnostics.record_shader_pipeline_failure();
+                self.render_stats.shader_cache_rejections =
+                    self.render_stats.shader_cache_rejections.saturating_add(1);
                 log::warn!(
-                    "Skipping user shader cache entry because the {}-entry budget is exhausted",
-                    MAX_CACHED_USER_SHADERS
+                    "Skipping user shader cache entry because its source exceeds the {}-byte cache budget",
+                    MAX_CACHED_USER_SHADER_SOURCE_BYTES
                 );
                 return;
+            }
+            while self.shader_cache.get(shader_key).is_none()
+                && (self.shader_cache.len() >= MAX_CACHED_USER_SHADERS
+                    || self
+                        .shader_cache_source_bytes()
+                        .saturating_add(source_bytes)
+                        > MAX_CACHED_USER_SHADER_SOURCE_BYTES)
+            {
+                if !self.evict_compiled_shader_entry(shader_key) {
+                    self.render_diagnostics.record_shader_pipeline_failure();
+                    self.render_stats.shader_cache_rejections =
+                        self.render_stats.shader_cache_rejections.saturating_add(1);
+                    log::warn!(
+                        "Skipping user shader cache entry because no evictable cache entry remains"
+                    );
+                    return;
+                }
             }
             let uniform_bind_group_layout = if uniform_signature.is_empty() {
                 None
@@ -368,11 +512,11 @@ impl GpuRenderer {
             }
         };
         if missing {
-            let Some(cache) = self.shader_cache.get(shader_key) else {
-                return None;
-            };
+            let cache = self.shader_cache.get(shader_key)?;
             if cached_pipeline_count(cache) >= MAX_PIPELINES_PER_USER_SHADER {
                 self.render_diagnostics.record_shader_pipeline_failure();
+                self.render_stats.shader_cache_rejections =
+                    self.render_stats.shader_cache_rejections.saturating_add(1);
                 log::warn!(
                     "Skipping user shader pipeline because the {}-pipeline budget is exhausted",
                     MAX_PIPELINES_PER_USER_SHADER

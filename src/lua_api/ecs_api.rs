@@ -50,6 +50,88 @@ pub struct LuaQueryView {
     inner: Rc<RefCell<QueryView>>,
 }
 
+/// Prepared, version-checked ECS ChangeSet owned by an existing universe.
+#[derive(Clone)]
+pub struct LuaEcsBatch {
+    world: LuaUniverse,
+    changeset: Rc<RefCell<Option<LuaRegistryKey>>>,
+    base_version: u64,
+    record_count: usize,
+}
+
+fn ecs_batch_error(method: &str, error: impl std::fmt::Display) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.ecs.{method}: {error}"))
+}
+
+impl LuaUserData for LuaEcsBatch {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- preview --
+        /// Returns immutable metadata for this prepared ECS ChangeSet.
+        /// @return | table | Base version, record count, and pending state.
+        methods.add_method("preview", |lua, this, ()| {
+            let out = lua.create_table()?;
+            out.set("baseVersion", this.base_version)?;
+            out.set("recordCount", this.record_count)?;
+            out.set("pending", this.changeset.borrow().is_some())?;
+            Ok(out)
+        });
+        // -- commit --
+        /// Applies the prepared ChangeSet if the universe version is unchanged.
+        /// @return | integer | Number of records applied as one logical mutation.
+        methods.add_method("commit", |lua, this, ()| {
+            let current_version = this.world.inner.borrow().version();
+            if current_version != this.base_version {
+                return Err(ecs_batch_error(
+                    "LEcsBatch:commit",
+                    format!(
+                        "version conflict: prepared for {}, current version is {current_version}",
+                        this.base_version
+                    ),
+                ));
+            }
+            let changeset = {
+                let pending = this.changeset.borrow();
+                let key = pending
+                    .as_ref()
+                    .ok_or_else(|| ecs_batch_error("LEcsBatch:commit", "batch is not pending"))?;
+                lua.registry_value::<LuaTable>(key)
+                    .map_err(|error| ecs_batch_error("LEcsBatch:commit", error))?
+            };
+            let count = this
+                .world
+                .inner
+                .borrow_mut()
+                .apply_changeset(lua, changeset)
+                .map_err(|error| ecs_batch_error("LEcsBatch:commit", error))?;
+            *this.changeset.borrow_mut() = None;
+            Ok(count)
+        });
+        // -- discard --
+        /// Discards the prepared ChangeSet without mutating the universe.
+        /// @return | boolean | True when a pending ChangeSet was discarded.
+        methods.add_method("discard", |_, this, ()| {
+            Ok(this.changeset.borrow_mut().take().is_some())
+        });
+        // -- isPending --
+        /// Returns whether this prepared ChangeSet remains usable.
+        /// @return | boolean | True before successful commit or discard.
+        methods.add_method("isPending", |_, this, ()| {
+            Ok(this.changeset.borrow().is_some())
+        });
+        // -- type --
+        /// Returns this userdata type name.
+        /// @return | string | Always `"LEcsBatch"`.
+        methods.add_method("type", |_, _, ()| Ok("LEcsBatch"));
+        // -- typeOf --
+        /// Checks whether this userdata matches a requested type.
+        /// @param | name | string | Type name.
+        /// @return | boolean | True for `LEcsBatch` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LEcsBatch" || name == "LObject")
+        });
+    }
+}
+
 #[derive(Clone)]
 /// Lua-side handle for one additive stat block.
 pub struct LuaStatBlock {
@@ -716,6 +798,12 @@ impl LuaUserData for LuaUniverse {
         methods.add_method("getQueryChangeTick", |_, this, ()| {
             Ok(this.inner.borrow().get_query_change_tick())
         });
+        // -- getVersion --
+        /// Returns the monotonic universe mutation version.
+        /// @return | integer | Version used by prepared batches and Lua-side caches.
+        methods.add_method("getVersion", |_, this, ()| {
+            Ok(this.inner.borrow().version())
+        });
         // -- newQueryView --
         /// Creates a cached component query view that refreshes only when this universe changes.
         /// @param | with_table | table | Array table of required component names.
@@ -958,7 +1046,98 @@ impl LuaUserData for LuaUniverse {
         /// @param | changeset | table | Table returned by `LChangeSet:toTable()` or `serialize.decodeChangeSet`.
         /// @return | integer | Number of validated records applied in order.
         methods.add_method("applyChangeSet", |lua, this, changeset: LuaTable| {
-            this.inner.borrow_mut().apply_changeset(lua, changeset)
+            this.inner
+                .borrow_mut()
+                .apply_changeset(lua, changeset)
+                .map_err(|error| ecs_batch_error("LUniverse:applyChangeSet", error))
+        });
+        // -- prepareChangeSet --
+        /// Validates and stores an ECS ChangeSet without mutating this universe.
+        /// @param | changeset | table | Table returned by `LChangeSet:toTable()` or decodeChangeSet.
+        /// @param | expectedVersion | integer? | Optional required current universe version.
+        /// @return | LEcsBatch | Prepared ChangeSet with preview, commit, and discard.
+        methods.add_method(
+            "prepareChangeSet",
+            |lua, this, (changeset, expected_version): (LuaTable, Option<u64>)| {
+                let version = this.inner.borrow().version();
+                if expected_version.is_some_and(|expected| expected != version) {
+                    return Err(ecs_batch_error(
+                        "LUniverse:prepareChangeSet",
+                        format!(
+                            "version conflict: expected {}, current version is {version}",
+                            expected_version.unwrap_or(version)
+                        ),
+                    ));
+                }
+                let copy = deep_copy_table(lua, &changeset)
+                    .map_err(|error| ecs_batch_error("LUniverse:prepareChangeSet", error))?;
+                let record_count = this
+                    .inner
+                    .borrow()
+                    .validate_changeset(copy.clone())
+                    .map_err(|error| ecs_batch_error("LUniverse:prepareChangeSet", error))?;
+                let key = lua
+                    .create_registry_value(copy)
+                    .map_err(|error| ecs_batch_error("LUniverse:prepareChangeSet", error))?;
+                Ok(LuaEcsBatch {
+                    world: this.clone(),
+                    changeset: Rc::new(RefCell::new(Some(key))),
+                    base_version: version,
+                    record_count,
+                })
+            },
+        );
+        // -- readComponents --
+        /// Reads many entity/component selections with one Lua-to-Rust boundary crossing.
+        /// @param | requests | table | Array of `{id, names={...}}` request tables.
+        /// @return | table | Input-ordered records with id, alive, and component values.
+        methods.add_method("readComponents", |lua, this, requests: LuaTable| {
+            if requests.raw_len() > 100_000 {
+                return Err(ecs_batch_error(
+                    "LUniverse:readComponents",
+                    "request count exceeds 100000",
+                ));
+            }
+            let world = this.inner.borrow();
+            let out = lua.create_table_with_capacity(requests.raw_len(), 0)?;
+            for (index, request) in requests.sequence_values::<LuaTable>().enumerate() {
+                let request = request.map_err(|error| {
+                    ecs_batch_error(
+                        "LUniverse:readComponents",
+                        format!("request {}: {error}", index + 1),
+                    )
+                })?;
+                let id = request.get::<_, u32>("id").map_err(|error| {
+                    ecs_batch_error(
+                        "LUniverse:readComponents",
+                        format!("request {} id: {error}", index + 1),
+                    )
+                })?;
+                let names = request.get::<_, LuaTable>("names").map_err(|error| {
+                    ecs_batch_error(
+                        "LUniverse:readComponents",
+                        format!("request {} names: {error}", index + 1),
+                    )
+                })?;
+                if names.raw_len() > 1024 {
+                    return Err(ecs_batch_error(
+                        "LUniverse:readComponents",
+                        format!("request {} has more than 1024 component names", index + 1),
+                    ));
+                }
+                let values = lua.create_table()?;
+                for name in names.sequence_values::<String>() {
+                    let name =
+                        name.map_err(|error| ecs_batch_error("LUniverse:readComponents", error))?;
+                    values.set(name.as_str(), world.get_component(lua, id, name.as_str())?)?;
+                }
+                let row = lua.create_table()?;
+                row.set("id", id)?;
+                row.set("alive", world.is_alive(id))?;
+                row.set("components", values)?;
+                out.set(index + 1, row)?;
+            }
+            Ok(out)
         });
         // -- takeSnapshotDiff --
         /// Returns and clears accumulated ECS snapshot diff data.

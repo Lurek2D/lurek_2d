@@ -10,7 +10,7 @@ use super::limits::{checked_chunk_cells, checked_flat_index, TileMapLimits};
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{CK01, CK02, CK03};
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 const CHUNK_BYTES_MAGIC: &[u8; 4] = b"LCM2";
 const CHUNK_BYTES_VERSION: u16 = 1;
@@ -29,6 +29,45 @@ pub struct ChunkMap {
     dirty_chunks: HashSet<(i32, i32)>,
     /// Shared allocation and operation ceilings for this map.
     limits: TileMapLimits,
+    /// Monotonic logical tile-content version.
+    version: u64,
+}
+
+/// Fully validated tile replacements that can be committed atomically.
+#[derive(Debug, Clone)]
+pub struct PreparedChunkBatch {
+    base_version: u64,
+    replacements: Vec<((i32, i32), Vec<u32>)>,
+    changed_chunks: Vec<(i32, i32)>,
+    edit_count: usize,
+    changed_tile_count: usize,
+}
+
+impl PreparedChunkBatch {
+    /// Return the map version observed while preparing this batch.
+    pub fn base_version(&self) -> u64 {
+        self.base_version
+    }
+
+    /// Return the number of submitted edit records.
+    pub fn edit_count(&self) -> usize {
+        self.edit_count
+    }
+
+    /// Return the number of tile coordinates whose final value changes.
+    pub fn changed_tile_count(&self) -> usize {
+        self.changed_tile_count
+    }
+
+    /// Return changed chunk coordinates in deterministic order.
+    pub fn changed_chunks(&self) -> &[(i32, i32)] {
+        &self.changed_chunks
+    }
+
+    /// Return true when committing this batch would not change tile content.
+    pub fn is_empty(&self) -> bool {
+        self.replacements.is_empty()
+    }
 }
 
 impl ChunkMap {
@@ -48,6 +87,7 @@ impl ChunkMap {
             chunks: HashMap::new(),
             dirty_chunks: HashSet::new(),
             limits: TileMapLimits::default(),
+            version: 1,
         }
     }
 
@@ -82,6 +122,11 @@ impl ChunkMap {
         self.limits
     }
 
+    /// Return the monotonic logical tile-content version.
+    pub fn version(&self) -> u64 {
+        self.version
+    }
+
     /// Return the GID at tile `(x, y)`; returns `DEFAULT_GID` when the chunk is not loaded.
     pub fn get_tile(&self, x: i32, y: i32) -> u32 {
         let (cx, cy, lx, ly) = self.decompose(x, y);
@@ -91,6 +136,66 @@ impl ChunkMap {
                 .unwrap_or(Self::DEFAULT_GID),
             None => Self::DEFAULT_GID,
         }
+    }
+
+    /// Read a half-open tile rectangle in deterministic row-major order.
+    pub fn read_region(
+        &self,
+        x0: i32,
+        y0: i32,
+        x1: i32,
+        y1: i32,
+    ) -> Result<Vec<u32>, TileMapError> {
+        let width = i64::from(x1).saturating_sub(i64::from(x0)).max(0) as u64;
+        let height = i64::from(y1).saturating_sub(i64::from(y0)).max(0) as u64;
+        let cells = width
+            .checked_mul(height)
+            .ok_or(TileMapError::TileOperationLimitExceeded {
+                cells: u64::MAX,
+                max_cells: self.limits.max_tile_operation_cells,
+            })?;
+        if cells > self.limits.max_tile_operation_cells {
+            return Err(TileMapError::TileOperationLimitExceeded {
+                cells,
+                max_cells: self.limits.max_tile_operation_cells,
+            });
+        }
+        let capacity =
+            usize::try_from(cells).map_err(|_| TileMapError::TileOperationLimitExceeded {
+                cells,
+                max_cells: self.limits.max_tile_operation_cells,
+            })?;
+        let mut values = Vec::new();
+        values
+            .try_reserve_exact(capacity)
+            .map_err(|_| TileMapError::AllocationFailed {
+                context: "chunk-map region snapshot",
+            })?;
+        for y in y0..y1 {
+            for x in x0..x1 {
+                values.push(self.get_tile(x, y));
+            }
+        }
+        Ok(values)
+    }
+
+    /// Return a deterministic FNV-1a hash for one half-open tile rectangle.
+    pub fn hash_region(&self, x0: i32, y0: i32, x1: i32, y1: i32) -> Result<String, TileMapError> {
+        let values = self.read_region(x0, y0, x1, y1)?;
+        let mut hash = 0xcbf29ce484222325u64;
+        for value in [x0 as i64, y0 as i64, x1 as i64, y1 as i64] {
+            for byte in value.to_le_bytes() {
+                hash ^= u64::from(byte);
+                hash = hash.wrapping_mul(0x100000001b3);
+            }
+        }
+        for gid in values {
+            for byte in gid.to_le_bytes() {
+                hash ^= u64::from(byte);
+                hash = hash.wrapping_mul(0x100000001b3);
+            }
+        }
+        Ok(format!("{hash:016x}"))
     }
 
     /// Write `gid` to tile `(x, y)`, allocating the chunk if needed.
@@ -124,6 +229,7 @@ impl ChunkMap {
         if chunk[index] != gid {
             chunk[index] = gid;
             self.mark_dirty_chunk(cx, cy);
+            self.bump_version()?;
         }
         Ok(())
     }
@@ -143,21 +249,144 @@ impl ChunkMap {
         &mut self,
         edits: &[(i32, i32, u32)],
     ) -> Result<Vec<(i32, i32)>, TileMapError> {
+        let prepared = self.prepare_tiles(edits)?;
+        self.commit_prepared(prepared)
+    }
+
+    /// Validate and stage a tile batch without mutating the live map.
+    pub fn prepare_tiles(
+        &self,
+        edits: &[(i32, i32, u32)],
+    ) -> Result<PreparedChunkBatch, TileMapError> {
         if edits.len() as u64 > self.limits.max_tile_operation_cells {
             return Err(TileMapError::TileOperationLimitExceeded {
                 cells: edits.len() as u64,
                 max_cells: self.limits.max_tile_operation_cells,
             });
         }
-        let mut changed = BTreeSet::new();
+        let cells = checked_chunk_cells(self.chunk_size, &self.limits)?;
+        let mut staged = BTreeMap::<(i32, i32), Vec<u32>>::new();
+        let mut final_edits = BTreeMap::new();
         for (x, y, gid) in edits {
-            let before = self.get_tile(*x, *y);
-            self.try_set_tile(*x, *y, *gid)?;
-            if before != *gid {
-                changed.insert(self.tile_to_chunk(*x, *y));
+            let (cx, cy, lx, ly) = self.decompose(*x, *y);
+            let chunk = if let Some(chunk) = staged.get_mut(&(cx, cy)) {
+                chunk
+            } else {
+                let replacement = match self.chunks.get(&(cx, cy)) {
+                    Some(existing) => existing.clone(),
+                    None => {
+                        let mut allocated = Vec::new();
+                        allocated.try_reserve_exact(cells).map_err(|_| {
+                            TileMapError::AllocationFailed {
+                                context: "prepared chunk batch",
+                            }
+                        })?;
+                        allocated.resize(cells, Self::DEFAULT_GID);
+                        allocated
+                    }
+                };
+                staged.entry((cx, cy)).or_insert(replacement)
+            };
+            let index = checked_flat_index(self.chunk_size, lx, ly, chunk.len()).ok_or(
+                TileMapError::InvalidTileCoord {
+                    layer: 0,
+                    x: lx,
+                    y: ly,
+                    width: self.chunk_size,
+                    height: self.chunk_size,
+                },
+            )?;
+            chunk[index] = *gid;
+            final_edits.insert((*x, *y), *gid);
+        }
+
+        let mut replacements = Vec::new();
+        let mut changed_chunks = Vec::new();
+        for (coord, chunk) in staged {
+            let changed = match self.chunks.get(&coord) {
+                Some(existing) => existing != &chunk,
+                None => chunk.iter().any(|gid| *gid != Self::DEFAULT_GID),
+            };
+            if changed {
+                changed_chunks.push(coord);
+                replacements.push((coord, chunk));
             }
         }
-        Ok(changed.into_iter().collect())
+
+        let new_chunks = replacements
+            .iter()
+            .filter(|(coord, _)| !self.chunks.contains_key(coord))
+            .count();
+        let requested =
+            self.chunks
+                .len()
+                .checked_add(new_chunks)
+                .ok_or(TileMapError::MaxChunksExceeded {
+                    requested: usize::MAX,
+                    max_chunks: self.limits.max_chunks,
+                })?;
+        if requested > self.limits.max_chunks {
+            return Err(TileMapError::MaxChunksExceeded {
+                requested,
+                max_chunks: self.limits.max_chunks,
+            });
+        }
+
+        let changed_tile_count = final_edits
+            .into_iter()
+            .filter(|((x, y), gid)| self.get_tile(*x, *y) != *gid)
+            .count();
+
+        Ok(PreparedChunkBatch {
+            base_version: self.version,
+            replacements,
+            changed_chunks,
+            edit_count: edits.len(),
+            changed_tile_count,
+        })
+    }
+
+    /// Atomically commit a previously prepared tile batch.
+    pub fn commit_prepared(
+        &mut self,
+        batch: PreparedChunkBatch,
+    ) -> Result<Vec<(i32, i32)>, TileMapError> {
+        if self.version != batch.base_version {
+            return Err(TileMapError::VersionConflict {
+                expected: batch.base_version,
+                actual: self.version,
+            });
+        }
+        if batch.replacements.is_empty() {
+            return Ok(Vec::new());
+        }
+        let next_version = self
+            .version
+            .checked_add(1)
+            .ok_or(TileMapError::VersionOverflow)?;
+        let new_chunks = batch
+            .replacements
+            .iter()
+            .filter(|(coord, _)| !self.chunks.contains_key(coord))
+            .count();
+        self.chunks
+            .try_reserve(new_chunks)
+            .map_err(|_| TileMapError::AllocationFailed {
+                context: "prepared chunk commit",
+            })?;
+        self.dirty_chunks
+            .try_reserve(batch.changed_chunks.len())
+            .map_err(|_| TileMapError::AllocationFailed {
+                context: "prepared dirty-chunk commit",
+            })?;
+        for (coord, chunk) in batch.replacements {
+            self.chunks.insert(coord, chunk);
+        }
+        for coord in &batch.changed_chunks {
+            self.dirty_chunks.insert(*coord);
+        }
+        self.version = next_version;
+        Ok(batch.changed_chunks)
     }
 
     /// Fill all tiles in the rectangle `[x0,x1) x [y0,y1)` with `gid`.
@@ -191,12 +420,23 @@ impl ChunkMap {
                 max_cells: limits.max_tile_operation_cells,
             });
         }
+        let capacity =
+            usize::try_from(checks).map_err(|_| TileMapError::TileOperationLimitExceeded {
+                cells: checks,
+                max_cells: limits.max_tile_operation_cells,
+            })?;
+        let mut edits = Vec::new();
+        edits
+            .try_reserve_exact(capacity)
+            .map_err(|_| TileMapError::AllocationFailed {
+                context: "rectangle tile batch",
+            })?;
         for y in y0..y1 {
             for x in x0..x1 {
-                self.try_set_tile(x, y, gid)?;
+                edits.push((x, y, gid));
             }
         }
-        Ok(())
+        self.try_set_tiles(&edits).map(|_| ())
     }
 
     /// Ensure the chunk at `(cx, cy)` is allocated; no-op when already loaded.
@@ -227,8 +467,15 @@ impl ChunkMap {
     /// Discard the chunk at `(cx, cy)` and free its memory.
     pub fn unload_chunk(&mut self, cx: i32, cy: i32) {
         log_msg!(debug, CK03, "({}, {})", cx, cy);
+        let changed = self
+            .chunks
+            .get(&(cx, cy))
+            .is_some_and(|chunk| chunk.iter().any(|gid| *gid != Self::DEFAULT_GID));
         self.chunks.remove(&(cx, cy));
         self.dirty_chunks.remove(&(cx, cy));
+        if changed {
+            let _ = self.bump_version();
+        }
     }
 
     /// Return a stable list of chunks with pending tile changes.
@@ -445,9 +692,15 @@ impl ChunkMap {
         for raw in bytes[CHUNK_BYTES_HEADER_LEN..].chunks_exact(4) {
             chunk.push(u32::from_le_bytes([raw[0], raw[1], raw[2], raw[3]]));
         }
-        self.try_load_chunk(cx, cy).map_err(|err| err.to_string())?;
-        self.chunks.insert((cx, cy), chunk);
-        self.mark_dirty_chunk(cx, cy);
+        let changed = self.chunks.get(&(cx, cy)) != Some(&chunk);
+        if changed {
+            if !self.chunks.contains_key(&(cx, cy)) {
+                self.try_load_chunk(cx, cy).map_err(|err| err.to_string())?;
+            }
+            self.chunks.insert((cx, cy), chunk);
+            self.mark_dirty_chunk(cx, cy);
+            self.bump_version().map_err(|err| err.to_string())?;
+        }
         Ok(())
     }
 
@@ -463,6 +716,14 @@ impl ChunkMap {
 
     fn mark_dirty_chunk(&mut self, cx: i32, cy: i32) {
         self.dirty_chunks.insert((cx, cy));
+    }
+
+    fn bump_version(&mut self) -> Result<(), TileMapError> {
+        self.version = self
+            .version
+            .checked_add(1)
+            .ok_or(TileMapError::VersionOverflow)?;
+        Ok(())
     }
 }
 

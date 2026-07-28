@@ -16,7 +16,7 @@
 - Source path: `src/ecs`
 - Binding: `src/lua_api/ecs_api.rs`
 - Namespace: `lurek.ecs`
-- Lua API surface: `22` functions, `10` types, `120` methods
+- Lua API surface: `22` functions, `11` types, `129` methods
 - User-facing: `true`
 - Plugin tier: `not_evaluated`
 
@@ -186,6 +186,23 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### Types
 
+#### LEcsBatch Type
+
+- Prepared, version-checked ECS ChangeSet owned by an existing universe.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LEcsBatch:commit() -> integer`: Applies the prepared ChangeSet if the universe version is unchanged.
+- `LEcsBatch:discard() -> boolean`: Discards the prepared ChangeSet without mutating the universe.
+- `LEcsBatch:isPending() -> boolean`: Returns whether this prepared ChangeSet remains usable.
+- `LEcsBatch:preview() -> table`: Returns immutable metadata for this prepared ECS ChangeSet.
+- `LEcsBatch:type() -> string`: Returns this userdata type name.
+- `LEcsBatch:typeOf(name) -> boolean`: Checks whether this userdata matches a requested type.
+
 #### LLoadout Type
 
 - Lua-side handle for one modular loadout.
@@ -343,6 +360,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LUniverse:getRelated(from, name) -> integer[]`: Returns targets linked from an entity by a named relation.
 - `LUniverse:getSystemCount() -> integer`: Returns the number of registered systems.
 - `LUniverse:getTags(id) -> string[]`: Returns string tags assigned to an entity.
+- `LUniverse:getVersion() -> integer`: Returns the monotonic universe mutation version.
 - `LUniverse:has(id, name) -> boolean`: Returns whether an entity has a named component.
 - `LUniverse:hasBitmapTag(id, name) -> boolean`: Returns whether an entity has a bitmap tag.
 - `LUniverse:hasBlueprint(name) -> boolean`: Returns whether a named blueprint exists.
@@ -355,12 +373,14 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LUniverse:newQueryView(with_table, without_table?) -> LQueryView`: Creates a cached component query view that refreshes only when this universe changes.
 - `LUniverse:onComponentAdded(name, cb) -> nil`: Registers a callback for queued component-add events with a given component name.
 - `LUniverse:onComponentRemoved(name, cb) -> nil`: Registers a callback for queued component-remove events with a given component name.
+- `LUniverse:prepareChangeSet(changeset, expectedVersion?) -> LEcsBatch`: Validates and stores an ECS ChangeSet without mutating this universe.
 - `LUniverse:query(...) -> integer[]`: Returns entities that have all component names passed as varargs.
 - `LUniverse:queryBitmapAll(names) -> integer[]`: Returns entities that have every bitmap tag from a list.
 - `LUniverse:queryBitmapAny(names) -> integer[]`: Returns entities with at least one bitmap tag from a list.
 - `LUniverse:queryBitmapTag(name) -> integer[]`: Returns entities with one bitmap tag.
 - `LUniverse:queryMulti(names_table, callback) -> nil`: Iterates entities that have all component names from a table.
 - `LUniverse:queryNot(with_tbl, without_tbl) -> integer[]`: Returns entities that include one component set and exclude another component set.
+- `LUniverse:readComponents(requests) -> table`: Reads many entity/component selections with one Lua-to-Rust boundary crossing.
 - `LUniverse:release() -> nil`: Releases universe contents by clearing all ECS state.
 - `LUniverse:remove(id, name) -> nil`: Removes a named component from an entity.
 - `LUniverse:removeBlueprint(name) -> boolean`: Removes a named blueprint from this universe.
@@ -436,4 +456,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ## Notes
 
-- No additional module-specific notes.
+- `getVersion`, `prepareChangeSet`, and `LEcsBatch` provide optimistic, Lua-controlled ChangeSet commits. Validation happens before mutation and one successful ChangeSet advances the world version once.
+- Component observers remain queued during mutations and run only when Lua calls `flushObservers`, preventing callbacks from re-entering a half-applied game transaction.
+- `readComponents` returns selected entity/component rows in request order with one Lua/Rust boundary crossing.
+- `spawnBulk` pre-stages independent blueprint component rows, is bounded to 100,000 entities, and advances the universe version once for the successful group.
+- ECS does not resolve graph ids, tile occupants, renderer entries, or save records. Those references are ordinary component data whose meaning and synchronization remain Lua-owned.

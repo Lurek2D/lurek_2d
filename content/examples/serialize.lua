@@ -178,3 +178,24 @@ do
     lurek.log.info("toml bytes = " .. #toml .. ", has version = " .. tostring(has_version))
     lurek.log.info("restored title = " .. restored.game.title)
 end
+--@api: lurek.serialize.canonicalEncode
+do
+    local first = { z = 2, a = 1, nested = { y = true, b = "ore" } }
+    local second = { nested = { b = "ore", y = true }, a = 1, z = 2 }
+    local encoded_first = lurek.serialize.canonicalEncode(first)
+    local encoded_second = lurek.serialize.canonicalEncode(second)
+    local stable = encoded_first == encoded_second
+    lurek.log.info("canonical=" .. encoded_first)
+    lurek.log.info("stable=" .. tostring(stable))
+end
+
+--@api: lurek.serialize.canonicalHash
+do
+    local checkpoint = { tick = 12, inventory = { ore = 4, coal = 2 } }
+    local first = lurek.serialize.canonicalHash(checkpoint)
+    local reordered = { inventory = { coal = 2, ore = 4 }, tick = 12 }
+    local second = lurek.serialize.canonicalHash(reordered)
+    local stable = first == second
+    lurek.log.info("checkpoint hash=" .. first)
+    lurek.log.info("stable=" .. tostring(stable))
+end

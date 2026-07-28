@@ -52,6 +52,8 @@ Single registry for durable Python, PowerShell, CMD, shell, and installer toolin
 - `audit/parse_test_log.py` [audit; durable; mcp:no] - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
 - `audit/perf_regression_gate.py` [audit; durable; mcp:no] - perf_regression_gate.py — lightweight perf/stress regression gate for CI.
 - `audit/quality_report.py` [audit; durable; mcp:candidate] - quality_report.py — Lurek2D master quality report.
+- `audit/render_dependency_check.py` [audit; durable; mcp:no] - Enforce the province/render GPU ownership boundary.
+- `audit/render_perf_gate.py` [audit; durable; mcp:no] - Run deterministic release-mode render scenarios against a checked-in baseline.
 - `audit/reseed_lua_artifacts.py` [audit; durable; mcp:no] - Rebuild Lua golden baselines from current evidence artifacts.
 - `audit/scan_api_names.py` [audit; durable; mcp:no] - Extract all registered function names from Rust API files.
 - `audit/scan_exact.py` [audit; durable; mcp:no] - Scan specific Rust API files for exact function signatures.

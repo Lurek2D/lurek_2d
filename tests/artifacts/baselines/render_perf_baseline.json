@@ -1,0 +1,85 @@
+{
+  "backend": "software",
+  "required_scenarios": [
+    "canvas_postfx_command_stream",
+    "large_command_stream",
+    "mesh_resource_lifecycle_stream",
+    "primitive_heavy_steady_state",
+    "readback_row_layout_pressure",
+    "text_rich_command_stream",
+    "transform_clip_stream"
+  ],
+  "max_slowdown_ratio": 1.75,
+  "scenarios": {
+    "canvas_postfx_command_stream": {
+      "backend": "software",
+      "command_count": 192,
+      "draw_count": 160,
+      "p50_ns": 252700,
+      "p95_ns": 343500,
+      "p99_ns": 345500,
+      "samples": 31,
+      "scenario": "canvas_postfx_command_stream"
+    },
+    "large_command_stream": {
+      "backend": "software",
+      "command_count": 1024,
+      "draw_count": 512,
+      "p50_ns": 602200,
+      "p95_ns": 743800,
+      "p99_ns": 959300,
+      "samples": 31,
+      "scenario": "large_command_stream"
+    },
+    "mesh_resource_lifecycle_stream": {
+      "backend": "software",
+      "command_count": 96,
+      "draw_count": 96,
+      "p50_ns": 116200,
+      "p95_ns": 155900,
+      "p99_ns": 162000,
+      "samples": 31,
+      "scenario": "mesh_resource_lifecycle_stream"
+    },
+    "primitive_heavy_steady_state": {
+      "backend": "software",
+      "command_count": 192,
+      "draw_count": 128,
+      "p50_ns": 292800,
+      "p95_ns": 471700,
+      "p99_ns": 478900,
+      "samples": 31,
+      "scenario": "primitive_heavy_steady_state"
+    },
+    "readback_row_layout_pressure": {
+      "backend": "cpu_validation",
+      "command_count": 96,
+      "draw_count": 0,
+      "p50_ns": 100,
+      "p95_ns": 200,
+      "p99_ns": 200,
+      "samples": 31,
+      "scenario": "readback_row_layout_pressure"
+    },
+    "text_rich_command_stream": {
+      "backend": "software",
+      "command_count": 128,
+      "draw_count": 128,
+      "p50_ns": 133000,
+      "p95_ns": 176900,
+      "p99_ns": 182900,
+      "samples": 31,
+      "scenario": "text_rich_command_stream"
+    },
+    "transform_clip_stream": {
+      "backend": "software",
+      "command_count": 197,
+      "draw_count": 133,
+      "p50_ns": 292800,
+      "p95_ns": 445500,
+      "p99_ns": 546600,
+      "samples": 31,
+      "scenario": "transform_clip_stream"
+    }
+  }
+}

@@ -41,6 +41,77 @@ pub enum SerialValue {
     Map(IndexMap<String, SerialValue>),
 }
 
+/// Encode a value tree into compact canonical JSON with lexicographically sorted map keys.
+pub fn canonical_encode(
+    value: &SerialValue,
+    limits: &SerializeLimits,
+) -> Result<String, SerializeError> {
+    validate_serial_value(value, limits, "canonical_encode")?;
+    let mut output = String::new();
+    canonical_encode_inner(value, &mut output)?;
+    Ok(output)
+}
+
+/// Hash the canonical encoding with deterministic 64-bit FNV-1a.
+pub fn canonical_hash(
+    value: &SerialValue,
+    limits: &SerializeLimits,
+) -> Result<String, SerializeError> {
+    let encoded = canonical_encode(value, limits)?;
+    let mut hash = 0xcbf29ce484222325u64;
+    for byte in encoded.as_bytes() {
+        hash ^= u64::from(*byte);
+        hash = hash.wrapping_mul(0x100000001b3);
+    }
+    Ok(format!("{hash:016x}"))
+}
+
+fn canonical_encode_inner(value: &SerialValue, output: &mut String) -> Result<(), SerializeError> {
+    match value {
+        SerialValue::Null => output.push_str("null"),
+        SerialValue::Bool(value) => output.push_str(if *value { "true" } else { "false" }),
+        SerialValue::Int(value) => output.push_str(&value.to_string()),
+        SerialValue::Float(value) => {
+            let encoded = serde_json::to_string(value)
+                .map_err(|error| SerializeError::codec("canonical_encode", error.to_string()))?;
+            output.push_str(&encoded);
+        }
+        SerialValue::Str(value) => {
+            let encoded = serde_json::to_string(value)
+                .map_err(|error| SerializeError::codec("canonical_encode", error.to_string()))?;
+            output.push_str(&encoded);
+        }
+        SerialValue::Seq(values) => {
+            output.push('[');
+            for (index, value) in values.iter().enumerate() {
+                if index > 0 {
+                    output.push(',');
+                }
+                canonical_encode_inner(value, output)?;
+            }
+            output.push(']');
+        }
+        SerialValue::Map(values) => {
+            output.push('{');
+            let mut entries: Vec<_> = values.iter().collect();
+            entries.sort_by(|left, right| left.0.cmp(right.0));
+            for (index, (key, value)) in entries.into_iter().enumerate() {
+                if index > 0 {
+                    output.push(',');
+                }
+                let encoded_key = serde_json::to_string(key).map_err(|error| {
+                    SerializeError::codec("canonical_encode", error.to_string())
+                })?;
+                output.push_str(&encoded_key);
+                output.push(':');
+                canonical_encode_inner(value, output)?;
+            }
+            output.push('}');
+        }
+    }
+    Ok(())
+}
+
 /// Display scalar values inline; complex values show `[complex]`.
 impl fmt::Display for SerialValue {
     /// Format this value for user-facing display.

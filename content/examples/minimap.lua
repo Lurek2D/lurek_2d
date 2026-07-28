@@ -580,6 +580,16 @@ do
     lurek.log.info("placed object count " .. count .. " with owner tint " .. tostring(owner_r))
 end
 
+--@api: LMinimap:setObjects
+do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local ship = mm:addObjectType("ship", 0.2, 0.8, 1.0, 1.0)
+    local updated = mm:setObjects({ { id = 1, x = 3, y = 5, type_idx = ship }, { id = 2, x = 12, y = 9, type_idx = ship, owner = 1 } })
+    lurek.log.info("bulk minimap update=" .. tostring(updated) .. " count=" .. mm:getObjectCount())
+    lurek.log.info("first batch object id=1, second id=2")
+    lurek.log.info("object type count=" .. tostring(mm:getObjectTypeCount()))
+end
+
 --@api: LMinimap:getObjectCount
 do
 

@@ -9,6 +9,7 @@ use std::collections::HashSet;
 use crate::flownet::types::EdgeId;
 
 /// Directed connection between two graph nodes.
+#[derive(Clone)]
 pub struct Edge {
     /// Stable edge identifier.
     pub id: EdgeId,

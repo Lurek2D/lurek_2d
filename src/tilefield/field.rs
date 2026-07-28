@@ -17,8 +17,38 @@ use crate::tilefield::line::{line_between, CellCoord};
 use crate::tilefield::modifier::TileModifier;
 use crate::tilefield::reference::TileRef;
 use crate::tilefield::topology::TileTopology;
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::collections::{HashMap, HashSet};
+
+fn fnv_write(hash: &mut u64, bytes: &[u8]) {
+    for byte in bytes {
+        *hash ^= u64::from(*byte);
+        *hash = hash.wrapping_mul(0x100000001b3);
+    }
+}
+
+fn fnv_string(hash: &mut u64, value: &str) {
+    fnv_write(hash, &(value.len() as u64).to_le_bytes());
+    fnv_write(hash, value.as_bytes());
+}
+
+fn hash_bool_map(hash: &mut u64, values: &HashMap<String, bool>) {
+    let mut entries: Vec<_> = values.iter().collect();
+    entries.sort_by(|left, right| left.0.cmp(right.0));
+    for (name, value) in entries {
+        fnv_string(hash, name);
+        fnv_write(hash, &[u8::from(*value)]);
+    }
+}
+
+fn hash_f32_map(hash: &mut u64, values: &HashMap<String, f32>) {
+    let mut entries: Vec<_> = values.iter().collect();
+    entries.sort_by(|left, right| left.0.cmp(right.0));
+    for (name, value) in entries {
+        fnv_string(hash, name);
+        fnv_write(hash, &value.to_bits().to_le_bytes());
+    }
+}
 
 /// Named tile-level region stored as an explicit set of whole cells.
 ///
@@ -33,6 +63,21 @@ pub struct TileRegion {
     pub cells: Vec<CellCoord>,
     /// Arbitrary string properties attached to the region.
     pub properties: HashMap<String, String>,
+}
+
+/// Aggregate facts for one rectangular build footprint.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TileFootprintSummary {
+    /// Number of addressed cells.
+    pub cell_count: usize,
+    /// Number of cells with a non-zero occupant.
+    pub occupied_count: usize,
+    /// Number of cells explicitly or implicitly buildable.
+    pub buildable_count: usize,
+    /// Resource label counts in deterministic key order.
+    pub resources: BTreeMap<String, usize>,
+    /// Built-in blocker counts ordered as move, vision, action, light, and sun.
+    pub blocker_counts: [usize; 5],
 }
 
 /// Multi-level tile gameplay field.
@@ -241,6 +286,235 @@ impl TileField {
         self.version
     }
 
+    /// Normalize mutations performed on a private clone to one logical version step.
+    pub(crate) fn normalize_batch_version(
+        &mut self,
+        base_version: u64,
+        changed: bool,
+    ) -> Result<(), String> {
+        self.version = if changed {
+            base_version
+                .checked_add(1)
+                .ok_or_else(|| "tilefield version overflow; batch rejected".to_string())?
+        } else {
+            base_version
+        };
+        Ok(())
+    }
+
+    /// Summarize one bounded rectangular footprint without allocating per-cell records.
+    pub fn inspect_footprint(
+        &self,
+        x: u32,
+        y: u32,
+        z: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<TileFootprintSummary, String> {
+        let (x_end, y_end, cell_count) = self.validate_footprint(x, y, z, width, height)?;
+        let mut summary = TileFootprintSummary {
+            cell_count,
+            occupied_count: 0,
+            buildable_count: 0,
+            resources: BTreeMap::new(),
+            blocker_counts: [0; 5],
+        };
+        let channels = [
+            TileChannel::Move,
+            TileChannel::Vision,
+            TileChannel::Action,
+            TileChannel::Light,
+            TileChannel::Sun,
+        ];
+        for row in y..y_end {
+            for column in x..x_end {
+                let coord = CellCoord {
+                    x: column,
+                    y: row,
+                    z,
+                };
+                if self.occupant(coord).unwrap_or(0) != 0 {
+                    summary.occupied_count += 1;
+                }
+                if self.is_buildable(coord) {
+                    summary.buildable_count += 1;
+                }
+                if let Some(resource) = self.resource(coord) {
+                    *summary.resources.entry(resource.to_string()).or_default() += 1;
+                }
+                for (index, channel) in channels.iter().enumerate() {
+                    if self.blocks(coord, *channel) {
+                        summary.blocker_counts[index] += 1;
+                    }
+                }
+            }
+        }
+        Ok(summary)
+    }
+
+    /// Count resource labels inside one bounded rectangular footprint.
+    pub fn summarize_resources(
+        &self,
+        x: u32,
+        y: u32,
+        z: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<BTreeMap<String, usize>, String> {
+        self.inspect_footprint(x, y, z, width, height)
+            .map(|summary| summary.resources)
+    }
+
+    /// Atomically assign one occupant id to every cell in a bounded footprint.
+    pub fn set_footprint_occupant(
+        &mut self,
+        origin: CellCoord,
+        width: u32,
+        height: u32,
+        occupant: u64,
+        require_empty: bool,
+    ) -> Result<usize, String> {
+        let CellCoord { x, y, z } = origin;
+        let (x_end, y_end, cell_count) = self.validate_footprint(x, y, z, width, height)?;
+        if require_empty {
+            for row in y..y_end {
+                for column in x..x_end {
+                    let coord = CellCoord {
+                        x: column,
+                        y: row,
+                        z,
+                    };
+                    if self.occupant(coord).unwrap_or(0) != 0 {
+                        return Err(format!(
+                            "tilefield footprint cell ({column}, {row}, {z}) is occupied"
+                        ));
+                    }
+                }
+            }
+        }
+        let changed = (y..y_end)
+            .flat_map(|row| {
+                (x..x_end).map(move |column| CellCoord {
+                    x: column,
+                    y: row,
+                    z,
+                })
+            })
+            .filter(|coord| self.occupant(*coord).unwrap_or(0) != occupant)
+            .count();
+        if changed == 0 {
+            return Ok(0);
+        }
+        let next_version = self
+            .version
+            .checked_add(1)
+            .ok_or_else(|| "tilefield version overflow; mutation rejected".to_string())?;
+        if occupant != 0 {
+            self.occupants
+                .try_reserve(cell_count)
+                .map_err(|_| "tilefield footprint occupant allocation failed".to_string())?;
+        }
+        for row in y..y_end {
+            for column in x..x_end {
+                let coord = CellCoord {
+                    x: column,
+                    y: row,
+                    z,
+                };
+                if occupant == 0 {
+                    self.occupants.remove(&coord);
+                } else {
+                    self.occupants.insert(coord, occupant);
+                }
+            }
+        }
+        self.version = next_version;
+        self.push_dirty_rect((x, y, z, width, height));
+        Ok(changed)
+    }
+
+    /// Return a deterministic FNV-1a hash for all gameplay facts in a bounded footprint.
+    pub fn hash_region(
+        &self,
+        x: u32,
+        y: u32,
+        z: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<String, String> {
+        let (x_end, y_end, _) = self.validate_footprint(x, y, z, width, height)?;
+        let mut hash = 0xcbf29ce484222325u64;
+        for value in [x, y, z, width, height] {
+            fnv_write(&mut hash, &value.to_le_bytes());
+        }
+        let channels = [
+            TileChannel::Move,
+            TileChannel::Vision,
+            TileChannel::Action,
+            TileChannel::Light,
+            TileChannel::Sun,
+        ];
+        for row in y..y_end {
+            for column in x..x_end {
+                let coord = CellCoord {
+                    x: column,
+                    y: row,
+                    z,
+                };
+                let cell = self
+                    .cell(coord)
+                    .ok_or_else(|| "tilefield region coordinate is out of bounds".to_string())?;
+                for channel in channels {
+                    fnv_write(&mut hash, &[u8::from(cell.blocks(channel))]);
+                    fnv_write(&mut hash, &cell.cost(channel).to_bits().to_le_bytes());
+                }
+                fnv_write(&mut hash, &cell.sun_occlusion().to_bits().to_le_bytes());
+                hash_bool_map(&mut hash, cell.category_blockers());
+                hash_f32_map(&mut hash, cell.category_costs());
+                hash_f32_map(&mut hash, cell.category_transmissions());
+                let mut filters: Vec<_> = cell.category_filters().iter().collect();
+                filters.sort_by(|left, right| left.0.cmp(right.0));
+                for (name, values) in filters {
+                    fnv_string(&mut hash, name);
+                    for value in values {
+                        fnv_write(&mut hash, &value.to_bits().to_le_bytes());
+                    }
+                }
+                let mut refs: Vec<_> = cell.refs().iter().collect();
+                refs.sort_by(|left, right| left.0.cmp(right.0));
+                for (name, value) in refs {
+                    fnv_string(&mut hash, name);
+                    fnv_write(&mut hash, &value.to_le_bytes());
+                }
+                let mut typed_refs: Vec<_> = cell.typed_refs().iter().collect();
+                typed_refs.sort_by(|left, right| left.0.cmp(right.0));
+                for (name, value) in typed_refs {
+                    fnv_string(&mut hash, name);
+                    fnv_string(&mut hash, &value.tileset_id);
+                    fnv_write(&mut hash, &value.local_id.unwrap_or(u32::MAX).to_le_bytes());
+                    fnv_string(&mut hash, value.object_id.as_deref().unwrap_or(""));
+                }
+                let mut lights: Vec<_> = cell.lights().iter().collect();
+                lights.sort_by(|left, right| left.0.cmp(right.0));
+                for (name, light) in lights {
+                    fnv_string(&mut hash, name);
+                    fnv_write(&mut hash, &light.radius.to_bits().to_le_bytes());
+                    fnv_write(&mut hash, &light.intensity.to_bits().to_le_bytes());
+                    for component in light.color {
+                        fnv_write(&mut hash, &component.to_bits().to_le_bytes());
+                    }
+                }
+                for modifier in cell.modifiers() {
+                    fnv_string(&mut hash, modifier);
+                }
+                fnv_write(&mut hash, &self.occupant(coord).unwrap_or(0).to_le_bytes());
+                fnv_string(&mut hash, self.resource(coord).unwrap_or(""));
+                fnv_write(&mut hash, &[u8::from(self.is_buildable(coord))]);
+            }
+        }
+        Ok(format!("{hash:016x}"))
+    }
+
     /// Start a nested edit without discarding already pending changes.
     pub fn begin_edit(&mut self) {
         self.edit_depth = self.edit_depth.saturating_add(1);
@@ -340,7 +614,11 @@ impl TileField {
 
     fn mark_dirty_cell(&mut self, coord: CellCoord) -> Result<(), String> {
         self.bump_version()?;
-        let mut rect = (coord.x, coord.y, coord.z, 1, 1);
+        self.push_dirty_rect((coord.x, coord.y, coord.z, 1, 1));
+        Ok(())
+    }
+
+    fn push_dirty_rect(&mut self, mut rect: (u32, u32, u32, u32, u32)) {
         let mut index = 0;
         while index < self.dirty_rects.len() {
             let existing = self.dirty_rects[index];
@@ -356,10 +634,46 @@ impl TileField {
         if self.dirty_rects.len() > self.limits.max_dirty_rects {
             self.dirty_rects.clear();
             self.dirty_rects
-                .push((0, 0, coord.z, self.width, self.height));
+                .push((0, 0, rect.2, self.width, self.height));
             self.dirty_overflowed = true;
         }
-        Ok(())
+    }
+
+    fn validate_footprint(
+        &self,
+        x: u32,
+        y: u32,
+        z: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<(u32, u32, usize), String> {
+        if width == 0 || height == 0 {
+            return Err("tilefield footprint width and height must be > 0".to_string());
+        }
+        if z >= self.levels {
+            return Err("tilefield footprint level is out of bounds".to_string());
+        }
+        let x_end = x
+            .checked_add(width)
+            .ok_or_else(|| "tilefield footprint x extent overflow".to_string())?;
+        let y_end = y
+            .checked_add(height)
+            .ok_or_else(|| "tilefield footprint y extent overflow".to_string())?;
+        if x_end > self.width || y_end > self.height {
+            return Err("tilefield footprint is out of bounds".to_string());
+        }
+        let cells = u64::from(width)
+            .checked_mul(u64::from(height))
+            .ok_or_else(|| "tilefield footprint cell count overflow".to_string())?;
+        if cells > self.limits.max_cells_per_field {
+            return Err(format!(
+                "tilefield footprint has {cells} cells, exceeding limit {}",
+                self.limits.max_cells_per_field
+            ));
+        }
+        let cell_count = usize::try_from(cells)
+            .map_err(|_| "tilefield footprint is not addressable".to_string())?;
+        Ok((x_end, y_end, cell_count))
     }
 
     fn mark_full_dirty(&mut self) -> Result<(), String> {

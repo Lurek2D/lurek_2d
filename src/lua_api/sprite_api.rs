@@ -3,7 +3,8 @@
 use super::SharedState;
 use crate::image::ImageData;
 use crate::lua_api::render_api::{
-    ensure_shader_target, shader_key_from_userdata, LuaImage, LuaNineSlice, LuaShader,
+    create_sprite_batch, ensure_shader_target, shader_key_from_userdata, LuaImage, LuaNineSlice,
+    LuaShader,
 };
 use crate::math::{Rect, Vec2};
 use crate::render::{ShaderTarget, UniformValue};
@@ -1130,6 +1131,21 @@ impl LuaUserData for LuaSpriteAnimator {
 /// Registers the `lurek.sprite` module, exposing sprite sheet and texture atlas constructors.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+
+    // -- newBatch --
+    /// Creates a sprite-owned batch that draws many instances of one render texture.
+    /// @param | texture | LImage | Live render texture shared by every batch entry.
+    /// @param | max | integer? | Maximum entries, defaulting to 1000.
+    /// @return | LSpriteBatch | Batch handle with sprite entry semantics.
+    {
+        let s = state.clone();
+        tbl.set(
+            "newBatch",
+            lua.create_function(move |_, (texture, max): (LuaAnyUserData, Option<usize>)| {
+                create_sprite_batch(&s, &texture, max, "lurek.sprite.newBatch")
+            })?,
+        )?;
+    }
 
     // --- sprite instance and lightweight animator ---
     // -- newSprite --

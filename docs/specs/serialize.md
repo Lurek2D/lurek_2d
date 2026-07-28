@@ -14,7 +14,7 @@
 - Source path: `src/serialize`
 - Binding: `src/lua_api/serialize_api.rs`
 - Namespace: `lurek.serialize`
-- Lua API surface: `18` functions, `0` types, `0` methods
+- Lua API surface: `20` functions, `0` types, `0` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -140,6 +140,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ### Functions
 
 - `lurek.serialize.applyDefaults(value, schema) -> table`: Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
+- `lurek.serialize.canonicalEncode(value, opts?) -> string`: Encodes any supported Lua value as compact canonical JSON with recursively sorted map keys.
+- `lurek.serialize.canonicalHash(value, opts?) -> string`: Returns a deterministic 64-bit FNV-1a hash of the canonical value encoding.
 - `lurek.serialize.decode(payload, format?, opts?) -> table`: Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
 - `lurek.serialize.decodeChangeSet(payload, format?, opts?) -> table`: Decodes and validates a ChangeSet transport payload into a Lua table.
 - `lurek.serialize.decodeMsgPack(bytes) -> table`: Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
@@ -183,3 +185,5 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `SerializeLimits` are part of the module contract for untrusted or generated data. Depth, node, string, input-byte, and CSV budgets should stay explicit.
 - Lua table cycles and non-finite numbers are rejected rather than coerced or silently serialized.
 - `SerialFormat` exposes capability flags so tooling can discover whether a format can encode, decode text, or decode bytes before attempting the operation.
+- `canonicalEncode` recursively sorts map keys while preserving sequence order and emits compact JSON.
+- `canonicalHash` applies deterministic 64-bit FNV-1a to that canonical encoding. Games can combine independent module snapshots in Lua and hash the resulting table without adding engine-level integration.

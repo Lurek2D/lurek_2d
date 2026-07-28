@@ -435,6 +435,10 @@ name = "render_tests"
 path = "tests/rust/unit/render_tests.rs"
 
 [[test]]
+name = "render_perf_tests"
+path = "tests/rust/perf/render_perf_tests.rs"
+
+[[test]]
 name = "repl_tests"
 path = "tests/rust/unit/repl_tests.rs"
 

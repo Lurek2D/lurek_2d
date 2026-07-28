@@ -62,6 +62,37 @@ describe("lurek.serialize JSON helpers", function()
     end)
 end)
 
+-- @describe lurek.serialize canonical helpers
+describe("lurek.serialize canonical helpers", function()
+    -- @covers lurek.serialize.canonicalEncode
+    it("sorts map keys recursively while preserving array order", function()
+        local first = lurek.serialize.canonicalEncode({
+            z = 2,
+            a = 1,
+            nested = { y = false, b = "ok" },
+            sequence = { 3, 1, 2 },
+        })
+        local second = lurek.serialize.canonicalEncode({
+            sequence = { 3, 1, 2 },
+            nested = { b = "ok", y = false },
+            a = 1,
+            z = 2,
+        })
+        expect_equal(first, second)
+        expect_contains(first, '"a":1')
+        expect_contains(first, '"sequence":[3,1,2]')
+    end)
+
+    -- @covers lurek.serialize.canonicalHash
+    it("returns the same hash for structurally equal tables", function()
+        local first = lurek.serialize.canonicalHash({ b = 2, a = { y = 1, x = 0 } })
+        local second = lurek.serialize.canonicalHash({ a = { x = 0, y = 1 }, b = 2 })
+        expect_equal(first, second)
+        expect_equal(16, #first)
+        expect_not_equal(first, lurek.serialize.canonicalHash({ a = { x = 1, y = 1 }, b = 2 }))
+    end)
+end)
+
 -- @describe lurek.serialize TOML helpers
 describe("lurek.serialize TOML helpers", function()
     -- @covers lurek.serialize.fromToml
