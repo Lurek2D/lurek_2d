@@ -15,14 +15,18 @@ describe("sprite hostile inputs", function()
         expect_error(function() lurek.sprite.newSheet(65, 32, 32, 32) end)
         expect_error(function() lurek.sprite.newSheet(1000000, 1000000, 1, 1) end)
     end)
-
-    -- @security lurek.sprite.newSprite
-    it("rejects stale texture IDs at construction and normal-map assignment", function()
+    local function __audit_security_1()
         expect_error(function() lurek.sprite.newSprite(7, 0, 0) end)
         local image = lurek.render.newImage("assets/icon.png")
         local sprite = lurek.sprite.newSprite(image:getId(), 0, 0)
         image:release()
         expect_error(function() sprite:setNormalMap(7) end)
+    end
+
+
+    -- @security lurek.sprite.newSprite
+    it("rejects stale texture IDs at construction and normal-map assignment", function()
+        __audit_security_1()
     end)
 
     -- @security LSpriteSheet:getFrame

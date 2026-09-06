@@ -1,0 +1,11 @@
+Tiled polygon province topology
+geometry_kind=polygon
+map_extent=12x10
+polygon_count=5
+province=1 components=3 capital=1.000,1.000
+province=2 components=1 capital=5.000,1.000
+province=3 components=1 capital=5.000,5.000
+adjacency=1-2
+adjacency=2-3
+border=1-2 4.000,0.000 -> 4.000,4.000
+border=2-3 4.000,4.000 -> 6.000,4.000

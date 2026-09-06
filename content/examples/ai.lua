@@ -1715,27 +1715,17 @@ end
 
 --@api: LSquad:getFormationSummary
 do
-  local sq = lurek.ai.newSquad("summary")
-  sq:addMember("beta_1")
-  sq:addMember("alpha_1")
-  sq:addMember("beta_2")
-  sq:addMember("alpha_2")
-  sq:setFormation("line", 8.0)
-  sq:setFormationBehavior("distance", "keep", true)
-  sq:setMemberProfile("beta_1", { subgroup = "beta" })
-  sq:setMemberProfile("beta_2", { subgroup = "beta" })
-  sq:setMemberProfile("alpha_1", { subgroup = "alpha" })
-  sq:setMemberProfile("alpha_2", { subgroup = "alpha" })
-  local summary = sq:getFormationSummary(0.0, 0.0, {
-    positions = {
-      beta_1 = { x = -40.0, y = 0.0 },
-      beta_2 = { x = -30.0, y = 0.0 },
-      alpha_1 = { x = 30.0, y = 0.0 },
-      alpha_2 = { x = 40.0, y = 0.0 },
-    },
-  })
-  lurek.log.info(tostring("LSquad:getFormationSummary: active=" .. tostring(summary.activeFormation)))
-  lurek.log.info(tostring("LSquad:getFormationSummary: slots=" .. tostring(summary.slotCount)))
+local sq = lurek.ai.newSquad("summary")
+sq:addMember("beta_1")
+sq:addMember("alpha_1")
+sq:addMember("beta_2")
+sq:addMember("alpha_2")
+sq:setFormation("line", 8.0)
+sq:setFormationBehavior("distance", "keep", true)
+sq:setMemberProfile("beta_1", { subgroup = "beta" })
+sq:setMemberProfile("beta_2", { subgroup = "beta" })
+sq:setMemberProfile("alpha_1", { subgroup = "alpha" })
+sq:setMemberProfile("alpha_2", { subgroup = "alpha" })
 end
 
 --@api: LSquad:assignFormationMove
@@ -1760,24 +1750,22 @@ end
 
 --@api: LSquad:submitFormationPaths
 do
-  lurek.pathfind.setThreadCount(1)
-  lurek.pathfind.clearAsyncPaths()
-  local world = lurek.ai.newWorld()
-  local nav = lurek.pathfind.newNavGrid(32, 32)
-  local sq = lurek.ai.newSquad("summary_paths")
-  local alpha = world:addAgent("alpha")
-  local beta = world:addAgent("beta")
-  alpha:setPosition(0.0, 0.0)
-  beta:setPosition(10.0, 0.0)
-  sq:addMember("alpha")
-  sq:addMember("beta")
-  sq:setFormation("line", 10.0)
-  local submitted = sq:submitFormationPaths(world, nav, 100.0, 50.0, {
-    cellSize = 10.0,
-    priority = 2,
-  })
-  lurek.log.info(tostring("LSquad:submitFormationPaths: request=" .. tostring(submitted.requestId)))
-  lurek.log.info(tostring("LSquad:submitFormationPaths: submitted=" .. tostring(submitted.submittedCount)))
+lurek.pathfind.setThreadCount(1)
+lurek.pathfind.clearAsyncPaths()
+local world = lurek.ai.newWorld()
+local nav = lurek.pathfind.newNavGrid(32, 32)
+local sq = lurek.ai.newSquad("summary_paths")
+local alpha = world:addAgent("alpha")
+local beta = world:addAgent("beta")
+alpha:setPosition(0.0, 0.0)
+beta:setPosition(10.0, 0.0)
+sq:addMember("alpha")
+sq:addMember("beta")
+sq:setFormation("line", 10.0)
+local submitted = sq:submitFormationPaths(world, nav, 100.0, 50.0, {
+cellSize = 10.0,
+priority = 2,
+})
 end
 
 --@api: LSquad:getBlackboard

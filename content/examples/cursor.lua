@@ -187,29 +187,22 @@ end
 --@api: LCursorManager:defineState
 do
 
-    local manager = lurek.cursor.newManager()
-    manager:defineState("inspect", {
-        system = "crosshair",
-        scale = 1.2,
-        offset_x = 1,
-        offset_y = -1,
-        trail = {
-            mode = "ribbon",
-            width = 6,
-            lifetime = 0.35,
-        },
-        zoom = {
-            magnification = 2.25,
-            radius = 44,
-        },
-    })
-    manager:defineState("paint", {
-        custom = lurek.cursor.newCustom(16, 16, 2, 2),
-        native_preferred = false,
-    })
-    local preview = manager:getActiveState()
-    lurek.log.info("defined cursor states inspect and paint")
-    lurek.log.info("preview cursor kind = " .. preview.kind)
+local manager = lurek.cursor.newManager()
+manager:defineState("inspect", {
+system = "crosshair",
+scale = 1.2,
+offset_x = 1,
+offset_y = -1,
+trail = {
+mode = "ribbon",
+width = 6,
+lifetime = 0.35,
+},
+zoom = {
+magnification = 2.25,
+radius = 44,
+},
+})
 end
 
 --@api: LCursorManager:defineEffect
@@ -283,23 +276,22 @@ end
 --@api: LCursorManager:getLastHit
 do
 
-    local manager = lurek.cursor.newManager()
-    manager:addSource({
-        kind = "callback",
-        callback = function()
-            return {
-                module = "example",
-                kind = "marker",
-                surface = "surface",
-                id = "hover-01",
-            }
-        end,
-    })
-    manager:update(48, 64, 0.016)
-    local hit = manager:getLastHit()
-    lurek.log.info("cursor last hit exists = " .. tostring(hit ~= nil))
-    lurek.log.info("cursor last hit kind = " .. tostring(hit and hit.kind))
-    lurek.log.info("cursor last hit id = " .. tostring(hit and hit.id))
+local manager = lurek.cursor.newManager()
+manager:addSource({
+kind = "callback",
+callback = function()
+return {
+module = "example",
+kind = "marker",
+surface = "surface",
+id = "hover-01",
+}
+end,
+})
+manager:update(48, 64, 0.016)
+local hit = manager:getLastHit()
+lurek.log.info("cursor last hit exists = " .. tostring(hit ~= nil))
+lurek.log.info("cursor last hit kind = " .. tostring(hit and hit.kind))
 end
 
 --@api: LCursorManager:getActiveState

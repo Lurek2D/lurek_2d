@@ -215,119 +215,36 @@ impl<'a> FrameCommandContext<'a> {
                 segments: path_segs,
                 mode,
                 close,
+                fill_rule,
+                stroke,
             } => {
                 let t = transform_stack_last(&transform_stack);
-                let mut verts: Vec<ColorVertex> = Vec::new();
-                let mut idxs: Vec<u32> = Vec::new();
-                let mut points: Vec<[f32; 2]> = Vec::new();
-                let mut pen = [0.0f32; 2];
-                let mut anchor = [0.0f32; 2];
-                for seg in path_segs {
-                    match seg {
-                        PathSegment::MoveTo { x, y } => {
-                            if !points.is_empty() {
-                                if *close {
-                                    points.push(anchor);
-                                }
-                                for w in points.windows(2) {
-                                    push_thick_line(
-                                        &mut verts,
-                                        &mut idxs,
-                                        t,
-                                        current_color,
-                                        w[0][0],
-                                        w[0][1],
-                                        w[1][0],
-                                        w[1][1],
-                                        line_width,
-                                    );
-                                }
-                                points.clear();
-                            }
-                            pen = [*x, *y];
-                            anchor = pen;
-                            points.push(pen);
-                        }
-                        PathSegment::LineTo { x, y } => {
-                            pen = [*x, *y];
-                            points.push(pen);
-                        }
-                        PathSegment::QuadTo { cx, cy, x, y } => {
-                            let s = Vec2::new(pen[0], pen[1]);
-                            let c = Vec2::new(*cx, *cy);
-                            let e = Vec2::new(*x, *y);
-                            for i in 1..=8usize {
-                                let tv = i as f32 / 8.0;
-                                let mt = 1.0 - tv;
-                                let nx = mt * mt * s.x + 2.0 * mt * tv * c.x + tv * tv * e.x;
-                                let ny = mt * mt * s.y + 2.0 * mt * tv * c.y + tv * tv * e.y;
-                                points.push([nx, ny]);
-                            }
-                            pen = [*x, *y];
-                        }
-                        PathSegment::CubicTo {
-                            cx1,
-                            cy1,
-                            cx2,
-                            cy2,
-                            x,
-                            y,
-                        } => {
-                            let s = Vec2::new(pen[0], pen[1]);
-                            let cp1 = Vec2::new(*cx1, *cy1);
-                            let cp2 = Vec2::new(*cx2, *cy2);
-                            let ep = Vec2::new(*x, *y);
-                            for i in 1..=8usize {
-                                let tv = i as f32 / 8.0;
-                                let mt = 1.0 - tv;
-                                let nx = mt * mt * mt * s.x
-                                    + 3.0 * mt * mt * tv * cp1.x
-                                    + 3.0 * mt * tv * tv * cp2.x
-                                    + tv * tv * tv * ep.x;
-                                let ny = mt * mt * mt * s.y
-                                    + 3.0 * mt * mt * tv * cp1.y
-                                    + 3.0 * mt * tv * tv * cp2.y
-                                    + tv * tv * tv * ep.y;
-                                points.push([nx, ny]);
-                            }
-                            pen = [*x, *y];
-                        }
+                let style = if stroke.width <= 0.0 {
+                    crate::render::shape::StrokeStyle {
+                        width: line_width,
+                        ..stroke.clone()
                     }
-                }
-                if !points.is_empty() {
-                    if *close {
-                        points.push(anchor);
+                } else {
+                    stroke.clone()
+                };
+                let (verts, idxs) = match crate::render::shape::tessellate_path(
+                    path_segs,
+                    mode.clone(),
+                    *close,
+                    *fill_rule,
+                    style,
+                    line_width,
+                    *t,
+                    current_color,
+                    0.1,
+                ) {
+                    Ok(geometry) => geometry,
+                    Err(error) => {
+                        renderer.render_diagnostics.record_invalid_render_input();
+                        log::warn!("Skipping invalid immediate path: {}", error);
+                        (Vec::new(), Vec::new())
                     }
-                    match mode {
-                        DrawMode::Line => {
-                            for w in points.windows(2) {
-                                push_thick_line(
-                                    &mut verts,
-                                    &mut idxs,
-                                    t,
-                                    current_color,
-                                    w[0][0],
-                                    w[0][1],
-                                    w[1][0],
-                                    w[1][1],
-                                    line_width,
-                                );
-                            }
-                        }
-                        DrawMode::Fill => {
-                            let flat: Vec<f32> = points.iter().flat_map(|p| [p[0], p[1]]).collect();
-                            renderer.tess_polygon(
-                                &mut verts,
-                                &mut idxs,
-                                t,
-                                current_color,
-                                &DrawMode::Fill,
-                                &flat,
-                                line_width,
-                            );
-                        }
-                    }
-                }
+                };
                 let (tw, th) = renderer.target_dimensions(current_target, canvases);
                 append_color_draw(
                     &mut draws,

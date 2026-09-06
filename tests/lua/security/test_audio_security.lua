@@ -4,8 +4,7 @@ local NAN = 0 / 0
 
 -- @describe security: audio multi-listener validation
 describe("security: audio multi-listener validation", function()
-    -- @security lurek.audio.setListeners
-    it("rejects duplicate ids and non-finite values atomically", function()
+    local function __audit_security_1()
         lurek.audio.setListeners({ { id = "preserved", x = 1, y = 2 } })
         expect_error(function()
             lurek.audio.setListeners({
@@ -20,6 +19,11 @@ describe("security: audio multi-listener validation", function()
         expect_equal(1, #listeners)
         expect_equal("preserved", listeners[1].id)
         lurek.audio.setListener(0, 0, 0)
+    end
+
+    -- @security lurek.audio.setListeners
+    it("rejects duplicate ids and non-finite values atomically", function()
+        __audit_security_1()
     end)
 end)
 

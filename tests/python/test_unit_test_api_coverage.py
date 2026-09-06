@@ -126,6 +126,26 @@ class UnitTestApiCoverageStructureTests(unittest.TestCase):
         self.assertTrue(result.explicit)
         self.assertEqual(structure["by_code"].get("duplicate-marker"), 1)
 
+    def test_covers_case_is_explicit_without_duplicate_ownership(self) -> None:
+        results, structure = self.run_scan(
+            {
+                "case.lua": """
+                -- @covers lurek.timer.getDelta
+                it("canonical block", function()
+                    expect_type("number", lurek.timer.getDelta())
+                end)
+
+                -- @covers-case lurek.timer.getDelta
+                it("regression block", function()
+                    expect_type("number", lurek.timer.getDelta())
+                end)
+                """,
+            }
+        )
+        result = next(item for item in results if item.api.lua_name == "lurek.timer.getDelta")
+        self.assertTrue(result.explicit)
+        self.assertEqual(structure["by_code"], {})
+
 
 if __name__ == "__main__":
     unittest.main()

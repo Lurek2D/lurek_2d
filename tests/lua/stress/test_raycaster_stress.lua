@@ -2,8 +2,7 @@
 
 -- @describe raycaster stress: isolated view state
 describe("raycaster stress: isolated view state", function()
-    -- @stress lurek.raycaster.newView
-    it("keeps 256 view configurations independent", function()
+    local function __audit_stress_1()
         local views = {}
         for index = 1, 256 do
             local view = lurek.raycaster.newView({
@@ -20,6 +19,11 @@ describe("raycaster stress: isolated view state", function()
         end
         expect_equal(1, views[1]:getViewport().x)
         expect_equal(256, views[256]:getCameraState().x)
+    end
+
+    -- @stress lurek.raycaster.newView
+    it("keeps 256 view configurations independent", function()
+        __audit_stress_1()
     end)
 end)
 

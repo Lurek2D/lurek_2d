@@ -1,0 +1,64 @@
+category = "character"
+view_box = [0, 0, 64, 64]
+palette = { background = [0.08, 0.10, 0.14, 1.0], primary = [0.82, 0.86, 0.92, 1.0], secondary = [0.42, 0.50, 0.62, 1.0], accent = [0.95, 0.63, 0.18, 1.0], outline = [0.08, 0.10, 0.14, 1.0], highlight = [1.0, 1.0, 1.0, 1.0], shadow = [0.18, 0.20, 0.28, 1.0], emissive = [0.35, 0.95, 0.92, 1.0] }
+
+[[shapes]]
+id = "humanoid"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "hero"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "warrior"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "mage"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "rogue"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "archer"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "guard"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "worker"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "villager"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "robot"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "astronaut"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "ghost"
+anchor = [0.5, 1.0]
+tags = ["character", "actor"]
+elements = [{ kind = "native", primitive = "compound" }]

@@ -19,13 +19,16 @@ use lurek2d::render::postfx_pipeline::{
 use lurek2d::render::province_map_pipeline::ProvinceMapUniforms;
 use lurek2d::render::renderer::{
     adaptive_circle_ellipse_segments, BlendMode, CompareMode, DepthMode, DrawMode,
-    PhysicsDebugConfig, ProvinceMapEffectOptions, RenderCommand, StencilAction, StencilMode,
-    TextSpan, TextureData,
+    PhysicsDebugConfig, ProvinceMapEffectOptions, RenderCommand, ShapeInstance, StencilAction,
+    StencilMode, TextSpan, TextureData,
 };
-use lurek2d::render::shape::{CompoundShape, ShapeCommand};
+use lurek2d::render::shape::{
+    CompoundShape, FillRule, ShapeCommand, StrokeCap, StrokeJoin, StrokeStyle,
+};
 use lurek2d::render::software_capture::{
     capture_commands_to_image, capture_commands_to_image_with_diagnostics,
 };
+use lurek2d::render::PathSegment;
 
 #[cfg(feature = "voxel-loader")]
 mod voxel_loader_tests {
@@ -863,6 +866,73 @@ mod shape_tests {
         assert_eq!(original.command_count(), 1);
         assert_eq!(cloned.command_count(), 2);
     }
+
+    #[test]
+    fn compile_retains_indexed_geometry_and_invalidates_on_mutation() {
+        let mut shape = CompoundShape::new();
+        shape.push_command(ShapeCommand::Rectangle {
+            mode: DrawMode::Fill,
+            x: 2.0,
+            y: 3.0,
+            w: 10.0,
+            h: 8.0,
+        });
+        shape.compile(0.1).unwrap();
+        let compiled = shape.compiled.as_ref().unwrap();
+        assert!(compiled.vertex_count() >= 3);
+        assert!(compiled.index_count() >= 3);
+        assert_eq!(shape.bounds(), [2.0, 3.0, 12.0, 11.0]);
+        shape.push_command(ShapeCommand::SetColorRole("accent".into()));
+        assert!(shape.compiled.is_none());
+    }
+
+    #[test]
+    fn path_supports_curves_holes_and_even_odd_fill() {
+        let mut shape = CompoundShape::new();
+        shape.push_command(ShapeCommand::Path {
+            segments: vec![
+                PathSegment::MoveTo { x: 0.0, y: 0.0 },
+                PathSegment::LineTo { x: 40.0, y: 0.0 },
+                PathSegment::LineTo { x: 40.0, y: 40.0 },
+                PathSegment::LineTo { x: 0.0, y: 40.0 },
+                PathSegment::MoveTo { x: 10.0, y: 10.0 },
+                PathSegment::QuadTo {
+                    cx: 20.0,
+                    cy: 0.0,
+                    x: 30.0,
+                    y: 10.0,
+                },
+                PathSegment::LineTo { x: 30.0, y: 30.0 },
+                PathSegment::LineTo { x: 10.0, y: 30.0 },
+            ],
+            mode: DrawMode::Fill,
+            close: true,
+            fill_rule: FillRule::EvenOdd,
+            stroke: StrokeStyle::default(),
+        });
+        shape.compile(0.1).unwrap();
+        let compiled = shape.compiled.as_ref().unwrap();
+        assert!(compiled.index_count() > 0);
+        assert!(shape.bounds()[2] >= 40.0);
+    }
+
+    #[test]
+    fn stroke_style_accepts_caps_joins_and_dashes() {
+        let mut shape = CompoundShape::new();
+        shape.push_command(ShapeCommand::SetStrokeStyle(StrokeStyle {
+            width: 3.0,
+            cap: StrokeCap::Round,
+            join: StrokeJoin::Bevel,
+            miter_limit: 2.0,
+            dash: vec![4.0, 2.0],
+            dash_offset: 1.0,
+        }));
+        shape.push_command(ShapeCommand::Polyline {
+            points: vec![0.0, 0.0, 20.0, 0.0, 20.0, 20.0],
+        });
+        shape.compile(0.1).unwrap();
+        assert!(shape.compiled.as_ref().unwrap().index_count() > 0);
+    }
 }
 
 mod renderer_tests {
@@ -956,6 +1026,7 @@ mod renderer_tests {
 
 mod software_capture_tests {
     use super::*;
+    use slotmap::SlotMap;
 
     #[test]
     fn stencil_write_and_test_mask_color_output() {
@@ -1042,6 +1113,63 @@ mod software_capture_tests {
             [0.0, 0.0, 0.0, 1.0],
         );
         assert_eq!(diagnostics.unsupported_capture_commands, 1);
+    }
+
+    #[test]
+    fn retained_shape_capture_replays_compiled_triangles_and_instances() {
+        let mut shapes = SlotMap::with_key();
+        let mut shape = CompoundShape::new();
+        shape.current_color = [1.0, 0.0, 0.0, 1.0];
+        shape.push_command(ShapeCommand::Rectangle {
+            mode: DrawMode::Fill,
+            x: 0.0,
+            y: 0.0,
+            w: 8.0,
+            h: 8.0,
+        });
+        shape.compile(0.1).unwrap();
+        let key = shapes.insert(shape);
+        let image = lurek2d::render::software_capture::capture_commands_to_image_with_shapes(
+            &[
+                RenderCommand::DrawShape {
+                    shape_key: key,
+                    x: 2.0,
+                    y: 2.0,
+                    rotation: 0.0,
+                    sx: 1.0,
+                    sy: 1.0,
+                    ox: 0.0,
+                    oy: 0.0,
+                },
+                RenderCommand::DrawShapeMany {
+                    shape_key: key,
+                    instances: vec![ShapeInstance {
+                        x: 14.0,
+                        y: 2.0,
+                        rotation: 0.0,
+                        sx: 1.0,
+                        sy: 1.0,
+                        ox: 0.0,
+                        oy: 0.0,
+                        tint: [0.5, 1.0, 1.0, 1.0],
+                    }],
+                },
+            ],
+            &shapes,
+            [0.0, 0.0, 0.0, 1.0],
+        );
+        let pixel = |x: u32, y: u32| {
+            let bytes = image.as_bytes();
+            let index = ((y * image.width() + x) * 4) as usize;
+            [
+                bytes[index],
+                bytes[index + 1],
+                bytes[index + 2],
+                bytes[index + 3],
+            ]
+        };
+        assert_eq!(pixel(4, 4), [255, 0, 0, 255]);
+        assert_eq!(pixel(16, 4), [127, 0, 0, 255]);
     }
 }
 
@@ -2301,8 +2429,9 @@ mod render_input_validation_tests {
 mod gpu_renderer_tests {
     use lurek2d::render::gpu_frame_builder::merge_adjacent_prepared_draws;
     use lurek2d::render::gpu_pipeline::{
-        build_custom_color_shader_source, build_custom_light_shader_source,
-        build_custom_particle_shader_source, build_custom_texture_shader_source,
+        build_custom_color_instanced_shader_source, build_custom_color_shader_source,
+        build_custom_light_shader_source, build_custom_particle_shader_source,
+        build_custom_texture_instanced_shader_source, build_custom_texture_shader_source,
         build_custom_textured_particle_shader_source, depth_stencil_state, GeometryKind,
         GpuStencilMode,
     };
@@ -2521,6 +2650,27 @@ mod gpu_renderer_tests {
     }
 
     #[test]
+    fn frame_builder_merges_contiguous_instanced_ranges_without_extending_indices() {
+        let mut first = prepared_color_draw(0, 6);
+        first.geometry = GeometryKind::ColorInstanced;
+        first.static_geometry = Some(StaticGeometryKey::default());
+        first.instance_start = 0;
+        first.instance_count = 2;
+        let mut second = first;
+        second.instance_start = 2;
+        second.instance_count = 3;
+        let mut draws = vec![first, second];
+        let mut scratch = Vec::new();
+
+        assert_eq!(merge_adjacent_prepared_draws(&mut draws, &mut scratch), 1);
+        assert_eq!(draws.len(), 1);
+        assert_eq!(draws[0].idx_start, 0);
+        assert_eq!(draws[0].idx_count, 6);
+        assert_eq!(draws[0].instance_start, 0);
+        assert_eq!(draws[0].instance_count, 5);
+    }
+
+    #[test]
     fn texture_upload_validation_rejects_invalid_dimensions_and_lengths() {
         let limits = wgpu::Limits {
             max_texture_dimension_2d: 64,
@@ -2699,6 +2849,19 @@ mod gpu_renderer_tests {
         wgpu::naga::front::wgsl::parse_str(&source)
             .expect("wrapped color shader source should remain valid WGSL");
     }
+
+    #[test]
+    fn custom_instanced_color_shader_source_matches_instance_layout() {
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_color_instanced_shader_source(&shader, &[]);
+        assert!(source.contains("@location(2) col0: vec2<f32>"));
+        assert!(source.contains("@location(5) tint: vec4<f32>"));
+        assert!(source.contains("out.color = in.color * in.tint"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped instanced color shader source should remain valid WGSL");
+    }
+
     #[test]
     fn custom_texture_shader_source_is_parseable_with_uniforms() {
         let uniform_signature = vec![("uv_scale".to_string(), ShaderUniformKind::Vec2)];
@@ -2711,6 +2874,44 @@ mod gpu_renderer_tests {
         assert!(source.contains("textureSample(t_diffuse, s_diffuse, in.uv) * in.color"));
         wgpu::naga::front::wgsl::parse_str(&source)
             .expect("wrapped texture shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn custom_instanced_texture_shader_source_matches_instance_layout() {
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_texture_instanced_shader_source(&shader, &[]);
+        assert!(source.contains("@location(4) col0: vec2<f32>"));
+        assert!(source.contains("@location(7) tint: vec4<f32>"));
+        assert!(source.contains("textureSample(t_diffuse, s_diffuse, in.uv) * in.color"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped instanced texture shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn custom_tilemap_shader_wrappers_pass_naga_validation() {
+        let shader = Shader::new_for_target(
+            VALID_WGSL_FRAGMENT_SHADER.to_string(),
+            ShaderTarget::Tilemap,
+        )
+        .expect("expected valid tilemap fragment shader");
+        let sources = [
+            build_custom_color_shader_source(&shader, &[]),
+            build_custom_color_instanced_shader_source(&shader, &[]),
+            build_custom_texture_shader_source(&shader, &[]),
+            build_custom_texture_instanced_shader_source(&shader, &[]),
+        ];
+        for source in sources {
+            let module = wgpu::naga::front::wgsl::parse_str(&source)
+                .expect("wrapped tilemap shader source should parse");
+            let mut validator = wgpu::naga::valid::Validator::new(
+                wgpu::naga::valid::ValidationFlags::all(),
+                wgpu::naga::valid::Capabilities::all(),
+            );
+            validator
+                .validate(&module)
+                .expect("wrapped tilemap shader source should validate");
+        }
     }
 
     #[test]
@@ -2745,9 +2946,26 @@ mod gpu_renderer_tests {
         assert!(source.contains("@group(1) @binding(1) var s_particle: sampler;"));
         assert!(source.contains("@group(2) @binding(0) var<uniform> amount: f32;"));
         assert!(source.contains("textureSample(t_particle, s_particle, in.uv) * in.color"));
-        assert!(source.contains("in.sampled_color"));
-        wgpu::naga::front::wgsl::parse_str(&source)
-            .expect("wrapped textured particle shader source should remain valid WGSL");
+        assert!(source.contains(
+            "let sampled_color = textureSample(t_particle, s_particle, in.uv) * in.color;"
+        ));
+        assert!(!source.contains("out.sampled_color = textureSample"));
+        let fragment_start = source
+            .find("@fragment")
+            .expect("textured particle wrapper should have a fragment entry");
+        assert!(
+            !source[..fragment_start].contains("textureSample"),
+            "textured particle sampling must stay in the fragment stage"
+        );
+        let module = wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped textured particle shader source should parse");
+        let mut validator = wgpu::naga::valid::Validator::new(
+            wgpu::naga::valid::ValidationFlags::all(),
+            wgpu::naga::valid::Capabilities::all(),
+        );
+        validator
+            .validate(&module)
+            .expect("wrapped textured particle shader source should validate");
     }
 
     #[test]

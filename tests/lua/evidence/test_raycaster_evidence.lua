@@ -1,20 +1,4 @@
 -- Canonical evidence file for lurek.raycaster visual outputs.
--- @covers lurek.filesystem.write
--- @covers lurek.image.newImageData
--- @covers lurek.image.savePNG
--- @covers lurek.raycaster.buildMultiLevelSceneFromField
--- @covers lurek.raycaster.drawLastScene
--- @covers lurek.raycaster.getShader
--- @covers lurek.raycaster.new
--- @covers lurek.raycaster.newMultiLevelGrid
--- @covers lurek.raycaster.setShader
--- @covers lurek.render.newImage
--- @covers lurek.render.newShader
--- @covers lurek.tilefield.new
--- @covers lurek.tileset.fromProvider
--- @covers lurek.tileset.newCatalog
-
-
 local OUT = evidence_output_dir("raycaster")
 
 local function save_png(img, name)
@@ -649,6 +633,60 @@ describe("Evidence: lurek.raycaster", function()
         img:drawCircle(716, 366, 8, 255, 235, 90, 255)
         img:drawCircle(756, 366, 8, 178, 184, 220, 255)
         save_png(img, "raycaster_full_scene_day_night.png")
+    end)
+
+    -- Does: Builds a transparent-ceiling raycaster view from three user textures and changes camera/time/cloud-copy inputs.
+    -- Shows: Ordered roof-plane layers keep stars behind a moon and moving clouds, while zero, one, and three copies visibly change cloud coverage.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_layered_sky_clear.png, tests/artifacts/current/raycaster/raycaster_layered_sky_partial.png, tests/artifacts/current/raycaster/raycaster_layered_sky_heavy.png, tests/artifacts/current/raycaster/raycaster_layered_sky_yaw_shift.png
+    -- Why: The layered-sky contract is a render-boundary feature; separate deterministic captures prove compositing, roof-plane perspective, motion, yaw response, and bounded cloud density in the CPU evidence path.
+    it("PNG: layered animated sky variants", function()
+        local base_data = lurek.image.newImageData(32, 16)
+        base_data:fill(8, 18, 58, 255)
+        base_data:drawRect(0, 2, 1, 1, 250, 250, 220, 255)
+        base_data:drawRect(16, 5, 1, 1, 220, 235, 255, 255)
+        base_data:drawRect(27, 3, 1, 1, 255, 255, 255, 255)
+        local moon_data = lurek.image.newImageData(32, 16)
+        moon_data:fill(0, 0, 0, 0)
+        moon_data:drawCircle(2, 5, 3, 255, 228, 150, 235)
+        local cloud_data = lurek.image.newImageData(32, 16)
+        cloud_data:fill(0, 0, 0, 0)
+        cloud_data:drawRect(1, 8, 12, 3, 205, 215, 232, 175)
+        cloud_data:drawRect(19, 6, 10, 3, 180, 194, 220, 155)
+        local base = lurek.render.newImage(base_data)
+        local moon = lurek.render.newImage(moon_data)
+        local clouds = lurek.render.newImage(cloud_data)
+        local rc = make_room(12, 10)
+
+        local function frame_at(time_seconds, angle, copies)
+            rc:buildScene({
+                px = 5.5,
+                py = 4.5,
+                angle = angle,
+                fov = math.pi / 3,
+                rays = 96,
+                max_dist = 14.0,
+                screen_w = 240,
+                screen_h = 140,
+                ceiling_a = 0.0,
+                time_seconds = time_seconds,
+                background = {
+                    type = "layered_sky",
+                    top = { 0.02, 0.04, 0.12, 1.0 },
+                    bottom = { 0.12, 0.18, 0.34, 1.0 },
+                    layers = {
+                        { texture = base, height = 1.5, copies = 1 },
+                        { texture = moon, height = 1.5, tint = { 1.0, 0.95, 0.78, 0.9 }, blend = "add", copies = 1 },
+                        { texture = clouds, height = 1.5, tint = { 0.78, 0.84, 0.94, 0.8 }, velocity = { 0.32, 0.0 }, parallax = 0.82, copies = copies },
+                    },
+                },
+            }, {}, {}, {})
+            return lurek.raycaster.drawLastScene(240, 140)
+        end
+
+        save_png(frame_at(0.0, 0.0, 0), "raycaster_layered_sky_clear.png")
+        save_png(frame_at(0.0, 0.0, 1), "raycaster_layered_sky_partial.png")
+        save_png(frame_at(0.0, 0.0, 3), "raycaster_layered_sky_heavy.png")
+        save_png(frame_at(1.0, math.pi / 2, 1), "raycaster_layered_sky_yaw_shift.png")
     end)
 
     -- Does: Builds one raycaster scene using wall/floor/ceiling materials, shader-style background and overlay descriptors, depth fog, and projected particle emitters, then captures two deterministic CPU fallback frames.

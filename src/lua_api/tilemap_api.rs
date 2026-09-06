@@ -18,7 +18,9 @@ use crate::tilemap::orientation::MapOrientation;
 use crate::tilemap::render::TileFieldSlotRenderOptions;
 use crate::tilemap::tilemap::TileMap;
 use crate::tilemap::tmx::{load_tmx_with_options, TmxLayer, TmxLoadOptions, TmxMap};
-use crate::tilemap::{TileMapDiagnosticsSnapshot, TileMapLimits};
+use crate::tilemap::{
+    TileMapDiagnosticsSnapshot, TileMapLimits, TiledObjectShape, TiledPropertyValue,
+};
 use crate::tileset::{TileCatalog, TileSet};
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -92,6 +94,15 @@ fn tilemap_limits_from_table(opts: Option<&LuaTable>) -> LuaResult<TileMapLimits
     limits.max_tile_operation_cells = opts
         .get::<_, Option<u64>>("maxTileOperationCells")?
         .unwrap_or(limits.max_tile_operation_cells);
+    limits.max_objects = opts
+        .get::<_, Option<usize>>("maxObjects")?
+        .unwrap_or(limits.max_objects);
+    limits.max_points_per_object = opts
+        .get::<_, Option<usize>>("maxPointsPerObject")?
+        .unwrap_or(limits.max_points_per_object);
+    limits.max_total_object_points = opts
+        .get::<_, Option<usize>>("maxTotalObjectPoints")?
+        .unwrap_or(limits.max_total_object_points);
     limits
         .validate()
         .map_err(|err| LuaError::RuntimeError(format!("lurek.tilemap.limits: {err}")))?;
@@ -182,12 +193,72 @@ fn tmx_map_table<'lua>(lua: &'lua Lua, tmx: &TmxMap) -> LuaResult<LuaTable<'lua>
             TmxLayer::Object(object) => {
                 entry.set("type", "object")?;
                 entry.set("name", object.name.as_str())?;
+                entry.set("visible", object.visible)?;
+                entry.set("offsetX", object.offset_x)?;
+                entry.set("offsetY", object.offset_y)?;
+                let objects = lua.create_table()?;
+                for (object_idx, object) in object.objects.iter().enumerate() {
+                    let object_tbl = lua.create_table()?;
+                    object_tbl.set("id", object.id)?;
+                    object_tbl.set("name", object.name.as_str())?;
+                    object_tbl.set("type", object.obj_type.as_str())?;
+                    object_tbl.set("x", object.x)?;
+                    object_tbl.set("y", object.y)?;
+                    object_tbl.set("width", object.width)?;
+                    object_tbl.set("height", object.height)?;
+                    object_tbl.set("gid", object.gid)?;
+                    object_tbl.set("rotation", object.rotation)?;
+                    match &object.shape {
+                        TiledObjectShape::Point => {
+                            object_tbl.set("shape", "point")?;
+                            object_tbl.set("point", true)?;
+                        }
+                        TiledObjectShape::Polygon(points) => {
+                            object_tbl.set("shape", "polygon")?;
+                            let points_tbl = lua.create_table()?;
+                            for (point_idx, point) in points.iter().enumerate() {
+                                let point_tbl = lua.create_table()?;
+                                point_tbl.set("x", point.x)?;
+                                point_tbl.set("y", point.y)?;
+                                point_tbl.set(1, point.x)?;
+                                point_tbl.set(2, point.y)?;
+                                points_tbl.set(point_idx + 1, point_tbl)?;
+                            }
+                            object_tbl.set("polygon", points_tbl)?;
+                        }
+                        TiledObjectShape::Unsupported => {
+                            object_tbl.set("shape", "unsupported")?;
+                        }
+                    }
+                    let properties = lua.create_table()?;
+                    for (name, value) in &object.properties {
+                        properties.set(name.as_str(), tiled_property_to_lua(lua, value)?)?;
+                    }
+                    object_tbl.set("properties", properties)?;
+                    objects.set(object_idx + 1, object_tbl)?;
+                }
+                entry.set("objects", objects)?;
             }
         }
         layers_tbl.set(layer_idx + 1, entry)?;
     }
     result.set("layers", layers_tbl)?;
     Ok(result)
+}
+
+fn tiled_property_to_lua<'lua>(
+    lua: &'lua Lua,
+    value: &TiledPropertyValue,
+) -> LuaResult<LuaValue<'lua>> {
+    match value {
+        TiledPropertyValue::String(value)
+        | TiledPropertyValue::Color(value)
+        | TiledPropertyValue::File(value) => Ok(LuaValue::String(lua.create_string(value)?)),
+        TiledPropertyValue::Int(value) => Ok(LuaValue::Integer(*value)),
+        TiledPropertyValue::Float(value) => Ok(LuaValue::Number(*value)),
+        TiledPropertyValue::Bool(value) => Ok(LuaValue::Boolean(*value)),
+        TiledPropertyValue::Object(value) => Ok(LuaValue::Integer(i64::from(*value))),
+    }
 }
 
 fn load_ldtk_lua<'lua>(
@@ -2423,8 +2494,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- loadTMX --
     /// Parses a TMX (Tiled XML) string and returns a table describing the map structure.
     /// @param | xml | string | Raw TMX XML content.
-    /// @param | opts | any? | Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits.
-    /// @return | table | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`, or nil on parse failure.
+    /// @param | opts | any? | Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits, including `maxObjects`, `maxPointsPerObject`, and `maxTotalObjectPoints` for object-layer geometry.
+    /// @return | table | Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`, or nil on parse failure. Object layers also expose `offsetX`, `offsetY`, and `objects`; each object retains `id`, position, rotation, `shape`, polygon points, and typed custom `properties`.
     /// @return | table | Structured import error table on parse failure, or nil on success.
     /// @field | format | string | Source format identifier (`"tmx"`).
     /// @field | code | string | Stable machine-readable error code.

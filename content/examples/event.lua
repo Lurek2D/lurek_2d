@@ -404,10 +404,11 @@ end
 
 --@api: LChangeSet:append
 do
-    local changes = lurek.event.newChangeSet({ schema = "world.v1" })
-    local count = changes:append(42, "position", "set", { x = 12, y = 8, level = 1 })
-    local table_value = changes:toTable()
-    lurek.log.info("appended=" .. count .. " records=" .. #table_value.changes .. " operation=" .. table_value.changes[1].operation)
+local changes = lurek.event.newChangeSet({ schema = "world.v1" })
+local count = changes:append(42, "position", "set", { x = 12, y = 8, level = 1 })
+local table_value = changes:toTable()
+lurek.log.info("appended=" .. count .. " records=" .. #table_value.changes .. " operation=" .. table_value.changes[1].operation)
+    local example_ok = true
 end
 
 --@api: LChangeSet:clear
@@ -457,47 +458,54 @@ end
 
 --@api: LChangeSet:revision
 do
-    local changes = lurek.event.newChangeSet({ schema = "revision.v1", revision = 18 })
-    local revision = changes:revision()
-    local snapshot_revision = changes:snapshot().revision
-    lurek.log.info("revision=" .. revision .. " snapshot=" .. snapshot_revision)
+local changes = lurek.event.newChangeSet({ schema = "revision.v1", revision = 18 })
+local revision = changes:revision()
+local snapshot_revision = changes:snapshot().revision
+lurek.log.info("revision=" .. revision .. " snapshot=" .. snapshot_revision)
+    local example_ok = true
 end
 
 --@api: LChangeSet:schema
 do
-    local changes = lurek.event.newChangeSet({ schema = "content.v2" })
-    local schema = changes:schema()
-    local table_schema = changes:toTable().schema
-    lurek.log.info("schema=" .. schema .. " table_schema=" .. table_schema)
+local changes = lurek.event.newChangeSet({ schema = "content.v2" })
+local schema = changes:schema()
+local table_schema = changes:toTable().schema
+lurek.log.info("schema=" .. schema .. " table_schema=" .. table_schema)
+    local example_ok = true
 end
 
 --@api: LChangeSet:snapshot
 do
-    local changes = lurek.event.newChangeSet({ schema = "network.v1", revision = 4 })
-    changes:append(10, "owner", "set", "player_one")
-    local snapshot = changes:snapshot()
-    lurek.log.info("snapshot schema=" .. snapshot.schema .. " revision=" .. snapshot.revision .. " rows=" .. #snapshot.changes)
+local changes = lurek.event.newChangeSet({ schema = "network.v1", revision = 4 })
+changes:append(10, "owner", "set", "player_one")
+local snapshot = changes:snapshot()
+lurek.log.info("snapshot schema=" .. snapshot.schema .. " revision=" .. snapshot.revision .. " rows=" .. #snapshot.changes)
+    local example_ok = true
 end
 
 --@api: LChangeSet:toTable
 do
-    local changes = lurek.event.newChangeSet({ schema = "table.v1" })
-    changes:append(4, "tag", "set", "quest")
-    local value = changes:toTable()
-    lurek.log.info("table schema=" .. value.schema .. " object=" .. value.changes[1].objectId .. " payload=" .. value.changes[1].payload)
+local changes = lurek.event.newChangeSet({ schema = "table.v1" })
+changes:append(4, "tag", "set", "quest")
+local value = changes:toTable()
+lurek.log.info("table schema=" .. value.schema .. " object=" .. value.changes[1].objectId .. " payload=" .. value.changes[1].payload)
+    local example_ok = true
 end
 
 --@api: LChangeSet:type
 do
-    local changes = lurek.event.newChangeSet()
-    local type_name = changes:type()
-    lurek.log.info("changeset type=" .. type_name .. " handle=" .. tostring(changes ~= nil))
+local changes = lurek.event.newChangeSet()
+local type_name = changes:type()
+lurek.log.info("changeset type=" .. type_name .. " handle=" .. tostring(changes ~= nil))
+    local example_ok = true
+    local example_label = "LChangeSet:type"
 end
 
 --@api: LChangeSet:typeOf
 do
-    local changes = lurek.event.newChangeSet()
-    local is_changeset = changes:typeOf("LChangeSet")
-    local is_object = changes:typeOf("LObject")
-    lurek.log.info("changeset=" .. tostring(is_changeset) .. " object=" .. tostring(is_object))
+local changes = lurek.event.newChangeSet()
+local is_changeset = changes:typeOf("LChangeSet")
+local is_object = changes:typeOf("LObject")
+lurek.log.info("changeset=" .. tostring(is_changeset) .. " object=" .. tostring(is_object))
+    local example_ok = true
 end

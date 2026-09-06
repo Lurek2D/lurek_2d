@@ -23,6 +23,12 @@ pub struct TileMapLimits {
     pub max_chunks: usize,
     /// Maximum number of cells touched by one bounded tile operation.
     pub max_tile_operation_cells: u64,
+    /// Maximum number of objects in one imported Tiled object layer.
+    pub max_objects: usize,
+    /// Maximum number of polygon points in one imported Tiled object.
+    pub max_points_per_object: usize,
+    /// Maximum number of polygon points across one imported Tiled map.
+    pub max_total_object_points: usize,
 }
 
 impl TileMapLimits {
@@ -38,6 +44,12 @@ impl TileMapLimits {
             (
                 "max_tile_operation_cells",
                 self.max_tile_operation_cells as u128,
+            ),
+            ("max_objects", self.max_objects as u128),
+            ("max_points_per_object", self.max_points_per_object as u128),
+            (
+                "max_total_object_points",
+                self.max_total_object_points as u128,
             ),
         ];
         for (field, value) in checks {
@@ -74,6 +86,9 @@ impl Default for TileMapLimits {
             max_chunk_cells: 1_048_576,
             max_chunks: 1_048_576,
             max_tile_operation_cells: 1_048_576,
+            max_objects: 100_000,
+            max_points_per_object: 16_384,
+            max_total_object_points: 1_000_000,
         }
     }
 }

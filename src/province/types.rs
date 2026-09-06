@@ -8,6 +8,25 @@
 
 use std::collections::HashMap;
 
+/// Authoring geometry used by a province registry.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProvinceGeometryKind {
+    /// Dense cell IDs extracted from a color-coded image.
+    Raster,
+    /// Authored polygon components imported from Tiled.
+    Polygon,
+}
+
+impl ProvinceGeometryKind {
+    /// Return the stable Lua-facing name for this geometry kind.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Raster => "raster",
+            Self::Polygon => "polygon",
+        }
+    }
+}
+
 /// Unique identifier for a province in the map system; 0 is reserved for "no province" / ocean pixels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct ProvinceId(pub u32);

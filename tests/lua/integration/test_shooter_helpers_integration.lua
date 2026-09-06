@@ -1,3 +1,4 @@
+-- Integration: input, camera, physics, and particle shooter helper pipeline.
 -- @describe integration: input + camera + physics + particle shooter helpers
 describe("integration: input + camera + physics + particle shooter helpers", function()
     -- @integration LCamera:presetHorizontalFollow

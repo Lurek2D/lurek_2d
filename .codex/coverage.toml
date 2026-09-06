@@ -8,7 +8,7 @@ skills = ["create-cag-artifact", "create-rag-artifact", "route-prompt"]
 [domains.engine]
 roots = ["src"]
 contracts = ["src/AGENTS.md"]
-skills = ["create-module", "create-engine-feature", "create-shader"]
+skills = ["create-module", "create-engine-feature", "create-shader", "create-procedural-graphic"]
 
 [domains.lua_api]
 roots = ["src/lua_api"]
@@ -23,7 +23,7 @@ skills = ["create-test-rust", "create-test-lua", "create-test-integration", "cre
 [domains.content]
 roots = ["content"]
 contracts = ["content/AGENTS.md"]
-skills = ["create-example", "create-layout", "create-snippet", "review-examples"]
+skills = ["create-example", "create-layout", "create-snippet", "review-examples", "create-procedural-graphic"]
 
 [domains.games]
 roots = ["lurek_2d_content/games"]

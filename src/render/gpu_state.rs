@@ -8,7 +8,7 @@
 use crate::render::gpu_types::{
     ColorVertex, InstanceData, ParticleVertex, PreparedDraw, TexVertex,
 };
-use crate::runtime::resource_keys::{InstanceBufferKey, StaticGeometryKey};
+use crate::runtime::resource_keys::{InstanceBufferKey, ShapeKey, StaticGeometryKey};
 use std::sync::mpsc::Receiver;
 use std::time::Instant;
 
@@ -36,6 +36,23 @@ pub struct GpuTexture {
     pub(crate) height: u32,
     /// CPU texture revision represented by this GPU allocation.
     pub(crate) source_revision: u64,
+    /// Optional multisampled color attachment used while rendering to a canvas.
+    /// The single-sampled `view` remains the shader/readback surface after resolve.
+    pub(crate) _render_texture: Option<wgpu::Texture>,
+    /// Optional multisampled view paired with `_render_texture`.
+    pub(crate) render_view: Option<wgpu::TextureView>,
+}
+
+/// Multisampled color attachment used for the screen before resolving into the swapchain.
+pub struct MsaaColorTarget {
+    /// Owned multisampled texture.
+    pub(crate) _texture: wgpu::Texture,
+    /// View bound as the render-pass color attachment.
+    pub(crate) view: wgpu::TextureView,
+    /// Pixel width matching the swapchain surface.
+    pub(crate) width: u32,
+    /// Pixel height matching the swapchain surface.
+    pub(crate) height: u32,
 }
 /// Combined depth/stencil render attachment; created lazily per render target.
 pub struct DepthStencilTarget {
@@ -111,6 +128,20 @@ pub struct RenderStats {
     pub batched_draws: u32,
     /// CPU time spent in `render_frame` this frame in milliseconds.
     pub cpu_render_ms: f32,
+    /// Number of CPU shape tessellations performed this frame.
+    pub shape_tessellations: u32,
+    /// Retained-shape cache hits this frame.
+    pub shape_cache_hits: u32,
+    /// Retained-shape cache misses/uploads this frame.
+    pub shape_cache_misses: u32,
+    /// Static geometry uploads performed this frame.
+    pub shape_uploads: u32,
+    /// Number of retained-shape instances submitted this frame.
+    pub shape_instances: u32,
+    /// Active MSAA sample count (1 or 4).
+    pub msaa_samples: u32,
+    /// True when the device could not expose the requested 4x target and 1x was selected.
+    pub msaa_fallback: bool,
 }
 
 /// CPU-side vectors reused while building and batching one GPU frame.
@@ -317,6 +348,13 @@ pub struct GpuMeshCache {
     pub static_geometry: std::collections::HashMap<StaticGeometryKey, StaticGeometryCacheEntry>,
     /// Dynamic instancing buffer bindings.
     pub instance_buffers: std::collections::HashMap<InstanceBufferKey, InstanceBufferCacheEntry>,
+    /// CPU revision represented by each retained shape upload.
+    pub shape_revisions: std::collections::HashMap<ShapeKey, u64>,
+    /// Static geometry key currently referenced by each retained shape.
+    ///
+    /// Multiple handles (notably built-in templates loaded with the same
+    /// palette/tolerance) may point at one shared VBO/IBO entry.
+    pub shape_geometry_keys: std::collections::HashMap<ShapeKey, StaticGeometryKey>,
 }
 
 /// Initialize empty geometry cache containers.
@@ -325,6 +363,8 @@ impl Default for GpuMeshCache {
         Self {
             static_geometry: std::collections::HashMap::new(),
             instance_buffers: std::collections::HashMap::new(),
+            shape_revisions: std::collections::HashMap::new(),
+            shape_geometry_keys: std::collections::HashMap::new(),
         }
     }
 }

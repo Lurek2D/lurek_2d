@@ -7,6 +7,7 @@ use lurek2d::math::Vec2;
 use lurek2d::physics::{Body, BodyType, World};
 use lurek2d::raycaster::*;
 use lurek2d::render::renderer::RenderCommand;
+use lurek2d::render::BlendMode;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -845,6 +846,100 @@ mod render_tests {
         );
     }
 
+    fn sample_sky_quad(texture_key: TextureKey, blend_mode: BlendMode) -> RaycasterSkyQuad {
+        RaycasterSkyQuad {
+            corners: [
+                Vec2::new(0.0, -20.0),
+                Vec2::new(100.0, -10.0),
+                Vec2::new(100.0, 40.0),
+                Vec2::new(0.0, 30.0),
+            ],
+            uvs: [
+                Vec2::new(0.0, 0.0),
+                Vec2::new(1.0, 0.0),
+                Vec2::new(1.0, 1.0),
+                Vec2::new(0.0, 1.0),
+            ],
+            corner_w: [4.0, 4.0, 8.0, 8.0],
+            texture_key,
+            color: [1.0, 0.9, 0.8, 0.75],
+            blend_mode,
+        }
+    }
+
+    #[test]
+    fn layered_sky_emits_perspective_quads_and_restores_render_state() {
+        let texture = TextureKey::from(KeyData::from_ffi(61));
+        let mut scene = RaycasterScene::new(100.0, 80.0);
+        scene.background = Some(RaycasterBackground::LayeredSky {
+            top: [0.1, 0.2, 0.4, 1.0],
+            bottom: [0.4, 0.5, 0.7, 1.0],
+            layers: Vec::new(),
+        });
+        scene.sky_quads = vec![
+            sample_sky_quad(texture, BlendMode::Alpha),
+            sample_sky_quad(texture, BlendMode::Add),
+        ];
+
+        let commands = scene.generate_render_commands_with_state(RaycasterRenderState {
+            scene_shader: None,
+            restore_shader: None,
+            restore_blend: BlendMode::Multiply,
+        });
+        assert!(commands
+            .iter()
+            .any(|command| matches!(command, RenderCommand::DrawGradientRect { .. })));
+        let sky_quads: Vec<_> = commands
+            .iter()
+            .filter_map(|command| match command {
+                RenderCommand::DrawTexturedQuad {
+                    texture_key,
+                    corner_w,
+                    uvs,
+                    ..
+                } if *texture_key == texture => Some((*corner_w, *uvs)),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(sky_quads.len(), 2);
+        assert!(sky_quads
+            .iter()
+            .all(|(corner_w, uvs)| corner_w.iter().all(|w| *w > 0.0)
+                && uvs
+                    .iter()
+                    .all(|uv| uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)));
+        assert!(matches!(
+            commands.last(),
+            Some(RenderCommand::SetBlendMode(BlendMode::Multiply))
+        ));
+    }
+
+    #[test]
+    fn layered_sky_without_built_plane_keeps_only_fallback_gradient() {
+        let texture = TextureKey::from(KeyData::from_ffi(62));
+        let mut scene = RaycasterScene::new(120.0, 80.0);
+        scene.background = Some(RaycasterBackground::LayeredSky {
+            top: [0.1, 0.2, 0.4, 1.0],
+            bottom: [0.4, 0.5, 0.7, 1.0],
+            layers: vec![RaycasterSkyLayer {
+                texture_key: texture,
+                tint: [1.0, 1.0, 1.0, 1.0],
+                blend_mode: BlendMode::Alpha,
+                scale: [1.0, 1.0],
+                offset: [0.0, 0.0],
+                velocity: [0.1, 0.0],
+                parallax: 1.0,
+                height: 4.0,
+                copies: 0,
+                wrap_y: false,
+            }],
+        });
+        assert!(!scene
+            .generate_render_commands()
+            .iter()
+            .any(|command| matches!(command, RenderCommand::DrawTexturedQuad { texture_key, .. } if *texture_key == texture)));
+    }
+
     #[test]
     fn particles_emit_particle_system_command() {
         let texture = TextureKey::from(KeyData::from_ffi(51));
@@ -1484,6 +1579,53 @@ mod build_scene_tests {
             !roof_scene.ceilings.is_empty(),
             "Textured roof cells should still render with ceiling_a=0"
         );
+    }
+
+    #[test]
+    fn layered_sky_builds_elevated_ceiling_style_quads() {
+        let rc = Raycaster2D::new(10, 10);
+        let mut params = default_params();
+        params.ceiling_color = Color::new(0.1, 0.1, 0.15, 0.0);
+        let texture = TextureKey::from(KeyData::from_ffi(72));
+        params.background = Some(RaycasterBackground::LayeredSky {
+            top: [0.02, 0.04, 0.12, 1.0],
+            bottom: [0.12, 0.18, 0.34, 1.0],
+            layers: vec![RaycasterSkyLayer {
+                texture_key: texture,
+                tint: [1.0, 1.0, 1.0, 1.0],
+                blend_mode: BlendMode::Alpha,
+                scale: [1.0, 1.0],
+                offset: [0.0, 0.0],
+                velocity: [0.0, 0.0],
+                parallax: 1.0,
+                height: 4.0,
+                copies: 1,
+                wrap_y: false,
+            }],
+        });
+        let scene = RaycasterScene::build(
+            &rc,
+            &params,
+            &[],
+            &[],
+            &|_| None,
+            &|_, _| None,
+            &|_, _| None,
+            &|_, _| None,
+        );
+        assert!(
+            !scene.sky_quads.is_empty(),
+            "sky plane should cover open cells"
+        );
+        assert!(scene.sky_quads.iter().all(|quad| {
+            quad.corners
+                .iter()
+                .any(|corner| corner.y < params.screen_height * 0.5)
+                && quad
+                    .uvs
+                    .iter()
+                    .all(|uv| uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+        }));
     }
 
     #[test]

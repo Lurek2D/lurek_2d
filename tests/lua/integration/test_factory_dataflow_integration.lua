@@ -16,6 +16,10 @@ describe("Lua-owned factory dataflow integration", function()
     -- @integration LGraphNode:runRecipe
     -- @integration lurek.serialize.canonicalHash
     -- @integration lurek.runtime.getFixedTick
+    -- @integration LGraph:addItem
+    -- @integration LGraph:createItem
+    -- @integration LUniverse:set
+    -- @integration LUniverse:spawn
     it("lets Lua compose placement, identity, logistics, recipes, and checkpoints", function()
         local field = lurek.tilefield.new({ width = 8, height = 4 })
         local world = lurek.ecs.newUniverse()

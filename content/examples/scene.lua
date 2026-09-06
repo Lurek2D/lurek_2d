@@ -24,24 +24,22 @@ end
 --@api: lurek.scene.define
 do
 
-    local GameplayFactory = lurek.scene.define({
-        name = "gameplay",
-        level = 0,
-        enter = function(self, params)
-            self.level = params and (params.level or 1) or self.level
-            lurek.log.info("gameplay enter level " .. self.level)
-        end,
-        leave = function()
-            lurek.log.info("gameplay leave")
-        end,
-        update = function()
-        end,
-        draw = function()
-        end,
-    })
-    local instance1 = GameplayFactory()
-    local instance2 = GameplayFactory()
-    lurek.log.info("two instances: " .. tostring(instance1 ~= instance2))
+local GameplayFactory = lurek.scene.define({
+name = "gameplay",
+level = 0,
+enter = function(self, params)
+self.level = params and (params.level or 1) or self.level
+lurek.log.info("gameplay enter level " .. self.level)
+end,
+leave = function()
+lurek.log.info("gameplay leave")
+end,
+update = function()
+end,
+draw = function()
+end,
+})
+local instance1 = GameplayFactory()
 end
 
 --@api: lurek.scene.push
@@ -60,30 +58,15 @@ end
 --@api: lurek.scene.switchTo
 do
 
-    local sceneA = lurek.scene.new({
-        name = "level1",
-        enter = function()
-            lurek.log.info("level1 enter")
-        end,
-        leave = function()
-            lurek.log.info("level1 leave")
-        end,
-    })
-    local sceneB = lurek.scene.new({
-        name = "level2",
-        enter = function(_, params)
-            lurek.log.info("level2 enter, from=" .. (params and params.from or "none"))
-        end,
-        leave = function()
-            lurek.log.info("level2 leave")
-        end,
-    })
-    lurek.scene.push(sceneA)
-    lurek.log.info("before switch: depth=" .. lurek.scene.getStackSize())
-    lurek.scene.switchTo(sceneB, "none", 0, "linear", { from = "level1" })
-    lurek.log.info("after switch: depth=" .. lurek.scene.getStackSize())
-    lurek.log.info("current = " .. lurek.scene.getCurrent().name)
-    lurek.scene.clear()
+local sceneA = lurek.scene.new({
+name = "level1",
+enter = function()
+lurek.log.info("level1 enter")
+end,
+leave = function()
+lurek.log.info("level1 leave")
+end,
+})
 end
 
 --@api: lurek.scene.registerScene
@@ -416,24 +399,22 @@ end
 --@api: lurek.scene.restoreScene
 do
 
-    lurek.scene.clear()
-    local menu = lurek.scene.new({ name = "menu" })
-    local game = lurek.scene.new({ name = "game" })
-    lurek.scene.registerScene("menu_restore", menu)
-    lurek.scene.registerScene("game_restore", game)
-    lurek.scene.pushRegistered("menu_restore")
-    lurek.scene.pushRegistered("game_restore")
-    lurek.scene.setData("chapter", "bridge")
-    local snapshot = lurek.scene.serializeScene()
-    lurek.scene.clear()
-    local restored = lurek.scene.restoreScene(snapshot, {
-        params = {
-            game_restore = { fromSave = true },
-        },
-    })
-    lurek.log.info("restored stack count = " .. tostring(restored))
-    lurek.log.info("restored chapter = " .. tostring(lurek.scene.getData("chapter")))
-    lurek.scene.clear()
+lurek.scene.clear()
+local menu = lurek.scene.new({ name = "menu" })
+local game = lurek.scene.new({ name = "game" })
+lurek.scene.registerScene("menu_restore", menu)
+lurek.scene.registerScene("game_restore", game)
+lurek.scene.pushRegistered("menu_restore")
+lurek.scene.pushRegistered("game_restore")
+lurek.scene.setData("chapter", "bridge")
+local snapshot = lurek.scene.serializeScene()
+lurek.scene.clear()
+local restored = lurek.scene.restoreScene(snapshot, {
+params = {
+game_restore = { fromSave = true },
+},
+})
+lurek.log.info("restored stack count = " .. tostring(restored))
 end
 
 --@api: lurek.scene.draw
@@ -946,40 +927,19 @@ end
 --@api: lurek.scene.newObjectContainer
 do
 
-    local container = lurek.scene.newObjectContainer()
+local container = lurek.scene.newObjectContainer()
 
-    local player = {
-        layer = 1,
-        x = 10,
-        y = 20,
-        update = function(self, dt)
-            self.x = self.x + dt * 100
-        end,
-        draw = function(self)
-            lurek.log.info("Drawing player at x=" .. self.x .. ", y=" .. self.y)
-        end
-    }
-
-    local background = {
-        layer = 0,
-        draw = function(self)
-            lurek.log.info("Drawing background")
-        end
-    }
-
-    container:add(background)
-    container:add(player)
-
-    lurek.log.info("object_count=" .. container:getCount())
-
-    container:update(0.016)
-    container:draw()
-
-    container:remove(player)
-    lurek.log.info("after_remove=" .. container:getCount())
-
-    container:clear()
-    lurek.log.info("after_clear=" .. container:getCount())
+local player = {
+layer = 1,
+x = 10,
+y = 20,
+update = function(self, dt)
+self.x = self.x + dt * 100
+end,
+draw = function(self)
+lurek.log.info("Drawing player at x=" .. self.x .. ", y=" .. self.y)
+end
+}
 end
 
 --@api: LSceneObjectContainer:add

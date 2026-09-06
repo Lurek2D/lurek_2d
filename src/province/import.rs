@@ -191,7 +191,13 @@ fn farthest_pair(points: &[(f32, f32)]) -> Option<((f32, f32), (f32, f32))> {
             }
         }
     }
-    Some(out)
+    // Keep marker endpoints stable even when the connected-component set was
+    // populated from a hash-based traversal.
+    if out.0 .0 > out.1 .0 || (out.0 .0 == out.1 .0 && out.0 .1 > out.1 .1) {
+        Some((out.1, out.0))
+    } else {
+        Some(out)
+    }
 }
 
 fn label_line_from_marker_points(points: &[(u32, u32)]) -> Option<((f32, f32), (f32, f32))> {

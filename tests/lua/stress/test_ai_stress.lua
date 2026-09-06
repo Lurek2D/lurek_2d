@@ -93,8 +93,7 @@ end)
 
 -- @describe stress: AI command queue lifecycle throughput
 describe("stress: AI command queue lifecycle throughput", function()
-    -- @stress LCommandQueue:drainEvents
-    it("2000 queued order lifecycle events drain in <10s", function()
+    local function __audit_stress_7()
         local queue = lurek.ai.newCommandQueue()
         local count = 1000
         local start = os.clock()
@@ -107,13 +106,17 @@ describe("stress: AI command queue lifecycle throughput", function()
         local events = queue:drainEvents()
         expect_equal(count * 2, #events)
         expect_true(elapsed < 10.0, "command queue lifecycle budget: " .. elapsed .. "s")
+    end
+
+    -- @stress LCommandQueue:drainEvents
+    it("2000 queued order lifecycle events drain in <10s", function()
+        __audit_stress_7()
     end)
 end)
 
 -- @describe stress: AI squad formation slot throughput
 describe("stress: AI squad formation slot throughput", function()
-    -- @stress LSquad:getFormationSlots
-    it("200-member distance-sorted formation layout resolves in <10s", function()
+    local function __audit_stress_6()
         local squad = lurek.ai.newSquad("company")
         squad:setFormation("line", 4.0)
         squad:setFormationBehavior("distance", "column", true)
@@ -144,10 +147,13 @@ describe("stress: AI squad formation slot throughput", function()
         expect_equal(200, #slots)
         expect_true(summary.slotCount == 200)
         expect_true(elapsed < 10.0, "squad formation layout budget: " .. elapsed .. "s")
-    end)
+    end
 
-    -- @stress LSquad:assignFormationMove
-    it("200-member formation order assignment resolves in <10s", function()
+    -- @stress LSquad:getFormationSlots
+    it("200-member distance-sorted formation layout resolves in <10s", function()
+        __audit_stress_6()
+    end)
+    local function __audit_stress_5()
         local squad = lurek.ai.newSquad("company_apply")
         local world = lurek.ai.newWorld()
         squad:setFormation("line", 4.0)
@@ -173,10 +179,14 @@ describe("stress: AI squad formation slot throughput", function()
         expect_equal(200, applied.assignedCount)
         expect_true(applied.slotCount == 200)
         expect_true(elapsed < 10.0, "squad formation assignment budget: " .. elapsed .. "s")
-    end)
+    end
 
-    -- @stress LSquad:submitFormationPaths
-    it("200-member formation path submission resolves in <10s", function()
+
+    -- @stress LSquad:assignFormationMove
+    it("200-member formation order assignment resolves in <10s", function()
+        __audit_stress_5()
+    end)
+    local function __audit_stress_4()
         lurek.pathfind.setThreadCount(1)
         lurek.pathfind.clearAsyncPaths()
         local squad = lurek.ai.newSquad("company_paths")
@@ -207,13 +217,18 @@ describe("stress: AI squad formation slot throughput", function()
         expect_true(submitted.requestId > 0)
         expect_true(lurek.pathfind.getAsyncPendingCount() >= 1)
         expect_true(elapsed < 10.0, "squad formation path submission budget: " .. elapsed .. "s")
+    end
+
+
+    -- @stress LSquad:submitFormationPaths
+    it("200-member formation path submission resolves in <10s", function()
+        __audit_stress_4()
     end)
 end)
 
 -- @describe stress: AI spatial acquisition throughput
 describe("stress: AI spatial acquisition throughput", function()
-    -- @stress LAIWorld:queryAgentsInRadius
-    it("2000-agent world spatial query resolves in <10s", function()
+    local function __audit_stress_3()
         local world = lurek.ai.newWorld()
         world:setSpatialCellSize(16.0)
         for i = 1, 2000 do
@@ -236,10 +251,13 @@ describe("stress: AI spatial acquisition throughput", function()
         expect_true(#found <= 24)
         expect_true(stats.candidateChecks > 0)
         expect_true(elapsed < 10.0, "world spatial query budget: " .. elapsed .. "s")
-    end)
+    end
 
-    -- @stress LBot:acquireTarget
-    it("stance-driven target acquisition resolves in <10s on a dense world", function()
+    -- @stress LAIWorld:queryAgentsInRadius
+    it("2000-agent world spatial query resolves in <10s", function()
+        __audit_stress_3()
+    end)
+    local function __audit_stress_2()
         local world = lurek.ai.newWorld()
         world:setSpatialCellSize(16.0)
         local hero = world:addAgent("hero")
@@ -257,10 +275,14 @@ describe("stress: AI spatial acquisition throughput", function()
         local elapsed = os.clock() - start
         expect_true(target ~= nil)
         expect_true(elapsed < 10.0, "acquireTarget budget: " .. elapsed .. "s")
-    end)
+    end
 
-    -- @stress LAIWorld:getOrderRuntimeStats
-    it("budgeted auto-engagement update resolves in <10s on a dense world", function()
+
+    -- @stress LBot:acquireTarget
+    it("stance-driven target acquisition resolves in <10s on a dense world", function()
+        __audit_stress_2()
+    end)
+    local function __audit_stress_1()
         local world = lurek.ai.newWorld()
         world:setSpatialCellSize(16.0)
         world:setAutoAcquireBudget(32)
@@ -289,6 +311,12 @@ describe("stress: AI spatial acquisition throughput", function()
         expect_true(stats.acquireQueries <= 32)
         expect_true(stats.activeEngagements > 0)
         expect_true(elapsed < 10.0, "order runtime update budget: " .. elapsed .. "s")
+    end
+
+
+    -- @stress LAIWorld:getOrderRuntimeStats
+    it("budgeted auto-engagement update resolves in <10s on a dense world", function()
+        __audit_stress_1()
     end)
 end)
 test_summary()

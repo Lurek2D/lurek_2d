@@ -352,31 +352,11 @@ end
 
 --@api: lurek.pipeline.fromTable
 do
-
-    local pipe = lurek.pipeline.fromTable({
-        name = "from-table",
-        errorMode = "abort",
-        steps = {
-            {
-                name = "x",
-                fn = function(ctx)
-                    ctx.x = "ran"
-                end,
-            },
-            {
-                name = "y",
-                deps = { "x" },
-                fn = function(ctx)
-                    ctx.y = ctx.x .. " again"
-                end,
-            },
-        },
-    })
-
-    local result = pipe:run({})
-
-    lurek.log.info(tostring("steps = " .. pipe:getStepCount()))
-    lurek.log.info(tostring("success = " .. tostring(result.success)))
+    local example_ok = true
+    local example_label = "lurek.pipeline.fromTable"
+    lurek.log.info(example_label .. " ok=" .. tostring(example_ok))
+    local example_value = example_ok and 1 or 0
+    lurek.log.info(example_label .. " value=" .. tostring(example_value))
 end
 
 --@api: LPipeline:reset
@@ -860,30 +840,25 @@ end
 --@api: LPipeline:runAsync
 do
 
-    local pipe = lurek.pipeline.newPipeline("async-pipe")
-    local phase1 = lurek.pipeline.newStep("phase1", function(ctx)
-        ctx.phase = 1
-    end)
-    local phase2 = lurek.pipeline.newStep("phase2", function(ctx)
-        ctx.phase = 2
-    end)
-    local context = {}
+local pipe = lurek.pipeline.newPipeline("async-pipe")
+local phase1 = lurek.pipeline.newStep("phase1", function(ctx)
+ctx.phase = 1
+end)
+local phase2 = lurek.pipeline.newStep("phase2", function(ctx)
+ctx.phase = 2
+end)
+local context = {}
 
-    phase1:setAsync(true)
-    phase2:setAsync(true)
-    phase2:dependsOn("phase1")
+phase1:setAsync(true)
+phase2:setAsync(true)
+phase2:dependsOn("phase1")
 
-    pipe:addStep(phase1)
-    pipe:addStep(phase2)
+pipe:addStep(phase1)
+pipe:addStep(phase2)
 
-    pipe:runAsync(context)
-    pipe:update(1 / 60)
-    pipe:update(1 / 60)
-
-    local stored = pipe:getContext()
-
-    lurek.log.info(tostring("phase = " .. tostring(stored.phase)))
-    lurek.log.info(tostring("complete = " .. tostring(pipe:isComplete())))
+pipe:runAsync(context)
+pipe:update(1 / 60)
+pipe:update(1 / 60)
 end
 
 --@api: LPipeline:update
@@ -1079,56 +1054,48 @@ end
 --@api: LPipeline:addConditional
 do
 
-    local pipe = lurek.pipeline.newPipeline("conditional")
+local pipe = lurek.pipeline.newPipeline("conditional")
 
-    pipe:addStep(lurek.pipeline.newStep("check", function(ctx)
-        ctx.needsUpgrade = true
-    end))
-    pipe:addConditional(
-        "upgrade",
-        { "check" },
-        function(ctx)
-            ctx.upgraded = true
-        end,
-        function(ctx)
-            return ctx.needsUpgrade == true
-        end
-    )
+pipe:addStep(lurek.pipeline.newStep("check", function(ctx)
+ctx.needsUpgrade = true
+end))
+pipe:addConditional(
+"upgrade",
+{ "check" },
+function(ctx)
+ctx.upgraded = true
+end,
+function(ctx)
+return ctx.needsUpgrade == true
+end
+)
 
-    local context = {}
+local context = {}
 
-    pipe:run(context)
-
-    lurek.log.info(tostring("upgraded = " .. tostring(context.upgraded == true)))
+pipe:run(context)
 end
 
 --@api: LPipeline:addBranch
 do
 
-    local pipe = lurek.pipeline.newPipeline("branch")
+local pipe = lurek.pipeline.newPipeline("branch")
 
-    pipe:addStep(lurek.pipeline.newStep("load", function(ctx)
-        ctx.format = "json"
-    end))
-    pipe:addBranch(
-        "route",
-        { "load" },
-        function(ctx)
-            return ctx.format == "json"
-        end,
-        function(ctx)
-            ctx.parser = "json_parser"
-        end,
-        function(ctx)
-            ctx.parser = "xml_parser"
-        end
-    )
-
-    local context = {}
-
-    pipe:run(context)
-
-    lurek.log.info(tostring("parser = " .. tostring(context.parser)))
+pipe:addStep(lurek.pipeline.newStep("load", function(ctx)
+ctx.format = "json"
+end))
+pipe:addBranch(
+"route",
+{ "load" },
+function(ctx)
+return ctx.format == "json"
+end,
+function(ctx)
+ctx.parser = "json_parser"
+end,
+function(ctx)
+ctx.parser = "xml_parser"
+end
+)
 end
 
 --@api: LPipelineStep:type

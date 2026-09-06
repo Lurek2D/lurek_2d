@@ -161,9 +161,6 @@ LNetworkState = {}
 ---@class LObject
 LObject = {}
 
----@class LProvinceGrid
-LProvinceGrid = {}
-
 ---@class LSpacer
 LSpacer = {}
 
@@ -461,6 +458,7 @@ LEngineGetFrameProfileResult = {}
 ---@field callback_total_ms number Callback total ms.
 ---@field canvas_bytes number Canvas bytes.
 ---@field canvas_count number Canvas count.
+---@field compiled_shape_count number Retained shapes with compiled CPU geometry.
 ---@field draw_ms number Draw ms.
 ---@field draw_ui_ms number Draw ui ms.
 ---@field fixed_update_ms number Fixed update ms.
@@ -471,6 +469,8 @@ LEngineGetFrameProfileResult = {}
 ---@field process_physics_ms number Process physics ms.
 ---@field shader_bytes number Shader bytes.
 ---@field shader_count number Shader count.
+---@field shape_bytes number Compiled retained-shape bytes.
+---@field shape_count number Retained shape handle count.
 ---@field texture_bytes number Texture bytes.
 ---@field texture_count number Texture count.
 ---@field total_bytes number Total bytes.
@@ -1003,6 +1003,38 @@ LProcgenWfcGenerateResult = {}
 ---@field regions table Array of region tables, each with id (integer), name (string), x (number), y (number), tags (string[]).
 LProcgenWorldGraphResult = {}
 
+---@class LProvinceGridAdjacenciesResult
+---@field border_pixels number Number of shared border pixels.
+---@field province_a number First province id.
+---@field province_b number Second province id.
+LProvinceGridAdjacenciesResult = {}
+
+---@class LProvinceGridBorderSegmentsResult
+---@field province_a number First province id.
+---@field province_b number Second province id.
+---@field x0 number Segment start x.
+---@field x1 number Segment end x.
+---@field y0 number Segment start y.
+---@field y1 number Segment end y.
+LProvinceGridBorderSegmentsResult = {}
+
+---@class LProvinceGridGetPolygonsResult
+---@field province_id number Province id.
+---@field rings table Array of rings; each ring is an array of [x, y] pairs.
+LProvinceGridGetPolygonsResult = {}
+
+---@class LProvinceGridGetPolygonsSimplifiedResult
+---@field province_id number Province id.
+---@field rings table Array of simplified rings; each ring is an array of [x, y] pairs.
+LProvinceGridGetPolygonsSimplifiedResult = {}
+
+---@class LProvinceGridProvinceSpansResult
+---@field province_id number Province id.
+---@field x0 number Start x coordinate.
+---@field x1 number End x coordinate.
+---@field y number Scanline y coordinate.
+LProvinceGridProvinceSpansResult = {}
+
 ---@class LProvinceRegistryAdjacenciesResult
 ---@field province_a number First province id.
 ---@field province_b number Second province id.
@@ -1186,12 +1218,19 @@ LRectPackerGetPackedResult = {}
 ---@field drawcalls number Total draw call count.
 ---@field fonts number Loaded font count.
 ---@field gpu_draw_calls number GPU-side draw call count.
+---@field msaa_fallback boolean True when 4x MSAA was unavailable and 1x was selected.
+---@field msaa_samples number Active screen/canvas MSAA sample count (1 or 4).
 ---@field shader_cache_evictions number Shader cache entries evicted to stay within source-memory limits this frame.
 ---@field shader_cache_hits number Reused user-shader cache entries this frame.
 ---@field shader_cache_misses number User-shader cache rebuilds this frame.
 ---@field shader_cache_rejections number Shader or pipeline cache limit rejections this frame.
 ---@field shader_negative_cache_hits number Repeated invalid shader signatures skipped this frame.
 ---@field shader_switches number Shader switch count.
+---@field shape_cache_hits number Compiled shape cache hits this frame.
+---@field shape_cache_misses number Compiled shape cache misses this frame.
+---@field shape_instances number Retained-shape instances submitted this frame.
+---@field shape_tessellations number CPU retained-shape tessellations performed this frame.
+---@field shape_uploads number Compiled shape GPU uploads this frame.
 ---@field texture_memory number Texture memory in bytes.
 ---@field texture_switches number Texture switch count.
 ---@field textures number Loaded texture count.
@@ -1516,38 +1555,6 @@ LUniverseSnapshotResult = {}
 ---@field dirty_entities number[] Modified entity ids.
 ---@field removed_components table Array of {entity_id, name} tables.
 LUniverseTakeSnapshotDiffResult = {}
-
----@class LUnknownAdjacenciesResult
----@field border_pixels number Number of shared border pixels.
----@field province_a number First province id.
----@field province_b number Second province id.
-LUnknownAdjacenciesResult = {}
-
----@class LUnknownBorderSegmentsResult
----@field province_a number First province id.
----@field province_b number Second province id.
----@field x0 number Segment start x.
----@field x1 number Segment end x.
----@field y0 number Segment start y.
----@field y1 number Segment end y.
-LUnknownBorderSegmentsResult = {}
-
----@class LUnknownGetPolygonsResult
----@field province_id number Province id.
----@field rings table Array of rings; each ring is an array of [x, y] pairs.
-LUnknownGetPolygonsResult = {}
-
----@class LUnknownGetPolygonsSimplifiedResult
----@field province_id number Province id.
----@field rings table Array of simplified rings; each ring is an array of [x, y] pairs.
-LUnknownGetPolygonsSimplifiedResult = {}
-
----@class LUnknownProvinceSpansResult
----@field province_id number Province id.
----@field x0 number Start x coordinate.
----@field x1 number End x coordinate.
----@field y number Scanline y coordinate.
-LUnknownProvinceSpansResult = {}
 
 ---@class LValidationReportGetIssuesResult
 ---@field hint string? Optional fix hint.
@@ -2447,8 +2454,9 @@ LLayeredImage = {}
 ---@class LPaletteLUT
 LPaletteLUT = {}
 
----@class LUnknown
-LUnknown = {}
+--- Compatibility re-export; the canonical Lua-visible province grid owns topology,
+---@class LProvinceGrid
+LProvinceGrid = {}
 
 --- Lua-side combo detector handle tracking ordered key sequences.
 ---@class LCombo
@@ -2923,39 +2931,51 @@ LProcgenGrid = {}
 ---@class LProcgenScalarGrid
 LProcgenScalarGrid = {}
 
+--- Lua-visible `Achievement` object carrying progression state and operations.
 ---@class LAchievement
 LAchievement = {}
 
+--- Lua-visible `ActivityFeed` object carrying progression state and operations.
 ---@class LActivityFeed
 LActivityFeed = {}
 
+--- Lua-visible `ActivityFeedEntry` object carrying progression state and operations.
 ---@class LActivityFeedEntry
 LActivityFeedEntry = {}
 
+--- Lua-visible `Challenge` object carrying progression state and operations.
 ---@class LChallenge
 LChallenge = {}
 
+--- Lua-visible `Collection` object carrying progression state and operations.
 ---@class LCollection
 LCollection = {}
 
+--- Lua-visible `LeaderboardEntry` object carrying progression state and operations.
 ---@class LLeaderboardEntry
 LLeaderboardEntry = {}
 
+--- Lua-visible `Population` object carrying progression state and operations.
 ---@class LPopulation
 LPopulation = {}
 
+--- Lua-visible `PopulationProfile` object carrying progression state and operations.
 ---@class LPopulationProfile
 LPopulationProfile = {}
 
+--- Lua-visible `Prestige` object carrying progression state and operations.
 ---@class LPrestige
 LPrestige = {}
 
+--- Lua-visible `ProfileHandle` object carrying progression state and operations.
 ---@class LProgressionProfile
 LProgressionProfile = {}
 
+--- Lua-visible `ProgressionStore` object carrying progression state and operations.
 ---@class LProgressionStore
 LProgressionStore = {}
 
+--- Lua-visible `ProgressionTransaction` object carrying progression state and operations.
 ---@class LProgressionTransaction
 LProgressionTransaction = {}
 
@@ -2963,6 +2983,7 @@ LProgressionTransaction = {}
 ---@class LQuestJournal
 LQuestJournal = {}
 
+--- Lua-visible `QuestJournalEntry` object carrying progression state and operations.
 ---@class LQuestJournalEntry
 LQuestJournalEntry = {}
 
@@ -2974,19 +2995,23 @@ LQuestState = {}
 ---@class LReward
 LReward = {}
 
+--- Lua-visible `Rival` object carrying progression state and operations.
 ---@class LRival
 LRival = {}
 
+--- Lua-visible `RivalDelta` object carrying progression state and operations.
 ---@class LRivalDelta
 LRivalDelta = {}
 
+--- Lua-visible `Season` object carrying progression state and operations.
 ---@class LSeason
 LSeason = {}
 
+--- Lua-visible `SeasonArchive` object carrying progression state and operations.
 ---@class LSeasonArchive
 LSeasonArchive = {}
 
---- Creates an isolated deterministic status lifecycle tracker.
+--- Lua-visible `StatusTracker` object carrying progression state and operations.
 ---@class LStatusTracker
 LStatusTracker = {}
 
@@ -9735,7 +9760,7 @@ function LAnimatedCursor:update(dt) end
 --- Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.
 ---@param context_or_rule string|table Legacy context name, or a v2 rule table with `priority`, `event`, `context`, `target`, `state`, `effect`, and `duration_ms`.
 ---@param cursor_name? string System cursor name used by the legacy `(context, cursor_name)` shorthand.
----@return number? Rule id for v2 table calls, or `nil` for the legacy shorthand.
+---@return number Rule id for v2 table calls, or `nil` for the legacy shorthand.
 function LCursorManager:addRule(context_or_rule, cursor_name) end
 
 --- Registers a hover source that feeds semantic cursor hits into the shared runtime resolver.
@@ -9787,7 +9812,7 @@ function LCursorManager:getActiveState() end
 function LCursorManager:getContext() end
 
 --- Returns the most recent semantic hover hit seen by the runtime cursor.
----@return table? Last hover hit table, or `nil` when nothing is currently resolved.
+---@return LCursorManagerGetLastHitResult Last hover hit table, or `nil` when nothing is currently resolved.
 function LCursorManager:getLastHit() end
 
 --- Returns the current runtime cursor position.
@@ -9832,7 +9857,7 @@ function LCursorManager:setLocked(locked) end
 ---@param name string System cursor name such as `"arrow"`, `"hand"`, or `"crosshair"`.
 function LCursorManager:setSystem(name) end
 
---- Shows or hides the runtime cursor.
+--- Shows or hides the runtime cursor for the active application window.
 ---@param visible boolean True to show the cursor, or false to hide it.
 function LCursorManager:setVisible(visible) end
 
@@ -11156,7 +11181,7 @@ function LDialogStory:canContinue() end
 function LDialogStory:choose(index) end
 
 --- Emits the next story line and tag array, or nil at choice/end.
----@return string? Next line plus tag array; or nil plus an empty tag table. (value 1).
+---@return string Next line plus tag array; or nil plus an empty tag table. (value 1).
 ---@return table Next line plus tag array; or nil plus an empty tag table. (value 2).
 function LDialogStory:continue() end
 
@@ -11177,7 +11202,7 @@ function LDialogStory:getVariable(name) end
 ---@param name string Knot name.
 function LDialogStory:gotoKnot(name) end
 
---- Lists story variable names.
+--- Lists all story variable names currently defined in the story runtime.
 ---@return table Array of story variable names.
 function LDialogStory:listVariables() end
 
@@ -11186,8 +11211,8 @@ function LDialogStory:listVariables() end
 function LDialogStory:restore(snapshot) end
 
 --- Sets or replaces one story variable using a nil, boolean, number, or string value.
----@param name any
----@param value any
+---@param name string Story variable name.
+---@param value any New nil, boolean, number, or string value.
 function LDialogStory:setVariable(name, value) end
 
 --- Returns a serializable story runtime snapshot.
@@ -12164,7 +12189,7 @@ function LEcsBatch:isPending() end
 ---@return table Base version, record count, and pending state.
 function LEcsBatch:preview() end
 
---- Returns this userdata type name.
+--- Returns this userdata type name for Lua-side ECS batch inspection.
 ---@return string Always `"LEcsBatch"`.
 function LEcsBatch:type() end
 
@@ -12184,6 +12209,7 @@ function LLoadout:computeStats() end
 --- Equips a part into a named slot after compatibility checks.
 ---@param slot string Slot name.
 ---@param part LPartDef Part definition to equip.
+---@return boolean True when the part was accepted and equipped.
 function LLoadout:equip(slot, part) end
 
 --- Returns total cost of equipped parts.
@@ -12216,7 +12242,7 @@ function LLoadout:unequip(slot) end
 ---@return string[] Validation errors. Empty means the loadout is valid.
 function LLoadout:validate() end
 
---- Returns the part cost value.
+--- Returns the part cost value configured for this loadout definition.
 ---@return number Part cost.
 function LPartDef:getCost() end
 
@@ -12224,11 +12250,11 @@ function LPartDef:getCost() end
 ---@return string[] Hardpoint names.
 function LPartDef:getHardpoints() end
 
---- Returns the stable part id.
+--- Returns the stable part id for this loadout part definition.
 ---@return string Part id.
 function LPartDef:getId() end
 
---- Returns the preferred slot name.
+--- Returns the preferred slot name for this loadout part definition.
 ---@return string Slot name, or empty string when unrestricted.
 function LPartDef:getSlot() end
 
@@ -12236,7 +12262,7 @@ function LPartDef:getSlot() end
 ---@return table Stat key-value table.
 function LPartDef:getStats() end
 
---- Returns compatibility tags.
+--- Returns compatibility tags configured on this loadout part definition.
 ---@return string[] Part tags.
 function LPartDef:getTags() end
 
@@ -12343,7 +12369,7 @@ function LSlotDef:getAccepts() end
 ---@return string Hardpoint name, or nil.
 function LSlotDef:getHardpoint() end
 
---- Returns the slot name.
+--- Returns the configured slot name for this loadout slot definition.
 ---@return string Slot name.
 function LSlotDef:getName() end
 
@@ -12360,7 +12386,7 @@ function LSlotDef:type() end
 ---@return boolean True for `LSlotDef` or `LObject`.
 function LSlotDef:typeOf(name) end
 
---- Adds a numeric delta to one stat.
+--- Adds a numeric delta to one stat in this additive stat block.
 ---@param name string Stat key.
 ---@param value number Finite delta to add.
 function LStatBlock:add(name, value) end
@@ -12370,7 +12396,7 @@ function LStatBlock:add(name, value) end
 ---@return number Stat value.
 function LStatBlock:get(name) end
 
---- Replaces one stat value.
+--- Replaces one stat value in this additive stat block.
 ---@param name string Stat key.
 ---@param value number Finite stat value.
 function LStatBlock:set(name, value) end
@@ -13777,7 +13803,7 @@ function LGraph:batchAddNodes(count, config) end
 ---@param iterations number Number of steps to run.
 function LGraph:batchStep(dt, iterations) end
 
---- Discards all queued pull events.
+--- Discards all queued pull events and returns the removed record count.
 ---@return number Number of queued records removed.
 function LGraph:clearEvents() end
 
@@ -13827,7 +13853,7 @@ function LGraph:getEdgeBetween(from_ud, to_ud) end
 
 --- Resolves a stable numeric edge id to a graph-local handle.
 ---@param id number Numeric edge id from a batch preview, event, or snapshot.
----@return LGraphEdge? Edge handle, or nil when the id is absent.
+---@return LGraphEdge Edge handle, or nil when the id is absent.
 function LGraph:getEdgeById(id) end
 
 --- Returns the number of edges in this graph.
@@ -13848,7 +13874,7 @@ function LGraph:getEventQueueStats() end
 
 --- Resolves a stable numeric item id to a graph-local handle.
 ---@param id number Numeric item id from an event, recipe result, or snapshot.
----@return LGraphItem? Item handle, or nil when the id is absent.
+---@return LGraphItem Item handle, or nil when the id is absent.
 function LGraph:getItemById(id) end
 
 --- Returns the number of items in this graph.
@@ -13866,7 +13892,7 @@ function LGraph:getNeighbors(node_ud) end
 
 --- Resolves a stable numeric node id to a graph-local handle.
 ---@param id number Numeric node id from a batch mapping, event, or snapshot.
----@return LGraphNode? Node handle, or nil when the id is absent.
+---@return LGraphNode Node handle, or nil when the id is absent.
 function LGraph:getNodeById(id) end
 
 --- Returns the number of nodes in this graph.
@@ -14459,7 +14485,7 @@ function LGraphTopologyBatch:isPending() end
 ---@return table Base version, operation counts, external nodes, and created ids.
 function LGraphTopologyBatch:preview() end
 
---- Returns this userdata type name.
+--- Returns this userdata type name for Lua-side graph topology inspection.
 ---@return string Always `"LGraphTopologyBatch"`.
 function LGraphTopologyBatch:type() end
 
@@ -16089,17 +16115,17 @@ function LPaletteLUT:type() end
 function LPaletteLUT:typeOf(name) end
 
 --- Returns province adjacency records and shared border pixel counts.
----@return LUnknownAdjacenciesResult Array table with `province_a`, `province_b`, and `border_pixels` fields.
-function LUnknown:adjacencies() end
+---@return LProvinceGridAdjacenciesResult Array table with `province_a`, `province_b`, and `border_pixels` fields.
+function LProvinceGrid:adjacencies() end
 
 --- Returns border line segments between neighboring provinces.
----@return LUnknownBorderSegmentsResult Array table with province ids and segment coordinates.
-function LUnknown:borderSegments() end
+---@return LProvinceGridBorderSegmentsResult Array table with province ids and segment coordinates.
+function LProvinceGrid:borderSegments() end
 
 --- Decodes serialized province shape data into span and segment tables.
 ---@param bytes string Serialized shape data bytes.
 ---@return LuaValue Table with `spans` and `segments`, or nil when decoding fails.
-function LUnknown:deserializeShapeData(bytes) end
+function LProvinceGrid:deserializeShapeData(bytes) end
 
 --- Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
 ---@param x? number Viewport left edge (required if providing a viewport).
@@ -16107,50 +16133,50 @@ function LUnknown:deserializeShapeData(bytes) end
 ---@param w? number Viewport width (required if providing a viewport).
 ---@param h? number Viewport height (required if providing a viewport).
 ---@return number Number of polygons emitted to the render command queue.
-function LUnknown:drawShapes(x, y, w, h) end
+function LProvinceGrid:drawShapes(x, y, w, h) end
 
 --- Returns the province id stored at grid coordinates.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
 ---@return number Province id at the pixel.
-function LUnknown:getAt(x, y) end
+function LProvinceGrid:getAt(x, y) end
 
 --- Returns the province grid height. This method is available to Lua scripts.
 ---@return number Grid height in pixels.
-function LUnknown:getHeight() end
+function LProvinceGrid:getHeight() end
 
 --- Returns polygon rings for every province.
----@return LUnknownGetPolygonsResult Array table of province polygon records with `province_id` and `rings` fields.
-function LUnknown:getPolygons() end
+---@return LProvinceGridGetPolygonsResult Array table of province polygon records with `province_id` and `rings` fields.
+function LProvinceGrid:getPolygons() end
 
 --- Returns simplified polygon rings for every province.
----@return LUnknownGetPolygonsSimplifiedResult Array table of simplified province polygon records with `province_id` and `rings` fields.
-function LUnknown:getPolygonsSimplified() end
+---@return LProvinceGridGetPolygonsSimplifiedResult Array table of simplified province polygon records with `province_id` and `rings` fields.
+function LProvinceGrid:getPolygonsSimplified() end
 
 --- Returns the province grid width. This method is available to Lua scripts.
 ---@return number Grid width in pixels.
-function LUnknown:getWidth() end
+function LProvinceGrid:getWidth() end
 
 --- Returns the number of distinct provinces in the grid.
 ---@return number Province count.
-function LUnknown:provinceCount() end
+function LProvinceGrid:provinceCount() end
 
 --- Returns horizontal province spans by row.
----@return LUnknownProvinceSpansResult Array table with `province_id`, `y`, `x0`, and `x1` fields.
-function LUnknown:provinceSpans() end
+---@return LProvinceGridProvinceSpansResult Array table with `province_id`, `y`, `x0`, and `x1` fields.
+function LProvinceGrid:provinceSpans() end
 
 --- Serializes province span and border shape data into a binary Lua string.
 ---@return string Serialized shape data bytes.
-function LUnknown:serializeShapeData() end
+function LProvinceGrid:serializeShapeData() end
 
 --- Returns the Lua-visible type name for this province grid handle.
 ---@return string The string `LProvinceGrid`.
-function LUnknown:type() end
+function LProvinceGrid:type() end
 
 --- Returns whether this province grid handle matches a supported type name.
 ---@param name string Type name to compare against `LProvinceGrid` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
-function LUnknown:typeOf(name) end
+function LProvinceGrid:typeOf(name) end
 
 --- Returns a completed screen capture image or requests one for a future call.
 ---@return LImageData nil | `LImageData` when capture data is ready, or nil after requesting capture.
@@ -16243,6 +16269,7 @@ lurek.image.savePNGWorkspace = function(img_ud, filename) end
 function LCombo:completedWithin(ms) end
 
 --- Marks the latest combo completion as consumed.
+---@return boolean True when an unconsumed completion was consumed.
 function LCombo:consume() end
 
 --- Feeds one key into the combo detector and returns progress status.
@@ -16338,7 +16365,7 @@ function LPlayerInputContext:assignGamepad(id, opts) end
 ---@param opts? table Options with `shared`; all owners must opt into sharing.
 function LPlayerInputContext:assignKeyboardMouse(opts) end
 
---- Removes every local action.
+--- Removes every local action from this player input context.
 function LPlayerInputContext:clearActions() end
 
 --- Defines or replaces a continuous one-dimensional action.
@@ -16384,7 +16411,7 @@ function LPlayerInputContext:isDown(name) end
 ---@return boolean Current enabled state.
 function LPlayerInputContext:isEnabled() end
 
---- Removes one local action.
+--- Removes one local action from this player input context.
 ---@param name string Local action name.
 ---@return boolean True when an action was removed.
 function LPlayerInputContext:removeAction(name) end
@@ -16838,7 +16865,7 @@ lurek.input.gamepad.setVibration = function(id, low_freq, high_freq, duration_ms
 lurek.input.mouse.setVisible = function(visible) end
 
 --- Starts playback of the loaded recording. `opts.mode` may be `frame`, `fixed`, or `realtime`.
----@param opts? any
+---@param opts? table Optional playback options; `mode` selects the timing mode.
 lurek.input.startPlayback = function(opts) end
 
 --- Starts recording input events into the module recorder.
@@ -19500,7 +19527,7 @@ function LWrapSpace:delta(ax, ay, bx, by) end
 ---@return number Shortest Euclidean distance.
 function LWrapSpace:distance(ax, ay, bx, by) end
 
---- Returns this helper's type name.
+--- Returns this helper's runtime type name for Lua introspection.
 ---@return string The string `LWrapSpace`.
 function LWrapSpace:type() end
 
@@ -20493,10 +20520,12 @@ function LMinimap:setAntiAlias(enabled) end
 function LMinimap:setCenter(x, y) end
 
 --- Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
----@param tilemap_ud any
----@param wx any
----@param wy any
-function LMinimap:setCenterFromTileMapWorld(tilemap_ud, wx, wy) end
+---@param tilemap LTileMap Tilemap whose world coordinates are queried.
+---@param wx number World X coordinate.
+---@param wy number World Y coordinate.
+---@return number One-based tile center coordinates. (value 1).
+---@return number One-based tile center coordinates. (value 2).
+function LMinimap:setCenterFromTileMapWorld(tilemap, wx, wy) end
 
 --- Enables or disables minimap click handling.
 ---@param enabled boolean Clickable flag.
@@ -20561,8 +20590,8 @@ function LMinimap:setLayerColor(layer, value, r, g, b, a) end
 function LMinimap:setLayerData(layer, data_tbl) end
 
 --- Applies common raw-layer style fields: visible, alpha, blend, and colors.
----@param layer any
----@param style any
+---@param layer number Zero-based raw layer index.
+---@param style table Style fields to apply.
 function LMinimap:setLayerStyle(layer, style) end
 
 --- Sets whether a minimap data layer is drawn even when it is not the active layer.
@@ -20651,12 +20680,16 @@ function LMinimap:setTileDescription(type_id, desc) end
 function LMinimap:setViewportColor(r, g, b, a) end
 
 --- Converts a tilemap world rectangle into a minimap viewport rectangle.
----@param tilemap_ud any
----@param x any
----@param y any
----@param w any
----@param h any
-function LMinimap:setViewportFromTileMapWorld(tilemap_ud, x, y, w, h) end
+---@param tilemap LTileMap Tilemap whose world rectangle is queried.
+---@param x number World rectangle X coordinate.
+---@param y number World rectangle Y coordinate.
+---@param w number World rectangle width.
+---@param h number World rectangle height.
+---@return number Tile viewport rectangle. (value 1).
+---@return number Tile viewport rectangle. (value 2).
+---@return number Tile viewport rectangle. (value 3).
+---@return number Tile viewport rectangle. (value 4).
+function LMinimap:setViewportFromTileMapWorld(tilemap, x, y, w, h) end
 
 --- Sets the visible viewport rectangle shown on the minimap.
 ---@param x number Viewport x coordinate.
@@ -20685,10 +20718,11 @@ function LMinimap:showPath(points_tbl, color_tbl) end
 function LMinimap:syncProvinceRegistry(registry, opts) end
 
 --- Copies explored/visible masks from `LTileAwareness` into minimap fog data.
----@param awareness_ud any
----@param player any
----@param opts? any
-function LMinimap:syncTileAwarenessFog(awareness_ud, player, opts) end
+---@param awareness LTileAwareness Awareness map supplying visibility masks.
+---@param player string Player or subject identifier.
+---@param opts? table Optional hidden and explored byte values.
+---@return table Normalized fog layer cell values.
+function LMinimap:syncTileAwarenessFog(awareness, player, opts) end
 
 --- Copies visible or action masks from `LTileAwareness` into a minimap raw layer.
 function LMinimap:syncTileAwarenessLayer() end
@@ -20700,10 +20734,11 @@ function LMinimap:syncTileFieldBlockLayer() end
 function LMinimap:syncTileFieldCostLayer() end
 
 --- Copies computed tilelight luma into a minimap raw byte layer.
----@param light_ud any
----@param layer any
----@param opts? any
-function LMinimap:syncTileLightLayer(light_ud, layer, opts) end
+---@param light LTileLightMap Tilelight map supplying luma values.
+---@param layer number Zero-based raw layer index.
+---@param opts? table Optional z, scale, and style values.
+---@return table Normalized raw layer cell values.
+function LMinimap:syncTileLightLayer(light, layer, opts) end
 
 --- Copies tile GIDs from an `LTileMap` layer into minimap terrain cells.
 ---@param tilemap LTileMap Source tilemap.
@@ -25661,8 +25696,12 @@ function LFlowStream:type() end
 ---@return boolean True for `LFlowStream` and `LObject`.
 function LFlowStream:typeOf(name) end
 
+--- Removes the vertical span constraint from movement sweeps.
+---@return nil No return value.
 function LKinematicController2D:clearVerticalSpan() end
 
+--- Returns the most recent movement or recovery result, when available.
+---@return table Last result table, or nil before any movement.
 function LKinematicController2D:getLastResult() end
 
 --- Sweeps and wall-slides the controlled kinematic body.
@@ -25672,36 +25711,55 @@ function LKinematicController2D:getLastResult() end
 ---@return table Deterministic movement result and ordered hits.
 function LKinematicController2D:move(dx, dy, opts) end
 
----@param opts? any
+--- Applies penetration recovery and updates the controlled body position.
+---@param opts? table Optional `{zMin, zMax}` override.
+---@return table Deterministic recovery result and ordered hits.
 function LKinematicController2D:recover(opts) end
 
+--- Releases this controller so further operations fail predictably.
+---@return nil No return value.
 function LKinematicController2D:release() end
 
----@param filter any
+--- Replaces the query filter used by movement sweeps.
+---@param filter any Query-filter table or nil to clear optional filters.
+---@return nil No return value.
 function LKinematicController2D:setFilter(filter) end
 
----@param max_slides any
+--- Sets the maximum number of wall slides permitted for one movement.
+---@param max_slides number Slide limit from 1 through the engine maximum.
+---@return nil No return value.
 function LKinematicController2D:setMaxSlides(max_slides) end
 
----@param radius any
+--- Sets the positive sweep radius used by subsequent movement queries.
+---@param radius number Positive finite sweep radius.
+---@return nil No return value.
 function LKinematicController2D:setRadius(radius) end
 
----@param skin any
+--- Sets the non-negative collision skin used by subsequent movement queries.
+---@param skin number Finite non-negative collision skin.
+---@return nil No return value.
 function LKinematicController2D:setSkin(skin) end
 
----@param z_min any
----@param z_max any
+--- Constrains movement sweeps to a strict vertical span.
+---@param z_min number Finite lower vertical bound.
+---@param z_max number Finite upper bound greater than `z_min`.
+---@return nil No return value.
 function LKinematicController2D:setVerticalSpan(z_min, z_max) end
 
 --- Solves movement without mutating the controlled body.
----@param dx any
----@param dy any
----@param opts? any
+---@param dx number Requested X displacement.
+---@param dy number Requested Y displacement.
+---@param opts? table Optional `{zMin, zMax}` override.
+---@return table Deterministic movement result and ordered hits.
 function LKinematicController2D:testMove(dx, dy, opts) end
 
+--- Returns this controller's runtime type name.
+---@return string Always `LKinematicController2D`.
 function LKinematicController2D:type() end
 
----@param name any
+--- Checks whether a type name is implemented by this controller.
+---@param name string Type name to check.
+---@return boolean True for `LKinematicController2D` or `LObject`.
 function LKinematicController2D:typeOf(name) end
 
 --- Applies sampled buoyancy and linear drag to matching dynamic bodies in the linked world.
@@ -26374,7 +26432,7 @@ function LWorld:getSolverIterations() end
 function LWorld:getStats() end
 
 --- Returns the current explicit toroidal wrap bounds, or nil when wrapping is disabled.
----@return table? Bounds with `min_x`, `min_y`, `max_x`, and `max_y`, or nil.
+---@return table Bounds with `min_x`, `min_y`, `max_x`, and `max_y`, or nil.
 function LWorld:getWrapBounds() end
 
 --- Returns all zone enter/leave events from the last step.
@@ -26392,7 +26450,7 @@ function LWorld:hasBody(id) end
 function LWorld:hasJoint(id) end
 
 --- Returns whether one live body participates in simulation and queries.
----@param body_id any
+---@param body_id number Stable body identifier.
 function LWorld:isBodyEnabled(body_id) end
 
 --- Returns whether a body is currently in the sleeping (inactive) state.
@@ -26401,8 +26459,8 @@ function LWorld:isBodyEnabled(body_id) end
 function LWorld:isBodySleeping(id) end
 
 --- Returns whether one zero-based fixture participates in simulation and queries.
----@param body_id any
----@param fixture_index any
+---@param body_id number Stable body identifier.
+---@param fixture_index number Zero-based fixture index.
 function LWorld:isFixtureEnabled(body_id, fixture_index) end
 
 --- Returns the total number of joints in the world.
@@ -26586,8 +26644,8 @@ function LWorld:setBodyCCD(id, enabled) end
 function LWorld:setBodyData(id, value) end
 
 --- Enables or disables one body without destroying its stable id.
----@param body_id any
----@param enabled any
+---@param body_id number Stable body identifier.
+---@param enabled boolean Whether the body participates in simulation and queries.
 function LWorld:setBodyEnabled(body_id, enabled) end
 
 --- Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
@@ -26625,9 +26683,9 @@ function LWorld:setCollisionPair(groupA, groupB, enabled) end
 function LWorld:setEndContact(callback) end
 
 --- Enables or disables one zero-based fixture without changing sensor state.
----@param body_id any
----@param fixture_index any
----@param enabled any
+---@param body_id number Stable body identifier.
+---@param fixture_index number Zero-based fixture index.
+---@param enabled boolean Whether the fixture participates in simulation and queries.
 function LWorld:setFixtureEnabled(body_id, fixture_index, enabled) end
 
 --- Updates the friction coefficient of a specific fixture on a body.
@@ -28023,853 +28081,1128 @@ lurek.procgen.wfcGenerateGrid = function(opts) end
 lurek.procgen.worldGraph = function(width, height, regionCount, seed) end
 
 --- Returns the authored achievement id.
----@return string Stable achievement identifier.
+---@return string Result produced by this progression operation.
 function LAchievement:getId() end
 
 --- Returns the authored achievement title.
----@return string Local presentation title.
+---@return string Result produced by this progression operation.
 function LAchievement:getTitle() end
 
 --- Returns whether the achievement is currently unlocked for the owning profile.
----@return boolean `true` when the achievement was unlocked.
+---@return boolean Result produced by this progression operation.
 function LAchievement:isUnlocked() end
 
 --- Returns the number of retained activity-feed entries in this selection.
----@return number Number of feed entries currently stored in this feed snapshot.
+---@return number Result produced by this progression operation.
 function LActivityFeed:count() end
 
 --- Returns every retained activity-feed entry as typed userdata.
----@return table Array of `LActivityFeedEntry` userdata values.
+---@return number Result produced by this progression operation.
 function LActivityFeed:listEntries() end
 
 --- Returns the canonical activity event type name.
----@return string Event type such as `"achievement_unlocked"`.
+---@return string Result produced by this progression operation.
 function LActivityFeedEntry:getEventType() end
 
 --- Returns the retained event sequence number.
----@return number Event sequence in feed order.
+---@return number Result produced by this progression operation.
 function LActivityFeedEntry:getSequence() end
 
 --- Returns the authored challenge id.
----@return string Stable challenge identifier.
+---@return string Result produced by this progression operation.
 function LChallenge:getId() end
 
 --- Returns the current challenge lifecycle status.
----@return string One of `"inactive"`, `"active"`, `"completed"`, or `"expired"`.
+---@return string Result produced by this progression operation.
 function LChallenge:getStatus() end
 
 --- Returns the authored collection id.
----@return string Stable collection identifier.
+---@return string Result produced by this progression operation.
 function LCollection:getId() end
 
 --- Returns whether every collection item is currently collected.
----@return boolean `true` when the collection is complete.
+---@return boolean Result produced by this progression operation.
 function LCollection:isComplete() end
 
 --- Returns the leaderboard that produced this row.
----@return string Leaderboard identifier.
+---@return string Result produced by this progression operation.
 function LLeaderboardEntry:getLeaderboardId() end
 
 --- Returns the profile that owns this row.
----@return string Profile identifier.
+---@return string Result produced by this progression operation.
 function LLeaderboardEntry:getProfileId() end
 
 --- Returns the one-based rank currently assigned to this row.
----@return number Deterministic rank for the current ordering.
+---@return number Result produced by this progression operation.
 function LLeaderboardEntry:getRank() end
 
---- Returns the population id.
----@return string Population identifier.
+--- Returns id from the progression store for Lua callers.
+---@return string string | Population identifier | Result produced by this progression operation.
 function LPopulation:getId() end
 
 --- Returns whether logical simulation for this population is paused.
----@return boolean `true` when updates are paused.
+---@return boolean Result produced by this progression operation.
 function LPopulation:isPaused() end
 
---- Returns the virtual profile id.
----@return string Virtual profile identifier.
+--- Returns profile id from the progression store for Lua callers.
+---@return string string | Virtual profile identifier | Result produced by this progression operation.
 function LPopulationProfile:getProfileId() end
 
 --- Returns whether this virtual profile is materialized as a normal store profile.
----@return boolean `true` when the virtual profile was materialized.
+---@return boolean Result produced by this progression operation.
 function LPopulationProfile:isMaterialized() end
 
---- Returns the authored prestige id.
----@return string Prestige identifier.
+--- Returns id from the progression store for Lua callers.
+---@return string string | Prestige identifier | Result produced by this progression operation.
 function LPrestige:getId() end
 
 --- Returns whether the owning profile currently satisfies the prestige condition.
----@return boolean `true` when the prestige is currently available.
+---@return number Result produced by this progression operation.
 function LPrestige:isAvailable() end
 
---- Returns the id.
+--- Returns id from the progression store for Lua callers.
+---@return string Result produced by this progression operation.
 function LProgressionProfile:getId() end
 
 --- Returns this profile's pending reward records as typed reward handles.
----@return table Array of `LReward` values still waiting for claim.
+---@return number Result produced by this progression operation.
 function LProgressionProfile:getPendingRewards() end
 
---- Type.
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@return string Result produced by this progression operation.
 function LProgressionProfile:type() end
 
---- Type of.
----@param name any
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 function LProgressionProfile:typeOf(name) end
 
---- Returns the pending rewards.
----@param profile any
----@param quest_id any
+--- Performs the `acceptQuest` progression operation for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@param quest_id any Value supplied for `quest_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:acceptQuest(profile, quest_id) end
 
---- Ack changes through.
----@param revision any
+--- Performs the `ackChangesThrough` progression operation for Lua callers.
+---@param revision number Value supplied for `revision`.
+---@return nil No return value.
 function LProgressionStore:ackChangesThrough(revision) end
 
----@param profile any
----@param perk_id any
+--- Performs the `acquirePerk` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param perk_id any Value supplied for `perk_id`.
+---@return nil No return value.
 function LProgressionStore:acquirePerk(profile, perk_id) end
 
----@param profile any
----@param challenge_id any
----@param options? any
+--- Performs the `activateChallenge` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param challenge_id any Value supplied for `challenge_id`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:activateChallenge(profile, challenge_id, options) end
 
----@param profile any
----@param attribute_id any
----@param amount any
+--- Adds attribute base to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param attribute_id any Value supplied for `attribute_id`.
+---@param amount any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionStore:addAttributeBase(profile, attribute_id, amount) end
 
----@param profile any
----@param counter_id any
----@param amount? any
+--- Adds counter to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param counter_id any Value supplied for `counter_id`.
+---@param amount? any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionStore:addCounter(profile, counter_id, amount) end
 
----@param profile any
----@param track_id any
----@param amount any
+--- Adds experience to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param track_id any Value supplied for `track_id`.
+---@param amount any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionStore:addExperience(profile, track_id, amount) end
 
----@param profile any
----@param target_id any
----@param opts any
+--- Adds modifier to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param target_id any Value supplied for `target_id`.
+---@param opts any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:addModifier(profile, target_id, opts) end
 
---- Adds profile tag.
----@param id any
----@param tag any
+--- Adds profile tag to the progression store for Lua callers.
+---@param id string Value supplied for `id`.
+---@param tag string Value supplied for `tag`.
+---@return nil No return value.
 function LProgressionStore:addProfileTag(id, tag) end
 
----@param profile any
----@param resource_id any
----@param amount any
+--- Adds resource to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param resource_id any Value supplied for `resource_id`.
+---@param amount any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionStore:addResource(profile, resource_id, amount) end
 
---- Advance time.
----@param seconds any
+--- Performs the `advanceTime` progression operation for Lua callers.
+---@param seconds number Value supplied for `seconds`.
+---@return nil No return value.
 function LProgressionStore:advanceTime(seconds) end
 
---- Apply changeset.
----@param changeset any
+--- Applies changeset in the progression store for Lua callers.
+---@param changeset any Value supplied for `changeset`.
+---@return nil No return value.
 function LProgressionStore:applyChangeset(changeset) end
 
----@param changeset any
----@param options? any
+--- Applies changeset envelope in the progression store for Lua callers.
+---@param changeset any Value supplied for `changeset`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:applyChangesetEnvelope(changeset, options) end
 
----@param profile any
----@param prestige_id any
+--- Applies prestige in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param prestige_id any Value supplied for `prestige_id`.
+---@return nil No return value.
 function LProgressionStore:applyPrestige(profile, prestige_id) end
 
----@param profile any
----@param template_id any
+--- Applies profile template in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param template_id any Value supplied for `template_id`.
+---@return nil No return value.
 function LProgressionStore:applyProfileTemplate(profile, template_id) end
 
----@param profile any
----@param trait_id any
+--- Applies trait in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param trait_id any Value supplied for `trait_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:applyTrait(profile, trait_id) end
 
----@param options? any
+--- Begins transaction in the progression store for Lua callers.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:beginTransaction(options) end
 
----@param profile any
----@param prestige_id any
+--- Checks whether Lua callers can prestige in the progression store.
+---@param profile any Stable progression profile identifier.
+---@param prestige_id any Value supplied for `prestige_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:canPrestige(profile, prestige_id) end
 
----@param profile any
----@param resource_id any
----@param amount any
+--- Checks whether Lua callers can spend resource in the progression store.
+---@param profile any Stable progression profile identifier.
+---@param resource_id any Value supplied for `resource_id`.
+---@param amount any Value supplied for `amount`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:canSpendResource(profile, resource_id, amount) end
 
---- Clears the state.
+--- Clears this operation in the progression store for Lua callers.
+---@return nil No return value.
 function LProgressionStore:clear() end
 
---- Clears events.
+--- Clears events in the progression store for Lua callers.
+---@return nil No return value.
 function LProgressionStore:clearEvents() end
 
----@param profile any
----@param collection_id any
----@param item_id any
+--- Performs the `collectCollectionItem` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param collection_id any Value supplied for `collection_id`.
+---@param item_id any Value supplied for `item_id`.
+---@return nil No return value.
 function LProgressionStore:collectCollectionItem(profile, collection_id, item_id) end
 
---- Compact changes.
----@param max_records any
+--- Performs the `compactChanges` progression operation for Lua callers.
+---@param max_records number Value supplied for `max_records`.
+---@return nil No return value.
 function LProgressionStore:compactChanges(max_records) end
 
---- Compile condition.
----@param condition any
+--- Performs the `compileCondition` progression operation for Lua callers.
+---@param condition table Value supplied for `condition`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:compileCondition(condition) end
 
----@param profile any
----@param quest_id any
+--- Performs the `completeQuest` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:completeQuest(profile, quest_id) end
 
---- Returns the number of items.
-function LProgressionStore:countProfiles() end
+--- Performs the `countProfiles` progression operation for Lua callers.
+---@param arg1? any Value supplied for `arg1`.
+---@return number Result produced by this progression operation.
+function LProgressionStore:countProfiles(arg1) end
 
----@param id any
----@param options? any
+--- Creates profile in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:createProfile(id, options) end
 
---- Debug snapshot.
+--- Performs the `debugSnapshot` progression operation for Lua callers.
+---@return table Result produced by this progression operation.
 function LProgressionStore:debugSnapshot() end
 
----@param id any
----@param definition any
+--- Defines achievement in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineAchievement(id, definition) end
 
----@param id any
----@param definition any
+--- Defines attribute in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineAttribute(id, definition) end
 
----@param id any
----@param definition any
+--- Defines challenge template in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineChallengeTemplate(id, definition) end
 
----@param id any
----@param definition any
+--- Defines collection in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineCollection(id, definition) end
 
----@param id any
----@param definition any
+--- Defines counter in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineCounter(id, definition) end
 
----@param id any
----@param definition any
+--- Defines derived value in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineDerivedValue(id, definition) end
 
----@param id any
----@param definition any
+--- Defines leaderboard in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineLeaderboard(id, definition) end
 
----@param id any
----@param definition any
+--- Defines level track in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineLevelTrack(id, definition) end
 
----@param id any
----@param definition any
+--- Defines perk in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:definePerk(id, definition) end
 
----@param id any
----@param definition any
+--- Defines population template in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:definePopulationTemplate(id, definition) end
 
----@param id any
----@param definition any
+--- Defines prestige in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:definePrestige(id, definition) end
 
----@param id any
----@param definition any
+--- Defines profile template in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineProfileTemplate(id, definition) end
 
----@param id any
----@param definition any
+--- Defines quest in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineQuest(id, definition) end
 
----@param id any
----@param definition any
+--- Defines resource in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineResource(id, definition) end
 
----@param id any
----@param definition any
+--- Defines season in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineSeason(id, definition) end
 
----@param id any
----@param definition any
+--- Defines skill in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineSkill(id, definition) end
 
----@param id any
----@param definition any
+--- Defines trait in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param definition any Value supplied for `definition`.
+---@return nil No return value.
 function LProgressionStore:defineTrait(id, definition) end
 
----@param profile_id any
----@param options? any
+--- Performs the `dematerializePopulationProfile` progression operation for Lua callers.
+---@param profile_id any Stable progression profile identifier.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:dematerializePopulationProfile(profile_id, options) end
 
---- Drain events.
+--- Performs the `drainEvents` progression operation for Lua callers.
+---@return table Result produced by this progression operation.
 function LProgressionStore:drainEvents() end
 
----@param id any
----@param options? any
+--- Performs the `endSeason` progression operation for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:endSeason(id, options) end
 
----@param id any
----@param options? any
+--- Performs the `ensureProfile` progression operation for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:ensureProfile(id, options) end
 
----@param profile any
----@param condition any
+--- Performs the `evaluateCondition` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param condition any Value supplied for `condition`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:evaluateCondition(profile, condition) end
 
----@param profile any
----@param attribute_id any
+--- Performs the `explainAttribute` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param attribute_id any Value supplied for `attribute_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:explainAttribute(profile, attribute_id) end
 
----@param profile any
----@param condition any
+--- Performs the `explainCondition` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param condition any Value supplied for `condition`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:explainCondition(profile, condition) end
 
----@param profile any
----@param id any
+--- Performs the `explainDerivedValue` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param id any Stable progression profile identifier.
+---@return table Result produced by this progression operation.
 function LProgressionStore:explainDerivedValue(profile, id) end
 
---- Export changes since.
----@param revision any
+--- Exports changes since from the progression store for Lua callers.
+---@param revision number Value supplied for `revision`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:exportChangesSince(revision) end
 
----@param revision any
----@param options? any
+--- Exports changeset from the progression store for Lua callers.
+---@param revision any Value supplied for `revision`.
+---@param options? any Optional operation options supplied by the caller.
+---@return table Result produced by this progression operation.
 function LProgressionStore:exportChangeset(revision, options) end
 
---- Export snapshot.
+--- Exports snapshot from the progression store for Lua callers.
+---@return table Result produced by this progression operation.
 function LProgressionStore:exportSnapshot() end
 
----@param profile any
----@param quest_id any
+--- Performs the `failQuest` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:failQuest(profile, quest_id) end
 
----@param template_id any
----@param options? any
+--- Performs the `generatePopulation` progression operation for Lua callers.
+---@param template_id any Value supplied for `template_id`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:generatePopulation(template_id, options) end
 
----@param profile any
----@param achievement_id any
+--- Returns achievement from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param achievement_id any Value supplied for `achievement_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getAchievement(profile, achievement_id) end
 
 --- Returns one typed activity-feed selection object.
----@param query? any
+---@param query? table Value supplied for `query`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getActivityFeed(query) end
 
----@param profile any
----@param attribute_id any
----@param mode? any
+--- Returns attribute from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param attribute_id any Value supplied for `attribute_id`.
+---@param mode? any Value supplied for `mode`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getAttribute(profile, attribute_id, mode) end
 
----@param profile any
----@param attribute_id any
+--- Returns attribute state from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param attribute_id any Value supplied for `attribute_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getAttributeState(profile, attribute_id) end
 
----@param profile any
----@param challenge_id any
+--- Returns challenge from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param challenge_id any Value supplied for `challenge_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getChallenge(profile, challenge_id) end
 
----@param profile any
----@param collection_id any
+--- Returns collection from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param collection_id any Value supplied for `collection_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getCollection(profile, collection_id) end
 
----@param profile any
----@param counter_id any
+--- Returns counter from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param counter_id any Value supplied for `counter_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getCounter(profile, counter_id) end
 
----@param profile any
----@param counter_id any
+--- Returns counter state from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param counter_id any Value supplied for `counter_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getCounterState(profile, counter_id) end
 
---- Returns the definition hash.
+--- Returns definition hash from the progression store for Lua callers.
+---@return string Result produced by this progression operation.
 function LProgressionStore:getDefinitionHash() end
 
----@param profile any
----@param id any
+--- Returns derived value from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param id any Stable progression profile identifier.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getDerivedValue(profile, id) end
 
----@param profile any
----@param track_id any
+--- Returns experience from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param track_id any Value supplied for `track_id`.
+---@return number Result produced by this progression operation.
 function LProgressionStore:getExperience(profile, track_id) end
 
----@param profile any
----@param track_id any
+--- Returns experience to next level from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param track_id any Value supplied for `track_id`.
+---@return number Result produced by this progression operation.
 function LProgressionStore:getExperienceToNextLevel(profile, track_id) end
 
---- Returns the id.
+--- Returns id from the progression store for Lua callers.
+---@return string Result produced by this progression operation.
 function LProgressionStore:getId() end
 
----@param profile any
----@param leaderboard_id any
+--- Returns leaderboard entry from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param leaderboard_id any Value supplied for `leaderboard_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getLeaderboardEntry(profile, leaderboard_id) end
 
----@param profile any
----@param track_id any
+--- Returns level from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param track_id any Value supplied for `track_id`.
+---@return number Result produced by this progression operation.
 function LProgressionStore:getLevel(profile, track_id) end
 
---- Returns the population.
----@param handle_or_id any
+--- Returns population from the progression store for Lua callers.
+---@param handle_or_id string Value supplied for `handle_or_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getPopulation(handle_or_id) end
 
----@param handle_or_id any
----@param query? any
+--- Returns population statistics from the progression store for Lua callers.
+---@param handle_or_id any Value supplied for `handle_or_id`.
+---@param query? any Value supplied for `query`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getPopulationStatistics(handle_or_id, query) end
 
----@param profile any
----@param prestige_id any
+--- Returns prestige from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param prestige_id any Value supplied for `prestige_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getPrestige(profile, prestige_id) end
 
---- Returns the profile.
----@param id any
+--- Returns profile from the progression store for Lua callers.
+---@param id string Value supplied for `id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getProfile(id) end
 
----@param profile any
----@param quest_id any
+--- Returns quest state from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getQuestState(profile, quest_id) end
 
----@param profile any
----@param resource_id any
+--- Returns resource from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param resource_id any Value supplied for `resource_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getResource(profile, resource_id) end
 
---- Returns the revision.
+--- Returns revision from the progression store for Lua callers.
+---@return number Result produced by this progression operation.
 function LProgressionStore:getRevision() end
 
----@param profile any
----@param rival_profile any
+--- Returns rival from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param rival_profile any Value supplied for `rival_profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getRival(profile, rival_profile) end
 
----@param profile any
----@param rival_profile any
+--- Returns rival delta from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param rival_profile any Value supplied for `rival_profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getRivalDelta(profile, rival_profile) end
 
---- Returns the schema version.
+--- Returns schema version from the progression store for Lua callers.
+---@return number Result produced by this progression operation.
 function LProgressionStore:getSchemaVersion() end
 
---- Returns the season.
----@param id any
+--- Returns season from the progression store for Lua callers.
+---@param id string Value supplied for `id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getSeason(id) end
 
----@param id any
----@param query? any
+--- Returns season archive from the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param query? any Value supplied for `query`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getSeasonArchive(id, query) end
 
----@param profile any
----@param skill_id any
+--- Returns skill cooldown from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param skill_id any Value supplied for `skill_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getSkillCooldown(profile, skill_id) end
 
----@param profile any
----@param skill_id any
+--- Returns skill level from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param skill_id any Value supplied for `skill_id`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:getSkillLevel(profile, skill_id) end
 
---- Returns the time.
+--- Returns time from the progression store for Lua callers.
+---@return number Result produced by this progression operation.
 function LProgressionStore:getTime() end
 
----@param profile any
----@param perk_id any
+--- Checks whether perk exists in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param perk_id any Value supplied for `perk_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:hasPerk(profile, perk_id) end
 
---- Returns true if profile.
----@param id any
+--- Checks whether profile exists in the progression store for Lua callers.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:hasProfile(id) end
 
----@param profile any
----@param trait_id any
+--- Checks whether trait exists in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param trait_id any Value supplied for `trait_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:hasTrait(profile, trait_id) end
 
----@param profile any
----@param skill_id any
+--- Performs the `learnSkill` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param skill_id any Value supplied for `skill_id`.
+---@return nil No return value.
 function LProgressionStore:learnSkill(profile, skill_id) end
 
---- List achievements.
----@param profile any
+--- Lists achievements from the progression store for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listAchievements(profile) end
 
----@param profile any
----@param options? any
+--- Lists challenges from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param options? any Optional operation options supplied by the caller.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listChallenges(profile, options) end
 
---- List collections.
----@param profile any
+--- Lists collections from the progression store for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listCollections(profile) end
 
---- List counters.
----@param profile any
+--- Lists counters from the progression store for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listCounters(profile) end
 
+--- Lists leaderboard around profile from the progression store for Lua callers.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listLeaderboardAroundProfile() end
 
----@param leaderboard_id any
----@param start_rank any
----@param limit? any
+--- Lists leaderboard range from the progression store for Lua callers.
+---@param leaderboard_id any Value supplied for `leaderboard_id`.
+---@param start_rank any Value supplied for `start_rank`.
+---@param limit? any Value supplied for `limit`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listLeaderboardRange(leaderboard_id, start_rank, limit) end
 
----@param leaderboard_id any
----@param limit? any
+--- Lists leaderboard top from the progression store for Lua callers.
+---@param leaderboard_id any Value supplied for `leaderboard_id`.
+---@param limit? any Value supplied for `limit`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listLeaderboardTop(leaderboard_id, limit) end
 
---- List modifiers.
----@param profile any
+--- Lists modifiers from the progression store for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listModifiers(profile) end
 
----@param handle_or_id any
----@param query? any
+--- Lists population profiles from the progression store for Lua callers.
+---@param handle_or_id any Value supplied for `handle_or_id`.
+---@param query? any Value supplied for `query`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listPopulationProfiles(handle_or_id, query) end
 
---- List prestiges.
----@param profile any
+--- Lists prestiges from the progression store for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listPrestiges(profile) end
 
---- List profiles.
-function LProgressionStore:listProfiles() end
+--- Lists profiles from the progression store for Lua callers.
+---@param arg1? any Value supplied for `arg1`.
+---@return table Result produced by this progression operation.
+function LProgressionStore:listProfiles(arg1) end
 
---- List rivals.
----@param profile any
+--- Lists rivals from the progression store for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listRivals(profile) end
 
---- List seasons.
----@param query? any
+--- Lists seasons from the progression store for Lua callers.
+---@param query? table Value supplied for `query`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listSeasons(query) end
 
---- List traits.
----@param profile any
+--- Lists traits from the progression store for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return table Result produced by this progression operation.
 function LProgressionStore:listTraits(profile) end
 
---- Load snapshot.
----@param snapshot any
+--- Performs the `loadSnapshot` progression operation for Lua callers.
+---@param snapshot any Value supplied for `snapshot`.
+---@return nil No return value.
 function LProgressionStore:loadSnapshot(snapshot) end
 
----@param profile_id any
+--- Performs the `materializePopulationProfile` progression operation for Lua callers.
+---@param profile_id any Stable progression profile identifier.
+---@return nil No return value.
 function LProgressionStore:materializePopulationProfile(profile_id) end
 
---- Pause population.
----@param handle_or_id any
+--- Performs the `pausePopulation` progression operation for Lua callers.
+---@param handle_or_id string Value supplied for `handle_or_id`.
+---@return nil No return value.
 function LProgressionStore:pausePopulation(handle_or_id) end
 
----@param profile any
----@param rival_profile any
----@param options? any
+--- Performs the `pinRival` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param rival_profile any Value supplied for `rival_profile`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:pinRival(profile, rival_profile, options) end
 
----@param profile any
----@param resource_id any
----@param amount? any
+--- Performs the `refillResource` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param resource_id any Value supplied for `resource_id`.
+---@param amount? any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionStore:refillResource(profile, resource_id, amount) end
 
---- Refresh quest lifecycle.
----@param profile any
+--- Performs the `refreshQuestLifecycle` progression operation for Lua callers.
+---@param profile any Value supplied for `profile`.
+---@return nil No return value.
 function LProgressionStore:refreshQuestLifecycle(profile) end
 
----@param handle_or_id any
----@param options? any
+--- Performs the `regeneratePopulation` progression operation for Lua callers.
+---@param handle_or_id any Value supplied for `handle_or_id`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:regeneratePopulation(handle_or_id, options) end
 
---- Removes derived value.
----@param id any
+--- Removes derived value from the progression store for Lua callers.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:removeDerivedValue(id) end
 
----@param profile any
----@param handle any
+--- Removes modifier from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param handle any Value supplied for `handle`.
+---@return nil No return value.
 function LProgressionStore:removeModifier(profile, handle) end
 
----@param handle_or_id any
----@param options? any
+--- Removes population from the progression store for Lua callers.
+---@param handle_or_id any Value supplied for `handle_or_id`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:removePopulation(handle_or_id, options) end
 
----@param id any
----@param opts? any
+--- Removes profile from the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param opts? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:removeProfile(id, opts) end
 
----@param id any
----@param key any
+--- Removes profile metadata from the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param key any Value supplied for `key`.
+---@return nil No return value.
 function LProgressionStore:removeProfileMetadata(id, key) end
 
----@param id any
----@param tag any
+--- Removes profile tag from the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param tag any Value supplied for `tag`.
+---@return nil No return value.
 function LProgressionStore:removeProfileTag(id, tag) end
 
----@param profile any
----@param trait_id any
+--- Removes trait from the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param trait_id any Value supplied for `trait_id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:removeTrait(profile, trait_id) end
 
---- Resume population.
----@param handle_or_id any
+--- Performs the `resumePopulation` progression operation for Lua callers.
+---@param handle_or_id string Value supplied for `handle_or_id`.
+---@return nil No return value.
 function LProgressionStore:resumePopulation(handle_or_id) end
 
----@param profile any
----@param quest_id any
+--- Performs the `revealQuest` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@return nil No return value.
 function LProgressionStore:revealQuest(profile, quest_id) end
 
----@param profile any
----@param attribute_id any
----@param value any
+--- Sets attribute base in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param attribute_id any Value supplied for `attribute_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionStore:setAttributeBase(profile, attribute_id, value) end
 
----@param profile any
----@param challenge_id any
----@param value any
+--- Sets challenge progress in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param challenge_id any Value supplied for `challenge_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionStore:setChallengeProgress(profile, challenge_id, value) end
 
----@param profile any
----@param counter_id any
----@param value any
+--- Sets counter in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param counter_id any Value supplied for `counter_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionStore:setCounter(profile, counter_id, value) end
 
----@param profile any
----@param track_id any
----@param value any
+--- Sets experience in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param track_id any Value supplied for `track_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionStore:setExperience(profile, track_id, value) end
 
----@param profile any
----@param track_id any
----@param level any
+--- Sets level in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param track_id any Value supplied for `track_id`.
+---@param level any Value supplied for `level`.
+---@return nil No return value.
 function LProgressionStore:setLevel(profile, track_id, level) end
 
----@param id any
----@param key any
----@param value any
+--- Sets profile metadata in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param key any Value supplied for `key`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionStore:setProfileMetadata(id, key, value) end
 
----@param profile any
----@param quest_id any
----@param objective_id any
----@param value any
+--- Sets quest objective in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@param objective_id any Value supplied for `objective_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionStore:setQuestObjective(profile, quest_id, objective_id, value) end
 
----@param profile any
----@param quest_id any
----@param objective_id any
----@param status any
+--- Sets quest objective status in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@param objective_id any Value supplied for `objective_id`.
+---@param status any Value supplied for `status`.
+---@return nil No return value.
 function LProgressionStore:setQuestObjectiveStatus(profile, quest_id, objective_id, status) end
 
----@param profile any
----@param quest_id any
----@param objective_id any
----@param visible any
+--- Sets quest objective visibility in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@param objective_id any Value supplied for `objective_id`.
+---@param visible any Value supplied for `visible`.
+---@return nil No return value.
 function LProgressionStore:setQuestObjectiveVisibility(profile, quest_id, objective_id, visible) end
 
----@param profile any
----@param resource_id any
----@param value any
+--- Sets resource in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param resource_id any Value supplied for `resource_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionStore:setResource(profile, resource_id, value) end
 
---- Sets the time.
----@param seconds any
+--- Sets time in the progression store for Lua callers.
+---@param seconds number Value supplied for `seconds`.
+---@return nil No return value.
 function LProgressionStore:setTime(seconds) end
 
----@param handle_or_id any
----@param logical_time any
----@param options? any
+--- Performs the `simulatePopulationUntil` progression operation for Lua callers.
+---@param handle_or_id any Value supplied for `handle_or_id`.
+---@param logical_time any Value supplied for `logical_time`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:simulatePopulationUntil(handle_or_id, logical_time, options) end
 
----@param profile any
----@param resource_id any
----@param amount any
+--- Performs the `spendResource` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param resource_id any Value supplied for `resource_id`.
+---@param amount any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionStore:spendResource(profile, resource_id, amount) end
 
----@param id any
----@param options? any
+--- Performs the `startSeason` progression operation for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:startSeason(id, options) end
 
---- Stats.
+--- Performs the `stats` progression operation for Lua callers.
+---@return table Result produced by this progression operation.
 function LProgressionStore:stats() end
 
----@param profile any
----@param leaderboard_id any
----@param score any
+--- Performs the `submitScore` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param leaderboard_id any Value supplied for `leaderboard_id`.
+---@param score any Value supplied for `score`.
+---@return nil No return value.
 function LProgressionStore:submitScore(profile, leaderboard_id, score) end
 
---- Type.
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@return string Result produced by this progression operation.
 function LProgressionStore:type() end
 
---- Type of.
----@param name any
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:typeOf(name) end
 
----@param profile any
----@param achievement_id any
+--- Performs the `unlockAchievement` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param achievement_id any Value supplied for `achievement_id`.
+---@return nil No return value.
 function LProgressionStore:unlockAchievement(profile, achievement_id) end
 
----@param dt any
----@param opts? any
+--- Updates this operation in the progression store for Lua callers.
+---@param dt any Value supplied for `dt`.
+---@param opts? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:update(dt, opts) end
 
----@param handle_or_id any
----@param dt any
----@param options? any
+--- Updates population in the progression store for Lua callers.
+---@param handle_or_id any Value supplied for `handle_or_id`.
+---@param dt any Value supplied for `dt`.
+---@param options? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:updatePopulation(handle_or_id, dt, options) end
 
----@param id any
----@param patch? any
+--- Updates profile in the progression store for Lua callers.
+---@param id any Stable progression profile identifier.
+---@param patch? any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionStore:updateProfile(id, patch) end
 
----@param profile any
----@param skill_id any
+--- Performs the `useSkill` progression operation for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param skill_id any Value supplied for `skill_id`.
+---@return nil No return value.
 function LProgressionStore:useSkill(profile, skill_id) end
 
---- Validate.
+--- Validates this operation using the progression store rules for Lua callers.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:validate() end
 
---- Validate condition.
----@param condition any
+--- Validates condition using the progression store rules for Lua callers.
+---@param condition table Value supplied for `condition`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:validateCondition(condition) end
 
---- Validate derived values.
+--- Validates derived values using the progression store rules for Lua callers.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:validateDerivedValues() end
 
---- Validate population template.
----@param id any
+--- Validates population template using the progression store rules for Lua callers.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 function LProgressionStore:validatePopulationTemplate(id) end
 
----@param profile any
----@param counter_id any
----@param amount any
+--- Adds counter to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param counter_id any Value supplied for `counter_id`.
+---@param amount any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionTransaction:addCounter(profile, counter_id, amount) end
 
----@param profile any
----@param track_id any
----@param amount any
+--- Adds experience to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param track_id any Value supplied for `track_id`.
+---@param amount any Value supplied for `amount`.
+---@return nil No return value.
 function LProgressionTransaction:addExperience(profile, track_id, amount) end
 
----@param profile any
----@param target_id any
----@param opts any
+--- Adds modifier to the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param target_id any Value supplied for `target_id`.
+---@param opts any Optional operation options supplied by the caller.
+---@return nil No return value.
 function LProgressionTransaction:addModifier(profile, target_id, opts) end
 
---- Commit.
+--- Commits the pending progression transaction and returns its result to Lua callers.
+---@return table Result produced by this progression operation.
 function LProgressionTransaction:commit() end
 
---- Rollback.
+--- Rolls back the pending progression transaction for Lua callers.
+---@return nil No return value.
 function LProgressionTransaction:rollback() end
 
----@param profile any
----@param attribute_id any
----@param value any
+--- Sets attribute base in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param attribute_id any Value supplied for `attribute_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionTransaction:setAttributeBase(profile, attribute_id, value) end
 
----@param profile any
----@param counter_id any
----@param value any
+--- Sets counter in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param counter_id any Value supplied for `counter_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionTransaction:setCounter(profile, counter_id, value) end
 
----@param profile any
----@param quest_id any
----@param objective_id any
----@param value any
+--- Sets quest objective in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param quest_id any Value supplied for `quest_id`.
+---@param objective_id any Value supplied for `objective_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionTransaction:setQuestObjective(profile, quest_id, objective_id, value) end
 
----@param profile any
----@param resource_id any
----@param value any
+--- Sets resource in the progression store for Lua callers.
+---@param profile any Stable progression profile identifier.
+---@param resource_id any Value supplied for `resource_id`.
+---@param value any Value supplied for `value`.
+---@return nil No return value.
 function LProgressionTransaction:setResource(profile, resource_id, value) end
 
---- Type.
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@return string Result produced by this progression operation.
 function LProgressionTransaction:type() end
 
---- Type of.
----@param name any
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 function LProgressionTransaction:typeOf(name) end
 
 --- Appends one entry to the live quest journal and returns the stored entry object.
 ---@param text string Non-empty journal body text to append.
 ---@param tag? string Optional tag that categorizes the new journal entry.
----@return LQuestJournalEntry Retained journal entry after store-side indexing and trimming.
+---@return number Result produced by this progression operation.
 function LQuestJournal:addEntry(text, tag) end
 
 --- Returns the number of retained entries currently stored in this journal.
----@return number Journal entry count after retention trimming.
+---@return number Result produced by this progression operation.
 function LQuestJournal:count() end
 
 --- Returns the quest id that owns this journal.
----@return string Authored quest identifier.
+---@return string Result produced by this progression operation.
 function LQuestJournal:getQuestId() end
 
 --- Returns every retained journal entry as typed entry userdata.
----@return table Array of `LQuestJournalEntry` userdata values.
+---@return number Result produced by this progression operation.
 function LQuestJournal:listEntries() end
 
 --- Returns the stable monotonically increasing journal index.
----@return number Zero-based journal entry index.
+---@return number Result produced by this progression operation.
 function LQuestJournalEntry:getIndex() end
 
 --- Returns the optional journal entry tag.
----@return string Journal entry tag, or an empty string when no tag was stored.
+---@return string Result produced by this progression operation.
 function LQuestJournalEntry:getTag() end
 
 --- Returns the authored journal entry text.
----@return string Retained journal body text.
+---@return string Result produced by this progression operation.
 function LQuestJournalEntry:getText() end
 
 --- Returns the retained quest journal as a typed journal object.
----@return LQuestJournal Journal handle for the current quest state.
+---@return LQuestJournal|Journal handle for the current quest state Result produced by this progression operation.
 function LQuestState:getJournal() end
 
---- Returns the authored quest id.
----@return string Quest identifier.
+--- Returns quest id from the progression store for Lua callers.
+---@return string string | Quest identifier | Result produced by this progression operation.
 function LQuestState:getQuestId() end
 
 --- Returns the current quest lifecycle status.
----@return string Current quest state such as `"hidden"`, `"available"`, or `"active"`.
+---@return string Result produced by this progression operation.
 function LQuestState:getStatus() end
 
 --- Returns whether the quest is currently revealed to the owning profile.
----@return boolean `true` when the quest is visible.
+---@return boolean Result produced by this progression operation.
 function LQuestState:isRevealed() end
 
 --- Claims this pending reward and returns the updated reward object.
----@return LReward Updated reward handle after the claim transition.
+---@return LReward|Updated reward handle after the claim transition Result produced by this progression operation.
 function LReward:claim() end
 
---- Returns the reward record id.
----@return string Stable reward identifier.
+--- Returns id from the progression store for Lua callers.
+---@return string string | Stable reward identifier | Result produced by this progression operation.
 function LReward:getId() end
 
---- Returns the current reward state.
----@return string One of `"pending"`, `"claimed"`, `"applied"`, or `"rejected"`.
+--- Returns state from the progression store for Lua callers.
+---@return table string | One of `"pending"`, `"claimed"`, `"applied"`, or `"rejected"` | Result produced by this progression operation.
 function LReward:getState() end
 
 --- Marks this claimed reward as applied and returns the updated reward object.
 ---@param external_receipt? string Optional game-specific receipt or transaction token.
----@return LReward Updated reward handle after the apply transition.
+---@return number Result produced by this progression operation.
 function LReward:markApplied(external_receipt) end
 
 --- Rejects this reward and returns the updated reward object.
 ---@param reason? string Optional rejection reason for logs or external flow control.
----@return LReward Updated reward handle after the rejection transition.
+---@return LReward|Updated reward handle after the rejection transition Result produced by this progression operation.
 function LReward:reject(reason) end
 
 --- Returns the owner profile id for this rivalry.
----@return string Profile identifier that pinned the rival.
+---@return string Result produced by this progression operation.
 function LRival:getProfileId() end
 
 --- Returns the pinned rival profile id.
----@return string Rival profile identifier.
+---@return string Result produced by this progression operation.
 function LRival:getRivalProfileId() end
 
 --- Returns the leaderboard used to compute this rivalry delta.
----@return string Leaderboard identifier.
+---@return string Result produced by this progression operation.
 function LRivalDelta:getLeaderboardId() end
 
 --- Returns the signed rank gap between the owner and rival profiles.
----@return number Positive when the rival is behind, negative when ahead.
+---@return number Result produced by this progression operation.
 function LRivalDelta:getRankDelta() end
 
---- Returns the authored season id.
----@return string Season identifier.
+--- Returns id from the progression store for Lua callers.
+---@return string string | Season identifier | Result produced by this progression operation.
 function LSeason:getId() end
 
 --- Returns whether this season is currently active.
----@return boolean `true` when the season is active.
+---@return boolean Result produced by this progression operation.
 function LSeason:isActive() end
 
 --- Returns the monotonically increasing archive index for this season.
----@return number Archive sequence number.
+---@return number Result produced by this progression operation.
 function LSeasonArchive:getArchiveIndex() end
 
 --- Returns the season id that owns this archive record.
----@return string Season identifier.
+---@return string Result produced by this progression operation.
 function LSeasonArchive:getId() end
 
 --- Applies a status to a subject and returns its stable runtime instance id.
@@ -28877,534 +29210,622 @@ function LSeasonArchive:getId() end
 ---@param definitionId string Registered status definition id.
 ---@param sourceId? number Optional source/owner id.
 ---@param stacks? number Initial stack count, clamped to maxStacks.
----@return number Status instance id.
+---@return number Result produced by this progression operation.
 function LStatusTracker:apply(subjectId, definitionId, sourceId, stacks) end
 
 --- Removes all definitions, instances, and queued events.
+---@return nil No return value.
 function LStatusTracker:clear() end
 
 --- Registers or replaces one status definition.
 ---@param definition table Definition with id, duration, tickInterval, maxStacks, stacking, and tags.
+---@return nil No return value.
 function LStatusTracker:define(definition) end
 
 --- Takes and clears neutral apply/refresh/stack/tick/expired events.
----@return table Event records in deterministic emission order.
+---@return table Result produced by this progression operation.
 function LStatusTracker:drainEvents() end
 
 --- Returns one active status instance by runtime id.
 ---@param instanceId number Runtime status instance id.
----@return table? Status instance record, or nil when missing.
+---@return table Result produced by this progression operation.
 function LStatusTracker:get(instanceId) end
 
 --- Checks whether a subject has a status with the requested definition id or tag.
 ---@param subjectId number Stable subject/entity id.
 ---@param definitionOrTag string Definition id or copied instance tag.
----@return boolean Whether a matching instance exists.
+---@return number Result produced by this progression operation.
 function LStatusTracker:has(subjectId, definitionOrTag) end
 
 --- Lists active status instances attached to one subject and matching all optional filters.
 ---@param subjectId number Stable subject/entity id.
 ---@param filter? table Optional definitionId, tag, sourceId, and paused filters.
----@return table Status instance records.
+---@return table Result produced by this progression operation.
 function LStatusTracker:list(subjectId, filter) end
 
 --- Removes one active status instance.
 ---@param instanceId number Runtime status instance id.
----@return boolean True when an instance was removed.
+---@return boolean Result produced by this progression operation.
 function LStatusTracker:remove(instanceId) end
 
 --- Removes every matching definition instance from one subject.
 ---@param subjectId number Stable subject/entity id.
 ---@param definitionId string Registered status definition id.
----@return number Number of removed instances.
+---@return number Result produced by this progression operation.
 function LStatusTracker:removeByDefinition(subjectId, definitionId) end
 
 --- Removes every instance carrying a copied tag from one subject.
 ---@param subjectId number Stable subject/entity id.
 ---@param tag string Instance tag to match.
----@return number Number of removed instances.
+---@return number Result produced by this progression operation.
 function LStatusTracker:removeByTag(subjectId, tag) end
 
 --- Restores definitions, active instances, and ID allocation from a snapshot.
 ---@param snapshot table Table returned by `snapshot`.
+---@return nil No return value.
 function LStatusTracker:restore(snapshot) end
 
 --- Pauses or resumes one status instance's lifecycle timers.
 ---@param instanceId number Runtime status instance id.
 ---@param paused boolean Whether timers should be paused.
----@return boolean True when the instance exists.
+---@return number Result produced by this progression operation.
 function LStatusTracker:setPaused(instanceId, paused) end
 
 --- Sets one status instance's remaining duration; nil makes it infinite.
 ---@param instanceId number Runtime status instance id.
 ---@param seconds? number Finite non-negative seconds, or nil.
----@return boolean True when the instance exists.
+---@return number Result produced by this progression operation.
 function LStatusTracker:setRemaining(instanceId, seconds) end
 
 --- Captures definitions, instances, and ID allocation state.
----@return table Serializable status tracker snapshot.
+---@return table Result produced by this progression operation.
 function LStatusTracker:snapshot() end
 
 --- Returns the Lua-visible type name.
----@return string Always `LStatusTracker`.
+---@return string Result produced by this progression operation.
 function LStatusTracker:type() end
 
 --- Checks whether this handle matches `LStatusTracker` or `LObject`.
 ---@param name string Type name to compare.
----@return boolean Whether the name matches.
+---@return boolean Result produced by this progression operation.
 function LStatusTracker:typeOf(name) end
 
 --- Advances finite durations and periodic tick timers by dt seconds.
 ---@param dt number Non-negative logical seconds.
----@return number Number of events currently queued after the update.
+---@return number Result produced by this progression operation.
 function LStatusTracker:update(dt) end
 
---- Acquire perk.
----@param this any
----@param name any
+--- Performs the `acquirePerk` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.acquirePerk = function(this, name) end
 
---- Active count.
----@param this any
+--- Performs the `activeCount` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return number Result produced by this progression operation.
 lurek.progression.activeCount = function(this) end
 
---- Active ids.
----@param this any
+--- Performs the `activeIds` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return nil No return value.
 lurek.progression.activeIds = function(this) end
 
---- Adds buff.
+--- Adds buff to the progression store for Lua callers.
+---@return string Result produced by this progression operation.
 lurek.progression.addBuff = function() end
 
---- Adds journal entry.
----@param this any
----@param quest_id any
----@param text any
----@param tag? any
+--- Adds journal entry to the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param quest_id string Value supplied for `quest_id`.
+---@param text string Value supplied for `text`.
+---@param tag? string Value supplied for `tag`.
+---@return number Result produced by this progression operation.
 lurek.progression.addJournalEntry = function(this, quest_id, text, tag) end
 
---- Adds quest.
----@param this any
----@param quest any
+--- Adds quest to the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param quest table Value supplied for `quest`.
+---@return nil No return value.
 lurek.progression.addQuest = function(this, quest) end
 
---- Adds xp.
----@param this any
----@param amount any
+--- Adds x p to the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param amount number Value supplied for `amount`.
+---@return nil No return value.
 lurek.progression.addXP = function(this, amount) end
 
---- Adjust morale.
----@param this any
----@param delta any
+--- Performs the `adjustMorale` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param delta number Value supplied for `delta`.
+---@return nil No return value.
 lurek.progression.adjustMorale = function(this, delta) end
 
---- Advance objective.
+--- Performs the `advanceObjective` progression operation for Lua callers.
+---@return boolean Result produced by this progression operation.
 lurek.progression.advanceObjective = function() end
 
---- Apply damage.
----@param this any
----@param stat any
----@param amount any
----@param dtype? any
+--- Applies damage in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param stat string Value supplied for `stat`.
+---@param amount number Value supplied for `amount`.
+---@param dtype? string Value supplied for `dtype`.
+---@return number Result produced by this progression operation.
 lurek.progression.applyDamage = function(this, stat, amount, dtype) end
 
---- Apply trait buffs.
----@param this any
----@param trait_name any
+--- Applies trait buffs in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param trait_name string Value supplied for `trait_name`.
+---@return nil No return value.
 lurek.progression.applyTraitBuffs = function(this, trait_name) end
 
---- Begin turn.
----@param this any
+--- Begins turn in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return nil No return value.
 lurek.progression.beginTurn = function(this) end
 
---- Check morale.
----@param this any
+--- Performs the `checkMorale` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return string Result produced by this progression operation.
 lurek.progression.checkMorale = function(this) end
 
---- Clears buffs.
----@param this any
----@param stat? any
+--- Clears buffs in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param stat? string Value supplied for `stat`.
+---@return nil No return value.
 lurek.progression.clearBuffs = function(this, stat) end
 
---- Clears flag.
----@param this any
----@param name any
+--- Clears flag in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return nil No return value.
 lurek.progression.clearFlag = function(this, name) end
 
---- Complete quest.
----@param this any
----@param id any
+--- Performs the `completeQuest` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.completeQuest = function(this, id) end
 
---- Completed count.
----@param this any
+--- Performs the `completedCount` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return number Result produced by this progression operation.
 lurek.progression.completedCount = function(this) end
 
---- Completed ids.
----@param this any
+--- Performs the `completedIds` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return nil No return value.
 lurek.progression.completedIds = function(this) end
 
---- Create legacy quest adapter.
----@param store any
----@param profile any
----@param options? any
+--- Creates legacy quest adapter in the progression store for Lua callers.
+---@param store AnyUserData Value supplied for `store`.
+---@param profile any Value supplied for `profile`.
+---@param options? table Value supplied for `options`.
+---@return nil No return value.
 lurek.progression.createLegacyQuestAdapter = function(store, profile, options) end
 
---- Create legacy stats adapter.
----@param store any
----@param profile any
----@param options? any
+--- Creates legacy stats adapter in the progression store for Lua callers.
+---@param store AnyUserData Value supplied for `store`.
+---@param profile any Value supplied for `profile`.
+---@param options? table Value supplied for `options`.
+---@return nil No return value.
 lurek.progression.createLegacyStatsAdapter = function(store, profile, options) end
 
---- Define.
----@param this any
----@param name any
----@param base any
----@param opts? any
+--- Defines this operation in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@param base number Value supplied for `base`.
+---@param opts? table Optional operation options table.
+---@return nil No return value.
 lurek.progression.define = function(this, name, base, opts) end
 
---- Define perk.
----@param this any
----@param name any
----@param opts? any
+--- Defines perk in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@param opts? table Optional operation options table.
+---@return nil No return value.
 lurek.progression.definePerk = function(this, name, opts) end
 
---- Define skill.
----@param this any
----@param name any
----@param opts? any
+--- Defines skill in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@param opts? table Optional operation options table.
+---@return nil No return value.
 lurek.progression.defineSkill = function(this, name, opts) end
 
---- Fail quest.
----@param this any
----@param id any
+--- Performs the `failQuest` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.failQuest = function(this, id) end
 
---- Failed ids.
----@param this any
+--- Performs the `failedIds` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return nil No return value.
 lurek.progression.failedIds = function(this) end
 
---- Returns a value.
----@param this any
----@param name any
+--- Returns this operation from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return number Result produced by this progression operation.
 lurek.progression.get = function(this, name) end
 
---- Returns the action points.
----@param this any
----@return number Current action points followed by the configured maximum. (value 1).
----@return number Current action points followed by the configured maximum. (value 2).
+--- Returns action points from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table number, number | Current action points followed by the configured maximum | Result produced by this progression operation.
 lurek.progression.getActionPoints = function(this) end
 
---- Returns the active traits.
----@param this any
+--- Returns active traits from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table Result produced by this progression operation.
 lurek.progression.getActiveTraits = function(this) end
 
---- Returns the base.
----@param this any
----@param name any
+--- Returns base from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return number Result produced by this progression operation.
 lurek.progression.getBase = function(this, name) end
 
---- Returns the buff count.
----@param this any
----@param stat? any
+--- Returns buff count from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param stat? string Value supplied for `stat`.
+---@return number Result produced by this progression operation.
 lurek.progression.getBuffCount = function(this, stat) end
 
---- Returns the buffs.
----@param this any
----@param stat? any
+--- Returns buffs from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param stat? string Value supplied for `stat`.
+---@return table Result produced by this progression operation.
 lurek.progression.getBuffs = function(this, stat) end
 
---- Returns the cooldown remaining.
----@param this any
----@param name any
+--- Returns cooldown remaining from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return number Result produced by this progression operation.
 lurek.progression.getCooldownRemaining = function(this, name) end
 
---- Returns the encumbrance.
----@param this any
+--- Returns encumbrance from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table Result produced by this progression operation.
 lurek.progression.getEncumbrance = function(this) end
 
---- Returns the flags.
----@param this any
+--- Returns flags from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table Result produced by this progression operation.
 lurek.progression.getFlags = function(this) end
 
---- Returns the initiative.
----@param this any
+--- Returns initiative from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table Result produced by this progression operation.
 lurek.progression.getInitiative = function(this) end
 
---- Returns the level.
----@param this any
+--- Returns level from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return number Result produced by this progression operation.
 lurek.progression.getLevel = function(this) end
 
---- Returns the max.
----@param this any
----@param name any
+--- Returns max from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return table Result produced by this progression operation.
 lurek.progression.getMax = function(this, name) end
 
---- Returns the min.
----@param this any
----@param name any
+--- Returns min from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return table Result produced by this progression operation.
 lurek.progression.getMin = function(this, name) end
 
---- Returns the morale.
----@param this any
----@return number Current morale followed by the configured maximum. (value 1).
----@return number Current morale followed by the configured maximum. (value 2).
+--- Returns morale from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table number, number | Current morale followed by the configured maximum | Result produced by this progression operation.
 lurek.progression.getMorale = function(this) end
 
---- Returns the quest.
----@param this any
----@param id any
+--- Returns quest from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@return table Result produced by this progression operation.
 lurek.progression.getQuest = function(this, id) end
 
---- Returns the quest reward.
----@param this any
----@param id any
+--- Returns quest reward from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@return table Result produced by this progression operation.
 lurek.progression.getQuestReward = function(this, id) end
 
---- Returns the regen.
----@param this any
----@param name any
+--- Returns regen from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return table Result produced by this progression operation.
 lurek.progression.getRegen = function(this, name) end
 
---- Returns the resistance.
----@param this any
----@param dtype any
+--- Returns resistance from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param dtype string Value supplied for `dtype`.
+---@return number Result produced by this progression operation.
 lurek.progression.getResistance = function(this, dtype) end
 
---- Returns the skill level.
----@param this any
----@param name any
+--- Returns skill level from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return number Result produced by this progression operation.
 lurek.progression.getSkillLevel = function(this, name) end
 
---- Returns the stat names.
----@param this any
+--- Returns stat names from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table Result produced by this progression operation.
 lurek.progression.getStatNames = function(this) end
 
---- Returns the use count.
----@param this any
----@param name any
+--- Returns use count from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return number Result produced by this progression operation.
 lurek.progression.getUseCount = function(this, name) end
 
---- Returns the xp.
----@param this any
+--- Returns x p from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return number Result produced by this progression operation.
 lurek.progression.getXP = function(this) end
 
---- Returns true if flag.
----@param this any
----@param name any
+--- Checks whether flag exists in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.hasFlag = function(this, name) end
 
---- Returns true if perk.
----@param this any
----@param name any
+--- Checks whether perk exists in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.hasPerk = function(this, name) end
 
---- Returns true if trait.
----@param this any
----@param trait_name any
+--- Checks whether trait exists in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param trait_name string Value supplied for `trait_name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.hasTrait = function(this, trait_name) end
 
---- Import legacy quest snapshot.
----@param snapshot any
+--- Imports legacy quest snapshot into the progression store for Lua callers.
+---@param snapshot table Value supplied for `snapshot`.
+---@return nil No return value.
 lurek.progression.importLegacyQuestSnapshot = function(snapshot) end
 
---- Import legacy stats snapshot.
----@param snapshot any
+--- Imports legacy stats snapshot into the progression store for Lua callers.
+---@param snapshot table Value supplied for `snapshot`.
+---@return nil No return value.
 lurek.progression.importLegacyStatsSnapshot = function(snapshot) end
 
---- Returns true if encumbered.
----@param this any
+--- Checks whether encumbered is true for this progression object.
+---@param this table Adapter table owning this operation.
+---@return boolean Result produced by this progression operation.
 lurek.progression.isEncumbered = function(this) end
 
---- Learn skill.
----@param this any
----@param name any
+--- Performs the `learnSkill` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.learnSkill = function(this, name) end
 
---- Load store.
----@param snapshot any
+--- Performs the `loadStore` progression operation for Lua callers.
+---@param snapshot any Value supplied for `snapshot`.
+---@return nil No return value.
 lurek.progression.loadStore = function(snapshot) end
 
 --- Creates an isolated deterministic status lifecycle tracker.
----@return LStatusTracker New status tracker handle.
+---@return LStatusTracker|New status tracker handle Result produced by this progression operation.
 lurek.progression.newStatusTracker = function() end
 
---- New store.
----@param options? any
+--- Performs the `newStore` progression operation for Lua callers.
+---@param options? table Value supplied for `options`.
+---@return nil No return value.
 lurek.progression.newStore = function(options) end
 
---- Quest count.
----@param this any
+--- Performs the `questCount` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return number Result produced by this progression operation.
 lurek.progression.questCount = function(this) end
 
---- Quest ids.
----@param this any
+--- Performs the `questIds` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table Result produced by this progression operation.
 lurek.progression.questIds = function(this) end
 
---- Quests with status.
----@param this any
----@param wanted any
+--- Performs the `questsWithStatus` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param wanted string Value supplied for `wanted`.
+---@return table Result produced by this progression operation.
 lurek.progression.questsWithStatus = function(this, wanted) end
 
---- Record use.
----@param this any
----@param name any
+--- Performs the `recordUse` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return nil No return value.
 lurek.progression.recordUse = function(this, name) end
 
---- Recover action points.
----@param this any
----@param amount any
+--- Performs the `recoverActionPoints` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param amount number Value supplied for `amount`.
+---@return nil No return value.
 lurek.progression.recoverActionPoints = function(this, amount) end
 
---- Removes buff.
----@param this any
----@param handle any
+--- Removes buff from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param handle string Value supplied for `handle`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.removeBuff = function(this, handle) end
 
---- Removes quest.
----@param this any
----@param id any
+--- Removes quest from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.removeQuest = function(this, id) end
 
---- Removes trait buffs.
----@param this any
----@param trait_name any
+--- Removes trait buffs from the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param trait_name string Value supplied for `trait_name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.removeTraitBuffs = function(this, trait_name) end
 
---- Clears quest.
----@param this any
----@param id any
+--- Performs the `resetQuest` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.resetQuest = function(this, id) end
 
---- Restore.
----@param this any
----@param snap any
+--- Performs the `restore` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param snap table Value supplied for `snap`.
+---@return nil No return value.
 lurek.progression.restore = function(this, snap) end
 
---- Sets the action points.
----@param this any
----@param max_val any
+--- Sets action points in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param max_val number Value supplied for `max_val`.
+---@return nil No return value.
 lurek.progression.setActionPoints = function(this, max_val) end
 
---- Sets the base.
----@param this any
----@param name any
----@param value any
+--- Sets base in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@param value number Value supplied for `value`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.setBase = function(this, name, value) end
 
---- Sets the berserk threshold.
----@param this any
----@param value any
+--- Sets berserk threshold in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setBerserkThreshold = function(this, value) end
 
---- Sets the encumbrance.
----@param this any
----@param cur any
----@param max_val any
+--- Sets encumbrance in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param cur number Value supplied for `cur`.
+---@param max_val number Value supplied for `max_val`.
+---@return nil No return value.
 lurek.progression.setEncumbrance = function(this, cur, max_val) end
 
---- Sets the flag.
----@param this any
----@param name any
+--- Sets flag in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return nil No return value.
 lurek.progression.setFlag = function(this, name) end
 
---- Sets the initiative.
----@param this any
----@param value any
+--- Sets initiative in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setInitiative = function(this, value) end
 
---- Sets the level.
----@param this any
----@param value any
+--- Sets level in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setLevel = function(this, value) end
 
---- Sets the level thresholds.
----@param this any
----@param thresholds any
+--- Sets level thresholds in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param thresholds table Value supplied for `thresholds`.
+---@return nil No return value.
 lurek.progression.setLevelThresholds = function(this, thresholds) end
 
---- Sets the max.
----@param this any
----@param name any
----@param value any
+--- Sets max in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setMax = function(this, name, value) end
 
---- Sets the min.
----@param this any
----@param name any
----@param value any
+--- Sets min in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setMin = function(this, name, value) end
 
---- Sets the morale.
----@param this any
----@param max_val any
+--- Sets morale in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param max_val number Value supplied for `max_val`.
+---@return nil No return value.
 lurek.progression.setMorale = function(this, max_val) end
 
---- Sets the panic threshold.
----@param this any
----@param value any
+--- Sets panic threshold in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setPanicThreshold = function(this, value) end
 
---- Sets the quest reward.
----@param this any
----@param id any
----@param reward any
+--- Sets quest reward in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@param reward string Value supplied for `reward`.
+---@return nil No return value.
 lurek.progression.setQuestReward = function(this, id, reward) end
 
---- Sets the regen.
----@param this any
----@param name any
----@param value any
+--- Sets regen in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setRegen = function(this, name, value) end
 
---- Sets the resistance.
----@param this any
----@param dtype any
----@param value any
+--- Sets resistance in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param dtype string Value supplied for `dtype`.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setResistance = function(this, dtype, value) end
 
---- Sets the xp.
----@param this any
----@param value any
+--- Sets x p in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param value number Value supplied for `value`.
+---@return nil No return value.
 lurek.progression.setXP = function(this, value) end
 
---- Snapshot.
----@param this any
+--- Performs the `snapshot` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@return table Result produced by this progression operation.
 lurek.progression.snapshot = function(this) end
 
---- Spend action points.
----@param this any
----@param amount any
+--- Performs the `spendActionPoints` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param amount number Value supplied for `amount`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.spendActionPoints = function(this, amount) end
 
---- Start quest.
----@param this any
----@param id any
+--- Performs the `startQuest` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param id string Value supplied for `id`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.startQuest = function(this, id) end
 
---- Type.
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@return string Result produced by this progression operation.
 lurek.progression.type = function() end
 
---- Type.
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@return string Result produced by this progression operation.
 lurek.progression.type = function() end
 
---- Type of.
----@param name any
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.typeOf = function(name) end
 
---- Type of.
----@param name any
+--- Returns the runtime type name exposed by this progression object to Lua callers.
+---@param name string Value supplied for `name`.
+---@return boolean Result produced by this progression operation.
 lurek.progression.typeOf = function(name) end
 
---- Update.
----@param this any
----@param dt any
+--- Updates this operation in the progression store for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param dt number Value supplied for `dt`.
+---@return nil No return value.
 lurek.progression.update = function(this, dt) end
 
---- Use skill.
----@param this any
----@param name any
----@return boolean Success flag followed by an optional failure reason. (value 1).
----@return string? Success flag followed by an optional failure reason. (value 2).
+--- Performs the `useSkill` progression operation for Lua callers.
+---@param this table Adapter table owning this operation.
+---@param name string Value supplied for `name`.
+---@return nil boolean, string? | Success flag followed by an optional failure reason | Result produced by this progression operation.
 lurek.progression.useSkill = function(this, name) end
 
 --- Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
@@ -29453,7 +29874,7 @@ function LProvinceRegistry:findRoutes(pairs, cost_fn) end
 ---@return number Camera x; camera y; and zoom factor. (value 3).
 function LProvinceRegistry:fitCamera(screen_w, screen_h, pixel_size) end
 
---- Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
+--- Returns the province ID at the given grid cell coordinates. Raster maps sample the cell directly; polygon maps sample the cell center `(x + 0.5, y + 0.5)`. Returns 0 if unowned.
 ---@param x number Zero-based column index.
 ---@param y number Zero-based row index.
 ---@return number Province ID at (x, y), or 0 for unowned cells.
@@ -29486,8 +29907,12 @@ function LProvinceRegistry:getChangesSince(revision) end
 ---@return table Array of arrays of province ids.
 function LProvinceRegistry:getConnectedComponents() end
 
---- Returns the height of the province grid in cells (pixels of the source PNG).
----@return number Grid height in cells.
+--- Returns `"raster"` for PNG/grid-backed registries or `"polygon"` for Tiled polygon registries.
+---@return string Registry geometry kind.
+function LProvinceRegistry:getGeometryKind() end
+
+--- Returns the height of the province map. Raster registries report PNG cells; polygon registries report the Tiled map pixel extent.
+---@return number Map height in source pixels/cells.
 function LProvinceRegistry:getHeight() end
 
 --- Returns the name of the currently active map mode.
@@ -29503,10 +29928,20 @@ function LProvinceRegistry:getName() end
 ---@return number[] Array of neighboring province IDs.
 function LProvinceRegistry:getNeighbors(id) end
 
+--- Returns the total polygon component count, or the component count for one province.
+---@param province_id? number Optional province ID filter.
+---@return number Number of polygon components.
+function LProvinceRegistry:getPolygonCount(province_id) end
+
 --- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state), centroid, capital marker, and custom attributes.
 ---@param id number Province ID to query.
 ---@return LProvinceRegistryGetProvinceResult Province snapshot table, or nil if the ID does not exist.
 function LProvinceRegistry:getProvince(id) end
+
+--- Returns read-only polygon component geometry for one province.
+---@param province_id number Province ID.
+---@return table Array of component tables with source_object_id, vertices, area, and bounds.
+function LProvinceRegistry:getProvincePolygons(province_id) end
 
 --- Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
 ---@return number Current revision number.
@@ -29516,8 +29951,8 @@ function LProvinceRegistry:getRevision() end
 ---@return LShader Bound shader handle.
 function LProvinceRegistry:getShader() end
 
---- Returns the width of the province grid in cells (pixels of the source PNG).
----@return number Grid width in cells.
+--- Returns the width of the province map. Raster registries report PNG cells; polygon registries report the Tiled map pixel extent.
+---@return number Map width in source pixels/cells.
 function LProvinceRegistry:getWidth() end
 
 --- Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
@@ -29530,6 +29965,12 @@ function LProvinceRegistry:importMetadataFromFiles(opts) end
 ---@param to_id number Target province id.
 ---@return boolean True when connected.
 function LProvinceRegistry:isConnected(from_id, to_id) end
+
+--- Returns the province under a floating-point map coordinate, or nil for a gap/outside.
+---@param map_x number Map-space x coordinate.
+---@param map_y number Map-space y coordinate.
+---@return number Province ID, or nil.
+function LProvinceRegistry:pickProvince(map_x, map_y) end
 
 --- Returns the total number of distinct provinces in this registry (excluding ID 0).
 ---@return number Count of provinces.
@@ -29743,6 +30184,13 @@ lurek.province.hasFlag = function(id, bit) end
 ---@return LProvinceRegistry The newly created registry handle.
 lurek.province.newFromPng = function(name, png_path) end
 
+--- Creates a polygon-backed province registry from a Tiled TMX, TMJ, or JSON object map.
+---@param name string Unique registry name for later retrieval.
+---@param filename string GameFS-relative `.tmx`, `.tmj`, or `.json` path.
+---@param opts? table Layer/property names and strict grid snapping options.
+---@return LProvinceRegistry The newly created polygon registry handle.
+lurek.province.newFromTiled = function(name, filename, opts) end
+
 --- Loads a province id grid from a GameFS-authorized encoded image.
 ---@param filename string Province map image filename relative to the game directory.
 ---@return LProvinceGrid New province grid handle.
@@ -29875,7 +30323,7 @@ function LMultiLevelGrid:activeLevel() end
 function LMultiLevelGrid:addLevel(level) end
 
 --- Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
----@param params table Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors.
+---@param params table Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors. `background.type = "layered_sky"` accepts up to three ordered elevated roof texture layers with independent UV velocity, height, and parallax.
 ---@param lights? table Array of render light tables.
 ---@param sprites? table|LSpriteManager Array of level sprite tables or an LSpriteManager.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
@@ -29883,17 +30331,17 @@ function LMultiLevelGrid:addLevel(level) end
 function LMultiLevelGrid:buildScene(params, lights, sprites, wallTextures) end
 
 --- Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.
----@param params table Scene params for the current camera.
+---@param params table Scene params for the current camera, including optional `background.type = "layered_sky"` with up to three ordered animated elevated roof layers.
 ---@param adapter LSceneAdapter Runtime scene adapter providing lights, sprites, and models.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
 ---@return number Total number of quads in the built scene.
 function LMultiLevelGrid:buildSceneFromAdapter(params, adapter, wallTextures) end
 
 --- Clears one arbitrary pick attribute or the whole surface channel from one active-level cell.
----@param x any
----@param y any
----@param surface any
----@param key? any
+---@param x number Grid column.
+---@param y number Grid row.
+---@param surface string Surface channel name.
+---@param key? string Optional attribute key; omit it to clear the channel.
 function LMultiLevelGrid:clearPickAttr(x, y, surface, key) end
 
 --- Removes any per-cell wall feature override from the active level.
@@ -29942,10 +30390,11 @@ function LMultiLevelGrid:getFloorTextureCell(x, y) end
 function LMultiLevelGrid:getLoweredFloorCell(x, y) end
 
 --- Reads one arbitrary pick attribute from one active-level surface cell.
----@param x any
----@param y any
----@param surface any
----@param key any
+---@param x number Grid column.
+---@param y number Grid row.
+---@param surface string Surface channel name.
+---@param key string Attribute key.
+---@return string Attribute value, or nil when the key is missing.
 function LMultiLevelGrid:getPickAttr(x, y, surface, key) end
 
 --- Returns the wall feature attached to an active-level cell, or nil when none is set.
@@ -30050,11 +30499,11 @@ function LMultiLevelGrid:setFloorTextureCell(x, y, texture) end
 function LMultiLevelGrid:setLoweredFloorCell(x, y, opts) end
 
 --- Sets one arbitrary pick attribute on one active-level surface cell.
----@param x any
----@param y any
----@param surface any
----@param key any
----@param value any
+---@param x number Grid column.
+---@param y number Grid row.
+---@param surface string Surface channel name.
+---@param key string Attribute key.
+---@param value string Attribute value.
 function LMultiLevelGrid:setPickAttr(x, y, surface, key, value) end
 
 --- Attaches a render-only wall feature descriptor to a blocking cell on the active level.
@@ -30082,7 +30531,7 @@ function LRaycaster:addParticleEmitter(emitter) end
 function LRaycaster:applyDoorManager(doors, alpha) end
 
 --- Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
----@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to skip untextured ceiling polygons while still rendering textured roof cells. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
+---@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to expose an elevated layered sky through the normal ceiling. `background` accepts solid, gradient, skybox, layered_sky, or shader descriptors. A layered_sky has up to three ordered world-space roof layers with `tint`, `blend`, `scale`, `offset`, `velocity`, `parallax`, `height`, `copies` (0..8), and optional `wrap_y`; each layer is projected like a ceiling tile above the level floor. `overlays` accepts fog, depth fog, snow, or shader descriptors.
 ---@param lights? table Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.
 ---@param sprites? table|LSpriteManager Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
@@ -30090,14 +30539,14 @@ function LRaycaster:applyDoorManager(doors, alpha) end
 function LRaycaster:buildScene(params, lights, sprites, wallTextures) end
 
 --- Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
----@param params table Scene params (same as buildScene).
+---@param params table Scene params (same as buildScene), including optional `background.type = "layered_sky"` with up to three ordered animated elevated roof layers.
 ---@param adapter LSceneAdapter Runtime scene adapter providing lights, sprites, and models.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
 ---@return number Total number of quads in the built scene.
 function LRaycaster:buildSceneFromAdapter(params, adapter, wallTextures) end
 
 --- Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
----@param params table Scene params (same as buildScene).
+---@param params table Scene params (same as buildScene), including optional `background.type = "layered_sky"` with up to three ordered animated elevated roof layers.
 ---@param lights? table Array of render light tables.
 ---@param sprites? table|LSpriteManager Array of sprite tables with billboard or 4-direction textures, or an LSpriteManager with integer/LImage textures.
 ---@param wallTextures? table Map of cell_value -> texture.
@@ -30159,10 +30608,10 @@ function LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) end
 function LRaycaster:clearParticleEmitters() end
 
 --- Clears one arbitrary pick attribute or the whole channel from a raycaster surface cell.
----@param x any
----@param y any
----@param surface any
----@param key? any
+---@param x number Grid column.
+---@param y number Grid row.
+---@param surface string Surface channel name.
+---@param key? string Optional attribute key; omit it to clear the channel.
 function LRaycaster:clearPickAttr(x, y, surface, key) end
 
 --- Removes any per-cell wall feature override from a blocking cell.
@@ -30249,10 +30698,11 @@ function LRaycaster:getFloorTextureCell(x, y) end
 function LRaycaster:getLoweredFloorCell(x, y) end
 
 --- Reads one arbitrary pick attribute from a raycaster surface cell.
----@param x any
----@param y any
----@param surface any
----@param key any
+---@param x number Grid column.
+---@param y number Grid row.
+---@param surface string Surface channel name.
+---@param key string Attribute key.
+---@return string Attribute value, or nil when the key is missing.
 function LRaycaster:getPickAttr(x, y, surface, key) end
 
 --- Returns the current transparency value for a wall tile type.
@@ -30354,11 +30804,11 @@ function LRaycaster:setFloorTextureCell(x, y, texture) end
 function LRaycaster:setLoweredFloorCell(x, y, opts) end
 
 --- Sets one arbitrary pick attribute on a raycaster surface cell.
----@param x any
----@param y any
----@param surface any
----@param key any
----@param value any
+---@param x number Grid column.
+---@param y number Grid row.
+---@param surface string Surface channel name.
+---@param key string Attribute key.
+---@param value string Attribute value.
 function LRaycaster:setPickAttr(x, y, surface, key, value) end
 
 --- Sets the transparency for a specific wall tile type, enabling see-through walls.
@@ -30450,11 +30900,11 @@ function LRaycasterView:setShader(shader) end
 ---@param viewport table `{x, y, w, h}` in pixels.
 function LRaycasterView:setViewport(viewport) end
 
---- Returns `LRaycasterView`.
+--- Returns the runtime type name for this raycaster projection view.
 ---@return string Handle type.
 function LRaycasterView:type() end
 
---- Checks the handle type.
+--- Checks whether this handle matches a supported raycaster view type.
 ---@param name string Type name.
 ---@return boolean Whether it matches.
 function LRaycasterView:typeOf(name) end
@@ -30575,7 +31025,7 @@ function LSpriteManager:clearAttr(id, key) end
 --- Reads one arbitrary string attribute from the sprite.
 ---@param id number Sprite id.
 ---@param key string Attribute key to read.
----@return string? Attribute value, or `nil` when the key is missing.
+---@return string Attribute value, or `nil` when the key is missing.
 function LSpriteManager:getAttr(id, key) end
 
 --- Removes a sprite by its id. This method is available to Lua scripts.
@@ -30583,9 +31033,9 @@ function LSpriteManager:getAttr(id, key) end
 function LSpriteManager:remove(id) end
 
 --- Sets one arbitrary string attribute on the sprite.
----@param id any
----@param key any
----@param value any
+---@param id number Sprite id.
+---@param key string Attribute key.
+---@param value string Attribute value.
 function LSpriteManager:setAttr(id, key, value) end
 
 --- Replaces the directional bitmap set for an existing sprite and optionally updates its facing angle.
@@ -30645,7 +31095,7 @@ function LSpriteManager:typeOf(name) end
 lurek.raycaster.applyLitShade = function(baseShade, r, g, b) end
 
 --- Builds a multilevel raycaster scene from a stack of plain Lua level tables.
----@param params table Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`.
+---@param params table Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`. Layered sky backgrounds accept up to three ordered elevated roof texture layers with independent UV velocity, height, and parallax.
 ---@param levels table|LMultiLevelGrid Array of level tables or a persistent LMultiLevelGrid.
 ---@param lights? table Array of render light tables.
 ---@param sprites? table|LSpriteManager Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.
@@ -31082,7 +31532,7 @@ function LReadbackRequest:result() end
 ---@return string Stable request lifecycle state.
 function LReadbackRequest:status() end
 
---- Returns the userdata type name.
+--- Returns the userdata type name for this surface readback request handle.
 ---@return string `LReadbackRequest`.
 function LReadbackRequest:type() end
 
@@ -31147,7 +31597,7 @@ function LShaderPrewarmRequest:release() end
 ---@return string Stable request lifecycle state.
 function LShaderPrewarmRequest:status() end
 
---- Returns the userdata type name.
+--- Returns the userdata type name for this shader prewarm request handle.
 ---@return string `LShaderPrewarmRequest`.
 function LShaderPrewarmRequest:type() end
 
@@ -31155,6 +31605,11 @@ function LShaderPrewarmRequest:type() end
 ---@param name string Type name to test.
 ---@return boolean Whether the type matches.
 function LShaderPrewarmRequest:typeOf(name) end
+
+--- Snapshots another shape's IR under an optional local transform.
+---@param child LShape Shape whose commands are copied.
+---@param opts? table Optional local transform.
+function LShape:addShape(child, opts) end
 
 --- Adds a filled or outlined arc command to the shape.
 ---@param mode string "fill" or "line".
@@ -31166,6 +31621,25 @@ function LShaderPrewarmRequest:typeOf(name) end
 ---@param segments? number Number of arc segments (default 32).
 function LShape:arc(mode, x, y, r, astart, aend, segments) end
 
+--- Adds an arrow from `(x1,y1)` to `(x2,y2)` with a triangular head.
+---@param mode string "fill" or "line".
+---@param x1 number Start X.
+---@param y1 number Start Y.
+---@param x2 number End X.
+---@param y2 number End Y.
+---@param width? number Arrow width (default 6).
+---@param head? number Head length (default twice width).
+function LShape:arrow(mode, x1, y1, x2, y2, width, head) end
+
+--- Adds a rounded capsule (horizontal or vertical according to its dimensions).
+---@param mode string "fill" or "line".
+---@param x number Left edge X.
+---@param y number Top edge Y.
+---@param w number Capsule width.
+---@param h number Capsule height.
+---@param radius? number Corner radius (defaults from dimensions).
+function LShape:capsule(mode, x, y, w, h, radius) end
+
 --- Adds a filled or outlined circle command to the shape.
 ---@param mode string "fill" or "line".
 ---@param x number Center X.
@@ -31175,6 +31649,11 @@ function LShape:circle(mode, x, y, r) end
 
 --- Removes all drawing commands from this shape, making it empty.
 function LShape:clear() end
+
+--- Compiles the shape once on the CPU; the next frame uploads one static GPU mesh.
+---@param opts? table Optional compile tolerance settings.
+---@return boolean True when compilation succeeds.
+function LShape:compile(opts) end
 
 --- Renders the accumulated shape commands to the screen with optional transform.
 ---@param x number X position.
@@ -31186,6 +31665,10 @@ function LShape:clear() end
 ---@param oy? number Origin offset Y (default 0).
 function LShape:draw(x, y, rotation, sx, sy, ox, oy) end
 
+--- Queues up to 250,000 instances of one compiled shape for a single compatible draw.
+---@param instances table Array of `{x,y,rotation,sx,sy,ox,oy,tint}` records.
+function LShape:drawMany(instances) end
+
 --- Adds an ellipse command to the shape.
 ---@param mode string "fill" or "line".
 ---@param x number Center X.
@@ -31194,9 +31677,17 @@ function LShape:draw(x, y, rotation, sx, sy, ox, oy) end
 ---@param ry number Vertical radius.
 function LShape:ellipse(mode, x, y, rx, ry) end
 
+--- Returns `{x,y,w,h,minX,minY,maxX,maxY}` in local shape coordinates.
+---@return table Shape bounds in local coordinates.
+function LShape:getBounds() end
+
 --- Returns the number of drawing commands accumulated in this shape.
 ---@return number Command count.
 function LShape:getCommandCount() end
+
+--- Returns compile revision, geometry counters, tolerance, and warnings.
+---@return table Shape compilation diagnostics.
+function LShape:getDiagnostics() end
 
 --- Adds a line segment command to the shape.
 ---@param x1 number Start X.
@@ -31204,6 +31695,20 @@ function LShape:getCommandCount() end
 ---@param x2 number End X.
 ---@param y2 number End Y.
 function LShape:line(x1, y1, x2, y2) end
+
+--- Adds a native path with move, line, quadratic, cubic, and close verbs.
+---@param segments table Path segment records.
+---@param opts? table Fill, close and stroke options.
+function LShape:path(segments, opts) end
+
+--- Adds one point or disc primitive to the shape.
+---@param x number Point center X.
+---@param y number Point center Y.
+---@param size? number Point diameter (default 1).
+function LShape:point(x, y, size) end
+
+--- Adds many point/disc primitives from flat coordinates or `{x,y}` pairs.
+function LShape:points() end
 
 --- Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
 ---@param mode string "fill" or "line".
@@ -31222,6 +31727,28 @@ function LShape:polyline(...) end
 ---@param h number Height.
 function LShape:rectangle(mode, x, y, w, h) end
 
+--- Adds a regular polygon, useful for icons and data-viz marks.
+---@param mode string "fill" or "line".
+---@param x number Center X.
+---@param y number Center Y.
+---@param radius number Polygon radius.
+---@param sides number Number of polygon sides.
+---@param rotation? number Rotation in radians (default -pi/2).
+function LShape:regularPolygon(mode, x, y, radius, sides, rotation) end
+
+--- Releases the shape slot and makes this handle stale.
+---@return boolean True when the shape slot was released.
+function LShape:release() end
+
+--- Adds a ring or annulus approximation from two circles.
+---@param mode string "fill" or "line".
+---@param x number Center X.
+---@param y number Center Y.
+---@param outer number Outer radius.
+---@param inner number Inner radius.
+---@param segments? number Segment count (default 32).
+function LShape:ring(mode, x, y, outer, inner, segments) end
+
 --- Adds a rounded rectangle command to the shape.
 ---@param mode string "fill" or "line".
 ---@param x number Left edge X.
@@ -31232,6 +31759,16 @@ function LShape:rectangle(mode, x, y, w, h) end
 ---@param ry? number Vertical corner radius (defaults to rx).
 function LShape:roundedRectangle(mode, x, y, w, h, rx, ry) end
 
+--- Adds a filled sector or stroked arc.
+---@param mode string "fill" or "line".
+---@param x number Center X.
+---@param y number Center Y.
+---@param radius number Sector radius.
+---@param angle1 number Start angle in radians.
+---@param angle2 number End angle in radians.
+---@param segments? number Segment count (default 32).
+function LShape:sector(mode, x, y, radius, angle1, angle2, segments) end
+
 --- Sets the drawing color for subsequent shape commands.
 ---@param r number Red channel (0â€“1).
 ---@param g number Green channel (0â€“1).
@@ -31239,9 +31776,44 @@ function LShape:roundedRectangle(mode, x, y, w, h, rx, ry) end
 ---@param a? number Alpha channel (0â€“1, default 1).
 function LShape:setColor(r, g, b, a) end
 
+--- Selects a semantic palette role for subsequent commands.
+---@param role string Semantic palette role name.
+function LShape:setColorRole(role) end
+
 --- Sets the line width for subsequent line-mode shape commands.
 ---@param w number Line width in pixels.
 function LShape:setLineWidth(w) end
+
+--- Replaces one or more semantic palette roles with normalized RGBA colors.
+---@param palette table Keys are background/primary/secondary/accent/outline/highlight/shadow/emissive.
+function LShape:setPalette(palette) end
+
+--- Sets cap, join, miter and dash parameters for subsequent stroke commands.
+---@param opts table Stroke width, cap, join, miter and dash options.
+function LShape:setStrokeStyle(opts) end
+
+--- Adds a regular star with alternating outer/inner radii.
+---@param mode string "fill" or "line".
+---@param x number Center X.
+---@param y number Center Y.
+---@param outer number Outer radius.
+---@param inner number Inner radius.
+---@param points number Number of star points.
+---@param rotation? number Rotation in radians (default -pi/2).
+function LShape:star(mode, x, y, outer, inner, points, rotation) end
+
+--- Adds a data-viz marker symbol (circle, square, diamond, triangle, cross, plus, times, asterisk, wye).
+---@param name string Symbol name.
+---@param x number Center X.
+---@param y number Center Y.
+---@param size number Symbol size.
+---@param mode? string "fill" or "line" (default "fill").
+function LShape:symbol(name, x, y, size, mode) end
+
+--- Adds a variable-width trail as a strip between two point lists.
+---@param coords table Flat x,y coordinate list.
+---@param width_table table One non-negative width per point.
+function LShape:trail(coords, width_table) end
 
 --- Adds a triangle command to the shape.
 ---@param mode string "fill" or "line".
@@ -31331,9 +31903,11 @@ function LSpriteBatch:typeOf(name) end
 function LSpriteBatch:updateEntries(updates) end
 
 --- Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.
+---@return table Bounds table with six numeric coordinates.
 function LVoxelModel:getBounds() end
 
 --- Returns the number of occupied source voxels.
+---@return number Number of occupied voxels in the model.
 function LVoxelModel:getVoxelCount() end
 
 --- Applies a post-processing effect or stack from one canvas into another canvas.
@@ -31475,11 +32049,11 @@ lurek.render.drawMany = function(list) end
 ---@param h number Target height.
 lurek.render.drawNineSlice = function(slice, x, y, w, h) end
 
---- Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
----@param path table Array of segment tables, each with a "type" field and coordinates.
----@param mode? string "line" (default) or "fill".
----@param close? boolean Close the path back to start (default false).
-lurek.render.drawPath = function(path, mode, close) end
+--- Draws a vector path composed of moveTo, lineTo, quadTo, cubicTo, and close segments.
+---@param path table Array of segment tables, each with a "type" or "verb" field and coordinates.
+---@param modeOrOpts? string Legacy "line"/"fill" mode, or options with mode, close, fillRule, and stroke fields.
+---@param close? boolean Legacy close flag (default false); an explicit close verb also closes its subpath.
+lurek.render.drawPath = function(path, modeOrOpts, close) end
 
 --- Draws a quadratic Bezier curve through start, control, and end points.
 ---@param x1 number Start X.
@@ -31557,11 +32131,19 @@ lurek.render.getBudgetLimits = function() end
 ---@return string[] Array of bundled font names such as font_8 and fontb_8.
 lurek.render.getBuiltInFontNames = function() end
 
+--- Returns metadata for one native shape template.
+---@param id string Canonical built-in shape identifier.
+---@return table Shape metadata including category, anchor, tags, primitive vocabulary, and default role palette.
+lurek.render.getBuiltinShapeInfo = function(id) end
+
 --- Returns the active canvas, or nil when drawing to the screen.
+---@return LCanvas Active canvas handle, or nil for the screen.
 lurek.render.getCanvas = function() end
 
 --- Returns the pixel dimensions of a canvas.
----@param ud any
+---@param ud userdata Canvas handle to inspect.
+---@return number Pixel width and height. (value 1).
+---@return number Pixel width and height. (value 2).
 lurek.render.getCanvasSize = function(ud) end
 
 --- Returns stable, read-only capabilities and normalized active-device limits.
@@ -31672,7 +32254,7 @@ lurek.render.getLineWidth = function() end
 lurek.render.getPointSize = function() end
 
 --- Returns render-resource residency and pressure counters without mutating ownership.
----@return table Current retained bytes, counts, and effective resource budget.
+---@return table Current retained bytes, counts, compiled-shape residency, and effective resource budget.
 lurek.render.getResourceStats = function() end
 
 --- Returns the current scissor rectangle, or nothing if no scissor is set.
@@ -31727,6 +32309,17 @@ lurek.render.isWireframe = function() end
 --- Draws a line between two points, or a polyline through multiple points.
 ---@param ... number Coordinate values: x1, y1, x2, y2 for a line, or more for a polyline.
 lurek.render.line = function(...) end
+
+--- Lists the 96 native primitive-based shape templates.
+---@param filter? table|string Optional category or query filter.
+---@return table Metadata records sorted by canonical ID. Each row also contains tags, primitive vocabulary, and the default role palette.
+lurek.render.listBuiltinShapes = function(filter) end
+
+--- Creates and compiles one native shape template into the shape registry.
+---@param id string Canonical built-in shape identifier.
+---@param opts? table Optional palette overrides.
+---@return LShape The created built-in shape handle.
+lurek.render.loadBuiltinShape = function(id, opts) end
 
 --- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 ---@param path string File path to the model file relative to the game directory.
@@ -31969,7 +32562,7 @@ lurek.render.setBlendMode = function(mode) end
 lurek.render.setBold = function(bold) end
 
 --- Redirects subsequent drawing to a canvas, or nil for the screen.
----@param ud? any
+---@param ud? userdata Canvas handle, or nil to draw to the screen.
 lurek.render.setCanvas = function(ud) end
 
 --- Sets the active drawing color for all subsequent draw operations.
@@ -31980,8 +32573,8 @@ lurek.render.setCanvas = function(ud) end
 lurek.render.setColor = function(r, g, b, a) end
 
 --- Sets which color channels are written during draw calls. Call with no args to enable all.
----@param ... any
-lurek.render.setColorMask = function(...) end
+---@param args any Up to four booleans for red, green, blue, and alpha.
+lurek.render.setColorMask = function(args) end
 
 --- Activates a debugviz-target shader, or restores the normal draw shader with nil.
 ---@param shader? LShader Debug-target shader handle or nil.
@@ -32315,6 +32908,7 @@ function LSceneObjectContainer:clear() end
 function LSceneObjectContainer:defineGroup(name) end
 
 --- Call draw() on all objects that have a draw method, sorted by layer.
+---@return nil No return value; object draw callbacks are invoked in order.
 function LSceneObjectContainer:draw() end
 
 --- Get all objects whose layer equals `n`.
@@ -32323,6 +32917,7 @@ function LSceneObjectContainer:draw() end
 function LSceneObjectContainer:getByLayer(n) end
 
 --- Get the number of objects currently in the container.
+---@return number Number of objects currently in the container.
 function LSceneObjectContainer:getCount() end
 
 --- Return the bit index assigned to a group name.
@@ -33053,7 +33648,7 @@ function LAtlasPacker:getRegion(name) end
 ---@param w number Region width in pixels.
 ---@param h number Region height in pixels.
 ---@return boolean True when the region was packed.
----@return string? `duplicate`; `invalid`; `overflow`; or `full` when packing fails.
+---@return string `duplicate`; `invalid`; `overflow`; or `full` when packing fails.
 function LAtlasPacker:pack(name, w, h) end
 
 --- Returns the number of currently packed regions.
@@ -33177,6 +33772,7 @@ function LSpriteAnimator:pause() end
 --- Plays or restarts a named animation clip.
 ---@param name string Clip name.
 ---@param restart? boolean Whether to restart when already playing this clip. Defaults to true.
+---@return boolean True when the named clip exists and playback started.
 function LSpriteAnimator:play(name, restart) end
 
 --- Resume playback from current frame when a clip is selected.
@@ -33373,8 +33969,10 @@ lurek.sprite.newAtlasSheet = function(atlas, sw, sh) end
 ---@return LSpriteAutoTileSheet Autotile sheet descriptor.
 lurek.sprite.newAutoTileSheet = function(image, layout, opts) end
 
----@param texture any
----@param max? any
+--- Creates a sprite-owned batch that draws many instances of one render texture.
+---@param texture LImage Live render texture shared by every batch entry.
+---@param max? number Maximum entries, defaulting to 1000.
+---@return LSpriteBatch Batch handle with sprite entry semantics.
 lurek.sprite.newBatch = function(texture, max) end
 
 --- Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
@@ -34999,7 +35597,7 @@ function LTileFieldBatch:isPending() end
 ---@return table Base version, submitted count, affected count, and changed flag.
 function LTileFieldBatch:preview() end
 
---- Returns this userdata type name.
+--- Returns this userdata type name for Lua-side tile field batch inspection.
 ---@return string Always `"LTileFieldBatch"`.
 function LTileFieldBatch:type() end
 
@@ -35973,8 +36571,8 @@ lurek.tilemap.getAutoTileFormats = function() end
 
 --- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 ---@param xml string Raw TMX XML content.
----@param opts? any Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits.
----@return LTilemapLoadTMXResult Parsed map with `width`; `height`; `tileWidth`; `tileHeight`; `orientation`; and `layers`; or nil on parse failure.
+---@param opts? any Optional import policy table (`strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`) plus byte/size limits, including `maxObjects`, `maxPointsPerObject`, and `maxTotalObjectPoints` for object-layer geometry.
+---@return LTilemapLoadTMXResult Parsed map with `width`; `height`; `tileWidth`; `tileHeight`; `orientation`; and `layers`; or nil on parse failure. Object layers also expose `offsetX`; `offsetY`; and `objects`; each object retains `id`; position; rotation; `shape`; polygon points; and typed custom `properties`.
 ---@return LTilemapLoadTMXResult Structured import error table on parse failure; or nil on success.
 lurek.tilemap.loadTMX = function(xml, opts) end
 
@@ -38294,15 +38892,15 @@ function LUiContext:dispatchWheel(x, y) end
 ---@return boolean Whether focus moved.
 function LUiContext:focusDirection(direction) end
 
---- Moves focus forward.
+--- Moves focus forward to the next focusable widget in this UI context.
 function LUiContext:focusNext() end
 
---- Moves focus backward.
+--- Moves focus backward to the previous focusable widget in this UI context.
 function LUiContext:focusPrev() end
 
 --- Finds a widget by id inside this context.
 ---@param id string Widget id.
----@return LUiWidget? Matching widget or nil.
+---@return LUiWidget Matching widget or nil.
 function LUiContext:getById(id) end
 
 --- Returns isolated runtime counters and UX diagnostics.
@@ -38310,7 +38908,7 @@ function LUiContext:getById(id) end
 function LUiContext:getDiagnostics() end
 
 --- Returns the focused widget handle.
----@return LUiWidget? Focused widget or nil.
+---@return LUiWidget Focused widget or nil.
 function LUiContext:getFocus() end
 
 --- Returns this context's screen rectangle.
@@ -38341,11 +38939,11 @@ function LUiContext:setFocus(widget) end
 ---@param viewport table `{x, y, w, h}`.
 function LUiContext:setViewport(viewport) end
 
---- Returns `LUiContext`.
+--- Returns the runtime type name for this explicit UI context handle.
 ---@return string Handle type.
 function LUiContext:type() end
 
---- Checks this handle type.
+--- Checks whether this handle matches a supported UI context type.
 ---@param name string Type name.
 ---@return boolean Whether it matches.
 function LUiContext:typeOf(name) end
@@ -38452,7 +39050,7 @@ function LUiWidget:getIconSize() end
 function LUiWidget:getId() end
 
 --- Returns the live widget handle associated through `setLabelFor`, or nil.
----@return LUiWidget? The linked widget handle, or nil when unset or released.
+---@return LUiWidget The linked widget handle, or nil when unset or released.
 function LUiWidget:getLabelFor() end
 
 --- Returns the outer margin of this widget.
@@ -38856,7 +39454,7 @@ lurek.ui.drawToImage = function(w, h) end
 lurek.ui.dropOn = function(target) end
 
 --- Ends the current drag operation without dropping.
----@return LUiWidget? The widget handle that was being dragged, or nil if no drag was active.
+---@return LUiWidget The widget handle that was being dragged, or nil if no drag was active.
 lurek.ui.endDrag = function() end
 
 --- Flushes internal UI layout and render caches.
@@ -38885,7 +39483,7 @@ lurek.ui.focusPrev = function() end
 lurek.ui.getAccessibilityTree = function() end
 
 --- Returns the live widget currently being dragged, or nil.
----@return LUiWidget? The dragged widget handle, or nil when no drag is active.
+---@return LUiWidget The dragged widget handle, or nil when no drag is active.
 lurek.ui.getActiveDrag = function() end
 
 --- Returns the index of the currently focused widget, or nil.

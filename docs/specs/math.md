@@ -732,7 +732,7 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 
 - `LWrapSpace:delta(ax, ay, bx, by) -> number`: Returns the shortest signed toroidal displacement from point A to point B.
 - `LWrapSpace:distance(ax, ay, bx, by) -> number`: Returns the shortest toroidal distance between two points.
-- `LWrapSpace:type() -> string`: Returns this helper's type name.
+- `LWrapSpace:type() -> string`: Returns this helper's runtime type name for Lua introspection.
 - `LWrapSpace:typeOf(name) -> boolean`: Checks this helper against its public type names.
 - `LWrapSpace:wrap(x, y) -> number`: Wraps a point into this half-open toroidal domain.
 

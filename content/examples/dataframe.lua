@@ -1563,24 +1563,23 @@ end
 --@api: LDataFrame:lazy.2
 do
 
-  local df = lurek.dataframe.newDataFrame()
-  df:addColumn("damage", 0)
-  df:addColumn("class", "")
-  df:addRow({damage = 12, class = "warrior"})
-  df:addRow({damage = 8, class = "mage"})
-  df:addRow({damage = 20, class = "warrior"})
-  df:addRow({damage = 5, class = "mage"})
+local df = lurek.dataframe.newDataFrame()
+df:addColumn("damage", 0)
+df:addColumn("class", "")
+df:addRow({damage = 12, class = "warrior"})
+df:addRow({damage = 8, class = "mage"})
+df:addRow({damage = 20, class = "warrior"})
+df:addRow({damage = 5, class = "mage"})
 
-  local grouped = df:groupByObj("class")
-  local result = grouped:aggregate("damage", function(vals)
-    local sum = 0
-    for _, value in ipairs(vals) do
-      sum = sum + value
-    end
-    return sum / #vals
-  end)
-  lurek.log.info(tostring("grouped aggregate"))
-  lurek.log.info(tostring(result:toString()))
+local grouped = df:groupByObj("class")
+local result = grouped:aggregate("damage", function(vals)
+local sum = 0
+for _, value in ipairs(vals) do
+sum = sum + value
+end
+return sum / #vals
+end)
+lurek.log.info(tostring("grouped aggregate"))
 end
 --@api: LDataFrame:groupByObj
 do
@@ -2746,48 +2745,40 @@ end
 --@api: LfromTable:lazy.2
 do
 
-  -- LazyQuery chains multiple operations before executing them all at once.
-  -- This can be more efficient than applying each operation individually.
-  local df = lurek.dataframe.fromTable({
-    {name = "alice", hp = 12, mana = 5, team = "red"},
-    {name = "bob", hp = 7, mana = nil, team = "blue"},
-    {name = "cara", hp = 20, mana = 9, team = "red"},
-    {name = "dave", hp = 15, mana = 3, team = "blue"},
-  })
+-- LazyQuery chains multiple operations before executing them all at once.
+-- This can be more efficient than applying each operation individually.
+local df = lurek.dataframe.fromTable({
+{name = "alice", hp = 12, mana = 5, team = "red"},
+{name = "bob", hp = 7, mana = nil, team = "blue"},
+{name = "cara", hp = 20, mana = 9, team = "red"},
+{name = "dave", hp = 15, mana = 3, team = "blue"},
+})
 
-  -- Verify type
-  local q = df:lazy()
-  local is_lazy = q:typeOf("LLazyQuery")
-  lurek.log.info("is lazy query: " .. tostring(is_lazy))
+-- Verify type
+local q = df:lazy()
+local is_lazy = q:typeOf("LLazyQuery")
+lurek.log.info("is lazy query: " .. tostring(is_lazy))
 
-  -- Chain: filter hp > 10, then collect results
-  local filtered = df:lazy():filter("hp", ">", 10):collect()
+-- Chain: filter hp > 10, then collect results
+local filtered = df:lazy():filter("hp", ">", 10):collect()
 
-  -- Chain: sort by hp descending, take top 2
-  local sorted = df:lazy():sort("hp", false):head(2):collect()
+-- Chain: sort by hp descending, take top 2
+local sorted = df:lazy():sort("hp", false):head(2):collect()
 
-  -- Chain: get last 2 rows
-  local tailed = df:lazy():tail(2):collect()
+-- Chain: get last 2 rows
+local tailed = df:lazy():tail(2):collect()
 
-  -- Chain: limit to 3 rows maximum
-  local limited = df:lazy():limit(3):collect()
+-- Chain: limit to 3 rows maximum
+local limited = df:lazy():limit(3):collect()
 
-  -- Chain: slice rows 2 through 4 (inclusive)
-  local sliced = df:lazy():slice(2, 4):collect()
+-- Chain: slice rows 2 through 4 (inclusive)
+local sliced = df:lazy():slice(2, 4):collect()
 
-  -- Chain: drop rows where mana is nil
-  local non_nil = df:lazy():dropNil("mana"):collect()
+-- Chain: drop rows where mana is nil
+local non_nil = df:lazy():dropNil("mana"):collect()
 
-  -- Chain: keep only name and hp columns
-  local selected = df:lazy():select({"name", "hp"}):collect()
-
-  lurek.log.info("filtered: " .. filtered:nrows() .. " rows")
-  lurek.log.info("top 2 by hp: " .. sorted:nrows() .. " rows")
-  lurek.log.info("tailed: " .. tailed:nrows() .. " rows")
-  lurek.log.info("limited: " .. limited:nrows() .. " rows")
-  lurek.log.info("sliced: " .. sliced:nrows() .. " rows")
-  lurek.log.info("non-nil mana: " .. non_nil:nrows() .. " rows")
-  lurek.log.info("selected cols: " .. selected:ncols() .. " cols")
+-- Chain: keep only name and hp columns
+local selected = df:lazy():select({"name", "hp"}):collect()
 end
 --@api: LDataFrame:nrows
 do

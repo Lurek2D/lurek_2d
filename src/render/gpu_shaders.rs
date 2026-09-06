@@ -36,8 +36,12 @@ pub struct GpuShader {
     pub uniform_bind_group: Option<wgpu::BindGroup>,
     /// Compiled shader module for the flat-color vertex path.
     pub color_module: wgpu::ShaderModule,
+    /// Compiled shader module for the flat-color instanced vertex path.
+    pub color_instanced_module: wgpu::ShaderModule,
     /// Compiled shader module for the textured vertex path.
     pub texture_module: wgpu::ShaderModule,
+    /// Compiled shader module for the textured instanced vertex path.
+    pub texture_instanced_module: wgpu::ShaderModule,
     /// Compiled shader module for the particle vertex path.
     pub particle_module: wgpu::ShaderModule,
     /// Compiled shader module for the textured particle vertex path.
@@ -56,8 +60,12 @@ pub struct GpuShader {
     pub light_layout: Option<wgpu::PipelineLayout>,
     /// Cached color render pipelines keyed by blend/stencil state.
     pub color_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    /// Cached instanced color render pipelines keyed by blend/stencil state.
+    pub color_instanced_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
     /// Cached texture render pipelines keyed by blend/stencil state.
     pub texture_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
+    /// Cached instanced texture render pipelines keyed by blend/stencil state.
+    pub texture_instanced_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
     /// Cached particle render pipelines keyed by blend/stencil state.
     pub particle_pipelines: HashMap<PipelineKey, wgpu::RenderPipeline>,
     /// Cached textured particle render pipelines keyed by blend/stencil state.

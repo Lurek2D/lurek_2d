@@ -113,6 +113,14 @@ local EXTERNAL_TSX_TMX = [[<?xml version="1.0" encoding="UTF-8"?>
  </layer>
 </map>]]
 
+local OBJECT_TMX = [[<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" orientation="orthogonal" width="4" height="4" tilewidth="16" tileheight="16">
+ <objectgroup name="objects" offsetx="3" offsety="4">
+  <object id="7" x="10" y="11" rotation="0"><properties><property name="province_id" type="int" value="12"/></properties><polygon points="0,0 16,0 16,16 0,16"/></object>
+  <object id="8" x="20" y="21"><point/></object>
+ </objectgroup>
+</map>]]
+
 -- @describe lurek.tilemap module
 describe("lurek.tilemap module", function()
     -- @covers lurek.tilemap.newTileSet
@@ -186,6 +194,14 @@ describe("lurek.tilemap module", function()
         local result, err = lurek.tilemap.loadTMX(MINIMAL_TMX)
         expect_not_nil(result)
         expect_nil(err)
+
+        local objects, object_err = lurek.tilemap.loadTMX(OBJECT_TMX)
+        expect_nil(object_err)
+        expect_equal("object", objects.layers[1].type)
+        expect_equal(3, objects.layers[1].offsetX)
+        expect_equal("polygon", objects.layers[1].objects[1].shape)
+        expect_equal(12, objects.layers[1].objects[1].properties.province_id)
+        expect_equal("point", objects.layers[1].objects[2].shape)
 
         local result, err = lurek.tilemap.loadTMX(SHORT_LAYER_TMX, { strictLayerSize = true })
         expect_nil(result)

@@ -11,13 +11,14 @@
 use crate::render::gpu_state::{DepthStencilTarget, GpuTexture};
 use crate::render::shader::Shader;
 use crate::runtime::resource_keys::{
-    CanvasKey, FontKey, MeshKey, ShaderKey, StaticGeometryKey, TextureKey,
+    CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, StaticGeometryKey, TextureKey,
 };
 
 use crate::render::gpu_tess::parse_filter_mode;
 use crate::render::gpu_types::{ColorVertex, ParticleVertex, TexVertex};
 use crate::render::renderer::TextureData;
-use slotmap::{Key, SlotMap};
+use slotmap::{Key, KeyData, SlotMap};
+use std::hash::{Hash, Hasher};
 
 use super::GpuRenderer;
 
@@ -30,6 +31,37 @@ const MAX_LIVE_STATIC_MESHES: usize = 4_096;
 const MAX_LIVE_STATIC_MESH_BYTES: u64 = 512 * 1024 * 1024;
 const MAX_LIVE_FONT_ATLASES: usize = 256;
 const MAX_LIVE_FONT_ATLAS_BYTES: u64 = 256 * 1024 * 1024;
+/// High-bit namespace separating retained-shape static keys from mesh slot keys.
+const SHAPE_STATIC_KEY_NAMESPACE: u64 = 1u64 << 63;
+
+/// Derive a process-stable static key from compiled geometry contents.
+///
+/// The previous implementation encoded the slotmap handle directly, which
+/// forced two identical built-in shapes to allocate duplicate GPU buffers.  A
+/// content key lets every handle share the same VBO/IBO while the per-handle
+/// revision map still tracks invalidation and stale releases.
+pub(crate) fn shape_geometry_static_key(
+    compiled: &crate::render::shape::CompiledShape,
+) -> StaticGeometryKey {
+    let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    compiled.tolerance.to_bits().hash(&mut hasher);
+    compiled.vertices.len().hash(&mut hasher);
+    for vertex in &compiled.vertices {
+        vertex.position[0].to_bits().hash(&mut hasher);
+        vertex.position[1].to_bits().hash(&mut hasher);
+        for channel in vertex.color {
+            channel.to_bits().hash(&mut hasher);
+        }
+    }
+    compiled.indices.len().hash(&mut hasher);
+    compiled.indices.hash(&mut hasher);
+    let hash = hasher.finish() | SHAPE_STATIC_KEY_NAMESPACE;
+    StaticGeometryKey::from(KeyData::from_ffi(hash))
+}
+
+fn is_shape_static_geometry_key(key: StaticGeometryKey) -> bool {
+    key.data().as_ffi() & SHAPE_STATIC_KEY_NAMESPACE != 0
+}
 
 /// Validate an RGBA8 texture upload before touching the GPU backend.
 pub fn validate_rgba_texture_upload(
@@ -130,6 +162,43 @@ pub fn is_builtin_static_geometry_key(key: StaticGeometryKey) -> bool {
 }
 
 impl GpuRenderer {
+    /// Ensure the multisampled screen color attachment matches the swapchain dimensions.
+    pub(crate) fn ensure_screen_msaa_target(&mut self) {
+        if self.sample_count <= 1 {
+            self.screen_msaa_target = None;
+            return;
+        }
+        let needs_recreate = self
+            .screen_msaa_target
+            .as_ref()
+            .map(|target| target.width != self.width || target.height != self.height)
+            .unwrap_or(true);
+        if !needs_recreate {
+            return;
+        }
+        let texture = self.device.create_texture(&wgpu::TextureDescriptor {
+            label: Some("screen_msaa_color_target"),
+            size: wgpu::Extent3d {
+                width: self.width,
+                height: self.height,
+                depth_or_array_layers: 1,
+            },
+            mip_level_count: 1,
+            sample_count: self.sample_count,
+            dimension: wgpu::TextureDimension::D2,
+            format: self.surface_format,
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            view_formats: &[],
+        });
+        let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+        self.screen_msaa_target = Some(crate::render::gpu_state::MsaaColorTarget {
+            _texture: texture,
+            view,
+            width: self.width,
+            height: self.height,
+        });
+    }
+
     /// Validate a canvas replacement before allocating its color attachment.  The old
     /// allocation remains counted until the new attachment is fully constructed.
     fn validate_canvas_resource_budget(
@@ -582,6 +651,8 @@ impl GpuRenderer {
             width,
             height,
             source_revision,
+            _render_texture: None,
+            render_view: None,
         })
     }
 
@@ -655,7 +726,9 @@ impl GpuRenderer {
         default_filter: &(String, String, u32),
     ) -> Result<(), String> {
         validate_canvas_size(width, height, &self.device.limits())?;
-        self.validate_canvas_resource_budget(None, width, height)?;
+        // Treat a resize/recreation as a replacement so the old attachment does
+        // not consume a second slot while the new MSAA/resolve pair is built.
+        self.validate_canvas_resource_budget(Some(key), width, height)?;
         let texture = self.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("canvas_texture"),
             size: wgpu::Extent3d {
@@ -671,6 +744,26 @@ impl GpuRenderer {
             view_formats: &[],
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let (render_texture, render_view) = if self.sample_count > 1 {
+            let render_texture = self.device.create_texture(&wgpu::TextureDescriptor {
+                label: Some("canvas_msaa_texture"),
+                size: wgpu::Extent3d {
+                    width,
+                    height,
+                    depth_or_array_layers: 1,
+                },
+                mip_level_count: 1,
+                sample_count: self.sample_count,
+                dimension: wgpu::TextureDimension::D2,
+                format: self.surface_format,
+                usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+                view_formats: &[],
+            });
+            let render_view = render_texture.create_view(&wgpu::TextureViewDescriptor::default());
+            (Some(render_texture), Some(render_view))
+        } else {
+            (None, None)
+        };
         let sampler = self.create_sampler(default_filter);
         let bind_group = self.create_texture_bind_group(&view, &sampler, "canvas_bg");
         self.canvas_stencil_targets.remove(key);
@@ -683,6 +776,8 @@ impl GpuRenderer {
                 width,
                 height,
                 source_revision: 0,
+                _render_texture: render_texture,
+                render_view,
             },
         );
         self.canvas_needs_clear.insert(key, true);
@@ -704,7 +799,7 @@ impl GpuRenderer {
                 depth_or_array_layers: 1,
             },
             mip_level_count: 1,
-            sample_count: 1,
+            sample_count: self.sample_count,
             dimension: wgpu::TextureDimension::D2,
             format: wgpu::TextureFormat::Depth24PlusStencil8,
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
@@ -758,6 +853,7 @@ impl GpuRenderer {
         canvases: &SlotMap<CanvasKey, crate::render::Canvas>,
         shaders: &SlotMap<ShaderKey, Shader>,
         meshes: &SlotMap<MeshKey, crate::render::Mesh>,
+        shapes: &SlotMap<ShapeKey, crate::render::CompoundShape>,
     ) {
         let stale_textures: Vec<TextureKey> = self
             .gpu_textures
@@ -806,12 +902,35 @@ impl GpuRenderer {
         for key in stale_negative_shaders {
             self.shader_negative_cache.remove(key);
         }
+        // Shape handles are generational and may be released while their
+        // content-keyed GPU entry is still shared by another handle.  Drop the
+        // handle mappings first, then remove only unreferenced static buffers.
+        let stale_shape_handles: Vec<ShapeKey> = self
+            .mesh_cache
+            .shape_geometry_keys
+            .keys()
+            .copied()
+            .filter(|key| !shapes.contains_key(*key))
+            .collect();
+        for key in stale_shape_handles {
+            self.mesh_cache.shape_geometry_keys.remove(&key);
+            self.mesh_cache.shape_revisions.remove(&key);
+        }
+        let referenced_shape_geometry: std::collections::HashSet<StaticGeometryKey> = self
+            .mesh_cache
+            .shape_geometry_keys
+            .values()
+            .copied()
+            .collect();
         let stale_meshes: Vec<StaticGeometryKey> = self
             .mesh_cache
             .static_geometry
             .keys()
             .cloned()
             .filter(|key| {
+                if is_shape_static_geometry_key(*key) {
+                    return referenced_shape_geometry.contains(key);
+                }
                 if is_builtin_static_geometry_key(*key) {
                     return false;
                 }
@@ -1014,6 +1133,181 @@ impl GpuRenderer {
         };
 
         self.mesh_cache.static_geometry.insert(static_key, entry);
+        Ok(())
+    }
+
+    /// Upload one compiled retained shape into the shared static geometry cache.
+    ///
+    /// Shape keys use a separate high-bit namespace so mesh and shape handles can
+    /// coexist in the existing `PreparedDraw::static_geometry` slot without changing
+    /// the render-pass encoder.  Re-upload is skipped when the CPU revision is already
+    /// resident, which is the core retained-geometry performance guarantee.
+    pub(crate) fn sync_shape_geometry(
+        &mut self,
+        shape_key: ShapeKey,
+        compiled: &crate::render::shape::CompiledShape,
+    ) -> Result<(), String> {
+        let old_static_key = self.mesh_cache.shape_geometry_keys.get(&shape_key).copied();
+        if compiled.indices.is_empty() {
+            // Empty retained shapes are valid authoring assets, but wgpu does not
+            // accept zero-byte vertex/index buffers. Leave them uncached so draw
+            // simply becomes a no-op until geometry is added.
+            self.mesh_cache.shape_geometry_keys.remove(&shape_key);
+            self.mesh_cache.shape_revisions.remove(&shape_key);
+            if let Some(old_key) = old_static_key {
+                let still_referenced = self
+                    .mesh_cache
+                    .shape_geometry_keys
+                    .values()
+                    .any(|key| *key == old_key);
+                if !still_referenced {
+                    self.mesh_cache.static_geometry.remove(&old_key);
+                }
+            }
+            return Ok(());
+        }
+        let static_key = shape_geometry_static_key(compiled);
+        if self.mesh_cache.shape_revisions.get(&shape_key).copied() == Some(compiled.revision)
+            && self.mesh_cache.shape_geometry_keys.get(&shape_key) == Some(&static_key)
+            && self.mesh_cache.static_geometry.contains_key(&static_key)
+        {
+            return Ok(());
+        }
+        if compiled.vertices.len() > crate::render::shape::MAX_SHAPE_VERTICES {
+            return Err(format!(
+                "shape vertices exceed maximum of {}",
+                crate::render::shape::MAX_SHAPE_VERTICES
+            ));
+        }
+        if compiled.indices.len() > crate::render::shape::MAX_SHAPE_INDICES
+            || !compiled.indices.len().is_multiple_of(3)
+        {
+            return Err(format!(
+                "shape indices must be a triangle list below {}",
+                crate::render::shape::MAX_SHAPE_INDICES
+            ));
+        }
+        for (index, vertex) in compiled.vertices.iter().enumerate() {
+            if vertex
+                .position
+                .iter()
+                .chain(vertex.color.iter())
+                .any(|value| !value.is_finite())
+            {
+                return Err(format!("shape vertex {index} contains a non-finite value"));
+            }
+        }
+        for (index, &value) in compiled.indices.iter().enumerate() {
+            if value as usize >= compiled.vertices.len() {
+                return Err(format!(
+                    "shape index {index} references vertex {value}, but the mesh has {} vertices",
+                    compiled.vertices.len()
+                ));
+            }
+        }
+        // A compiled mesh can be shared by several handles (for example, by
+        // built-in shapes with the same palette and tolerance).  Publish only
+        // the handle-to-content mapping in that case; creating temporary GPU
+        // buffers on every handle would defeat the retained upload guarantee.
+        if self.mesh_cache.static_geometry.contains_key(&static_key) {
+            if let Some(old_key) = old_static_key.filter(|old_key| *old_key != static_key) {
+                let still_referenced = self
+                    .mesh_cache
+                    .shape_geometry_keys
+                    .iter()
+                    .any(|(key, geometry_key)| *key != shape_key && *geometry_key == old_key);
+                if !still_referenced {
+                    self.mesh_cache.static_geometry.remove(&old_key);
+                }
+            }
+            self.mesh_cache
+                .shape_geometry_keys
+                .insert(shape_key, static_key);
+            self.mesh_cache
+                .shape_revisions
+                .insert(shape_key, compiled.revision);
+            return Ok(());
+        }
+        let vertex_bytes = compiled
+            .vertices
+            .len()
+            .checked_mul(std::mem::size_of::<ColorVertex>())
+            .ok_or_else(|| "shape vertex byte size overflow".to_string())?;
+        let index_bytes = compiled
+            .indices
+            .len()
+            .checked_mul(std::mem::size_of::<u32>())
+            .ok_or_else(|| "shape index byte size overflow".to_string())?;
+        validate_dynamic_buffer_bytes(
+            &[
+                (compiled.vertices.len(), std::mem::size_of::<ColorVertex>()),
+                (compiled.indices.len(), std::mem::size_of::<u32>()),
+            ],
+            &self.device.limits(),
+        )
+        .map_err(|error| error.to_string())?;
+        let byte_size = u64::try_from(vertex_bytes)
+            .ok()
+            .and_then(|vertices| {
+                u64::try_from(index_bytes)
+                    .ok()
+                    .map(|indices| vertices + indices)
+            })
+            .ok_or_else(|| "shape GPU byte size overflow".to_string())?;
+        if !self.mesh_cache.static_geometry.contains_key(&static_key)
+            && self.mesh_cache.static_geometry.len() >= MAX_LIVE_STATIC_MESHES
+        {
+            return Err(format!(
+                "live GPU geometry count exceeds maximum of {MAX_LIVE_STATIC_MESHES}"
+            ));
+        }
+        self.validate_static_mesh_resource_budget(static_key, byte_size)
+            .map_err(|error| error.to_string())?;
+        use wgpu::util::DeviceExt;
+        let vertex_buffer = self
+            .device
+            .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("compiled_shape_vbo"),
+                contents: bytemuck::cast_slice(&compiled.vertices),
+                usage: wgpu::BufferUsages::VERTEX,
+            });
+        let index_buffer = self
+            .device
+            .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("compiled_shape_ibo"),
+                contents: bytemuck::cast_slice(&compiled.indices),
+                usage: wgpu::BufferUsages::INDEX,
+            });
+        let index_count = u32::try_from(compiled.indices.len())
+            .map_err(|_| "shape index count exceeds u32".to_string())?;
+        if let std::collections::hash_map::Entry::Vacant(entry) =
+            self.mesh_cache.static_geometry.entry(static_key)
+        {
+            entry.insert(crate::render::gpu_state::StaticGeometryCacheEntry {
+                vertex_buffer,
+                index_buffer,
+                index_count,
+                geometry_kind: crate::render::gpu_pipeline::GeometryKind::ColorInstanced,
+                texture: None,
+                byte_size,
+            });
+        }
+        if let Some(old_key) = old_static_key.filter(|old_key| *old_key != static_key) {
+            let still_referenced = self
+                .mesh_cache
+                .shape_geometry_keys
+                .iter()
+                .any(|(key, geometry_key)| *key != shape_key && *geometry_key == old_key);
+            if !still_referenced {
+                self.mesh_cache.static_geometry.remove(&old_key);
+            }
+        }
+        self.mesh_cache
+            .shape_geometry_keys
+            .insert(shape_key, static_key);
+        self.mesh_cache
+            .shape_revisions
+            .insert(shape_key, compiled.revision);
         Ok(())
     }
 }

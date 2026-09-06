@@ -17,6 +17,11 @@ Structural lint checks (E-codes) run automatically after the summary:
     E7 -- top-level ``do`` block has no immediately preceding ``--@api:`` / ``--@api-stub:``
     E8 -- top-level Lua code appears outside a marker-owned ``do ... end`` block
     E9 -- file is bloated relative to its API marker count
+    E10 -- example block exceeds 16 non-comment code lines
+
+Files ending in ``.demo.lua`` are runnable focused demos. They are excluded
+from this marker catalog and structural lint; use them for short feature
+walkthroughs while keeping one-module API coverage in the canonical files.
 
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
@@ -243,14 +248,21 @@ def _is_body_code_line(stripped: str) -> bool:
     return bool(stripped) and not stripped.startswith('--')
 
 
+def _is_focused_demo(path: Path) -> bool:
+    """Focused demos are runnable examples, not API-owner catalog files."""
+    return path.name.endswith('.demo.lua')
+
+
 def load_texts(d: Path) -> dict[str, dict]:
-    """Load all .lua files.
+    """Load canonical API example files; focused demos are skipped.
 
     Returns dict: filename -> { 'blocks': dict, 'lines': int, 'comments': int }
     """
     out: dict[str, dict] = {}
     global_markers: dict[str, tuple[str, int]] = {}
     for p in d.glob('*.lua'):
+        if _is_focused_demo(p):
+            continue
         raw = p.read_text(encoding='utf-8', errors='replace')
         file_lines = raw.splitlines()
         comments = 0
@@ -572,6 +584,7 @@ MARKER_VALID_RE = re.compile(
     r'(?:\.\d+)?$'                    # optional .N dedup suffix
 )
 LINT_MIN_BODY_LINES = 5  # code lines inside a do block; comments and blanks do not count
+LINT_MAX_BODY_LINES = 16
 LINT_MAX_AVG_LINES_PER_MARKER = 60
 
 EXTRA_LINT_ISSUES: list[tuple[str, int, str, str]] = []
@@ -642,10 +655,13 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
       E7  top-level ``do`` block has no immediately preceding example marker
       E8  top-level Lua code outside a marker-owned ``do ... end`` block
       E9  file has too many lines per API marker, usually from duplicated helper scaffolding
+      E10 marker-owned block has more than LINT_MAX_BODY_LINES code lines
     """
     issues: list = []
 
     for p in sorted(examples_dir.glob('*.lua')):
+        if _is_focused_demo(p):
+            continue
         if filt and filt.lower() not in p.stem.lower():
             continue
 
@@ -729,6 +745,10 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                 issues.append((p.name, stub_lineno, 'E4',
                     f"stub '{marker}': block has {len(code_lines)} non-comment code line(s) "
                     f"(need >= {LINT_MIN_BODY_LINES})"))
+            elif len(code_lines) > LINT_MAX_BODY_LINES:
+                issues.append((p.name, stub_lineno, 'E10',
+                    f"stub '{marker}': block has {len(code_lines)} non-comment code line(s) "
+                    f"(max {LINT_MAX_BODY_LINES}); move workflows to a focused .demo.lua file"))
 
             i = end_idx + 1
 

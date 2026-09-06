@@ -422,6 +422,7 @@ describe("lurek.network constructors and helpers", function()
     expect_true(lurek.network.newSnapshotStore():typeOf("LNetworkSnapshotStore"))
   end)
 
+  -- @covers-case lurek.network.newNetState
   it("applies explicit state payloads and dispatches callbacks when polled", function()
     local authority = lurek.network.newNetState(nil, { authority = true })
     authority:set("score", 7)
@@ -439,6 +440,7 @@ describe("lurek.network constructors and helpers", function()
     expect_equal(authority:hashState(), replica:hashState())
   end)
 
+  -- @covers-case lurek.network.newNetState
   it("exposes full-state requests as explicit Lua-routable payloads", function()
     local state = lurek.network.newNetState(nil, { authority = false })
     expect_equal(nil, state:takeRequest())
@@ -447,6 +449,7 @@ describe("lurek.network constructors and helpers", function()
     expect_equal(nil, state:takeRequest())
   end)
 
+  -- @covers-case lurek.network.newNetState
   it("advances authority turn state and notifies on poll", function()
     local state = lurek.network.newNetState(nil, { authority = true, turnBased = true })
     local observed_turn = nil

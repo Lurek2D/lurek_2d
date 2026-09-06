@@ -27,6 +27,8 @@ pub mod limits;
 pub mod orientation;
 /// Render helpers converting tilemap data to `RenderCommand` sequences.
 pub mod render;
+/// Format-neutral bounded Tiled object-map import used by geometry-owning modules.
+pub mod tiled;
 /// Core `TileMap` and `TileLayer` types.
 #[allow(clippy::module_inception)]
 pub mod tilemap;
@@ -53,6 +55,11 @@ pub use ldtk::{load_ldtk, load_ldtk_with_limits};
 pub use limits::TileMapLimits;
 /// Re-export tilemap orientation used by storage and render adapters.
 pub use orientation::MapOrientation;
+/// Re-export normalized Tiled object-map import types.
+pub use tiled::{
+    load_tiled, load_tiled_json, load_tiled_tmx, TiledImportError, TiledMap, TiledObject,
+    TiledObjectLayer, TiledObjectShape, TiledPoint, TiledPropertyValue,
+};
 /// Re-export core tilemap types.
 pub use tilemap::{TileIndexPolicy, TileLayer, TileMap, TileMapDiagnosticsSnapshot};
 /// Re-export TMX import types and loader function.

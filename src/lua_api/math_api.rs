@@ -80,7 +80,7 @@ impl LuaUserData for LuaWrapSpace {
                 Ok((dx * dx + dy * dy).sqrt())
             },
         );
-        /// Returns this helper's type name.
+        /// Returns this helper's runtime type name for Lua introspection.
         /// @return | string | The string `LWrapSpace`.
         methods.add_method("type", |_lua, _this, ()| Ok("LWrapSpace"));
         /// Checks this helper against its public type names.

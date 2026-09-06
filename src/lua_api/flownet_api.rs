@@ -428,7 +428,7 @@ impl LuaUserData for LuaGraphTopologyBatch {
             Ok(this.prepared.borrow().is_some())
         });
         // -- type --
-        /// Returns this userdata type name.
+        /// Returns this userdata type name for Lua-side graph topology inspection.
         /// @return | string | Always `"LGraphTopologyBatch"`.
         methods.add_method("type", |_, _, ()| Ok("LGraphTopologyBatch"));
         // -- typeOf --
@@ -1576,7 +1576,7 @@ impl LuaUserData for LuaGraph {
         // -- getNodeById --
         /// Resolves a stable numeric node id to a graph-local handle.
         /// @param | id | integer | Numeric node id from a batch mapping, event, or snapshot.
-        /// @return | LGraphNode? | Node handle, or nil when the id is absent.
+        /// @return | LGraphNode | Node handle, or nil when the id is absent.
         methods.add_method("getNodeById", |lua, this, id: u64| {
             if this.inner.borrow().has_node(id) {
                 Ok(LuaValue::UserData(lua.create_userdata(LuaNode {
@@ -1676,7 +1676,7 @@ impl LuaUserData for LuaGraph {
         // -- getEdgeById --
         /// Resolves a stable numeric edge id to a graph-local handle.
         /// @param | id | integer | Numeric edge id from a batch preview, event, or snapshot.
-        /// @return | LGraphEdge? | Edge handle, or nil when the id is absent.
+        /// @return | LGraphEdge | Edge handle, or nil when the id is absent.
         methods.add_method("getEdgeById", |lua, this, id: u64| {
             if this.inner.borrow().has_edge(id) {
                 Ok(LuaValue::UserData(lua.create_userdata(LuaEdge {
@@ -1812,7 +1812,7 @@ impl LuaUserData for LuaGraph {
         // -- getItemById --
         /// Resolves a stable numeric item id to a graph-local handle.
         /// @param | id | integer | Numeric item id from an event, recipe result, or snapshot.
-        /// @return | LGraphItem? | Item handle, or nil when the id is absent.
+        /// @return | LGraphItem | Item handle, or nil when the id is absent.
         methods.add_method("getItemById", |lua, this, id: u64| {
             if this.inner.borrow().has_item(id) {
                 Ok(LuaValue::UserData(lua.create_userdata(LuaGraphItem {
@@ -2295,7 +2295,7 @@ impl LuaUserData for LuaGraph {
             Ok(out)
         });
         // -- clearEvents --
-        /// Discards all queued pull events.
+        /// Discards all queued pull events and returns the removed record count.
         /// @return | integer | Number of queued records removed.
         methods.add_method("clearEvents", |_, this, ()| {
             let mut state = this.event_state.borrow_mut();

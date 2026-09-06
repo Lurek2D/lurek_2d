@@ -28,6 +28,7 @@ use std::collections::HashMap;
 
 mod floors;
 mod pipeline;
+mod sky;
 mod sprites;
 mod walls;
 

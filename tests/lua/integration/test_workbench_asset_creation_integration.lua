@@ -41,6 +41,7 @@ describe("workbench asset creation integration", function()
     -- @integration lurek.animation.fromFrames
     -- @integration lurek.tileset.newTileSet
     -- @integration lurek.audio.newSource
+    -- @integration lurek.filesystem.exists
     it("creates particle, TMX, layout, sprite-sheet, animation, tileset, and audio-cue documents that Lurek can consume", function()
         local Registry = load_workbench_module("app/editor_registry.lua")
         local State = load_workbench_module("app/state.lua")
@@ -110,6 +111,11 @@ describe("workbench asset creation integration", function()
 
     -- @integration lurek.filesystem.watchPath
     -- @integration lurek.filesystem.pollWatchers
+    -- @integration lurek.filesystem.mountWorkspace
+    -- @integration lurek.filesystem.read
+    -- @integration lurek.filesystem.toAbsolutePath
+    -- @integration lurek.filesystem.unmount
+    -- @integration lurek.filesystem.writeWorkspaceAtomic
     it("flags only an externally modified open asset through the GameFS watcher", function()
         local Registry = load_workbench_module("app/editor_registry.lua")
         local State = load_workbench_module("app/state.lua")
@@ -142,6 +148,10 @@ describe("workbench asset creation integration", function()
 
     -- @integration lurek.image.savePNGWorkspace
     -- @integration lurek.image.newImageData
+    -- @integration LImageData:getWidth
+    -- @integration lurek.filesystem.mountWorkspace
+    -- @integration lurek.filesystem.toAbsolutePath
+    -- @integration lurek.filesystem.unmount
     it("creates a paintable PNG document that reloads through the image API", function()
         local Registry = load_workbench_module("app/editor_registry.lua")
         local State = load_workbench_module("app/state.lua")

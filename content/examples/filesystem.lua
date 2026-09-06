@@ -883,25 +883,18 @@ end
 
 --@api: lurek.filesystem.pollAsync
 do
-    local FS_ROOT = "save/example_filesystem/"
-    local PROFILE_DIR = FS_ROOT .. "profiles/"
-    local CACHE_DIR = FS_ROOT .. "cache/"
-    local WATCH_DIR = FS_ROOT .. "watch/"
-    local WATCH_FILE = WATCH_DIR .. "settings.json"
-    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-    local path = FS_ROOT .. "async_poll.json"
-    lurek.filesystem.createDirectory(FS_ROOT)
-    lurek.filesystem.write(path, '{"region":"cave","npcs":6}')
-    local ticket = lurek.filesystem.readAsync(path)
-    local status, payload = "pending", nil
-    for _ = 1, 20 do
-        status, payload = lurek.filesystem.pollAsync(ticket)
-        if status == "done" then
-            break
-        end
-    end
-    lurek.log.info("async read completed with status=" .. tostring(status) .. " bytes=" .. tostring(payload and #payload or 0))
+local path = FS_ROOT .. "async_poll.json"
+lurek.filesystem.createDirectory(FS_ROOT)
+lurek.filesystem.write(path, '{"region":"cave","npcs":6}')
+local ticket = lurek.filesystem.readAsync(path)
+local status, payload = "pending", nil
 end
 
 --@api: lurek.filesystem.writeAsync
@@ -923,25 +916,23 @@ end
 
 --@api: lurek.filesystem.pollAsyncWrite
 do
-    local FS_ROOT = "save/example_filesystem/"
-    local PROFILE_DIR = FS_ROOT .. "profiles/"
-    local CACHE_DIR = FS_ROOT .. "cache/"
-    local WATCH_DIR = FS_ROOT .. "watch/"
-    local WATCH_FILE = WATCH_DIR .. "settings.json"
-    local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-    local path = FS_ROOT .. "async_write_poll.json"
-    lurek.filesystem.createDirectory(FS_ROOT)
-    local ticket = lurek.filesystem.writeAsync(path, '{"region":"harbor","npcs":11}')
-    local status, info = "pending", nil
-    for _ = 1, 20 do
-        status, info = lurek.filesystem.pollAsyncWrite(ticket)
-        if status == "done" then
-            break
-        end
-    end
-    local persisted = lurek.filesystem.exists(path)
-    lurek.log.info("async write finished status=" .. tostring(status) .. " persisted=" .. tostring(persisted))
+local path = FS_ROOT .. "async_write_poll.json"
+lurek.filesystem.createDirectory(FS_ROOT)
+local ticket = lurek.filesystem.writeAsync(path, '{"region":"harbor","npcs":11}')
+local status, info = "pending", nil
+for _ = 1, 20 do
+status, info = lurek.filesystem.pollAsyncWrite(ticket)
+if status == "done" then
+break
+end
+end
 end
 
 --@api: lurek.filesystem.mount
@@ -979,157 +970,129 @@ end
 
 --@api: lurek.filesystem.mountZip
 do
-    local ok, err = pcall(function()
-        local FS_ROOT = "save/example_filesystem/"
-        local PROFILE_DIR = FS_ROOT .. "profiles/"
-        local CACHE_DIR = FS_ROOT .. "cache/"
-        local WATCH_DIR = FS_ROOT .. "watch/"
-        local WATCH_FILE = WATCH_DIR .. "settings.json"
-        local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local ok, err = pcall(function()
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-        local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_preview")
-        local prefix = zip:prefix()
-        local files = zip:listFiles()
-        local contains_hello = zip:contains("zip_preview/hello.txt")
-        lurek.log.info("zip mount prefix=" .. prefix .. " files=" .. tostring(#files) .. " containsHello=" .. tostring(contains_hello))
-    end)
-    if not ok then
-        lurek.log.info("zip mount unavailable: " .. tostring(err))
-        lurek.log.info("skipping lurek.filesystem.mountZip")
-    end
+local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_preview")
+local prefix = zip:prefix()
+local files = zip:listFiles()
+local contains_hello = zip:contains("zip_preview/hello.txt")
+lurek.log.info("zip mount prefix=" .. prefix .. " files=" .. tostring(#files) .. " containsHello=" .. tostring(contains_hello))
+end)
 end
 
 --@api: LZipMount:readFile
 do
-    local ok, err = pcall(function()
-        local FS_ROOT = "save/example_filesystem/"
-        local PROFILE_DIR = FS_ROOT .. "profiles/"
-        local CACHE_DIR = FS_ROOT .. "cache/"
-        local WATCH_DIR = FS_ROOT .. "watch/"
-        local WATCH_FILE = WATCH_DIR .. "settings.json"
-        local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local ok, err = pcall(function()
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-        local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_read")
-        local payload = zip:readFile("zip_read/hello.txt")
-        local size = #payload
-        local prefix = zip:prefix()
-        local summary = "zip payload bytes=" .. tostring(size) .. " from " .. prefix
-        lurek.log.info(summary)
-    end)
-    if not ok then
-        lurek.log.info("zip mount unavailable: " .. tostring(err))
-        lurek.log.info("skipping LZipMount:readFile")
-    end
+local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_read")
+local payload = zip:readFile("zip_read/hello.txt")
+local size = #payload
+local prefix = zip:prefix()
+local summary = "zip payload bytes=" .. tostring(size) .. " from " .. prefix
+lurek.log.info(summary)
+end)
 end
 
 --@api: LZipMount:contains
 do
-    local ok, err = pcall(function()
-        local FS_ROOT = "save/example_filesystem/"
-        local PROFILE_DIR = FS_ROOT .. "profiles/"
-        local CACHE_DIR = FS_ROOT .. "cache/"
-        local WATCH_DIR = FS_ROOT .. "watch/"
-        local WATCH_FILE = WATCH_DIR .. "settings.json"
-        local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local ok, err = pcall(function()
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-        local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_contains")
-        local has_hello = zip:contains("zip_contains/hello.txt")
-        local has_missing = zip:contains("zip_contains/missing.txt")
-        local prefix = zip:prefix()
-        lurek.log.info("zip lookup under " .. prefix .. " hello=" .. tostring(has_hello) .. " missing=" .. tostring(has_missing))
-    end)
-    if not ok then
-        lurek.log.info("zip mount unavailable: " .. tostring(err))
-        lurek.log.info("skipping LZipMount:contains")
-    end
+local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_contains")
+local has_hello = zip:contains("zip_contains/hello.txt")
+local has_missing = zip:contains("zip_contains/missing.txt")
+local prefix = zip:prefix()
+lurek.log.info("zip lookup under " .. prefix .. " hello=" .. tostring(has_hello) .. " missing=" .. tostring(has_missing))
+end)
 end
 
 --@api: LZipMount:listFiles
 do
-    local ok, err = pcall(function()
-        local FS_ROOT = "save/example_filesystem/"
-        local PROFILE_DIR = FS_ROOT .. "profiles/"
-        local CACHE_DIR = FS_ROOT .. "cache/"
-        local WATCH_DIR = FS_ROOT .. "watch/"
-        local WATCH_FILE = WATCH_DIR .. "settings.json"
-        local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local ok, err = pcall(function()
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-        local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_list")
-        local files = zip:listFiles()
-        local first = files[1] or "none"
-        local count = #files
-        lurek.log.info("zip file catalog count=" .. tostring(count) .. " first=" .. tostring(first))
-    end)
-    if not ok then
-        lurek.log.info("zip mount unavailable: " .. tostring(err))
-        lurek.log.info("skipping LZipMount:listFiles")
-    end
+local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_list")
+local files = zip:listFiles()
+local first = files[1] or "none"
+local count = #files
+lurek.log.info("zip file catalog count=" .. tostring(count) .. " first=" .. tostring(first))
+end)
 end
 
 --@api: LZipMount:prefix
 do
-    local ok, err = pcall(function()
-        local FS_ROOT = "save/example_filesystem/"
-        local PROFILE_DIR = FS_ROOT .. "profiles/"
-        local CACHE_DIR = FS_ROOT .. "cache/"
-        local WATCH_DIR = FS_ROOT .. "watch/"
-        local WATCH_FILE = WATCH_DIR .. "settings.json"
-        local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local ok, err = pcall(function()
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-        local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_prefix")
-        local prefix = zip:prefix()
-        local hello_path = prefix .. "/hello.txt"
-        local exists = zip:contains(hello_path)
-        lurek.log.info("zip prefix builds virtual asset path " .. hello_path .. " exists=" .. tostring(exists))
-    end)
-    if not ok then
-        lurek.log.info("zip mount unavailable: " .. tostring(err))
-        lurek.log.info("skipping LZipMount:prefix")
-    end
+local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_prefix")
+local prefix = zip:prefix()
+local hello_path = prefix .. "/hello.txt"
+local exists = zip:contains(hello_path)
+lurek.log.info("zip prefix builds virtual asset path " .. hello_path .. " exists=" .. tostring(exists))
+end)
 end
 
 --@api: LZipMount:type
 do
-    local ok, err = pcall(function()
-        local FS_ROOT = "save/example_filesystem/"
-        local PROFILE_DIR = FS_ROOT .. "profiles/"
-        local CACHE_DIR = FS_ROOT .. "cache/"
-        local WATCH_DIR = FS_ROOT .. "watch/"
-        local WATCH_FILE = WATCH_DIR .. "settings.json"
-        local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local ok, err = pcall(function()
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-        local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_type")
-        local type_name = zip:type()
-        local prefix = zip:prefix()
-        local file_count = #zip:listFiles()
-        lurek.log.info("zip mount type=" .. type_name .. " prefix=" .. prefix .. " files=" .. tostring(file_count))
-    end)
-    if not ok then
-        lurek.log.info("zip mount unavailable: " .. tostring(err))
-        lurek.log.info("skipping LZipMount:type")
-    end
+local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_type")
+local type_name = zip:type()
+local prefix = zip:prefix()
+local file_count = #zip:listFiles()
+lurek.log.info("zip mount type=" .. type_name .. " prefix=" .. prefix .. " files=" .. tostring(file_count))
+end)
 end
 
 --@api: LZipMount:typeOf
 do
-    local ok, err = pcall(function()
-        local FS_ROOT = "save/example_filesystem/"
-        local PROFILE_DIR = FS_ROOT .. "profiles/"
-        local CACHE_DIR = FS_ROOT .. "cache/"
-        local WATCH_DIR = FS_ROOT .. "watch/"
-        local WATCH_FILE = WATCH_DIR .. "settings.json"
-        local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
+local ok, err = pcall(function()
+local FS_ROOT = "save/example_filesystem/"
+local PROFILE_DIR = FS_ROOT .. "profiles/"
+local CACHE_DIR = FS_ROOT .. "cache/"
+local WATCH_DIR = FS_ROOT .. "watch/"
+local WATCH_FILE = WATCH_DIR .. "settings.json"
+local ZIP_FIXTURE = "tests/fixtures/test_archive.zip"
 
-        local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_typeof")
-        local matches = zip:typeOf("LZipMount")
-        local prefix = zip:prefix()
-        local has_hello = zip:contains(prefix .. "/hello.txt")
-        lurek.log.info("typeOf confirms LZipMount=" .. tostring(matches) .. " hello=" .. tostring(has_hello))
-    end)
-    if not ok then
-        lurek.log.info("zip mount unavailable: " .. tostring(err))
-        lurek.log.info("skipping LZipMount:typeOf")
-    end
+local zip = lurek.filesystem.mountZip(ZIP_FIXTURE, "zip_typeof")
+local matches = zip:typeOf("LZipMount")
+local prefix = zip:prefix()
+local has_hello = zip:contains(prefix .. "/hello.txt")
+lurek.log.info("typeOf confirms LZipMount=" .. tostring(matches) .. " hello=" .. tostring(has_hello))
+end)
 end
 
 --@api: lurek.filesystem.load

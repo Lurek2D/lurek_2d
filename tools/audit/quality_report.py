@@ -20,6 +20,7 @@ Exit codes:
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -30,6 +31,33 @@ TOOLS_DIR = WORKSPACE_ROOT / "tools"
 MODULE_AUDIT_CANDIDATES = (
     "audit/audit_module.py",
     "audit/module_audit.py",
+)
+
+FOCUSED_GATE_SPECS = (
+    (
+        "lua_api_validator",
+        "validate/validate_lua_api.py",
+        ["src/lua_api"],
+        "Lua API validator",
+    ),
+    (
+        "unit_api_coverage",
+        "audit/unit_test_api_coverage.py",
+        ["--json", "--strict", "--threshold", "100"],
+        "Lua unit ownership",
+    ),
+    (
+        "example_coverage",
+        "audit/example_coverage.py",
+        ["--report", "--no-stubs", "--no-partials"],
+        "Example coverage and structure",
+    ),
+    (
+        "docstring_audit",
+        "audit/docstring_audit.py",
+        ["--json", "--check"],
+        "Lua API docstrings",
+    ),
 )
 
 
@@ -63,6 +91,91 @@ def _tool_failed(payload: dict) -> bool:
     return isinstance(payload, dict) and isinstance(payload.get("error"), str)
 
 
+def _run_focused_gate(name: str, script: str, args: list, label: str) -> dict:
+    """Run one exact contract gate and retain only deterministic diagnostics."""
+    command = [sys.executable, str(TOOLS_DIR / script), *args]
+    result = subprocess.run(
+        command,
+        cwd=WORKSPACE_ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    output = "\n".join(part for part in (result.stdout, result.stderr) if part)
+    status = "pass" if result.returncode == 0 else "fail" if result.returncode == 1 else "error"
+    details: dict = {"label": label, "command": [script, *args], "exit_code": result.returncode}
+
+    if name == "lua_api_validator":
+        details.update(
+            {
+                "failed_files": len(re.findall(r"^\s*\[FAIL\]", output, re.MULTILINE)),
+                "errors": len(re.findall(r"\[ERROR\]", output)),
+                "warnings": len(re.findall(r"\[WARN\]", output)),
+            }
+        )
+    elif name == "unit_api_coverage":
+        try:
+            payload = _parse_json_prefix(result.stdout)
+            summary = payload.get("summary", {})
+            structure = payload.get("structure", {})
+            details.update(
+                {
+                    "total_apis": summary.get("total_apis", 0),
+                    "covered_explicit": summary.get("covered_explicit", 0),
+                    "coverage_pct": summary.get("pct_explicit", 0),
+                    "missing_owners": summary.get("uncovered", 0),
+                    "duplicate_markers": structure.get("duplicate_api_markers", 0),
+                    "structure_violations": structure.get("invalid_it_blocks", 0),
+                }
+            )
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            status = "error"
+            details["error"] = "unit coverage did not emit valid JSON"
+    elif name == "example_coverage":
+        details["lint_issues"] = len(re.findall(r"^\s*\d+: \[E\d+\]", output, re.MULTILINE))
+        details["e10_oversized_blocks"] = len(re.findall(r"\[E10\]", output))
+        details["e4_thin_blocks"] = len(re.findall(r"\[E4\]", output))
+    elif name == "docstring_audit":
+        try:
+            payload = _parse_json_prefix(result.stdout)
+            violations = payload.get("violations", [])
+            details["violations"] = len(violations) if isinstance(violations, list) else 0
+        except (json.JSONDecodeError, TypeError, AttributeError):
+            status = "error"
+            details["error"] = "docstring audit did not emit valid JSON"
+
+    if status == "error" and "error" not in details:
+        details["error"] = output.strip()[-400:]
+    details["status"] = status
+    return {name: details}
+
+
+def _run_focused_gates() -> dict:
+    """Run the exact focused audits that the aggregate dashboard must enforce."""
+    focused: dict = {}
+    for name, script, args, label in FOCUSED_GATE_SPECS:
+        focused.update(_run_focused_gate(name, script, args, label))
+    return focused
+
+
+def _focused_has_errors(focused: dict) -> bool:
+    return any(item.get("status") in {"fail", "error"} for item in focused.values())
+
+
+def _focused_has_tool_errors(focused: dict) -> bool:
+    return any(item.get("status") == "error" for item in focused.values())
+
+
+def _parse_json_prefix(text: str) -> dict:
+    """Parse a JSON document followed by an optional human gate message."""
+    decoder = json.JSONDecoder()
+    value, _ = decoder.raw_decode(text.lstrip())
+    if not isinstance(value, dict):
+        raise json.JSONDecodeError("expected JSON object", text, 0)
+    return value
+
+
 def _module_count(module_data: dict) -> int:
     """Return the number of audited modules from the module-audit payload."""
     if isinstance(module_data, list):
@@ -93,6 +206,7 @@ def generate_report(
     test_data: dict,
     module_data: dict,
     validation_data: dict,
+    focused_data: dict | None = None,
 ) -> str:
     """Generate the master quality Markdown report."""
     lines = [
@@ -128,7 +242,14 @@ def generate_report(
                 for issues in game_results.values():
                     if isinstance(issues, list):
                         total_issues += len(issues)
-    lines.append(f"| API validation issues | {total_issues} | {'PASS' if total_issues == 0 else 'WARN'} |")
+    lines.append(f"| API validation issues | {total_issues} | {'PASS' if total_issues == 0 else 'FAIL'} |")
+
+    if focused_data is not None:
+        for key in (name for name, _, _, _ in FOCUSED_GATE_SPECS):
+            item = focused_data.get(key, {"status": "error", "error": "gate result missing"})
+            status = item.get("status", "error").upper()
+            label = item.get("label", key)
+            lines.append(f"| Focused: {label} | {status.lower()} | {status} |")
 
     # Module count
     luna_count = _module_count(module_data)
@@ -168,6 +289,34 @@ def generate_report(
         "",
     ])
 
+    if focused_data is not None:
+        lines.extend(["## Focused Gates", ""])
+        for key, _, _, _ in FOCUSED_GATE_SPECS:
+            item = focused_data.get(key, {"status": "error", "error": "gate result missing"})
+            status = item.get("status", "error").upper()
+            label = item.get("label", key)
+            details = []
+            for detail_key in (
+                "failed_files",
+                "errors",
+                "warnings",
+                "coverage_pct",
+                "missing_owners",
+                "duplicate_markers",
+                "structure_violations",
+                "lint_issues",
+                "e10_oversized_blocks",
+                "e4_thin_blocks",
+                "violations",
+            ):
+                if detail_key in item:
+                    details.append(f"{detail_key}={item[detail_key]}")
+            if item.get("error"):
+                details.append(str(item["error"]))
+            suffix = f" ({', '.join(details)})" if details else ""
+            lines.append(f"- **{label}**: {status}{suffix}")
+        lines.append("")
+
     if total_issues > 0 and isinstance(validation_data, dict):
         for game_name, game_results in sorted(validation_data.items()):
             if isinstance(game_results, dict):
@@ -205,6 +354,7 @@ def generate_report(
         and rust_test_pct >= 50
         and lua_test_pct >= 30
         and total_issues == 0
+        and (focused_data is None or not _focused_has_errors(focused_data))
     )
     lines.extend([
         "## Overall Verdict",
@@ -240,15 +390,19 @@ def main() -> int:
     print("[4/4] Running API validation...", file=sys.stderr)
     validation_data = _run_tool("validate/validate_game.py", ["--all-examples"])
 
+    print("[focused] Running exact contract gates...", file=sys.stderr)
+    focused_data = _run_focused_gates()
+
     if args.json:
         report = json.dumps({
             "docs-general": doc_data,
             "test_coverage": test_data,
             "modules": module_data,
             "validation": validation_data,
+            "focused_gates": focused_data,
         }, indent=2, ensure_ascii=False)
     else:
-        report = generate_report(doc_data, test_data, module_data, validation_data)
+        report = generate_report(doc_data, test_data, module_data, validation_data, focused_data)
 
     if args.output:
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)
@@ -259,6 +413,10 @@ def main() -> int:
 
     if any(_tool_failed(payload) for payload in (doc_data, test_data, module_data, validation_data)):
         return 2
+    if _focused_has_tool_errors(focused_data):
+        return 2
+    if _focused_has_errors(focused_data):
+        return 1
     return 0
 
 

@@ -458,7 +458,7 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- continue --
         /// Emits the next story line and tag array, or nil at choice/end.
-        /// @return | string?, table | Next line plus tag array, or nil plus an empty tag table.
+        /// @return | string, table | Next line plus tag array, or nil plus an empty tag table.
         methods.add_method("continue", |lua, this, ()| {
             match this
                 .inner
@@ -531,6 +531,8 @@ impl LuaUserData for LuaDialogStory {
         });
         // -- setVariable --
         /// Sets or replaces one story variable using a nil, boolean, number, or string value.
+        /// @param | name | string | Story variable name.
+        /// @param | value | any | New nil, boolean, number, or string value.
         methods.add_method(
             "setVariable",
             |_, this, (name, value): (String, LuaValue)| {
@@ -548,7 +550,7 @@ impl LuaUserData for LuaDialogStory {
             story_value_to_lua(lua, &this.inner.borrow().get_variable(&name))
         });
         // -- listVariables --
-        /// Lists story variable names.
+        /// Lists all story variable names currently defined in the story runtime.
         /// @return | table | Array of story variable names.
         methods.add_method("listVariables", |lua, this, ()| {
             let out = lua.create_table()?;

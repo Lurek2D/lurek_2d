@@ -317,14 +317,14 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `lurek.ui.draw() -> nil`: Queues retained UI render commands, then invokes custom draw callbacks for widgets that registered one.
 - `lurek.ui.drawToImage(w, h) -> LImageData`: Renders the entire UI to an image buffer.
 - `lurek.ui.dropOn(target) -> boolean`: Drops the currently dragged widget onto a target widget.
-- `lurek.ui.endDrag() -> LUiWidget?`: Ends the current drag operation without dropping.
+- `lurek.ui.endDrag() -> LUiWidget`: Ends the current drag operation without dropping.
 - `lurek.ui.flushCache() -> boolean`: Flushes internal UI layout and render caches.
 - `lurek.ui.focusDirection(dx, dy) -> boolean`: Move focus in a spatial direction. Uses geometry to find nearest focusable widget.
 - `lurek.ui.focusNeighbor(direction) -> boolean`: Moves keyboard focus using an explicit directional focus link.
 - `lurek.ui.focusNext() -> nil`: Moves keyboard focus to the next focusable widget.
 - `lurek.ui.focusPrev() -> nil`: Moves keyboard focus to the previous focusable widget.
 - `lurek.ui.getAccessibilityTree() -> table`: Returns a flattened accessibility snapshot for all live widgets except the root.
-- `lurek.ui.getActiveDrag() -> LUiWidget?`: Returns the live widget currently being dragged, or nil.
+- `lurek.ui.getActiveDrag() -> LUiWidget`: Returns the live widget currently being dragged, or nil.
 - `lurek.ui.getFocus() -> integer`: Returns the index of the currently focused widget, or nil.
 - `lurek.ui.getFont() -> LFont`: Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.
 - `lurek.ui.getIconGlyph(name) -> string|nil`: Returns the built-in text glyph for an icon name, or nil when missing.
@@ -1251,19 +1251,19 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiContext:dispatchText(text) -> boolean`: Explicitly dispatches text input.
 - `LUiContext:dispatchWheel(x, y) -> boolean`: Explicitly dispatches a wheel delta.
 - `LUiContext:focusDirection(direction) -> boolean`: Moves focus in a named spatial direction.
-- `LUiContext:focusNext() -> nil`: Moves focus forward.
-- `LUiContext:focusPrev() -> nil`: Moves focus backward.
-- `LUiContext:getById(id) -> LUiWidget?`: Finds a widget by id inside this context.
+- `LUiContext:focusNext() -> nil`: Moves focus forward to the next focusable widget in this UI context.
+- `LUiContext:focusPrev() -> nil`: Moves focus backward to the previous focusable widget in this UI context.
+- `LUiContext:getById(id) -> LUiWidget`: Finds a widget by id inside this context.
 - `LUiContext:getDiagnostics() -> table`: Returns isolated runtime counters and UX diagnostics.
-- `LUiContext:getFocus() -> LUiWidget?`: Returns the focused widget handle.
+- `LUiContext:getFocus() -> LUiWidget`: Returns the focused widget handle.
 - `LUiContext:getViewport() -> table`: Returns this context's screen rectangle.
 - `LUiContext:loadLayout(path, opts?) -> LUiWidget`: Loads and atomically attaches a TOML layout through GameFS.
 - `LUiContext:queueDraw(opts?) -> integer`: Queues this context to its viewport or an explicit canvas and restores render state.
 - `LUiContext:renderToImage(opts?) -> LImageData`: Renders this context into CPU image data.
 - `LUiContext:setFocus(widget?) -> nil`: Sets focus to a context-owned widget or clears it with nil.
 - `LUiContext:setViewport(viewport) -> nil`: Sets this context's screen rectangle.
-- `LUiContext:type() -> string`: Returns `LUiContext`.
-- `LUiContext:typeOf(name) -> boolean`: Checks this handle type.
+- `LUiContext:type() -> string`: Returns the runtime type name for this explicit UI context handle.
+- `LUiContext:typeOf(name) -> boolean`: Checks whether this handle matches a supported UI context type.
 - `LUiContext:update(dt) -> nil`: Advances this context and dispatches only its callbacks.
 
 #### LUiWidget Type
@@ -1299,7 +1299,7 @@ This module primarily collaborates with `dataframe`, `image`, `math`, `render`, 
 - `LUiWidget:getIconPosition() -> string`: Returns this widget's icon placement token.
 - `LUiWidget:getIconSize() -> number`: Returns this widget's requested icon size in pixels.
 - `LUiWidget:getId() -> string`: Returns the string identifier assigned to this widget.
-- `LUiWidget:getLabelFor() -> LUiWidget?`: Returns the live widget handle associated through `setLabelFor`, or nil.
+- `LUiWidget:getLabelFor() -> LUiWidget`: Returns the live widget handle associated through `setLabelFor`, or nil.
 - `LUiWidget:getMargin() -> number, number, number, number`: Returns the outer margin of this widget.
 - `LUiWidget:getMaxSize() -> number, number`: Returns the maximum width and height of this widget.
 - `LUiWidget:getMinSize() -> number, number`: Returns the minimum width and height of this widget.

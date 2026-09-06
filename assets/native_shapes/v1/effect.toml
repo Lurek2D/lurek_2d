@@ -1,0 +1,64 @@
+category = "effect"
+view_box = [0, 0, 64, 64]
+palette = { background = [0.08, 0.10, 0.14, 1.0], primary = [0.82, 0.86, 0.92, 1.0], secondary = [0.42, 0.50, 0.62, 1.0], accent = [0.95, 0.63, 0.18, 1.0], outline = [0.08, 0.10, 0.14, 1.0], highlight = [1.0, 1.0, 1.0, 1.0], shadow = [0.18, 0.20, 0.28, 1.0], emissive = [0.35, 0.95, 0.92, 1.0] }
+
+[[shapes]]
+id = "spark"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "star" }]
+[[shapes]]
+id = "burst"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "star" }]
+[[shapes]]
+id = "explosion"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "star" }]
+[[shapes]]
+id = "smoke"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "flame"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "sector" }]
+[[shapes]]
+id = "snowflake"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "symbol" }]
+[[shapes]]
+id = "droplet"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "sector" }]
+[[shapes]]
+id = "lightning"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "polygon" }]
+[[shapes]]
+id = "aura"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "ring" }]
+[[shapes]]
+id = "target"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "ring" }]
+[[shapes]]
+id = "slash"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "line" }]
+[[shapes]]
+id = "trail"
+anchor = [0.5, 0.5]
+tags = ["effect", "fx"]
+elements = [{ kind = "native", primitive = "trail" }]

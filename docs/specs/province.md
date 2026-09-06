@@ -4,9 +4,9 @@
 
 ## TL;DR
 
-- Simulates region maps decoded from color-coded PNG cartographic assets.
+- Simulates region maps decoded from color-coded PNG cartographic assets or authored as Tiled polygon maps.
 - Imports capitals, angled labels, and terrain metadata, compiling adjacencies.
-- Supports horizontal span runs, binary geometry caches, and map modes.
+- Supports horizontal span runs, authored polygon components, shared-edge topology, binary geometry caches, and map modes.
 - Exposes province-specific routing and picking adapters while shared path search and camera math stay in their owner modules.
 
 ## General Info
@@ -15,7 +15,7 @@
 - Source path: `src/province`
 - Binding: `src/lua_api/province_api.rs`
 - Namespace: `lurek.province`
-- Lua API surface: `16` functions, `8` types, `52` methods
+- Lua API surface: `17` functions, `8` types, `56` methods
 - User-facing: `true`
 - Plugin tier: `core_keep`
 
@@ -44,7 +44,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - Owning tier: `Feature Systems`
 - Plugin tier: `core_keep`
 - Lua binding owner: `src/lua_api/province_api.rs`
-- Referenced engine modules: `camera`, `image`, `math`, `pathfind`, `render`, `runtime`
+- Referenced engine modules: `camera`, `image`, `math`, `pathfind`, `render`, `runtime`, `tilemap`
 
 ## Imports
 
@@ -54,6 +54,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `pathfind`: Imports or references `src/pathfind/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
+- `tilemap`: Imports or references `src/tilemap/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 
 ## Source Files
 
@@ -132,6 +133,13 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - The exported set here defines which province owners are considered part of the supported internal engine surface.
 - Agents should start here when tracing province features because it reveals the authoritative file split by concern.
 - This file stays thin by contract, so substantive province behavior belongs in the concrete owners it re-exports.
+
+### polygon_geometry.rs
+
+- Owns polygon-authored province geometry, validation, topology, and picking.
+- Tiled syntax is parsed by `tilemap::tiled`; this module converts normalized
+- objects into the province domain model. It deliberately keeps style,
+- routing policy, and renderer resources in their existing owners.
 
 ### properties.rs
 
@@ -229,6 +237,7 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `lurek.province.getProperty(id, key) -> number`: Gets a numeric property from a province. Returns nil if not set.
 - `lurek.province.hasFlag(id, bit) -> boolean`: Checks whether a flag bit is set on a province.
 - `lurek.province.newFromPng(name, png_path) -> LProvinceRegistry`: Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.
+- `lurek.province.newFromTiled(name, filename, opts?) -> LProvinceRegistry`: Creates a polygon-backed province registry from a Tiled TMX, TMJ, or JSON object map.
 - `lurek.province.newGrid(filename) -> LProvinceGrid`: Loads a province id grid from a GameFS-authorized encoded image.
 - `lurek.province.remove(name) -> boolean`: Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.
 - `lurek.province.sanitizeMarkedPng(input_png, output_png, opts?) -> table`: Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.
@@ -267,22 +276,26 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 - `LProvinceRegistry:findRoute(from_id, to_id, cost_fn?) -> table`: Finds a route between two provinces by adapting registry adjacency to pathfind graph routing. Uses BFS by default or Dijkstra when `cost_fn` is supplied.
 - `LProvinceRegistry:findRoutes(pairs, cost_fn?) -> table`: Finds routes for a batch of `{from, to}` pairs by adapting registry adjacency to pathfind graph routing.
 - `LProvinceRegistry:fitCamera(screen_w, screen_h, pixel_size?) -> number, number, number`: Computes camera position and zoom so the entire province map fits within the given screen dimensions.
-- `LProvinceRegistry:getAt(x, y) -> integer`: Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
+- `LProvinceRegistry:getAt(x, y) -> integer`: Returns the province ID at the given grid cell coordinates. Raster maps sample the cell directly; polygon maps sample the cell center `(x + 0.5, y + 0.5)`. Returns 0 if unowned.
 - `LProvinceRegistry:getBorderClass(a, b) -> integer`: Backward-compatible alias for getBorderType. Returns the border type ID.
 - `LProvinceRegistry:getBorderPairStyle(a, b) -> table`: Returns the style override for a specific adjacency pair, or nil when unset.
 - `LProvinceRegistry:getBorderType(a, b) -> integer`: Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.
 - `LProvinceRegistry:getChangesSince(revision) -> table`: Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state, or border_class).
 - `LProvinceRegistry:getConnectedComponents() -> table`: Returns connected components in the province adjacency graph via pathfind graph traversal.
-- `LProvinceRegistry:getHeight() -> integer`: Returns the height of the province grid in cells (pixels of the source PNG).
+- `LProvinceRegistry:getGeometryKind() -> string`: Returns `"raster"` for PNG/grid-backed registries or `"polygon"` for Tiled polygon registries.
+- `LProvinceRegistry:getHeight() -> integer`: Returns the height of the province map. Raster registries report PNG cells; polygon registries report the Tiled map pixel extent.
 - `LProvinceRegistry:getMapMode() -> string`: Returns the name of the currently active map mode.
 - `LProvinceRegistry:getName() -> string`: Returns the string name used to identify this registry in the province system.
 - `LProvinceRegistry:getNeighbors(id) -> integer[]`: Returns a table of province IDs that share a border with the given province.
+- `LProvinceRegistry:getPolygonCount(province_id?) -> integer`: Returns the total polygon component count, or the component count for one province.
 - `LProvinceRegistry:getProvince(id) -> table`: Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state, visual_state), centroid, capital marker, and custom attributes.
+- `LProvinceRegistry:getProvincePolygons(province_id) -> table`: Returns read-only polygon component geometry for one province.
 - `LProvinceRegistry:getRevision() -> integer`: Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
 - `LProvinceRegistry:getShader() -> LShader`: Returns the currently bound command-render province shader, or nil.
-- `LProvinceRegistry:getWidth() -> integer`: Returns the width of the province grid in cells (pixels of the source PNG).
+- `LProvinceRegistry:getWidth() -> integer`: Returns the width of the province map. Raster registries report PNG cells; polygon registries report the Tiled map pixel extent.
 - `LProvinceRegistry:importMetadataFromFiles(opts) -> table`: Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
 - `LProvinceRegistry:isConnected(from_id, to_id) -> boolean`: Returns true when there is at least one pathfind graph route between two provinces.
+- `LProvinceRegistry:pickProvince(map_x, map_y) -> integer`: Returns the province under a floating-point map coordinate, or nil for a gap/outside.
 - `LProvinceRegistry:provinceCount() -> integer`: Returns the total number of distinct provinces in this registry (excluding ID 0).
 - `LProvinceRegistry:provinceIds() -> integer[]`: Returns a sequential table of all province IDs in this registry.
 - `LProvinceRegistry:provinceSpans() -> table`: Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.
@@ -427,9 +440,13 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 ## Notes
 
 - `province` owns conversion from painted province maps into province ids, spans, borders, polygons, and registry state. Use `lurek.province.newGrid` for bounded GameFS-backed grid ingestion; `image` owns generic pixel buffers and retains `newProvinceGrid` only as a compatibility facade.
+- `lurek.province.newFromTiled` is the additive polygon authoring path. It accepts finite orthogonal TMX/TMJ/JSON maps, requires `provinces` and `capitals` object layers with integer `province_id` properties, snaps vertices to a configured grid, and rejects invalid overlaps, missing capitals, unsupported shapes, and non-manifold shared edges.
+- Province polygons may be concave and disconnected components may share one ID. Every known ID needs exactly one explicitly authored, strictly interior point capital; capital coordinates are retained as authored floating-point positions. Gaps remain unowned, point contacts do not create adjacency, and shared intervals are merged after quantization.
+- Polygon geometry remains authoritative after import. Multiple polygon components may share one province ID, while adjacency is derived only from positive-length shared edges. Polygon picking uses floating map coordinates and does not create a hidden province ID grid.
+- Raster PNG registries retain their existing cell/span/render path. Polygon registries use triangulated fills and shared-edge lines for command rendering; the explicit segment backend may rasterize polygon triangles into its output texture.
 - `province` owns topology as territory data, but `pathfind` owns reusable path search, weighted traversal, connectivity traversal, movement budgets, and reachability over that topology. Province route methods should stay thin adapters over pathfind graph traversal.
 - Flow simulation over graph nodes, items, queues, capacity, and supply/demand belongs to `flownet`/`lurek.graph`; province adjacency can feed it but should not implement transport semantics.
 - `province` may expose `fitCamera`, `screenToProvince`, and `zoomCameraAt` for strategy-map ergonomics, but generic viewport and zoom-anchor math belongs to `camera`.
 - `province` owns semantic visual state such as climate, weather, fog amount, and visual seeds. `render` still owns WGSL code, bind-group layout, validation, and actual water, border-noise, fog, and weather composition in `DrawProvinceMap`.
-- `province` exports a bounded `ProvinceRenderSnapshot` when registry revision changes. The snapshot contains only CPU pixels and semantic style records; it has no device, queue, texture, or other `wgpu` handle. The app forwards it to render, which owns upload formats, GPU residency, and incremental resource replacement.
+- `province` exports a bounded `ProvinceRenderSnapshot` when registry revision changes. Raster snapshots contain CPU pixel payloads; polygon snapshots contain immutable vertices, triangle indexes, shared borders, and compact style slots. Neither contains a device, queue, texture, or other `wgpu` handle. The app forwards the packet to render, which owns upload formats, GPU residency, mesh buffers, and incremental resource replacement.
 - `LProvinceRegistry:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The registry stores the semantic shader binding, then the command backend wraps generated render commands in render-owned shader state. The specialized `backend = "gpu"` province map pipeline and segment raster cache do not yet execute custom user shaders; richer province-id and heatmap inputs belong in a later render-owned `DrawProvinceMap` shader contract.

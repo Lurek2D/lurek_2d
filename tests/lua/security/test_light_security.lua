@@ -71,9 +71,7 @@ describe("light hostile constructors", function()
             lurek.light.drawToImage(65536, 65536)
         end)
     end)
-
-    -- @security lurek.light.createLightsFromTilefield
-    it("rejects an oversized tile conversion without partial scene state", function()
+    local function __audit_security_1()
         reset_light()
         local tileset = lurek.tileset.fromProvider({
             firstGid = 1,
@@ -94,6 +92,12 @@ describe("light hostile constructors", function()
             lurek.light.createLightsFromTilefield(field, "tiles", tileset)
         end)
         expect_empty_light_world()
+    end
+
+
+    -- @security lurek.light.createLightsFromTilefield
+    it("rejects an oversized tile conversion without partial scene state", function()
+        __audit_security_1()
     end)
 end)
 

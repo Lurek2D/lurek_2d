@@ -8,7 +8,7 @@
 - `test_<module>_unit.lua`: Canonical unit owner for one public module.
 
 ## Rules
-- One API = one `it()` = one directly-adjacent `-- @covers <generated-lua-name>`.
+- Each `it()` has one directly-adjacent marker. Use `-- @covers <generated-lua-name>` for the canonical owner; use `-- @covers-case <generated-lua-name>` for an additional regression/edge-case block that must not claim a second owner.
 - The `-- @covers` symbol must match a known generated Lua API name; object methods use the generated `lua_name`.
 - Keep marker indentation identical to the following `it()` line.
 - Do not leave helper-only `it()` blocks in this folder.

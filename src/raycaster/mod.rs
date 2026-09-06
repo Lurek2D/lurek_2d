@@ -43,6 +43,8 @@ pub mod scene;
 pub mod scene_adapter;
 /// 2D line segment and `cast_ray_2d` entry point.
 pub mod segment;
+/// Camera-aware layered sky projection helpers.
+pub(crate) mod sky;
 /// Sprite registry and frustum-sorted sprite list.
 pub mod sprite_manager;
 /// Screen-space sprite projection math.
@@ -94,7 +96,8 @@ pub use render::RaycasterRenderState;
 pub use scene::{
     BillboardSprite, CeilingQuad, EntityPickKind, EntityPickResult, FloorQuad, ModelMesh,
     RaycasterBackground, RaycasterBuildStats, RaycasterMaterial, RaycasterMaterialFrameLayout,
-    RaycasterOverlayEffect, RaycasterParticle, RaycasterScene, WallQuad,
+    RaycasterOverlayEffect, RaycasterParticle, RaycasterScene, RaycasterSkyLayer, RaycasterSkyQuad,
+    WallQuad,
 };
 #[cfg(feature = "obj-loader")]
 pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel, SceneAdapterModelAsset};

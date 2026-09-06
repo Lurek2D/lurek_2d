@@ -290,7 +290,7 @@ This module is mostly self-contained inside the Feature Systems group. Cross-mod
 - `LTileFieldBatch:discard() -> boolean`: Discards this prepared field patch.
 - `LTileFieldBatch:isPending() -> boolean`: Returns whether this prepared field patch can still be committed.
 - `LTileFieldBatch:preview() -> table`: Returns immutable metadata for this prepared field patch.
-- `LTileFieldBatch:type() -> string`: Returns this userdata type name.
+- `LTileFieldBatch:type() -> string`: Returns this userdata type name for Lua-side tile field batch inspection.
 - `LTileFieldBatch:typeOf(name) -> boolean`: Checks this userdata against `LTileFieldBatch` or `LObject`.
 
 #### LTileFieldMap Type

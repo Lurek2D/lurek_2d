@@ -160,7 +160,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LCursorManager:addRule(context_or_rule, cursor_name?) -> integer?`: Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.
+- `LCursorManager:addRule(context_or_rule, cursor_name?) -> integer`: Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.
 - `LCursorManager:addSource(source_tbl) -> integer`: Registers a hover source that feeds semantic cursor hits into the shared runtime resolver.
 - `LCursorManager:defineEffect(name, spec) -> nil`: Defines a reusable cursor-local burst effect preset for hover or click rules.
 - `LCursorManager:defineState(name, spec) -> nil`: Defines a reusable named cursor state for rule-driven runtime selection.
@@ -171,7 +171,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LCursorManager:enableZoom(mag, radius) -> nil`: Enables the live zoom lens centered on the runtime cursor.
 - `LCursorManager:getActiveState() -> table`: Returns the currently resolved cursor state after context, hover, and override rules have been applied.
 - `LCursorManager:getContext() -> string`: Returns the current named cursor context.
-- `LCursorManager:getLastHit() -> table?`: Returns the most recent semantic hover hit seen by the runtime cursor.
+- `LCursorManager:getLastHit() -> table`: Returns the most recent semantic hover hit seen by the runtime cursor.
 - `LCursorManager:getPosition() -> number`: Returns the current runtime cursor position.
 - `LCursorManager:isLocked() -> boolean`: Returns whether the runtime cursor is currently marked as locked.
 - `LCursorManager:isVisible() -> boolean`: Returns whether the runtime cursor is currently visible.
@@ -182,7 +182,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LCursorManager:setCustom(cursor) -> nil`: Switches the active runtime cursor to a custom RGBA cursor immediately.
 - `LCursorManager:setLocked(locked) -> nil`: Locks or unlocks the runtime cursor according to the active platform policy.
 - `LCursorManager:setSystem(name) -> nil`: Switches the active runtime cursor to a named system cursor immediately.
-- `LCursorManager:setVisible(visible) -> nil`: Shows or hides the runtime cursor.
+- `LCursorManager:setVisible(visible) -> nil`: Shows or hides the runtime cursor for the active application window.
 - `LCursorManager:type() -> string`: Returns the Lua handle type name for this cursor manager userdata.
 - `LCursorManager:update(x, y, dt) -> nil`: Overrides the runtime cursor position and advances cursor-local effects for one frame.
 

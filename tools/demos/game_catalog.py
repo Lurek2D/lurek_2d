@@ -20,6 +20,7 @@ TITLE_OVERRIDES = {
     "finance_app": "Household Finance Lab",
     "hex_logistics": "Hex Logistics",
     "music_composer": "Music Composer",
+    "packman": "Packman: Big Neon Maze",
     "tactical_mech_shooter": "Tactical Mech Shooter",
 }
 
@@ -42,6 +43,7 @@ GAME_DECISIONS: dict[str, tuple[str, str]] = {
     "finance_app": ("KEEP", "Data-heavy finance dashboard app kept in the current flat catalog."),
     "hex_logistics": ("KEEP", "Hex logistics mini game kept in the current flat catalog."),
     "music_composer": ("KEEP", "Interactive music composition app kept in the current flat catalog."),
+    "packman": ("KEEP", "Classic Packman maze chase with four route-planning ghosts and a larger seeded board."),
     "sensible_soccer": ("KEEP", "Top-down soccer game kept in the current flat catalog."),
     "tactical_mech_shooter": ("KEEP", "Complete tactical mech campaign with current validation, regression, and smoke evidence."),
 }

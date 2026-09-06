@@ -50,6 +50,16 @@ pub struct RaycasterLimits {
     pub max_scene_models: usize,
     /// Maximum number of point lights accepted in one build.
     pub max_scene_lights: usize,
+    /// Maximum number of texture layers accepted by a layered sky.
+    pub max_sky_layers: usize,
+    /// Maximum repeated copies accepted for one layered-sky texture.
+    pub max_sky_layer_copies: u8,
+    /// Maximum UV scale accepted by a layered-sky texture.
+    pub max_sky_scale: f32,
+    /// Maximum absolute UV velocity accepted by a layered-sky texture.
+    pub max_sky_velocity: f32,
+    /// Maximum height above a level floor accepted by one layered-sky plane.
+    pub max_sky_height: f32,
     /// Default OOB policy assigned to new raycaster grids.
     pub default_oob_policy: OutOfBoundsPolicy,
 }
@@ -70,6 +80,11 @@ impl Default for RaycasterLimits {
             max_scene_sprites: 65_536,
             max_scene_models: 16_384,
             max_scene_lights: 16_384,
+            max_sky_layers: 3,
+            max_sky_layer_copies: 8,
+            max_sky_scale: 16.0,
+            max_sky_velocity: 16.0,
+            max_sky_height: 64.0,
             default_oob_policy: OutOfBoundsPolicy::Open,
         }
     }

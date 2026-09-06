@@ -485,19 +485,19 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ##### Methods
 
-- `LKinematicController2D:clearVerticalSpan() -> nil`: Lua-visible method.
-- `LKinematicController2D:getLastResult() -> nil`: Lua-visible method.
+- `LKinematicController2D:clearVerticalSpan() -> nil`: Removes the vertical span constraint from movement sweeps.
+- `LKinematicController2D:getLastResult() -> table`: Returns the most recent movement or recovery result, when available.
 - `LKinematicController2D:move(dx, dy, opts?) -> table`: Sweeps and wall-slides the controlled kinematic body.
-- `LKinematicController2D:recover(opts?) -> nil`: Lua-visible method.
-- `LKinematicController2D:release() -> nil`: Lua-visible method.
-- `LKinematicController2D:setFilter(filter) -> nil`: Lua-visible method.
-- `LKinematicController2D:setMaxSlides(max_slides) -> nil`: Lua-visible method.
-- `LKinematicController2D:setRadius(radius) -> nil`: Lua-visible method.
-- `LKinematicController2D:setSkin(skin) -> nil`: Lua-visible method.
-- `LKinematicController2D:setVerticalSpan(z_min, z_max) -> nil`: Lua-visible method.
-- `LKinematicController2D:testMove(dx, dy, opts?) -> nil`: Solves movement without mutating the controlled body.
-- `LKinematicController2D:type() -> nil`: Lua-visible method.
-- `LKinematicController2D:typeOf(name) -> nil`: Lua-visible method.
+- `LKinematicController2D:recover(opts?) -> table`: Applies penetration recovery and updates the controlled body position.
+- `LKinematicController2D:release() -> nil`: Releases this controller so further operations fail predictably.
+- `LKinematicController2D:setFilter(filter) -> nil`: Replaces the query filter used by movement sweeps.
+- `LKinematicController2D:setMaxSlides(max_slides) -> nil`: Sets the maximum number of wall slides permitted for one movement.
+- `LKinematicController2D:setRadius(radius) -> nil`: Sets the positive sweep radius used by subsequent movement queries.
+- `LKinematicController2D:setSkin(skin) -> nil`: Sets the non-negative collision skin used by subsequent movement queries.
+- `LKinematicController2D:setVerticalSpan(z_min, z_max) -> nil`: Constrains movement sweeps to a strict vertical span.
+- `LKinematicController2D:testMove(dx, dy, opts?) -> table`: Solves movement without mutating the controlled body.
+- `LKinematicController2D:type() -> string`: Returns this controller's runtime type name.
+- `LKinematicController2D:typeOf(name) -> boolean`: Checks whether a type name is implemented by this controller.
 
 #### LLiquidMap Type
 
@@ -733,7 +733,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getMeter() -> number`: Returns the current pixels-per-meter scale.
 - `LWorld:getSolverIterations() -> integer`: Returns the current number of velocity solver iterations.
 - `LWorld:getStats() -> table`: Returns active counts and slot diagnostics for the world.
-- `LWorld:getWrapBounds() -> table?`: Returns the current explicit toroidal wrap bounds, or nil when wrapping is disabled.
+- `LWorld:getWrapBounds() -> table`: Returns the current explicit toroidal wrap bounds, or nil when wrapping is disabled.
 - `LWorld:getZoneEvents() -> table`: Returns all zone enter/leave events from the last step.
 - `LWorld:hasBody(id) -> boolean`: Returns true when a body ID still refers to a live body slot.
 - `LWorld:hasJoint(id) -> boolean`: Returns true when a joint ID still refers to a live joint slot.

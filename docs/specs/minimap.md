@@ -197,7 +197,7 @@ The broader integration map is split by role:
 - `LMinimap:screenToGrid(sx, sy, mx, my) -> number`: Converts a screen position to grid coordinates.
 - `LMinimap:setAntiAlias(enabled) -> nil`: Enables or disables minimap anti-aliasing.
 - `LMinimap:setCenter(x, y) -> nil`: Sets the minimap world-space center position.
-- `LMinimap:setCenterFromTileMapWorld(tilemap_ud, wx, wy) -> nil`: Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
+- `LMinimap:setCenterFromTileMapWorld(tilemap, wx, wy) -> number, number`: Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
 - `LMinimap:setClickable(enabled) -> nil`: Enables or disables minimap click handling.
 - `LMinimap:setColorMode(mode) -> nil`: Sets the minimap color mode to terrain or political.
 - `LMinimap:setDisplaySize(w, h) -> nil`: Sets the minimap display width and height in pixels.
@@ -225,17 +225,17 @@ The broader integration map is split by role:
 - `LMinimap:setTerrainData(data) -> nil`: Replaces terrain data from a flat array table.
 - `LMinimap:setTileDescription(type_id, desc) -> nil`: Sets text description for a tile type.
 - `LMinimap:setViewportColor(r, g, b, a?) -> nil`: Sets the viewport rectangle color.
-- `LMinimap:setViewportFromTileMapWorld(tilemap_ud, x, y, w, h) -> nil`: Converts a tilemap world rectangle into a minimap viewport rectangle.
+- `LMinimap:setViewportFromTileMapWorld(tilemap, x, y, w, h) -> number, number, number, number`: Converts a tilemap world rectangle into a minimap viewport rectangle.
 - `LMinimap:setViewportRect(x, y, w, h) -> nil`: Sets the visible viewport rectangle shown on the minimap.
 - `LMinimap:setViewportVisible(visible) -> nil`: Sets whether the viewport rectangle is visible.
 - `LMinimap:setZoom(zoom) -> nil`: Sets the minimap zoom magnification level.
 - `LMinimap:showPath(points_tbl, color_tbl) -> integer`: Adds a colored path overlay and returns its id.
 - `LMinimap:syncProvinceRegistry(registry, opts?) -> nil`: Copies province registry terrain, visibility, and palette data into this minimap.
-- `LMinimap:syncTileAwarenessFog(awareness_ud, player, opts?) -> nil`: Copies explored/visible masks from `LTileAwareness` into minimap fog data.
+- `LMinimap:syncTileAwarenessFog(awareness, player, opts?) -> table`: Copies explored/visible masks from `LTileAwareness` into minimap fog data.
 - `LMinimap:syncTileAwarenessLayer() -> nil`: Copies visible or action masks from `LTileAwareness` into a minimap raw layer.
 - `LMinimap:syncTileFieldBlockLayer() -> nil`: Copies one `LTileField` blocker channel layer into a minimap raw data layer.
 - `LMinimap:syncTileFieldCostLayer() -> nil`: Copies one `LTileField` cost channel layer into a minimap raw byte layer.
-- `LMinimap:syncTileLightLayer(light_ud, layer, opts?) -> nil`: Copies computed tilelight luma into a minimap raw byte layer.
+- `LMinimap:syncTileLightLayer(light, layer, opts?) -> table`: Copies computed tilelight luma into a minimap raw byte layer.
 - `LMinimap:syncTileMapTerrain(tilemap, opts?) -> nil`: Copies tile GIDs from an `LTileMap` layer into minimap terrain cells.
 - `LMinimap:trackCamera(camera_ud) -> nil`: Centers the minimap and viewport rectangle from a camera handle.
 - `LMinimap:type() -> string`: Returns the Lua-visible type name for this minimap handle.

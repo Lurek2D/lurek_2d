@@ -939,4 +939,159 @@ function Fixture.render_revision_timeline_frames(loaded)
     return frames
 end
 
+local function tiled_polygon_color(id)
+    local colors = {
+        [1] = { 190, 70, 70 },
+        [2] = { 70, 115, 205 },
+        [3] = { 80, 170, 105 },
+    }
+    return colors[id] or { 110, 120, 135 }
+end
+
+local function tiled_registry(backend)
+    local registry = lurek.province.newFromTiled(
+        "province_evidence_tiled_" .. backend,
+        "tests/fixtures/province_polygon.tmj"
+    )
+    registry:render({
+        backend = backend,
+        selected_id = 1,
+        hovered_id = 1,
+        draw_labels = false,
+        draw_capitals = false,
+        draw_roads = false,
+    })
+    return registry
+end
+
+local function draw_tiled_polygon_map(canvas, registry, x, y, scale)
+    for map_y = 0, registry:getHeight() - 1 do
+        for map_x = 0, registry:getWidth() - 1 do
+            local id = registry:pickProvince(map_x + 0.5, map_y + 0.5)
+            if id then
+                local color = tiled_polygon_color(id)
+                canvas:drawRect(
+                    x + map_x * scale,
+                    y + map_y * scale,
+                    scale + 1,
+                    scale + 1,
+                    color[1],
+                    color[2],
+                    color[3],
+                    255
+                )
+            end
+        end
+    end
+    for _, segment in ipairs(registry:borderSegments()) do
+        canvas:drawLine(
+            x + segment.x0 * scale,
+            y + segment.y0 * scale,
+            x + segment.x1 * scale,
+            y + segment.y1 * scale,
+            26,
+            30,
+            42,
+            255
+        )
+    end
+    for _, id in ipairs(registry:provinceIds()) do
+        local snapshot = registry:getProvince(id)
+        local capital = snapshot and snapshot.capital
+        if capital then
+            canvas:drawCircle(
+                x + capital.x * scale,
+                y + capital.y * scale,
+                5,
+                255,
+                238,
+                120,
+                255
+            )
+            canvas:drawCircle(
+                x + capital.x * scale,
+                y + capital.y * scale,
+                2,
+                32,
+                36,
+                50,
+                255
+            )
+        end
+    end
+    for _, polygon in ipairs(registry:getProvincePolygons(1)) do
+        local vertices = polygon.vertices
+        for index = 1, #vertices, 2 do
+            local next_index = (index + 2 - 1) % #vertices + 1
+            canvas:drawLine(
+                x + vertices[index] * scale,
+                y + vertices[index + 1] * scale,
+                x + vertices[next_index] * scale,
+                y + vertices[next_index + 1] * scale,
+                255,
+                225,
+                55,
+                255
+            )
+        end
+    end
+end
+
+function Fixture.render_tiled_polygon(backend)
+    local registry = tiled_registry(backend)
+    local canvas = image_canvas(
+        520,
+        390,
+        "TILED POLYGON " .. string.upper(backend),
+        "concave components / islands / exact shared borders / explicit capitals"
+    )
+    draw_tiled_polygon_map(canvas, registry, 54, 94, 24)
+    draw_text(canvas, "KIND " .. registry:getGeometryKind(), 360, 104, 1, 238, 242, 248)
+    draw_text(canvas, "COMPONENTS " .. registry:getPolygonCount(), 360, 128, 1, 238, 242, 248)
+    draw_text(canvas, "PROVINCE 1 " .. registry:getPolygonCount(1) .. " PARTS", 360, 152, 1, 238, 242, 248)
+    draw_text(canvas, "GAP (11,9) " .. tostring(registry:pickProvince(11.5, 9.5)), 360, 176, 1, 238, 242, 248)
+    draw_text(canvas, "YELLOW = SELECTED ISLANDS", 360, 222, 1, 255, 225, 55)
+    draw_text(canvas, "GOLD DOT = CAPITAL", 360, 246, 1, 255, 238, 120)
+    return canvas
+end
+
+function Fixture.tiled_polygon_topology()
+    local registry = lurek.province.newFromTiled(
+        "province_evidence_tiled_topology",
+        "tests/fixtures/province_polygon.tmj"
+    )
+    local lines = {
+        "Tiled polygon province topology",
+        "geometry_kind=" .. registry:getGeometryKind(),
+        "map_extent=" .. registry:getWidth() .. "x" .. registry:getHeight(),
+        "polygon_count=" .. registry:getPolygonCount(),
+    }
+    for _, id in ipairs(registry:provinceIds()) do
+        local snapshot = registry:getProvince(id)
+        local capital = snapshot and snapshot.capital
+        local capital_text = capital and string.format("%.3f,%.3f", capital.x, capital.y) or "nil"
+        lines[#lines + 1] = string.format(
+            "province=%d components=%d capital=%s",
+            id,
+            registry:getPolygonCount(id),
+            capital_text
+        )
+    end
+    for _, pair in ipairs(registry:adjacencies()) do
+        lines[#lines + 1] = string.format("adjacency=%d-%d", pair.province_a, pair.province_b)
+    end
+    for _, segment in ipairs(registry:borderSegments()) do
+        lines[#lines + 1] = string.format(
+            "border=%d-%d %.3f,%.3f -> %.3f,%.3f",
+            segment.province_a,
+            segment.province_b,
+            segment.x0,
+            segment.y0,
+            segment.x1,
+            segment.y1
+        )
+    end
+    return table.concat(lines, "\n") .. "\n"
+end
+
 return Fixture

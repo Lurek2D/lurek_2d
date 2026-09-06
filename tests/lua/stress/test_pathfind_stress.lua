@@ -170,9 +170,7 @@ describe("pathfinding stress: repeated pathfinding", function()
         expect_true(stats.hits >= 2, "cache hits accumulate")
         expect_equal(1, stats.misses)
     end)
-
-    -- @stress lurek.pathfind.submitAsyncPathsToGoal
-    it("builds many async shared-goal routes in one grouped request", function()
+    local function __audit_stress_8()
         lurek.pathfind.clearAsyncPaths()
         local grid = lurek.pathfind.newNavGrid(200, 200)
         local starts = {}
@@ -207,10 +205,14 @@ describe("pathfinding stress: repeated pathfinding", function()
         expect_not_nil(final_event, "grouped async event arrived")
         expect_equal("complete", final_event.status)
         expect_true(#final_event.paths >= 120, "most grouped routes retained")
-    end)
+    end
 
-    -- @stress LNavGrid:findHpaPathsToGoal
-    it("builds many shared-goal HPA routes on a large grid", function()
+
+    -- @stress lurek.pathfind.submitAsyncPathsToGoal
+    it("builds many async shared-goal routes in one grouped request", function()
+        __audit_stress_8()
+    end)
+    local function __audit_stress_7()
         local grid = lurek.pathfind.newNavGrid(200, 200)
         grid:setChunkSize(10)
         local starts = {}
@@ -224,6 +226,12 @@ describe("pathfinding stress: repeated pathfinding", function()
         local routes = grid:findHpaPathsToGoal(starts, 190, 190)
         expect_true(#routes >= 110, "most HPA routes retained")
         expect_not_nil(routes[1], "first HPA route exists")
+    end
+
+
+    -- @stress LNavGrid:findHpaPathsToGoal
+    it("builds many shared-goal HPA routes on a large grid", function()
+        __audit_stress_7()
     end)
 end)
 
@@ -237,9 +245,7 @@ describe("pathfinding stress: flow field", function()
         expect_type("number", dx)
         expect_type("number", dy)
     end)
-
-    -- @stress LFlowField:calculateFor
-    it("computes a footprint-aware flow field on a 200x200 grid", function()
+    local function __audit_stress_6()
         local grid = lurek.pathfind.newNavGrid(200, 200)
         grid:defineFootprint("tank", { w = 2, h = 2 })
         local ff = lurek.pathfind.newFlowField(grid)
@@ -247,6 +253,12 @@ describe("pathfinding stress: flow field", function()
         ff:calculateFor("tank", 150, 150)
         expect_true(ff:isCalculated(), "named-footprint flow field calculated")
         expect_true(ff:getBuildCount() >= 1, "at least one build recorded")
+    end
+
+
+    -- @stress LFlowField:calculateFor
+    it("computes a footprint-aware flow field on a 200x200 grid", function()
+        __audit_stress_6()
     end)
 
     -- @stress LFlowField:pathsFrom
@@ -268,8 +280,7 @@ end)
 
 -- @describe pathfinding stress: orca crowd solver
 describe("pathfinding stress: orca crowd solver", function()
-    -- @stress LORCASolver:compute
-    it("updates a large bounded-neighbor crowd under one compute pass", function()
+    local function __audit_stress_5()
         local orca = lurek.pathfind.newORCASolver(1.5)
         orca:setCellSize(8.0)
         orca:setNeighborRadius(12.0)
@@ -295,10 +306,13 @@ describe("pathfinding stress: orca crowd solver", function()
         expect_type("number", vy)
         expect_equal(1500, stats.activeAgents)
         expect_true(stats.maxNeighborsUsed <= 6, "neighbor cap respected")
-    end)
+    end
 
-    -- @stress LORCASolver:getStats
-    it("reports budget exhaustion when crowd work is cut off early", function()
+    -- @stress LORCASolver:compute
+    it("updates a large bounded-neighbor crowd under one compute pass", function()
+        __audit_stress_5()
+    end)
+    local function __audit_stress_4()
         local orca = lurek.pathfind.newORCASolver(1.5)
         for i = 1, 1000 do
             orca:setAgent(i, {
@@ -315,13 +329,18 @@ describe("pathfinding stress: orca crowd solver", function()
         local stats = orca:getStats()
         expect_true(stats.budgetExhausted)
         expect_equal(1000, stats.activeAgents)
+    end
+
+
+    -- @stress LORCASolver:getStats
+    it("reports budget exhaustion when crowd work is cut off early", function()
+        __audit_stress_4()
     end)
 end)
 
 -- @describe pathfinding stress: clearance and dirty updates
 describe("pathfinding stress: clearance and dirty updates", function()
-    -- @stress LNavGrid:rebuildClearance
-    it("rebuilds footprint clearance on a 200x200 grid", function()
+    local function __audit_stress_3()
         local grid = lurek.pathfind.newNavGrid(200, 200)
         grid:defineFootprint("infantry", { w = 1, h = 1 })
         grid:defineFootprint("tank", { w = 2, h = 2 })
@@ -330,10 +349,13 @@ describe("pathfinding stress: clearance and dirty updates", function()
         local rebuilt = grid:rebuildClearance()
         expect_equal(3, rebuilt)
         expect_true(grid:isWalkableFor("tank", 1, 1))
-    end)
+    end
 
-    -- @stress LNavGrid:commitUpdate
-    it("commits batched dirty updates without full-map mutation loops in Lua", function()
+    -- @stress LNavGrid:rebuildClearance
+    it("rebuilds footprint clearance on a 200x200 grid", function()
+        __audit_stress_3()
+    end)
+    local function __audit_stress_2()
         local grid = lurek.pathfind.newNavGrid(200, 200)
         grid:defineFootprint("tank", { w = 2, h = 2 })
         grid:rebuildClearance()
@@ -345,10 +367,14 @@ describe("pathfinding stress: clearance and dirty updates", function()
         local committed = grid:commitUpdate({ rebuild = "dirty_chunks" })
         expect_equal(50, committed)
         expect_false(grid:isWalkableFor("tank", 1, 1))
-    end)
+    end
 
-    -- @stress LNavGrid:patchCells
-    it("atomically applies a 40000-cell navigation patch", function()
+
+    -- @stress LNavGrid:commitUpdate
+    it("commits batched dirty updates without full-map mutation loops in Lua", function()
+        __audit_stress_2()
+    end)
+    local function __audit_stress_1()
         local grid = lurek.pathfind.newNavGrid(200, 200)
         local patches = {}
         for y = 1, 200 do
@@ -363,6 +389,12 @@ describe("pathfinding stress: clearance and dirty updates", function()
         local dirty = grid:patchCells(patches)
         expect_equal(40000, #dirty)
         expect_equal(1, grid:getCost(200, 200))
+    end
+
+
+    -- @stress LNavGrid:patchCells
+    it("atomically applies a 40000-cell navigation patch", function()
+        __audit_stress_1()
     end)
 end)
 test_summary()

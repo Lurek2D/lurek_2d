@@ -9,9 +9,7 @@ describe("security: UI trust boundaries", function()
         lurek.ui.clear()
         lurek.ui.setViewport(320, 180)
     end)
-
-    -- @security lurek.ui.destroy
-    it("rejects forged and stale widget tables without mutating the live tree", function()
+    local function __audit_security_3()
         local widget = lurek.ui.newButton("live")
         local forged = { _idx = 0 }
         expect_error(function() lurek.ui.destroy(forged) end)
@@ -24,10 +22,14 @@ describe("security: UI trust boundaries", function()
         widget:setText("stale")
         local replacement = lurek.ui.newButton("replacement")
         expect_equal("replacement", replacement:getText())
-    end)
+    end
 
-    -- @security lurek.ui.renderToImage
-    it("rejects non-finite, zero, over-limit, and traversal capture requests atomically", function()
+
+    -- @security lurek.ui.destroy
+    it("rejects forged and stale widget tables without mutating the live tree", function()
+        __audit_security_3()
+    end)
+    local function __audit_security_2()
         expect_error(function() lurek.ui.renderToImage(NAN, 8, "save/ui_nan.png") end)
         expect_error(function() lurek.ui.renderToImage(INF, 8, "save/ui_inf.png") end)
         expect_error(function() lurek.ui.renderToImage(0, 8, "save/ui_zero.png") end)
@@ -36,16 +38,26 @@ describe("security: UI trust boundaries", function()
 
         local button = lurek.ui.newButton("still live")
         expect_true(button:isValid())
-    end)
+    end
 
-    -- @security lurek.ui.loadLayout
-    it("rejects malformed and non-finite layout data while preserving the existing UI", function()
+
+    -- @security lurek.ui.renderToImage
+    it("rejects non-finite, zero, over-limit, and traversal capture requests atomically", function()
+        __audit_security_2()
+    end)
+    local function __audit_security_1()
         local preserved = lurek.ui.newLabel("preserved")
         expect_error(function()
             lurek.ui.loadLayout({ children = { "not a widget" } })
         end)
         expect_true(preserved:isValid())
         expect_equal("preserved", preserved:getText())
+    end
+
+
+    -- @security lurek.ui.loadLayout
+    it("rejects malformed and non-finite layout data while preserving the existing UI", function()
+        __audit_security_1()
     end)
 end)
 

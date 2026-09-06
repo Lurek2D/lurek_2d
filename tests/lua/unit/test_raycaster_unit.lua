@@ -1965,6 +1965,63 @@ fn fs(@location(0) color: vec4<f32>) -> @location(0) vec4<f32> {
         }
         local shader_count = map:buildScene(feature_params, {}, {}, { [1] = wall, [2] = wall })
         expect_true(shader_count > 0)
+
+        local layered_params = scene_params()
+        layered_params.ceiling_a = 0.0
+        layered_params.angle = math.pi / 4
+        layered_params.time_seconds = 1.25
+        layered_params.background = {
+            type = "layered_sky",
+            top = { 0.03, 0.06, 0.16, 1.0 },
+            bottom = { 0.35, 0.48, 0.70, 1.0 },
+            layers = {
+                { texture = wall, parallax = 1.0, velocity = { 0.01, 0.0 }, copies = 1 },
+                { texture = wall, tint = { 1.0, 0.9, 0.6, 0.8 }, blend = "add", copies = 1 },
+                { texture = wall, tint = { 0.8, 0.85, 0.9, 0.55 }, velocity = { 0.02, 0.0 }, parallax = 0.8, height = 2.0, copies = 3 },
+            },
+        }
+        local layered_count = map:buildScene(layered_params, {}, {}, { [1] = wall })
+        expect_true(layered_count > 0)
+        expect_error(function()
+            local bad = scene_params()
+            bad.background = {
+                type = "layered_sky",
+                layers = { { texture = wall }, { texture = wall }, { texture = wall }, { texture = wall } },
+            }
+            map:buildScene(bad, {}, {}, {})
+        end)
+        expect_error(function()
+            local bad = scene_params()
+            bad.background = {
+                type = "layered_sky",
+                layers = { [1] = { texture = wall }, [3] = { texture = wall } },
+            }
+            map:buildScene(bad, {}, {}, {})
+        end)
+        expect_error(function()
+            local bad = scene_params()
+            bad.background = {
+                type = "layered_sky",
+                layers = { { texture = wall, copies = 9 } },
+            }
+            map:buildScene(bad, {}, {}, {})
+        end)
+        expect_error(function()
+            local bad = scene_params()
+            bad.background = {
+                type = "layered_sky",
+                layers = { { texture = wall, scale = { 0.0, 1.0 } } },
+            }
+            map:buildScene(bad, {}, {}, {})
+        end)
+        expect_error(function()
+            local bad = scene_params()
+            bad.background = {
+                type = "layered_sky",
+                layers = { { texture = wall, height = 0.0 } },
+            }
+            map:buildScene(bad, {}, {}, {})
+        end)
         expect_error(function()
             local bad = scene_params()
             bad.background = { type = "shader" }

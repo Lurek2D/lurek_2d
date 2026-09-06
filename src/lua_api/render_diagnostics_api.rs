@@ -14,7 +14,7 @@ pub(super) fn register_diagnostics_api(
     let s = state.clone();
     // -- getResourceStats --
     /// Returns render-resource residency and pressure counters without mutating ownership.
-    /// @return | table | Current retained bytes, counts, and effective resource budget.
+    /// @return | table | Current retained bytes, counts, compiled-shape residency, and effective resource budget.
     graphics.set(
         "getResourceStats",
         lua.create_function(move |lua, ()| {
@@ -24,6 +24,7 @@ pub(super) fn register_diagnostics_api(
             table.set("font_bytes", stats.font_bytes)?;
             table.set("canvas_bytes", stats.canvas_bytes)?;
             table.set("shader_bytes", stats.shader_bytes)?;
+            table.set("shape_bytes", stats.shape_bytes)?;
             table.set("evictable_bytes", stats.evictable_bytes)?;
             table.set("non_evictable_bytes", stats.non_evictable_bytes)?;
             table.set("total_bytes", stats.total_bytes)?;
@@ -32,6 +33,8 @@ pub(super) fn register_diagnostics_api(
             table.set("font_count", stats.font_count)?;
             table.set("canvas_count", stats.canvas_count)?;
             table.set("shader_count", stats.shader_count)?;
+            table.set("shape_count", stats.shape_count)?;
+            table.set("compiled_shape_count", stats.compiled_shape_count)?;
             Ok(table)
         })?,
     )?;

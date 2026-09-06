@@ -470,7 +470,7 @@ impl GpuRenderer {
                     ..Default::default()
                 },
                 depth_stencil: Some(depth_stencil_state(GpuStencilMode::Disabled)),
-                multisample: wgpu::MultisampleState::default(),
+                multisample: crate::render::gpu_pipeline::multisample_state(self.sample_count),
                 multiview: None,
                 cache: None,
             })

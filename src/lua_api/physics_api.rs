@@ -2094,6 +2094,10 @@ impl LuaUserData for LuaKinematicController2D {
         );
         // -- testMove --
         /// Solves movement without mutating the controlled body.
+        /// @param | dx | number | Requested X displacement.
+        /// @param | dy | number | Requested Y displacement.
+        /// @param | opts | table? | Optional `{zMin, zMax}` override.
+        /// @return | table | Deterministic movement result and ordered hits.
         methods.add_method_mut(
             "testMove",
             |lua, this, (dx, dy, opts): (f32, f32, Option<LuaTable>)| {
@@ -2103,6 +2107,9 @@ impl LuaUserData for LuaKinematicController2D {
             },
         );
         // -- setRadius --
+        /// Sets the positive sweep radius used by subsequent movement queries.
+        /// @param | radius | number | Positive finite sweep radius.
+        /// @return | nil | No return value.
         methods.add_method_mut("setRadius", |_, this, radius: f32| {
             this.ensure_live("LKinematicController2D:setRadius")?;
             if !radius.is_finite() || radius <= 0.0 {
@@ -2115,6 +2122,9 @@ impl LuaUserData for LuaKinematicController2D {
             Ok(())
         });
         // -- setSkin --
+        /// Sets the non-negative collision skin used by subsequent movement queries.
+        /// @param | skin | number | Finite non-negative collision skin.
+        /// @return | nil | No return value.
         methods.add_method_mut("setSkin", |_, this, skin: f32| {
             this.ensure_live("LKinematicController2D:setSkin")?;
             if !skin.is_finite() || skin < 0.0 {
@@ -2127,6 +2137,9 @@ impl LuaUserData for LuaKinematicController2D {
             Ok(())
         });
         // -- setMaxSlides --
+        /// Sets the maximum number of wall slides permitted for one movement.
+        /// @param | max_slides | integer | Slide limit from 1 through the engine maximum.
+        /// @return | nil | No return value.
         methods.add_method_mut("setMaxSlides", |_, this, max_slides: usize| {
             this.ensure_live("LKinematicController2D:setMaxSlides")?;
             if max_slides == 0 || max_slides > MAX_KINEMATIC_SLIDES {
@@ -2139,6 +2152,9 @@ impl LuaUserData for LuaKinematicController2D {
             Ok(())
         });
         // -- setFilter --
+        /// Replaces the query filter used by movement sweeps.
+        /// @param | filter | any | Query-filter table or nil to clear optional filters.
+        /// @return | nil | No return value.
         methods.add_method_mut("setFilter", |_, this, filter: LuaValue| {
             this.ensure_live("LKinematicController2D:setFilter")?;
             let mut filter =
@@ -2148,6 +2164,10 @@ impl LuaUserData for LuaKinematicController2D {
             Ok(())
         });
         // -- setVerticalSpan --
+        /// Constrains movement sweeps to a strict vertical span.
+        /// @param | z_min | number | Finite lower vertical bound.
+        /// @param | z_max | number | Finite upper bound greater than `z_min`.
+        /// @return | nil | No return value.
         methods.add_method_mut("setVerticalSpan", |_, this, (z_min, z_max): (f32, f32)| {
             this.ensure_live("LKinematicController2D:setVerticalSpan")?;
             if !z_min.is_finite() || !z_max.is_finite() || z_max <= z_min {
@@ -2160,12 +2180,17 @@ impl LuaUserData for LuaKinematicController2D {
             Ok(())
         });
         // -- clearVerticalSpan --
+        /// Removes the vertical span constraint from movement sweeps.
+        /// @return | nil | No return value.
         methods.add_method_mut("clearVerticalSpan", |_, this, ()| {
             this.ensure_live("LKinematicController2D:clearVerticalSpan")?;
             this.settings.vertical_span = None;
             Ok(())
         });
         // -- recover --
+        /// Applies penetration recovery and updates the controlled body position.
+        /// @param | opts | table? | Optional `{zMin, zMax}` override.
+        /// @return | table | Deterministic recovery result and ordered hits.
         methods.add_method_mut("recover", |lua, this, opts: Option<LuaTable>| {
             this.ensure_live("LKinematicController2D:recover")?;
             let mut settings = this.settings;
@@ -2200,19 +2225,28 @@ impl LuaUserData for LuaKinematicController2D {
             kinematic_result_to_table(lua, &result)
         });
         // -- getLastResult --
+        /// Returns the most recent movement or recovery result, when available.
+        /// @return | table | Last result table, or nil before any movement.
         methods.add_method("getLastResult", |lua, this, ()| match &this.last_result {
             Some(result) => Ok(LuaValue::Table(kinematic_result_to_table(lua, result)?)),
             None => Ok(LuaValue::Nil),
         });
         // -- release --
+        /// Releases this controller so further operations fail predictably.
+        /// @return | nil | No return value.
         methods.add_method_mut("release", |_, this, ()| {
             this.released = true;
             this.last_result = None;
             Ok(())
         });
         // -- type --
+        /// Returns this controller's runtime type name.
+        /// @return | string | Always `LKinematicController2D`.
         methods.add_method("type", |_, _, ()| Ok("LKinematicController2D"));
         // -- typeOf --
+        /// Checks whether a type name is implemented by this controller.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True for `LKinematicController2D` or `LObject`.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LKinematicController2D" || name == "LObject")
         });
@@ -2551,7 +2585,7 @@ impl LuaUserData for LuaWorld {
         // -- getWrapBounds --
         /// Returns the current explicit toroidal wrap bounds, or nil when wrapping is disabled.
         /// The caller decides when bodies are wrapped; this method does not alter simulation state.
-        /// @return | table? | Bounds with `min_x`, `min_y`, `max_x`, and `max_y`, or nil.
+        /// @return | table | Bounds with `min_x`, `min_y`, `max_x`, and `max_y`, or nil.
         methods.add_method("getWrapBounds", |lua, this, ()| {
             let Some((min_x, min_y, max_x, max_y)) = this.world.borrow().get_wrap_bounds() else {
                 return Ok(LuaValue::Nil);
@@ -3788,6 +3822,8 @@ impl LuaUserData for LuaWorld {
         });
         // -- setBodyEnabled --
         /// Enables or disables one body without destroying its stable id.
+        /// @param | body_id | integer | Stable body identifier.
+        /// @param | enabled | boolean | Whether the body participates in simulation and queries.
         methods.add_method(
             "setBodyEnabled",
             |_, this, (body_id, enabled): (usize, bool)| {
@@ -3799,6 +3835,7 @@ impl LuaUserData for LuaWorld {
         );
         // -- isBodyEnabled --
         /// Returns whether one live body participates in simulation and queries.
+        /// @param | body_id | integer | Stable body identifier.
         methods.add_method("isBodyEnabled", |_, this, body_id: usize| {
             this.world
                 .borrow()
@@ -3807,6 +3844,9 @@ impl LuaUserData for LuaWorld {
         });
         // -- setFixtureEnabled --
         /// Enables or disables one zero-based fixture without changing sensor state.
+        /// @param | body_id | integer | Stable body identifier.
+        /// @param | fixture_index | integer | Zero-based fixture index.
+        /// @param | enabled | boolean | Whether the fixture participates in simulation and queries.
         methods.add_method(
             "setFixtureEnabled",
             |_, this, (body_id, fixture_index, enabled): (usize, usize, bool)| {
@@ -3818,6 +3858,8 @@ impl LuaUserData for LuaWorld {
         );
         // -- isFixtureEnabled --
         /// Returns whether one zero-based fixture participates in simulation and queries.
+        /// @param | body_id | integer | Stable body identifier.
+        /// @param | fixture_index | integer | Zero-based fixture index.
         methods.add_method(
             "isFixtureEnabled",
             |_, this, (body_id, fixture_index): (usize, usize)| {

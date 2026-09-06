@@ -239,8 +239,59 @@ pub enum RaycasterBackground {
         tint: [f32; 4],
         offset: f32,
     },
+    /// Layered world-space roof drawn as elevated ceiling geometry.
+    LayeredSky {
+        /// Fallback color behind the elevated roof layers.
+        top: [f32; 4],
+        /// Fallback color at the bottom of the background.
+        bottom: [f32; 4],
+        /// Back-to-front elevated roof texture layers.
+        layers: Vec<RaycasterSkyLayer>,
+    },
     /// Shader-backed fullscreen background using existing render-owned shader infrastructure.
     Shader { material: RaycasterMaterial },
+}
+
+/// One animated world-space roof texture layer in a [`RaycasterBackground::LayeredSky`].
+#[derive(Debug, Clone)]
+pub struct RaycasterSkyLayer {
+    /// Texture repeated over the elevated horizontal plane like a ceiling tile.
+    pub texture_key: TextureKey,
+    /// RGBA tint; alpha controls layer opacity.
+    pub tint: [f32; 4],
+    /// Blend mode used when this layer is composited.
+    pub blend_mode: BlendMode,
+    /// UV density over each world tile; `1.0` matches the normal ceiling mapping.
+    pub scale: [f32; 2],
+    /// Constant world-space UV phase added before time motion.
+    pub offset: [f32; 2],
+    /// World-space UV cycles per second; sign encodes movement direction.
+    pub velocity: [f32; 2],
+    /// World-plane response: `1.0` is world locked and `0.0` is camera locked.
+    pub parallax: f32,
+    /// Height above the local level floor. This should exceed the normal ceiling height.
+    pub height: f32,
+    /// Bounded deterministic repeated copies, useful for cloud density.
+    pub copies: u8,
+    /// Retained for compatibility; world-space roof tiles repeat in both axes.
+    pub wrap_y: bool,
+}
+
+/// A perspective-projected sky tile emitted from an elevated world-space plane.
+#[derive(Debug, Clone)]
+pub struct RaycasterSkyQuad {
+    /// Screen-space corners matching the ceiling quad convention.
+    pub corners: [Vec2; 4],
+    /// Normalized texture coordinates matching `corners`.
+    pub uvs: [Vec2; 4],
+    /// Perspective-correct camera depths for each corner.
+    pub corner_w: [f32; 4],
+    /// Texture sampled for this sky tile.
+    pub texture_key: TextureKey,
+    /// Tint and lighting multiplier applied while drawing the tile.
+    pub color: [f32; 4],
+    /// Blend mode used while compositing this layer.
+    pub blend_mode: BlendMode,
 }
 
 /// Screen-space presentation effect drawn over the raycaster frame.
@@ -340,6 +391,8 @@ pub struct RaycasterScene {
     pub floors: Vec<FloorQuad>,
     /// Ceiling quads sorted front-to-back.
     pub ceilings: Vec<CeilingQuad>,
+    /// Elevated layered-sky quads drawn before ordinary ceiling and wall geometry.
+    pub sky_quads: Vec<RaycasterSkyQuad>,
     /// Billboard sprites sorted back-to-front for alpha blending.
     pub sprites: Vec<BillboardSprite>,
     /// Projected transparent particles sorted back-to-front.
@@ -356,6 +409,12 @@ pub struct RaycasterScene {
     pub screen_height: f32,
     /// Deterministic time value captured for animated material evaluation.
     pub time_seconds: f32,
+    /// Camera yaw captured with the built scene for projected presentation diagnostics.
+    pub camera_angle: f32,
+    /// Camera horizontal field of view captured with the built scene.
+    pub camera_fov: f32,
+    /// Screen-space horizon used by the camera projection; elevated roof tiles naturally render above it.
+    pub horizon_y: f32,
     /// Build-time counters captured while assembling this scene.
     pub build_stats: RaycasterBuildStats,
     /// Approximate per-ray wall depths used for depth-aware overlays and particle occlusion.
@@ -368,6 +427,7 @@ impl RaycasterScene {
             walls: Vec::new(),
             floors: Vec::new(),
             ceilings: Vec::new(),
+            sky_quads: Vec::new(),
             sprites: Vec::new(),
             particles: Vec::new(),
             models: Vec::new(),
@@ -376,6 +436,9 @@ impl RaycasterScene {
             screen_width,
             screen_height,
             time_seconds: 0.0,
+            camera_angle: 0.0,
+            camera_fov: std::f32::consts::PI / 3.0,
+            horizon_y: screen_height * 0.5,
             build_stats: RaycasterBuildStats::default(),
             depth_columns: Vec::new(),
         }
@@ -385,6 +448,7 @@ impl RaycasterScene {
         self.walls.len()
             + self.floors.len()
             + self.ceilings.len()
+            + self.sky_quads.len()
             + self.sprites.len()
             + self.particles.len()
             + self.models.len()

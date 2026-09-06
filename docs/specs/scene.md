@@ -264,7 +264,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LSceneObjectContainer:defineGroup(name) -> integer`: Define an object group and return its 0-based bit index.
 - `LSceneObjectContainer:draw() -> nil`: Call draw() on all objects that have a draw method, sorted by layer.
 - `LSceneObjectContainer:getByLayer(n) -> table`: Get all objects whose layer equals `n`.
-- `LSceneObjectContainer:getCount() -> nil`: Get the number of objects currently in the container.
+- `LSceneObjectContainer:getCount() -> integer`: Get the number of objects currently in the container.
 - `LSceneObjectContainer:getGroupBit(name) -> integer`: Return the bit index assigned to a group name.
 - `LSceneObjectContainer:getObjects() -> table`: Get all objects as an array (layer-sorted).
 - `LSceneObjectContainer:has(obj) -> boolean`: Check whether an object is present in the container.

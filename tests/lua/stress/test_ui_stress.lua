@@ -6,9 +6,7 @@ describe("stress: retained UI workload", function()
         lurek.ui.clear()
         lurek.ui.setViewport(1280, 720)
     end)
-
-    -- @stress lurek.ui.newButton
-    it("creates, lays out, renders, and clears a bounded retained tree", function()
+    local function __audit_stress_3()
         local root = lurek.ui.getRoot()
         local count = 512
         for index = 1, count do
@@ -22,19 +20,27 @@ describe("stress: retained UI workload", function()
         lurek.ui.clear()
         local recovered = lurek.ui.newButton("recovered")
         expect_true(recovered:isValid())
-    end)
+    end
 
-    -- @stress lurek.ui.renderToImage
-    it("captures at the supported boundary shape then accepts a fresh valid capture", function()
+
+    -- @stress lurek.ui.newButton
+    it("creates, lays out, renders, and clears a bounded retained tree", function()
+        __audit_stress_3()
+    end)
+    local function __audit_stress_2()
         local button = lurek.ui.newButton("capture")
         lurek.ui.getRoot():addChild(button)
         lurek.ui.renderToImage(512, 512, "save/ui_stress_capture.png")
         lurek.ui.renderToImage(64, 64, "save/ui_stress_recovery.png")
         expect_true(button:isValid())
-    end)
+    end
 
-    -- @stress lurek.ui.newContext
-    it("keeps 64 retained context trees independent", function()
+
+    -- @stress lurek.ui.renderToImage
+    it("captures at the supported boundary shape then accepts a fresh valid capture", function()
+        __audit_stress_2()
+    end)
+    local function __audit_stress_1()
         local contexts = {}
         for context_index = 1, 64 do
             local context = lurek.ui.newContext({
@@ -50,6 +56,12 @@ describe("stress: retained UI workload", function()
         end
         expect_equal("1:1", contexts[1]:getById("label_1"):getText())
         expect_equal("64:1", contexts[64]:getById("label_1"):getText())
+    end
+
+
+    -- @stress lurek.ui.newContext
+    it("keeps 64 retained context trees independent", function()
+        __audit_stress_1()
     end)
 end)
 

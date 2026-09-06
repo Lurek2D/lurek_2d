@@ -336,4 +336,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    try:
+        # Reports contain Unicode module names and the output-path arrow. Keep
+        # the CLI usable under the Windows CP1250 default console encoding.
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+    except AttributeError:
+        pass
     main()

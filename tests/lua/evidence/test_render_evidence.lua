@@ -70,6 +70,12 @@
 -- @covers lurek.render.stencil
 -- @covers lurek.render.translate
 -- @covers lurek.render.triangle
+-- @covers lurek.render.listBuiltinShapes
+-- @covers lurek.render.getBuiltinShapeInfo
+-- @covers lurek.render.loadBuiltinShape
+-- @covers LShape:compile
+-- @covers LShape:addShape
+-- @covers LShape:drawMany
 -- @covers lurek.sprite.newNineSlice
 
 
@@ -500,6 +506,23 @@ describe("Evidence: lurek.render", function()
             lurek.render.pop()
         end
         capture_png("render_retained_shape_instances.png")
+    end)
+
+    -- Does: Renders every executable-native template in an 8x12 contact sheet.
+    -- Shows: The same primitive-based catalogue used by agents is visible without SVG assets.
+    -- Artifact: tests/artifacts/current/render/render_native_shape_catalog.png
+    -- Why: This is the visual smoke test for the 96-template catalogue and retained GPU path.
+    it("PNG: native shape catalogue contact sheet", function()
+        lurek.render.setColor(0.05, 0.06, 0.09, 1.0)
+        lurek.render.rectangle("fill", 0, 0, 800, 600)
+        local all = lurek.render.listBuiltinShapes()
+        for index, info in ipairs(all) do
+            local col = (index - 1) % 12
+            local row = math.floor((index - 1) / 12)
+            local shape = lurek.render.loadBuiltinShape(info.id)
+            shape:drawMany({ { x = col * 66 + 1, y = row * 72 + 4, tint = { 0.35 + (row % 3) * 0.2, 0.75, 1.0, 1.0 } } })
+        end
+        capture_png("render_native_shape_catalog.png")
     end)
 
     -- Does: Activates a custom shader, sends uniforms, draws through it, then restores the default shader.

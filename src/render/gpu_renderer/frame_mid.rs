@@ -931,6 +931,55 @@ impl<'a> FrameCommandContext<'a> {
                     * Mat3::from_scale(Vec2 { x: *sx, y: *sy })
                     * Mat3::from_translation(Vec2 { x: -*ox, y: -*oy });
                 let shape_transform = *parent * local;
+                if let Some(compiled) = shape.compiled.as_ref() {
+                    let static_key =
+                        crate::render::gpu_resources::shape_geometry_static_key(compiled);
+                    if compiled.revision == shape.revision
+                        && renderer
+                            .mesh_cache
+                            .static_geometry
+                            .contains_key(&static_key)
+                    {
+                        let Some(geometry) = renderer.mesh_cache.static_geometry.get(&static_key)
+                        else {
+                            restore_state!();
+                            return true;
+                        };
+                        let inst_offset = frame_instances.len() as u32;
+                        frame_instances.push(crate::render::gpu_types::InstanceData::from(
+                            shape_transform,
+                        ));
+                        renderer.render_stats.shape_instances =
+                            renderer.render_stats.shape_instances.saturating_add(1);
+                        let (target_width, target_height) =
+                            renderer.target_dimensions(current_target, canvases);
+                        draws.push(PreparedDraw {
+                            target: current_target,
+                            geometry: crate::render::gpu_pipeline::GeometryKind::ColorInstanced,
+                            texture_ref: None,
+                            idx_start: 0,
+                            idx_count: geometry.index_count,
+                            blend_mode: current_blend_mode,
+                            scissor: normalize_scissor(
+                                current_scissor,
+                                target_width,
+                                target_height,
+                            ),
+                            color_mask_bits,
+                            shader: active_shader.filter(|key| shaders.contains_key(*key)),
+                            stencil_mode,
+                            stencil_reference: stencil_reference as u32,
+                            static_geometry: Some(static_key),
+                            instance_buffer: None,
+                            instance_start: inst_offset,
+                            instance_count: 1,
+                        });
+                        restore_state!();
+                        return true;
+                    }
+                }
+                renderer.render_stats.shape_tessellations =
+                    renderer.render_stats.shape_tessellations.saturating_add(1);
                 renderer.replay_compound_shape(
                     shape,
                     &shape_transform,
@@ -948,6 +997,116 @@ impl<'a> FrameCommandContext<'a> {
                     &mut all_color_idxs,
                     &mut draws,
                 );
+            }
+            RenderCommand::DrawShapeMany {
+                shape_key,
+                instances,
+            } => {
+                let Some(shape) = shapes.get(*shape_key) else {
+                    renderer.render_diagnostics.record_missing_shape();
+                    restore_state!();
+                    return true;
+                };
+                let parent = transform_stack_last(&transform_stack);
+                let compiled_geometry = shape.compiled.as_ref().and_then(|compiled| {
+                    let static_key =
+                        crate::render::gpu_resources::shape_geometry_static_key(compiled);
+                    (compiled.revision == shape.revision
+                        && renderer
+                            .mesh_cache
+                            .static_geometry
+                            .contains_key(&static_key))
+                    .then(|| {
+                        renderer
+                            .mesh_cache
+                            .static_geometry
+                            .get(&static_key)
+                            .map(|geometry| (static_key, geometry))
+                    })
+                    .flatten()
+                });
+                if let Some((static_key, geometry)) = compiled_geometry {
+                    let inst_offset = frame_instances.len() as u32;
+                    for instance in instances {
+                        let local = Mat3::from_translation(Vec2 {
+                            x: instance.x,
+                            y: instance.y,
+                        }) * Mat3::from_rotation(instance.rotation)
+                            * Mat3::from_scale(Vec2 {
+                                x: instance.sx,
+                                y: instance.sy,
+                            })
+                            * Mat3::from_translation(Vec2 {
+                                x: -instance.ox,
+                                y: -instance.oy,
+                            });
+                        let mut gpu_instance =
+                            crate::render::gpu_types::InstanceData::from(*parent * local);
+                        gpu_instance.tint = instance.tint;
+                        frame_instances.push(gpu_instance);
+                    }
+                    renderer.render_stats.shape_instances = renderer
+                        .render_stats
+                        .shape_instances
+                        .saturating_add(instances.len() as u32);
+                    let (target_width, target_height) =
+                        renderer.target_dimensions(current_target, canvases);
+                    draws.push(PreparedDraw {
+                        target: current_target,
+                        geometry: crate::render::gpu_pipeline::GeometryKind::ColorInstanced,
+                        texture_ref: None,
+                        idx_start: 0,
+                        idx_count: geometry.index_count,
+                        blend_mode: current_blend_mode,
+                        scissor: normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        shader: active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference: stencil_reference as u32,
+                        static_geometry: Some(static_key),
+                        instance_buffer: None,
+                        instance_start: inst_offset,
+                        instance_count: instances.len() as u32,
+                    });
+                } else {
+                    // Cold/uncompiled shapes retain backwards-compatible immediate replay;
+                    // users can call `compile()` once during load/init for the cached path.
+                    renderer.render_stats.shape_tessellations = renderer
+                        .render_stats
+                        .shape_tessellations
+                        .saturating_add(instances.len() as u32);
+                    for instance in instances {
+                        let local = Mat3::from_translation(Vec2 {
+                            x: instance.x,
+                            y: instance.y,
+                        }) * Mat3::from_rotation(instance.rotation)
+                            * Mat3::from_scale(Vec2 {
+                                x: instance.sx,
+                                y: instance.sy,
+                            })
+                            * Mat3::from_translation(Vec2 {
+                                x: -instance.ox,
+                                y: -instance.oy,
+                            });
+                        renderer.replay_compound_shape(
+                            shape,
+                            &(*parent * local),
+                            wireframe,
+                            current_target,
+                            current_blend_mode,
+                            current_scissor,
+                            color_mask_bits,
+                            active_text_shader.or(active_shader),
+                            stencil_mode,
+                            stencil_reference,
+                            canvases,
+                            shaders,
+                            &mut all_color_verts,
+                            &mut all_color_idxs,
+                            &mut draws,
+                        );
+                    }
+                }
             }
             RenderCommand::DrawParticleSystem {
                 ref particles,

@@ -67,6 +67,33 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ## Notes
 
+### Retained native shapes
+
+- `lurek.render.newShape()` creates a retained `LShape`; primitives, paths,
+  palette roles, stroke styles, and advanced marks are recorded in a compact
+  command IR. `compile({tolerance=0.1})` tessellates once and publishes an
+  indexed flat-color mesh to the shared GPU cache.
+- Use `listBuiltinShapes(filter?)`, `getBuiltinShapeInfo(id)`, and
+  `loadBuiltinShape(id, opts?)` for the executable's 96 templates. Canonical
+  IDs are `category/name`, for example `character/hero` and
+  `data_viz/error_bar`.
+- `LShape:addShape(child, transform?)` snapshots a child, preserving layer
+  order and current palette colors. `drawMany(instances)` validates up to
+  250,000 transforms and emits one compatible instanced draw.
+- `path` accepts `moveTo`, `lineTo`, `quadTo`, `cubicTo`, multiple subpaths,
+  `close`, and `nonzero`/`evenodd` fill rules. `setStrokeStyle` supports
+  butt/round/square caps, miter/round/bevel joins, miter limits, and dashes.
+- Immediate `lurek.render.drawPath` keeps its legacy `(path, mode, close)`
+  overload and also accepts the retained-style options table with `fillRule`
+  and stroke fields. Both paths use the Lyon tessellator before GPU upload;
+  software evidence capture replays the generated triangles as well.
+- After warm-up, `getStats()` should report no new shape tessellation. Shape
+  bytes and handle counts are included in `getResourceStats()`.
+- Screen and canvas color passes use a shared 4× MSAA target when the negotiated
+  surface and depth/stencil formats support it; each pass resolves into the
+  single-sampled surface/canvas view consumed by screenshots, textures, and
+  post-fx. `getStats().msaa_fallback` reports the explicit 1× fallback.
+
 - Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua/unit/`.
 - `lurek.render.getCapabilities()` returns only normalized adapter limits and stable booleans. It intentionally excludes raw `wgpu` types, adapter names, driver strings, and mutable device state; `getBudgetLimits()` remains the source for effective engine work ceilings.
 - `lurek.render.getResourceStats()` reports tracked retained bytes and counts without exposing or destroying live handles. Under pressure, only reconstructible cache data is eligible for eviction; live public resources remain non-evictable and the pressure is observable.

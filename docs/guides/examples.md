@@ -17,6 +17,10 @@
 | [dataframe.lua](https://github.com/Lurek2D/lurek_2d/blob/main/content/examples/dataframe.lua) | Table-shaped data loading and querying. |
 | [automation.lua](https://github.com/Lurek2D/lurek_2d/blob/main/content/examples/automation.lua) | Replay and deterministic test workflows. |
 
+## Focused feature demos
+
+Use focused demos for a copyable workflow instead of the generated API catalog. [raycaster_layered_sky.demo.lua](https://github.com/Lurek2D/lurek_2d/blob/main/content/examples/raycaster_layered_sky.demo.lua) is the compact example for an elevated ceiling sky with a stationary background, moving moon, and configurable cloud density.
+
 ## Run Examples
 
 ```powershell

@@ -555,24 +555,23 @@ end
 
 --@api: LCommandStack:redo
 do
-    local patterns_last_state_dt = 0
+local patterns_last_state_dt = 0
 
-    local cmds = lurek.patterns.newCommandStack(10)
-    local value = 1
-    cmds:execute("add", function()
-        value = value + 4
-    end, function()
-        value = value - 4
-    end)
-    cmds:execute("double", function()
-        value = value * 2
-    end, function()
-        value = value / 2
-    end)
-    cmds:undo()
-    cmds:redo()
-    lurek.log.info("value = " .. value)
-    lurek.log.info("current = " .. tostring(cmds:getCurrentName()))
+local cmds = lurek.patterns.newCommandStack(10)
+local value = 1
+cmds:execute("add", function()
+value = value + 4
+end, function()
+value = value - 4
+end)
+cmds:execute("double", function()
+value = value * 2
+end, function()
+value = value / 2
+end)
+cmds:undo()
+cmds:redo()
+lurek.log.info("value = " .. value)
 end
 
 --@api: LCommandStack:canUndo

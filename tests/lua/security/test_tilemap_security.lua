@@ -37,13 +37,17 @@ describe("tilemap hostile inputs", function()
             map:loadChunk(1, 0)
         end)
     end)
-
-    -- @security LLargeMapRenderer:setMapData
-    it("rejects mismatched dense renderer payloads", function()
+    local function __audit_security_1()
         local renderer = lurek.tilemap.newLargeMapRenderer(16, 16)
         expect_error(function()
             renderer:setMapData({ 1, 2, 3 }, 2, 2)
         end)
+    end
+
+
+    -- @security LLargeMapRenderer:setMapData
+    it("rejects mismatched dense renderer payloads", function()
+        __audit_security_1()
     end)
 
     -- @security lurek.tilemap.loadTMX

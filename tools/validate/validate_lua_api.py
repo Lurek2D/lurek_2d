@@ -68,7 +68,12 @@ def check_file_header(lines: list[str]) -> None:
 
 
 def check_register_signature(lines: list[str]) -> None:
-    """pub fn register must exist with the canonical 3-argument signature."""
+    """Validate public module registers and private render helper registers.
+
+    ``src/lua_api`` also contains private ``pub(super) fn register_*_api``
+    helpers that populate the canonical ``lurek.render`` table.  They are
+    intentionally not standalone modules and must not be rejected as such.
+    """
     for i, line in enumerate(lines):
         # Skip comment lines (//!, //, or ///): they may mention `pub fn register()
         # in prose and must not be treated as actual Rust function definitions.
@@ -90,6 +95,10 @@ def check_register_signature(lines: list[str]) -> None:
             preceding = [l.strip() for l in lines[max(0, i - 4): i]]
             if not any(l.startswith("///") for l in preceding):
                 _warn(i + 1, "pub fn register() is missing a `///` docstring line")
+            return
+        if re.search(r"pub\s*\([^)]*\)\s*fn\s+register_[a-z0-9_]+\s*\(", line):
+            # A private helper is owned by its parent module and does not
+            # receive a standalone ``lurek.set`` registration.
             return
     _err(0, "No `pub fn register(` found -- file is not a valid lua_api module")
 
@@ -123,6 +132,11 @@ def check_module_registration(content: str) -> None:
         r'\b\w+\s*\.\s*set\s*\(\s*"[\w]+"\s*,\s*(\w+)(?:\.clone\(\))?\s*\)\s*\?\s*;'
     )
     if any(match.group(1) in created_tables for match in fallback_re.finditer(content)):
+        return
+
+    # Private ``register_*_api`` helpers are merged into a parent table and
+    # therefore have no module-level ``lurek.set`` call by design.
+    if re.search(r"pub\s*\([^)]*\)\s*fn\s+register_[a-z0-9_]+\s*\(", content):
         return
 
     if not created_tables:
@@ -510,7 +524,11 @@ def check_lua_entry_doc_completeness(path: Path) -> None:
                     f'`{entry_name}`: every Lua registration must have `@return | type | description` data',
                 )
 
-        if entry.kind == "method" and entry.owner_type and entry.owner_type != "Unknown":
+        if (
+            entry.kind == "method"
+            and entry.owner_type
+            and entry.owner_type not in {"Unknown", "LUnknown"}
+        ):
             first_method_line_by_owner.setdefault(entry.owner_type, entry.line)
 
     for owner_type, line_no in sorted(first_method_line_by_owner.items(), key=lambda item: item[1]):

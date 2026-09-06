@@ -10,6 +10,10 @@ local FILES = {
     "raycaster_floor_ceiling_pick_uv.png",
     "raycaster_multilevel_hole_pick.png",
     "raycaster_full_scene_day_night.png",
+    "raycaster_layered_sky_clear.png",
+    "raycaster_layered_sky_partial.png",
+    "raycaster_layered_sky_heavy.png",
+    "raycaster_layered_sky_yaw_shift.png",
 }
 
 -- @describe golden: raycaster evidence comparison

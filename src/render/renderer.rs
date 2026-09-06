@@ -13,6 +13,7 @@
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;
 use crate::render::mesh::Mesh;
+use crate::render::shape::{FillRule, StrokeStyle};
 use crate::runtime::resource_keys::{
     CanvasKey, FontKey, InstanceBufferKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey,
     StaticGeometryKey, TextureKey,
@@ -378,6 +379,27 @@ impl Default for ProvinceMapEffectOptions {
         }
     }
 }
+/// One retained-shape instance submitted by `DrawShapeMany`.
+#[derive(Debug, Clone, Copy)]
+pub struct ShapeInstance {
+    /// World-space X position.
+    pub x: f32,
+    /// World-space Y position.
+    pub y: f32,
+    /// Rotation in radians.
+    pub rotation: f32,
+    /// Scale X.
+    pub sx: f32,
+    /// Scale Y.
+    pub sy: f32,
+    /// Origin offset X.
+    pub ox: f32,
+    /// Origin offset Y.
+    pub oy: f32,
+    /// RGBA multiplier applied by the instanced shader.
+    pub tint: [f32; 4],
+}
+
 /// All draw, state, and control operations submitted to `GpuRenderer::render_frame`.
 #[derive(Debug, Clone)]
 pub enum RenderCommand {
@@ -652,6 +674,13 @@ pub enum RenderCommand {
         ox: f32,
         oy: f32,
     },
+    /// Draw one compiled retained shape for many transforms in one GPU dispatch.
+    DrawShapeMany {
+        /// Shape registry key.
+        shape_key: ShapeKey,
+        /// Validated instance records.
+        instances: Vec<ShapeInstance>,
+    },
     /// Draw a particle system snapshot as a list of `ParticleInstance` values.
     DrawParticleSystem {
         particles: Vec<ParticleInstance>,
@@ -696,6 +725,10 @@ pub enum RenderCommand {
         segments: Vec<PathSegment>,
         mode: DrawMode,
         close: bool,
+        /// Fill winding rule used when `mode` is `Fill`.
+        fill_rule: FillRule,
+        /// Stroke parameters used when `mode` is `Line`.
+        stroke: StrokeStyle,
     },
     /// Draw a solid rectangle with a two-color gradient.
     DrawGradientRect {
@@ -902,6 +935,7 @@ impl RenderCommand {
             | SyncMesh { .. }
             | DrawMeshTransient { .. }
             | DrawShape { .. }
+            | DrawShapeMany { .. }
             | DrawStaticGeometry { .. } => RenderCommandCategory::Mesh,
             DrawBatch { .. } | DrawParticleSystem { .. } => RenderCommandCategory::Batch,
             BeginPostFx { .. } | EndPostFx { .. } | ApplyPostFx { .. } => {

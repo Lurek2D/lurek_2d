@@ -941,7 +941,7 @@ do
     lurek.log.info("typeOf object=" .. tostring(is_object) .. " compressed=" .. tostring(is_compressed) .. " format=" .. fmt)
 end
 
---@api: LUnknown:getAt
+--@api: LProvinceGrid:getAt
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -951,7 +951,7 @@ do
     lurek.log.info("province at (10,10) = " .. id)
 end
 
---@api: LUnknown:provinceCount
+--@api: LProvinceGrid:provinceCount
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -961,7 +961,7 @@ do
     lurek.log.info("provinces = " .. grid:provinceCount())
 end
 
---@api: LUnknown:provinceSpans
+--@api: LProvinceGrid:provinceSpans
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -971,7 +971,7 @@ do
     lurek.log.info("total spans = " .. #spans)
 end
 
---@api: LUnknown:adjacencies
+--@api: LProvinceGrid:adjacencies
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -981,7 +981,7 @@ do
     lurek.log.info("adjacency records = " .. #adj)
 end
 
---@api: LUnknown:borderSegments
+--@api: LProvinceGrid:borderSegments
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -991,7 +991,7 @@ do
     lurek.log.info("border segments = " .. #segs)
 end
 
---@api: LUnknown:getPolygons
+--@api: LProvinceGrid:getPolygons
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1001,7 +1001,7 @@ do
     lurek.log.info("polygon records = " .. #polys)
 end
 
---@api: LUnknown:getPolygonsSimplified
+--@api: LProvinceGrid:getPolygonsSimplified
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1011,7 +1011,7 @@ do
     lurek.log.info("simplified records = " .. #polys)
 end
 
---@api: LUnknown:drawShapes
+--@api: LProvinceGrid:drawShapes
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1021,7 +1021,7 @@ do
     lurek.log.info("drew " .. count .. " polygons")
 end
 
---@api: LUnknown:serializeShapeData
+--@api: LProvinceGrid:serializeShapeData
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1031,7 +1031,7 @@ do
     lurek.log.info("deserialized")
 end
 
---@api: LUnknown:deserializeShapeData
+--@api: LProvinceGrid:deserializeShapeData
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1041,7 +1041,7 @@ do
     lurek.log.info("deserialized")
 end
 
---@api: LUnknown:getWidth
+--@api: LProvinceGrid:getWidth
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1051,7 +1051,7 @@ do
     lurek.log.info("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
---@api: LUnknown:getHeight
+--@api: LProvinceGrid:getHeight
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1061,7 +1061,7 @@ do
     lurek.log.info("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
---@api: LUnknown:type
+--@api: LProvinceGrid:type
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
@@ -1071,7 +1071,7 @@ do
     lurek.log.info("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 
---@api: LUnknown:typeOf
+--@api: LProvinceGrid:typeOf
 do
 
     local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")

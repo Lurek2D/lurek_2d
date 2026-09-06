@@ -21,9 +21,9 @@ use crate::raycaster::{
     RaycasterBuildStats, RaycasterLastBuildContext, RaycasterLevel, RaycasterLimits,
     RaycasterMaterial, RaycasterMaterialFrameLayout, RaycasterOverlayEffect,
     RaycasterParticleEmitter, RaycasterPickWorld, RaycasterRenderState, RaycasterScene,
-    RaycasterView, RaycasterViewCamera, RaycasterViewQuality, RaycasterViewport, SceneAdapter,
-    SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform, ScreenPickParams,
-    WallFeature, WallFeatureKind, WorldSprite,
+    RaycasterSkyLayer, RaycasterView, RaycasterViewCamera, RaycasterViewQuality, RaycasterViewport,
+    SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform,
+    ScreenPickParams, WallFeature, WallFeatureKind, WorldSprite,
 };
 #[cfg(any(feature = "obj-loader", feature = "voxel-loader"))]
 use crate::raycaster::{SceneAdapterModel, SceneAdapterModelAsset};
@@ -514,6 +514,308 @@ fn parse_particle_shape(table: &LuaTable, api_name: &str) -> LuaResult<ParticleR
 
 struct RaycasterLuaParser;
 
+fn sky_path(api_name: &str, index: usize, field: &str) -> String {
+    format!("{api_name}: background.layers[{index}].{field}")
+}
+
+fn parse_sky_vec2(
+    table: &LuaTable,
+    key: &str,
+    api_name: &str,
+    index: usize,
+    default: [f32; 2],
+) -> LuaResult<[f32; 2]> {
+    let path = sky_path(api_name, index, key);
+    let value = table.get::<_, Option<LuaValue>>(key).map_err(|err| {
+        LuaError::RuntimeError(format!(
+            "{path} must be a number or vec2-like table ({err})"
+        ))
+    })?;
+    let Some(value) = value else {
+        return Ok(default);
+    };
+    let scalar = |value: LuaValue, component: &str| -> LuaResult<f32> {
+        match value {
+            LuaValue::Number(value) if value.is_finite() => Ok(value as f32),
+            LuaValue::Integer(value) => Ok(value as f32),
+            _ => Err(LuaError::RuntimeError(format!(
+                "{path}.{component} must be a finite number"
+            ))),
+        }
+    };
+    match value {
+        LuaValue::Number(value) if value.is_finite() => Ok([value as f32, value as f32]),
+        LuaValue::Integer(value) => Ok([value as f32, value as f32]),
+        LuaValue::Table(vector) => {
+            let x = vector
+                .get::<_, Option<LuaValue>>(1)
+                .map_err(|err| LuaError::RuntimeError(format!("{path}.x is invalid ({err})")))?
+                .or(vector.get::<_, Option<LuaValue>>("x").map_err(|err| {
+                    LuaError::RuntimeError(format!("{path}.x is invalid ({err})"))
+                })?)
+                .unwrap_or(LuaValue::Number(default[0] as f64));
+            let y = vector
+                .get::<_, Option<LuaValue>>(2)
+                .map_err(|err| LuaError::RuntimeError(format!("{path}.y is invalid ({err})")))?
+                .or(vector.get::<_, Option<LuaValue>>("y").map_err(|err| {
+                    LuaError::RuntimeError(format!("{path}.y is invalid ({err})"))
+                })?)
+                .unwrap_or(LuaValue::Number(default[1] as f64));
+            Ok([scalar(x, "x")?, scalar(y, "y")?])
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "{path} must be a finite number or vec2-like table"
+        ))),
+    }
+}
+
+fn parse_layered_sky(
+    table: &LuaTable,
+    api_name: &str,
+    state: &SharedState,
+) -> LuaResult<RaycasterBackground> {
+    let limits = RaycasterLimits::default();
+    let layers_value = table
+        .get::<_, Option<LuaValue>>("layers")
+        .map_err(|err| {
+            LuaError::RuntimeError(format!("{api_name}: background.layers is invalid ({err})"))
+        })?
+        .unwrap_or(LuaValue::Nil);
+    let layers_table = match layers_value {
+        LuaValue::Nil => None,
+        LuaValue::Table(table) => Some(table),
+        other => {
+            return Err(LuaError::RuntimeError(format!(
+                "{api_name}: background.layers must be an array table, got {}",
+                other.type_name()
+            )))
+        }
+    };
+    let layer_count = layers_table.as_ref().map(LuaTable::raw_len).unwrap_or(0);
+    if layer_count > limits.max_sky_layers {
+        return Err(LuaError::RuntimeError(format!(
+            "{api_name}: background.layers supports at most {} layers",
+            limits.max_sky_layers
+        )));
+    }
+    if let Some(layers_table) = layers_table.as_ref() {
+        let mut seen = HashSet::with_capacity(layer_count);
+        for pair in layers_table.clone().pairs::<LuaValue, LuaValue>() {
+            let (key, _) = pair.map_err(|err| {
+                LuaError::RuntimeError(format!(
+                    "{api_name}: background.layers must be a dense array table ({err})"
+                ))
+            })?;
+            let index = match key {
+                LuaValue::Integer(value) if value > 0 => value as usize,
+                LuaValue::Number(value)
+                    if value.is_finite() && value.fract() == 0.0 && value > 0.0 =>
+                {
+                    value as usize
+                }
+                _ => {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api_name}: background.layers must be a dense array table"
+                    )))
+                }
+            };
+            if index == 0 || index > layer_count || !seen.insert(index) {
+                return Err(LuaError::RuntimeError(format!(
+                    "{api_name}: background.layers must be a dense array table"
+                )));
+            }
+        }
+        if seen.len() != layer_count {
+            return Err(LuaError::RuntimeError(format!(
+                "{api_name}: background.layers must be a dense array table"
+            )));
+        }
+    }
+    let mut layers = Vec::with_capacity(layer_count);
+    if let Some(layers_table) = layers_table {
+        for index in 1..=layer_count {
+            let path_index = index;
+            let value = layers_table.raw_get::<_, LuaValue>(index).map_err(|err| {
+                LuaError::RuntimeError(format!(
+                    "{api_name}: background.layers[{path_index}] is invalid ({err})"
+                ))
+            })?;
+            let layer_table = match value {
+                LuaValue::Table(table) => table,
+                other => {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api_name}: background.layers[{path_index}] must be a table, got {}",
+                        other.type_name()
+                    )))
+                }
+            };
+            let texture_value = layer_table
+                .get::<_, Option<LuaValue>>("texture")
+                .map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "{}: texture is invalid ({err})",
+                        sky_path(api_name, path_index, "texture")
+                    ))
+                })?
+                .or(layer_table
+                    .get::<_, Option<LuaValue>>("image")
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "{}: texture is invalid ({err})",
+                            sky_path(api_name, path_index, "texture")
+                        ))
+                    })?
+                    .or(layer_table
+                        .get::<_, Option<LuaValue>>("textureId")
+                        .map_err(|err| {
+                            LuaError::RuntimeError(format!(
+                                "{}: texture is invalid ({err})",
+                                sky_path(api_name, path_index, "texture")
+                            ))
+                        })?))
+                .unwrap_or(LuaValue::Nil);
+            let texture_path = sky_path(api_name, path_index, "texture");
+            let texture_key =
+                parse_texture_key_value_checked(&texture_value, &texture_path, state)?
+                    .ok_or_else(|| {
+                        LuaError::RuntimeError(format!(
+                            "{texture_path} must be an image or texture id"
+                        ))
+                    })?
+                    .0;
+            let blend = layer_table
+                .get::<_, Option<String>>("blend")
+                .map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "{}: blend is invalid ({err})",
+                        sky_path(api_name, path_index, "blend")
+                    ))
+                })?
+                .or(layer_table
+                    .get::<_, Option<String>>("blend_mode")
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "{}: blend is invalid ({err})",
+                            sky_path(api_name, path_index, "blend")
+                        ))
+                    })?)
+                .unwrap_or_else(|| "alpha".to_string());
+            let blend_mode =
+                blend_mode_from_name(&blend, &sky_path(api_name, path_index, "blend"))?;
+            let scale = parse_sky_vec2(&layer_table, "scale", api_name, path_index, [1.0, 1.0])?;
+            for (component, value) in [("x", scale[0]), ("y", scale[1])] {
+                if !value.is_finite() || value <= 0.0 || value > limits.max_sky_scale {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{}.{component} must be finite, greater than 0, and at most {}",
+                        sky_path(api_name, path_index, "scale"),
+                        limits.max_sky_scale
+                    )));
+                }
+            }
+            let offset = parse_sky_vec2(&layer_table, "offset", api_name, path_index, [0.0, 0.0])?;
+            let velocity =
+                parse_sky_vec2(&layer_table, "velocity", api_name, path_index, [0.0, 0.0])?;
+            for (component, value) in [("x", velocity[0]), ("y", velocity[1])] {
+                if !value.is_finite() || value.abs() > limits.max_sky_velocity {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{}.{component} must be finite with absolute value at most {}",
+                        sky_path(api_name, path_index, "velocity"),
+                        limits.max_sky_velocity
+                    )));
+                }
+            }
+            for (field, values) in [("offset", offset), ("velocity", velocity)] {
+                if values.iter().any(|value| !value.is_finite()) {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{} must contain only finite numbers",
+                        sky_path(api_name, path_index, field)
+                    )));
+                }
+            }
+            let parallax = layer_table
+                .get::<_, Option<f32>>("parallax")
+                .map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "{} must be a finite number ({err})",
+                        sky_path(api_name, path_index, "parallax")
+                    ))
+                })?
+                .unwrap_or(1.0);
+            if !parallax.is_finite() || !(-4.0..=4.0).contains(&parallax) {
+                return Err(LuaError::RuntimeError(format!(
+                    "{} must be finite and between -4 and 4",
+                    sky_path(api_name, path_index, "parallax")
+                )));
+            }
+            let height = layer_table
+                .get::<_, Option<f32>>("height")
+                .map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "{} must be a finite positive number ({err})",
+                        sky_path(api_name, path_index, "height")
+                    ))
+                })?
+                .unwrap_or(2.0);
+            if !height.is_finite() || height <= 0.0 || height > limits.max_sky_height {
+                return Err(LuaError::RuntimeError(format!(
+                    "{} must be finite, greater than 0, and at most {}",
+                    sky_path(api_name, path_index, "height"),
+                    limits.max_sky_height
+                )));
+            }
+            let copies = layer_table
+                .get::<_, Option<i64>>("copies")
+                .map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "{} must be an integer between 0 and {} ({err})",
+                        sky_path(api_name, path_index, "copies"),
+                        limits.max_sky_layer_copies
+                    ))
+                })?
+                .unwrap_or(1);
+            if copies < 0 || copies > i64::from(limits.max_sky_layer_copies) {
+                return Err(LuaError::RuntimeError(format!(
+                    "{} must be between 0 and {}",
+                    sky_path(api_name, path_index, "copies"),
+                    limits.max_sky_layer_copies
+                )));
+            }
+            let tint = table_color(
+                &layer_table,
+                "tint",
+                &sky_path(api_name, path_index, "tint"),
+                [1.0, 1.0, 1.0, 1.0],
+            )?;
+            let wrap_y = layer_table
+                .get::<_, Option<bool>>("wrap_y")
+                .map_err(|err| {
+                    LuaError::RuntimeError(format!(
+                        "{} must be boolean ({err})",
+                        sky_path(api_name, path_index, "wrap_y")
+                    ))
+                })?
+                .unwrap_or(false);
+            layers.push(RaycasterSkyLayer {
+                texture_key,
+                tint,
+                blend_mode,
+                scale,
+                offset,
+                velocity,
+                parallax,
+                height,
+                copies: copies as u8,
+                wrap_y,
+            });
+        }
+    }
+    Ok(RaycasterBackground::LayeredSky {
+        top: table_color(table, "top", api_name, [0.45, 0.62, 0.86, 1.0])?,
+        bottom: table_color(table, "bottom", api_name, [0.82, 0.90, 1.0, 1.0])?,
+        layers,
+    })
+}
+
 impl RaycasterLuaParser {
     fn parse_background_value(
         value: &LuaValue,
@@ -572,6 +874,15 @@ impl RaycasterLuaParser {
                             tint: table_color(tbl, "tint", api_name, [1.0, 1.0, 1.0, 1.0])?,
                             offset: tbl.get::<_, Option<f32>>("offset")?.unwrap_or(0.0),
                         }))
+                    }
+                    "layered_sky" | "layeredsky" | "layered-sky" => {
+                        let state = state.ok_or_else(|| {
+                            LuaError::RuntimeError(format!(
+                                "{}: layered sky backgrounds require runtime texture access",
+                                api_name
+                            ))
+                        })?;
+                        Ok(Some(parse_layered_sky(tbl, api_name, state)?))
                     }
                     "shader" => {
                         let state = state.ok_or_else(|| {
@@ -3201,6 +3512,11 @@ impl LuaUserData for LuaRaycaster {
         });
         // -- setPickAttr --
         /// Sets one arbitrary pick attribute on a raycaster surface cell.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | surface | string | Surface channel name.
+        /// @param | key | string | Attribute key.
+        /// @param | value | string | Attribute value.
         methods.add_method_mut(
             "setPickAttr",
             |_, this, (x, y, surface, key, value): (u32, u32, String, String, String)| {
@@ -3212,6 +3528,11 @@ impl LuaUserData for LuaRaycaster {
         );
         // -- getPickAttr --
         /// Reads one arbitrary pick attribute from a raycaster surface cell.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | surface | string | Surface channel name.
+        /// @param | key | string | Attribute key.
+        /// @return | string | Attribute value, or nil when the key is missing.
         methods.add_method(
             "getPickAttr",
             |_, this, (x, y, surface, key): (u32, u32, String, String)| {
@@ -3225,6 +3546,10 @@ impl LuaUserData for LuaRaycaster {
         );
         // -- clearPickAttr --
         /// Clears one arbitrary pick attribute or the whole channel from a raycaster surface cell.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | surface | string | Surface channel name.
+        /// @param | key | string? | Optional attribute key; omit it to clear the channel.
         methods.add_method_mut(
             "clearPickAttr",
             |_, this, (x, y, surface, key): (u32, u32, String, Option<String>)| {
@@ -4280,7 +4605,7 @@ impl LuaUserData for LuaRaycaster {
         /// Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
         /// for the renderer to consume on the next frame. Returns the number of quads generated.
         /// Stored wall, floor, ceiling, and particle-emitter overrides from this map are included automatically.
-        /// @param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to skip untextured ceiling polygons while still rendering textured roof cells. `background` accepts solid, gradient, skybox, or shader descriptors. `overlays` accepts fog, depth fog, snow, or shader descriptors.
+        /// @param | params | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b/a?, camera_height?, horizon_offset?, time_seconds?, background?, overlays?}. Set `ceiling_a=0` to expose an elevated layered sky through the normal ceiling. `background` accepts solid, gradient, skybox, layered_sky, or shader descriptors. A layered_sky has up to three ordered world-space roof layers with `tint`, `blend`, `scale`, `offset`, `velocity`, `parallax`, `height`, `copies` (0..8), and optional `wrap_y`; each layer is projected like a ceiling tile above the level floor. `overlays` accepts fog, depth fog, snow, or shader descriptors.
         /// @param | lights | table? | Array of render light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?}.
         /// @param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
@@ -4356,7 +4681,7 @@ impl LuaUserData for LuaRaycaster {
         );
         // -- buildSceneFromAdapter --
         /// Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
-        /// @param | params | table | Scene params (same as buildScene).
+        /// @param | params | table | Scene params (same as buildScene), including optional `background.type = "layered_sky"` with up to three ordered animated elevated roof layers.
         /// @param | adapter | LSceneAdapter | Runtime scene adapter providing lights, sprites, and models.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
         /// @return | integer | Total number of quads in the built scene.
@@ -4478,7 +4803,7 @@ impl LuaUserData for LuaRaycaster {
         // -- buildSceneWithModels --
         /// Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
         /// Extends buildScene with a models array for placing 3D props in the dungeon.
-        /// @param | params | table | Scene params (same as buildScene).
+        /// @param | params | table | Scene params (same as buildScene), including optional `background.type = "layered_sky"` with up to three ordered animated elevated roof layers.
         /// @param | lights | table? | Array of render light tables.
         /// @param | sprites | table|LSpriteManager? | Array of sprite tables with billboard or 4-direction textures, or an LSpriteManager with integer/LImage textures.
         /// @param | wallTextures | table? | Map of cell_value -> texture.
@@ -4767,6 +5092,11 @@ impl LuaUserData for LuaMultiLevelGrid {
         });
         // -- setPickAttr --
         /// Sets one arbitrary pick attribute on one active-level surface cell.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | surface | string | Surface channel name.
+        /// @param | key | string | Attribute key.
+        /// @param | value | string | Attribute value.
         methods.add_method_mut(
             "setPickAttr",
             |_, this, (x, y, surface, key, value): (u32, u32, String, String, String)| {
@@ -4785,6 +5115,11 @@ impl LuaUserData for LuaMultiLevelGrid {
         );
         // -- getPickAttr --
         /// Reads one arbitrary pick attribute from one active-level surface cell.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | surface | string | Surface channel name.
+        /// @param | key | string | Attribute key.
+        /// @return | string | Attribute value, or nil when the key is missing.
         methods.add_method(
             "getPickAttr",
             |_, this, (x, y, surface, key): (u32, u32, String, String)| {
@@ -4802,6 +5137,10 @@ impl LuaUserData for LuaMultiLevelGrid {
         );
         // -- clearPickAttr --
         /// Clears one arbitrary pick attribute or the whole surface channel from one active-level cell.
+        /// @param | x | integer | Grid column.
+        /// @param | y | integer | Grid row.
+        /// @param | surface | string | Surface channel name.
+        /// @param | key | string? | Optional attribute key; omit it to clear the channel.
         methods.add_method_mut(
             "clearPickAttr",
             |_, this, (x, y, surface, key): (u32, u32, String, Option<String>)| {
@@ -5204,7 +5543,7 @@ impl LuaUserData for LuaMultiLevelGrid {
         });
         // -- buildScene --
         /// Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
-        /// @param | params | table | Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors.
+        /// @param | params | table | Scene params for the current camera, including optional `time_seconds`, `background`, and `overlays` descriptors. `background.type = "layered_sky"` accepts up to three ordered elevated roof texture layers with independent UV velocity, height, and parallax.
         /// @param | lights | table? | Array of render light tables.
         /// @param | sprites | table|LSpriteManager? | Array of level sprite tables or an LSpriteManager.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
@@ -5269,7 +5608,7 @@ impl LuaUserData for LuaMultiLevelGrid {
         );
         // -- buildSceneFromAdapter --
         /// Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.
-        /// @param | params | table | Scene params for the current camera.
+        /// @param | params | table | Scene params for the current camera, including optional `background.type = "layered_sky"` with up to three ordered animated elevated roof layers.
         /// @param | adapter | LSceneAdapter | Runtime scene adapter providing lights, sprites, and models.
         /// @param | wallTextures | table? | Map of cell_value -> texture for wall surfaces.
         /// @return | integer | Total number of quads in the built scene.
@@ -6806,6 +7145,9 @@ impl LuaUserData for LuaSpriteManager {
         });
         // -- setAttr --
         /// Sets one arbitrary string attribute on the sprite.
+        /// @param | id | integer | Sprite id.
+        /// @param | key | string | Attribute key.
+        /// @param | value | string | Attribute value.
         methods.add_method_mut(
             "setAttr",
             |_, this, (id, key, value): (u32, String, String)| {
@@ -6817,7 +7159,7 @@ impl LuaUserData for LuaSpriteManager {
         /// Reads one arbitrary string attribute from the sprite.
         /// @param | id | integer | Sprite id.
         /// @param | key | string | Attribute key to read.
-        /// @return | string? | Attribute value, or `nil` when the key is missing.
+        /// @return | string | Attribute value, or `nil` when the key is missing.
         methods.add_method("getAttr", |_, this, (id, key): (u32, String)| {
             Ok(this.inner.get_attr(id, &key).map(str::to_string))
         });
@@ -7508,11 +7850,11 @@ impl LuaUserData for LuaRaycasterView {
             Ok(())
         });
         // -- type --
-        /// Returns `LRaycasterView`.
+        /// Returns the runtime type name for this raycaster projection view.
         /// @return | string | Handle type.
         methods.add_method("type", |_, _, ()| Ok("LRaycasterView"));
         // -- typeOf --
-        /// Checks the handle type.
+        /// Checks whether this handle matches a supported raycaster view type.
         /// @param | name | string | Type name.
         /// @return | boolean | Whether it matches.
         methods.add_method("typeOf", |_, _, name: String| {
@@ -8041,7 +8383,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     // -- buildMultiLevelScene --
     /// Builds a multilevel raycaster scene from a stack of plain Lua level tables.
-    /// @param | params | table | Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`.
+    /// @param | params | table | Scene params plus optional `active_level`, `time_seconds`, `background`, and `overlays`. Layered sky backgrounds accept up to three ordered elevated roof texture layers with independent UV velocity, height, and parallax.
     /// @param | levels | table|LMultiLevelGrid | Array of level tables or a persistent LMultiLevelGrid.
     /// @param | lights | table? | Array of render light tables.
     /// @param | sprites | table|LSpriteManager? | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.

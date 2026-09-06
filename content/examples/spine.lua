@@ -376,34 +376,20 @@ end
 --@api: lurek.spine.skeletonFromJson
 do
 
-        local jsonData = [[
-        {
-            "skeleton": {"name": "example_import"},
-            "bones": [
-                {"name": "root"},
-                {"name": "torso", "parent": "root", "x": 4.0, "y": -6.0}
-            ],
-            "slots": [
-                {"name": "body", "bone": "torso", "attachment": "body_idle"}
-            ],
-            "animations": {
-                "idle": {
-                    "bones": {
-                        "torso": {
-                            "translate": [
-                                {"time": 0.0, "x": 0.0, "y": 0.0},
-                                {"time": 1.0, "x": 1.0, "y": 0.0}
-                            ]
-                        }
-                    }
-                }
-            }
-        }
-        ]]
-        local importer = rawget(lurek.spine, "skeletonFromJson")
-        local imported = importer and importer(jsonData)
-        lurek.log.info("imported bones = " .. imported:boneCount())
-        lurek.log.info("imported slots = " .. imported:slotCount())
+local jsonData = [[
+{
+    "skeleton": {"name": "example_import"},
+    "bones": [
+        {"name": "root"},
+        {"name": "torso", "parent": "root", "x": 4.0, "y": -6.0}
+    ],
+    "slots": [
+        {"name": "body", "bone": "torso", "attachment": "body_idle"}
+    ]
+}
+]]
+local imported = lurek.spine.skeletonFromJson(jsonData)
+lurek.log.info("skeletonFromJson bones=" .. tostring(imported:boneCount()) .. " slots=" .. tostring(imported:slotCount()))
 end
 
 --- Spine Module Part 1: LSkeleton, LSkeletonAnimation, animationFromJson, newSkeleton, newSkeletonAnimation

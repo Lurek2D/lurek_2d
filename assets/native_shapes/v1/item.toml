@@ -1,0 +1,64 @@
+category = "item"
+view_box = [0, 0, 64, 64]
+palette = { background = [0.08, 0.10, 0.14, 1.0], primary = [0.82, 0.86, 0.92, 1.0], secondary = [0.42, 0.50, 0.62, 1.0], accent = [0.95, 0.63, 0.18, 1.0], outline = [0.08, 0.10, 0.14, 1.0], highlight = [1.0, 1.0, 1.0, 1.0], shadow = [0.18, 0.20, 0.28, 1.0], emissive = [0.35, 0.95, 0.92, 1.0] }
+
+[[shapes]]
+id = "sword"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "polygon" }]
+[[shapes]]
+id = "axe"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "polygon" }]
+[[shapes]]
+id = "bow"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "arc" }]
+[[shapes]]
+id = "shield"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "polygon" }]
+[[shapes]]
+id = "potion"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "key"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "coin"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "circle" }]
+[[shapes]]
+id = "gem"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "polygon" }]
+[[shapes]]
+id = "scroll"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "rectangle" }]
+[[shapes]]
+id = "bomb"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "circle" }]
+[[shapes]]
+id = "hammer"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "apple"
+anchor = [0.5, 1.0]
+tags = ["item", "prop"]
+elements = [{ kind = "native", primitive = "compound" }]

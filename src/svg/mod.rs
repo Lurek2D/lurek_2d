@@ -5,6 +5,8 @@
 //! Changes here alter the vector boundary, since reexports decide what runtime systems and bindings may import directly.
 //! This module keeps scene representation and vector loading separate from higher-level render and Lua binding layers.
 
+/// Headless CPU rasterization of parsed SVG trees.
+pub mod raster;
 /// SVG image document model, parser output structs, and render command conversion helpers.
 pub mod svg_image;
 pub use svg_image::{SvgElement, SvgImage, SvgPath};

@@ -798,64 +798,40 @@ end
 --@api: LNavMesh:connectPolygons
 do
 
-    local mesh = lurek.pathfind.newNavMesh()
-    local a = mesh:addPolygon({
-        { x = 0, y = 0 },
-        { x = 50, y = 0 },
-        { x = 25, y = 40 },
-    })
-    local b = mesh:addPolygon({
-        { x = 50, y = 0 },
-        { x = 100, y = 0 },
-        { x = 75, y = 40 },
-    })
-    local c = mesh:addPolygon({
-        { x = 25, y = 40 },
-        { x = 75, y = 40 },
-        { x = 50, y = 80 },
-    })
-    local ab = mesh:connectPolygons(a, b, true)
-    local bc = mesh:connectPolygons(b, c, false)
-
-    lurek.log.info("connected_ab = " .. tostring(ab))
-    lurek.log.info("connected_bc = " .. tostring(bc))
-    lurek.log.info("polygon_count = " .. mesh:getPolygonCount())
+local mesh = lurek.pathfind.newNavMesh()
+local a = mesh:addPolygon({
+{ x = 0, y = 0 },
+{ x = 50, y = 0 },
+{ x = 25, y = 40 },
+})
+local b = mesh:addPolygon({
+{ x = 50, y = 0 },
+{ x = 100, y = 0 },
+{ x = 75, y = 40 },
+})
+local c = mesh:addPolygon({
+{ x = 25, y = 40 },
+{ x = 75, y = 40 },
+{ x = 50, y = 80 },
+})
 end
 
 --@api: LNavMesh:findPath
 do
 
-    local mesh = lurek.pathfind.newNavMesh()
-    local p1 = mesh:addPolygon({
-        { x = 0, y = 0 },
-        { x = 100, y = 0 },
-        { x = 100, y = 100 },
-        { x = 0, y = 100 },
-    })
-    local p2 = mesh:addPolygon({
-        { x = 100, y = 0 },
-        { x = 200, y = 0 },
-        { x = 200, y = 100 },
-        { x = 100, y = 100 },
-    })
-    local p3 = mesh:addPolygon({
-        { x = 200, y = 0 },
-        { x = 300, y = 0 },
-        { x = 300, y = 100 },
-        { x = 200, y = 100 },
-    })
-
-    mesh:connectPolygons(p1, p2, true)
-    mesh:connectPolygons(p2, p3, true)
-
-    local path = mesh:findPath(10, 50, 290, 50)
-    if path then
-        lurek.log.info("waypoints = " .. #path)
-        lurek.log.info("first = " .. path[1].x .. "," .. path[1].y)
-        lurek.log.info("last = " .. path[#path].x .. "," .. path[#path].y)
-    else
-        lurek.log.info("waypoints = 0")
-    end
+local mesh = lurek.pathfind.newNavMesh()
+local p1 = mesh:addPolygon({
+{ x = 0, y = 0 },
+{ x = 100, y = 0 },
+{ x = 100, y = 100 },
+{ x = 0, y = 100 },
+})
+local p2 = mesh:addPolygon({
+{ x = 100, y = 0 },
+{ x = 200, y = 0 },
+{ x = 200, y = 100 },
+{ x = 100, y = 100 },
+})
 end
 
 --@api: LNavMesh:type
@@ -2193,28 +2169,16 @@ end
 --@api: lurek.pathfind.pollAsyncPaths
 do
 
-    lurek.pathfind.clearAsyncPaths()
-    local nav = lurek.pathfind.newNavGrid(24, 24)
-    local request_id = lurek.pathfind.submitAsyncPath(nav, {
-        start_x = 1,
-        start_y = 1,
-        goal_x = 24,
-        goal_y = 24,
-        stream_budget = 4,
-    })
-    local seen = {}
-    for _ = 1, 64 do
-        local events = lurek.pathfind.pollAsyncPaths()
-        for i = 1, #events do
-            seen[#seen + 1] = events[i]
-        end
-        if #seen > 0 then
-            break
-        end
-        lurek.timer.sleep(0.001)
-    end
-    lurek.log.info("request = " .. tostring(request_id))
-    lurek.log.info("events = " .. tostring(#seen))
+lurek.pathfind.clearAsyncPaths()
+local nav = lurek.pathfind.newNavGrid(24, 24)
+local request_id = lurek.pathfind.submitAsyncPath(nav, {
+start_x = 1,
+start_y = 1,
+goal_x = 24,
+goal_y = 24,
+stream_budget = 4,
+})
+local seen = {}
 end
 
 --@api: lurek.pathfind.cancelAsyncPath

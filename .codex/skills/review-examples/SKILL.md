@@ -33,6 +33,7 @@ description: "Load this skill when auditing and fixing example coverage, example
 - Generated API inventory is the canonical list used for coverage.
 - The coverage report classifies blocks as `FULL`, `PART`, `TODO`, or `MISS`.
 - `PART` means the owned body has fewer than five relevant non-comment lines.
+- Finished owner blocks contain 5-16 relevant non-comment lines; `E10` flags larger blocks that belong in a focused demo.
 - Structural error `E6` means one API marker appears more than once.
 - Structural errors `E7` and `E8` identify unowned top-level blocks or Lua statements.
 - Error `E9` flags files averaging more than 60 lines per API marker.
@@ -44,7 +45,7 @@ description: "Load this skill when auditing and fixing example coverage, example
 2. Generate or inspect the current public API inventory.
 3. Run module example coverage without accepting stubs or partial owners.
 4. Run repository example validation.
-5. Classify missing, duplicate, malformed, TODO, PART, and thin owners.
+5. Classify missing, duplicate, malformed, TODO, PART, thin, and oversized owners.
 6. Map each finding to its generated signature and module file.
 7. Inspect the exact block the parser extracts.
 8. Check that the marker is followed immediately by `do`.

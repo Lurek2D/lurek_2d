@@ -23,6 +23,8 @@ pub mod import;
 pub mod labels;
 /// Config-driven map mode registry and per-mode colour resolver.
 pub mod map_modes;
+/// Authored polygon province import, topology, and spatial queries.
+pub mod polygon_geometry;
 /// Generic per-province property store for game-defined key-value data.
 pub mod properties;
 /// Authoritative store for all province state, geometry, and change history.
@@ -55,8 +57,9 @@ pub use registry::ProvinceRegistry;
 pub use render_snapshot::ProvinceRenderSnapshot;
 pub use types::{
     parse_province_effect_flag_token, BorderPairFlags, BorderPairStyle, BorderType,
-    BorderTypeConfig, ProvinceClimateKind, ProvinceId, ProvinceSnapshot, ProvinceStyle,
-    ProvinceVisualState, ProvinceWeatherKind, PROVINCE_EFFECT_COAST_FOAM, PROVINCE_EFFECT_CONFLICT,
-    PROVINCE_EFFECT_FOG_NOISE, PROVINCE_EFFECT_HEAT_HAZE, PROVINCE_EFFECT_WAVES,
+    BorderTypeConfig, ProvinceClimateKind, ProvinceGeometryKind, ProvinceId, ProvinceSnapshot,
+    ProvinceStyle, ProvinceVisualState, ProvinceWeatherKind, PROVINCE_EFFECT_COAST_FOAM,
+    PROVINCE_EFFECT_CONFLICT, PROVINCE_EFFECT_FOG_NOISE, PROVINCE_EFFECT_HEAT_HAZE,
+    PROVINCE_EFFECT_WAVES,
 };
 pub use view_transform::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};

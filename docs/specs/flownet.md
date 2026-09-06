@@ -190,7 +190,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraph:batchAddEdges(edges) -> integer[]`: Creates multiple edges from a table of {from_id, to_id} or {from_id, to_id, edge_type} entries.
 - `LGraph:batchAddNodes(count, config?) -> integer[]`: Creates multiple nodes at once, returning their IDs as a table.
 - `LGraph:batchStep(dt, iterations) -> nil`: Runs multiple simulation steps in sequence. More efficient than calling step() in a loop from Lua.
-- `LGraph:clearEvents() -> integer`: Discards all queued pull events.
+- `LGraph:clearEvents() -> integer`: Discards all queued pull events and returns the removed record count.
 - `LGraph:colorGraph() -> table`: Computes graph coloring and returns color indices by node id.
 - `LGraph:createItem(item_type?, decay_time?) -> LGraphItem`: Creates an unplaced graph item with optional type and decay time.
 - `LGraph:drainEvents(maxCount?) -> table`: Removes and returns queued graph events in deterministic emission order.
@@ -199,16 +199,16 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraph:getComponents() -> LGraphNode[]`: Returns connected components as arrays of node handles.
 - `LGraph:getDistance(from_ud, to_ud) -> number`: Returns graph distance between two nodes when reachable.
 - `LGraph:getEdgeBetween(from_ud, to_ud) -> LGraphEdge`: Returns the edge connecting two nodes when one exists.
-- `LGraph:getEdgeById(id) -> LGraphEdge?`: Resolves a stable numeric edge id to a graph-local handle.
+- `LGraph:getEdgeById(id) -> LGraphEdge`: Resolves a stable numeric edge id to a graph-local handle.
 - `LGraph:getEdgeCount() -> integer`: Returns the number of edges in this graph.
 - `LGraph:getEdges() -> LGraphEdge[]`: Returns all edges in this logistics graph.
 - `LGraph:getEventMode() -> string`: Returns the current event delivery mode.
 - `LGraph:getEventQueueStats() -> table`: Returns queue diagnostics without draining events.
-- `LGraph:getItemById(id) -> LGraphItem?`: Resolves a stable numeric item id to a graph-local handle.
+- `LGraph:getItemById(id) -> LGraphItem`: Resolves a stable numeric item id to a graph-local handle.
 - `LGraph:getItemCount() -> integer`: Returns the number of items in this graph.
 - `LGraph:getItems() -> LGraphItem[]`: Returns all items in this logistics graph.
 - `LGraph:getNeighbors(node_ud) -> LGraphNode[]`: Returns neighbor nodes connected to a node.
-- `LGraph:getNodeById(id) -> LGraphNode?`: Resolves a stable numeric node id to a graph-local handle.
+- `LGraph:getNodeById(id) -> LGraphNode`: Resolves a stable numeric node id to a graph-local handle.
 - `LGraph:getNodeCount() -> integer`: Returns the number of nodes in this graph.
 - `LGraph:getNodes() -> LGraphNode[]`: Returns all nodes in this logistics graph.
 - `LGraph:getReachable(from_ud, max_dist?) -> LGraphNode[]`: Returns nodes reachable from a start node within an optional maximum distance.
@@ -439,7 +439,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphTopologyBatch:discard() -> boolean`: Discards this prepared topology mutation.
 - `LGraphTopologyBatch:isPending() -> boolean`: Returns whether this topology batch remains pending.
 - `LGraphTopologyBatch:preview() -> table`: Returns deterministic metadata and created-id previews for this topology batch.
-- `LGraphTopologyBatch:type() -> string`: Returns this userdata type name.
+- `LGraphTopologyBatch:type() -> string`: Returns this userdata type name for Lua-side graph topology inspection.
 - `LGraphTopologyBatch:typeOf(name) -> boolean`: Checks whether this userdata matches a requested type.
 
 ## Examples

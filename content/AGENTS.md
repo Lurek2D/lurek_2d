@@ -5,7 +5,7 @@
 - Keep content runnable, validator-safe, and aligned with the public Lua API lifecycle.
 
 ## Files
-- `examples/`: Single-file, per-API reference examples.
+- `examples/`: Single-file, per-API reference examples plus short `*.demo.lua` feature demos.
 - `layouts/`: TOML UI layouts.
 - `snippets/`: Sources for VS Code snippets.
 
@@ -18,6 +18,7 @@
 - Use forward slashes in asset paths.
 - Use `lurek.log.*` instead of raw print calls.
 - Do not hide warnings with local editor settings or diagnostic-disable comments.
+- Keep user-facing feature walkthroughs in `examples/*.demo.lua`; generated per-API catalogs remain the coverage source.
 
 ## Workflow
 - Run only validators and smoke flows for the edited content type.

@@ -200,7 +200,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LEcsBatch:discard() -> boolean`: Discards the prepared ChangeSet without mutating the universe.
 - `LEcsBatch:isPending() -> boolean`: Returns whether this prepared ChangeSet remains usable.
 - `LEcsBatch:preview() -> table`: Returns immutable metadata for this prepared ECS ChangeSet.
-- `LEcsBatch:type() -> string`: Returns this userdata type name.
+- `LEcsBatch:type() -> string`: Returns this userdata type name for Lua-side ECS batch inspection.
 - `LEcsBatch:typeOf(name) -> boolean`: Checks whether this userdata matches a requested type.
 
 #### LLoadout Type
@@ -215,7 +215,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `LLoadout:addSlot(slot) -> nil`: Adds or replaces one slot definition on this loadout.
 - `LLoadout:computeStats() -> LStatBlock`: Computes final additive stats from base stats and equipped parts.
-- `LLoadout:equip(slot, part) -> nil`: Equips a part into a named slot after compatibility checks.
+- `LLoadout:equip(slot, part) -> boolean`: Equips a part into a named slot after compatibility checks.
 - `LLoadout:getCost() -> number`: Returns total cost of equipped parts.
 - `LLoadout:getHardpoints() -> string[]`: Returns slot and part hardpoints exposed by this loadout.
 - `LLoadout:toComponent() -> table`: Returns a plain ECS component table with stats, hardpoints, cost, and equipped part ids.
@@ -234,12 +234,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ##### Methods
 
-- `LPartDef:getCost() -> number`: Returns the part cost value.
+- `LPartDef:getCost() -> number`: Returns the part cost value configured for this loadout definition.
 - `LPartDef:getHardpoints() -> string[]`: Returns hardpoints exposed by this part.
-- `LPartDef:getId() -> string`: Returns the stable part id.
-- `LPartDef:getSlot() -> string`: Returns the preferred slot name.
+- `LPartDef:getId() -> string`: Returns the stable part id for this loadout part definition.
+- `LPartDef:getSlot() -> string`: Returns the preferred slot name for this loadout part definition.
 - `LPartDef:getStats() -> table`: Returns additive stat modifiers as a plain table.
-- `LPartDef:getTags() -> string[]`: Returns compatibility tags.
+- `LPartDef:getTags() -> string[]`: Returns compatibility tags configured on this loadout part definition.
 - `LPartDef:getVisuals() -> table`: Returns visual attachment mapping for this part.
 - `LPartDef:type() -> string`: Returns the Lua-visible type name for this part definition.
 - `LPartDef:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
@@ -294,7 +294,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `LSlotDef:getAccepts() -> string[]`: Returns accepted compatibility tags.
 - `LSlotDef:getHardpoint() -> string`: Returns the slot hardpoint name when one is configured.
-- `LSlotDef:getName() -> string`: Returns the slot name.
+- `LSlotDef:getName() -> string`: Returns the configured slot name for this loadout slot definition.
 - `LSlotDef:isRequired() -> boolean`: Returns whether this slot is required during loadout validation.
 - `LSlotDef:type() -> string`: Returns the Lua-visible type name for this slot definition.
 - `LSlotDef:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
@@ -309,9 +309,9 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ##### Methods
 
-- `LStatBlock:add(name, value) -> nil`: Adds a numeric delta to one stat.
+- `LStatBlock:add(name, value) -> nil`: Adds a numeric delta to one stat in this additive stat block.
 - `LStatBlock:get(name) -> number`: Returns one stat value, or zero when the key is absent.
-- `LStatBlock:set(name, value) -> nil`: Replaces one stat value.
+- `LStatBlock:set(name, value) -> nil`: Replaces one stat value in this additive stat block.
 - `LStatBlock:toTable() -> table`: Returns all stat values as a plain Lua table.
 - `LStatBlock:type() -> string`: Returns the Lua-visible type name for this stat block.
 - `LStatBlock:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.

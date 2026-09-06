@@ -92,6 +92,32 @@ mod tmx_tests {
         assert_eq!(err.code, "tmx_invalid_content");
         assert!(err.message.contains("tileheight"));
     }
+
+    #[test]
+    fn tmx_object_layers_expose_shape_offset_and_typed_properties() {
+        let xml = r#"<map version="1.10" orientation="orthogonal" width="4" height="4" tilewidth="16" tileheight="16">
+            <objectgroup name="objects" offsetx="3" offsety="4">
+                <object id="7" name="land" class="province" x="10" y="11" rotation="0">
+                    <properties><property name="province_id" type="int" value="12"/></properties>
+                    <polygon points="0,0 16,0 16,16 0,16"/>
+                </object>
+                <object id="8" x="20" y="21"><point/></object>
+            </objectgroup>
+        </map>"#;
+        let map = load_tmx(xml).expect("TMX object fields should parse");
+        let layer = &map.object_layers().next().expect("object layer");
+        assert_eq!((layer.offset_x, layer.offset_y), (3.0, 4.0));
+        assert!(matches!(
+            layer.objects[0].shape,
+            TiledObjectShape::Polygon(_)
+        ));
+        assert!(matches!(layer.objects[1].shape, TiledObjectShape::Point));
+        assert_eq!(
+            layer.objects[0].properties["province_id"].as_int(),
+            Some(12)
+        );
+        assert_eq!(layer.objects[0].rotation, 0.0);
+    }
 }
 
 mod isomap_tests {
@@ -988,3 +1014,75 @@ mod autotile_sheet_tests {
 }
 
 // TileMap layer/tile/viewport/sweep/index behavior: `tests/lua/unit/test_tilemap_core_unit.lua`.
+
+#[cfg(test)]
+mod tiled_object_import_tests {
+    use super::*;
+
+    const TMX: &str = r#"<map version="1.10" orientation="orthogonal" width="8" height="8" tilewidth="1" tileheight="1">
+        <objectgroup name="provinces" offsetx="1" offsety="2">
+          <object id="7" x="1" y="1"><properties><property name="province_id" type="int" value="3"/></properties><polygon points="0,0 2,0 2,2 0,2"/></object>
+        </objectgroup>
+        <objectgroup name="capitals"><object id="8" x="2" y="3"><point/><properties><property name="province_id" type="int" value="3"/></properties></object></objectgroup>
+    </map>"#;
+
+    const TMJ: &str = r#"{
+      "type":"map", "orientation":"orthogonal", "infinite":false,
+      "width":8, "height":8, "tilewidth":1, "tileheight":1,
+      "layers":[
+        {"type":"objectgroup","name":"provinces","offsetx":1,"offsety":2,"objects":[{"id":7,"x":1,"y":1,"polygon":[{"x":0,"y":0},{"x":2,"y":0},{"x":2,"y":2},{"x":0,"y":2}],"properties":[{"name":"province_id","type":"int","value":3}]}]},
+        {"type":"objectgroup","name":"capitals","objects":[{"id":8,"x":2,"y":3,"point":true,"properties":[{"name":"province_id","type":"int","value":3}]}]}
+      ]
+    }"#;
+
+    #[test]
+    fn tmx_and_json_normalize_polygon_and_point_objects() {
+        let xml = load_tiled(TMX, "tmx", &TileMapLimits::default()).unwrap();
+        let json = load_tiled(TMJ, "tmj", &TileMapLimits::default()).unwrap();
+        assert_eq!(xml.width, json.width);
+        assert_eq!(xml.object_layers.len(), 2);
+        assert_eq!(xml.object_layers, json.object_layers);
+        assert!(matches!(
+            xml.object_layers[0].objects[0].shape,
+            TiledObjectShape::Polygon(_)
+        ));
+        assert!(matches!(
+            xml.object_layers[1].objects[0].shape,
+            TiledObjectShape::Point
+        ));
+        assert_eq!(
+            xml.object_layers[0].objects[0].properties["province_id"].as_int(),
+            Some(3)
+        );
+    }
+
+    #[test]
+    fn tiled_import_rejects_unknown_extension() {
+        let error = load_tiled(TMX, "txt", &TileMapLimits::default()).unwrap_err();
+        assert!(error.message.contains("unsupported Tiled extension"));
+    }
+
+    #[test]
+    fn tiled_import_rejects_malformed_numbers_and_object_limits() {
+        let malformed = TMX.replace("x=\"1\"", "x=\"oops\"");
+        let error = load_tiled(&malformed, "tmx", &TileMapLimits::default()).unwrap_err();
+        assert!(error.message.contains("not a number"));
+
+        let limits = TileMapLimits {
+            max_objects: 1,
+            ..TileMapLimits::default()
+        };
+        let error = load_tiled(TMX, "tmx", &limits).unwrap_err();
+        assert!(error.message.contains("object limit"));
+    }
+
+    #[test]
+    fn tiled_import_enforces_total_point_budget() {
+        let limits = TileMapLimits {
+            max_total_object_points: 2,
+            ..TileMapLimits::default()
+        };
+        let error = load_tiled(TMX, "tmx", &limits).unwrap_err();
+        assert!(error.message.contains("object point limit"));
+    }
+}

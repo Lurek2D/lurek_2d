@@ -886,4 +886,68 @@ describe("province explicit owner coverage", function()
 end)
 end
 
+-- @describe polygon-authored province registries
+describe("polygon-authored province registries", function()
+    -- @covers lurek.province.newFromTiled
+    it("loads the TMJ polygon map through GameFS", function()
+        local reg = lurek.province.newFromTiled("lua_polygon_tmj", "tests/fixtures/province_polygon.tmj")
+        expect_equal("polygon", reg:getGeometryKind())
+        expect_equal(5, reg:getPolygonCount())
+        local tmx = lurek.province.newFromTiled("lua_polygon_tmx", "tests/fixtures/province_polygon.tmx")
+        expect_equal("polygon", tmx:getGeometryKind())
+        expect_equal(reg:getPolygonCount(), tmx:getPolygonCount())
+    end)
+
+    -- @covers LProvinceRegistry:getGeometryKind
+    it("reports raster and polygon geometry kinds", function()
+        local png = lurek.province.newFromPng("lua_geometry_png", "lurek_2d_content/games/eu2/map.png")
+        local tiled = lurek.province.newFromTiled("lua_geometry_tmx", "tests/fixtures/province_polygon.tmx")
+        expect_equal("raster", png:getGeometryKind())
+        expect_equal("polygon", tiled:getGeometryKind())
+    end)
+
+    -- @covers LProvinceRegistry:getPolygonCount
+    it("counts disconnected components by province", function()
+        local reg = lurek.province.newFromTiled("lua_component_count", "tests/fixtures/province_polygon.tmj")
+        expect_equal(3, reg:getPolygonCount(1))
+        expect_equal(5, reg:getPolygonCount())
+    end)
+
+    -- @covers LProvinceRegistry:getProvincePolygons
+    it("returns copied polygon vertices and bounds", function()
+        local reg = lurek.province.newFromTiled("lua_polygon_vertices", "tests/fixtures/province_polygon.tmj")
+        local polygons = reg:getProvincePolygons(1)
+        expect_equal(3, #polygons)
+        expect_type("table", polygons[1].vertices)
+        expect_type("number", polygons[1].area)
+        expect_type("table", polygons[1].bounds)
+    end)
+
+    -- @covers LProvinceRegistry:pickProvince
+    it("picks polygon interiors, islands, gaps, and shared borders", function()
+        local reg = lurek.province.newFromTiled("lua_polygon_pick", "tests/fixtures/province_polygon.tmj")
+        expect_equal(1, reg:pickProvince(1.0, 1.0))
+        expect_equal(1, reg:pickProvince(1.0, 7.0))
+        expect_equal(2, reg:pickProvince(5.0, 1.0))
+        expect_equal(3, reg:pickProvince(5.0, 5.0))
+        expect_equal(1, reg:pickProvince(4.0, 4.0))
+        expect_equal(nil, reg:pickProvince(11.0, 9.0))
+        expect_equal(1, reg:getAt(0, 0))
+        expect_equal(2, reg:getAt(4, 0))
+        expect_equal(0, reg:getAt(11, 9))
+        expect_equal(1, reg:screenToProvince(1.5, 1.5, 0, 0, 1, 1))
+        reg:render({ backend = "commands", selected_id = 1 })
+        reg:render({ backend = "gpu", selected_id = 1 })
+        reg:render({ backend = "segments", selected_id = 1 })
+    end)
+
+    -- @covers-case LProvinceRegistry:provinceSpans
+    it("rejects raster-only spans for polygon geometry", function()
+        local reg = lurek.province.newFromTiled("lua_polygon_spans", "tests/fixtures/province_polygon.tmj")
+        local ok, err = pcall(function() reg:provinceSpans() end)
+        expect_false(ok)
+        expect_true(string.find(tostring(err), "unavailable for polygon geometry") ~= nil)
+    end)
+end)
+
 test_summary()

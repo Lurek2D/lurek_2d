@@ -14,8 +14,7 @@ use crate::math::{polygon, Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
     adaptive_circle_ellipse_segments, BevelStyle, BlendMode, DrawMode, DrawableKind,
-    GradientDirection, HexOrientation, ParticleRenderShape, PathSegment, RenderCommand,
-    TextureData,
+    GradientDirection, HexOrientation, ParticleRenderShape, RenderCommand, TextureData,
 };
 use crate::render::shader::{Shader, ShaderTarget};
 use crate::runtime::resource_keys::{
@@ -92,6 +91,7 @@ struct GpuDrawTransform {
 
 struct ProvinceMapGpuCache {
     textures: crate::render::province_upload::ProvinceGpuTextures,
+    geometry_version: u64,
     province_ids_version: u64,
     border_index_version: u64,
     distance_field_version: u64,
@@ -136,6 +136,7 @@ impl ProvinceMapGpuCache {
 
         Self {
             textures,
+            geometry_version: snapshot.geometry_version,
             province_ids_version: snapshot.province_ids_version,
             border_index_version: snapshot.border_index_version,
             distance_field_version: snapshot.distance_field_version,
@@ -242,7 +243,16 @@ fn build_tinted_province_records(
 ) -> Vec<crate::province::gpu_bridge::ProvinceGpuRecord> {
     let mut records = snapshot.province_records.clone();
     for (id, color) in province_tints {
-        if let Some(record) = records.get_mut(*id as usize) {
+        let slot =
+            if snapshot.geometry_kind == crate::province::types::ProvinceGeometryKind::Polygon {
+                snapshot
+                    .polygon_geometry
+                    .as_ref()
+                    .and_then(|geometry| geometry.province_ids.iter().position(|value| value == id))
+            } else {
+                Some(*id as usize)
+            };
+        if let Some(record) = slot.and_then(|index| records.get_mut(index)) {
             record.political_color = *color;
         }
     }
@@ -321,6 +331,7 @@ struct VertexInput {
     @location(2) col0:     vec2<f32>,
     @location(3) col1:     vec2<f32>,
     @location(4) col2:     vec2<f32>,
+    @location(5) tint:     vec4<f32>,
 }
 struct VertexOutput {
     @builtin(position) clip_position: vec4<f32>,
@@ -345,7 +356,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     );
     let cam_pos = view * vec3<f32>(world_pos, 1.0);
     out.clip_position = vec4<f32>((cam_pos.x / viewport.size.x)*2.0-1.0, 1.0-(cam_pos.y/viewport.size.y)*2.0, 0.0, 1.0);
-    out.color = in.color;
+    out.color = in.color * in.tint;
     return out;
 }
 @fragment
@@ -405,6 +416,7 @@ struct VertexInput {
     @location(4) col0:     vec2<f32>,
     @location(5) col1:     vec2<f32>,
     @location(6) col2:     vec2<f32>,
+    @location(7) tint:     vec4<f32>,
 }
 struct VertexOutput {
     @builtin(position) clip_position: vec4<f32>,
@@ -436,7 +448,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     let ndc_y = 1.0 - (cam_pos.y / viewport.size.y) * 2.0;
     out.clip_position = vec4<f32>(ndc_x * w, ndc_y * w, 0.0, w);
     out.uv = in.uv;
-    out.color = in.color;
+    out.color = in.color * in.tint;
     return out;
 }
 @fragment
@@ -626,6 +638,8 @@ pub struct GpuRenderer {
         SparseSecondaryMap<CanvasKey, crate::render::gpu_state::GpuTexture>,
     /// Lazily created depth/stencil attachment for the main screen target.
     pub(crate) screen_stencil_target: Option<crate::render::gpu_state::DepthStencilTarget>,
+    /// Multisampled screen color target resolved into the swapchain each pass.
+    pub(crate) screen_msaa_target: Option<crate::render::gpu_state::MsaaColorTarget>,
     /// Per-canvas depth/stencil attachments created on first stencil use.
     pub(crate) canvas_stencil_targets:
         SparseSecondaryMap<CanvasKey, crate::render::gpu_state::DepthStencilTarget>,
@@ -633,6 +647,10 @@ pub struct GpuRenderer {
     pub(crate) canvas_needs_clear: SparseSecondaryMap<CanvasKey, bool>,
     /// Surface texture format negotiated at creation.
     pub(crate) surface_format: wgpu::TextureFormat,
+    /// Active target sample count (4 when supported, otherwise the explicit 1x fallback).
+    pub(crate) sample_count: u32,
+    /// Whether the renderer selected 1x because the target/depth formats lack 4x support.
+    pub(crate) msaa_fallback: bool,
     /// Current framebuffer width in pixels.
     pub width: u32,
     /// Current framebuffer height in pixels.
@@ -689,7 +707,9 @@ impl GpuRenderer {
         surface_format: wgpu::TextureFormat,
         width: u32,
         height: u32,
+        sample_count: u32,
     ) -> Self {
+        let sample_count = if sample_count == 4 { 4 } else { 1 };
         let uncaptured_gpu_failure = Arc::new(AtomicU8::new(0));
         let callback_failure = Arc::clone(&uncaptured_gpu_failure);
         device.on_uncaptured_error(Box::new(move |error| {
@@ -888,7 +908,8 @@ impl GpuRenderer {
             };
             mesh_cache.static_geometry.insert(quad_key, quad_entry);
         }
-        let province_map_pipeline = ProvinceMapPipeline::new(&device, &queue, surface_format);
+        let province_map_pipeline =
+            ProvinceMapPipeline::new(&device, &queue, surface_format, sample_count);
         GpuRenderer {
             device,
             queue,
@@ -926,9 +947,12 @@ impl GpuRenderer {
             font_atlas_textures: SparseSecondaryMap::new(),
             canvas_gpu_textures: SparseSecondaryMap::new(),
             screen_stencil_target: None,
+            screen_msaa_target: None,
             canvas_stencil_targets: SparseSecondaryMap::new(),
             canvas_needs_clear: SparseSecondaryMap::new(),
             surface_format,
+            sample_count,
+            msaa_fallback: sample_count != 4,
             width,
             height,
             render_stats: RenderStats::default(),
@@ -976,6 +1000,7 @@ impl GpuRenderer {
         self.queue
             .write_buffer(&self.viewport_buffer, 0, bytemuck::bytes_of(&data));
         self.screen_stencil_target = None;
+        self.screen_msaa_target = None;
         self.light_gpu = None;
     }
 
@@ -988,7 +1013,9 @@ impl GpuRenderer {
             .province_map_cache
             .get(registry_name)
             .map(|cache| {
-                cache.textures.width != snapshot.width || cache.textures.height != snapshot.height
+                cache.textures.width != snapshot.width
+                    || cache.textures.height != snapshot.height
+                    || cache.geometry_version != snapshot.geometry_version
             })
             .unwrap_or(true);
         if rebuild_static {
@@ -1023,7 +1050,7 @@ impl GpuRenderer {
     fn draw_province_maps_to_screen(
         &mut self,
         encoder: &mut wgpu::CommandEncoder,
-        view: &wgpu::TextureView,
+        resolve_view: &wgpu::TextureView,
         pending: &[PendingProvinceMapDraw],
         province_snapshots: &HashMap<
             String,
@@ -1192,11 +1219,16 @@ impl GpuRenderer {
                 &cache.data_bind_group
             };
             {
+                let color_view = self
+                    .screen_msaa_target
+                    .as_ref()
+                    .map(|target| &target.view)
+                    .unwrap_or(resolve_view);
                 let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("province_map_pass"),
                     color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                        view,
-                        resolve_target: None,
+                        view: color_view,
+                        resolve_target: (self.sample_count > 1).then_some(resolve_view),
                         ops: wgpu::Operations {
                             load: color_load,
                             store: wgpu::StoreOp::Store,

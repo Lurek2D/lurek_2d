@@ -11,6 +11,7 @@ use lurek2d::province::import::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
 };
+use lurek2d::province::polygon_geometry::{PolygonImportOptions, PolygonProvinceGeometry};
 use lurek2d::province::registry::ProvinceRegistry;
 use lurek2d::province::render::{
     generate_capital_path_commands, generate_render_commands, render_segment_raster,
@@ -19,8 +20,8 @@ use lurek2d::province::render::{
 };
 use lurek2d::province::types::{
     parse_province_effect_flag_token, BorderPairFlags, BorderPairStyle, BorderTypeConfig,
-    ProvinceClimateKind, ProvinceId, ProvinceVisualState, ProvinceWeatherKind,
-    PROVINCE_EFFECT_STRIPES,
+    ProvinceClimateKind, ProvinceGeometryKind, ProvinceId, ProvinceVisualState,
+    ProvinceWeatherKind, PROVINCE_EFFECT_STRIPES,
 };
 use lurek2d::province::{
     border_index::{
@@ -33,6 +34,9 @@ use lurek2d::province::{
 };
 use lurek2d::render::renderer::{DrawMode, RenderCommand};
 use lurek2d::runtime::resource_keys::FontKey;
+use lurek2d::tilemap::{
+    TiledMap, TiledObject, TiledObjectLayer, TiledObjectShape, TiledPoint, TiledPropertyValue,
+};
 use slotmap::KeyData;
 
 fn sample_grid() -> ProvinceGrid {
@@ -74,6 +78,174 @@ fn test_output_path(name: &str) -> PathBuf {
 
 fn dummy_font_key() -> FontKey {
     FontKey::from(KeyData::from_ffi(1))
+}
+
+fn tiled_polygon_fixture() -> TiledMap {
+    let polygon = |id: u32, province_id: i64, points: &[(f64, f64)]| {
+        let mut properties = HashMap::new();
+        properties.insert(
+            "province_id".to_string(),
+            TiledPropertyValue::Int(province_id),
+        );
+        TiledObject {
+            id,
+            name: String::new(),
+            class_name: String::new(),
+            x: 0.0,
+            y: 0.0,
+            rotation: 0.0,
+            shape: TiledObjectShape::Polygon(
+                points.iter().map(|&(x, y)| TiledPoint { x, y }).collect(),
+            ),
+            properties,
+        }
+    };
+    let capital = |id: u32, province_id: i64, x: f64, y: f64| {
+        let mut properties = HashMap::new();
+        properties.insert(
+            "province_id".to_string(),
+            TiledPropertyValue::Int(province_id),
+        );
+        TiledObject {
+            id,
+            name: String::new(),
+            class_name: String::new(),
+            x,
+            y,
+            rotation: 0.0,
+            shape: TiledObjectShape::Point,
+            properties,
+        }
+    };
+    TiledMap {
+        width: 10,
+        height: 10,
+        tile_width: 1,
+        tile_height: 1,
+        orientation: "orthogonal".to_string(),
+        infinite: false,
+        object_layers: vec![
+            TiledObjectLayer {
+                name: "provinces".to_string(),
+                visible: true,
+                offset_x: 0.0,
+                offset_y: 0.0,
+                objects: vec![
+                    polygon(1, 1, &[(0.0, 0.0), (4.0, 0.0), (4.0, 4.0), (0.0, 4.0)]),
+                    polygon(
+                        2,
+                        2,
+                        &[(4.0, 0.0), (8.0, 0.0), (8.0, 4.0), (4.0, 4.0), (4.0, 2.0)],
+                    ),
+                    polygon(3, 1, &[(0.0, 6.0), (2.0, 6.0), (2.0, 8.0), (0.0, 8.0)]),
+                    polygon(4, 1, &[(3.0, 6.0), (5.0, 6.0), (5.0, 8.0), (3.0, 8.0)]),
+                    polygon(5, 3, &[(4.0, 4.0), (6.0, 4.0), (5.0, 6.0)]),
+                ],
+            },
+            TiledObjectLayer {
+                name: "capitals".to_string(),
+                visible: true,
+                offset_x: 0.0,
+                offset_y: 0.0,
+                objects: vec![
+                    capital(10, 1, 1.0, 1.0),
+                    capital(11, 2, 5.0, 1.0),
+                    capital(12, 3, 5.0, 5.0),
+                ],
+            },
+        ],
+    }
+}
+
+#[test]
+fn polygon_geometry_groups_components_and_derives_shared_edges() {
+    let geometry = PolygonProvinceGeometry::from_tiled(
+        &tiled_polygon_fixture(),
+        &PolygonImportOptions::default(),
+    )
+    .unwrap();
+    assert_eq!(geometry.by_province[&ProvinceId(1)].len(), 3);
+    assert_eq!(
+        geometry
+            .borders
+            .iter()
+            .filter(|segment| segment.province_a == ProvinceId(1)
+                && segment.province_b == ProvinceId(2))
+            .count(),
+        1
+    );
+    assert_eq!(
+        geometry
+            .borders
+            .iter()
+            .filter(|segment| segment.province_a == ProvinceId(2)
+                && segment.province_b == ProvinceId(3))
+            .count(),
+        1
+    );
+    assert_eq!(geometry.borders[0].x0, 4.0);
+    assert_eq!(geometry.borders[0].y0, 0.0);
+    assert_eq!(geometry.borders[0].x1, 4.0);
+    assert_eq!(geometry.borders[0].y1, 4.0);
+    assert_eq!(geometry.pick(1.0, 1.0), Some(ProvinceId(1)));
+    assert_eq!(geometry.pick(5.0, 1.0), Some(ProvinceId(2)));
+    assert_eq!(geometry.pick(4.0, 4.0), Some(ProvinceId(1)));
+    assert_eq!(geometry.pick(9.0, 9.0), None);
+    assert_eq!(geometry.capitals[&ProvinceId(1)], (1.0, 1.0));
+    assert_ne!(
+        geometry.centroids[&ProvinceId(1)],
+        geometry.capitals[&ProvinceId(1)]
+    );
+}
+
+#[test]
+fn polygon_registry_uses_float_picking_and_command_triangles() {
+    let geometry = PolygonProvinceGeometry::from_tiled(
+        &tiled_polygon_fixture(),
+        &PolygonImportOptions::default(),
+    )
+    .unwrap();
+    let registry = ProvinceRegistry::from_polygon_geometry(geometry);
+    assert_eq!(registry.geometry_kind().as_str(), "polygon");
+    assert_eq!(registry.polygon_count(Some(ProvinceId(1))), 3);
+    assert_eq!(registry.pick_province(0.5, 0.5), Some(ProvinceId(1)));
+    assert_eq!(registry.pick_province(4.5, 0.5), Some(ProvinceId(2)));
+    let commands = generate_render_commands(&registry, &ProvinceRenderOptions::default(), None);
+    assert!(commands
+        .iter()
+        .any(|command| matches!(command, RenderCommand::Triangle { .. })));
+    let raster = render_segment_raster(&registry, &ProvinceSegmentRasterOptions::default());
+    assert!(raster.pixels.iter().any(|value| *value != 8));
+}
+
+#[test]
+fn polygon_validation_rejects_overlap_missing_capital_and_off_grid_vertex() {
+    let mut overlap = tiled_polygon_fixture();
+    let mut duplicate = overlap.object_layers[0].objects[1].clone();
+    duplicate.id = 99;
+    duplicate.x = 1.0;
+    overlap.object_layers[0].objects.push(duplicate);
+    let error = PolygonProvinceGeometry::from_tiled(&overlap, &PolygonImportOptions::default())
+        .expect_err("positive-area overlap must fail");
+    assert!(
+        error.contains("overlap"),
+        "unexpected overlap error: {error}"
+    );
+
+    let mut missing_capital = tiled_polygon_fixture();
+    missing_capital.object_layers[1].objects.pop();
+    let error =
+        PolygonProvinceGeometry::from_tiled(&missing_capital, &PolygonImportOptions::default())
+            .expect_err("missing capital must fail");
+    assert!(error.contains("missing its capital"));
+
+    let mut off_grid = tiled_polygon_fixture();
+    if let TiledObjectShape::Polygon(points) = &mut off_grid.object_layers[0].objects[0].shape {
+        points[0] = TiledPoint { x: 0.5, y: 0.0 };
+    }
+    let error = PolygonProvinceGeometry::from_tiled(&off_grid, &PolygonImportOptions::default())
+        .expect_err("off-grid point must fail");
+    assert!(error.contains("not snapped"));
 }
 
 #[test]
@@ -369,6 +541,24 @@ fn test_geometry_cache_encode_decode_roundtrip() {
 
     assert_eq!(decoded.spans, cache.spans);
     assert_eq!(decoded.border_segments, cache.border_segments);
+}
+
+#[test]
+fn test_polygon_geometry_cache_uses_version_two_roundtrip() {
+    let geometry = PolygonProvinceGeometry::from_tiled(
+        &tiled_polygon_fixture(),
+        &PolygonImportOptions::default(),
+    )
+    .expect("polygon fixture should import");
+    let registry = ProvinceRegistry::from_polygon_geometry(geometry);
+    let cache = ProvinceGeometryCache::from_registry(&registry);
+    assert_eq!(cache.geometry_kind, ProvinceGeometryKind::Polygon);
+    let bytes = cache.encode();
+    assert_eq!(u32::from_le_bytes(bytes[4..8].try_into().unwrap()), 2);
+    let decoded = ProvinceGeometryCache::decode(&bytes).expect("decode polygon cache");
+    assert_eq!(decoded.geometry_kind, ProvinceGeometryKind::Polygon);
+    assert_eq!(decoded.polygon_components, cache.polygon_components);
+    assert_eq!(decoded.polygon_borders, cache.polygon_borders);
 }
 
 #[test]
@@ -1295,6 +1485,7 @@ fn test_render_snapshot_is_cpu_only_and_versions_style_changes_independently() {
     assert_eq!(before.province_ids_version, after.province_ids_version);
     assert_eq!(before.border_index_version, after.border_index_version);
     assert_eq!(before.distance_field_version, after.distance_field_version);
+    assert_eq!(before.geometry_version, after.geometry_version);
     assert_ne!(
         before.province_records_version,
         after.province_records_version

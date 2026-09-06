@@ -181,7 +181,7 @@ def load_api(module_filter: Optional[str] = None) -> List[ApiEntry]:
 
 
 _EXPLICIT_RE = re.compile(
-    r"--\s*@(covers|tests)\s+([a-zA-Z_][\w.:]*(?::[a-zA-Z_]\w*)?)",
+    r"--\s*@(covers|covers-case|tests)\s+([a-zA-Z_][\w.:]*(?::[a-zA-Z_]\w*)?)",
     re.IGNORECASE,
 )
 _IT_OPEN_RE = re.compile(r"\bit\s*\(")
@@ -255,7 +255,13 @@ def _parse_it_blocks(content: str) -> List[ItBlock]:
 
 
 def _collect_preceding_markers(lines: List[str], it_line: int) -> List[str]:
-    """Collect contiguous @covers/@tests markers immediately preceding one it()."""
+    """Collect one canonical or supplemental marker immediately preceding one it().
+
+    ``@covers`` assigns the unique unit-test owner.  ``@covers-case`` records
+    an additional edge-case exercise without stealing ownership from the
+    canonical block, which keeps negative/regression tests explicit without
+    creating duplicate-owner failures.
+    """
     markers: List[str] = []
     cursor = it_line - 2
     while cursor >= 0:
@@ -266,7 +272,10 @@ def _collect_preceding_markers(lines: List[str], it_line: int) -> List[str]:
         if stripped.startswith("--"):
             marker = _EXPLICIT_RE.match(stripped)
             if marker:
-                markers.append(marker.group(2).strip().rstrip(".,;"))
+                ref = marker.group(2).strip().rstrip(".,;")
+                if marker.group(1).lower() == "covers-case":
+                    ref = f"case:{ref}"
+                markers.append(ref)
             cursor -= 1
             continue
         break
@@ -318,31 +327,39 @@ def scan_file(
                     it_description=block.description,
                 )
             )
-        elif validate_unknown_markers and markers[0] not in known_lua_names:
-            violations.append(
-                StructureViolation(
-                    file=filename,
-                    line=block.line,
-                    code="unknown-marker",
-                    message=f"Marker '{markers[0]}' does not match a known Lurek API symbol.",
-                    it_description=block.description,
-                    api_ref=markers[0],
+        api_ref = ""
+        is_case_marker = False
+        if len(markers) == 1:
+            marker_ref = markers[0]
+            is_case_marker = marker_ref.startswith("case:")
+            api_ref = marker_ref[5:] if is_case_marker else marker_ref
+
+            if validate_unknown_markers and api_ref not in known_lua_names:
+                violations.append(
+                    StructureViolation(
+                        file=filename,
+                        line=block.line,
+                        code="unknown-marker",
+                        message=f"Marker '{api_ref}' does not match a known Lurek API symbol.",
+                        it_description=block.description,
+                        api_ref=api_ref,
+                    )
                 )
-            )
-        else:
-            explicit_candidates.append(
-                MarkerOccurrence(
-                    api_ref=markers[0],
-                    file=filename,
-                    line=block.line,
-                    it_description=block.description,
-                )
-            )
-            locations[markers[0]].append(loc)
+            else:
+                if not is_case_marker:
+                    explicit_candidates.append(
+                        MarkerOccurrence(
+                            api_ref=api_ref,
+                            file=filename,
+                            line=block.line,
+                            it_description=block.description,
+                        )
+                    )
+                locations[api_ref].append(f"{loc} [case]" if is_case_marker else loc)
 
         for ref_match in _LUREK_REF_RE.finditer(block.body):
             lua_name = f"lurek.{ref_match.group(1)}.{ref_match.group(2)}"
-            if lua_name in known_lua_names and lua_name not in unique_markers:
+            if lua_name in known_lua_names and lua_name not in unique_markers and lua_name != api_ref:
                 heuristic_set.add(lua_name)
                 tagged = f"{loc} [heuristic]"
                 if tagged not in locations[lua_name]:
@@ -350,7 +367,7 @@ def scan_file(
 
         for ref_match in _METHOD_CALL_RE.finditer(block.body):
             lua_name = f"{ref_match.group(1)}:{ref_match.group(2)}"
-            if lua_name in known_lua_names and lua_name not in unique_markers:
+            if lua_name in known_lua_names and lua_name not in unique_markers and lua_name != api_ref:
                 heuristic_set.add(lua_name)
                 tagged = f"{loc} [heuristic]"
                 if tagged not in locations[lua_name]:
@@ -362,7 +379,7 @@ def scan_file(
                 if method_name not in method_names:
                     continue
                 lua_name = f"{owner_type}:{method_name}"
-                if lua_name in known_lua_names and lua_name not in unique_markers:
+                if lua_name in known_lua_names and lua_name not in unique_markers and lua_name != api_ref:
                     heuristic_set.add(lua_name)
                     tagged = f"{loc} [heuristic]"
                     if tagged not in locations[lua_name]:
@@ -795,11 +812,12 @@ def main() -> int:
     )
     data = build_analytics(results, structure, strict=args.strict)
 
+    pct_explicit = data["summary"]["pct_explicit"]
+    threshold_failed = args.threshold > 0 and pct_explicit < args.threshold
+
     if args.json:
         print(json.dumps(data, indent=2))
-        return 0
-
-    if args.gaps:
+    elif args.gaps:
         print(format_gaps(data))
     elif args.suggest:
         print(format_suggest(data))
@@ -814,8 +832,7 @@ def main() -> int:
         print(f"\nSaved JSON   -> {OUTPUT_JSON.relative_to(ROOT)}")
         print(f"Saved report -> {OUTPUT_MD.relative_to(ROOT)}")
 
-    pct_explicit = data["summary"]["pct_explicit"]
-    if args.threshold > 0 and pct_explicit < args.threshold:
+    if threshold_failed:
         print(f"\n[FAIL] Explicit coverage {pct_explicit:.1f}% is below threshold {args.threshold:.1f}%")
         return 1
 

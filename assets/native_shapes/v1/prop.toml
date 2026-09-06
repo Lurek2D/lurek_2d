@@ -1,0 +1,64 @@
+category = "prop"
+view_box = [0, 0, 64, 64]
+palette = { background = [0.08, 0.10, 0.14, 1.0], primary = [0.82, 0.86, 0.92, 1.0], secondary = [0.42, 0.50, 0.62, 1.0], accent = [0.95, 0.63, 0.18, 1.0], outline = [0.08, 0.10, 0.14, 1.0], highlight = [1.0, 1.0, 1.0, 1.0], shadow = [0.18, 0.20, 0.28, 1.0], emissive = [0.35, 0.95, 0.92, 1.0] }
+
+[[shapes]]
+id = "tree"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "rock"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "polygon" }]
+[[shapes]]
+id = "bush"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "crate"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "rectangle" }]
+[[shapes]]
+id = "barrel"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "capsule" }]
+[[shapes]]
+id = "chest"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "lamp"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "sign"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "table"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "chair"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "ladder"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]
+[[shapes]]
+id = "campfire"
+anchor = [0.5, 1.0]
+tags = ["prop", "world"]
+elements = [{ kind = "native", primitive = "compound" }]

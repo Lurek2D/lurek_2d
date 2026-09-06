@@ -108,23 +108,20 @@ end
 --@api: lurek.debugbridge.poll
 do
 
-    if lurek.debugbridge.isRunning() then
-        lurek.debugbridge.stop()
-    end
-    lurek.debugbridge.poll()
-    local port = 49740
-    if lurek.debugbridge.isRunning() then
-        lurek.debugbridge.stop()
-    end
-    if not lurek.debugbridge.start(port) then
-        port = nil
-    end
-    lurek.debugbridge.poll()
-    local running = lurek.debugbridge.isRunning()
-    lurek.log.info("poll running=" .. tostring(running) .. " port=" .. tostring(port) .. " clients=" .. lurek.debugbridge.getClientCount())
-    if lurek.debugbridge.isRunning() then
-        lurek.debugbridge.stop()
-    end
+if lurek.debugbridge.isRunning() then
+lurek.debugbridge.stop()
+end
+lurek.debugbridge.poll()
+local port = 49740
+if lurek.debugbridge.isRunning() then
+lurek.debugbridge.stop()
+end
+if not lurek.debugbridge.start(port) then
+port = nil
+end
+lurek.debugbridge.poll()
+local running = lurek.debugbridge.isRunning()
+lurek.log.info("poll running=" .. tostring(running) .. " port=" .. tostring(port) .. " clients=" .. lurek.debugbridge.getClientCount())
 end
 
 --@api: lurek.debugbridge.capturePrint

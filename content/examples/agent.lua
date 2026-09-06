@@ -347,28 +347,13 @@ end
 
 --@api: LAgent:promptBatch
 do
-    local agent = lurek.agent.new({
-        url    = "http://127.0.0.1:9/api/generate",
-        model  = "offline-test-model",
-        timeout = 1,
-        max_retries = 0,
-        format = "json",
-    })
-
-    local id = agent:promptBatch({
-        "Describe the bridge.",
-        "Describe the engine room.",
-        "Describe the dungeon entrance.",
-    }, function(results)
-        for i, res in ipairs(results) do
-            if res.success then
-                lurek.log.info(tostring("Result " .. i .. ":") .. " " .. tostring(res.data.description))
-            else
-                lurek.log.info(tostring("Task " .. i .. " failed [" .. res.error.code .. "]:") .. " " .. tostring(res.error.message))
-            end
-        end
-    end)
-    lurek.log.info(tostring("Batch dispatched, id =") .. " " .. tostring(id))
+local agent = lurek.agent.new({
+url    = "http://127.0.0.1:9/api/generate",
+model  = "offline-test-model",
+timeout = 1,
+max_retries = 0,
+format = "json",
+})
 end
 
 -- ─── LAgent:cancel ───────────────────────────────────────────────────────────
@@ -689,62 +674,60 @@ end
 
 --@api: LAISystem:prompt
 do
-    local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
-    system:addInstruction("art_style", "Use 16-bit pixel art.")
-    system:addSkill("pixel_art_rules", { "sprite", "texture" }, "Max 16 colours per tile.")
+local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
+system:addInstruction("art_style", "Use 16-bit pixel art.")
+system:addSkill("pixel_art_rules", { "sprite", "texture" }, "Max 16 colours per tile.")
 
-    local designer = lurek.agent.new({
-        url    = "http://127.0.0.1:9/api/generate",
-        model  = "offline-test-model",
-        timeout = 1,
-        max_retries = 0,
-        format = "json",
-    })
-    designer:setDescription("Visual design specialist focusing on sprites and environments.")
-    system:addAgent("designer", designer)
+local designer = lurek.agent.new({
+url    = "http://127.0.0.1:9/api/generate",
+model  = "offline-test-model",
+timeout = 1,
+max_retries = 0,
+format = "json",
+})
+designer:setDescription("Visual design specialist focusing on sprites and environments.")
+system:addAgent("designer", designer)
 
-    -- Keyword "sprite" triggers auto-injection of "pixel_art_rules".
-    -- "art_style" is explicitly included via opts.instructions.
-    local id = system:prompt(
-        "designer",
-        "Design a player sprite for the main character.",
-        function(success, data, err_info)
-            if success then
-                lurek.log.info(tostring("Design:") .. " " .. tostring(data.description))
-            else
-                lurek.log.info(tostring("Error:") .. " " .. tostring(err_info.message))
-            end
-        end,
-        { instructions = { "art_style" } }
-    )
-    lurek.log.info(tostring("System prompt dispatched, id =") .. " " .. tostring(id))
+-- Keyword "sprite" triggers auto-injection of "pixel_art_rules".
+-- "art_style" is explicitly included via opts.instructions.
+local id = system:prompt(
+"designer",
+"Design a player sprite for the main character.",
+function(success, data, err_info)
+    if success then
+        lurek.log.info("Design: " .. tostring(data and data.description))
+    else
+        lurek.log.info("Error: " .. tostring(err_info and err_info.message))
+    end
+end,
+{ instructions = { "art_style" } }
+)
 end
 
 -- ─── LAISystem:runAll ────────────────────────────────────────────────────────
 
 --@api: LAISystem:runAll
 do
-    local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
-    system:addInstruction("art_style", "16-bit pixel art.")
+local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
+system:addInstruction("art_style", "16-bit pixel art.")
 
-    local writer   = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
-    local designer = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
-    writer:setDescription("Writes story and NPC dialogue.")
-    designer:setDescription("Designs levels and visual assets.")
+local writer   = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
+local designer = lurek.agent.new({ url = "http://127.0.0.1:9/api/generate", model = "offline-test-model", timeout = 1, max_retries = 0, format = "json" })
+writer:setDescription("Writes story and NPC dialogue.")
+designer:setDescription("Designs levels and visual assets.")
 
-    system:addAgent("writer",   writer)
-    system:addAgent("designer", designer)
+system:addAgent("writer",   writer)
+system:addAgent("designer", designer)
 
-    -- Each task specifies which agent to route to and which instructions to include.
-    local id = system:runAll({
-        { agent = "writer",   instruction = "Write boss intro text.", instructions = {} },
-        { agent = "designer", instruction = "Design the boss arena.", instructions = { "art_style" } },
-    }, function(results)
-        for i, res in ipairs(results) do
-            lurek.log.info(tostring("Task " .. i) .. " " .. tostring(res.success and tostring(res.data) or res.error.message))
-        end
-    end)
-    lurek.log.info(tostring("System runAll dispatched, id =") .. " " .. tostring(id))
+-- Each task specifies which agent to route to and which instructions to include.
+local id = system:runAll({
+{ agent = "writer",   instruction = "Write boss intro text.", instructions = {} },
+{ agent = "designer", instruction = "Design the boss arena.", instructions = { "art_style" } },
+}, function(results)
+for i, res in ipairs(results) do
+lurek.log.info(tostring("Task " .. i) .. " " .. tostring(res.success and tostring(res.data) or res.error.message))
+end
+end)
 end
 
 -- ─── LAISystem:update ────────────────────────────────────────────────────────

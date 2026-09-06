@@ -1,4 +1,4 @@
-﻿-- content/examples/sprite.lua
+-- content/examples/sprite.lua
 -- Auto-generated from content/examples2/sprite_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/sprite.lua
 
@@ -8,14 +8,12 @@
 
 --- Sprite Module: sheets, atlases, packing, lit sprites, and frame animation.
 
-local SPRITE_TEXTURE = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-local function sprite_texture_id()
-    return SPRITE_TEXTURE:getId()
-end
-
 --@api: lurek.sprite.newBatch
 do
-
+    _G.SPRITE_TEXTURE = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    function sprite_texture_id()
+        return _G.SPRITE_TEXTURE:getId()
+    end
     local texture = lurek.render.newTexture("content/examples/assets/images/sample_texture.png")
     local batch = lurek.sprite.newBatch(texture, 32)
     batch:add(12, 18)
@@ -198,25 +196,22 @@ end
 --@api: lurek.sprite.parseAsepriteAtlas
 do
 
-    local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
-        frames = {
-            ["hero_walk_0001.png"] = {
-                frame = { x = 0, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-            ["hero_walk_0002.png"] = {
-                frame = { x = 16, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-        },
-        meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
-    }))
-    local entry = atlas:getEntry("hero_walk_0001.png")
-    local names = atlas:entryNames()
-    local count = atlas:entryCount()
-    lurek.log.info("parseAsepriteAtlas count=" .. count .. " first=" .. tostring(names[1]) .. " hero=" .. entry.w .. "x" .. entry.h)
+local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
+frames = {
+["hero_walk_0001.png"] = {
+frame = { x = 0, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+["hero_walk_0002.png"] = {
+frame = { x = 16, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+},
+meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+}))
+local entry = atlas:getEntry("hero_walk_0001.png")
 end
 
 --@api: lurek.sprite.newAtlasSheet
@@ -381,97 +376,85 @@ end
 --@api: LSpriteAtlas:entryCount
 do
 
-    local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
-        frames = {
-            ["hero_walk_0001.png"] = {
-                frame = { x = 0, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-            ["hero_walk_0002.png"] = {
-                frame = { x = 16, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-        },
-        meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
-    }))
-    local count = atlas:entryCount()
-    local names = atlas:entryNames()
-    local entry = atlas:getEntry(names[1])
-    lurek.log.info("entryCount count=" .. count .. " first=" .. tostring(names[1]) .. " size=" .. entry.w .. "x" .. entry.h)
+local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
+frames = {
+["hero_walk_0001.png"] = {
+frame = { x = 0, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+["hero_walk_0002.png"] = {
+frame = { x = 16, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+},
+meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+}))
+local count = atlas:entryCount()
 end
 
 --@api: LSpriteAtlas:entryNames
 do
 
-    local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
-        frames = {
-            ["hero_walk_0001.png"] = {
-                frame = { x = 0, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-            ["hero_walk_0002.png"] = {
-                frame = { x = 16, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-        },
-        meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
-    }))
-    local names = atlas:entryNames()
-    local count = atlas:entryCount()
-    local second = names[2] or "none"
-    lurek.log.info("entryNames count=" .. count .. " first=" .. tostring(names[1]) .. " second=" .. tostring(second))
+local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
+frames = {
+["hero_walk_0001.png"] = {
+frame = { x = 0, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+["hero_walk_0002.png"] = {
+frame = { x = 16, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+},
+meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+}))
+local names = atlas:entryNames()
 end
 
 --@api: LSpriteAtlas:type
 do
 
-    local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
-        frames = {
-            ["hero_walk_0001.png"] = {
-                frame = { x = 0, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-            ["hero_walk_0002.png"] = {
-                frame = { x = 16, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-        },
-        meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
-    }))
-    local kind = atlas:type()
-    local count = atlas:entryCount()
-    local names = atlas:entryNames()
-    lurek.log.info("atlas type=" .. kind .. " count=" .. count .. " first=" .. tostring(names[1]))
+local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
+frames = {
+["hero_walk_0001.png"] = {
+frame = { x = 0, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+["hero_walk_0002.png"] = {
+frame = { x = 16, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+},
+meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+}))
+local kind = atlas:type()
 end
 
 --@api: LSpriteAtlas:typeOf
 do
 
-    local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
-        frames = {
-            ["hero_walk_0001.png"] = {
-                frame = { x = 0, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-            ["hero_walk_0002.png"] = {
-                frame = { x = 16, y = 0, w = 16, h = 16 },
-                rotated = false,
-                sourceSize = { w = 16, h = 16 },
-            },
-        },
-        meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
-    }))
-    local is_atlas = atlas:typeOf("LSpriteAtlas")
-    local is_object = atlas:typeOf("LObject")
-    local count = atlas:entryCount()
-    lurek.log.info("atlas typeOf atlas=" .. tostring(is_atlas) .. " object=" .. tostring(is_object) .. " count=" .. count)
+local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serialize.toJson({
+frames = {
+["hero_walk_0001.png"] = {
+frame = { x = 0, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+["hero_walk_0002.png"] = {
+frame = { x = 16, y = 0, w = 16, h = 16 },
+rotated = false,
+sourceSize = { w = 16, h = 16 },
+},
+},
+meta = { image = "hero.png", size = { w = 32, h = 16 }, scale = "1" },
+}))
+local is_atlas = atlas:typeOf("LSpriteAtlas")
 end
 
 --@api: lurek.sprite.newSprite

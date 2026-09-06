@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" orientation="orthogonal" width="12" height="10" tilewidth="1" tileheight="1" infinite="0">
+  <objectgroup name="provinces">
+    <object id="1" x="0" y="0"><polygon points="0,0 4,0 4,4 2,2 0,4"/><properties><property name="province_id" type="int" value="1"/></properties></object>
+    <object id="2" x="4" y="0"><polygon points="0,0 4,0 4,4 0,4 0,2"/><properties><property name="province_id" type="int" value="2"/></properties></object>
+    <object id="3" x="0" y="6"><polygon points="0,0 2,0 2,2 0,2"/><properties><property name="province_id" type="int" value="1"/></properties></object>
+    <object id="5" x="3" y="6"><polygon points="0,0 2,0 2,2 0,2"/><properties><property name="province_id" type="int" value="1"/></properties></object>
+    <object id="4" x="4" y="4"><polygon points="0,0 2,0 1,2"/><properties><property name="province_id" type="int" value="3"/></properties></object>
+  </objectgroup>
+  <objectgroup name="capitals">
+    <object id="101" x="1" y="1"><point/><properties><property name="province_id" type="int" value="1"/></properties></object>
+    <object id="102" x="5" y="1"><point/><properties><property name="province_id" type="int" value="2"/></properties></object>
+    <object id="103" x="5" y="5"><point/><properties><property name="province_id" type="int" value="3"/></properties></object>
+  </objectgroup>
+</map>

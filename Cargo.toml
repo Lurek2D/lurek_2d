@@ -73,6 +73,12 @@ fontdue = "0.9"
 # DDS compressed texture format parsing
 # SVG parsing for vector graphics support
 usvg = { version = "0.36", default-features = false }
+# Deterministic path construction and GPU-ready fill/stroke tessellation for retained shapes.
+lyon_path = "1.0"
+lyon_tessellation = "1.0"
+# CPU SVG rasterization for the standard graphics catalog and headless PNG export.
+resvg = { version = "0.36", default-features = false }
+tiny-skia = "0.11"
 
 # Audio playback — OGG Vorbis + WAV only. FLAC (claxon) and MP3 (minimp3) decoders removed.
 # To re-enable: add "flac" or "mp3" back to features array.
@@ -425,6 +431,10 @@ path = "tests/rust/unit/procgen_tests.rs"
 [[test]]
 name = "province_tests"
 path = "tests/rust/unit/province_tests.rs"
+
+[[test]]
+name = "math_tests"
+path = "tests/rust/unit/math_tests.rs"
 
 [[test]]
 name = "raycaster_tests"

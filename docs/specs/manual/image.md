@@ -28,6 +28,9 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 ## Notes
 
+- Built-in procedural graphics belong to `lurek.render`, not this CPU image module. The native catalogue is compiled into the executable, so portable packages do not need an asset-relative SVG directory.
+- Use `lurek.render.listBuiltinShapes`, `getBuiltinShapeInfo`, and `loadBuiltinShape` for the 96 primitive-based templates. Keep `LShape` handles retained and compiled; use `LShape:drawMany` for repeated instances.
+- `lurek.svg` remains available for user-provided SVG files. It is intentionally separate from the native shape catalogue and does not add built-in SVG dependencies to a release package.
 - `lurek.province.newGrid` is the canonical GameFS-backed constructor for province id grids. `lurek.image.newProvinceGrid` remains a compatibility facade for image-origin content and delegates to the same bounded province adapter; migrate new code to `lurek.province.newGrid`.
 - Lua image construction, codecs, callbacks, frames, layers, and byte exports use `ImageLimits`; oversized dimensions, encoded input, decompression output, aggregate state, or pixel work fail before allocation or iteration.
 - Lua save operations encode bounded bytes and write through GameFS atomically. Normal output is restricted to `save/`; the engine's approved `tests/artifacts/current/` evidence root is available to test runs through the same checked atomic writer. Host paths, traversal, and direct filesystem writes are not image responsibilities.

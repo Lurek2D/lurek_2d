@@ -2,9 +2,9 @@
 
 ## TL;DR
 
-- Simulates region maps decoded from color-coded PNG cartographic assets.
+- Simulates region maps decoded from color-coded PNG cartographic assets or authored as Tiled polygon maps.
 - Imports capitals, angled labels, and terrain metadata, compiling adjacencies.
-- Supports horizontal span runs, binary geometry caches, and map modes.
+- Supports horizontal span runs, authored polygon components, shared-edge topology, binary geometry caches, and map modes.
 - Exposes province-specific routing and picking adapters while shared path search and camera math stay in their owner modules.
 
 ## Summary
@@ -29,11 +29,15 @@ This module primarily collaborates with `camera`, `image`, `pathfind`, `render`,
 ## Notes
 
 - `province` owns conversion from painted province maps into province ids, spans, borders, polygons, and registry state. Use `lurek.province.newGrid` for bounded GameFS-backed grid ingestion; `image` owns generic pixel buffers and retains `newProvinceGrid` only as a compatibility facade.
+- `lurek.province.newFromTiled` is the additive polygon authoring path. It accepts finite orthogonal TMX/TMJ/JSON maps, requires `provinces` and `capitals` object layers with integer `province_id` properties, snaps vertices to a configured grid, and rejects invalid overlaps, missing capitals, unsupported shapes, and non-manifold shared edges.
+- Province polygons may be concave and disconnected components may share one ID. Every known ID needs exactly one explicitly authored, strictly interior point capital; capital coordinates are retained as authored floating-point positions. Gaps remain unowned, point contacts do not create adjacency, and shared intervals are merged after quantization.
+- Polygon geometry remains authoritative after import. Multiple polygon components may share one province ID, while adjacency is derived only from positive-length shared edges. Polygon picking uses floating map coordinates and does not create a hidden province ID grid.
+- Raster PNG registries retain their existing cell/span/render path. Polygon registries use triangulated fills and shared-edge lines for command rendering; the explicit segment backend may rasterize polygon triangles into its output texture.
 - `province` owns topology as territory data, but `pathfind` owns reusable path search, weighted traversal, connectivity traversal, movement budgets, and reachability over that topology. Province route methods should stay thin adapters over pathfind graph traversal.
 - Flow simulation over graph nodes, items, queues, capacity, and supply/demand belongs to `flownet`/`lurek.graph`; province adjacency can feed it but should not implement transport semantics.
 - `province` may expose `fitCamera`, `screenToProvince`, and `zoomCameraAt` for strategy-map ergonomics, but generic viewport and zoom-anchor math belongs to `camera`.
 - `province` owns semantic visual state such as climate, weather, fog amount, and visual seeds. `render` still owns WGSL code, bind-group layout, validation, and actual water, border-noise, fog, and weather composition in `DrawProvinceMap`.
-- `province` exports a bounded `ProvinceRenderSnapshot` when registry revision changes. The snapshot contains only CPU pixels and semantic style records; it has no device, queue, texture, or other `wgpu` handle. The app forwards it to render, which owns upload formats, GPU residency, and incremental resource replacement.
+- `province` exports a bounded `ProvinceRenderSnapshot` when registry revision changes. Raster snapshots contain CPU pixel payloads; polygon snapshots contain immutable vertices, triangle indexes, shared borders, and compact style slots. Neither contains a device, queue, texture, or other `wgpu` handle. The app forwards the packet to render, which owns upload formats, GPU residency, mesh buffers, and incremental resource replacement.
 - `LProvinceRegistry:setShader(shaderOrNil)` accepts only `mapviz` shaders created by `lurek.render.newShader`. The registry stores the semantic shader binding, then the command backend wraps generated render commands in render-owned shader state. The specialized `backend = "gpu"` province map pipeline and segment raster cache do not yet execute custom user shaders; richer province-id and heatmap inputs belong in a later render-owned `DrawProvinceMap` shader contract.
 
 ## Architecture Links

@@ -177,6 +177,24 @@ describe("Evidence: lurek.province fixture-derived artifacts", function()
             { target = "mapviz", slug = "frontline_heat" },
         }, OUT)
     end)
+
+    -- Does: Loads the same authored polygon map and exercises all three province render backends with one selected multi-component province.
+    -- Shows: Concave fill, selected mainland and island components, exact shared borders, an unowned gap, and explicit capital markers.
+    -- Artifact: tests/artifacts/current/province/province_tiled_polygon_commands.png, province_tiled_polygon_gpu.png, province_tiled_polygon_segments.png
+    -- Why: The polygon source path must keep logical ownership and component styling consistent across commands, GPU, and segment rendering.
+    it("PNG: Tiled polygon rendering backends", function()
+        save_png(Fixture.render_tiled_polygon("commands"), OUT .. "province_tiled_polygon_commands.png")
+        save_png(Fixture.render_tiled_polygon("gpu"), OUT .. "province_tiled_polygon_gpu.png")
+        save_png(Fixture.render_tiled_polygon("segments"), OUT .. "province_tiled_polygon_segments.png")
+    end)
+
+    -- Does: Reads the normalized polygon registry topology and serializes stable ids, component counts, capitals, adjacency, and border intervals.
+    -- Shows: The text record is an inspectable topology contract independent of rasterized anti-aliasing.
+    -- Artifact: tests/artifacts/current/province/province_tiled_polygon_topology.txt
+    -- Why: Exact shared-edge derivation and deterministic province identity are easier to audit as sorted text than pixels.
+    it("TXT: Tiled polygon topology", function()
+        save_text(OUT .. "province_tiled_polygon_topology.txt", Fixture.tiled_polygon_topology())
+    end)
 end)
 
 test_summary()

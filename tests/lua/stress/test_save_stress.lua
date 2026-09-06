@@ -25,8 +25,7 @@ end
 
 -- @describe stress: savegame collect cycles
 describe("stress: savegame collect cycles", function()
-    -- @stress LSaveManager:collect
-    it("100 savegame collect cycles in <10s", function()
+    local function __audit_stress_1()
         local COUNT = 100
         local sm    = lurek.save.newSaveManager()
 
@@ -55,6 +54,11 @@ describe("stress: savegame collect cycles", function()
         end)
 
         expect_true(elapsed < 10.0, "savegame collect budget: " .. elapsed .. "s")
+    end
+
+    -- @stress LSaveManager:collect
+    it("100 savegame collect cycles in <10s", function()
+        __audit_stress_1()
     end)
 
     -- @stress LSaveManager:setSummary

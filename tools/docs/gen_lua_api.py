@@ -416,6 +416,20 @@ def collect_class_descriptions(api_file: Path) -> Dict[str, str]:
         if desc:
             result[class_name] = desc
 
+    # Pass 2b: compatibility helpers may expose a userdata owned by another
+    # module through a re-export (for example image's legacy province grid).
+    # Keep the canonical owner name so unit-test markers and docs agree across
+    # both namespaces.
+    reexport_re = re.compile(r"pub\s+use\s+[^;]*::(Lua\w+)\s*;")
+    for i, line in enumerate(lines):
+        match = reexport_re.search(line)
+        if not match:
+            continue
+        class_name = _canonical_name(match.group(1))
+        desc = _collect_doc_above(lines, i)
+        if desc:
+            result.setdefault(class_name, desc)
+
     known_class_names: set[str] = set(result) | set(type_returns.values())
 
     # Pass 3: create_widget_table( â€” shared UI base-widget table helpers
@@ -770,6 +784,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
     rel_path = str(api_file.relative_to(WORKSPACE_ROOT)).replace("\\", "/")
     functions: List[LuaFunction] = []
     current_impl_type: Optional[str] = None
+    pending_helper_type: Optional[str] = None
     current_widget_type: Optional[str] = None
     brace_depth = 0
     macro_depth = 0
@@ -979,6 +994,15 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
         if impl_m:
             current_impl_type = impl_m.group(1)
 
+        # Generic helper functions can register methods for a concrete
+        # userdata without living inside its `impl` block.  Carry the owner
+        # across a multiline signature until its body opens.
+        if "fn add_legacy_province_grid_methods" in stripped:
+            pending_helper_type = "LuaProvinceGrid"
+        if pending_helper_type and "{" in stripped:
+            current_impl_type = pending_helper_type
+            pending_helper_type = None
+
         if create_widget_table_re.search(stripped):
             current_widget_type = "LUiWidget"
 
@@ -989,7 +1013,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
             w_type = "L" + "".join(p.capitalize() for p in raw_w.split("_"))
             current_widget_type = w_type
 
-        if brace_depth <= 0:
+        if brace_depth <= 0 and pending_helper_type is None:
             current_impl_type = None
             brace_depth = 0
 

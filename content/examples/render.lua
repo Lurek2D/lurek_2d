@@ -1119,6 +1119,232 @@ do
     lurek.log.info("shape typeOf LShape=" .. tostring(is_shape) .. " LObject=" .. tostring(is_object) .. " commands=" .. shape:getCommandCount())
 end
 
+--@api: LShape:setPalette
+do
+    local shape = lurek.render.newShape()
+    local before = shape:getCommandCount()
+    shape:setPalette({ primary = { 0.9, 0.2, 0.2, 1 }, outline = { 0.1, 0.1, 0.1 } })
+    shape:rectangle("fill", 0, 0, 12, 8)
+    local after = shape:getCommandCount()
+    lurek.log.info("shape palette commands " .. before .. " -> " .. after)
+end
+
+--@api: LShape:setColorRole
+do
+    local shape = lurek.render.newShape()
+    local role = "accent"
+    shape:setColorRole(role)
+    shape:rectangle("fill", 0, 0, 20, 12)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape color role " .. role .. " commands = " .. count)
+end
+
+--@api: LShape:setStrokeStyle
+do
+    local shape = lurek.render.newShape()
+    local style = { width = 2, cap = "round", join = "bevel", dash = { 4, 2 } }
+    shape:setStrokeStyle(style)
+    shape:line(0, 0, 24, 12)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape stroke style commands = " .. count)
+end
+
+--@api: LShape:point
+do
+    local shape = lurek.render.newShape()
+    local size = 3
+    shape:point(4, 5, size)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape point size=" .. size)
+    lurek.log.info("shape point commands = " .. count)
+end
+
+--@api: LShape:points
+do
+    local shape = lurek.render.newShape()
+    local values = { 0, 0, 8, 4, 16, 8, 2 }
+    shape:points(unpack(values))
+    local count = shape:getCommandCount()
+    lurek.log.info("shape points values = " .. #values)
+    lurek.log.info("shape points commands = " .. count)
+end
+
+--@api: LShape:path
+do
+    local shape = lurek.render.newShape()
+    local segments = { { verb = "moveTo", x = 0, y = 0 }, { verb = "lineTo", x = 24, y = 12 } }
+    shape:path(segments, { close = false })
+    local count = shape:getCommandCount()
+    lurek.log.info("shape path segments = " .. #segments)
+    lurek.log.info("shape path commands = " .. count)
+end
+
+--@api: LShape:regularPolygon
+do
+    local shape = lurek.render.newShape()
+    local sides = 6
+    shape:regularPolygon("fill", 12, 12, 10, sides)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape regular polygon sides = " .. sides)
+    lurek.log.info("shape regular polygon commands = " .. count)
+end
+
+--@api: LShape:star
+do
+    local shape = lurek.render.newShape()
+    local points = 5
+    shape:star("fill", 12, 12, 10, 4, points)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape star points = " .. points)
+    lurek.log.info("shape star commands = " .. count)
+end
+
+--@api: LShape:capsule
+do
+    local shape = lurek.render.newShape()
+    local radius = 4
+    shape:capsule("line", 0, 0, 30, 12, radius)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape capsule radius = " .. radius)
+    lurek.log.info("shape capsule commands = " .. count)
+end
+
+--@api: LShape:ring
+do
+    local shape = lurek.render.newShape()
+    local segments = 12
+    shape:ring("line", 12, 12, 10, 5, segments)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape ring segments = " .. segments)
+    lurek.log.info("shape ring commands = " .. count)
+end
+
+--@api: LShape:sector
+do
+    local shape = lurek.render.newShape()
+    local segments = 12
+    shape:sector("fill", 12, 12, 10, 0, math.pi, segments)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape sector segments = " .. segments)
+    lurek.log.info("shape sector commands = " .. count)
+end
+
+--@api: LShape:arrow
+do
+    local shape = lurek.render.newShape()
+    local width, head = 4, 8
+    shape:arrow("fill", 0, 0, 24, 12, width, head)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape arrow width/head = " .. width .. "/" .. head)
+    lurek.log.info("shape arrow commands = " .. count)
+end
+
+--@api: LShape:symbol
+do
+    local shape = lurek.render.newShape()
+    local name, size = "diamond", 10
+    shape:symbol(name, 12, 12, size, "fill")
+    local count = shape:getCommandCount()
+    lurek.log.info("shape symbol name/size = " .. name .. "/" .. size)
+    lurek.log.info("shape symbol commands = " .. count)
+end
+
+--@api: LShape:trail
+do
+    local shape = lurek.render.newShape()
+    local coords, widths = { 0, 0, 12, 4, 24, 0 }, { 2, 3, 1 }
+    shape:trail(coords, widths)
+    local count = shape:getCommandCount()
+    lurek.log.info("shape trail points = " .. (#coords / 2))
+    lurek.log.info("shape trail commands = " .. count)
+end
+
+--@api: LShape:addShape
+do
+    local child = lurek.render.newShape()
+    child:rectangle("fill", 0, 0, 8, 8)
+    local parent = lurek.render.newShape()
+    parent:addShape(child, { x = 10, y = 4, rotation = 0.1 })
+    lurek.log.info("shape composite commands = " .. parent:getCommandCount())
+end
+
+--@api: LShape:compile
+do
+    local shape = lurek.render.newShape()
+    shape:rectangle("fill", 0, 0, 10, 10)
+    local compiled = shape:compile({ tolerance = 0.1 })
+    local diagnostics = shape:getDiagnostics()
+    lurek.log.info("shape compiled = " .. tostring(compiled))
+    lurek.log.info("shape compile revision = " .. diagnostics.revision)
+end
+
+--@api: LShape:drawMany
+do
+    local shape = lurek.render.newShape()
+    shape:rectangle("fill", 0, 0, 8, 8)
+    shape:compile()
+    shape:drawMany({ { x = 10, y = 10 }, { x = 24, y = 12, rotation = 0.2 } })
+    lurek.log.info("shape instances queued")
+end
+
+--@api: LShape:getBounds
+do
+    local shape = lurek.render.newShape()
+    shape:rectangle("fill", -2, -3, 10, 8)
+    local bounds = shape:getBounds()
+    local area = bounds.w * bounds.h
+    lurek.log.info("shape bounds = " .. bounds.w .. "x" .. bounds.h)
+    lurek.log.info("shape bounds area = " .. area)
+end
+
+--@api: LShape:getDiagnostics
+do
+    local shape = lurek.render.newShape()
+    shape:circle("fill", 5, 5, 3)
+    local diagnostics = shape:getDiagnostics()
+    local commands = diagnostics.commands
+    lurek.log.info("shape diagnostics commands = " .. commands)
+    lurek.log.info("shape diagnostics compiled = " .. tostring(diagnostics.compiled))
+end
+
+--@api: LShape:release
+do
+    local shape = lurek.render.newShape()
+    local type_name = shape:type()
+    local released = shape:release()
+    lurek.log.info("shape type before release = " .. type_name)
+    lurek.log.info("shape released = " .. tostring(released))
+    lurek.log.info("shape release complete")
+end
+
+--@api: lurek.render.listBuiltinShapes
+do
+    local filter = { category = "ui", query = "heart" }
+    local shapes = lurek.render.listBuiltinShapes(filter)
+    local count = #shapes
+    local first = shapes[1] or {}
+    local id = first.id or "none"
+    lurek.log.info("builtin shape search count=" .. count .. " id=" .. id)
+end
+
+--@api: lurek.render.getBuiltinShapeInfo
+do
+    local id = "ui/heart"
+    local info = lurek.render.getBuiltinShapeInfo(id)
+    local category = info.category
+    lurek.log.info("builtin shape " .. info.id .. " category=" .. category)
+    lurek.log.info("builtin shape id queried = " .. id)
+end
+
+--@api: lurek.render.loadBuiltinShape
+do
+    local id = "ui/heart"
+    local palette = { primary = { 1, 0.2, 0.2 } }
+    local shape = lurek.render.loadBuiltinShape(id, { palette = palette })
+    local count = shape:getCommandCount()
+    lurek.log.info("builtin shape " .. id .. " commands = " .. count)
+end
+
 --@api: lurek.render.loadObj
 do
 

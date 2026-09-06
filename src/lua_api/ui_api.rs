@@ -1112,7 +1112,7 @@ fn create_widget_table<'a>(
     // -- getLabelFor --
     /// Returns the live widget handle associated through `setLabelFor`, or nil.
     /// @param | self | LUiWidget | The widget instance.
-    /// @return | LUiWidget? | The linked widget handle, or nil when unset or released.
+    /// @return | LUiWidget | The linked widget handle, or nil when unset or released.
     t.set(
         "getLabelFor",
         lua.create_function(move |lua, _self: LuaValue| {
@@ -7961,7 +7961,7 @@ impl LuaUserData for LuaUiContext {
         // -- getById --
         /// Finds a widget by id inside this context.
         /// @param | id | string | Widget id.
-        /// @return | LUiWidget? | Matching widget or nil.
+        /// @return | LUiWidget | Matching widget or nil.
         methods.add_method("getById", |lua, this, id: String| {
             let slot = this.context.borrow().find_by_id(0, &id);
             match slot {
@@ -8139,7 +8139,7 @@ impl LuaUserData for LuaUiContext {
         });
         // -- getFocus --
         /// Returns the focused widget handle.
-        /// @return | LUiWidget? | Focused widget or nil.
+        /// @return | LUiWidget | Focused widget or nil.
         methods.add_method("getFocus", |lua, this, ()| {
             match this.context.borrow().focused_widget {
                 Some(slot) => Ok(Some(create_typed_widget_table(
@@ -8152,7 +8152,7 @@ impl LuaUserData for LuaUiContext {
             }
         });
         // -- focusNext --
-        /// Moves focus forward.
+        /// Moves focus forward to the next focusable widget in this UI context.
         methods.add_method("focusNext", |_, this, ()| {
             let mut context = this.context.borrow_mut();
             if context.layout_dirty {
@@ -8162,7 +8162,7 @@ impl LuaUserData for LuaUiContext {
             Ok(())
         });
         // -- focusPrev --
-        /// Moves focus backward.
+        /// Moves focus backward to the previous focusable widget in this UI context.
         methods.add_method("focusPrev", |_, this, ()| {
             let mut context = this.context.borrow_mut();
             if context.layout_dirty {
@@ -8341,11 +8341,11 @@ impl LuaUserData for LuaUiContext {
             Ok(out)
         });
         // -- type --
-        /// Returns `LUiContext`.
+        /// Returns the runtime type name for this explicit UI context handle.
         /// @return | string | Handle type.
         methods.add_method("type", |_, _, ()| Ok("LUiContext"));
         // -- typeOf --
-        /// Checks this handle type.
+        /// Checks whether this handle matches a supported UI context type.
         /// @param | name | string | Type name.
         /// @return | boolean | Whether it matches.
         methods.add_method("typeOf", |_, _, name: String| {
@@ -10306,7 +10306,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let cbs_active_drag = callbacks.clone();
     // -- getActiveDrag --
     /// Returns the live widget currently being dragged, or nil.
-    /// @return | LUiWidget? | The dragged widget handle, or nil when no drag is active.
+    /// @return | LUiWidget | The dragged widget handle, or nil when no drag is active.
     tbl.set(
         "getActiveDrag",
         lua.create_function(move |lua, ()| {
@@ -10340,7 +10340,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let cbs_end_drag = callbacks.clone();
     // -- endDrag --
     /// Ends the current drag operation without dropping.
-    /// @return | LUiWidget? | The widget handle that was being dragged, or nil if no drag was active.
+    /// @return | LUiWidget | The widget handle that was being dragged, or nil if no drag was active.
     tbl.set(
         "endDrag",
         lua.create_function(move |lua, ()| {

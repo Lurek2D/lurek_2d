@@ -255,6 +255,19 @@ fn fill_background(
                 }
             }
         }
+        RaycasterBackground::LayeredSky {
+            top,
+            bottom,
+            layers: _,
+        } => {
+            let denom = height.saturating_sub(1).max(1) as f32;
+            for y in 0..height {
+                let color = rgba_to_u8(mix_rgba(*top, *bottom, y as f32 / denom));
+                for x in 0..width {
+                    img.set_pixel(x, y, color.0, color.1, color.2, color.3);
+                }
+            }
+        }
         RaycasterBackground::Shader { material } => {
             draw_fullscreen_material(img, material, time_seconds, texture_sampler);
         }
@@ -601,6 +614,29 @@ impl RaycasterScene {
         let mut img = ImageData::new(width, height);
         if let Some(background) = &self.background {
             fill_background(&mut img, background, self.time_seconds, texture_sampler);
+        }
+        for sky in &self.sky_quads {
+            fill_quad(
+                &mut img,
+                QuadRaster {
+                    corners: scale_corners(
+                        sky.corners,
+                        self.screen_width,
+                        self.screen_height,
+                        width,
+                        height,
+                    ),
+                    uvs: sky.uvs,
+                    corner_w: sky.corner_w,
+                    texture_key: Some(sky.texture_key),
+                    light: sky.color,
+                    texture_sampler,
+                    depth_buffer: None,
+                    depth: None,
+                    write_depth: false,
+                    blend_mode: sky.blend_mode,
+                },
+            );
         }
         let mut depth_buffer =
             vec![f32::INFINITY; (width as usize).saturating_mul(height as usize)];

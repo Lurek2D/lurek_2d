@@ -91,12 +91,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | font_bytes | integer | Font bytes.
     /// @field | canvas_bytes | integer | Canvas bytes.
     /// @field | shader_bytes | integer | Shader bytes.
+    /// @field | shape_bytes | integer | Compiled retained-shape bytes.
     /// @field | total_bytes | integer | Total bytes.
     /// @field | budget_bytes | integer | Budget bytes.
     /// @field | texture_count | integer | Texture count.
     /// @field | font_count | integer | Font count.
     /// @field | canvas_count | integer | Canvas count.
     /// @field | shader_count | integer | Shader count.
+    /// @field | shape_count | integer | Retained shape handle count.
+    /// @field | compiled_shape_count | integer | Retained shapes with compiled CPU geometry.
     /// @field | app_tick_ms | number | App tick ms.
     /// @field | app_update_ms | number | App update ms.
     /// @field | app_render_ms | number | App render ms.
@@ -118,12 +121,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             out.set("font_bytes", stats.font_bytes)?;
             out.set("canvas_bytes", stats.canvas_bytes)?;
             out.set("shader_bytes", stats.shader_bytes)?;
+            out.set("shape_bytes", stats.shape_bytes)?;
             out.set("total_bytes", stats.total_bytes)?;
             out.set("budget_bytes", stats.budget_bytes)?;
             out.set("texture_count", stats.texture_count)?;
             out.set("font_count", stats.font_count)?;
             out.set("canvas_count", stats.canvas_count)?;
             out.set("shader_count", stats.shader_count)?;
+            out.set("shape_count", stats.shape_count)?;
+            out.set("compiled_shape_count", stats.compiled_shape_count)?;
             Ok(out)
         })?,
     )?;

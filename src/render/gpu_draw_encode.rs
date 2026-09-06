@@ -25,6 +25,11 @@ impl GpuRenderer {
             blend_mode: draw.blend_mode,
             color_mask_bits: draw.color_mask_bits,
             stencil_mode: draw.stencil_mode,
+            sample_count: if matches!(geometry, GeometryKind::Light) {
+                1
+            } else {
+                self.sample_count
+            },
         };
         match shader_for_draw(draw) {
             Some(shader) => PipelineSelectionKey::Custom {
@@ -65,6 +70,7 @@ impl GpuRenderer {
                     geometry,
                     key,
                     "fs_main",
+                    key.sample_count,
                 ),
                 GeometryKind::Texture => create_render_pipeline(
                     &self.device,
@@ -74,6 +80,7 @@ impl GpuRenderer {
                     geometry,
                     key,
                     "fs_main",
+                    key.sample_count,
                 ),
                 GeometryKind::ColorInstanced => create_render_pipeline(
                     &self.device,
@@ -83,6 +90,7 @@ impl GpuRenderer {
                     geometry,
                     key,
                     "fs_main",
+                    key.sample_count,
                 ),
                 GeometryKind::TextureInstanced => create_render_pipeline(
                     &self.device,
@@ -92,6 +100,7 @@ impl GpuRenderer {
                     geometry,
                     key,
                     "fs_main",
+                    key.sample_count,
                 ),
                 GeometryKind::Particle | GeometryKind::ParticleTextured | GeometryKind::Light => {
                     return None
@@ -202,6 +211,11 @@ impl GpuRenderer {
             blend_mode: draw.blend_mode,
             color_mask_bits: draw.color_mask_bits,
             stencil_mode: draw.stencil_mode,
+            sample_count: if matches!(draw.geometry, GeometryKind::Light) {
+                1
+            } else {
+                self.sample_count
+            },
         };
         let effective_shader = shader_for_draw(draw);
 

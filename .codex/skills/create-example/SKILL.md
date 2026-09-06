@@ -18,7 +18,7 @@ description: "Load this skill when creating or modifying API examples under cont
 - No comment or setup line appears between the marker and `do`.
 - The owned block contains all required setup and cleanup.
 - Generated pages may extract the block without the rest of the file.
-- Each block contains at least five relevant non-comment code lines.
+- Each block contains 5-16 relevant non-comment code lines.
 - `--@api-stub:` marks unfinished coverage.
 - Finished examples do not contain TODO or PART markers.
 - An example shows one realistic success path.
@@ -29,8 +29,9 @@ description: "Load this skill when creating or modifying API examples under cont
 - The complete module file must boot without state leaking between blocks.
 - `content/examples/README.md` is the namespace index for example files.
 - Shared example resources live under `content/examples/assets/`.
+- Files ending in `.demo.lua` are focused user-facing workflows. They are smoke-tested but intentionally excluded from API-marker coverage; keep them short and do not add `--@api:` markers.
 - Coverage states are `FULL`, `PART`, `TODO`, and `MISS`.
-- `FULL` requires a marker block, no TODO line, and at least five non-comment body lines.
+- `FULL` requires a marker block, no TODO line, and at least five useful non-comment body lines; strict lint separately enforces the 16-line maximum.
 - Structural lint rejects duplicate markers, unowned top-level `do` blocks, and top-level Lua code outside owned blocks.
 - `--report --no-stubs --no-partials` is the strict finished-example gate.
 

@@ -2,8 +2,7 @@
 
 -- @describe audio stress: listener limit and atomic validation
 describe("audio stress: listener limit and atomic validation", function()
-    -- @stress lurek.audio.setListeners
-    it("accepts 64 listeners and atomically rejects 65", function()
+    local function __audit_stress_1()
         local listeners = {}
         for i = 1, 64 do
             listeners[i] = {
@@ -23,6 +22,11 @@ describe("audio stress: listener limit and atomic validation", function()
         end)
         expect_equal(64, #lurek.audio.getListeners())
         lurek.audio.setListener(0, 0, 0)
+    end
+
+    -- @stress lurek.audio.setListeners
+    it("accepts 64 listeners and atomically rejects 65", function()
+        __audit_stress_1()
     end)
 end)
 

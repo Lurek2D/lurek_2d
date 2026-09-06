@@ -1,0 +1,18 @@
+{
+  "type": "map", "version": "1.10", "orientation": "orthogonal", "infinite": false,
+  "width": 12, "height": 10, "tilewidth": 1, "tileheight": 1,
+  "layers": [
+    {"type":"objectgroup","name":"provinces","objects":[
+      {"id":1,"x":0,"y":0,"polygon":[{"x":0,"y":0},{"x":4,"y":0},{"x":4,"y":4},{"x":2,"y":2},{"x":0,"y":4}],"properties":[{"name":"province_id","type":"int","value":1}]},
+      {"id":2,"x":4,"y":0,"polygon":[{"x":0,"y":0},{"x":4,"y":0},{"x":4,"y":4},{"x":0,"y":4},{"x":0,"y":2}],"properties":[{"name":"province_id","type":"int","value":2}]},
+      {"id":3,"x":0,"y":6,"polygon":[{"x":0,"y":0},{"x":2,"y":0},{"x":2,"y":2},{"x":0,"y":2}],"properties":[{"name":"province_id","type":"int","value":1}]},
+      {"id":5,"x":3,"y":6,"polygon":[{"x":0,"y":0},{"x":2,"y":0},{"x":2,"y":2},{"x":0,"y":2}],"properties":[{"name":"province_id","type":"int","value":1}]},
+      {"id":4,"x":4,"y":4,"polygon":[{"x":0,"y":0},{"x":2,"y":0},{"x":1,"y":2}],"properties":[{"name":"province_id","type":"int","value":3}]}
+    ]},
+    {"type":"objectgroup","name":"capitals","objects":[
+      {"id":101,"x":1,"y":1,"point":true,"properties":[{"name":"province_id","type":"int","value":1}]},
+      {"id":102,"x":5,"y":1,"point":true,"properties":[{"name":"province_id","type":"int","value":2}]},
+      {"id":103,"x":5,"y":5,"point":true,"properties":[{"name":"province_id","type":"int","value":3}]}
+    ]}
+  ]
+}

@@ -6,7 +6,7 @@
 //! Use this file when changing province border index defaults, lifecycle handling, validation, or data ownership rules.
 
 use crate::province::registry::ProvinceRegistry;
-use crate::province::types::{BorderPairStyle, ProvinceId};
+use crate::province::types::{BorderPairStyle, ProvinceGeometryKind, ProvinceId};
 use std::collections::HashMap;
 
 /// Dense per-pixel border pair index map.
@@ -228,6 +228,30 @@ where
 pub fn build_border_index_from_registry(registry: &ProvinceRegistry) -> ProvinceBorderIndex {
     let width = registry.width();
     let height = registry.height();
+    if registry.geometry_kind() == ProvinceGeometryKind::Polygon {
+        // Polygon topology is already represented by exact floating-point
+        // segments. Keep this raster-only index empty instead of sampling the
+        // authored map into a dense cell grid.
+        let mut id_to_pair = vec![(ProvinceId(0), ProvinceId(0))];
+        let mut pair_to_id = HashMap::new();
+        if let Some(segments) = registry.polygon_border_segments() {
+            for segment in segments {
+                let _ = assign_pair_id(
+                    &mut pair_to_id,
+                    &mut id_to_pair,
+                    segment.province_a,
+                    segment.province_b,
+                );
+            }
+        }
+        return ProvinceBorderIndex {
+            data: Vec::new(),
+            width,
+            height,
+            id_to_pair,
+            pair_to_id,
+        };
+    }
     let mut ids = Vec::with_capacity((width as usize).saturating_mul(height as usize));
     for y in 0..height {
         for x in 0..width {

@@ -11,7 +11,10 @@
 
 use crate::image::ImageData;
 use crate::render::mesh::Mesh;
-use crate::render::renderer::{CompareMode, DrawMode, RenderCommand, StencilAction};
+use crate::render::renderer::{CompareMode, DrawMode, RenderCommand, ShapeInstance, StencilAction};
+use crate::render::shape::CompoundShape;
+use crate::runtime::resource_keys::ShapeKey;
+use slotmap::SlotMap;
 
 /// Counters collected while replaying render commands through the software capture path.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -130,6 +133,80 @@ struct MeshTransform {
     sy: f32,
     ox: f32,
     oy: f32,
+}
+
+fn shape_transform(instance: &ShapeInstance) -> Mat3 {
+    Mat3::translate(instance.x, instance.y)
+        .mul(Mat3::rotate(instance.rotation))
+        .mul(Mat3::scale(instance.sx, instance.sy))
+        .mul(Mat3::translate(-instance.ox, -instance.oy))
+}
+
+/// Rasterize a compiled retained shape into the deterministic CPU capture target.
+///
+/// GPU rendering uses the indexed static mesh directly.  The software path only
+/// exists for evidence/screenshot tests, so replaying its triangles keeps captures
+/// useful without reintroducing the old SVG catalogue or a second shape authoring
+/// representation.
+fn draw_compiled_shape(
+    img: &mut ImageData,
+    state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
+    shape: &CompoundShape,
+    instance: &ShapeInstance,
+) {
+    let compiled_shape;
+    let compiled = if let Some(compiled) = shape.compiled.as_ref() {
+        compiled
+    } else {
+        let mut candidate = shape.clone();
+        if candidate.compile(candidate.compile_tolerance).is_err() {
+            diagnostics.invalid_geometry_inputs =
+                diagnostics.invalid_geometry_inputs.saturating_add(1);
+            return;
+        }
+        compiled_shape = candidate;
+        let Some(compiled) = compiled_shape.compiled.as_ref() else {
+            diagnostics.invalid_geometry_inputs =
+                diagnostics.invalid_geometry_inputs.saturating_add(1);
+            return;
+        };
+        compiled
+    };
+    if compiled.indices.len() < 3 {
+        return;
+    }
+    let previous_transform = state.transform;
+    let previous_color = state.color;
+    state.transform = state.transform.mul(shape_transform(instance));
+    for triangle in compiled.indices.chunks_exact(3) {
+        let Some(a) = compiled.vertices.get(triangle[0] as usize) else {
+            continue;
+        };
+        let Some(b) = compiled.vertices.get(triangle[1] as usize) else {
+            continue;
+        };
+        let Some(c) = compiled.vertices.get(triangle[2] as usize) else {
+            continue;
+        };
+        state.color = average_rgba8(&[a.color, b.color, c.color]);
+        for channel in 0..4 {
+            state.color[channel] =
+                (f32::from(state.color[channel]) * instance.tint[channel]).clamp(0.0, 255.0) as u8;
+        }
+        fill_polygon(
+            img,
+            state,
+            diagnostics,
+            &[
+                (a.position[0], a.position[1]),
+                (b.position[0], b.position[1]),
+                (c.position[0], c.position[1]),
+            ],
+        );
+    }
+    state.transform = previous_transform;
+    state.color = previous_color;
 }
 
 fn color_to_rgba8(color: [f32; 4]) -> [u8; 4] {
@@ -715,6 +792,59 @@ fn replay_command(
             *angle2,
             *segments,
         ),
+        RenderCommand::DrawPath {
+            segments,
+            mode,
+            close,
+            fill_rule,
+            stroke,
+        } => {
+            let mut style = stroke.clone();
+            if style.width <= 0.0 {
+                style.width = state.line_width.max(0) as f32;
+            }
+            let color = state.color.map(|channel| f32::from(channel) / 255.0);
+            match crate::render::shape::tessellate_path(
+                segments,
+                mode.clone(),
+                *close,
+                *fill_rule,
+                style,
+                state.line_width.max(0) as f32,
+                crate::math::Mat3::identity(),
+                color,
+                0.1,
+            ) {
+                Ok((vertices, indices)) => {
+                    for triangle in indices.chunks_exact(3) {
+                        let Some(a) = vertices.get(triangle[0] as usize) else {
+                            continue;
+                        };
+                        let Some(b) = vertices.get(triangle[1] as usize) else {
+                            continue;
+                        };
+                        let Some(c) = vertices.get(triangle[2] as usize) else {
+                            continue;
+                        };
+                        draw_polygon(
+                            img,
+                            state,
+                            diagnostics,
+                            &DrawMode::Fill,
+                            &[
+                                (a.position[0], a.position[1]),
+                                (b.position[0], b.position[1]),
+                                (c.position[0], c.position[1]),
+                            ],
+                        );
+                    }
+                }
+                Err(_) => {
+                    diagnostics.invalid_geometry_inputs =
+                        diagnostics.invalid_geometry_inputs.saturating_add(1)
+                }
+            }
+        }
         RenderCommand::DrawColoredPolygon {
             vertices,
             colors,
@@ -771,6 +901,13 @@ fn replay_command(
                 }
             }
         }
+        // Retained shapes are handled by `replay_command_with_shapes`, which has
+        // access to the live shape registry.  Keep this fallback diagnostic for
+        // callers of the legacy command-only capture helper.
+        RenderCommand::DrawShape { .. } | RenderCommand::DrawShapeMany { .. } => {
+            diagnostics.unsupported_capture_commands =
+                diagnostics.unsupported_capture_commands.saturating_add(1);
+        }
         RenderCommand::Print {
             text, x, y, scale, ..
         } => {
@@ -799,6 +936,63 @@ fn replay_command(
     }
 }
 
+fn replay_command_with_shapes(
+    img: &mut ImageData,
+    state: &mut CaptureState,
+    diagnostics: &mut SoftwareCaptureDiagnostics,
+    command: &RenderCommand,
+    shapes: &SlotMap<ShapeKey, CompoundShape>,
+) {
+    match command {
+        RenderCommand::DrawShape {
+            shape_key,
+            x,
+            y,
+            rotation,
+            sx,
+            sy,
+            ox,
+            oy,
+        } => {
+            let Some(shape) = shapes.get(*shape_key) else {
+                diagnostics.unsupported_capture_commands =
+                    diagnostics.unsupported_capture_commands.saturating_add(1);
+                return;
+            };
+            draw_compiled_shape(
+                img,
+                state,
+                diagnostics,
+                shape,
+                &ShapeInstance {
+                    x: *x,
+                    y: *y,
+                    rotation: *rotation,
+                    sx: *sx,
+                    sy: *sy,
+                    ox: *ox,
+                    oy: *oy,
+                    tint: [1.0, 1.0, 1.0, 1.0],
+                },
+            );
+        }
+        RenderCommand::DrawShapeMany {
+            shape_key,
+            instances,
+        } => {
+            let Some(shape) = shapes.get(*shape_key) else {
+                diagnostics.unsupported_capture_commands =
+                    diagnostics.unsupported_capture_commands.saturating_add(1);
+                return;
+            };
+            for instance in instances {
+                draw_compiled_shape(img, state, diagnostics, shape, instance);
+            }
+        }
+        other => replay_command(img, state, diagnostics, other),
+    }
+}
+
 /// Replay queued render commands into a CPU `ImageData` buffer using a solid background color.
 pub fn capture_commands_to_image(
     commands: &[RenderCommand],
@@ -824,6 +1018,25 @@ pub fn capture_commands_to_image_sized(
     let mut diagnostics = SoftwareCaptureDiagnostics::default();
     for command in commands {
         replay_command(&mut img, &mut state, &mut diagnostics, command);
+    }
+    img
+}
+
+/// Replay queued commands and retained `LShape` assets into a CPU image.  This is
+/// used by `captureScreenshot`; the GPU path remains the source of truth at runtime.
+pub fn capture_commands_to_image_with_shapes(
+    commands: &[RenderCommand],
+    shapes: &SlotMap<ShapeKey, CompoundShape>,
+    background_color: [f32; 4],
+) -> ImageData {
+    let (width, height) = estimate_canvas_size(commands);
+    let bg = color_to_rgba8(background_color);
+    let mut img = ImageData::new(width, height);
+    img.draw_rect(0, 0, width, height, bg[0], bg[1], bg[2], bg[3]);
+    let mut state = CaptureState::new(width, height);
+    let mut diagnostics = SoftwareCaptureDiagnostics::default();
+    for command in commands {
+        replay_command_with_shapes(&mut img, &mut state, &mut diagnostics, command, shapes);
     }
     img
 }

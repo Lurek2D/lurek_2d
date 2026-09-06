@@ -35,9 +35,7 @@ describe("tileset bounded stress", function()
         expect_equal(2, #tileset:getAnimation(1))
         expect_equal("stress", tileset:getProperty(256, "biome"))
     end)
-
-    -- @stress LTileSet:setAutoTileRule
-    it("keeps four-way rule lookup deterministic across a bounded table", function()
+    local function __audit_stress_2()
         local tileset = lurek.tileset.newTileSet(1, 1024, 32, 16, 16)
         for mask = 0, 255 do
             tileset:setAutoTileRule("stress", mask, (mask % 1024) + 1)
@@ -45,16 +43,26 @@ describe("tileset bounded stress", function()
         for mask = 0, 255 do
             expect_equal((mask % 1024) + 1, tileset:getAutoTileId("stress", mask))
         end
-    end)
+    end
 
-    -- @stress lurek.tileset.newCatalog
-    it("resolves sorted snapshot catalog entries", function()
+
+    -- @stress LTileSet:setAutoTileRule
+    it("keeps four-way rule lookup deterministic across a bounded table", function()
+        __audit_stress_2()
+    end)
+    local function __audit_stress_1()
         local first = build_provider()
         local second = lurek.tileset.newTileSet(1, 16, 4, 16, 16)
         local catalog = lurek.tileset.newCatalog({ zed = first, alpha = second })
         expect_equal("alpha", catalog:getIds()[1])
         expect_equal("LTileSet", catalog:getTileset("zed"):type())
         expect_equal("a.png", catalog:getVisual({ tileset = "zed", object = "a" }).image)
+    end
+
+
+    -- @stress lurek.tileset.newCatalog
+    it("resolves sorted snapshot catalog entries", function()
+        __audit_stress_1()
     end)
 end)
 

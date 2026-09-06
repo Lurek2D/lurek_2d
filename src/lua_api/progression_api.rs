@@ -101,10 +101,12 @@ fn snapshot_arg_to_json(value: LuaValue) -> LuaResult<JsonValue> {
 }
 
 #[derive(Clone)]
+/// Lua-visible `ProgressionStore` object carrying progression state and operations.
 struct LuaProgressionStore {
     store: Rc<RefCell<ProgressionStore>>,
 }
 
+/// Lua-visible `StatusTracker` object carrying progression state and operations.
 struct LuaStatusTracker {
     tracker: StatusTracker,
 }
@@ -254,11 +256,13 @@ fn status_snapshot_from_lua(table: LuaTable) -> LuaResult<StatusSnapshot> {
     })
 }
 
+/// Lua-visible `StatusTracker` object carrying progression state and operations.
 impl UserData for LuaStatusTracker {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- define --
         /// Registers or replaces one status definition.
         /// @param | definition | table | Definition with id, duration, tickInterval, maxStacks, stacking, and tags.
+        /// @return | nil | No return value.
         methods.add_method_mut("define", |_, this, definition: LuaTable| {
             let definition = parse_status_definition(definition)?;
             this.tracker
@@ -271,7 +275,7 @@ impl UserData for LuaStatusTracker {
         /// @param | definitionId | string | Registered status definition id.
         /// @param | sourceId | integer? | Optional source/owner id.
         /// @param | stacks | integer? | Initial stack count, clamped to maxStacks.
-        /// @return | integer | Status instance id.
+        /// @return | | integer | Status instance id | Result produced by this progression operation.
         methods.add_method_mut(
             "apply",
             |_,
@@ -289,13 +293,14 @@ impl UserData for LuaStatusTracker {
         );
         // -- clear --
         /// Removes all definitions, instances, and queued events.
+        /// @return | nil | No return value.
         methods.add_method_mut("clear", |_, this, ()| {
             this.tracker.clear();
             Ok(())
         });
         // -- drainEvents --
         /// Takes and clears neutral apply/refresh/stack/tick/expired events.
-        /// @return | table | Event records in deterministic emission order.
+        /// @return | | table | Event records in deterministic emission order | Result produced by this progression operation.
         methods.add_method_mut("drainEvents", |lua, this, ()| {
             let events = this.tracker.drain_events();
             let output = lua.create_table()?;
@@ -307,7 +312,7 @@ impl UserData for LuaStatusTracker {
         // -- get --
         /// Returns one active status instance by runtime id.
         /// @param | instanceId | integer | Runtime status instance id.
-        /// @return | table? | Status instance record, or nil when missing.
+        /// @return | | table? | Status instance record, or nil when missing | Result produced by this progression operation.
         methods.add_method("get", |lua, this, instance_id: u64| {
             this.tracker
                 .get(instance_id)
@@ -318,7 +323,7 @@ impl UserData for LuaStatusTracker {
         /// Checks whether a subject has a status with the requested definition id or tag.
         /// @param | subjectId | integer | Stable subject/entity id.
         /// @param | definitionOrTag | string | Definition id or copied instance tag.
-        /// @return | boolean | Whether a matching instance exists.
+        /// @return | | boolean | Whether a matching instance exists | Result produced by this progression operation.
         methods.add_method(
             "has",
             |_, this, (subject_id, definition_or_tag): (u64, String)| {
@@ -329,7 +334,7 @@ impl UserData for LuaStatusTracker {
         /// Lists active status instances attached to one subject and matching all optional filters.
         /// @param | subjectId | integer | Stable subject/entity id.
         /// @param | filter | table? | Optional definitionId, tag, sourceId, and paused filters.
-        /// @return | table | Status instance records.
+        /// @return | | table | Status instance records | Result produced by this progression operation.
         methods.add_method(
             "list",
             |lua, this, (subject_id, filter): (u64, Option<LuaTable>)| {
@@ -370,7 +375,7 @@ impl UserData for LuaStatusTracker {
         // -- remove --
         /// Removes one active status instance.
         /// @param | instanceId | integer | Runtime status instance id.
-        /// @return | boolean | True when an instance was removed.
+        /// @return | | boolean | True when an instance was removed | Result produced by this progression operation.
         methods.add_method_mut("remove", |_, this, instance_id: u64| {
             Ok(this.tracker.remove(instance_id))
         });
@@ -378,7 +383,7 @@ impl UserData for LuaStatusTracker {
         /// Removes every matching definition instance from one subject.
         /// @param | subjectId | integer | Stable subject/entity id.
         /// @param | definitionId | string | Registered status definition id.
-        /// @return | integer | Number of removed instances.
+        /// @return | | integer | Number of removed instances | Result produced by this progression operation.
         methods.add_method_mut(
             "removeByDefinition",
             |_, this, (subject_id, definition_id): (u64, String)| {
@@ -391,7 +396,7 @@ impl UserData for LuaStatusTracker {
         /// Removes every instance carrying a copied tag from one subject.
         /// @param | subjectId | integer | Stable subject/entity id.
         /// @param | tag | string | Instance tag to match.
-        /// @return | integer | Number of removed instances.
+        /// @return | | integer | Number of removed instances | Result produced by this progression operation.
         methods.add_method_mut(
             "removeByTag",
             |_, this, (subject_id, tag): (u64, String)| {
@@ -401,6 +406,7 @@ impl UserData for LuaStatusTracker {
         // -- restore --
         /// Restores definitions, active instances, and ID allocation from a snapshot.
         /// @param | snapshot | table | Table returned by `snapshot`.
+        /// @return | nil | No return value.
         methods.add_method_mut("restore", |_, this, snapshot: LuaTable| {
             this.tracker
                 .restore(status_snapshot_from_lua(snapshot)?)
@@ -408,7 +414,7 @@ impl UserData for LuaStatusTracker {
         });
         // -- snapshot --
         /// Captures definitions, instances, and ID allocation state.
-        /// @return | table | Serializable status tracker snapshot.
+        /// @return | | table | Serializable status tracker snapshot | Result produced by this progression operation.
         methods.add_method("snapshot", |lua, this, ()| {
             status_snapshot_to_lua(lua, &this.tracker.snapshot())
         });
@@ -416,7 +422,7 @@ impl UserData for LuaStatusTracker {
         /// Pauses or resumes one status instance's lifecycle timers.
         /// @param | instanceId | integer | Runtime status instance id.
         /// @param | paused | boolean | Whether timers should be paused.
-        /// @return | boolean | True when the instance exists.
+        /// @return | | boolean | True when the instance exists | Result produced by this progression operation.
         methods.add_method_mut(
             "setPaused",
             |_, this, (instance_id, paused): (u64, bool)| {
@@ -427,7 +433,7 @@ impl UserData for LuaStatusTracker {
         /// Sets one status instance's remaining duration; nil makes it infinite.
         /// @param | instanceId | integer | Runtime status instance id.
         /// @param | seconds | number? | Finite non-negative seconds, or nil.
-        /// @return | boolean | True when the instance exists.
+        /// @return | | boolean | True when the instance exists | Result produced by this progression operation.
         methods.add_method_mut(
             "setRemaining",
             |_, this, (instance_id, seconds): (u64, Option<f64>)| {
@@ -438,19 +444,19 @@ impl UserData for LuaStatusTracker {
         );
         // -- type --
         /// Returns the Lua-visible type name.
-        /// @return | string | Always `LStatusTracker`.
+        /// @return | | string | Always `LStatusTracker` | Result produced by this progression operation.
         methods.add_method("type", |_, _, ()| Ok("LStatusTracker"));
         // -- typeOf --
         /// Checks whether this handle matches `LStatusTracker` or `LObject`.
         /// @param | name | string | Type name to compare.
-        /// @return | boolean | Whether the name matches.
+        /// @return | | boolean | Whether the name matches | Result produced by this progression operation.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LStatusTracker" || name == "LObject")
         });
         // -- update --
         /// Advances finite durations and periodic tick timers by dt seconds.
         /// @param | dt | number | Non-negative logical seconds.
-        /// @return | integer | Number of events currently queued after the update.
+        /// @return | | integer | Number of events currently queued after the update | Result produced by this progression operation.
         methods.add_method_mut("update", |_, this, dt: f64| {
             this.tracker
                 .update(dt)
@@ -460,12 +466,14 @@ impl UserData for LuaStatusTracker {
 }
 
 #[derive(Clone)]
+/// Lua-visible `ProfileHandle` object carrying progression state and operations.
 struct LuaProfileHandle {
     id: String,
     store: Rc<RefCell<ProgressionStore>>,
 }
 
 #[derive(Clone)]
+/// Lua-visible `ProgressionTransaction` object carrying progression state and operations.
 struct LuaProgressionTransaction {
     store: Rc<RefCell<ProgressionStore>>,
     tx: Rc<RefCell<ProgressionTransaction>>,
@@ -1222,12 +1230,12 @@ fn build_legacy_stats_adapter<'lua>(
     adapter.set("_encumbrance", lua.create_table()?)?;
     adapter.set("_initiative", 10.0)?;
 
-    /// Define.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @param base : number
-    /// @param opts : table?
+    /// Defines this operation in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @param | base | number | Value supplied for `base`.
+    /// @param | opts | table? | Optional operation options table.
+    /// @return | nil | No return value.
     adapter.set(
         "define",
         lua.create_function(
@@ -1266,11 +1274,10 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
-    /// Returns a value.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return number
+    /// Returns this operation from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | number | Result produced by this progression operation.
     adapter.set(
         "get",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1285,11 +1292,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the base.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return number
+    /// Returns base from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | number | Result produced by this progression operation.
     adapter.set(
         "getBase",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1304,12 +1310,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the base.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @param value : number
-    /// @return boolean
+    /// Sets base in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "setBase",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -1324,11 +1329,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the min.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @param value : number
+    /// Sets min in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setMin",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -1346,11 +1351,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the max.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @param value : number
+    /// Sets max in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setMax",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -1368,10 +1373,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the min.
-    ///
-    /// @param this : table
-    /// @param name : string
+    /// Returns min from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getMin",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1381,10 +1386,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the max.
-    ///
-    /// @param this : table
-    /// @param name : string
+    /// Returns max from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getMax",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1394,11 +1399,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the regen.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @param value : number
+    /// Sets regen in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setRegen",
         lua.create_function(|_, (this, name, value): (LuaTable, String, f64)| {
@@ -1409,10 +1414,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the regen.
-    ///
-    /// @param this : table
-    /// @param name : string
+    /// Returns regen from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getRegen",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1422,10 +1427,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the stat names.
-    ///
-    /// @param this : table
-    /// @return table
+    /// Returns stat names from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getStatNames",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -1444,9 +1448,8 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Adds buff.
-    ///
-    /// @return string
+    /// Adds buff to the progression store for Lua callers.
+    /// @return | string | Result produced by this progression operation.
     adapter.set(
         "addBuff",
         lua.create_function(
@@ -1479,11 +1482,10 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
-    /// Removes buff.
-    ///
-    /// @param this : table
-    /// @param handle : string
-    /// @return boolean
+    /// Removes buff from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | handle | string | Value supplied for `handle`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "removeBuff",
         lua.create_function(|_, (this, handle): (LuaTable, String)| {
@@ -1498,10 +1500,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Clears buffs.
-    ///
-    /// @param this : table
-    /// @param stat : string?
+    /// Clears buffs in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | stat | string? | Value supplied for `stat`.
+    /// @return | nil | No return value.
     adapter.set(
         "clearBuffs",
         lua.create_function(|_, (this, stat): (LuaTable, Option<String>)| {
@@ -1527,11 +1529,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the buff count.
-    ///
-    /// @param this : table
-    /// @param stat : string?
-    /// @return integer
+    /// Returns buff count from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | stat | string? | Value supplied for `stat`.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "getBuffCount",
         lua.create_function(|_, (this, stat): (LuaTable, Option<String>)| {
@@ -1554,10 +1555,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Apply trait buffs.
-    ///
-    /// @param this : table
-    /// @param trait_name : string
+    /// Applies trait buffs in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | trait_name | string | Value supplied for `trait_name`.
+    /// @return | nil | No return value.
     adapter.set(
         "applyTraitBuffs",
         lua.create_function(|_, (this, trait_name): (LuaTable, String)| {
@@ -1574,11 +1575,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Removes trait buffs.
-    ///
-    /// @param this : table
-    /// @param trait_name : string
-    /// @return boolean
+    /// Removes trait buffs from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | trait_name | string | Value supplied for `trait_name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "removeTraitBuffs",
         lua.create_function(|_, (this, trait_name): (LuaTable, String)| {
@@ -1595,11 +1595,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns true if trait.
-    ///
-    /// @param this : table
-    /// @param trait_name : string
-    /// @return boolean
+    /// Checks whether trait exists in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | trait_name | string | Value supplied for `trait_name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "hasTrait",
         lua.create_function(|_, (this, trait_name): (LuaTable, String)| {
@@ -1614,10 +1613,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the active traits.
-    ///
-    /// @param this : table
-    /// @return table
+    /// Returns active traits from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getActiveTraits",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -1635,11 +1633,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the buffs.
-    ///
-    /// @param this : table
-    /// @param stat : string?
-    /// @return table
+    /// Returns buffs from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | stat | string? | Value supplied for `stat`.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getBuffs",
         lua.create_function(|lua, (this, stat): (LuaTable, Option<String>)| {
@@ -1674,10 +1671,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Adds xp.
-    ///
-    /// @param this : table
-    /// @param amount : number
+    /// Adds x p to the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | amount | number | Value supplied for `amount`.
+    /// @return | nil | No return value.
     adapter.set(
         "addXP",
         lua.create_function(|_, (this, amount): (LuaTable, f64)| {
@@ -1699,10 +1696,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the xp.
-    ///
-    /// @param this : table
-    /// @return number
+    /// Returns x p from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | number | Result produced by this progression operation.
     adapter.set(
         "getXP",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1717,10 +1713,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the xp.
-    ///
-    /// @param this : table
-    /// @param value : number
+    /// Sets x p in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setXP",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -1745,10 +1741,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the level.
-    ///
-    /// @param this : table
-    /// @return integer
+    /// Returns level from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "getLevel",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -1763,10 +1758,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the level.
-    ///
-    /// @param this : table
-    /// @param value : integer
+    /// Sets level in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | value | integer | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setLevel",
         lua.create_function(|_, (this, value): (LuaTable, i64)| {
@@ -1791,10 +1786,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the level thresholds.
-    ///
-    /// @param this : table
-    /// @param thresholds : table
+    /// Sets level thresholds in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | thresholds | table | Value supplied for `thresholds`.
+    /// @return | nil | No return value.
     adapter.set(
         "setLevelThresholds",
         lua.create_function(|_, (this, thresholds): (LuaTable, LuaTable)| {
@@ -1843,11 +1838,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Define skill.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @param opts : table?
+    /// Defines skill in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @param | opts | table? | Optional operation options table.
+    /// @return | nil | No return value.
     adapter.set(
         "defineSkill",
         lua.create_function(
@@ -1869,11 +1864,10 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
-    /// Learn skill.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return boolean
+    /// Performs the `learnSkill` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "learnSkill",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1888,11 +1882,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Use skill.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return | boolean, string? | Success flag followed by an optional failure reason.
+    /// Performs the `useSkill` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | nil | boolean, string? | Success flag followed by an optional failure reason | Result produced by this progression operation.
     adapter.set(
         "useSkill",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1909,11 +1902,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the skill level.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return integer
+    /// Returns skill level from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "getSkillLevel",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1928,11 +1920,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the cooldown remaining.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return number
+    /// Returns cooldown remaining from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | number | Result produced by this progression operation.
     adapter.set(
         "getCooldownRemaining",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -1949,11 +1940,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Define perk.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @param opts : table?
+    /// Defines perk in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @param | opts | table? | Optional operation options table.
+    /// @return | nil | No return value.
     adapter.set(
         "definePerk",
         lua.create_function(
@@ -1994,11 +1985,10 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
-    /// Acquire perk.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return boolean
+    /// Performs the `acquirePerk` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "acquirePerk",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -2013,11 +2003,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns true if perk.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return boolean
+    /// Checks whether perk exists in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "hasPerk",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -2032,10 +2021,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the action points.
-    ///
-    /// @param this : table
-    /// @param max_val : number
+    /// Sets action points in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | max_val | number | Value supplied for `max_val`.
+    /// @return | nil | No return value.
     adapter.set(
         "setActionPoints",
         lua.create_function(|_, (this, max_val): (LuaTable, f64)| {
@@ -2066,10 +2055,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the action points.
-    ///
-    /// @param this : table
-    /// @return | number, number | Current action points followed by the configured maximum.
+    /// Returns action points from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | number, number | Current action points followed by the configured maximum | Result produced by this progression operation.
     adapter.set(
         "getActionPoints",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2090,11 +2078,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Spend action points.
-    ///
-    /// @param this : table
-    /// @param amount : number
-    /// @return boolean
+    /// Performs the `spendActionPoints` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | amount | number | Value supplied for `amount`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "spendActionPoints",
         lua.create_function(|_, (this, amount): (LuaTable, f64)| {
@@ -2112,10 +2099,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Recover action points.
-    ///
-    /// @param this : table
-    /// @param amount : number
+    /// Performs the `recoverActionPoints` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | amount | number | Value supplied for `amount`.
+    /// @return | nil | No return value.
     adapter.set(
         "recoverActionPoints",
         lua.create_function(|_, (this, amount): (LuaTable, f64)| {
@@ -2133,9 +2120,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Begin turn.
-    ///
-    /// @param this : table
+    /// Begins turn in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | nil | No return value.
     adapter.set(
         "beginTurn",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2151,10 +2138,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the morale.
-    ///
-    /// @param this : table
-    /// @param max_val : number
+    /// Sets morale in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | max_val | number | Value supplied for `max_val`.
+    /// @return | nil | No return value.
     adapter.set(
         "setMorale",
         lua.create_function(|_, (this, max_val): (LuaTable, f64)| {
@@ -2181,10 +2168,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Returns the morale.
-    ///
-    /// @param this : table
-    /// @return | number, number | Current morale followed by the configured maximum.
+    /// Returns morale from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | number, number | Current morale followed by the configured maximum | Result produced by this progression operation.
     adapter.set(
         "getMorale",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2203,10 +2189,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Adjust morale.
-    ///
-    /// @param this : table
-    /// @param delta : number
+    /// Performs the `adjustMorale` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | delta | number | Value supplied for `delta`.
+    /// @return | nil | No return value.
     adapter.set(
         "adjustMorale",
         lua.create_function(|_, (this, delta): (LuaTable, f64)| {
@@ -2227,10 +2213,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the panic threshold.
-    ///
-    /// @param this : table
-    /// @param value : number
+    /// Sets panic threshold in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setPanicThreshold",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -2239,10 +2225,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the berserk threshold.
-    ///
-    /// @param this : table
-    /// @param value : number
+    /// Sets berserk threshold in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setBerserkThreshold",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -2251,10 +2237,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Check morale.
-    ///
-    /// @param this : table
-    /// @return string
+    /// Performs the `checkMorale` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | string | Result produced by this progression operation.
     adapter.set(
         "checkMorale",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2293,10 +2278,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the flag.
-    ///
-    /// @param this : table
-    /// @param name : string
+    /// Sets flag in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | nil | No return value.
     adapter.set(
         "setFlag",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -2305,10 +2290,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
-    /// Clears flag.
-    ///
-    /// @param this : table
-    /// @param name : string
+    /// Clears flag in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | nil | No return value.
     adapter.set(
         "clearFlag",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -2317,11 +2302,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
-    /// Returns true if flag.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return boolean
+    /// Checks whether flag exists in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "hasFlag",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -2329,10 +2313,9 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(flags.get::<_, Option<bool>>(name)?.unwrap_or(false))
         })?,
     )?;
-    /// Returns the flags.
-    ///
-    /// @param this : table
-    /// @return table
+    /// Returns flags from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getFlags",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -2353,11 +2336,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the resistance.
-    ///
-    /// @param this : table
-    /// @param dtype : string
-    /// @param value : number
+    /// Sets resistance in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | dtype | string | Value supplied for `dtype`.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setResistance",
         lua.create_function(|_, (this, dtype, value): (LuaTable, String, f64)| {
@@ -2366,11 +2349,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
-    /// Returns the resistance.
-    ///
-    /// @param this : table
-    /// @param dtype : string
-    /// @return number
+    /// Returns resistance from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | dtype | string | Value supplied for `dtype`.
+    /// @return | number | Result produced by this progression operation.
     adapter.set(
         "getResistance",
         lua.create_function(|_, (this, dtype): (LuaTable, String)| {
@@ -2379,13 +2361,12 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Apply damage.
-    ///
-    /// @param this : table
-    /// @param stat : string
-    /// @param amount : number
-    /// @param dtype : string?
-    /// @return number
+    /// Applies damage in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | stat | string | Value supplied for `stat`.
+    /// @param | amount | number | Value supplied for `amount`.
+    /// @param | dtype | string? | Value supplied for `dtype`.
+    /// @return | number | Result produced by this progression operation.
     adapter.set(
         "applyDamage",
         lua.create_function(
@@ -2408,10 +2389,10 @@ fn build_legacy_stats_adapter<'lua>(
         )?,
     )?;
 
-    /// Record use.
-    ///
-    /// @param this : table
-    /// @param name : string
+    /// Performs the `recordUse` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | nil | No return value.
     adapter.set(
         "recordUse",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -2421,11 +2402,10 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
-    /// Returns the use count.
-    ///
-    /// @param this : table
-    /// @param name : string
-    /// @return integer
+    /// Returns use count from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "getUseCount",
         lua.create_function(|_, (this, name): (LuaTable, String)| {
@@ -2434,11 +2414,11 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the encumbrance.
-    ///
-    /// @param this : table
-    /// @param cur : number
-    /// @param max_val : number
+    /// Sets encumbrance in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | cur | number | Value supplied for `cur`.
+    /// @param | max_val | number | Value supplied for `max_val`.
+    /// @return | nil | No return value.
     adapter.set(
         "setEncumbrance",
         lua.create_function(|_, (this, cur, max_val): (LuaTable, f64, f64)| {
@@ -2448,10 +2428,9 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
-    /// Returns the encumbrance.
-    ///
-    /// @param this : table
-    /// @return table
+    /// Returns encumbrance from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getEncumbrance",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -2465,10 +2444,9 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(out)
         })?,
     )?;
-    /// Returns true if encumbered.
-    ///
-    /// @param this : table
-    /// @return boolean
+    /// Checks whether encumbered is true for this progression object.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "isEncumbered",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2479,10 +2457,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the initiative.
-    ///
-    /// @param this : table
-    /// @param value : number
+    /// Sets initiative in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | value | number | Value supplied for `value`.
+    /// @return | nil | No return value.
     adapter.set(
         "setInitiative",
         lua.create_function(|_, (this, value): (LuaTable, f64)| {
@@ -2490,9 +2468,9 @@ fn build_legacy_stats_adapter<'lua>(
             Ok(())
         })?,
     )?;
-    /// Returns the initiative.
-    ///
-    /// @param this : table
+    /// Returns initiative from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getInitiative",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2501,10 +2479,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Update.
-    ///
-    /// @param this : table
-    /// @param dt : number
+    /// Updates this operation in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | dt | number | Value supplied for `dt`.
+    /// @return | nil | No return value.
     adapter.set(
         "update",
         lua.create_function(|_, (this, dt): (LuaTable, f64)| {
@@ -2518,10 +2496,9 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Snapshot.
-    ///
-    /// @param this : table
-    /// @return table
+    /// Performs the `snapshot` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "snapshot",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -2554,10 +2531,10 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Restore.
-    ///
-    /// @param this : table
-    /// @param snap : table
+    /// Performs the `restore` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | snap | table | Value supplied for `snap`.
+    /// @return | nil | No return value.
     adapter.set(
         "restore",
         lua.create_function(|_, (this, snap): (LuaTable, LuaTable)| {
@@ -2604,17 +2581,15 @@ fn build_legacy_stats_adapter<'lua>(
         })?,
     )?;
 
-    /// Type.
-    ///
-    /// @return string
+    /// Returns the runtime type name exposed by this progression object to Lua callers.
+    /// @return | string | Result produced by this progression operation.
     adapter.set(
         "type",
         lua.create_function(|_, ()| Ok("LLegacyStatsAdapter"))?,
     )?;
-    /// Type of.
-    ///
-    /// @param name : string
-    /// @return boolean
+    /// Returns the runtime type name exposed by this progression object to Lua callers.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "typeOf",
         lua.create_function(|_, name: String| {
@@ -2640,10 +2615,10 @@ fn build_legacy_quest_adapter<'lua>(
     adapter.set("_quest_defs", lua.create_table()?)?;
     adapter.set("_quest_order", lua.create_table()?)?;
 
-    /// Adds quest.
-    ///
-    /// @param this : table
-    /// @param quest : table
+    /// Adds quest to the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | quest | table | Value supplied for `quest`.
+    /// @return | nil | No return value.
     adapter.set(
         "addQuest",
         lua.create_function(|_, (this, quest): (LuaTable, LuaTable)| {
@@ -2718,10 +2693,9 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Quest count.
-    ///
-    /// @param this : table
-    /// @return integer
+    /// Performs the `questCount` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "questCount",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2735,10 +2709,9 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Quest ids.
-    ///
-    /// @param this : table
-    /// @return table
+    /// Performs the `questIds` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "questIds",
         lua.create_function(|lua, (this,): (LuaTable,)| {
@@ -2752,11 +2725,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Removes quest.
-    ///
-    /// @param this : table
-    /// @param id : string
-    /// @return boolean
+    /// Removes quest from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "removeQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2782,11 +2754,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Start quest.
-    ///
-    /// @param this : table
-    /// @param id : string
-    /// @return boolean
+    /// Performs the `startQuest` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "startQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2801,11 +2772,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Complete quest.
-    ///
-    /// @param this : table
-    /// @param id : string
-    /// @return boolean
+    /// Performs the `completeQuest` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "completeQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2820,11 +2790,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Fail quest.
-    ///
-    /// @param this : table
-    /// @param id : string
-    /// @return boolean
+    /// Performs the `failQuest` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "failQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -2839,9 +2808,8 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Advance objective.
-    ///
-    /// @return boolean
+    /// Performs the `advanceObjective` progression operation for Lua callers.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "advanceObjective",
         lua.create_function(
@@ -2887,13 +2855,12 @@ fn build_legacy_quest_adapter<'lua>(
         )?,
     )?;
 
-    /// Adds journal entry.
-    ///
-    /// @param this : table
-    /// @param quest_id : string
-    /// @param text : string
-    /// @param tag : string?
-    /// @return integer
+    /// Adds journal entry to the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | quest_id | string | Value supplied for `quest_id`.
+    /// @param | text | string | Value supplied for `text`.
+    /// @param | tag | string? | Value supplied for `tag`.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "addJournalEntry",
         lua.create_function(
@@ -2928,11 +2895,10 @@ fn build_legacy_quest_adapter<'lua>(
         )?,
     )?;
 
-    /// Returns the quest.
-    ///
-    /// @param this : table
-    /// @param id : string
-    /// @return table
+    /// Returns quest from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getQuest",
         lua.create_function(|lua, (this, id): (LuaTable, String)| {
@@ -2963,11 +2929,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Quests with status.
-    ///
-    /// @param this : table
-    /// @param wanted : string
-    /// @return table
+    /// Performs the `questsWithStatus` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | wanted | string | Value supplied for `wanted`.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "questsWithStatus",
         lua.create_function(|lua, (this, wanted): (LuaTable, String)| {
@@ -2988,9 +2953,9 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Active ids.
-    ///
-    /// @param this : table
+    /// Performs the `activeIds` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | nil | No return value.
     adapter.set(
         "activeIds",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -2998,9 +2963,9 @@ fn build_legacy_quest_adapter<'lua>(
             fn_ref.call::<_, LuaTable>((this, "active"))
         })?,
     )?;
-    /// Completed ids.
-    ///
-    /// @param this : table
+    /// Performs the `completedIds` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | nil | No return value.
     adapter.set(
         "completedIds",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -3008,9 +2973,9 @@ fn build_legacy_quest_adapter<'lua>(
             fn_ref.call::<_, LuaTable>((this, "completed"))
         })?,
     )?;
-    /// Failed ids.
-    ///
-    /// @param this : table
+    /// Performs the `failedIds` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | nil | No return value.
     adapter.set(
         "failedIds",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -3019,10 +2984,9 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Active count.
-    ///
-    /// @param this : table
-    /// @return integer
+    /// Performs the `activeCount` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "activeCount",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -3031,10 +2995,9 @@ fn build_legacy_quest_adapter<'lua>(
             Ok(ids.raw_len() as i64)
         })?,
     )?;
-    /// Completed count.
-    ///
-    /// @param this : table
-    /// @return integer
+    /// Performs the `completedCount` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @return | integer | Result produced by this progression operation.
     adapter.set(
         "completedCount",
         lua.create_function(|_, (this,): (LuaTable,)| {
@@ -3044,11 +3007,11 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Sets the quest reward.
-    ///
-    /// @param this : table
-    /// @param id : string
-    /// @param reward : string
+    /// Sets quest reward in the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @param | reward | string | Value supplied for `reward`.
+    /// @return | nil | No return value.
     adapter.set(
         "setQuestReward",
         lua.create_function(|_, (this, id, reward): (LuaTable, String, String)| {
@@ -3058,10 +3021,10 @@ fn build_legacy_quest_adapter<'lua>(
             Ok(())
         })?,
     )?;
-    /// Returns the quest reward.
-    ///
-    /// @param this : table
-    /// @param id : string
+    /// Returns quest reward from the progression store for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @return | table | Result produced by this progression operation.
     adapter.set(
         "getQuestReward",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -3073,11 +3036,10 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Clears quest.
-    ///
-    /// @param this : table
-    /// @param id : string
-    /// @return boolean
+    /// Performs the `resetQuest` progression operation for Lua callers.
+    /// @param | this | table | Adapter table owning this operation.
+    /// @param | id | string | Value supplied for `id`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "resetQuest",
         lua.create_function(|_, (this, id): (LuaTable, String)| {
@@ -3095,17 +3057,15 @@ fn build_legacy_quest_adapter<'lua>(
         })?,
     )?;
 
-    /// Type.
-    ///
-    /// @return string
+    /// Returns the runtime type name exposed by this progression object to Lua callers.
+    /// @return | string | Result produced by this progression operation.
     adapter.set(
         "type",
         lua.create_function(|_, ()| Ok("LLegacyQuestAdapter"))?,
     )?;
-    /// Type of.
-    ///
-    /// @param name : string
-    /// @return boolean
+    /// Returns the runtime type name exposed by this progression object to Lua callers.
+    /// @param | name | string | Value supplied for `name`.
+    /// @return | boolean | Result produced by this progression operation.
     adapter.set(
         "typeOf",
         lua.create_function(|_, name: String| {
@@ -3115,15 +3075,15 @@ fn build_legacy_quest_adapter<'lua>(
     Ok(adapter)
 }
 
+/// Lua-visible `ProfileHandle` object carrying progression state and operations.
 impl UserData for LuaProfileHandle {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        /// Returns the id.
-        ///
-        /// @return string
+        /// Returns id from the progression store for Lua callers.
+        /// @return | string | Result produced by this progression operation.
         methods.add_method("getId", |_, this, ()| Ok(this.id.clone()));
         /// Returns this profile's pending reward records as typed reward handles.
         ///
-        /// @return | table | Array of `LReward` values still waiting for claim.
+        /// @return | | table | Array of `LReward` values still waiting for claim | Result produced by this progression operation.
         methods.add_method("getPendingRewards", |lua, this, ()| {
             let rewards = this
                 .store
@@ -3145,22 +3105,26 @@ impl UserData for LuaProfileHandle {
                 )),
             }
         });
-        /// Type.
-        ///
-        /// @return string
+        /// Returns the runtime type name exposed by this progression object to Lua callers.
+        /// @return | string | Result produced by this progression operation.
         methods.add_method("type", |_, _, ()| Ok("LProgressionProfile"));
-        /// Type of.
-        ///
-        /// @param name : string
-        /// @return boolean
+        /// Returns the runtime type name exposed by this progression object to Lua callers.
+        /// @param | name | string | Value supplied for `name`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LProgressionProfile" || name == "LObject")
         });
     }
 }
 
+/// Lua-visible `ProgressionTransaction` object carrying progression state and operations.
 impl UserData for LuaProgressionTransaction {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds counter to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | counter_id | any | Value supplied for `counter_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addCounter",
             |_, this, (profile, counter_id, amount): (LuaValue, String, f64)| {
@@ -3171,6 +3135,11 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
+        /// Sets counter in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | counter_id | any | Value supplied for `counter_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setCounter",
             |_, this, (profile, counter_id, value): (LuaValue, String, f64)| {
@@ -3181,6 +3150,11 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
+        /// Sets attribute base in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | attribute_id | any | Value supplied for `attribute_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setAttributeBase",
             |_, this, (profile, attribute_id, value): (LuaValue, String, f64)| {
@@ -3191,6 +3165,11 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
+        /// Sets resource in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | resource_id | any | Value supplied for `resource_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setResource",
             |_, this, (profile, resource_id, value): (LuaValue, String, f64)| {
@@ -3201,6 +3180,11 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
+        /// Adds modifier to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | target_id | any | Value supplied for `target_id`.
+        /// @param | opts | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addModifier",
             |_, this, (profile, target_id, opts): (LuaValue, String, LuaTable)| {
@@ -3213,6 +3197,12 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
+        /// Sets quest objective in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @param | objective_id | any | Value supplied for `objective_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setQuestObjective",
             |_, this, (profile, quest_id, objective_id, value): (LuaValue, String, String, f64)| {
@@ -3223,6 +3213,11 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
+        /// Adds experience to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | track_id | any | Value supplied for `track_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addExperience",
             |_, this, (profile, track_id, amount): (LuaValue, String, f64)| {
@@ -3233,8 +3228,8 @@ impl UserData for LuaProgressionTransaction {
                 Ok(())
             },
         );
-        /// Commit.
-        ///
+        /// Commits the pending progression transaction and returns its result to Lua callers.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method_mut("commit", |lua, this, ()| {
             let summary = this
                 .store
@@ -3249,74 +3244,72 @@ impl UserData for LuaProgressionTransaction {
                 }),
             )
         });
-        /// Rollback.
-        ///
+        /// Rolls back the pending progression transaction for Lua callers.
+        /// @return | nil | No return value.
         methods.add_method_mut("rollback", |_, this, ()| {
             *this.tx.borrow_mut() = ProgressionTransaction::new(None);
             Ok(())
         });
-        /// Type.
-        ///
-        /// @return string
+        /// Returns the runtime type name exposed by this progression object to Lua callers.
+        /// @return | string | Result produced by this progression operation.
         methods.add_method("type", |_, _, ()| Ok("LProgressionTransaction"));
-        /// Type of.
-        ///
-        /// @param name : string
-        /// @return boolean
+        /// Returns the runtime type name exposed by this progression object to Lua callers.
+        /// @param | name | string | Value supplied for `name`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LProgressionTransaction" || name == "LObject")
         });
     }
 }
 
+/// Lua-visible `ProgressionStore` object carrying progression state and operations.
 impl UserData for LuaProgressionStore {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        /// Returns the id.
-        ///
-        /// @return string
+        /// Returns id from the progression store for Lua callers.
+        /// @return | string | Result produced by this progression operation.
         methods.add_method("getId", |_, this, ()| {
             Ok(this.store.borrow().id().to_string())
         });
-        /// Returns the revision.
-        ///
-        /// @return integer
+        /// Returns revision from the progression store for Lua callers.
+        /// @return | integer | Result produced by this progression operation.
         methods.add_method("getRevision", |_, this, ()| {
             Ok(this.store.borrow().revision())
         });
-        /// Returns the schema version.
-        ///
-        /// @return integer
+        /// Returns schema version from the progression store for Lua callers.
+        /// @return | integer | Result produced by this progression operation.
         methods.add_method("getSchemaVersion", |_, this, ()| {
             Ok(this.store.borrow().schema_version())
         });
-        /// Returns the definition hash.
-        ///
-        /// @return string
+        /// Returns definition hash from the progression store for Lua callers.
+        /// @return | string | Result produced by this progression operation.
         methods.add_method("getDefinitionHash", |_, this, ()| {
             Ok(this.store.borrow().definition_hash())
         });
-        /// Returns the time.
-        ///
-        /// @return number
+        /// Returns time from the progression store for Lua callers.
+        /// @return | number | Result produced by this progression operation.
         methods.add_method("getTime", |_, this, ()| Ok(this.store.borrow().time()));
-        /// Sets the time.
-        ///
-        /// @param seconds : number
+        /// Sets time in the progression store for Lua callers.
+        /// @param | seconds | number | Value supplied for `seconds`.
+        /// @return | nil | No return value.
         methods.add_method_mut("setTime", |_, this, seconds: f64| {
             this.store
                 .borrow_mut()
                 .set_time(seconds)
                 .map_err(|err| progression_error("setTime", err))
         });
-        /// Advance time.
-        ///
-        /// @param seconds : number
+        /// Performs the `advanceTime` progression operation for Lua callers.
+        /// @param | seconds | number | Value supplied for `seconds`.
+        /// @return | nil | No return value.
         methods.add_method_mut("advanceTime", |_, this, seconds: f64| {
             this.store
                 .borrow_mut()
                 .advance_time(seconds)
                 .map_err(|err| progression_error("advanceTime", err))
         });
+        /// Updates this operation in the progression store for Lua callers.
+        /// @param | dt | any | Value supplied for `dt`.
+        /// @param | opts | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "update",
             |lua, this, (dt, _opts): (f64, Option<LuaTable>)| {
@@ -3329,25 +3322,25 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
-        /// Stats.
-        ///
+        /// Performs the `stats` progression operation for Lua callers.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("stats", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().stats())
         });
-        /// Clears the state.
-        ///
+        /// Clears this operation in the progression store for Lua callers.
+        /// @return | nil | No return value.
         methods.add_method_mut("clear", |_, this, ()| {
             this.store.borrow_mut().clear();
             Ok(())
         });
-        /// Validate.
-        ///
+        /// Validates this operation using the progression store rules for Lua callers.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("validate", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().validate())
         });
-        /// Compile condition.
-        ///
-        /// @param condition : table
+        /// Performs the `compileCondition` progression operation for Lua callers.
+        /// @param | condition | table | Value supplied for `condition`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("compileCondition", |lua, this, condition: LuaTable| {
             json_to_lua(
                 lua,
@@ -3357,9 +3350,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("compileCondition", err))?,
             )
         });
-        /// Validate condition.
-        ///
-        /// @param condition : table
+        /// Validates condition using the progression store rules for Lua callers.
+        /// @param | condition | table | Value supplied for `condition`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("validateCondition", |lua, this, condition: LuaTable| {
             json_to_lua(
                 lua,
@@ -3368,6 +3361,10 @@ impl UserData for LuaProgressionStore {
                     .validate_condition(&parse_condition_definition(condition)?),
             )
         });
+        /// Performs the `evaluateCondition` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | condition | any | Value supplied for `condition`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "evaluateCondition",
             |_, this, (profile, condition): (LuaValue, LuaTable)| {
@@ -3378,6 +3375,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("evaluateCondition", err))
             },
         );
+        /// Performs the `explainCondition` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | condition | any | Value supplied for `condition`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "explainCondition",
             |lua, this, (profile, condition): (LuaValue, LuaTable)| {
@@ -3391,29 +3392,31 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
-        /// Debug snapshot.
-        ///
+        /// Performs the `debugSnapshot` progression operation for Lua callers.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("debugSnapshot", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().debug_snapshot())
         });
-        /// Export snapshot.
-        ///
-        /// @return table
+        /// Exports snapshot from the progression store for Lua callers.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("exportSnapshot", |lua, this, ()| {
             let encoded = serde_json::to_string(&this.store.borrow().export_snapshot())
                 .map_err(|err| progression_error("exportSnapshot", err))?;
             Ok(LuaValue::String(lua.create_string(&encoded)?))
         });
-        /// Export changes since.
-        ///
-        /// @param revision : integer
-        /// @return table
+        /// Exports changes since from the progression store for Lua callers.
+        /// @param | revision | integer | Value supplied for `revision`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("exportChangesSince", |lua, this, revision: u64| {
             let encoded =
                 serde_json::to_string(&this.store.borrow().export_changes_since(revision))
                     .map_err(|err| progression_error("exportChangesSince", err))?;
             Ok(LuaValue::String(lua.create_string(&encoded)?))
         });
+        /// Exports changeset from the progression store for Lua callers.
+        /// @param | revision | any | Value supplied for `revision`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "exportChangeset",
             |lua, this, (revision, options): (u64, Option<LuaTable>)| {
@@ -3432,18 +3435,18 @@ impl UserData for LuaProgressionStore {
                 Ok(LuaValue::String(lua.create_string(&encoded)?))
             },
         );
-        /// Load snapshot.
-        ///
-        /// @param snapshot : any
+        /// Performs the `loadSnapshot` progression operation for Lua callers.
+        /// @param | snapshot | any | Value supplied for `snapshot`.
+        /// @return | nil | No return value.
         methods.add_method_mut("loadSnapshot", |_, this, snapshot: LuaValue| {
             this.store
                 .borrow_mut()
                 .load_snapshot(snapshot_arg_to_json(snapshot)?)
                 .map_err(|err| progression_error("loadSnapshot", err))
         });
-        /// Apply changeset.
-        ///
-        /// @param changeset : any
+        /// Applies changeset in the progression store for Lua callers.
+        /// @param | changeset | any | Value supplied for `changeset`.
+        /// @return | nil | No return value.
         methods.add_method_mut("applyChangeset", |lua, this, changeset: LuaValue| {
             let changes: Vec<crate::progression::ChangeRecord> =
                 serde_json::from_value(snapshot_arg_to_json(changeset)?)
@@ -3456,6 +3459,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("applyChangeset", err))?,
             )
         });
+        /// Applies changeset envelope in the progression store for Lua callers.
+        /// @param | changeset | any | Value supplied for `changeset`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "applyChangesetEnvelope",
             |lua, this, (changeset, options): (LuaValue, Option<LuaTable>)| {
@@ -3485,9 +3492,9 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
-        /// Ack changes through.
-        ///
-        /// @param revision : integer
+        /// Performs the `ackChangesThrough` progression operation for Lua callers.
+        /// @param | revision | integer | Value supplied for `revision`.
+        /// @return | nil | No return value.
         methods.add_method_mut("ackChangesThrough", |lua, this, revision: u64| {
             json_to_lua(
                 lua,
@@ -3496,9 +3503,9 @@ impl UserData for LuaProgressionStore {
                     .acknowledge_changes_through(revision),
             )
         });
-        /// Compact changes.
-        ///
-        /// @param max_records : integer
+        /// Performs the `compactChanges` progression operation for Lua callers.
+        /// @param | max_records | integer | Value supplied for `max_records`.
+        /// @return | nil | No return value.
         methods.add_method_mut("compactChanges", |lua, this, max_records: usize| {
             json_to_lua(
                 lua,
@@ -3508,20 +3515,24 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("compactChanges", err))?,
             )
         });
-        /// Drain events.
-        ///
+        /// Performs the `drainEvents` progression operation for Lua callers.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method_mut("drainEvents", |lua, this, ()| {
             let events = this.store.borrow_mut().drain_events();
             let values = serde_json::to_value(events)
                 .map_err(|err| progression_error("drainEvents", err))?;
             json_to_lua(lua, values)
         });
-        /// Clears events.
-        ///
+        /// Clears events in the progression store for Lua callers.
+        /// @return | nil | No return value.
         methods.add_method_mut("clearEvents", |_, this, ()| {
             this.store.borrow_mut().clear_events();
             Ok(())
         });
+        /// Creates profile in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method(
             "createProfile",
             |lua, this, (id, options): (String, Option<LuaTable>)| {
@@ -3535,6 +3546,10 @@ impl UserData for LuaProgressionStore {
                 })
             },
         );
+        /// Performs the `ensureProfile` progression operation for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "ensureProfile",
             |lua, this, (id, options): (String, Option<LuaTable>)| {
@@ -3552,16 +3567,15 @@ impl UserData for LuaProgressionStore {
                 ))
             },
         );
-        /// Returns true if profile.
-        ///
-        /// @param id : string
-        /// @return boolean
+        /// Checks whether profile exists in the progression store for Lua callers.
+        /// @param | id | string | Value supplied for `id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("hasProfile", |_, this, id: String| {
             Ok(this.store.borrow().has_profile(&id))
         });
-        /// Returns the profile.
-        ///
-        /// @param id : string
+        /// Returns profile from the progression store for Lua callers.
+        /// @param | id | string | Value supplied for `id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("getProfile", |lua, this, id: String| {
             json_to_lua(
                 lua,
@@ -3571,6 +3585,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getProfile", err))?,
             )
         });
+        /// Updates profile in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | patch | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "updateProfile",
             |_, this, (id, patch): (String, Option<LuaTable>)| {
@@ -3580,6 +3598,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("updateProfile", err))
             },
         );
+        /// Removes profile from the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | opts | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "removeProfile",
             |_, this, (id, _opts): (String, Option<LuaTable>)| {
@@ -3589,29 +3611,32 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removeProfile", err))
             },
         );
-        /// List profiles.
-        ///
-        /// @param  : table?
+        /// Lists profiles from the progression store for Lua callers.
+        /// @param | arg1 | any | Value supplied for `arg1`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listProfiles", |lua, this, _: Option<LuaTable>| {
             json_to_lua(lua, JsonValue::Array(this.store.borrow().list_profiles()))
         });
-        /// Returns the number of items.
-        ///
-        /// @param  : table?
-        /// @return integer
+        /// Performs the `countProfiles` progression operation for Lua callers.
+        /// @param | arg1 | any | Value supplied for `arg1`.
+        /// @return | number | Result produced by this progression operation.
         methods.add_method("countProfiles", |_, this, _: Option<LuaTable>| {
             Ok(this.store.borrow().count_profiles() as i64)
         });
-        /// Adds profile tag.
-        ///
-        /// @param id : string
-        /// @param tag : string
+        /// Adds profile tag to the progression store for Lua callers.
+        /// @param | id | string | Value supplied for `id`.
+        /// @param | tag | string | Value supplied for `tag`.
+        /// @return | nil | No return value.
         methods.add_method_mut("addProfileTag", |_, this, (id, tag): (String, String)| {
             this.store
                 .borrow_mut()
                 .add_profile_tag(&id, &tag)
                 .map_err(|err| progression_error("addProfileTag", err))
         });
+        /// Removes profile tag from the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | tag | any | Value supplied for `tag`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "removeProfileTag",
             |_, this, (id, tag): (String, String)| {
@@ -3621,6 +3646,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removeProfileTag", err))
             },
         );
+        /// Sets profile metadata in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | key | any | Value supplied for `key`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setProfileMetadata",
             |_, this, (id, key, value): (String, String, LuaValue)| {
@@ -3630,6 +3660,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("setProfileMetadata", err))
             },
         );
+        /// Removes profile metadata from the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | key | any | Value supplied for `key`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "removeProfileMetadata",
             |_, this, (id, key): (String, String)| {
@@ -3639,6 +3673,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removeProfileMetadata", err))
             },
         );
+        /// Defines counter in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineCounter",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3648,6 +3686,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineCounter", err))
             },
         );
+        /// Adds counter to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | counter_id | any | Value supplied for `counter_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addCounter",
             |_, this, (profile, counter_id, amount): (LuaValue, String, Option<f64>)| {
@@ -3658,6 +3701,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("addCounter", err))
             },
         );
+        /// Sets counter in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | counter_id | any | Value supplied for `counter_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setCounter",
             |_, this, (profile, counter_id, value): (LuaValue, String, f64)| {
@@ -3668,6 +3716,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("setCounter", err))
             },
         );
+        /// Returns counter from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | counter_id | any | Value supplied for `counter_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getCounter",
             |_, this, (profile, counter_id): (LuaValue, String)| {
@@ -3678,6 +3730,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getCounter", err))
             },
         );
+        /// Returns counter state from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | counter_id | any | Value supplied for `counter_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getCounterState",
             |lua, this, (profile, counter_id): (LuaValue, String)| {
@@ -3691,9 +3747,9 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
-        /// List counters.
-        ///
-        /// @param profile : any
+        /// Lists counters from the progression store for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listCounters", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             json_to_lua(
@@ -3706,6 +3762,10 @@ impl UserData for LuaProgressionStore {
                 ),
             )
         });
+        /// Defines attribute in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineAttribute",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3715,6 +3775,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineAttribute", err))
             },
         );
+        /// Returns attribute from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | attribute_id | any | Value supplied for `attribute_id`.
+        /// @param | mode | any | Value supplied for `mode`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getAttribute",
             |_, this, (profile, attribute_id, mode): (LuaValue, String, Option<String>)| {
@@ -3725,6 +3790,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getAttribute", err))
             },
         );
+        /// Returns attribute state from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | attribute_id | any | Value supplied for `attribute_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getAttributeState",
             |lua, this, (profile, attribute_id): (LuaValue, String)| {
@@ -3738,6 +3807,11 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Sets attribute base in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | attribute_id | any | Value supplied for `attribute_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setAttributeBase",
             |_, this, (profile, attribute_id, value): (LuaValue, String, f64)| {
@@ -3748,6 +3822,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("setAttributeBase", err))
             },
         );
+        /// Adds attribute base to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | attribute_id | any | Value supplied for `attribute_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addAttributeBase",
             |_, this, (profile, attribute_id, amount): (LuaValue, String, f64)| {
@@ -3758,6 +3837,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("addAttributeBase", err))
             },
         );
+        /// Performs the `explainAttribute` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | attribute_id | any | Value supplied for `attribute_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "explainAttribute",
             |lua, this, (profile, attribute_id): (LuaValue, String)| {
@@ -3777,6 +3860,11 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Adds modifier to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | target_id | any | Value supplied for `target_id`.
+        /// @param | opts | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addModifier",
             |_, this, (profile, target_id, opts): (LuaValue, String, LuaTable)| {
@@ -3787,6 +3875,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("addModifier", err))
             },
         );
+        /// Removes modifier from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | handle | any | Value supplied for `handle`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "removeModifier",
             |_, this, (profile, handle): (LuaValue, String)| {
@@ -3797,9 +3889,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removeModifier", err))
             },
         );
-        /// List modifiers.
-        ///
-        /// @param profile : any
+        /// Lists modifiers from the progression store for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listModifiers", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             json_to_lua(
@@ -3812,6 +3904,10 @@ impl UserData for LuaProgressionStore {
                 ),
             )
         });
+        /// Defines resource in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineResource",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3821,6 +3917,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineResource", err))
             },
         );
+        /// Returns resource from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | resource_id | any | Value supplied for `resource_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getResource",
             |lua, this, (profile, resource_id): (LuaValue, String)| {
@@ -3834,6 +3934,11 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Sets resource in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | resource_id | any | Value supplied for `resource_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setResource",
             |_, this, (profile, resource_id, value): (LuaValue, String, f64)| {
@@ -3844,6 +3949,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("setResource", err))
             },
         );
+        /// Adds resource to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | resource_id | any | Value supplied for `resource_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addResource",
             |_, this, (profile, resource_id, amount): (LuaValue, String, f64)| {
@@ -3854,6 +3964,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("addResource", err))
             },
         );
+        /// Performs the `spendResource` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | resource_id | any | Value supplied for `resource_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "spendResource",
             |_, this, (profile, resource_id, amount): (LuaValue, String, f64)| {
@@ -3864,6 +3979,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("spendResource", err))
             },
         );
+        /// Checks whether Lua callers can spend resource in the progression store.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | resource_id | any | Value supplied for `resource_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method(
             "canSpendResource",
             |_, this, (profile, resource_id, amount): (LuaValue, String, f64)| {
@@ -3874,6 +3994,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("canSpendResource", err))
             },
         );
+        /// Performs the `refillResource` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | resource_id | any | Value supplied for `resource_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "refillResource",
             |_, this, (profile, resource_id, amount): (LuaValue, String, Option<f64>)| {
@@ -3884,6 +4009,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("refillResource", err))
             },
         );
+        /// Defines level track in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineLevelTrack",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3893,6 +4022,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineLevelTrack", err))
             },
         );
+        /// Defines derived value in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineDerivedValue",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3902,6 +4035,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineDerivedValue", err))
             },
         );
+        /// Defines profile template in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineProfileTemplate",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3911,6 +4048,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineProfileTemplate", err))
             },
         );
+        /// Defines trait in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineTrait",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3920,6 +4061,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineTrait", err))
             },
         );
+        /// Applies trait in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | trait_id | any | Value supplied for `trait_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method_mut(
             "applyTrait",
             |_, this, (profile, trait_id): (LuaValue, String)| {
@@ -3930,6 +4075,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("applyTrait", err))
             },
         );
+        /// Removes trait from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | trait_id | any | Value supplied for `trait_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method_mut(
             "removeTrait",
             |_, this, (profile, trait_id): (LuaValue, String)| {
@@ -3940,6 +4089,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removeTrait", err))
             },
         );
+        /// Checks whether trait exists in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | trait_id | any | Value supplied for `trait_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method(
             "hasTrait",
             |_, this, (profile, trait_id): (LuaValue, String)| {
@@ -3950,9 +4103,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("hasTrait", err))
             },
         );
-        /// List traits.
-        ///
-        /// @param profile : any
+        /// Lists traits from the progression store for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listTraits", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             json_to_lua(
@@ -3968,6 +4121,10 @@ impl UserData for LuaProgressionStore {
                 })?,
             )
         });
+        /// Defines perk in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "definePerk",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3977,6 +4134,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("definePerk", err))
             },
         );
+        /// Defines skill in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineSkill",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -3986,6 +4147,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineSkill", err))
             },
         );
+        /// Performs the `learnSkill` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | skill_id | any | Value supplied for `skill_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "learnSkill",
             |_, this, (profile, skill_id): (LuaValue, String)| {
@@ -3996,6 +4161,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("learnSkill", err))
             },
         );
+        /// Performs the `useSkill` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | skill_id | any | Value supplied for `skill_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "useSkill",
             |lua, this, (profile, skill_id): (LuaValue, String)| {
@@ -4009,6 +4178,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Returns skill level from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | skill_id | any | Value supplied for `skill_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getSkillLevel",
             |_, this, (profile, skill_id): (LuaValue, String)| {
@@ -4019,6 +4192,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getSkillLevel", err))
             },
         );
+        /// Returns skill cooldown from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | skill_id | any | Value supplied for `skill_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getSkillCooldown",
             |_, this, (profile, skill_id): (LuaValue, String)| {
@@ -4029,6 +4206,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getSkillCooldown", err))
             },
         );
+        /// Performs the `acquirePerk` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | perk_id | any | Value supplied for `perk_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "acquirePerk",
             |_, this, (profile, perk_id): (LuaValue, String)| {
@@ -4039,6 +4220,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("acquirePerk", err))
             },
         );
+        /// Checks whether perk exists in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | perk_id | any | Value supplied for `perk_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method(
             "hasPerk",
             |_, this, (profile, perk_id): (LuaValue, String)| {
@@ -4049,6 +4234,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("hasPerk", err))
             },
         );
+        /// Applies profile template in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | template_id | any | Value supplied for `template_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "applyProfileTemplate",
             |lua, this, (profile, template_id): (LuaValue, String)| {
@@ -4062,6 +4251,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Defines leaderboard in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineLeaderboard",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4071,6 +4264,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineLeaderboard", err))
             },
         );
+        /// Defines season in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineSeason",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4080,6 +4277,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineSeason", err))
             },
         );
+        /// Performs the `startSeason` progression operation for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "startSeason",
             |lua, this, (id, options): (String, Option<LuaTable>)| {
@@ -4096,6 +4297,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Performs the `endSeason` progression operation for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "endSeason",
             |lua, this, (id, options): (String, Option<LuaTable>)| {
@@ -4116,9 +4321,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
-        /// Returns the season.
-        ///
-        /// @param id : string
+        /// Returns season from the progression store for Lua callers.
+        /// @param | id | string | Value supplied for `id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("getSeason", |lua, this, id: String| {
             lua.create_userdata(season(
                 this.store
@@ -4128,9 +4333,9 @@ impl UserData for LuaProgressionStore {
             ))
             .map(LuaValue::UserData)
         });
-        /// List seasons.
-        ///
-        /// @param query : table?
+        /// Lists seasons from the progression store for Lua callers.
+        /// @param | query | table? | Value supplied for `query`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listSeasons", |lua, this, query: Option<LuaTable>| {
             let active_only = match query {
                 Some(ref table) => table.get::<_, Option<bool>>("active")?,
@@ -4146,6 +4351,10 @@ impl UserData for LuaProgressionStore {
                     .collect(),
             )
         });
+        /// Returns season archive from the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | query | any | Value supplied for `query`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getSeasonArchive",
             |lua, this, (id, query): (String, Option<LuaTable>)| {
@@ -4174,6 +4383,10 @@ impl UserData for LuaProgressionStore {
                 }
             },
         );
+        /// Defines prestige in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "definePrestige",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4183,6 +4396,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("definePrestige", err))
             },
         );
+        /// Checks whether Lua callers can prestige in the progression store.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | prestige_id | any | Value supplied for `prestige_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method(
             "canPrestige",
             |_, this, (profile, prestige_id): (LuaValue, String)| {
@@ -4193,6 +4410,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("canPrestige", err))
             },
         );
+        /// Applies prestige in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | prestige_id | any | Value supplied for `prestige_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "applyPrestige",
             |lua, this, (profile, prestige_id): (LuaValue, String)| {
@@ -4206,6 +4427,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Returns prestige from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | prestige_id | any | Value supplied for `prestige_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getPrestige",
             |lua, this, (profile, prestige_id): (LuaValue, String)| {
@@ -4219,9 +4444,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
-        /// List prestiges.
-        ///
-        /// @param profile : any
+        /// Lists prestiges from the progression store for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listPrestiges", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             userdata_list(
@@ -4235,6 +4460,10 @@ impl UserData for LuaProgressionStore {
                     .collect(),
             )
         });
+        /// Defines collection in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineCollection",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4244,6 +4473,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineCollection", err))
             },
         );
+        /// Performs the `collectCollectionItem` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | collection_id | any | Value supplied for `collection_id`.
+        /// @param | item_id | any | Value supplied for `item_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "collectCollectionItem",
             |lua, this, (profile, collection_id, item_id): (LuaValue, String, String)| {
@@ -4257,6 +4491,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Returns collection from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | collection_id | any | Value supplied for `collection_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getCollection",
             |lua, this, (profile, collection_id): (LuaValue, String)| {
@@ -4270,9 +4508,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
-        /// List collections.
-        ///
-        /// @param profile : any
+        /// Lists collections from the progression store for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listCollections", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             userdata_list(
@@ -4286,6 +4524,11 @@ impl UserData for LuaProgressionStore {
                     .collect(),
             )
         });
+        /// Performs the `pinRival` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | rival_profile | any | Value supplied for `rival_profile`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "pinRival",
             |lua, this, (profile, rival_profile, options): (LuaValue, LuaValue, Option<LuaTable>)| {
@@ -4304,6 +4547,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Returns rival from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | rival_profile | any | Value supplied for `rival_profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getRival",
             |lua, this, (profile, rival_profile): (LuaValue, LuaValue)| {
@@ -4318,9 +4565,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
-        /// List rivals.
-        ///
-        /// @param profile : any
+        /// Lists rivals from the progression store for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listRivals", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             userdata_list(
@@ -4334,6 +4581,10 @@ impl UserData for LuaProgressionStore {
                     .collect(),
             )
         });
+        /// Returns rival delta from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | rival_profile | any | Value supplied for `rival_profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getRivalDelta",
             |lua, this, (profile, rival_profile): (LuaValue, LuaValue)| {
@@ -4349,8 +4600,8 @@ impl UserData for LuaProgressionStore {
             },
         );
         /// Returns one typed activity-feed selection object.
-        ///
-        /// @param query : table?
+        /// @param | query | table? | Value supplied for `query`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("getActivityFeed", |lua, this, query: Option<LuaTable>| {
             let profiles = match query {
                 Some(ref table) => match table.get::<_, Option<LuaTable>>("profiles")? {
@@ -4394,6 +4645,10 @@ impl UserData for LuaProgressionStore {
             lua.create_userdata(activity_feed(entries, profiles, types, limit))
                 .map(LuaValue::UserData)
         });
+        /// Defines population template in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "definePopulationTemplate",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4406,9 +4661,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("definePopulationTemplate", err))
             },
         );
-        /// Validate population template.
-        ///
-        /// @param id : string
+        /// Validates population template using the progression store rules for Lua callers.
+        /// @param | id | string | Value supplied for `id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("validatePopulationTemplate", |lua, this, id: String| {
             json_to_lua(
                 lua,
@@ -4418,6 +4673,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("validatePopulationTemplate", err))?,
             )
         });
+        /// Performs the `generatePopulation` progression operation for Lua callers.
+        /// @param | template_id | any | Value supplied for `template_id`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "generatePopulation",
             |lua, this, (template_id, options): (String, Option<LuaTable>)| {
@@ -4434,9 +4693,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
-        /// Returns the population.
-        ///
-        /// @param handle_or_id : string
+        /// Returns population from the progression store for Lua callers.
+        /// @param | handle_or_id | string | Value supplied for `handle_or_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("getPopulation", |lua, this, handle_or_id: String| {
             lua.create_userdata(population(
                 this.store
@@ -4446,6 +4705,11 @@ impl UserData for LuaProgressionStore {
             ))
             .map(LuaValue::UserData)
         });
+        /// Updates population in the progression store for Lua callers.
+        /// @param | handle_or_id | any | Value supplied for `handle_or_id`.
+        /// @param | dt | any | Value supplied for `dt`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "updatePopulation",
             |lua, this, (handle_or_id, dt, _options): (String, f64, Option<LuaTable>)| {
@@ -4458,6 +4722,11 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Performs the `simulatePopulationUntil` progression operation for Lua callers.
+        /// @param | handle_or_id | any | Value supplied for `handle_or_id`.
+        /// @param | logical_time | any | Value supplied for `logical_time`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "simulatePopulationUntil",
             |lua, this, (handle_or_id, logical_time, _options): (String, f64, Option<LuaTable>)| {
@@ -4470,9 +4739,9 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
-        /// Pause population.
-        ///
-        /// @param handle_or_id : string
+        /// Performs the `pausePopulation` progression operation for Lua callers.
+        /// @param | handle_or_id | string | Value supplied for `handle_or_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut("pausePopulation", |lua, this, handle_or_id: String| {
             json_to_lua(
                 lua,
@@ -4482,9 +4751,9 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("pausePopulation", err))?,
             )
         });
-        /// Resume population.
-        ///
-        /// @param handle_or_id : string
+        /// Performs the `resumePopulation` progression operation for Lua callers.
+        /// @param | handle_or_id | string | Value supplied for `handle_or_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut("resumePopulation", |lua, this, handle_or_id: String| {
             json_to_lua(
                 lua,
@@ -4494,6 +4763,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("resumePopulation", err))?,
             )
         });
+        /// Removes population from the progression store for Lua callers.
+        /// @param | handle_or_id | any | Value supplied for `handle_or_id`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "removePopulation",
             |_, this, (handle_or_id, options): (String, Option<LuaTable>)| {
@@ -4509,6 +4782,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("removePopulation", err))
             },
         );
+        /// Performs the `regeneratePopulation` progression operation for Lua callers.
+        /// @param | handle_or_id | any | Value supplied for `handle_or_id`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "regeneratePopulation",
             |lua, this, (handle_or_id, options): (String, Option<LuaTable>)| {
@@ -4527,6 +4804,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Returns population statistics from the progression store for Lua callers.
+        /// @param | handle_or_id | any | Value supplied for `handle_or_id`.
+        /// @param | query | any | Value supplied for `query`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getPopulationStatistics",
             |lua, this, (handle_or_id, query): (String, Option<LuaTable>)| {
@@ -4543,6 +4824,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Lists population profiles from the progression store for Lua callers.
+        /// @param | handle_or_id | any | Value supplied for `handle_or_id`.
+        /// @param | query | any | Value supplied for `query`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "listPopulationProfiles",
             |lua, this, (handle_or_id, query): (String, Option<LuaTable>)| {
@@ -4566,6 +4851,9 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Performs the `materializePopulationProfile` progression operation for Lua callers.
+        /// @param | profile_id | any | Stable progression profile identifier.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "materializePopulationProfile",
             |lua, this, profile_id: String| {
@@ -4578,6 +4866,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Performs the `dematerializePopulationProfile` progression operation for Lua callers.
+        /// @param | profile_id | any | Stable progression profile identifier.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "dematerializePopulationProfile",
             |_, this, (profile_id, options): (String, Option<LuaTable>)| {
@@ -4593,13 +4885,16 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("dematerializePopulationProfile", err))
             },
         );
-        /// Removes derived value.
-        ///
-        /// @param id : string
-        /// @return boolean
+        /// Removes derived value from the progression store for Lua callers.
+        /// @param | id | string | Value supplied for `id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method_mut("removeDerivedValue", |_, this, id: String| {
             Ok(this.store.borrow_mut().remove_derived_value(&id))
         });
+        /// Returns derived value from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getDerivedValue",
             |_, this, (profile, id): (LuaValue, String)| {
@@ -4610,6 +4905,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getDerivedValue", err))
             },
         );
+        /// Performs the `explainDerivedValue` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "explainDerivedValue",
             |lua, this, (profile, id): (LuaValue, String)| {
@@ -4623,11 +4922,16 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
-        /// Validate derived values.
-        ///
+        /// Validates derived values using the progression store rules for Lua callers.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("validateDerivedValues", |lua, this, ()| {
             json_to_lua(lua, this.store.borrow().validate_derived_values())
         });
+        /// Performs the `submitScore` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | leaderboard_id | any | Value supplied for `leaderboard_id`.
+        /// @param | score | any | Value supplied for `score`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "submitScore",
             |lua, this, (profile, leaderboard_id, score): (LuaValue, String, f64)| {
@@ -4641,6 +4945,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Returns leaderboard entry from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | leaderboard_id | any | Value supplied for `leaderboard_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getLeaderboardEntry",
             |lua, this, (profile, leaderboard_id): (LuaValue, String)| {
@@ -4654,6 +4962,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Lists leaderboard top from the progression store for Lua callers.
+        /// @param | leaderboard_id | any | Value supplied for `leaderboard_id`.
+        /// @param | limit | any | Value supplied for `limit`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "listLeaderboardTop",
             |lua, this, (leaderboard_id, limit): (String, Option<usize>)| {
@@ -4669,6 +4981,11 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Lists leaderboard range from the progression store for Lua callers.
+        /// @param | leaderboard_id | any | Value supplied for `leaderboard_id`.
+        /// @param | start_rank | any | Value supplied for `start_rank`.
+        /// @param | limit | any | Value supplied for `limit`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "listLeaderboardRange",
             |lua, this, (leaderboard_id, start_rank, limit): (String, u64, Option<usize>)| {
@@ -4684,6 +5001,8 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Lists leaderboard around profile from the progression store for Lua callers.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "listLeaderboardAroundProfile",
             |lua,
@@ -4712,6 +5031,11 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Adds experience to the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | track_id | any | Value supplied for `track_id`.
+        /// @param | amount | any | Value supplied for `amount`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "addExperience",
             |lua, this, (profile, track_id, amount): (LuaValue, String, f64)| {
@@ -4725,6 +5049,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Returns experience from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | track_id | any | Value supplied for `track_id`.
+        /// @return | number | Result produced by this progression operation.
         methods.add_method(
             "getExperience",
             |lua, this, (profile, track_id): (LuaValue, String)| {
@@ -4738,6 +5066,11 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Sets experience in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | track_id | any | Value supplied for `track_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setExperience",
             |lua, this, (profile, track_id, value): (LuaValue, String, f64)| {
@@ -4751,6 +5084,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Returns level from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | track_id | any | Value supplied for `track_id`.
+        /// @return | number | Result produced by this progression operation.
         methods.add_method(
             "getLevel",
             |_, this, (profile, track_id): (LuaValue, String)| {
@@ -4761,6 +5098,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getLevel", err))
             },
         );
+        /// Sets level in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | track_id | any | Value supplied for `track_id`.
+        /// @param | level | any | Value supplied for `level`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setLevel",
             |lua, this, (profile, track_id, level): (LuaValue, String, u32)| {
@@ -4774,6 +5116,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Returns experience to next level from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | track_id | any | Value supplied for `track_id`.
+        /// @return | number | Result produced by this progression operation.
         methods.add_method(
             "getExperienceToNextLevel",
             |_, this, (profile, track_id): (LuaValue, String)| {
@@ -4784,6 +5130,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("getExperienceToNextLevel", err))
             },
         );
+        /// Defines quest in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineQuest",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4793,6 +5143,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineQuest", err))
             },
         );
+        /// Defines challenge template in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineChallengeTemplate",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4805,6 +5159,11 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineChallengeTemplate", err))
             },
         );
+        /// Performs the `activateChallenge` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | challenge_id | any | Value supplied for `challenge_id`.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "activateChallenge",
             |lua, this, (profile, challenge_id, options): (LuaValue, String, Option<LuaTable>)| {
@@ -4823,6 +5182,11 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Sets challenge progress in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | challenge_id | any | Value supplied for `challenge_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setChallengeProgress",
             |lua, this, (profile, challenge_id, value): (LuaValue, String, f64)| {
@@ -4836,6 +5200,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Returns challenge from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | challenge_id | any | Value supplied for `challenge_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getChallenge",
             |lua, this, (profile, challenge_id): (LuaValue, String)| {
@@ -4849,6 +5217,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Lists challenges from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "listChallenges",
             |lua, this, (profile, options): (LuaValue, Option<LuaTable>)| {
@@ -4870,6 +5242,10 @@ impl UserData for LuaProgressionStore {
                 )
             },
         );
+        /// Defines achievement in the progression store for Lua callers.
+        /// @param | id | any | Stable progression profile identifier.
+        /// @param | definition | any | Value supplied for `definition`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "defineAchievement",
             |_, this, (id, definition): (String, LuaTable)| {
@@ -4879,6 +5255,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("defineAchievement", err))
             },
         );
+        /// Performs the `unlockAchievement` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | achievement_id | any | Value supplied for `achievement_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "unlockAchievement",
             |lua, this, (profile, achievement_id): (LuaValue, String)| {
@@ -4892,6 +5272,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Returns achievement from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | achievement_id | any | Value supplied for `achievement_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getAchievement",
             |lua, this, (profile, achievement_id): (LuaValue, String)| {
@@ -4905,9 +5289,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
-        /// List achievements.
-        ///
-        /// @param profile : any
+        /// Lists achievements from the progression store for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method("listAchievements", |lua, this, (profile,): (LuaValue,)| {
             let profile_id = coerce_profile_id(profile)?;
             userdata_list(
@@ -4921,9 +5305,10 @@ impl UserData for LuaProgressionStore {
                     .collect(),
             )
         });
-        /// Returns the pending rewards.
-        ///
-        /// @param profile : any
+        /// Performs the `acceptQuest` progression operation for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method_mut(
             "acceptQuest",
             |_, this, (profile, quest_id): (LuaValue, String)| {
@@ -4934,6 +5319,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("acceptQuest", err))
             },
         );
+        /// Performs the `revealQuest` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "revealQuest",
             |lua, this, (profile, quest_id): (LuaValue, String)| {
@@ -4949,9 +5338,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
-        /// Refresh quest lifecycle.
-        ///
-        /// @param profile : any
+        /// Performs the `refreshQuestLifecycle` progression operation for Lua callers.
+        /// @param | profile | any | Value supplied for `profile`.
+        /// @return | nil | No return value.
         methods.add_method_mut("refreshQuestLifecycle", |_, this, profile: LuaValue| {
             let profile_id = coerce_profile_id(profile)?;
             this.store
@@ -4959,6 +5348,10 @@ impl UserData for LuaProgressionStore {
                 .refresh_quest_lifecycle(&profile_id)
                 .map_err(|err| progression_error("refreshQuestLifecycle", err))
         });
+        /// Performs the `completeQuest` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method_mut(
             "completeQuest",
             |_, this, (profile, quest_id): (LuaValue, String)| {
@@ -4969,6 +5362,10 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("completeQuest", err))
             },
         );
+        /// Performs the `failQuest` progression operation for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method_mut(
             "failQuest",
             |_, this, (profile, quest_id): (LuaValue, String)| {
@@ -4979,6 +5376,12 @@ impl UserData for LuaProgressionStore {
                     .map_err(|err| progression_error("failQuest", err))
             },
         );
+        /// Sets quest objective in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @param | objective_id | any | Value supplied for `objective_id`.
+        /// @param | value | any | Value supplied for `value`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setQuestObjective",
             |lua, this, (profile, quest_id, objective_id, value): (LuaValue, String, String, f64)| {
@@ -4994,6 +5397,12 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Sets quest objective status in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @param | objective_id | any | Value supplied for `objective_id`.
+        /// @param | status | any | Value supplied for `status`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setQuestObjectiveStatus",
             |lua, this, (profile, quest_id, objective_id, status): (LuaValue, String, String, String)| {
@@ -5014,6 +5423,12 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Sets quest objective visibility in the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @param | objective_id | any | Value supplied for `objective_id`.
+        /// @param | visible | any | Value supplied for `visible`.
+        /// @return | nil | No return value.
         methods.add_method_mut(
             "setQuestObjectiveVisibility",
             |lua, this, (profile, quest_id, objective_id, visible): (LuaValue, String, String, bool)| {
@@ -5034,6 +5449,10 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Returns quest state from the progression store for Lua callers.
+        /// @param | profile | any | Stable progression profile identifier.
+        /// @param | quest_id | any | Value supplied for `quest_id`.
+        /// @return | table | Result produced by this progression operation.
         methods.add_method(
             "getQuestState",
             |lua, this, (profile, quest_id): (LuaValue, String)| {
@@ -5049,6 +5468,9 @@ impl UserData for LuaProgressionStore {
                 .map(LuaValue::UserData)
             },
         );
+        /// Begins transaction in the progression store for Lua callers.
+        /// @param | options | any | Optional operation options supplied by the caller.
+        /// @return | nil | No return value.
         methods.add_method(
             "beginTransaction",
             |lua, this, options: Option<LuaTable>| {
@@ -5063,14 +5485,12 @@ impl UserData for LuaProgressionStore {
                 })
             },
         );
-        /// Type.
-        ///
-        /// @return string
+        /// Returns the runtime type name exposed by this progression object to Lua callers.
+        /// @return | string | Result produced by this progression operation.
         methods.add_method("type", |_, _, ()| Ok("LProgressionStore"));
-        /// Type of.
-        ///
-        /// @param name : string
-        /// @return boolean
+        /// Returns the runtime type name exposed by this progression object to Lua callers.
+        /// @param | name | string | Value supplied for `name`.
+        /// @return | boolean | Result produced by this progression operation.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LProgressionStore" || name == "LObject")
         });
@@ -5151,7 +5571,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let table = lua.create_table()?;
     // -- newStatusTracker --
     /// Creates an isolated deterministic status lifecycle tracker.
-    /// @return | LStatusTracker | New status tracker handle.
+    /// @return | | LStatusTracker | New status tracker handle | Result produced by this progression operation.
     table.set(
         "newStatusTracker",
         lua.create_function(|lua, ()| {
@@ -5160,9 +5580,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
-    /// New store.
-    ///
-    /// @param options : table?
+    /// Performs the `newStore` progression operation for Lua callers.
+    /// @param | options | table? | Value supplied for `options`.
+    /// @return | nil | No return value.
     table.set(
         "newStore",
         lua.create_function(|lua, options: Option<LuaTable>| {
@@ -5173,9 +5593,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
-    /// Load store.
-    ///
-    /// @param snapshot : any
+    /// Performs the `loadStore` progression operation for Lua callers.
+    /// @param | snapshot | any | Value supplied for `snapshot`.
+    /// @return | nil | No return value.
     table.set(
         "loadStore",
         lua.create_function(|lua, snapshot: LuaValue| {
@@ -5186,25 +5606,25 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             })
         })?,
     )?;
-    /// Import legacy stats snapshot.
-    ///
-    /// @param snapshot : table
+    /// Imports legacy stats snapshot into the progression store for Lua callers.
+    /// @param | snapshot | table | Value supplied for `snapshot`.
+    /// @return | nil | No return value.
     table.set(
         "importLegacyStatsSnapshot",
         lua.create_function(|lua, snapshot: LuaTable| import_legacy_stats_snapshot(lua, snapshot))?,
     )?;
-    /// Import legacy quest snapshot.
-    ///
-    /// @param snapshot : table
+    /// Imports legacy quest snapshot into the progression store for Lua callers.
+    /// @param | snapshot | table | Value supplied for `snapshot`.
+    /// @return | nil | No return value.
     table.set(
         "importLegacyQuestSnapshot",
         lua.create_function(|lua, snapshot: LuaTable| import_legacy_quest_snapshot(lua, snapshot))?,
     )?;
-    /// Create legacy stats adapter.
-    ///
-    /// @param store : AnyUserData
-    /// @param profile : any
-    /// @param options : table?
+    /// Creates legacy stats adapter in the progression store for Lua callers.
+    /// @param | store | AnyUserData | Value supplied for `store`.
+    /// @param | profile | any | Value supplied for `profile`.
+    /// @param | options | table? | Value supplied for `options`.
+    /// @return | nil | No return value.
     table.set(
         "createLegacyStatsAdapter",
         lua.create_function(
@@ -5215,11 +5635,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             },
         )?,
     )?;
-    /// Create legacy quest adapter.
-    ///
-    /// @param store : AnyUserData
-    /// @param profile : any
-    /// @param options : table?
+    /// Creates legacy quest adapter in the progression store for Lua callers.
+    /// @param | store | AnyUserData | Value supplied for `store`.
+    /// @param | profile | any | Value supplied for `profile`.
+    /// @param | options | table? | Value supplied for `options`.
+    /// @return | nil | No return value.
     table.set(
         "createLegacyQuestAdapter",
         lua.create_function(
@@ -5352,14 +5772,14 @@ mod progression_objects_api_impl {
     macro_rules! add_common_snapshot_methods {
         ($methods:ident, $type_name:literal) => {
             /// Returns the immutable snapshot data as a plain Lua table.
-            /// @return | table | Snapshot table for this progression object.
+            /// @return | | table | Snapshot table for this progression object | Result produced by this progression operation.
             $methods.add_method("snapshot", |lua, this, ()| json_to_lua(lua, &this.snapshot));
             /// Returns the runtime userdata type name.
-            /// @return | string | Canonical Lua userdata type name.
+            /// @return | | string | Canonical Lua userdata type name | Result produced by this progression operation.
             $methods.add_method("type", |_, _, ()| Ok($type_name));
             /// Returns whether this userdata matches `name` or the shared base object type.
             /// @param | name | string | Candidate type name to compare against.
-            /// @return | boolean | `true` when `name` matches this userdata type or `LObject`.
+            /// @return | | boolean | `true` when `name` matches this userdata type or `LObject` | Result produced by this progression operation.
             $methods.add_method("typeOf", |_, _, name: String| {
                 Ok(name == $type_name || name == "LObject")
             });
@@ -5652,6 +6072,7 @@ mod progression_objects_api_impl {
         Ok(LuaValue::Table(table))
     }
 
+    /// Lua-visible `Achievement` object carrying progression state and operations.
     impl UserData for LuaAchievement {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5671,15 +6092,15 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the authored achievement id.
-            /// @return | string | Stable achievement identifier.
+            /// @return | | string | Stable achievement identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
             /// Returns the authored achievement title.
-            /// @return | string | Local presentation title.
+            /// @return | | string | Local presentation title | Result produced by this progression operation.
             methods.add_method("getTitle", |_, this, ()| {
                 snapshot_string(&this.snapshot, "title")
             });
             /// Returns whether the achievement is currently unlocked for the owning profile.
-            /// @return | boolean | `true` when the achievement was unlocked.
+            /// @return | | boolean | `true` when the achievement was unlocked | Result produced by this progression operation.
             methods.add_method("isUnlocked", |_, this, ()| {
                 snapshot_bool(&this.snapshot, "unlocked")
             });
@@ -5687,6 +6108,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `Challenge` object carrying progression state and operations.
     impl UserData for LuaChallenge {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5718,10 +6140,10 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the authored challenge id.
-            /// @return | string | Stable challenge identifier.
+            /// @return | | string | Stable challenge identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
             /// Returns the current challenge lifecycle status.
-            /// @return | string | One of `"inactive"`, `"active"`, `"completed"`, or `"expired"`.
+            /// @return | | string | One of `"inactive"`, `"active"`, `"completed"`, or `"expired"` | Result produced by this progression operation.
             methods.add_method("getStatus", |_, this, ()| {
                 snapshot_string(&this.snapshot, "status")
             });
@@ -5729,6 +6151,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `Collection` object carrying progression state and operations.
     impl UserData for LuaCollection {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5750,10 +6173,10 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the authored collection id.
-            /// @return | string | Stable collection identifier.
+            /// @return | | string | Stable collection identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
             /// Returns whether every collection item is currently collected.
-            /// @return | boolean | `true` when the collection is complete.
+            /// @return | | boolean | `true` when the collection is complete | Result produced by this progression operation.
             methods.add_method("isComplete", |_, this, ()| {
                 snapshot_bool(&this.snapshot, "complete")
             });
@@ -5761,6 +6184,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `LeaderboardEntry` object carrying progression state and operations.
     impl UserData for LuaLeaderboardEntry {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5778,17 +6202,17 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the leaderboard that produced this row.
-            /// @return | string | Leaderboard identifier.
+            /// @return | | string | Leaderboard identifier | Result produced by this progression operation.
             methods.add_method("getLeaderboardId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "leaderboard_id")
             });
             /// Returns the profile that owns this row.
-            /// @return | string | Profile identifier.
+            /// @return | | string | Profile identifier | Result produced by this progression operation.
             methods.add_method("getProfileId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "profile_id")
             });
             /// Returns the one-based rank currently assigned to this row.
-            /// @return | integer | Deterministic rank for the current ordering.
+            /// @return | | integer | Deterministic rank for the current ordering | Result produced by this progression operation.
             methods.add_method("getRank", |_, this, ()| {
                 Ok(snapshot_u64(&this.snapshot, "rank")? as i64)
             });
@@ -5796,6 +6220,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `Population` object carrying progression state and operations.
     impl UserData for LuaPopulation {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5815,11 +6240,11 @@ mod progression_objects_api_impl {
         }
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-            /// Returns the population id.
-            /// @return | string | Population identifier.
+            /// Returns id from the progression store for Lua callers.
+            /// @return | string | string | Population identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
             /// Returns whether logical simulation for this population is paused.
-            /// @return | boolean | `true` when updates are paused.
+            /// @return | | boolean | `true` when updates are paused | Result produced by this progression operation.
             methods.add_method("isPaused", |_, this, ()| {
                 snapshot_bool(&this.snapshot, "paused")
             });
@@ -5827,6 +6252,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `PopulationProfile` object carrying progression state and operations.
     impl UserData for LuaPopulationProfile {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5849,13 +6275,13 @@ mod progression_objects_api_impl {
         }
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-            /// Returns the virtual profile id.
-            /// @return | string | Virtual profile identifier.
+            /// Returns profile id from the progression store for Lua callers.
+            /// @return | string | string | Virtual profile identifier | Result produced by this progression operation.
             methods.add_method("getProfileId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "profile_id")
             });
             /// Returns whether this virtual profile is materialized as a normal store profile.
-            /// @return | boolean | `true` when the virtual profile was materialized.
+            /// @return | | boolean | `true` when the virtual profile was materialized | Result produced by this progression operation.
             methods.add_method("isMaterialized", |_, this, ()| {
                 snapshot_bool(&this.snapshot, "materialized")
             });
@@ -5863,6 +6289,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `Prestige` object carrying progression state and operations.
     impl UserData for LuaPrestige {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5883,11 +6310,11 @@ mod progression_objects_api_impl {
         }
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-            /// Returns the authored prestige id.
-            /// @return | string | Prestige identifier.
+            /// Returns id from the progression store for Lua callers.
+            /// @return | string | string | Prestige identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
             /// Returns whether the owning profile currently satisfies the prestige condition.
-            /// @return | boolean | `true` when the prestige is currently available.
+            /// @return | | boolean | `true` when the prestige is currently available | Result produced by this progression operation.
             methods.add_method("isAvailable", |_, this, ()| {
                 snapshot_bool(&this.snapshot, "available")
             });
@@ -5895,6 +6322,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `ActivityFeed` object carrying progression state and operations.
     impl UserData for LuaActivityFeed {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(fields, Self, ["entries", "profiles", "types", "limit"]);
@@ -5902,7 +6330,7 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the number of retained activity-feed entries in this selection.
-            /// @return | integer | Number of feed entries currently stored in this feed snapshot.
+            /// @return | | integer | Number of feed entries currently stored in this feed snapshot | Result produced by this progression operation.
             methods.add_method("count", |_, this, ()| {
                 Ok(snapshot_value(&this.snapshot, "entries")?
                     .as_array()
@@ -5910,7 +6338,7 @@ mod progression_objects_api_impl {
                     .unwrap_or(0))
             });
             /// Returns every retained activity-feed entry as typed userdata.
-            /// @return | table | Array of `LActivityFeedEntry` userdata values.
+            /// @return | | table | Array of `LActivityFeedEntry` userdata values | Result produced by this progression operation.
             methods.add_method("listEntries", |lua, this, ()| {
                 let entries = snapshot_value(&this.snapshot, "entries")?
                     .as_array()
@@ -5922,6 +6350,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `QuestState` object carrying progression state and operations.
     impl UserData for LuaQuestState {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5942,23 +6371,23 @@ mod progression_objects_api_impl {
         }
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-            /// Returns the authored quest id.
-            /// @return | string | Quest identifier.
+            /// Returns quest id from the progression store for Lua callers.
+            /// @return | string | string | Quest identifier | Result produced by this progression operation.
             methods.add_method("getQuestId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "quest_id")
             });
             /// Returns the current quest lifecycle status.
-            /// @return | string | Current quest state such as `"hidden"`, `"available"`, or `"active"`.
+            /// @return | | string | Current quest state such as `"hidden"`, `"available"`, or `"active"` | Result produced by this progression operation.
             methods.add_method("getStatus", |_, this, ()| {
                 snapshot_string(&this.snapshot, "status")
             });
             /// Returns whether the quest is currently revealed to the owning profile.
-            /// @return | boolean | `true` when the quest is visible.
+            /// @return | | boolean | `true` when the quest is visible | Result produced by this progression operation.
             methods.add_method("isRevealed", |_, this, ()| {
                 snapshot_bool(&this.snapshot, "revealed")
             });
             /// Returns the retained quest journal as a typed journal object.
-            /// @return | LQuestJournal | Journal handle for the current quest state.
+            /// @return | | LQuestJournal | Journal handle for the current quest state | Result produced by this progression operation.
             methods.add_method("getJournal", |lua, this, ()| {
                 let store = this.store.clone().ok_or_else(|| {
                     progression_object_error(
@@ -5980,6 +6409,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `Reward` object carrying progression state and operations.
     impl UserData for LuaReward {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -5997,16 +6427,16 @@ mod progression_objects_api_impl {
         }
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-            /// Returns the reward record id.
-            /// @return | string | Stable reward identifier.
+            /// Returns id from the progression store for Lua callers.
+            /// @return | string | string | Stable reward identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
-            /// Returns the current reward state.
-            /// @return | string | One of `"pending"`, `"claimed"`, `"applied"`, or `"rejected"`.
+            /// Returns state from the progression store for Lua callers.
+            /// @return | table | string | One of `"pending"`, `"claimed"`, `"applied"`, or `"rejected"` | Result produced by this progression operation.
             methods.add_method("getState", |_, this, ()| {
                 snapshot_string(&this.snapshot, "state")
             });
             /// Claims this pending reward and returns the updated reward object.
-            /// @return | LReward | Updated reward handle after the claim transition.
+            /// @return | | LReward | Updated reward handle after the claim transition | Result produced by this progression operation.
             methods.add_method_mut("claim", |lua, this, ()| {
                 let store = this.store.clone().ok_or_else(|| {
                     progression_object_error("LReward.claim", "reward context is not available")
@@ -6034,7 +6464,7 @@ mod progression_objects_api_impl {
             });
             /// Marks this claimed reward as applied and returns the updated reward object.
             /// @param | external_receipt | string? | Optional game-specific receipt or transaction token.
-            /// @return | LReward | Updated reward handle after the apply transition.
+            /// @return | | LReward | Updated reward handle after the apply transition | Result produced by this progression operation.
             methods.add_method_mut(
                 "markApplied",
                 |lua, this, external_receipt: Option<String>| {
@@ -6068,7 +6498,7 @@ mod progression_objects_api_impl {
             );
             /// Rejects this reward and returns the updated reward object.
             /// @param | reason | string? | Optional rejection reason for logs or external flow control.
-            /// @return | LReward | Updated reward handle after the rejection transition.
+            /// @return | | LReward | Updated reward handle after the rejection transition | Result produced by this progression operation.
             methods.add_method_mut("reject", |lua, this, reason: Option<String>| {
                 let store = this.store.clone().ok_or_else(|| {
                     progression_object_error("LReward.reject", "reward context is not available")
@@ -6098,6 +6528,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `QuestJournalEntry` object carrying progression state and operations.
     impl UserData for LuaQuestJournalEntry {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(fields, Self, ["index", "text", "tag"]);
@@ -6105,17 +6536,17 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the stable monotonically increasing journal index.
-            /// @return | integer | Zero-based journal entry index.
+            /// @return | | integer | Zero-based journal entry index | Result produced by this progression operation.
             methods.add_method("getIndex", |_, this, ()| {
                 Ok(snapshot_u64(&this.snapshot, "index")? as i64)
             });
             /// Returns the authored journal entry text.
-            /// @return | string | Retained journal body text.
+            /// @return | | string | Retained journal body text | Result produced by this progression operation.
             methods.add_method("getText", |_, this, ()| {
                 snapshot_string(&this.snapshot, "text")
             });
             /// Returns the optional journal entry tag.
-            /// @return | string | Journal entry tag, or an empty string when no tag was stored.
+            /// @return | | string | Journal entry tag, or an empty string when no tag was stored | Result produced by this progression operation.
             methods.add_method("getTag", |_, this, ()| {
                 snapshot_string(&this.snapshot, "tag")
             });
@@ -6123,6 +6554,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `QuestJournal` object carrying progression state and operations.
     impl UserData for LuaQuestJournal {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(fields, Self, ["quest_id", "entries"]);
@@ -6130,12 +6562,12 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the quest id that owns this journal.
-            /// @return | string | Authored quest identifier.
+            /// @return | | string | Authored quest identifier | Result produced by this progression operation.
             methods.add_method("getQuestId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "quest_id")
             });
             /// Returns the number of retained entries currently stored in this journal.
-            /// @return | integer | Journal entry count after retention trimming.
+            /// @return | | integer | Journal entry count after retention trimming | Result produced by this progression operation.
             methods.add_method("count", |_, this, ()| {
                 Ok(snapshot_value(&this.snapshot, "entries")?
                     .as_array()
@@ -6143,7 +6575,7 @@ mod progression_objects_api_impl {
                     .unwrap_or(0))
             });
             /// Returns every retained journal entry as typed entry userdata.
-            /// @return | table | Array of `LQuestJournalEntry` userdata values.
+            /// @return | | table | Array of `LQuestJournalEntry` userdata values | Result produced by this progression operation.
             methods.add_method("listEntries", |lua, this, ()| {
                 let entries = snapshot_value(&this.snapshot, "entries")?
                     .as_array()
@@ -6154,7 +6586,7 @@ mod progression_objects_api_impl {
             /// Appends one entry to the live quest journal and returns the stored entry object.
             /// @param | text | string | Non-empty journal body text to append.
             /// @param | tag | string? | Optional tag that categorizes the new journal entry.
-            /// @return | LQuestJournalEntry | Retained journal entry after store-side indexing and trimming.
+            /// @return | | LQuestJournalEntry | Retained journal entry after store-side indexing and trimming | Result produced by this progression operation.
             methods.add_method_mut(
                 "addEntry",
                 |lua, this, (text, tag): (String, Option<String>)| {
@@ -6214,6 +6646,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `Rival` object carrying progression state and operations.
     impl UserData for LuaRival {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -6225,12 +6658,12 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the owner profile id for this rivalry.
-            /// @return | string | Profile identifier that pinned the rival.
+            /// @return | | string | Profile identifier that pinned the rival | Result produced by this progression operation.
             methods.add_method("getProfileId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "profile_id")
             });
             /// Returns the pinned rival profile id.
-            /// @return | string | Rival profile identifier.
+            /// @return | | string | Rival profile identifier | Result produced by this progression operation.
             methods.add_method("getRivalProfileId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "rival_profile_id")
             });
@@ -6238,6 +6671,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `RivalDelta` object carrying progression state and operations.
     impl UserData for LuaRivalDelta {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -6257,12 +6691,12 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the leaderboard used to compute this rivalry delta.
-            /// @return | string | Leaderboard identifier.
+            /// @return | | string | Leaderboard identifier | Result produced by this progression operation.
             methods.add_method("getLeaderboardId", |_, this, ()| {
                 snapshot_string(&this.snapshot, "leaderboard_id")
             });
             /// Returns the signed rank gap between the owner and rival profiles.
-            /// @return | integer | Positive when the rival is behind, negative when ahead.
+            /// @return | | integer | Positive when the rival is behind, negative when ahead | Result produced by this progression operation.
             methods.add_method("getRankDelta", |_, this, ()| {
                 snapshot_i64(&this.snapshot, "rank_delta")
             });
@@ -6270,6 +6704,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `Season` object carrying progression state and operations.
     impl UserData for LuaSeason {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -6290,11 +6725,11 @@ mod progression_objects_api_impl {
         }
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-            /// Returns the authored season id.
-            /// @return | string | Season identifier.
+            /// Returns id from the progression store for Lua callers.
+            /// @return | string | string | Season identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
             /// Returns whether this season is currently active.
-            /// @return | boolean | `true` when the season is active.
+            /// @return | | boolean | `true` when the season is active | Result produced by this progression operation.
             methods.add_method("isActive", |_, this, ()| {
                 snapshot_bool(&this.snapshot, "active")
             });
@@ -6302,6 +6737,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `SeasonArchive` object carrying progression state and operations.
     impl UserData for LuaSeasonArchive {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -6320,10 +6756,10 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the season id that owns this archive record.
-            /// @return | string | Season identifier.
+            /// @return | | string | Season identifier | Result produced by this progression operation.
             methods.add_method("getId", |_, this, ()| snapshot_string(&this.snapshot, "id"));
             /// Returns the monotonically increasing archive index for this season.
-            /// @return | integer | Archive sequence number.
+            /// @return | | integer | Archive sequence number | Result produced by this progression operation.
             methods.add_method("getArchiveIndex", |_, this, ()| {
                 Ok(snapshot_u64(&this.snapshot, "archive_index")? as i64)
             });
@@ -6331,6 +6767,7 @@ mod progression_objects_api_impl {
         }
     }
 
+    /// Lua-visible `ActivityFeedEntry` object carrying progression state and operations.
     impl UserData for LuaActivityFeedEntry {
         fn add_fields<'lua, F: UserDataFields<'lua, Self>>(fields: &mut F) {
             add_snapshot_fields!(
@@ -6349,12 +6786,12 @@ mod progression_objects_api_impl {
 
         fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
             /// Returns the retained event sequence number.
-            /// @return | integer | Event sequence in feed order.
+            /// @return | | integer | Event sequence in feed order | Result produced by this progression operation.
             methods.add_method("getSequence", |_, this, ()| {
                 Ok(snapshot_u64(&this.snapshot, "sequence")? as i64)
             });
             /// Returns the canonical activity event type name.
-            /// @return | string | Event type such as `"achievement_unlocked"`.
+            /// @return | | string | Event type such as `"achievement_unlocked"` | Result produced by this progression operation.
             methods.add_method("getEventType", |_, this, ()| {
                 snapshot_string(&this.snapshot, "event_type")
             });

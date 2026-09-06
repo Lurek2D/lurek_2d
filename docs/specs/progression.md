@@ -294,98 +294,98 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ### Functions
 
-- `lurek.progression.acquirePerk(this, name) -> nil`: Acquire perk.
-- `lurek.progression.activeCount(this) -> nil`: Active count.
-- `lurek.progression.activeIds(this) -> nil`: Active ids.
-- `lurek.progression.addBuff() -> nil`: Adds buff.
-- `lurek.progression.addJournalEntry(this, quest_id, text, tag?) -> nil`: Adds journal entry.
-- `lurek.progression.addQuest(this, quest) -> nil`: Adds quest.
-- `lurek.progression.addXP(this, amount) -> nil`: Adds xp.
-- `lurek.progression.adjustMorale(this, delta) -> nil`: Adjust morale.
-- `lurek.progression.advanceObjective() -> nil`: Advance objective.
-- `lurek.progression.applyDamage(this, stat, amount, dtype?) -> nil`: Apply damage.
-- `lurek.progression.applyTraitBuffs(this, trait_name) -> nil`: Apply trait buffs.
-- `lurek.progression.beginTurn(this) -> nil`: Begin turn.
-- `lurek.progression.checkMorale(this) -> nil`: Check morale.
-- `lurek.progression.clearBuffs(this, stat?) -> nil`: Clears buffs.
-- `lurek.progression.clearFlag(this, name) -> nil`: Clears flag.
-- `lurek.progression.completeQuest(this, id) -> nil`: Complete quest.
-- `lurek.progression.completedCount(this) -> nil`: Completed count.
-- `lurek.progression.completedIds(this) -> nil`: Completed ids.
-- `lurek.progression.createLegacyQuestAdapter(store, profile, options?) -> nil`: Create legacy quest adapter.
-- `lurek.progression.createLegacyStatsAdapter(store, profile, options?) -> nil`: Create legacy stats adapter.
-- `lurek.progression.define(this, name, base, opts?) -> nil`: Define.
-- `lurek.progression.definePerk(this, name, opts?) -> nil`: Define perk.
-- `lurek.progression.defineSkill(this, name, opts?) -> nil`: Define skill.
-- `lurek.progression.failQuest(this, id) -> nil`: Fail quest.
-- `lurek.progression.failedIds(this) -> nil`: Failed ids.
-- `lurek.progression.get(this, name) -> nil`: Returns a value.
-- `lurek.progression.getActionPoints(this) -> number, number`: Returns the action points.
-- `lurek.progression.getActiveTraits(this) -> nil`: Returns the active traits.
-- `lurek.progression.getBase(this, name) -> nil`: Returns the base.
-- `lurek.progression.getBuffCount(this, stat?) -> nil`: Returns the buff count.
-- `lurek.progression.getBuffs(this, stat?) -> nil`: Returns the buffs.
-- `lurek.progression.getCooldownRemaining(this, name) -> nil`: Returns the cooldown remaining.
-- `lurek.progression.getEncumbrance(this) -> nil`: Returns the encumbrance.
-- `lurek.progression.getFlags(this) -> nil`: Returns the flags.
-- `lurek.progression.getInitiative(this) -> nil`: Returns the initiative.
-- `lurek.progression.getLevel(this) -> nil`: Returns the level.
-- `lurek.progression.getMax(this, name) -> nil`: Returns the max.
-- `lurek.progression.getMin(this, name) -> nil`: Returns the min.
-- `lurek.progression.getMorale(this) -> number, number`: Returns the morale.
-- `lurek.progression.getQuest(this, id) -> nil`: Returns the quest.
-- `lurek.progression.getQuestReward(this, id) -> nil`: Returns the quest reward.
-- `lurek.progression.getRegen(this, name) -> nil`: Returns the regen.
-- `lurek.progression.getResistance(this, dtype) -> nil`: Returns the resistance.
-- `lurek.progression.getSkillLevel(this, name) -> nil`: Returns the skill level.
-- `lurek.progression.getStatNames(this) -> nil`: Returns the stat names.
-- `lurek.progression.getUseCount(this, name) -> nil`: Returns the use count.
-- `lurek.progression.getXP(this) -> nil`: Returns the xp.
-- `lurek.progression.hasFlag(this, name) -> nil`: Returns true if flag.
-- `lurek.progression.hasPerk(this, name) -> nil`: Returns true if perk.
-- `lurek.progression.hasTrait(this, trait_name) -> nil`: Returns true if trait.
-- `lurek.progression.importLegacyQuestSnapshot(snapshot) -> nil`: Import legacy quest snapshot.
-- `lurek.progression.importLegacyStatsSnapshot(snapshot) -> nil`: Import legacy stats snapshot.
-- `lurek.progression.isEncumbered(this) -> nil`: Returns true if encumbered.
-- `lurek.progression.learnSkill(this, name) -> nil`: Learn skill.
-- `lurek.progression.loadStore(snapshot) -> nil`: Load store.
-- `lurek.progression.newStatusTracker() -> LStatusTracker`: Creates an isolated deterministic status lifecycle tracker.
-- `lurek.progression.newStore(options?) -> nil`: New store.
-- `lurek.progression.questCount(this) -> nil`: Quest count.
-- `lurek.progression.questIds(this) -> nil`: Quest ids.
-- `lurek.progression.questsWithStatus(this, wanted) -> nil`: Quests with status.
-- `lurek.progression.recordUse(this, name) -> nil`: Record use.
-- `lurek.progression.recoverActionPoints(this, amount) -> nil`: Recover action points.
-- `lurek.progression.removeBuff(this, handle) -> nil`: Removes buff.
-- `lurek.progression.removeQuest(this, id) -> nil`: Removes quest.
-- `lurek.progression.removeTraitBuffs(this, trait_name) -> nil`: Removes trait buffs.
-- `lurek.progression.resetQuest(this, id) -> nil`: Clears quest.
-- `lurek.progression.restore(this, snap) -> nil`: Restore.
-- `lurek.progression.setActionPoints(this, max_val) -> nil`: Sets the action points.
-- `lurek.progression.setBase(this, name, value) -> nil`: Sets the base.
-- `lurek.progression.setBerserkThreshold(this, value) -> nil`: Sets the berserk threshold.
-- `lurek.progression.setEncumbrance(this, cur, max_val) -> nil`: Sets the encumbrance.
-- `lurek.progression.setFlag(this, name) -> nil`: Sets the flag.
-- `lurek.progression.setInitiative(this, value) -> nil`: Sets the initiative.
-- `lurek.progression.setLevel(this, value) -> nil`: Sets the level.
-- `lurek.progression.setLevelThresholds(this, thresholds) -> nil`: Sets the level thresholds.
-- `lurek.progression.setMax(this, name, value) -> nil`: Sets the max.
-- `lurek.progression.setMin(this, name, value) -> nil`: Sets the min.
-- `lurek.progression.setMorale(this, max_val) -> nil`: Sets the morale.
-- `lurek.progression.setPanicThreshold(this, value) -> nil`: Sets the panic threshold.
-- `lurek.progression.setQuestReward(this, id, reward) -> nil`: Sets the quest reward.
-- `lurek.progression.setRegen(this, name, value) -> nil`: Sets the regen.
-- `lurek.progression.setResistance(this, dtype, value) -> nil`: Sets the resistance.
-- `lurek.progression.setXP(this, value) -> nil`: Sets the xp.
-- `lurek.progression.snapshot(this) -> nil`: Snapshot.
-- `lurek.progression.spendActionPoints(this, amount) -> nil`: Spend action points.
-- `lurek.progression.startQuest(this, id) -> nil`: Start quest.
-- `lurek.progression.type() -> nil`: Type.
-- `lurek.progression.type() -> nil`: Type.
-- `lurek.progression.typeOf(name) -> nil`: Type of.
-- `lurek.progression.typeOf(name) -> nil`: Type of.
-- `lurek.progression.update(this, dt) -> nil`: Update.
-- `lurek.progression.useSkill(this, name) -> boolean, string?`: Use skill.
+- `lurek.progression.acquirePerk(this, name) -> boolean`: Performs the `acquirePerk` progression operation for Lua callers.
+- `lurek.progression.activeCount(this) -> integer`: Performs the `activeCount` progression operation for Lua callers.
+- `lurek.progression.activeIds(this) -> nil`: Performs the `activeIds` progression operation for Lua callers.
+- `lurek.progression.addBuff() -> string`: Adds buff to the progression store for Lua callers.
+- `lurek.progression.addJournalEntry(this, quest_id, text, tag?) -> integer`: Adds journal entry to the progression store for Lua callers.
+- `lurek.progression.addQuest(this, quest) -> nil`: Adds quest to the progression store for Lua callers.
+- `lurek.progression.addXP(this, amount) -> nil`: Adds x p to the progression store for Lua callers.
+- `lurek.progression.adjustMorale(this, delta) -> nil`: Performs the `adjustMorale` progression operation for Lua callers.
+- `lurek.progression.advanceObjective() -> boolean`: Performs the `advanceObjective` progression operation for Lua callers.
+- `lurek.progression.applyDamage(this, stat, amount, dtype?) -> number`: Applies damage in the progression store for Lua callers.
+- `lurek.progression.applyTraitBuffs(this, trait_name) -> nil`: Applies trait buffs in the progression store for Lua callers.
+- `lurek.progression.beginTurn(this) -> nil`: Begins turn in the progression store for Lua callers.
+- `lurek.progression.checkMorale(this) -> string`: Performs the `checkMorale` progression operation for Lua callers.
+- `lurek.progression.clearBuffs(this, stat?) -> nil`: Clears buffs in the progression store for Lua callers.
+- `lurek.progression.clearFlag(this, name) -> nil`: Clears flag in the progression store for Lua callers.
+- `lurek.progression.completeQuest(this, id) -> boolean`: Performs the `completeQuest` progression operation for Lua callers.
+- `lurek.progression.completedCount(this) -> integer`: Performs the `completedCount` progression operation for Lua callers.
+- `lurek.progression.completedIds(this) -> nil`: Performs the `completedIds` progression operation for Lua callers.
+- `lurek.progression.createLegacyQuestAdapter(store, profile, options?) -> nil`: Creates legacy quest adapter in the progression store for Lua callers.
+- `lurek.progression.createLegacyStatsAdapter(store, profile, options?) -> nil`: Creates legacy stats adapter in the progression store for Lua callers.
+- `lurek.progression.define(this, name, base, opts?) -> nil`: Defines this operation in the progression store for Lua callers.
+- `lurek.progression.definePerk(this, name, opts?) -> nil`: Defines perk in the progression store for Lua callers.
+- `lurek.progression.defineSkill(this, name, opts?) -> nil`: Defines skill in the progression store for Lua callers.
+- `lurek.progression.failQuest(this, id) -> boolean`: Performs the `failQuest` progression operation for Lua callers.
+- `lurek.progression.failedIds(this) -> nil`: Performs the `failedIds` progression operation for Lua callers.
+- `lurek.progression.get(this, name) -> number`: Returns this operation from the progression store for Lua callers.
+- `lurek.progression.getActionPoints(this) -> table | number, number | Current action points followed by the configured maximum`: Returns action points from the progression store for Lua callers.
+- `lurek.progression.getActiveTraits(this) -> table`: Returns active traits from the progression store for Lua callers.
+- `lurek.progression.getBase(this, name) -> number`: Returns base from the progression store for Lua callers.
+- `lurek.progression.getBuffCount(this, stat?) -> integer`: Returns buff count from the progression store for Lua callers.
+- `lurek.progression.getBuffs(this, stat?) -> table`: Returns buffs from the progression store for Lua callers.
+- `lurek.progression.getCooldownRemaining(this, name) -> number`: Returns cooldown remaining from the progression store for Lua callers.
+- `lurek.progression.getEncumbrance(this) -> table`: Returns encumbrance from the progression store for Lua callers.
+- `lurek.progression.getFlags(this) -> table`: Returns flags from the progression store for Lua callers.
+- `lurek.progression.getInitiative(this) -> table`: Returns initiative from the progression store for Lua callers.
+- `lurek.progression.getLevel(this) -> integer`: Returns level from the progression store for Lua callers.
+- `lurek.progression.getMax(this, name) -> table`: Returns max from the progression store for Lua callers.
+- `lurek.progression.getMin(this, name) -> table`: Returns min from the progression store for Lua callers.
+- `lurek.progression.getMorale(this) -> table | number, number | Current morale followed by the configured maximum`: Returns morale from the progression store for Lua callers.
+- `lurek.progression.getQuest(this, id) -> table`: Returns quest from the progression store for Lua callers.
+- `lurek.progression.getQuestReward(this, id) -> table`: Returns quest reward from the progression store for Lua callers.
+- `lurek.progression.getRegen(this, name) -> table`: Returns regen from the progression store for Lua callers.
+- `lurek.progression.getResistance(this, dtype) -> number`: Returns resistance from the progression store for Lua callers.
+- `lurek.progression.getSkillLevel(this, name) -> integer`: Returns skill level from the progression store for Lua callers.
+- `lurek.progression.getStatNames(this) -> table`: Returns stat names from the progression store for Lua callers.
+- `lurek.progression.getUseCount(this, name) -> integer`: Returns use count from the progression store for Lua callers.
+- `lurek.progression.getXP(this) -> number`: Returns x p from the progression store for Lua callers.
+- `lurek.progression.hasFlag(this, name) -> boolean`: Checks whether flag exists in the progression store for Lua callers.
+- `lurek.progression.hasPerk(this, name) -> boolean`: Checks whether perk exists in the progression store for Lua callers.
+- `lurek.progression.hasTrait(this, trait_name) -> boolean`: Checks whether trait exists in the progression store for Lua callers.
+- `lurek.progression.importLegacyQuestSnapshot(snapshot) -> nil`: Imports legacy quest snapshot into the progression store for Lua callers.
+- `lurek.progression.importLegacyStatsSnapshot(snapshot) -> nil`: Imports legacy stats snapshot into the progression store for Lua callers.
+- `lurek.progression.isEncumbered(this) -> boolean`: Checks whether encumbered is true for this progression object.
+- `lurek.progression.learnSkill(this, name) -> boolean`: Performs the `learnSkill` progression operation for Lua callers.
+- `lurek.progression.loadStore(snapshot) -> nil`: Performs the `loadStore` progression operation for Lua callers.
+- `lurek.progression.newStatusTracker() -> | LStatusTracker | New status tracker handle`: Creates an isolated deterministic status lifecycle tracker.
+- `lurek.progression.newStore(options?) -> nil`: Performs the `newStore` progression operation for Lua callers.
+- `lurek.progression.questCount(this) -> integer`: Performs the `questCount` progression operation for Lua callers.
+- `lurek.progression.questIds(this) -> table`: Performs the `questIds` progression operation for Lua callers.
+- `lurek.progression.questsWithStatus(this, wanted) -> table`: Performs the `questsWithStatus` progression operation for Lua callers.
+- `lurek.progression.recordUse(this, name) -> nil`: Performs the `recordUse` progression operation for Lua callers.
+- `lurek.progression.recoverActionPoints(this, amount) -> nil`: Performs the `recoverActionPoints` progression operation for Lua callers.
+- `lurek.progression.removeBuff(this, handle) -> boolean`: Removes buff from the progression store for Lua callers.
+- `lurek.progression.removeQuest(this, id) -> boolean`: Removes quest from the progression store for Lua callers.
+- `lurek.progression.removeTraitBuffs(this, trait_name) -> boolean`: Removes trait buffs from the progression store for Lua callers.
+- `lurek.progression.resetQuest(this, id) -> boolean`: Performs the `resetQuest` progression operation for Lua callers.
+- `lurek.progression.restore(this, snap) -> nil`: Performs the `restore` progression operation for Lua callers.
+- `lurek.progression.setActionPoints(this, max_val) -> nil`: Sets action points in the progression store for Lua callers.
+- `lurek.progression.setBase(this, name, value) -> boolean`: Sets base in the progression store for Lua callers.
+- `lurek.progression.setBerserkThreshold(this, value) -> nil`: Sets berserk threshold in the progression store for Lua callers.
+- `lurek.progression.setEncumbrance(this, cur, max_val) -> nil`: Sets encumbrance in the progression store for Lua callers.
+- `lurek.progression.setFlag(this, name) -> nil`: Sets flag in the progression store for Lua callers.
+- `lurek.progression.setInitiative(this, value) -> nil`: Sets initiative in the progression store for Lua callers.
+- `lurek.progression.setLevel(this, value) -> nil`: Sets level in the progression store for Lua callers.
+- `lurek.progression.setLevelThresholds(this, thresholds) -> nil`: Sets level thresholds in the progression store for Lua callers.
+- `lurek.progression.setMax(this, name, value) -> nil`: Sets max in the progression store for Lua callers.
+- `lurek.progression.setMin(this, name, value) -> nil`: Sets min in the progression store for Lua callers.
+- `lurek.progression.setMorale(this, max_val) -> nil`: Sets morale in the progression store for Lua callers.
+- `lurek.progression.setPanicThreshold(this, value) -> nil`: Sets panic threshold in the progression store for Lua callers.
+- `lurek.progression.setQuestReward(this, id, reward) -> nil`: Sets quest reward in the progression store for Lua callers.
+- `lurek.progression.setRegen(this, name, value) -> nil`: Sets regen in the progression store for Lua callers.
+- `lurek.progression.setResistance(this, dtype, value) -> nil`: Sets resistance in the progression store for Lua callers.
+- `lurek.progression.setXP(this, value) -> nil`: Sets x p in the progression store for Lua callers.
+- `lurek.progression.snapshot(this) -> table`: Performs the `snapshot` progression operation for Lua callers.
+- `lurek.progression.spendActionPoints(this, amount) -> boolean`: Performs the `spendActionPoints` progression operation for Lua callers.
+- `lurek.progression.startQuest(this, id) -> boolean`: Performs the `startQuest` progression operation for Lua callers.
+- `lurek.progression.type() -> string`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `lurek.progression.type() -> string`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `lurek.progression.typeOf(name) -> boolean`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `lurek.progression.typeOf(name) -> boolean`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `lurek.progression.update(this, dt) -> nil`: Updates this operation in the progression store for Lua callers.
+- `lurek.progression.useSkill(this, name) -> nil | boolean, string? | Success flag followed by an optional failure reason`: Performs the `useSkill` progression operation for Lua callers.
 
 ### Callbacks
 
@@ -399,7 +399,7 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 #### LAchievement Type
 
-- Lua-visible object type.
+- Lua-visible `Achievement` object carrying progression state and operations.
 
 ##### Fields
 
@@ -407,13 +407,13 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LAchievement:getId() -> string`: Returns the authored achievement id.
-- `LAchievement:getTitle() -> string`: Returns the authored achievement title.
-- `LAchievement:isUnlocked() -> boolean`: Returns whether the achievement is currently unlocked for the owning profile.
+- `LAchievement:getId() -> | string | Stable achievement identifier`: Returns the authored achievement id.
+- `LAchievement:getTitle() -> | string | Local presentation title`: Returns the authored achievement title.
+- `LAchievement:isUnlocked() -> | boolean | `true` when the achievement was unlocked`: Returns whether the achievement is currently unlocked for the owning profile.
 
 #### LActivityFeed Type
 
-- Lua-visible object type.
+- Lua-visible `ActivityFeed` object carrying progression state and operations.
 
 ##### Fields
 
@@ -421,12 +421,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LActivityFeed:count() -> integer`: Returns the number of retained activity-feed entries in this selection.
-- `LActivityFeed:listEntries() -> table`: Returns every retained activity-feed entry as typed userdata.
+- `LActivityFeed:count() -> | integer | Number of feed entries currently stored in this feed snapshot`: Returns the number of retained activity-feed entries in this selection.
+- `LActivityFeed:listEntries() -> | table | Array of `LActivityFeedEntry` userdata values`: Returns every retained activity-feed entry as typed userdata.
 
 #### LActivityFeedEntry Type
 
-- Lua-visible object type.
+- Lua-visible `ActivityFeedEntry` object carrying progression state and operations.
 
 ##### Fields
 
@@ -434,12 +434,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LActivityFeedEntry:getEventType() -> string`: Returns the canonical activity event type name.
-- `LActivityFeedEntry:getSequence() -> integer`: Returns the retained event sequence number.
+- `LActivityFeedEntry:getEventType() -> | string | Event type such as `"achievement_unlocked"``: Returns the canonical activity event type name.
+- `LActivityFeedEntry:getSequence() -> | integer | Event sequence in feed order`: Returns the retained event sequence number.
 
 #### LChallenge Type
 
-- Lua-visible object type.
+- Lua-visible `Challenge` object carrying progression state and operations.
 
 ##### Fields
 
@@ -447,12 +447,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LChallenge:getId() -> string`: Returns the authored challenge id.
-- `LChallenge:getStatus() -> string`: Returns the current challenge lifecycle status.
+- `LChallenge:getId() -> | string | Stable challenge identifier`: Returns the authored challenge id.
+- `LChallenge:getStatus() -> | string | One of `"inactive"`, `"active"`, `"completed"`, or `"expired"``: Returns the current challenge lifecycle status.
 
 #### LCollection Type
 
-- Lua-visible object type.
+- Lua-visible `Collection` object carrying progression state and operations.
 
 ##### Fields
 
@@ -460,12 +460,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LCollection:getId() -> string`: Returns the authored collection id.
-- `LCollection:isComplete() -> boolean`: Returns whether every collection item is currently collected.
+- `LCollection:getId() -> | string | Stable collection identifier`: Returns the authored collection id.
+- `LCollection:isComplete() -> | boolean | `true` when the collection is complete`: Returns whether every collection item is currently collected.
 
 #### LLeaderboardEntry Type
 
-- Lua-visible object type.
+- Lua-visible `LeaderboardEntry` object carrying progression state and operations.
 
 ##### Fields
 
@@ -473,13 +473,13 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LLeaderboardEntry:getLeaderboardId() -> string`: Returns the leaderboard that produced this row.
-- `LLeaderboardEntry:getProfileId() -> string`: Returns the profile that owns this row.
-- `LLeaderboardEntry:getRank() -> integer`: Returns the one-based rank currently assigned to this row.
+- `LLeaderboardEntry:getLeaderboardId() -> | string | Leaderboard identifier`: Returns the leaderboard that produced this row.
+- `LLeaderboardEntry:getProfileId() -> | string | Profile identifier`: Returns the profile that owns this row.
+- `LLeaderboardEntry:getRank() -> | integer | Deterministic rank for the current ordering`: Returns the one-based rank currently assigned to this row.
 
 #### LPopulation Type
 
-- Lua-visible object type.
+- Lua-visible `Population` object carrying progression state and operations.
 
 ##### Fields
 
@@ -487,12 +487,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LPopulation:getId() -> string`: Returns the population id.
-- `LPopulation:isPaused() -> boolean`: Returns whether logical simulation for this population is paused.
+- `LPopulation:getId() -> string | string | Population identifier`: Returns id from the progression store for Lua callers.
+- `LPopulation:isPaused() -> | boolean | `true` when updates are paused`: Returns whether logical simulation for this population is paused.
 
 #### LPopulationProfile Type
 
-- Lua-visible object type.
+- Lua-visible `PopulationProfile` object carrying progression state and operations.
 
 ##### Fields
 
@@ -500,12 +500,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LPopulationProfile:getProfileId() -> string`: Returns the virtual profile id.
-- `LPopulationProfile:isMaterialized() -> boolean`: Returns whether this virtual profile is materialized as a normal store profile.
+- `LPopulationProfile:getProfileId() -> string | string | Virtual profile identifier`: Returns profile id from the progression store for Lua callers.
+- `LPopulationProfile:isMaterialized() -> | boolean | `true` when the virtual profile was materialized`: Returns whether this virtual profile is materialized as a normal store profile.
 
 #### LPrestige Type
 
-- Lua-visible object type.
+- Lua-visible `Prestige` object carrying progression state and operations.
 
 ##### Fields
 
@@ -513,12 +513,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LPrestige:getId() -> string`: Returns the authored prestige id.
-- `LPrestige:isAvailable() -> boolean`: Returns whether the owning profile currently satisfies the prestige condition.
+- `LPrestige:getId() -> string | string | Prestige identifier`: Returns id from the progression store for Lua callers.
+- `LPrestige:isAvailable() -> | boolean | `true` when the prestige is currently available`: Returns whether the owning profile currently satisfies the prestige condition.
 
 #### LProgressionProfile Type
 
-- Lua-visible object type.
+- Lua-visible `ProfileHandle` object carrying progression state and operations.
 
 ##### Fields
 
@@ -526,14 +526,14 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LProgressionProfile:getId() -> nil`: Returns the id.
-- `LProgressionProfile:getPendingRewards() -> table`: Returns this profile's pending reward records as typed reward handles.
-- `LProgressionProfile:type() -> nil`: Type.
-- `LProgressionProfile:typeOf(name) -> nil`: Type of.
+- `LProgressionProfile:getId() -> string`: Returns id from the progression store for Lua callers.
+- `LProgressionProfile:getPendingRewards() -> | table | Array of `LReward` values still waiting for claim`: Returns this profile's pending reward records as typed reward handles.
+- `LProgressionProfile:type() -> string`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `LProgressionProfile:typeOf(name) -> boolean`: Returns the runtime type name exposed by this progression object to Lua callers.
 
 #### LProgressionStore Type
 
-- Lua-visible object type.
+- Lua-visible `ProgressionStore` object carrying progression state and operations.
 
 ##### Fields
 
@@ -541,159 +541,159 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LProgressionStore:acceptQuest(profile, quest_id) -> nil`: Returns the pending rewards.
-- `LProgressionStore:ackChangesThrough(revision) -> nil`: Ack changes through.
-- `LProgressionStore:acquirePerk(profile, perk_id) -> nil`: Lua-visible method.
-- `LProgressionStore:activateChallenge(profile, challenge_id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:addAttributeBase(profile, attribute_id, amount) -> nil`: Lua-visible method.
-- `LProgressionStore:addCounter(profile, counter_id, amount?) -> nil`: Lua-visible method.
-- `LProgressionStore:addExperience(profile, track_id, amount) -> nil`: Lua-visible method.
-- `LProgressionStore:addModifier(profile, target_id, opts) -> nil`: Lua-visible method.
-- `LProgressionStore:addProfileTag(id, tag) -> nil`: Adds profile tag.
-- `LProgressionStore:addResource(profile, resource_id, amount) -> nil`: Lua-visible method.
-- `LProgressionStore:advanceTime(seconds) -> nil`: Advance time.
-- `LProgressionStore:applyChangeset(changeset) -> nil`: Apply changeset.
-- `LProgressionStore:applyChangesetEnvelope(changeset, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:applyPrestige(profile, prestige_id) -> nil`: Lua-visible method.
-- `LProgressionStore:applyProfileTemplate(profile, template_id) -> nil`: Lua-visible method.
-- `LProgressionStore:applyTrait(profile, trait_id) -> nil`: Lua-visible method.
-- `LProgressionStore:beginTransaction(options?) -> nil`: Lua-visible method.
-- `LProgressionStore:canPrestige(profile, prestige_id) -> nil`: Lua-visible method.
-- `LProgressionStore:canSpendResource(profile, resource_id, amount) -> nil`: Lua-visible method.
-- `LProgressionStore:clear() -> nil`: Clears the state.
-- `LProgressionStore:clearEvents() -> nil`: Clears events.
-- `LProgressionStore:collectCollectionItem(profile, collection_id, item_id) -> nil`: Lua-visible method.
-- `LProgressionStore:compactChanges(max_records) -> nil`: Compact changes.
-- `LProgressionStore:compileCondition(condition) -> nil`: Compile condition.
-- `LProgressionStore:completeQuest(profile, quest_id) -> nil`: Lua-visible method.
-- `LProgressionStore:countProfiles(arg?) -> nil`: Returns the number of items.
-- `LProgressionStore:createProfile(id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:debugSnapshot() -> nil`: Debug snapshot.
-- `LProgressionStore:defineAchievement(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineAttribute(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineChallengeTemplate(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineCollection(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineCounter(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineDerivedValue(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineLeaderboard(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineLevelTrack(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:definePerk(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:definePopulationTemplate(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:definePrestige(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineProfileTemplate(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineQuest(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineResource(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineSeason(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineSkill(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:defineTrait(id, definition) -> nil`: Lua-visible method.
-- `LProgressionStore:dematerializePopulationProfile(profile_id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:drainEvents() -> nil`: Drain events.
-- `LProgressionStore:endSeason(id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:ensureProfile(id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:evaluateCondition(profile, condition) -> nil`: Lua-visible method.
-- `LProgressionStore:explainAttribute(profile, attribute_id) -> nil`: Lua-visible method.
-- `LProgressionStore:explainCondition(profile, condition) -> nil`: Lua-visible method.
-- `LProgressionStore:explainDerivedValue(profile, id) -> nil`: Lua-visible method.
-- `LProgressionStore:exportChangesSince(revision) -> nil`: Export changes since.
-- `LProgressionStore:exportChangeset(revision, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:exportSnapshot() -> nil`: Export snapshot.
-- `LProgressionStore:failQuest(profile, quest_id) -> nil`: Lua-visible method.
-- `LProgressionStore:generatePopulation(template_id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:getAchievement(profile, achievement_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getActivityFeed(query?) -> nil`: Returns one typed activity-feed selection object.
-- `LProgressionStore:getAttribute(profile, attribute_id, mode?) -> nil`: Lua-visible method.
-- `LProgressionStore:getAttributeState(profile, attribute_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getChallenge(profile, challenge_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getCollection(profile, collection_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getCounter(profile, counter_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getCounterState(profile, counter_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getDefinitionHash() -> nil`: Returns the definition hash.
-- `LProgressionStore:getDerivedValue(profile, id) -> nil`: Lua-visible method.
-- `LProgressionStore:getExperience(profile, track_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getExperienceToNextLevel(profile, track_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getId() -> nil`: Returns the id.
-- `LProgressionStore:getLeaderboardEntry(profile, leaderboard_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getLevel(profile, track_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getPopulation(handle_or_id) -> nil`: Returns the population.
-- `LProgressionStore:getPopulationStatistics(handle_or_id, query?) -> nil`: Lua-visible method.
-- `LProgressionStore:getPrestige(profile, prestige_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getProfile(id) -> nil`: Returns the profile.
-- `LProgressionStore:getQuestState(profile, quest_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getResource(profile, resource_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getRevision() -> nil`: Returns the revision.
-- `LProgressionStore:getRival(profile, rival_profile) -> nil`: Lua-visible method.
-- `LProgressionStore:getRivalDelta(profile, rival_profile) -> nil`: Lua-visible method.
-- `LProgressionStore:getSchemaVersion() -> nil`: Returns the schema version.
-- `LProgressionStore:getSeason(id) -> nil`: Returns the season.
-- `LProgressionStore:getSeasonArchive(id, query?) -> nil`: Lua-visible method.
-- `LProgressionStore:getSkillCooldown(profile, skill_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getSkillLevel(profile, skill_id) -> nil`: Lua-visible method.
-- `LProgressionStore:getTime() -> nil`: Returns the time.
-- `LProgressionStore:hasPerk(profile, perk_id) -> nil`: Lua-visible method.
-- `LProgressionStore:hasProfile(id) -> nil`: Returns true if profile.
-- `LProgressionStore:hasTrait(profile, trait_id) -> nil`: Lua-visible method.
-- `LProgressionStore:learnSkill(profile, skill_id) -> nil`: Lua-visible method.
-- `LProgressionStore:listAchievements(profile) -> nil`: List achievements.
-- `LProgressionStore:listChallenges(profile, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:listCollections(profile) -> nil`: List collections.
-- `LProgressionStore:listCounters(profile) -> nil`: List counters.
-- `LProgressionStore:listLeaderboardAroundProfile() -> nil`: Lua-visible method.
-- `LProgressionStore:listLeaderboardRange(leaderboard_id, start_rank, limit?) -> nil`: Lua-visible method.
-- `LProgressionStore:listLeaderboardTop(leaderboard_id, limit?) -> nil`: Lua-visible method.
-- `LProgressionStore:listModifiers(profile) -> nil`: List modifiers.
-- `LProgressionStore:listPopulationProfiles(handle_or_id, query?) -> nil`: Lua-visible method.
-- `LProgressionStore:listPrestiges(profile) -> nil`: List prestiges.
-- `LProgressionStore:listProfiles(arg?) -> nil`: List profiles.
-- `LProgressionStore:listRivals(profile) -> nil`: List rivals.
-- `LProgressionStore:listSeasons(query?) -> nil`: List seasons.
-- `LProgressionStore:listTraits(profile) -> nil`: List traits.
-- `LProgressionStore:loadSnapshot(snapshot) -> nil`: Load snapshot.
-- `LProgressionStore:materializePopulationProfile(profile_id) -> nil`: Lua-visible method.
-- `LProgressionStore:pausePopulation(handle_or_id) -> nil`: Pause population.
-- `LProgressionStore:pinRival(profile, rival_profile, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:refillResource(profile, resource_id, amount?) -> nil`: Lua-visible method.
-- `LProgressionStore:refreshQuestLifecycle(profile) -> nil`: Refresh quest lifecycle.
-- `LProgressionStore:regeneratePopulation(handle_or_id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:removeDerivedValue(id) -> nil`: Removes derived value.
-- `LProgressionStore:removeModifier(profile, handle) -> nil`: Lua-visible method.
-- `LProgressionStore:removePopulation(handle_or_id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:removeProfile(id, opts?) -> nil`: Lua-visible method.
-- `LProgressionStore:removeProfileMetadata(id, key) -> nil`: Lua-visible method.
-- `LProgressionStore:removeProfileTag(id, tag) -> nil`: Lua-visible method.
-- `LProgressionStore:removeTrait(profile, trait_id) -> nil`: Lua-visible method.
-- `LProgressionStore:resumePopulation(handle_or_id) -> nil`: Resume population.
-- `LProgressionStore:revealQuest(profile, quest_id) -> nil`: Lua-visible method.
-- `LProgressionStore:setAttributeBase(profile, attribute_id, value) -> nil`: Lua-visible method.
-- `LProgressionStore:setChallengeProgress(profile, challenge_id, value) -> nil`: Lua-visible method.
-- `LProgressionStore:setCounter(profile, counter_id, value) -> nil`: Lua-visible method.
-- `LProgressionStore:setExperience(profile, track_id, value) -> nil`: Lua-visible method.
-- `LProgressionStore:setLevel(profile, track_id, level) -> nil`: Lua-visible method.
-- `LProgressionStore:setProfileMetadata(id, key, value) -> nil`: Lua-visible method.
-- `LProgressionStore:setQuestObjective(profile, quest_id, objective_id, value) -> nil`: Lua-visible method.
-- `LProgressionStore:setQuestObjectiveStatus(profile, quest_id, objective_id, status) -> nil`: Lua-visible method.
-- `LProgressionStore:setQuestObjectiveVisibility(profile, quest_id, objective_id, visible) -> nil`: Lua-visible method.
-- `LProgressionStore:setResource(profile, resource_id, value) -> nil`: Lua-visible method.
-- `LProgressionStore:setTime(seconds) -> nil`: Sets the time.
-- `LProgressionStore:simulatePopulationUntil(handle_or_id, logical_time, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:spendResource(profile, resource_id, amount) -> nil`: Lua-visible method.
-- `LProgressionStore:startSeason(id, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:stats() -> nil`: Stats.
-- `LProgressionStore:submitScore(profile, leaderboard_id, score) -> nil`: Lua-visible method.
-- `LProgressionStore:type() -> nil`: Type.
-- `LProgressionStore:typeOf(name) -> nil`: Type of.
-- `LProgressionStore:unlockAchievement(profile, achievement_id) -> nil`: Lua-visible method.
-- `LProgressionStore:update(dt, opts?) -> nil`: Lua-visible method.
-- `LProgressionStore:updatePopulation(handle_or_id, dt, options?) -> nil`: Lua-visible method.
-- `LProgressionStore:updateProfile(id, patch?) -> nil`: Lua-visible method.
-- `LProgressionStore:useSkill(profile, skill_id) -> nil`: Lua-visible method.
-- `LProgressionStore:validate() -> nil`: Validate.
-- `LProgressionStore:validateCondition(condition) -> nil`: Validate condition.
-- `LProgressionStore:validateDerivedValues() -> nil`: Validate derived values.
-- `LProgressionStore:validatePopulationTemplate(id) -> nil`: Validate population template.
+- `LProgressionStore:acceptQuest(profile, quest_id) -> boolean`: Performs the `acceptQuest` progression operation for Lua callers.
+- `LProgressionStore:ackChangesThrough(revision) -> nil`: Performs the `ackChangesThrough` progression operation for Lua callers.
+- `LProgressionStore:acquirePerk(profile, perk_id) -> nil`: Performs the `acquirePerk` progression operation for Lua callers.
+- `LProgressionStore:activateChallenge(profile, challenge_id, options?) -> nil`: Performs the `activateChallenge` progression operation for Lua callers.
+- `LProgressionStore:addAttributeBase(profile, attribute_id, amount) -> nil`: Adds attribute base to the progression store for Lua callers.
+- `LProgressionStore:addCounter(profile, counter_id, amount?) -> nil`: Adds counter to the progression store for Lua callers.
+- `LProgressionStore:addExperience(profile, track_id, amount) -> nil`: Adds experience to the progression store for Lua callers.
+- `LProgressionStore:addModifier(profile, target_id, opts) -> nil`: Adds modifier to the progression store for Lua callers.
+- `LProgressionStore:addProfileTag(id, tag) -> nil`: Adds profile tag to the progression store for Lua callers.
+- `LProgressionStore:addResource(profile, resource_id, amount) -> nil`: Adds resource to the progression store for Lua callers.
+- `LProgressionStore:advanceTime(seconds) -> nil`: Performs the `advanceTime` progression operation for Lua callers.
+- `LProgressionStore:applyChangeset(changeset) -> nil`: Applies changeset in the progression store for Lua callers.
+- `LProgressionStore:applyChangesetEnvelope(changeset, options?) -> nil`: Applies changeset envelope in the progression store for Lua callers.
+- `LProgressionStore:applyPrestige(profile, prestige_id) -> nil`: Applies prestige in the progression store for Lua callers.
+- `LProgressionStore:applyProfileTemplate(profile, template_id) -> nil`: Applies profile template in the progression store for Lua callers.
+- `LProgressionStore:applyTrait(profile, trait_id) -> boolean`: Applies trait in the progression store for Lua callers.
+- `LProgressionStore:beginTransaction(options?) -> nil`: Begins transaction in the progression store for Lua callers.
+- `LProgressionStore:canPrestige(profile, prestige_id) -> boolean`: Checks whether Lua callers can prestige in the progression store.
+- `LProgressionStore:canSpendResource(profile, resource_id, amount) -> boolean`: Checks whether Lua callers can spend resource in the progression store.
+- `LProgressionStore:clear() -> nil`: Clears this operation in the progression store for Lua callers.
+- `LProgressionStore:clearEvents() -> nil`: Clears events in the progression store for Lua callers.
+- `LProgressionStore:collectCollectionItem(profile, collection_id, item_id) -> nil`: Performs the `collectCollectionItem` progression operation for Lua callers.
+- `LProgressionStore:compactChanges(max_records) -> nil`: Performs the `compactChanges` progression operation for Lua callers.
+- `LProgressionStore:compileCondition(condition) -> table`: Performs the `compileCondition` progression operation for Lua callers.
+- `LProgressionStore:completeQuest(profile, quest_id) -> boolean`: Performs the `completeQuest` progression operation for Lua callers.
+- `LProgressionStore:countProfiles(arg1?) -> number`: Performs the `countProfiles` progression operation for Lua callers.
+- `LProgressionStore:createProfile(id, options?) -> nil`: Creates profile in the progression store for Lua callers.
+- `LProgressionStore:debugSnapshot() -> table`: Performs the `debugSnapshot` progression operation for Lua callers.
+- `LProgressionStore:defineAchievement(id, definition) -> nil`: Defines achievement in the progression store for Lua callers.
+- `LProgressionStore:defineAttribute(id, definition) -> nil`: Defines attribute in the progression store for Lua callers.
+- `LProgressionStore:defineChallengeTemplate(id, definition) -> nil`: Defines challenge template in the progression store for Lua callers.
+- `LProgressionStore:defineCollection(id, definition) -> nil`: Defines collection in the progression store for Lua callers.
+- `LProgressionStore:defineCounter(id, definition) -> nil`: Defines counter in the progression store for Lua callers.
+- `LProgressionStore:defineDerivedValue(id, definition) -> nil`: Defines derived value in the progression store for Lua callers.
+- `LProgressionStore:defineLeaderboard(id, definition) -> nil`: Defines leaderboard in the progression store for Lua callers.
+- `LProgressionStore:defineLevelTrack(id, definition) -> nil`: Defines level track in the progression store for Lua callers.
+- `LProgressionStore:definePerk(id, definition) -> nil`: Defines perk in the progression store for Lua callers.
+- `LProgressionStore:definePopulationTemplate(id, definition) -> nil`: Defines population template in the progression store for Lua callers.
+- `LProgressionStore:definePrestige(id, definition) -> nil`: Defines prestige in the progression store for Lua callers.
+- `LProgressionStore:defineProfileTemplate(id, definition) -> nil`: Defines profile template in the progression store for Lua callers.
+- `LProgressionStore:defineQuest(id, definition) -> nil`: Defines quest in the progression store for Lua callers.
+- `LProgressionStore:defineResource(id, definition) -> nil`: Defines resource in the progression store for Lua callers.
+- `LProgressionStore:defineSeason(id, definition) -> nil`: Defines season in the progression store for Lua callers.
+- `LProgressionStore:defineSkill(id, definition) -> nil`: Defines skill in the progression store for Lua callers.
+- `LProgressionStore:defineTrait(id, definition) -> nil`: Defines trait in the progression store for Lua callers.
+- `LProgressionStore:dematerializePopulationProfile(profile_id, options?) -> nil`: Performs the `dematerializePopulationProfile` progression operation for Lua callers.
+- `LProgressionStore:drainEvents() -> table`: Performs the `drainEvents` progression operation for Lua callers.
+- `LProgressionStore:endSeason(id, options?) -> nil`: Performs the `endSeason` progression operation for Lua callers.
+- `LProgressionStore:ensureProfile(id, options?) -> nil`: Performs the `ensureProfile` progression operation for Lua callers.
+- `LProgressionStore:evaluateCondition(profile, condition) -> table`: Performs the `evaluateCondition` progression operation for Lua callers.
+- `LProgressionStore:explainAttribute(profile, attribute_id) -> table`: Performs the `explainAttribute` progression operation for Lua callers.
+- `LProgressionStore:explainCondition(profile, condition) -> table`: Performs the `explainCondition` progression operation for Lua callers.
+- `LProgressionStore:explainDerivedValue(profile, id) -> table`: Performs the `explainDerivedValue` progression operation for Lua callers.
+- `LProgressionStore:exportChangesSince(revision) -> table`: Exports changes since from the progression store for Lua callers.
+- `LProgressionStore:exportChangeset(revision, options?) -> table`: Exports changeset from the progression store for Lua callers.
+- `LProgressionStore:exportSnapshot() -> table`: Exports snapshot from the progression store for Lua callers.
+- `LProgressionStore:failQuest(profile, quest_id) -> boolean`: Performs the `failQuest` progression operation for Lua callers.
+- `LProgressionStore:generatePopulation(template_id, options?) -> nil`: Performs the `generatePopulation` progression operation for Lua callers.
+- `LProgressionStore:getAchievement(profile, achievement_id) -> table`: Returns achievement from the progression store for Lua callers.
+- `LProgressionStore:getActivityFeed(query?) -> table`: Returns one typed activity-feed selection object.
+- `LProgressionStore:getAttribute(profile, attribute_id, mode?) -> table`: Returns attribute from the progression store for Lua callers.
+- `LProgressionStore:getAttributeState(profile, attribute_id) -> table`: Returns attribute state from the progression store for Lua callers.
+- `LProgressionStore:getChallenge(profile, challenge_id) -> table`: Returns challenge from the progression store for Lua callers.
+- `LProgressionStore:getCollection(profile, collection_id) -> table`: Returns collection from the progression store for Lua callers.
+- `LProgressionStore:getCounter(profile, counter_id) -> table`: Returns counter from the progression store for Lua callers.
+- `LProgressionStore:getCounterState(profile, counter_id) -> table`: Returns counter state from the progression store for Lua callers.
+- `LProgressionStore:getDefinitionHash() -> string`: Returns definition hash from the progression store for Lua callers.
+- `LProgressionStore:getDerivedValue(profile, id) -> table`: Returns derived value from the progression store for Lua callers.
+- `LProgressionStore:getExperience(profile, track_id) -> number`: Returns experience from the progression store for Lua callers.
+- `LProgressionStore:getExperienceToNextLevel(profile, track_id) -> number`: Returns experience to next level from the progression store for Lua callers.
+- `LProgressionStore:getId() -> string`: Returns id from the progression store for Lua callers.
+- `LProgressionStore:getLeaderboardEntry(profile, leaderboard_id) -> table`: Returns leaderboard entry from the progression store for Lua callers.
+- `LProgressionStore:getLevel(profile, track_id) -> number`: Returns level from the progression store for Lua callers.
+- `LProgressionStore:getPopulation(handle_or_id) -> table`: Returns population from the progression store for Lua callers.
+- `LProgressionStore:getPopulationStatistics(handle_or_id, query?) -> table`: Returns population statistics from the progression store for Lua callers.
+- `LProgressionStore:getPrestige(profile, prestige_id) -> table`: Returns prestige from the progression store for Lua callers.
+- `LProgressionStore:getProfile(id) -> table`: Returns profile from the progression store for Lua callers.
+- `LProgressionStore:getQuestState(profile, quest_id) -> table`: Returns quest state from the progression store for Lua callers.
+- `LProgressionStore:getResource(profile, resource_id) -> table`: Returns resource from the progression store for Lua callers.
+- `LProgressionStore:getRevision() -> integer`: Returns revision from the progression store for Lua callers.
+- `LProgressionStore:getRival(profile, rival_profile) -> table`: Returns rival from the progression store for Lua callers.
+- `LProgressionStore:getRivalDelta(profile, rival_profile) -> table`: Returns rival delta from the progression store for Lua callers.
+- `LProgressionStore:getSchemaVersion() -> integer`: Returns schema version from the progression store for Lua callers.
+- `LProgressionStore:getSeason(id) -> table`: Returns season from the progression store for Lua callers.
+- `LProgressionStore:getSeasonArchive(id, query?) -> table`: Returns season archive from the progression store for Lua callers.
+- `LProgressionStore:getSkillCooldown(profile, skill_id) -> table`: Returns skill cooldown from the progression store for Lua callers.
+- `LProgressionStore:getSkillLevel(profile, skill_id) -> table`: Returns skill level from the progression store for Lua callers.
+- `LProgressionStore:getTime() -> number`: Returns time from the progression store for Lua callers.
+- `LProgressionStore:hasPerk(profile, perk_id) -> boolean`: Checks whether perk exists in the progression store for Lua callers.
+- `LProgressionStore:hasProfile(id) -> boolean`: Checks whether profile exists in the progression store for Lua callers.
+- `LProgressionStore:hasTrait(profile, trait_id) -> boolean`: Checks whether trait exists in the progression store for Lua callers.
+- `LProgressionStore:learnSkill(profile, skill_id) -> nil`: Performs the `learnSkill` progression operation for Lua callers.
+- `LProgressionStore:listAchievements(profile) -> table`: Lists achievements from the progression store for Lua callers.
+- `LProgressionStore:listChallenges(profile, options?) -> table`: Lists challenges from the progression store for Lua callers.
+- `LProgressionStore:listCollections(profile) -> table`: Lists collections from the progression store for Lua callers.
+- `LProgressionStore:listCounters(profile) -> table`: Lists counters from the progression store for Lua callers.
+- `LProgressionStore:listLeaderboardAroundProfile() -> table`: Lists leaderboard around profile from the progression store for Lua callers.
+- `LProgressionStore:listLeaderboardRange(leaderboard_id, start_rank, limit?) -> table`: Lists leaderboard range from the progression store for Lua callers.
+- `LProgressionStore:listLeaderboardTop(leaderboard_id, limit?) -> table`: Lists leaderboard top from the progression store for Lua callers.
+- `LProgressionStore:listModifiers(profile) -> table`: Lists modifiers from the progression store for Lua callers.
+- `LProgressionStore:listPopulationProfiles(handle_or_id, query?) -> table`: Lists population profiles from the progression store for Lua callers.
+- `LProgressionStore:listPrestiges(profile) -> table`: Lists prestiges from the progression store for Lua callers.
+- `LProgressionStore:listProfiles(arg1?) -> table`: Lists profiles from the progression store for Lua callers.
+- `LProgressionStore:listRivals(profile) -> table`: Lists rivals from the progression store for Lua callers.
+- `LProgressionStore:listSeasons(query?) -> table`: Lists seasons from the progression store for Lua callers.
+- `LProgressionStore:listTraits(profile) -> table`: Lists traits from the progression store for Lua callers.
+- `LProgressionStore:loadSnapshot(snapshot) -> nil`: Performs the `loadSnapshot` progression operation for Lua callers.
+- `LProgressionStore:materializePopulationProfile(profile_id) -> nil`: Performs the `materializePopulationProfile` progression operation for Lua callers.
+- `LProgressionStore:pausePopulation(handle_or_id) -> nil`: Performs the `pausePopulation` progression operation for Lua callers.
+- `LProgressionStore:pinRival(profile, rival_profile, options?) -> nil`: Performs the `pinRival` progression operation for Lua callers.
+- `LProgressionStore:refillResource(profile, resource_id, amount?) -> nil`: Performs the `refillResource` progression operation for Lua callers.
+- `LProgressionStore:refreshQuestLifecycle(profile) -> nil`: Performs the `refreshQuestLifecycle` progression operation for Lua callers.
+- `LProgressionStore:regeneratePopulation(handle_or_id, options?) -> nil`: Performs the `regeneratePopulation` progression operation for Lua callers.
+- `LProgressionStore:removeDerivedValue(id) -> boolean`: Removes derived value from the progression store for Lua callers.
+- `LProgressionStore:removeModifier(profile, handle) -> nil`: Removes modifier from the progression store for Lua callers.
+- `LProgressionStore:removePopulation(handle_or_id, options?) -> nil`: Removes population from the progression store for Lua callers.
+- `LProgressionStore:removeProfile(id, opts?) -> nil`: Removes profile from the progression store for Lua callers.
+- `LProgressionStore:removeProfileMetadata(id, key) -> nil`: Removes profile metadata from the progression store for Lua callers.
+- `LProgressionStore:removeProfileTag(id, tag) -> nil`: Removes profile tag from the progression store for Lua callers.
+- `LProgressionStore:removeTrait(profile, trait_id) -> boolean`: Removes trait from the progression store for Lua callers.
+- `LProgressionStore:resumePopulation(handle_or_id) -> nil`: Performs the `resumePopulation` progression operation for Lua callers.
+- `LProgressionStore:revealQuest(profile, quest_id) -> nil`: Performs the `revealQuest` progression operation for Lua callers.
+- `LProgressionStore:setAttributeBase(profile, attribute_id, value) -> nil`: Sets attribute base in the progression store for Lua callers.
+- `LProgressionStore:setChallengeProgress(profile, challenge_id, value) -> nil`: Sets challenge progress in the progression store for Lua callers.
+- `LProgressionStore:setCounter(profile, counter_id, value) -> nil`: Sets counter in the progression store for Lua callers.
+- `LProgressionStore:setExperience(profile, track_id, value) -> nil`: Sets experience in the progression store for Lua callers.
+- `LProgressionStore:setLevel(profile, track_id, level) -> nil`: Sets level in the progression store for Lua callers.
+- `LProgressionStore:setProfileMetadata(id, key, value) -> nil`: Sets profile metadata in the progression store for Lua callers.
+- `LProgressionStore:setQuestObjective(profile, quest_id, objective_id, value) -> nil`: Sets quest objective in the progression store for Lua callers.
+- `LProgressionStore:setQuestObjectiveStatus(profile, quest_id, objective_id, status) -> nil`: Sets quest objective status in the progression store for Lua callers.
+- `LProgressionStore:setQuestObjectiveVisibility(profile, quest_id, objective_id, visible) -> nil`: Sets quest objective visibility in the progression store for Lua callers.
+- `LProgressionStore:setResource(profile, resource_id, value) -> nil`: Sets resource in the progression store for Lua callers.
+- `LProgressionStore:setTime(seconds) -> nil`: Sets time in the progression store for Lua callers.
+- `LProgressionStore:simulatePopulationUntil(handle_or_id, logical_time, options?) -> nil`: Performs the `simulatePopulationUntil` progression operation for Lua callers.
+- `LProgressionStore:spendResource(profile, resource_id, amount) -> nil`: Performs the `spendResource` progression operation for Lua callers.
+- `LProgressionStore:startSeason(id, options?) -> nil`: Performs the `startSeason` progression operation for Lua callers.
+- `LProgressionStore:stats() -> table`: Performs the `stats` progression operation for Lua callers.
+- `LProgressionStore:submitScore(profile, leaderboard_id, score) -> nil`: Performs the `submitScore` progression operation for Lua callers.
+- `LProgressionStore:type() -> string`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `LProgressionStore:typeOf(name) -> boolean`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `LProgressionStore:unlockAchievement(profile, achievement_id) -> nil`: Performs the `unlockAchievement` progression operation for Lua callers.
+- `LProgressionStore:update(dt, opts?) -> nil`: Updates this operation in the progression store for Lua callers.
+- `LProgressionStore:updatePopulation(handle_or_id, dt, options?) -> nil`: Updates population in the progression store for Lua callers.
+- `LProgressionStore:updateProfile(id, patch?) -> nil`: Updates profile in the progression store for Lua callers.
+- `LProgressionStore:useSkill(profile, skill_id) -> nil`: Performs the `useSkill` progression operation for Lua callers.
+- `LProgressionStore:validate() -> boolean`: Validates this operation using the progression store rules for Lua callers.
+- `LProgressionStore:validateCondition(condition) -> boolean`: Validates condition using the progression store rules for Lua callers.
+- `LProgressionStore:validateDerivedValues() -> boolean`: Validates derived values using the progression store rules for Lua callers.
+- `LProgressionStore:validatePopulationTemplate(id) -> boolean`: Validates population template using the progression store rules for Lua callers.
 
 #### LProgressionTransaction Type
 
-- Lua-visible object type.
+- Lua-visible `ProgressionTransaction` object carrying progression state and operations.
 
 ##### Fields
 
@@ -701,17 +701,17 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LProgressionTransaction:addCounter(profile, counter_id, amount) -> nil`: Lua-visible method.
-- `LProgressionTransaction:addExperience(profile, track_id, amount) -> nil`: Lua-visible method.
-- `LProgressionTransaction:addModifier(profile, target_id, opts) -> nil`: Lua-visible method.
-- `LProgressionTransaction:commit() -> nil`: Commit.
-- `LProgressionTransaction:rollback() -> nil`: Rollback.
-- `LProgressionTransaction:setAttributeBase(profile, attribute_id, value) -> nil`: Lua-visible method.
-- `LProgressionTransaction:setCounter(profile, counter_id, value) -> nil`: Lua-visible method.
-- `LProgressionTransaction:setQuestObjective(profile, quest_id, objective_id, value) -> nil`: Lua-visible method.
-- `LProgressionTransaction:setResource(profile, resource_id, value) -> nil`: Lua-visible method.
-- `LProgressionTransaction:type() -> nil`: Type.
-- `LProgressionTransaction:typeOf(name) -> nil`: Type of.
+- `LProgressionTransaction:addCounter(profile, counter_id, amount) -> nil`: Adds counter to the progression store for Lua callers.
+- `LProgressionTransaction:addExperience(profile, track_id, amount) -> nil`: Adds experience to the progression store for Lua callers.
+- `LProgressionTransaction:addModifier(profile, target_id, opts) -> nil`: Adds modifier to the progression store for Lua callers.
+- `LProgressionTransaction:commit() -> table`: Commits the pending progression transaction and returns its result to Lua callers.
+- `LProgressionTransaction:rollback() -> nil`: Rolls back the pending progression transaction for Lua callers.
+- `LProgressionTransaction:setAttributeBase(profile, attribute_id, value) -> nil`: Sets attribute base in the progression store for Lua callers.
+- `LProgressionTransaction:setCounter(profile, counter_id, value) -> nil`: Sets counter in the progression store for Lua callers.
+- `LProgressionTransaction:setQuestObjective(profile, quest_id, objective_id, value) -> nil`: Sets quest objective in the progression store for Lua callers.
+- `LProgressionTransaction:setResource(profile, resource_id, value) -> nil`: Sets resource in the progression store for Lua callers.
+- `LProgressionTransaction:type() -> string`: Returns the runtime type name exposed by this progression object to Lua callers.
+- `LProgressionTransaction:typeOf(name) -> boolean`: Returns the runtime type name exposed by this progression object to Lua callers.
 
 #### LQuestJournal Type
 
@@ -723,14 +723,14 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LQuestJournal:addEntry(text, tag?) -> LQuestJournalEntry`: Appends one entry to the live quest journal and returns the stored entry object.
-- `LQuestJournal:count() -> integer`: Returns the number of retained entries currently stored in this journal.
-- `LQuestJournal:getQuestId() -> string`: Returns the quest id that owns this journal.
-- `LQuestJournal:listEntries() -> table`: Returns every retained journal entry as typed entry userdata.
+- `LQuestJournal:addEntry(text, tag?) -> | LQuestJournalEntry | Retained journal entry after store-side indexing and trimming`: Appends one entry to the live quest journal and returns the stored entry object.
+- `LQuestJournal:count() -> | integer | Journal entry count after retention trimming`: Returns the number of retained entries currently stored in this journal.
+- `LQuestJournal:getQuestId() -> | string | Authored quest identifier`: Returns the quest id that owns this journal.
+- `LQuestJournal:listEntries() -> | table | Array of `LQuestJournalEntry` userdata values`: Returns every retained journal entry as typed entry userdata.
 
 #### LQuestJournalEntry Type
 
-- Lua-visible object type.
+- Lua-visible `QuestJournalEntry` object carrying progression state and operations.
 
 ##### Fields
 
@@ -738,9 +738,9 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LQuestJournalEntry:getIndex() -> integer`: Returns the stable monotonically increasing journal index.
-- `LQuestJournalEntry:getTag() -> string`: Returns the optional journal entry tag.
-- `LQuestJournalEntry:getText() -> string`: Returns the authored journal entry text.
+- `LQuestJournalEntry:getIndex() -> | integer | Zero-based journal entry index`: Returns the stable monotonically increasing journal index.
+- `LQuestJournalEntry:getTag() -> | string | Journal entry tag, or an empty string when no tag was stored`: Returns the optional journal entry tag.
+- `LQuestJournalEntry:getText() -> | string | Retained journal body text`: Returns the authored journal entry text.
 
 #### LQuestState Type
 
@@ -752,10 +752,10 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LQuestState:getJournal() -> LQuestJournal`: Returns the retained quest journal as a typed journal object.
-- `LQuestState:getQuestId() -> string`: Returns the authored quest id.
-- `LQuestState:getStatus() -> string`: Returns the current quest lifecycle status.
-- `LQuestState:isRevealed() -> boolean`: Returns whether the quest is currently revealed to the owning profile.
+- `LQuestState:getJournal() -> | LQuestJournal | Journal handle for the current quest state`: Returns the retained quest journal as a typed journal object.
+- `LQuestState:getQuestId() -> string | string | Quest identifier`: Returns quest id from the progression store for Lua callers.
+- `LQuestState:getStatus() -> | string | Current quest state such as `"hidden"`, `"available"`, or `"active"``: Returns the current quest lifecycle status.
+- `LQuestState:isRevealed() -> | boolean | `true` when the quest is visible`: Returns whether the quest is currently revealed to the owning profile.
 
 #### LReward Type
 
@@ -767,15 +767,15 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LReward:claim() -> LReward`: Claims this pending reward and returns the updated reward object.
-- `LReward:getId() -> string`: Returns the reward record id.
-- `LReward:getState() -> string`: Returns the current reward state.
-- `LReward:markApplied(external_receipt?) -> LReward`: Marks this claimed reward as applied and returns the updated reward object.
-- `LReward:reject(reason?) -> LReward`: Rejects this reward and returns the updated reward object.
+- `LReward:claim() -> | LReward | Updated reward handle after the claim transition`: Claims this pending reward and returns the updated reward object.
+- `LReward:getId() -> string | string | Stable reward identifier`: Returns id from the progression store for Lua callers.
+- `LReward:getState() -> table | string | One of `"pending"`, `"claimed"`, `"applied"`, or `"rejected"``: Returns state from the progression store for Lua callers.
+- `LReward:markApplied(external_receipt?) -> | LReward | Updated reward handle after the apply transition`: Marks this claimed reward as applied and returns the updated reward object.
+- `LReward:reject(reason?) -> | LReward | Updated reward handle after the rejection transition`: Rejects this reward and returns the updated reward object.
 
 #### LRival Type
 
-- Lua-visible object type.
+- Lua-visible `Rival` object carrying progression state and operations.
 
 ##### Fields
 
@@ -783,12 +783,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LRival:getProfileId() -> string`: Returns the owner profile id for this rivalry.
-- `LRival:getRivalProfileId() -> string`: Returns the pinned rival profile id.
+- `LRival:getProfileId() -> | string | Profile identifier that pinned the rival`: Returns the owner profile id for this rivalry.
+- `LRival:getRivalProfileId() -> | string | Rival profile identifier`: Returns the pinned rival profile id.
 
 #### LRivalDelta Type
 
-- Lua-visible object type.
+- Lua-visible `RivalDelta` object carrying progression state and operations.
 
 ##### Fields
 
@@ -796,12 +796,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LRivalDelta:getLeaderboardId() -> string`: Returns the leaderboard used to compute this rivalry delta.
-- `LRivalDelta:getRankDelta() -> integer`: Returns the signed rank gap between the owner and rival profiles.
+- `LRivalDelta:getLeaderboardId() -> | string | Leaderboard identifier`: Returns the leaderboard used to compute this rivalry delta.
+- `LRivalDelta:getRankDelta() -> | integer | Positive when the rival is behind, negative when ahead`: Returns the signed rank gap between the owner and rival profiles.
 
 #### LSeason Type
 
-- Lua-visible object type.
+- Lua-visible `Season` object carrying progression state and operations.
 
 ##### Fields
 
@@ -809,12 +809,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LSeason:getId() -> string`: Returns the authored season id.
-- `LSeason:isActive() -> boolean`: Returns whether this season is currently active.
+- `LSeason:getId() -> string | string | Season identifier`: Returns id from the progression store for Lua callers.
+- `LSeason:isActive() -> | boolean | `true` when the season is active`: Returns whether this season is currently active.
 
 #### LSeasonArchive Type
 
-- Lua-visible object type.
+- Lua-visible `SeasonArchive` object carrying progression state and operations.
 
 ##### Fields
 
@@ -822,12 +822,12 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LSeasonArchive:getArchiveIndex() -> integer`: Returns the monotonically increasing archive index for this season.
-- `LSeasonArchive:getId() -> string`: Returns the season id that owns this archive record.
+- `LSeasonArchive:getArchiveIndex() -> | integer | Archive sequence number`: Returns the monotonically increasing archive index for this season.
+- `LSeasonArchive:getId() -> | string | Season identifier`: Returns the season id that owns this archive record.
 
 #### LStatusTracker Type
 
-- Creates an isolated deterministic status lifecycle tracker.
+- Lua-visible `StatusTracker` object carrying progression state and operations.
 
 ##### Fields
 
@@ -835,23 +835,23 @@ expires it on the next explicit tracker update, including `update(0)`.
 
 ##### Methods
 
-- `LStatusTracker:apply(subjectId, definitionId, sourceId?, stacks?) -> integer`: Applies a status to a subject and returns its stable runtime instance id.
+- `LStatusTracker:apply(subjectId, definitionId, sourceId?, stacks?) -> | integer | Status instance id`: Applies a status to a subject and returns its stable runtime instance id.
 - `LStatusTracker:clear() -> nil`: Removes all definitions, instances, and queued events.
 - `LStatusTracker:define(definition) -> nil`: Registers or replaces one status definition.
-- `LStatusTracker:drainEvents() -> table`: Takes and clears neutral apply/refresh/stack/tick/expired events.
-- `LStatusTracker:get(instanceId) -> table?`: Returns one active status instance by runtime id.
-- `LStatusTracker:has(subjectId, definitionOrTag) -> boolean`: Checks whether a subject has a status with the requested definition id or tag.
-- `LStatusTracker:list(subjectId, filter?) -> table`: Lists active status instances attached to one subject and matching all optional filters.
-- `LStatusTracker:remove(instanceId) -> boolean`: Removes one active status instance.
-- `LStatusTracker:removeByDefinition(subjectId, definitionId) -> integer`: Removes every matching definition instance from one subject.
-- `LStatusTracker:removeByTag(subjectId, tag) -> integer`: Removes every instance carrying a copied tag from one subject.
+- `LStatusTracker:drainEvents() -> | table | Event records in deterministic emission order`: Takes and clears neutral apply/refresh/stack/tick/expired events.
+- `LStatusTracker:get(instanceId) -> | table? | Status instance record, or nil when missing`: Returns one active status instance by runtime id.
+- `LStatusTracker:has(subjectId, definitionOrTag) -> | boolean | Whether a matching instance exists`: Checks whether a subject has a status with the requested definition id or tag.
+- `LStatusTracker:list(subjectId, filter?) -> | table | Status instance records`: Lists active status instances attached to one subject and matching all optional filters.
+- `LStatusTracker:remove(instanceId) -> | boolean | True when an instance was removed`: Removes one active status instance.
+- `LStatusTracker:removeByDefinition(subjectId, definitionId) -> | integer | Number of removed instances`: Removes every matching definition instance from one subject.
+- `LStatusTracker:removeByTag(subjectId, tag) -> | integer | Number of removed instances`: Removes every instance carrying a copied tag from one subject.
 - `LStatusTracker:restore(snapshot) -> nil`: Restores definitions, active instances, and ID allocation from a snapshot.
-- `LStatusTracker:setPaused(instanceId, paused) -> boolean`: Pauses or resumes one status instance's lifecycle timers.
-- `LStatusTracker:setRemaining(instanceId, seconds?) -> boolean`: Sets one status instance's remaining duration; nil makes it infinite.
-- `LStatusTracker:snapshot() -> table`: Captures definitions, instances, and ID allocation state.
-- `LStatusTracker:type() -> string`: Returns the Lua-visible type name.
-- `LStatusTracker:typeOf(name) -> boolean`: Checks whether this handle matches `LStatusTracker` or `LObject`.
-- `LStatusTracker:update(dt) -> integer`: Advances finite durations and periodic tick timers by dt seconds.
+- `LStatusTracker:setPaused(instanceId, paused) -> | boolean | True when the instance exists`: Pauses or resumes one status instance's lifecycle timers.
+- `LStatusTracker:setRemaining(instanceId, seconds?) -> | boolean | True when the instance exists`: Sets one status instance's remaining duration; nil makes it infinite.
+- `LStatusTracker:snapshot() -> | table | Serializable status tracker snapshot`: Captures definitions, instances, and ID allocation state.
+- `LStatusTracker:type() -> | string | Always `LStatusTracker``: Returns the Lua-visible type name.
+- `LStatusTracker:typeOf(name) -> | boolean | Whether the name matches`: Checks whether this handle matches `LStatusTracker` or `LObject`.
+- `LStatusTracker:update(dt) -> | integer | Number of events currently queued after the update`: Advances finite durations and periodic tick timers by dt seconds.
 
 ## Examples
 

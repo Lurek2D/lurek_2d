@@ -64,7 +64,7 @@ Folder marker mapping is strict:
 Rules:
 
 - Markers must be directly above the `it()` they annotate.
-- In `tests/lua/unit/`, every `it()` must have exactly one directly-adjacent `@covers`.
+- In `tests/lua/unit/`, every `it()` must have exactly one directly-adjacent coverage marker: `@covers` for the canonical owner, or `@covers-case` for an additional regression/edge-case exercise.
 - In `tests/lua/unit/`, every public Lua API should own exactly one `it()` across the full unit suite.
 - In `tests/lua/unit/`, one `it()` may contain many assertions if they all prove the same API.
 - File-level `@covers` are forbidden in evidence files.

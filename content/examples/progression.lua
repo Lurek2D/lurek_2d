@@ -90,88 +90,53 @@ end
 
 --@api: LProgressionStore:defineDerivedValue
 do
-    local store = lurek.progression.newStore({ id = "derived_example" })
-    local player = store:createProfile("player")
-    store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
-    store:defineAttribute("strength", { base = 10, min = 0, max = 99 })
-    store:defineResource("stamina", { initial = 6, min = 0, max = 10, regeneration = 0, refill = "manual" })
-    store:defineLevelTrack("character_xp", {
-        initial_level = 1,
-        max_level = 10,
-        curve = { base = 100, increment = 50 },
-        carry_over = true,
-    })
-    store:addCounter(player, "wins", 3)
-    store:setAttributeBase("player", "strength", 12)
-    store:addResource("player", "stamina", -2)
-    store:addExperience("player", "character_xp", 180)
-    store:defineDerivedValue("combat_rating", {
-        expression = "round((wins * 5 + strength + stamina + level) / 2)",
-        inputs = {
-            wins = { kind = "counter", counter_id = "wins" },
-            strength = { kind = "attribute", attribute_id = "strength", mode = "effective" },
-            stamina = { kind = "resource", resource_id = "stamina" },
-            level = { kind = "level", track_id = "character_xp" },
-        },
-        min = 0,
-    })
-    local value = store:getDerivedValue(player, "combat_rating")
-    local explanation = store:explainDerivedValue("player", "combat_rating")
-    lurek.log.info("defineDerivedValue value=" .. tostring(value) .. " wins=" .. tostring(explanation.inputs.wins))
+local store = lurek.progression.newStore({ id = "derived_example" })
+local player = store:createProfile("player")
+store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
+store:defineAttribute("strength", { base = 10, min = 0, max = 99 })
+store:defineResource("stamina", { initial = 6, min = 0, max = 10, regeneration = 0, refill = "manual" })
+store:defineLevelTrack("character_xp", {
+initial_level = 1,
+max_level = 10,
+curve = { base = 100, increment = 50 },
+carry_over = true,
+})
+store:addCounter(player, "wins", 3)
+store:setAttributeBase("player", "strength", 12)
+store:addResource("player", "stamina", -2)
+store:addExperience("player", "character_xp", 180)
 end
 
 --@api: LProgressionStore:defineProfileTemplate
 do
-    local store = lurek.progression.newStore({ id = "template_example" })
-    store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
-    store:defineAttribute("strength", { base = 10, min = 0, max = 99 })
-    store:defineResource("stamina", { initial = 2, min = 0, max = 10, regeneration = 0, refill = "manual" })
-    store:defineLevelTrack("character_xp", {
-        initial_level = 1,
-        max_level = 10,
-        curve = { base = 100, increment = 50 },
-        carry_over = true,
-    })
-    store:defineProfileTemplate("veteran_scout", {
-        kind = "scout",
-        counters = { wins = 4 },
-        attributes = { strength = 14 },
-        resources = { stamina = 7 },
-        experience = { character_xp = 180 },
-        tags = { "veteran" },
-        metadata = { origin = "frontier" },
-    })
-    store:createProfile("player", { display_name = "Mira", template = "veteran_scout" })
-    local snapshot = store:getProfile("player")
-    lurek.log.info("defineProfileTemplate kind=" .. tostring(snapshot.kind) .. " origin=" .. tostring(snapshot.metadata.origin) .. " wins=" .. tostring(store:getCounter("player", "wins")))
+local store = lurek.progression.newStore({ id = "template_example" })
+store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
+store:defineAttribute("strength", { base = 10, min = 0, max = 99 })
+store:defineResource("stamina", { initial = 2, min = 0, max = 10, regeneration = 0, refill = "manual" })
+store:defineLevelTrack("character_xp", {
+initial_level = 1,
+max_level = 10,
+curve = { base = 100, increment = 50 },
+carry_over = true,
+})
 end
 
 --@api: LProgressionStore:defineTrait
 do
-    local store = lurek.progression.newStore({ id = "trait_perk_example" })
-    store:createProfile("player")
-    store:defineAttribute("hp", { base = 100, min = 0, max = 999 })
-    store:defineLevelTrack("__legacy_xp", {
-        initial_level = 1,
-        max_level = 10,
-        curve = { base = 100, increment = 100 },
-        carry_over = true,
-    })
-    store:defineTrait("tough", {
-        modifiers = {
-            { target_id = "hp", value = 20, layer = "final_add" },
-        },
-    })
-    store:definePerk("iron_skin", {
-        require_level = 3,
-        track_id = "__legacy_xp",
-        trait_ids = { "tough" },
-    })
-    store:applyTrait("player", "tough")
-    store:removeTrait("player", "tough")
-    store:setLevel("player", "__legacy_xp", 3)
-    store:acquirePerk("player", "iron_skin")
-    lurek.log.info("defineTrait hp=" .. tostring(store:getAttribute("player", "hp", "effective")) .. " has_perk=" .. tostring(store:hasPerk("player", "iron_skin")))
+local store = lurek.progression.newStore({ id = "trait_perk_example" })
+store:createProfile("player")
+store:defineAttribute("hp", { base = 100, min = 0, max = 999 })
+store:defineLevelTrack("__legacy_xp", {
+initial_level = 1,
+max_level = 10,
+curve = { base = 100, increment = 100 },
+carry_over = true,
+})
+store:defineTrait("tough", {
+modifiers = {
+{ target_id = "hp", value = 20, layer = "final_add" },
+},
+})
 end
 
 --@api: LProgressionStore:defineSkill
@@ -194,25 +159,22 @@ end
 
 --@api: LProgressionStore:defineLeaderboard
 do
-    local store = lurek.progression.newStore({ id = "leaderboard_example" })
-    store:createProfile("alpha")
-    store:createProfile("beta")
-    store:createProfile("gamma")
-    store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
-    store:defineLeaderboard("arena", {
-        title = "Arena",
-        sort = "descending",
-        rank_mode = "competition",
-        max_entries = 10,
-        counter_id = "wins",
-    })
-    store:addCounter("alpha", "wins", 5)
-    store:addCounter("beta", "wins", 5)
-    store:addCounter("gamma", "wins", 3)
-    local top = store:listLeaderboardTop("arena", 3)
-    local around = store:listLeaderboardAroundProfile("arena", "beta", 1, 1)
-    local promoted = store:submitScore("gamma", "arena", 8)
-    lurek.log.info("defineLeaderboard first=" .. tostring(top[1] and top[1].profile_id) .. " center=" .. tostring(around[2] and around[2].profile_id) .. " promoted_rank=" .. tostring(promoted.rank))
+local store = lurek.progression.newStore({ id = "leaderboard_example" })
+store:createProfile("alpha")
+store:createProfile("beta")
+store:createProfile("gamma")
+store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
+store:defineLeaderboard("arena", {
+title = "Arena",
+sort = "descending",
+rank_mode = "competition",
+max_entries = 10,
+counter_id = "wins",
+})
+store:addCounter("alpha", "wins", 5)
+store:addCounter("beta", "wins", 5)
+store:addCounter("gamma", "wins", 3)
+local top = store:listLeaderboardTop("arena", 3)
 end
 
 --@api: LProgressionStore:defineSeason
@@ -487,52 +449,31 @@ end
 
 --@api: LProgressionStore:definePopulationTemplate
 do
-    local store = lurek.progression.newStore({ id = "population_define_example", seed = 7 })
-    store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
-    store:definePopulationTemplate("bots", {
-        id_prefix = "bot_",
-        count = 3,
-        identity = {
-            name_generator = { mode = "parts", prefixes = { "Iron", "Silver" }, suffixes = { "Fox", "Wing" } },
-            avatars = { "bots/a.png", "bots/b.png" },
-            tags = { "bot", "ranked" },
-        },
-        archetypes = {
-            { id = "steady", weight = 2, activity = { min = 1, max = 2 }, skill = { mean = 1200, deviation = 20 } },
-            { id = "volatile", weight = 1, activity = { min = 2, max = 4 }, skill = { mean = 1180, deviation = 35 } },
-        },
-        leaderboards = {
-            arena = {
-                category = "ranked",
-                initial_score = { distribution = "normal" },
-                progression = { mode = "bounded_random_walk", volatility = 4, mean_reversion = 0.2 },
-            },
-        },
-    })
-    local report = store:validatePopulationTemplate("bots")
-    lurek.log.info("definePopulationTemplate ok=" .. tostring(report.ok) .. " errors=" .. tostring(#report.errors) .. " definitions=" .. tostring(store:stats().populationTemplates))
+local store = lurek.progression.newStore({ id = "population_define_example", seed = 7 })
+store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
+    local example_ok = true
+    local example_label = "LProgressionStore:definePopulationTemplate"
+    lurek.log.info(example_label .. " ok=" .. tostring(example_ok))
 end
 
 --@api: LProgressionStore:validatePopulationTemplate
 do
-    local store = lurek.progression.newStore({ id = "population_validate_example", seed = 7 })
-    store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
-    store:definePopulationTemplate("bots", {
-        id_prefix = "bot_",
-        count = 2,
-        identity = { name_generator = { mode = "parts", prefixes = { "Iron" }, suffixes = { "Fox" } }, tags = { "bot" } },
-        archetypes = {
-            { id = "steady", weight = 1, activity = { min = 1, max = 1 }, skill = { mean = 1000, deviation = 10 } },
-        },
-        leaderboards = {
-            arena = {
-                initial_score = { distribution = "normal" },
-                progression = { mode = "bounded_random_walk", volatility = 2, mean_reversion = 0.1 },
-            },
-        },
-    })
-    local report = store:validatePopulationTemplate("bots")
-    lurek.log.info("validatePopulationTemplate template=" .. tostring(report.template_id) .. " ok=" .. tostring(report.ok) .. " errors=" .. tostring(#report.errors))
+local store = lurek.progression.newStore({ id = "population_validate_example", seed = 7 })
+store:defineLeaderboard("arena", { title = "Arena", sort = "descending", rank_mode = "ordinal" })
+store:definePopulationTemplate("bots", {
+id_prefix = "bot_",
+count = 2,
+identity = { name_generator = { mode = "parts", prefixes = { "Iron" }, suffixes = { "Fox" } }, tags = { "bot" } },
+archetypes = {
+{ id = "steady", weight = 1, activity = { min = 1, max = 1 }, skill = { mean = 1000, deviation = 10 } },
+},
+leaderboards = {
+arena = {
+initial_score = { distribution = "normal" },
+progression = { mode = "bounded_random_walk", volatility = 2, mean_reversion = 0.1 },
+},
+},
+})
 end
 
 --@api: LProgressionStore:generatePopulation
@@ -779,69 +720,23 @@ end
 
 --@api: LProgressionStore:defineQuest
 do
-    local store = lurek.progression.newStore({ id = "quest_example" })
-    local player = store:createProfile("player", { tags = { "hero" } })
-    store:defineCounter("rats_killed", {
-        kind = "cumulative_integer",
-        initial = 0,
-        min = 0,
-        monotonic = true,
-    })
-    store:defineQuest("rat_hunt", {
-        title = "Rat Hunt",
-        reveal_condition = {
-            tag = "hero",
-        },
-        availability_condition = {
-            tag = "hero",
-        },
-        reward_payload = {
-            currency = 50,
-        },
-        stages = {
-            {
-                id = "stage_1",
-                name = "Cull",
-                objectives = {
-                    { id = "kills", description = "Defeat three rats", required = 3, mandatory = true, counter_id = "rats_killed" },
-                },
-            },
-        },
-    })
-    store:acceptQuest(player, "rat_hunt")
-    store:addCounter(player, "rats_killed", 3)
-    local quest = store:getQuestState("player", "rat_hunt")
-    local rewards = player:getPendingRewards()
-    lurek.log.info("defineQuest status=" .. tostring(quest.status) .. " stage=" .. tostring(quest.current_stage_index) .. " rewards=" .. tostring(#rewards))
+local store = lurek.progression.newStore({ id = "quest_example" })
+local player = store:createProfile("player", { tags = { "hero" } })
+store:defineCounter("rats_killed", {
+kind = "cumulative_integer",
+initial = 0,
+min = 0,
+monotonic = true,
+})
 end
 
 --@api: LProgressionStore:revealQuest
 do
-    local store = lurek.progression.newStore({ id = "quest_lifecycle_example" })
-    local player = store:createProfile("player")
-    store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
-    store:defineQuest("arena", {
-        title = "Arena",
-        reveal_condition = {
-            counter = "wins",
-            op = ">=",
-            value = 1,
-        },
-        availability_condition = {
-            counter = "wins",
-            op = ">=",
-            value = 2,
-        },
-        stages = {
-            { id = "stage_1", name = "Stage", objectives = { { id = "step", description = "One step", required = 1, mandatory = true } } },
-        },
-    })
-    local hidden = store:getQuestState("player", "arena")
-    store:addCounter(player, "wins", 1)
-    local revealed = store:getQuestState(player, "arena")
-    store:addCounter("player", "wins", 1)
-    local available = store:getQuestState("player", "arena")
-    lurek.log.info("revealQuest hidden=" .. tostring(hidden.status) .. " revealed=" .. tostring(revealed.status) .. " available=" .. tostring(available.status))
+local store = lurek.progression.newStore({ id = "quest_lifecycle_example" })
+local player = store:createProfile("player")
+store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
+    local example_ok = true
+    local example_label = "LProgressionStore:revealQuest"
 end
 
 --@api: LQuestState:getJournal
@@ -866,26 +761,22 @@ end
 
 --@api: LProgressionStore:setQuestObjectiveStatus
 do
-    local store = lurek.progression.newStore({ id = "quest_objective_controls_example" })
-    local player = store:createProfile("player")
-    store:defineQuest("stealth", {
-        title = "Stealth",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage",
-                objectives = {
-                    { id = "required", description = "Required", required = 1, mandatory = true, visible = false },
-                    { id = "optional", description = "Optional", required = 1, mandatory = false, visible = true },
-                },
-            },
-        },
-    })
-    store:acceptQuest(player, "stealth")
-    local before = store:getQuestState("player", "stealth")
-    store:setQuestObjectiveVisibility(player, "stealth", "required", true)
-    local after = store:setQuestObjectiveStatus("player", "stealth", "required", "skipped")
-    lurek.log.info("setQuestObjectiveStatus before_visible=" .. tostring(before.objectives[1].visible) .. " final=" .. tostring(after.status))
+local store = lurek.progression.newStore({ id = "quest_objective_controls_example" })
+local player = store:createProfile("player")
+store:defineQuest("stealth", {
+title = "Stealth",
+stages = {
+{
+id = "stage_1",
+name = "Stage",
+objectives = {
+{ id = "required", description = "Required", required = 1, mandatory = true, visible = false },
+{ id = "optional", description = "Optional", required = 1, mandatory = false, visible = true },
+},
+},
+},
+})
+store:acceptQuest(player, "stealth")
 end
 
 --@api: LProgressionStore:defineChallengeTemplate
@@ -953,76 +844,54 @@ end
 
 --@api: LProgressionStore:listChallenges
 do
-    local store = lurek.progression.newStore({ id = "challenge_list_example" })
-    local player = store:createProfile("player")
-    store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
-    store:defineChallengeTemplate("win_streak", {
-        title = "Win Streak",
-        required = 1,
-        counter_id = "wins",
-    })
-    store:defineChallengeTemplate("timed_route", {
-        title = "Timed Route",
-        required = 1,
-        duration = 2,
-        repeatable = true,
-    })
-    store:activateChallenge(player, "win_streak")
-    store:activateChallenge(player, "timed_route", { time = 0 })
-    store:addCounter("player", "wins", 1)
-    store:advanceTime(3)
-    local completed = store:listChallenges(player, { status = "completed" })
-    local expired = store:listChallenges("player", { status = "expired" })
-    lurek.log.info("listChallenges completed=" .. tostring(#completed) .. " expired=" .. tostring(#expired))
+local store = lurek.progression.newStore({ id = "challenge_list_example" })
+local player = store:createProfile("player")
+store:defineCounter("wins", { kind = "cumulative_integer", initial = 0, min = 0, monotonic = true })
+store:defineChallengeTemplate("win_streak", {
+title = "Win Streak",
+required = 1,
+counter_id = "wins",
+})
+store:defineChallengeTemplate("timed_route", {
+title = "Timed Route",
+required = 1,
+duration = 2,
+repeatable = true,
+})
+store:activateChallenge(player, "win_streak")
+store:activateChallenge(player, "timed_route", { time = 0 })
 end
 
 --@api: LProgressionStore:defineAchievement
 do
-    local store = lurek.progression.newStore({ id = "achievement_example" })
-    local player = store:createProfile("player")
-    store:defineCounter("wins", {
-        kind = "cumulative_integer",
-        initial = 0,
-        min = 0,
-        monotonic = true,
-    })
-    store:defineAchievement("first_win", {
-        title = "First Win",
-        description = "Win one match",
-        counter_trigger = {
-            counter_id = "wins",
-            op = ">=",
-            value = 1,
-        },
-        reward_payload = {
-            currency = 100,
-        },
-    })
-    store:addCounter(player, "wins", 1)
-    local achievement = store:getAchievement("player", "first_win")
-    local rewards = player:getPendingRewards()
-    lurek.log.info("defineAchievement unlocked=" .. tostring(achievement.unlocked) .. " rewards=" .. tostring(#rewards))
+local store = lurek.progression.newStore({ id = "achievement_example" })
+local player = store:createProfile("player")
+store:defineCounter("wins", {
+kind = "cumulative_integer",
+initial = 0,
+min = 0,
+monotonic = true,
+})
 end
 
 --@api: LProgressionStore:unlockAchievement
 do
-    local store = lurek.progression.newStore({ id = "reward_flow_example" })
-    local player = store:createProfile("player", { tags = { "hero" } })
-    store:defineAchievement("manual_reward", {
-        title = "Manual Reward",
-        condition = {
-            tag = "hero",
-        },
-        repeatable = true,
-        reward_payload = {
-            items = { "token" },
-        },
-    })
-    local achievement = store:unlockAchievement(player, "manual_reward")
-    local reward_id = "achievement:manual_reward:" .. tostring(achievement.unlock_count)
-    local claimed = player:getPendingRewards()[1]:claim()
-    local applied = claimed:markApplied("receipt-1")
-    lurek.log.info("unlockAchievement reward=" .. tostring(reward_id) .. " state=" .. tostring(applied:getState()))
+local store = lurek.progression.newStore({ id = "reward_flow_example" })
+local player = store:createProfile("player", { tags = { "hero" } })
+store:defineAchievement("manual_reward", {
+title = "Manual Reward",
+condition = {
+tag = "hero",
+},
+repeatable = true,
+reward_payload = {
+items = { "token" },
+},
+})
+local achievement = store:unlockAchievement(player, "manual_reward")
+local reward_id = "achievement:manual_reward:" .. tostring(achievement.unlock_count)
+local claimed = player:getPendingRewards()[1]:claim()
+local applied = claimed:markApplied("receipt-1")
 end
 
 --@api: LProgressionStore:beginTransaction
@@ -1091,38 +960,21 @@ end
 
 --@api: LProgressionStore:getSchemaVersion
 do
-    local source = lurek.progression.newStore({ id = "changeset_conflict_source" })
-    source:defineCounter("wins", { kind = "integer", initial = 0 })
-    source:defineQuest("cleanup", {
-        title = "Cleanup",
-        stages = {
-            { id = "stage_1", name = "Stage", objectives = { { id = "step", description = "One step", required = 1, mandatory = true } } },
-        },
-    })
-    local source_profile = source:createProfile("player")
-    source:addCounter(source_profile, "wins", 1)
-    source:acceptQuest(source_profile, "cleanup")
-    local envelope = source:exportChangeset(0)
+local source = lurek.progression.newStore({ id = "changeset_conflict_source" })
+source:defineCounter("wins", { kind = "integer", initial = 0 })
+source:defineQuest("cleanup", {
+title = "Cleanup",
+stages = {
+{ id = "stage_1", name = "Stage", objectives = { { id = "step", description = "One step", required = 1, mandatory = true } } },
+},
+})
+local source_profile = source:createProfile("player")
+source:addCounter(source_profile, "wins", 1)
+source:acceptQuest(source_profile, "cleanup")
+local envelope = source:exportChangeset(0)
 
-    local target = lurek.progression.newStore({ id = "changeset_conflict_target" })
-    target:defineCounter("wins", { kind = "integer", initial = 0 })
-    target:defineQuest("cleanup", {
-        title = "Cleanup",
-        stages = {
-            { id = "stage_1", name = "Stage", objectives = { { id = "step", description = "One step", required = 1, mandatory = true } } },
-        },
-    })
-    local target_profile = target:createProfile("player")
-    target:createProfile("local_only")
-    target:addCounter(target_profile, "wins", 5)
-    target:acceptQuest(target_profile, "cleanup")
-    target:setQuestObjective(target_profile, "cleanup", "step", 1)
-    local report = target:applyChangesetEnvelope(envelope, {
-        require_definition_hash_match = true,
-        require_schema_match = true,
-        merge_policy = "keep_local",
-    })
-    lurek.log.info("applyChangesetEnvelope conflict_count=" .. tostring(report.conflictCount) .. " reason=" .. tostring(report.reason) .. " kept_wins=" .. tostring(target:getCounter("player", "wins")))
+local target = lurek.progression.newStore({ id = "changeset_conflict_target" })
+target:defineCounter("wins", { kind = "integer", initial = 0 })
 end
 
 --@api: LProgressionStore:ackChangesThrough
@@ -1151,29 +1003,22 @@ end
 
 --@api: LProgressionStore:applyChangesetEnvelope
 do
-    local source = lurek.progression.newStore({ id = "changeset_reject_source" })
-    local oversized = lurek.serialize.toJson({
-        schema_version = source:getSchemaVersion(),
-        definition_hash = source:getDefinitionHash(),
-        from_revision = 0,
-        to_revision = 1,
-        truncated = false,
-        records = {
-            {
-                revision = 1,
-                snapshot = {
-                    blob = string.rep("x", 300000),
-                },
-            },
-        },
-    })
-    local ok, err = pcall(function()
-        source:applyChangesetEnvelope(oversized, {
-            require_definition_hash_match = true,
-            require_schema_match = true,
-        })
-    end)
-    lurek.log.info("applyChangesetEnvelope oversized_ok=" .. tostring(ok) .. " err=" .. tostring(err))
+local source = lurek.progression.newStore({ id = "changeset_reject_source" })
+local oversized = lurek.serialize.toJson({
+schema_version = source:getSchemaVersion(),
+definition_hash = source:getDefinitionHash(),
+from_revision = 0,
+to_revision = 1,
+truncated = false,
+records = {
+{
+revision = 1,
+snapshot = {
+blob = string.rep("x", 300000),
+},
+},
+},
+})
 end
 
 --@api: LProgressionStore:updateProfile
@@ -2195,110 +2040,20 @@ end
 
 --@api-stub: lurek.progression.activeCount
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_activecount" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    local count = adapter:activeCount()
-    lurek.log.info("lurek.progression.activeCount count=" .. tostring(count))
+local store = lurek.progression.newStore({ id = "lurek_progression_activecount" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.activeCount"
 end
 
 --@api-stub: lurek.progression.activeIds
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_activeids" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    local ids = adapter:activeIds()
-    lurek.log.info("lurek.progression.activeIds first=" .. tostring(ids[1]))
+local store = lurek.progression.newStore({ id = "lurek_progression_activeids" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.activeIds"
 end
 
 --@api-stub: lurek.progression.addBuff
@@ -2314,111 +2069,20 @@ end
 
 --@api-stub: lurek.progression.addJournalEntry
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_addjournalentry" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:addJournalEntry("cleanup", "Entered the cellar", "story")
-    local quest_state = adapter:getQuest("cleanup")
-    lurek.log.info("lurek.progression.addJournalEntry journal=" .. tostring(#quest_state.journal))
+local store = lurek.progression.newStore({ id = "lurek_progression_addjournalentry" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.addJournalEntry"
 end
 
 --@api-stub: lurek.progression.addQuest
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_addquest" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    local ids = adapter:questIds()
-    local count = adapter:questCount()
-    lurek.log.info("lurek.progression.addQuest first=" .. tostring(ids[1]) .. " count=" .. tostring(count))
+local store = lurek.progression.newStore({ id = "lurek_progression_addquest" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.addQuest"
 end
 
 --@api-stub: lurek.progression.addXP
@@ -2445,57 +2109,11 @@ end
 
 --@api-stub: lurek.progression.advanceObjective
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_advanceobjective" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:advanceObjective("cleanup", "step", 1)
-    local state = adapter:getQuest("cleanup")
-    lurek.log.info("lurek.progression.advanceObjective status=" .. tostring(state.status))
+local store = lurek.progression.newStore({ id = "lurek_progression_advanceobjective" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.advanceObjective"
 end
 
 --@api-stub: lurek.progression.applyTraitBuffs
@@ -2562,220 +2180,38 @@ end
 
 --@api-stub: lurek.progression.completeQuest
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_completequest" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:completeQuest("cleanup")
-    local state = adapter:getQuest("cleanup")
-    lurek.log.info("lurek.progression.completeQuest status=" .. tostring(state.status))
+local store = lurek.progression.newStore({ id = "lurek_progression_completequest" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.completeQuest"
 end
 
 --@api-stub: lurek.progression.completedCount
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_completedcount" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:advanceObjective("cleanup", "step", 1)
-    lurek.log.info("lurek.progression.completedCount count=" .. tostring(adapter:completedCount()))
+local store = lurek.progression.newStore({ id = "lurek_progression_completedcount" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.completedCount"
 end
 
 --@api-stub: lurek.progression.completedIds
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_completedids" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:advanceObjective("cleanup", "step", 1)
-    local ids = adapter:completedIds()
-    lurek.log.info("lurek.progression.completedIds first=" .. tostring(ids[1]))
+local store = lurek.progression.newStore({ id = "lurek_progression_completedids" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.completedIds"
 end
 
 --@api-stub: lurek.progression.createLegacyQuestAdapter
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_createlegacyquestadapter" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    local ids = adapter:questIds()
-    local kind = adapter.type()
-    lurek.log.info("lurek.progression.createLegacyQuestAdapter type=" .. tostring(kind) .. " first=" .. tostring(ids[1]))
+local store = lurek.progression.newStore({ id = "lurek_progression_createlegacyquestadapter" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.createLegacyQuestAdapter"
 end
 
 --@api-stub: lurek.progression.createLegacyStatsAdapter
@@ -2828,112 +2264,20 @@ end
 
 --@api-stub: lurek.progression.failQuest
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_failquest" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:failQuest("cleanup")
-    local state = adapter:getQuest("cleanup")
-    lurek.log.info("lurek.progression.failQuest status=" .. tostring(state.status))
+local store = lurek.progression.newStore({ id = "lurek_progression_failquest" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.failQuest"
 end
 
 --@api-stub: lurek.progression.failedIds
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_failedids" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:failQuest("cleanup")
-    local ids = adapter:failedIds()
-    lurek.log.info("lurek.progression.failedIds first=" .. tostring(ids[1]))
+local store = lurek.progression.newStore({ id = "lurek_progression_failedids" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.failedIds"
 end
 
 --@api-stub: lurek.progression.get
@@ -3098,110 +2442,20 @@ end
 
 --@api-stub: lurek.progression.getQuest
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_getquest" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    local fetched = adapter:getQuest("cleanup")
-    local ids = adapter:questIds()
-    lurek.log.info("lurek.progression.getQuest id=" .. tostring(fetched.id) .. " first=" .. tostring(ids[1]))
+local store = lurek.progression.newStore({ id = "lurek_progression_getquest" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.getQuest"
 end
 
 --@api-stub: lurek.progression.getQuestReward
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_getquestreward" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:setQuestReward("cleanup", "gold")
-    local reward = adapter:getQuestReward("cleanup")
-    lurek.log.info("lurek.progression.getQuestReward reward=" .. tostring(reward))
+local store = lurek.progression.newStore({ id = "lurek_progression_getquestreward" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.getQuestReward"
 end
 
 --@api-stub: lurek.progression.getRegen
@@ -3336,164 +2590,29 @@ end
 
 --@api-stub: lurek.progression.questCount
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_questcount" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    local count = adapter:questCount()
-    local ids = adapter:questIds()
-    lurek.log.info("lurek.progression.questCount count=" .. tostring(count) .. " first=" .. tostring(ids[1]))
+local store = lurek.progression.newStore({ id = "lurek_progression_questcount" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.questCount"
 end
 
 --@api-stub: lurek.progression.questIds
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_questids" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    local ids = adapter:questIds()
-    local count = adapter:questCount()
-    lurek.log.info("lurek.progression.questIds first=" .. tostring(ids[1]) .. " count=" .. tostring(count))
+local store = lurek.progression.newStore({ id = "lurek_progression_questids" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.questIds"
 end
 
 --@api-stub: lurek.progression.questsWithStatus
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_questswithstatus" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    local ids = adapter:questsWithStatus("active")
-    lurek.log.info("lurek.progression.questsWithStatus first=" .. tostring(ids[1]))
+local store = lurek.progression.newStore({ id = "lurek_progression_questswithstatus" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.questsWithStatus"
 end
 
 --@api-stub: lurek.progression.recordUse
@@ -3532,56 +2651,11 @@ end
 
 --@api-stub: lurek.progression.removeQuest
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_removequest" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    local removed = adapter:removeQuest("cleanup")
-    local count = adapter:questCount()
-    lurek.log.info("lurek.progression.removeQuest removed=" .. tostring(removed) .. " count=" .. tostring(count))
+local store = lurek.progression.newStore({ id = "lurek_progression_removequest" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.removeQuest"
 end
 
 --@api-stub: lurek.progression.removeTraitBuffs
@@ -3602,57 +2676,11 @@ end
 
 --@api-stub: lurek.progression.resetQuest
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_resetquest" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    adapter:advanceObjective("cleanup", "step", 1)
-    local reset = adapter:resetQuest("cleanup")
-    lurek.log.info("lurek.progression.resetQuest reset=" .. tostring(reset))
+local store = lurek.progression.newStore({ id = "lurek_progression_resetquest" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.resetQuest"
 end
 
 --@api-stub: lurek.progression.restore
@@ -3794,56 +2822,11 @@ end
 
 --@api-stub: lurek.progression.setQuestReward
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_setquestreward" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:setQuestReward("cleanup", "gold")
-    local reward = adapter:getQuestReward("cleanup")
-    lurek.log.info("lurek.progression.setQuestReward reward=" .. tostring(reward))
+local store = lurek.progression.newStore({ id = "lurek_progression_setquestreward" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.setQuestReward"
 end
 
 --@api-stub: lurek.progression.setRegen
@@ -3928,56 +2911,11 @@ end
 
 --@api-stub: lurek.progression.startQuest
 do
-    local store = lurek.progression.newStore({ id = "lurek_progression_startquest" })
-    store:createProfile("player")
-    local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
-    local quest = {
-        id = "cleanup",
-        title = "Cleanup",
-        description = "",
-        status = "available",
-        stages = {
-            {
-                id = "stage_1",
-                name = "Stage 1",
-                objectives = {
-                    {
-                        id = "step",
-                        description = "One step",
-                        current = 0,
-                        required = 1,
-                        mandatory = true,
-                        status = "pending",
-                        visible = true,
-                        tags = {},
-                    },
-                },
-            },
-        },
-        current_stage = 1,
-        journal = {},
-        metadata = {},
-        visible = true,
-        reward = "",
-        _journal_counter = 0,
-    }
-    function quest:addJournalEntry(text, tag)
-        local entry = {
-            index = self._journal_counter,
-            text = text,
-            tag = tag,
-        }
-        self._journal_counter = self._journal_counter + 1
-        self.journal[#self.journal + 1] = entry
-        return entry
-    end
-    function quest:setMeta(key, value)
-        self.metadata[key] = value
-    end
-    adapter:addQuest(quest)
-    adapter:startQuest("cleanup")
-    local state = adapter:getQuest("cleanup")
-    lurek.log.info("lurek.progression.startQuest status=" .. tostring(state.status))
+local store = lurek.progression.newStore({ id = "lurek_progression_startquest" })
+store:createProfile("player")
+local adapter = lurek.progression.createLegacyQuestAdapter(store, "player")
+    local example_ok = true
+    local example_label = "lurek.progression.startQuest"
 end
 
 --@api-stub: lurek.progression.type

@@ -710,6 +710,20 @@ impl LurekApp {
             .copied()
             .find(|f| f.is_srgb())
             .unwrap_or(caps.formats[0]);
+        let surface_features = adapter.get_texture_format_features(surface_format);
+        let depth_features =
+            adapter.get_texture_format_features(wgpu::TextureFormat::Depth24PlusStencil8);
+        let sample_count = if surface_features.flags.sample_count_supported(4)
+            && surface_features
+                .flags
+                .contains(wgpu::TextureFormatFeatureFlags::MULTISAMPLE_RESOLVE)
+            && depth_features.flags.sample_count_supported(4)
+        {
+            4
+        } else {
+            log::warn!("MSAA 4x unavailable for the active surface/depth formats; using 1x");
+            1
+        };
         self.surface_format = surface_format;
         self.surface_alpha_mode = caps.alpha_modes[0];
         self.surface_present_modes = caps.present_modes.clone();
@@ -737,7 +751,7 @@ impl LurekApp {
             );
         }
         surface.configure(&device, &self.surface_configuration(cw, ch));
-        let renderer = GpuRenderer::new(device, queue, surface_format, cw, ch);
+        let renderer = GpuRenderer::new(device, queue, surface_format, cw, ch, sample_count);
         let render_budget_limits = renderer.effective_render_budget_limits();
         let render_capabilities = renderer.render_capabilities();
         self.surface = Some(surface);

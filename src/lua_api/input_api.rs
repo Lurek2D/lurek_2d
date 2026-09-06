@@ -574,14 +574,14 @@ impl LuaUserData for LuaPlayerInputContext {
             },
         );
         // -- removeAction --
-        /// Removes one local action.
+        /// Removes one local action from this player input context.
         /// @param | name | string | Local action name.
         /// @return | boolean | True when an action was removed.
         methods.add_method_mut("removeAction", |_, this, name: String| {
             Ok(this.context.remove_action(&name))
         });
         // -- clearActions --
-        /// Removes every local action.
+        /// Removes every local action from this player input context.
         methods.add_method_mut("clearActions", |_, this, ()| {
             this.context.clear_actions();
             Ok(())
@@ -1509,6 +1509,7 @@ impl LuaUserData for LuaCombo {
         });
         // -- consume --
         /// Marks the latest combo completion as consumed.
+        /// @return | boolean | True when an unconsumed completion was consumed.
         methods.add_method_mut("consume", |_, this, ()| {
             let pending = this.completed_at_ms.is_some() && !this.consumed;
             this.consumed = true;
@@ -3425,6 +3426,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let rc = rec_state.clone();
     // -- startPlayback --
     /// Starts playback of the loaded recording. `opts.mode` may be `frame`, `fixed`, or `realtime`.
+    /// @param | opts | table? | Optional playback options; `mode` selects the timing mode.
     input_tbl.set(
         "startPlayback",
         lua.create_function(move |_, opts: Option<LuaTable>| {

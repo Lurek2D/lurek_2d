@@ -960,7 +960,7 @@ impl LuaUserData for LuaCursorManager {
         /// Registers a legacy context rule or a v2 runtime rule table for hover, click, release, leave, wheel, or context state resolution.
         /// @param | context_or_rule | string|table | Legacy context name, or a v2 rule table with `priority`, `event`, `context`, `target`, `state`, `effect`, and `duration_ms`.
         /// @param | cursor_name? | string | System cursor name used by the legacy `(context, cursor_name)` shorthand.
-        /// @return | integer? | Rule id for v2 table calls, or `nil` for the legacy shorthand.
+        /// @return | integer | Rule id for v2 table calls, or `nil` for the legacy shorthand.
         methods.add_method_mut("addRule", |_lua, this, args: LuaMultiValue| {
             let mut iter = args.into_iter();
             match (iter.next(), iter.next(), iter.next()) {
@@ -1009,7 +1009,7 @@ impl LuaUserData for LuaCursorManager {
         });
         // -- getLastHit --
         /// Returns the most recent semantic hover hit seen by the runtime cursor.
-        /// @return | table? | Last hover hit table, or `nil` when nothing is currently resolved.
+        /// @return | table | Last hover hit table, or `nil` when nothing is currently resolved.
         /// @field | module | string | Source module name such as `"globe"` or `"raycaster"`.
         /// @field | kind | string | Hit kind such as `"marker"`, `"wall"`, `"sprite"`, or a source-specific label.
         /// @field | surface | string | Surface label such as `"surface"`, `"wall"`, `"floor"`, or `"ceiling"`.
@@ -1057,7 +1057,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
         // -- setVisible --
-        /// Shows or hides the runtime cursor.
+        /// Shows or hides the runtime cursor for the active application window.
         /// @param | visible | boolean | True to show the cursor, or false to hide it.
         methods.add_method("setVisible", |_, this, visible: bool| {
             this.state.borrow_mut().cursor_runtime.set_visible(visible);

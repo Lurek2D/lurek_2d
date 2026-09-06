@@ -88,9 +88,7 @@ describe("binary stress: compression throughput", function()
         expect_type("string", compressed)
         expect_true(#compressed > 0, "compressed chunk stream has content")
     end)
-
-    -- @stress lurek.binary.decompressChunks
-    it("restores chunk payload order after chunk compression", function()
+    local function __audit_stress_1()
         local chunks = {}
         for i = 1, 250 do
             chunks[i] = string.format("seg_%04d", i)
@@ -98,6 +96,12 @@ describe("binary stress: compression throughput", function()
         local compressed = lurek.binary.compressChunks("zlib", chunks)
         local restored = lurek.binary.decompressChunks("zlib", compressed)
         expect_equal(table.concat(chunks), restored, "chunk stream roundtrip preserves order")
+    end
+
+
+    -- @stress lurek.binary.decompressChunks
+    it("restores chunk payload order after chunk compression", function()
+        __audit_stress_1()
     end)
 end)
 

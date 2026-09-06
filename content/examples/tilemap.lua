@@ -875,24 +875,13 @@ end
 --@api: lurek.tilemap.fromLDtk
 do
 
-    local ldtkJson = '{"levels":[{"identifier":"Level_0","layerInstances":[]}]}'
-    local map, err = lurek.tilemap.fromLDtk(ldtkJson)
-    if map then
-        lurek.log.info("LDtk map type = " .. map:type())
-    else
-        local err_tbl = err or {}
-        local code = err_tbl["code"] or "unknown"
-        local message = err_tbl["message"] or "unknown"
-        lurek.log.info("LDtk import error: " .. code .. " - " .. message)
-    end
-    local named, named_err = lurek.tilemap.fromLDtk(ldtkJson, "Level_0")
-    if named then
-        lurek.log.info("named level loaded")
-    else
-        local err_tbl = named_err or {}
-        local code = err_tbl["code"] or "unknown"
-        lurek.log.info("named level import error: " .. code)
-    end
+local ldtkJson = '{"levels":[{"identifier":"Level_0","layerInstances":[]}]}'
+local map, err = lurek.tilemap.fromLDtk(ldtkJson)
+local named, named_err = lurek.tilemap.fromLDtk(ldtkJson, "Level_0")
+local map_type = map and map:type() or "error"
+local named_status = named and "loaded" or tostring(named_err and named_err["code"] or "error")
+lurek.log.info("LDtk map type = " .. map_type)
+lurek.log.info("LDtk named level = " .. named_status)
 end
 
 

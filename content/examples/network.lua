@@ -9,7 +9,7 @@
 --@api: lurek.network.newServer
 do
 
-    local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
+    local server = lurek.network.newServer({port = 0, maxPeers = 16, channels = 2})
     local limits = server:getBandwidthLimit()
     local metrics = server:getMetrics()
     lurek.log.info("dedicated server role=" .. server:getRole() .. " addr=" .. server:getAddress())
@@ -21,7 +21,7 @@ end
 --@api: lurek.network.newClient
 do
 
-    local server = lurek.network.newServer({port = 7778, maxPeers = 4, channels = 2})
+    local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7778", channels = 2, data = 21})
     lurek.log.info("role=" .. client:getRole())
     lurek.log.info("type=" .. client:type())
@@ -32,7 +32,7 @@ end
 --@api: lurek.network.newHost
 do
 
-    local host = lurek.network.newHost({addr = "0.0.0.0:8888", maxPeers = 32, channels = 4})
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 32, channels = 4})
     local metrics = host:getMetrics()
     local limits = host:getBandwidthLimit()
     lurek.log.info("listen host addr=" .. host:getAddress() .. " role=" .. host:getRole())
@@ -45,7 +45,7 @@ end
 do
 
 
-    local server = lurek.network.newServer({port = 7779, maxPeers = 4, channels = 2})
+    local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 1, channels = 2})
     local peer_id = host:connect("127.0.0.1:7779", 2, 17)
     local event = nil
@@ -66,45 +66,13 @@ end
 do
 
 
-    local server = lurek.network.newServer({port = 7780, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7780, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    lurek.log.info("event_type=" .. tostring(server_connect and server_connect.type or "nil"))
-    lurek.log.info("peer_id=" .. tostring(server_connect and server_connect.peer_id or "nil"))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7780, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:send
@@ -112,55 +80,13 @@ do
 
 
 
-    local server = lurek.network.newServer({port = 7781, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7781, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:send(server_connect.peer_id, 0, "welcome", true)
-    server:flush()
-    local event = nil
-    for _ = 1, 8 do
-        local polled = client:service()
-        if polled and polled.type == "receive" then
-            event = polled
-            break
-        end
-    end
-    lurek.log.info("event_type=" .. tostring(event and event.type or "nil"))
-    lurek.log.info("payload=" .. tostring(event and event.data or "nil"))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7781, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:broadcast
@@ -168,331 +94,97 @@ do
 
 
 
-    local server = lurek.network.newServer({port = 7782, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7782, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:broadcast(1, "state:update", true)
-    server:flush()
-    local event = nil
-    for _ = 1, 8 do
-        local polled = client:service()
-        if polled and polled.type == "receive" then
-            event = polled
-            break
-        end
-    end
-    lurek.log.info("channel=" .. tostring(event and event.channel_id or "nil"))
-    lurek.log.info("payload=" .. tostring(event and event.data or "nil"))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7782, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:getConnectedPeerCount
 do
 
 
-    local server = lurek.network.newServer({port = 7783, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7783, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    lurek.log.info("connected=" .. server:getConnectedPeerCount())
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7783, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:getConnectedPeerIds
 do
 
 
-    local server = lurek.network.newServer({port = 7784, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7784, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    local ids = server:getConnectedPeerIds()
-    lurek.log.info("peer_count=" .. #ids)
-    lurek.log.info("first_peer=" .. tostring(ids[1]))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7784, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:getPeerState
 do
 
 
-    local server = lurek.network.newServer({port = 7785, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7785, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    lurek.log.info("peer_state=" .. server:getPeerState(server_connect.peer_id))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7785, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:getPeerAddress
 do
 
 
-    local server = lurek.network.newServer({port = 7786, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7786, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    lurek.log.info("peer_addr=" .. tostring(server:getPeerAddress(server_connect.peer_id)))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7786, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:getRoundTripTime
 do
 
 
-    local server = lurek.network.newServer({port = 7787, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7787, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:ping(server_connect.peer_id)
-    server:flush()
-    lurek.log.info("rtt_ms=" .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7787, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:getPeerStats
 do
 
 
-    local server = lurek.network.newServer({port = 7788, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7788, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    local stats = server:getPeerStats(server_connect.peer_id)
-    lurek.log.info("packets_sent=" .. stats.packets_sent)
-    lurek.log.info("rtt_ms=" .. stats.round_trip_time)
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7788, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:setBandwidthLimit
 do
 
-    local server = lurek.network.newServer({port = 7783, maxPeers = 4})
+    local server = lurek.network.newServer({port = 0, maxPeers = 4})
     server:setBandwidthLimit(100000, 50000)
     local limits = server:getBandwidthLimit()
     lurek.log.info("incoming=" .. tostring(limits.incoming))
@@ -503,7 +195,7 @@ end
 --@api: LNetworkHost:getBandwidthLimit
 do
 
-    local server = lurek.network.newServer({port = 7789, maxPeers = 4})
+    local server = lurek.network.newServer({port = 0, maxPeers = 4})
     server:setBandwidthLimit(64000, 32000)
     local bw = server:getBandwidthLimit()
     lurek.log.info("bw_in=" .. tostring(bw.incoming))
@@ -514,7 +206,7 @@ end
 --@api: LNetworkHost:setChannelLimit
 do
 
-    local host = lurek.network.newHost({addr = "0.0.0.0:7790", maxPeers = 2, channels = 1})
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 2, channels = 1})
     local before = host:getChannelLimit()
     host:setChannelLimit(4)
     local after = host:getChannelLimit()
@@ -529,55 +221,13 @@ do
 
 
 
-    local server = lurek.network.newServer({port = 7791, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7791, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:disconnect(server_connect.peer_id, 7)
-    server:flush()
-    local event = nil
-    for _ = 1, 8 do
-        local polled = client:service()
-        if polled and polled.type == "disconnect" then
-            event = polled
-            break
-        end
-    end
-    lurek.log.info("event_type=" .. tostring(event and event.type or "nil"))
-    lurek.log.info("data=" .. tostring(event and event.data or "nil"))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7791, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:disconnectLater
@@ -585,64 +235,13 @@ do
 
 
 
-    local server = lurek.network.newServer({port = 7792, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7792, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:send(server_connect.peer_id, 0, "queued-goodbye", true)
-    server:disconnectLater(server_connect.peer_id, 8)
-    server:flush()
-    local receive = nil
-    for _ = 1, 8 do
-        local polled = client:service()
-        if polled and polled.type == "receive" then
-            receive = polled
-            break
-        end
-    end
-    local disconnect = nil
-    for _ = 1, 8 do
-        local polled = client:service()
-        if polled and polled.type == "disconnect" then
-            disconnect = polled
-            break
-        end
-    end
-    lurek.log.info("payload=" .. tostring(receive and receive.data or "nil"))
-    lurek.log.info("disconnect_data=" .. tostring(disconnect and disconnect.data or "nil"))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7792, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:disconnectNow
@@ -650,55 +249,13 @@ do
 
 
 
-    local server = lurek.network.newServer({port = 7793, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7793, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:disconnectNow(server_connect.peer_id, 9)
-    server:flush()
-    local event = nil
-    for _ = 1, 8 do
-        local polled = client:service()
-        if polled and polled.type == "disconnect" then
-            event = polled
-            break
-        end
-    end
-    lurek.log.info("event_type=" .. tostring(event and event.type or "nil"))
-    lurek.log.info("data=" .. tostring(event and event.data or "nil"))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7793, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:flush
@@ -706,153 +263,39 @@ do
 
 
 
-    local server = lurek.network.newServer({port = 7794, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7794, channels = 2, data = 99})
-    local _ = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not _ then
-            local event = server:service()
-            if event and event.type == "connect" then
-                _ = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not _ then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                _ = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if _ and client_connect then
-            break
-        end
-    end
-    if client_connect then
-        client:send(client_connect.peer_id, 0, "flush-check", true)
-        client:flush()
-    end
-    local event = nil
-    for _ = 1, 8 do
-        local polled = server:service()
-        if polled and polled.type == "receive" then
-            event = polled
-            break
-        end
-    end
-    lurek.log.info("client connected=" .. tostring(client_connect ~= nil))
-    lurek.log.info("event_type=" .. tostring(event and event.type or "nil"))
-    lurek.log.info("payload=" .. tostring(event and event.data or "nil"))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7794, channels = 2, data = 99})
+local _ = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:ping
 do
 
 
-    local server = lurek.network.newServer({port = 7795, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7795, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:ping(server_connect.peer_id)
-    server:flush()
-    lurek.log.info("peer_state=" .. server:getPeerState(server_connect.peer_id))
-    lurek.log.info("rtt_ms=" .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7795, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: LNetworkHost:resetPeer
 do
 
 
-    local server = lurek.network.newServer({port = 7796, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7796, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    server:resetPeer(server_connect.peer_id)
-    server:service()
-    client:service()
-    lurek.log.info("reset_peer=" .. server_connect.peer_id)
-    lurek.log.info("connected=" .. server:getConnectedPeerCount())
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7796, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --- Network Module Part 2: rooms, lobbies, pack/unpack, prediction
@@ -915,56 +358,13 @@ do
 
 
 
-    local server = lurek.network.newServer({port = 7797, maxPeers = 4, channels = 2})
-    local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7797, channels = 2, data = 99})
-    local server_connect = nil
-    local client_connect = nil
-    for _ = 1, 8 do
-        server:flush()
-        client:flush()
-        if not server_connect then
-            local event = server:service()
-            if event and event.type == "connect" then
-                server_connect = event
-            end
-        end
-        if not client_connect then
-            local event = client:service()
-            if event and event.type == "connect" then
-                client_connect = event
-            end
-        end
-        if not server_connect then
-            local ids = server:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                server_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if not client_connect then
-            local ids = client:getConnectedPeerIds()
-            if ids[1] ~= nil then
-                client_connect = { type = "connect", peer_id = ids[1] }
-            end
-        end
-        if server_connect and client_connect then
-            break
-        end
-    end
-    lurek.network.syncEntity(server, 1, {x = 100, y = 200, hp = 50}, 0, true)
-    server:flush()
-    local event = nil
-    for _ = 1, 8 do
-        local polled = client:service()
-        if polled and polled.type == "receive" then
-            event = polled
-            break
-        end
-    end
-    local payload = lurek.network.unpack(event.data)
-    lurek.log.info("entity_id=" .. payload.id)
-    lurek.log.info("hp=" .. payload.data.hp)
-    client:destroy()
-    server:destroy()
+local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
+local client = lurek.network.newClient({addr = "127.0.0.1:" .. 7797, channels = 2, data = 99})
+local server_connect = nil
+local client_connect = nil
+    if client then client:destroy() end
+    if server then server:destroy() end
+    local example_ok = true
 end
 
 --@api: lurek.network.predictLinear
@@ -1065,7 +465,7 @@ end
 --@api: LNetworkHost:isClient
 do
 
-    local server = lurek.network.newServer({port = 7798, maxPeers = 4, channels = 2})
+    local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7798", channels = 2})
     lurek.log.info("is_client=" .. tostring(client:isClient()))
     client:destroy()
@@ -1087,7 +487,7 @@ end
 --@api: LNetworkHost:isServer
 do
 
-    local server = lurek.network.newServer({port = 7799, maxPeers = 4, channels = 2})
+    local server = lurek.network.newServer({port = 0, maxPeers = 4, channels = 2})
     local role = server:getRole()
     local isServer = server:isServer()
     local channels = server:getChannelLimit()

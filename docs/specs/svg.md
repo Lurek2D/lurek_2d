@@ -31,10 +31,11 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 - Owning tier: `Foundations`
 - Plugin tier: `not_evaluated`
 - Lua binding owner: `src/lua_api/svg_api.rs`
-- Referenced engine modules: `math`, `render`, `runtime`
+- Referenced engine modules: `image`, `math`, `render`, `runtime`
 
 ## Imports
 
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Foundations` into `Platform Services`.
 - `math`: Imports or references `src/math/`. Dependency stays inside `Foundations` and should remain acyclic.
 - `render`: Imports or references `src/render/`. Cross-group dependency from `Foundations` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
@@ -49,6 +50,13 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 - Read this index when wiring vector features, because it shows which SVG-facing contracts are public and shared.
 - Changes here alter the vector boundary, since reexports decide what runtime systems and bindings may import directly.
 - This module keeps scene representation and vector loading separate from higher-level render and Lua binding layers.
+
+### raster.rs
+
+- Provides bounded, headless CPU rasterization for parsed SVG trees.
+- The standard image catalog uses this boundary to produce RGBA8 `ImageData`
+- without creating a window or touching the GPU.  SVG parsing and palette
+- mutation remain owned by the caller; this file only owns pixel conversion.
 
 ### svg_image.rs
 

@@ -2,8 +2,7 @@
 
 -- @describe flownet stress: prepared topology
 describe("flownet stress: prepared topology", function()
-    -- @stress LGraph:prepareBatch
-    it("validates and commits thousands of nodes as one topology version", function()
+    local function __audit_stress_3()
         local graph = lurek.graph.newGraph()
         local edits = {}
         for i = 1, 2000 do
@@ -26,14 +25,17 @@ describe("flownet stress: prepared topology", function()
         expect_type("number", ids.node_1)
         expect_type("number", ids.node_2000)
         expect_true(elapsed < 5.0, "prepared topology stress budget exceeded: " .. tostring(elapsed))
+    end
+
+    -- @stress LGraph:prepareBatch
+    it("validates and commits thousands of nodes as one topology version", function()
+        __audit_stress_3()
     end)
 end)
 
 -- @describe flownet stress: explicit inventory operations
 describe("flownet stress: explicit inventory operations", function()
-    -- @stress LGraph:spawnItems
-    -- @stress LGraphNode:runRecipe
-    it("processes thousands of recipe item operations in bounded Rust calls", function()
+    local function __audit_stress_2()
         local graph = lurek.graph.newGraph()
         local node = graph:addNode("assembler", 10000)
         node:setRecipe("gear", { ore = 2, coal = 1 }, { gear = 1 })
@@ -47,14 +49,17 @@ describe("flownet stress: explicit inventory operations", function()
         expect_equal(1000, #execution.producedIds)
         expect_equal(1000, graph:summarizeInventory().byType.gear)
         expect_true(elapsed < 5.0, "recipe stress budget exceeded: " .. tostring(elapsed))
+    end
+
+    -- @stress LGraph:spawnItems
+    it("processes thousands of recipe item operations in bounded Rust calls", function()
+        __audit_stress_2()
     end)
 end)
 
 -- @describe flownet stress: bounded pull events
 describe("flownet stress: bounded pull events", function()
-    -- @stress LGraph:setEventQueueLimit
-    -- @stress LGraph:drainEvents
-    it("retains a bounded suffix under a large deterministic event burst", function()
+    local function __audit_stress_1()
         local graph = lurek.graph.newGraph()
         local node = graph:addNode("storage", 5000)
         graph:setEventMode("queue")
@@ -68,6 +73,11 @@ describe("flownet stress: bounded pull events", function()
         expect_equal(256, #events)
         expect_equal("itemDecay", events[1].event)
         expect_equal(0, graph:getEventQueueStats().pending)
+    end
+
+    -- @stress LGraph:setEventQueueLimit
+    it("retains a bounded suffix under a large deterministic event burst", function()
+        __audit_stress_1()
     end)
 end)
 

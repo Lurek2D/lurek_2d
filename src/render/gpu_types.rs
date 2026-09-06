@@ -12,7 +12,7 @@ use bytemuck::{Pod, Zeroable};
 
 /// Flat-shaded vertex with `position` and per-vertex `color`.
 #[repr(C)]
-#[derive(Copy, Clone, Pod, Zeroable)]
+#[derive(Copy, Clone, Debug, Pod, Zeroable)]
 pub struct ColorVertex {
     /// NDC/screen-space XY position.
     pub(crate) position: [f32; 2],
@@ -215,7 +215,11 @@ pub struct PreparedDraw {
     pub instance_count: u32,
 }
 
-/// Packed 2D instance transform data: 3 columns of `vec2<f32>`.
+/// Packed 2D instance transform data plus an RGBA multiplier.
+///
+/// The tint is deliberately part of the retained instance stream rather than the
+/// shape mesh.  A compiled shape can therefore be recoloured without rebuilding or
+/// re-uploading its static vertex/index buffers.
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Pod, Zeroable)]
 pub struct InstanceData {
@@ -225,6 +229,8 @@ pub struct InstanceData {
     pub col1: [f32; 2],
     /// Column 2 of transformation matrix (translation).
     pub col2: [f32; 2],
+    /// Per-instance RGBA multiplier.
+    pub tint: [f32; 4],
 }
 
 impl Default for InstanceData {
@@ -233,6 +239,7 @@ impl Default for InstanceData {
             col0: [1.0, 0.0],
             col1: [0.0, 1.0],
             col2: [0.0, 0.0],
+            tint: [1.0, 1.0, 1.0, 1.0],
         }
     }
 }
@@ -243,6 +250,7 @@ impl From<crate::math::Mat3> for InstanceData {
             col0: [m.m[0][0], m.m[1][0]],
             col1: [m.m[0][1], m.m[1][1]],
             col2: [m.m[0][2], m.m[1][2]],
+            tint: [1.0, 1.0, 1.0, 1.0],
         }
     }
 }

@@ -245,6 +245,7 @@ impl ProvinceMapPipeline {
         device: &wgpu::Device,
         queue: &wgpu::Queue,
         target_format: wgpu::TextureFormat,
+        sample_count: u32,
     ) -> Self {
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("province_map_shader"),
@@ -374,7 +375,7 @@ impl ProvinceMapPipeline {
                 conservative: false,
             },
             depth_stencil: None,
-            multisample: wgpu::MultisampleState::default(),
+            multisample: crate::render::gpu_pipeline::multisample_state(sample_count),
             multiview: None,
             cache: None,
         });

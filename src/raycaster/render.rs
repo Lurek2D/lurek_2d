@@ -10,7 +10,7 @@
 use crate::math::Vec2;
 use crate::raycaster::scene::{
     RaycasterBackground, RaycasterMaterial, RaycasterOverlayEffect, RaycasterParticle,
-    RaycasterScene,
+    RaycasterScene, RaycasterSkyQuad,
 };
 use crate::render::renderer::{
     BlendMode, DrawMode, GradientDirection, ParticleInstance, RenderCommand,
@@ -171,6 +171,7 @@ fn push_fullscreen_material(
 fn push_background_commands(
     cmds: &mut Vec<RenderCommand>,
     background: &RaycasterBackground,
+    sky_quads: &[RaycasterSkyQuad],
     pass: FullscreenPassContext,
     current_blend: &mut BlendMode,
     current_shader: &mut Option<ShaderKey>,
@@ -221,6 +222,34 @@ fn push_background_commands(
                 texture_key: *texture_key,
                 color: *tint,
             });
+        }
+        RaycasterBackground::LayeredSky {
+            top,
+            bottom,
+            layers: _,
+        } => {
+            push_set_blend(cmds, current_blend, BlendMode::Alpha);
+            push_set_shader(cmds, current_shader, pass.fallback_shader);
+            cmds.push(RenderCommand::DrawGradientRect {
+                x: 0.0,
+                y: 0.0,
+                w: pass.width,
+                h: pass.height,
+                color1: *top,
+                color2: *bottom,
+                direction: GradientDirection::Vertical,
+            });
+            for quad in sky_quads {
+                push_set_blend(cmds, current_blend, quad.blend_mode);
+                push_set_shader(cmds, current_shader, pass.fallback_shader);
+                cmds.push(RenderCommand::DrawTexturedQuad {
+                    corners: quad.corners,
+                    uvs: quad.uvs,
+                    corner_w: quad.corner_w,
+                    texture_key: quad.texture_key,
+                    color: quad.color,
+                });
+            }
         }
         RaycasterBackground::Shader { material } => push_fullscreen_material(
             cmds,
@@ -427,6 +456,7 @@ impl RaycasterScene {
             push_background_commands(
                 &mut cmds,
                 background,
+                &self.sky_quads,
                 FullscreenPassContext {
                     width: self.screen_width,
                     height: self.screen_height,

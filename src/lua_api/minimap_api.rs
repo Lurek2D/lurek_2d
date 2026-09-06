@@ -602,6 +602,10 @@ impl LuaUserData for LuaMinimap {
         );
         // -- setCenterFromTileMapWorld --
         /// Converts tilemap world coordinates into one-based tile coordinates and centers this minimap.
+        /// @param | tilemap | LTileMap | Tilemap whose world coordinates are queried.
+        /// @param | wx | number | World X coordinate.
+        /// @param | wy | number | World Y coordinate.
+        /// @return | number, number | One-based tile center coordinates.
         methods.add_method_mut(
             "setCenterFromTileMapWorld",
             |_, this, (tilemap_ud, wx, wy): (LuaAnyUserData, f32, f32)| {
@@ -617,6 +621,12 @@ impl LuaUserData for LuaMinimap {
         );
         // -- setViewportFromTileMapWorld --
         /// Converts a tilemap world rectangle into a minimap viewport rectangle.
+        /// @param | tilemap | LTileMap | Tilemap whose world rectangle is queried.
+        /// @param | x | number | World rectangle X coordinate.
+        /// @param | y | number | World rectangle Y coordinate.
+        /// @param | w | number | World rectangle width.
+        /// @param | h | number | World rectangle height.
+        /// @return | number, number, number, number | Tile viewport rectangle.
         methods.add_method_mut(
             "setViewportFromTileMapWorld",
             |_, this, (tilemap_ud, x, y, w, h): (LuaAnyUserData, f32, f32, f32, f32)| {
@@ -638,6 +648,8 @@ impl LuaUserData for LuaMinimap {
         );
         // -- setLayerStyle --
         /// Applies common raw-layer style fields: visible, alpha, blend, and colors.
+        /// @param | layer | integer | Zero-based raw layer index.
+        /// @param | style | table | Style fields to apply.
         methods.add_method_mut(
             "setLayerStyle",
             |_, this, (layer, style): (usize, LuaTable)| {
@@ -738,6 +750,10 @@ impl LuaUserData for LuaMinimap {
         );
         // -- syncTileLightLayer --
         /// Copies computed tilelight luma into a minimap raw byte layer.
+        /// @param | light | LTileLightMap | Tilelight map supplying luma values.
+        /// @param | layer | integer | Zero-based raw layer index.
+        /// @param | opts | table? | Optional z, scale, and style values.
+        /// @return | table | Normalized raw layer cell values.
         methods.add_method_mut(
             "syncTileLightLayer",
             |lua, this, (light_ud, layer, opts): (LuaAnyUserData, usize, Option<LuaTable>)| {
@@ -783,6 +799,10 @@ impl LuaUserData for LuaMinimap {
         );
         // -- syncTileAwarenessFog --
         /// Copies explored/visible masks from `LTileAwareness` into minimap fog data.
+        /// @param | awareness | LTileAwareness | Awareness map supplying visibility masks.
+        /// @param | player | string | Player or subject identifier.
+        /// @param | opts | table? | Optional hidden and explored byte values.
+        /// @return | table | Normalized fog layer cell values.
         methods.add_method_mut(
             "syncTileAwarenessFog",
             |lua,

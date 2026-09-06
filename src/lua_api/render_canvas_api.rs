@@ -65,6 +65,7 @@ pub(super) fn register_canvas_api(
     let s = state.clone();
     // -- setCanvas --
     /// Redirects subsequent drawing to a canvas, or nil for the screen.
+    /// @param | ud | userdata? | Canvas handle, or nil to draw to the screen.
     graphics.set(
         "setCanvas",
         lua.create_function(move |_, ud: Option<LuaAnyUserData>| {
@@ -90,6 +91,7 @@ pub(super) fn register_canvas_api(
     let s = state.clone();
     // -- getCanvas --
     /// Returns the active canvas, or nil when drawing to the screen.
+    /// @return | LCanvas | Active canvas handle, or nil for the screen.
     graphics.set(
         "getCanvas",
         lua.create_function(move |_, ()| {
@@ -102,6 +104,8 @@ pub(super) fn register_canvas_api(
     let s = state.clone();
     // -- getCanvasSize --
     /// Returns the pixel dimensions of a canvas.
+    /// @param | ud | userdata | Canvas handle to inspect.
+    /// @return | number, number | Pixel width and height.
     graphics.set(
         "getCanvasSize",
         lua.create_function(move |_, ud: LuaAnyUserData| {

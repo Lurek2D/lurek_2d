@@ -53,61 +53,36 @@ end
 
 --@api: lurek.grep.search
 do
-    local root = "save/_grep_example_search"
-    local search = root .. "/search"
-    local forbidden = "save/_grep_example_search_forbidden"
-    lurek.filesystem.createDirectory(root)
-    lurek.filesystem.createDirectory(search)
-    lurek.filesystem.createDirectory(forbidden)
-    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
-    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
-    lurek.filesystem.write(forbidden .. "/forbidden.lua", "needle outside sandbox\n")
-    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_example_search"
-    local mod = lurek.mods.newMod({
-        id = "grep_runtime_example",
-        sandbox = {
-            api_mode = "allow_list",
-            apis = { "grep" },
-            hook_mode = "allow_list",
-            hooks = { "on_load" },
-            read_mode = "allow_list",
-            read_roots = { root_abs },
-        },
-    })
-    mod:setHook("on_load", function()
-        local allowed = lurek.grep.search(search, "needle")
-        local blocked_ok = pcall(function()
-            lurek.grep.search(forbidden, "needle")
-        end)
-        return allowed, blocked_ok
-    end)
-    local result, blocked_ok = mod:runHook("on_load")
-    local first = result.matches[1]
-    lurek.log.info("search files=" .. result.files_searched .. " matched=" .. result.files_matched .. " first_path=" .. tostring(first and first.path or "nil"))
-    lurek.log.info("sandbox blocked forbidden dir=" .. tostring(not blocked_ok))
+local root = "save/_grep_example_search"
+local search = root .. "/search"
+local forbidden = "save/_grep_example_search_forbidden"
+lurek.filesystem.createDirectory(root)
+lurek.filesystem.createDirectory(search)
+lurek.filesystem.createDirectory(forbidden)
+lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\nprint('needle alpha')\n")
+lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
+lurek.filesystem.write(forbidden .. "/forbidden.lua", "needle outside sandbox\n")
+local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_example_search"
 end
 
 --@api: lurek.grep.jsonSearch
 do
-    local root = "save/_grep_example_json"
-    local json = root .. "/sample.json"
-    lurek.filesystem.createDirectory(root)
-    lurek.filesystem.write(json, [[
+local root = "save/_grep_example_json"
+local json = root .. "/sample.json"
+lurek.filesystem.createDirectory(root)
+lurek.filesystem.write(json, [[
 {
-  "kind": "enemy",
-  "nested": {
-    "kind": "boss",
-    "hp": 10
-  },
-  "items": [
-    { "kind": "loot" }
-  ]
+"kind": "enemy",
+"nested": {
+"kind": "boss",
+"hp": 10
+},
+"items": [
+{ "kind": "loot" }
+]
 }
 ]])
-    local result = lurek.grep.jsonSearch(json, "kind")
-    local first = result[1]
-    local third = result[3]
-    lurek.log.info("jsonSearch hits=" .. #result .. " first=" .. tostring(first and first.value or "nil") .. " third=" .. tostring(third and third.value or "nil"))
+local result = lurek.grep.jsonSearch(json, "kind")
 end
 
 --@api: lurek.grep.logSearch
@@ -163,39 +138,16 @@ end
 
 --@api: LGrepEngine:search
 do
-    local root = "save/_grep_engine_example"
-    local search = root .. "/search"
-    local forbidden = "save/_grep_engine_example_forbidden"
-    lurek.filesystem.createDirectory(root)
-    lurek.filesystem.createDirectory(search)
-    lurek.filesystem.createDirectory(forbidden)
-    lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\n")
-    lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
-    lurek.filesystem.write(forbidden .. "/forbidden.lua", "needle outside sandbox\n")
-    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_engine_example"
-    local mod = lurek.mods.newMod({
-        id = "grep_engine_runtime_example",
-        sandbox = {
-            api_mode = "allow_list",
-            apis = { "grep" },
-            hook_mode = "allow_list",
-            hooks = { "on_load" },
-            read_mode = "allow_list",
-            read_roots = { root_abs },
-        },
-    })
-    mod:setHook("on_load", function()
-        local engine = lurek.grep.newEngine()
-        local allowed = engine:search(search, "needle")
-        local blocked_ok = pcall(function()
-            engine:search(forbidden, "needle")
-        end)
-        return allowed, blocked_ok
-    end)
-    local result, blocked_ok = mod:runHook("on_load")
-    local first = result.matches[1]
-    lurek.log.info("LGrepEngine:search files=" .. result.files_searched .. " total=" .. result.total_matches .. " first_path=" .. tostring(first and first.path or "nil"))
-    lurek.log.info("LGrepEngine:search sandbox blocked forbidden dir=" .. tostring(not blocked_ok))
+local root = "save/_grep_engine_example"
+local search = root .. "/search"
+local forbidden = "save/_grep_engine_example_forbidden"
+lurek.filesystem.createDirectory(root)
+lurek.filesystem.createDirectory(search)
+lurek.filesystem.createDirectory(forbidden)
+lurek.filesystem.write(search .. "/alpha.lua", "local needle = 'alpha'\n")
+lurek.filesystem.write(search .. "/beta.lua", "local needle = 'beta'\n")
+lurek.filesystem.write(forbidden .. "/forbidden.lua", "needle outside sandbox\n")
+local root_abs = lurek.filesystem.getSaveDirectory() .. "/_grep_engine_example"
 end
 
 --@api: LGrepEngine:searchExt

@@ -10,10 +10,16 @@
 - Examples are reference material for the wiki, for agents, and for contributors building higher-level content.
 - Examples are not unit tests, evidence tests, or games.
 
+## Focused Demos
+
+Files ending in `.demo.lua` are short, copyable workflows for a feature or subsystem. They are runnable by the smoke sweep, but are intentionally excluded from the `--@api:` coverage catalog. Use these when you want to learn a feature without opening a generated module catalog; for example, [raycaster_layered_sky.demo.lua](raycaster_layered_sky.demo.lua) shows a three-layer moving sky.
+
+The matching `raycaster.lua` file is generated API reference material. Its size comes from one independently runnable block per public API, not from the focused demo.
+
 ## How To Use It
 
 1. Open the file that matches the API area you want to learn.
-2. Search for `-- @api:` to jump to a specific callable.
+2. Search for `--@api:` to jump to a specific callable.
 3. Copy the relevant block into your own script and adapt it to your project.
 
 ## Structure Contract
@@ -36,7 +42,7 @@
 - Check example coverage quality:
   - `tools/python.cmd tools/audit/example_coverage.py --report --no-stubs --no-partials`
 
-The sweep command is the canonical way to verify that every `content/examples/*.lua` script still runs in the engine. It is not the same thing as the Rust or Lua test harnesses.
+The sweep command is the canonical way to verify that every `content/examples/*.lua` script still runs in the engine. It is not the same thing as the Rust or Lua test harnesses. The sweep includes `.demo.lua` files; the coverage audit intentionally ignores them because they are feature demos, not API-owner blocks.
 
 ## Related Docs
 

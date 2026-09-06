@@ -10,10 +10,12 @@
 
 use super::error::TileMapError;
 use super::limits::{checked_layer_cells, TileMapLimits};
+use super::tiled::{TiledObjectShape, TiledPoint, TiledPropertyValue};
 use crate::log_msg;
 use crate::runtime::log_messages::{TL01, TL02};
 use base64::Engine as _;
 use flate2::read::{GzDecoder, ZlibDecoder};
+use std::collections::HashMap;
 use std::fmt;
 use std::io::Read;
 use std::path::{Component, Path, PathBuf};
@@ -186,6 +188,10 @@ pub struct TmxObjectLayer {
     pub name: String,
     /// Visibility flag.
     pub visible: bool,
+    /// Horizontal draw offset in pixels.
+    pub offset_x: f32,
+    /// Vertical draw offset in pixels.
+    pub offset_y: f32,
     /// All objects in this layer.
     pub objects: Vec<TmxObject>,
 }
@@ -209,6 +215,12 @@ pub struct TmxObject {
     pub height: f32,
     /// Tile GID when the object is a tile object; `0` for shape objects.
     pub gid: u32,
+    /// Object rotation in degrees.
+    pub rotation: f32,
+    /// Polygon, point, or unsupported shape data from the object element.
+    pub shape: TiledObjectShape,
+    /// Typed custom properties keyed by their Tiled property names.
+    pub properties: HashMap<String, TiledPropertyValue>,
 }
 /// A single map layer, either tile data or objects.
 #[derive(Debug, Clone)]
@@ -662,13 +674,43 @@ fn parse_object_layer(
 ) -> Result<TmxObjectLayer, String> {
     let name = node.attribute("name").unwrap_or("").to_string();
     let visible = node.attribute("visible") != Some("0");
+    let offset_x = node
+        .attribute("offsetx")
+        .and_then(|value| value.parse::<f32>().ok())
+        .unwrap_or(0.0);
+    let offset_y = node
+        .attribute("offsety")
+        .and_then(|value| value.parse::<f32>().ok())
+        .unwrap_or(0.0);
     let mut objects = Vec::new();
+    let mut total_points = 0usize;
     for child in node.children() {
         if child.has_tag_name("object") {
-            if objects.len() as u64 >= options.limits.max_tile_operation_cells {
+            if objects.len() >= options.limits.max_objects {
                 return Err(format!(
                     "object layer '{}': object count exceeds limit {}",
-                    name, options.limits.max_tile_operation_cells
+                    name, options.limits.max_objects
+                ));
+            }
+            let point_count = child
+                .children()
+                .find(|node| node.has_tag_name("polygon"))
+                .and_then(|polygon| polygon.attribute("points"))
+                .map(|points| points.split_whitespace().count())
+                .unwrap_or(1);
+            if point_count > options.limits.max_points_per_object {
+                return Err(format!(
+                    "object layer '{}': object point count exceeds limit {}",
+                    name, options.limits.max_points_per_object
+                ));
+            }
+            total_points = total_points
+                .checked_add(point_count)
+                .ok_or_else(|| format!("object layer '{}': object point count overflow", name))?;
+            if total_points > options.limits.max_total_object_points {
+                return Err(format!(
+                    "object layer '{}': total object point count exceeds limit {}",
+                    name, options.limits.max_total_object_points
                 ));
             }
             let property_count = child
@@ -687,11 +729,39 @@ fn parse_object_layer(
     Ok(TmxObjectLayer {
         name,
         visible,
+        offset_x,
+        offset_y,
         objects,
     })
 }
 /// Parse a single `<object>` XML node into a `TmxObject`.
 fn parse_object(node: &roxmltree::Node) -> TmxObject {
+    let shape = if node.children().any(|child| child.has_tag_name("point")) {
+        TiledObjectShape::Point
+    } else if let Some(polygon) = node.children().find(|child| child.has_tag_name("polygon")) {
+        polygon
+            .attribute("points")
+            .map(|value| {
+                value
+                    .split_whitespace()
+                    .filter_map(|pair| {
+                        let (x, y) = pair.split_once(',')?;
+                        let x = x.parse::<f64>().ok()?;
+                        let y = y.parse::<f64>().ok()?;
+                        if x.is_finite() && y.is_finite() {
+                            Some(TiledPoint { x, y })
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .filter(|points| !points.is_empty())
+            .map(TiledObjectShape::Polygon)
+            .unwrap_or(TiledObjectShape::Unsupported)
+    } else {
+        TiledObjectShape::Unsupported
+    };
     TmxObject {
         id: node
             .attribute("id")
@@ -724,7 +794,64 @@ fn parse_object(node: &roxmltree::Node) -> TmxObject {
             .and_then(|s| s.parse::<u32>().ok())
             .map(|g| g & 0x1FFF_FFFF)
             .unwrap_or(0),
+        rotation: node
+            .attribute("rotation")
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(0.0),
+        shape,
+        properties: parse_legacy_properties(node),
     }
+}
+
+/// Parse legacy TMX properties without changing the permissive scalar behavior of `loadTMX`.
+/// The normalized Tiled importer performs strict validation; this compatibility parser preserves
+/// a malformed property as a string rather than making an older loadTMX call fail unexpectedly.
+fn parse_legacy_properties(node: &roxmltree::Node) -> HashMap<String, TiledPropertyValue> {
+    let mut properties = HashMap::new();
+    let Some(properties_node) = node
+        .children()
+        .find(|child| child.has_tag_name("properties"))
+    else {
+        return properties;
+    };
+    for property in properties_node
+        .children()
+        .filter(|child| child.has_tag_name("property"))
+    {
+        let Some(name) = property.attribute("name") else {
+            continue;
+        };
+        let value = property
+            .attribute("value")
+            .or_else(|| property.text())
+            .unwrap_or_default();
+        let kind = property.attribute("type").unwrap_or("string");
+        let parsed = match kind {
+            "int" => value
+                .parse::<i64>()
+                .map(TiledPropertyValue::Int)
+                .unwrap_or_else(|_| TiledPropertyValue::String(value.to_string())),
+            "float" => value
+                .parse::<f64>()
+                .ok()
+                .filter(|parsed| parsed.is_finite())
+                .map(TiledPropertyValue::Float)
+                .unwrap_or_else(|| TiledPropertyValue::String(value.to_string())),
+            "bool" => value
+                .parse::<bool>()
+                .map(TiledPropertyValue::Bool)
+                .unwrap_or_else(|_| TiledPropertyValue::String(value.to_string())),
+            "color" => TiledPropertyValue::Color(value.to_string()),
+            "file" => TiledPropertyValue::File(value.to_string()),
+            "object" => value
+                .parse::<u32>()
+                .map(TiledPropertyValue::Object)
+                .unwrap_or_else(|_| TiledPropertyValue::String(value.to_string())),
+            _ => TiledPropertyValue::String(value.to_string()),
+        };
+        properties.insert(name.to_string(), parsed);
+    }
+    properties
 }
 /// Read a required u32 attribute `name` from `node`; returns an error string when absent or unparseable.
 fn attr_u32(node: &roxmltree::Node, name: &str) -> Result<u32, String> {

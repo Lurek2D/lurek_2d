@@ -260,6 +260,7 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 - `callback_total_ms` (`number`): Callback total ms.
 - `canvas_bytes` (`integer`): Canvas bytes.
 - `canvas_count` (`integer`): Canvas count.
+- `compiled_shape_count` (`integer`): Retained shapes with compiled CPU geometry.
 - `draw_ms` (`number`): Draw ms.
 - `draw_ui_ms` (`number`): Draw ui ms.
 - `fixed_update_ms` (`number`): Fixed update ms.
@@ -270,6 +271,8 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 - `process_physics_ms` (`number`): Process physics ms.
 - `shader_bytes` (`integer`): Shader bytes.
 - `shader_count` (`integer`): Shader count.
+- `shape_bytes` (`integer`): Compiled retained-shape bytes.
+- `shape_count` (`integer`): Retained shape handle count.
 - `texture_bytes` (`integer`): Texture bytes.
 - `texture_count` (`integer`): Texture count.
 - `total_bytes` (`integer`): Total bytes.

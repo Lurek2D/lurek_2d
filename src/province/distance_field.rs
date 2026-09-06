@@ -5,6 +5,7 @@
 //! Change this owner when border seed rules, traversal neighborhoods, or distance consumers in rendering need revision.
 
 use crate::province::registry::ProvinceRegistry;
+use crate::province::types::ProvinceGeometryKind;
 
 /// Per-pixel distance to nearest province border, clamped to `max_distance`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -130,6 +131,16 @@ pub fn compute_distance_field_from_registry(
 ) -> ProvinceDistanceField {
     let width = registry.width();
     let height = registry.height();
+    if registry.geometry_kind() == ProvinceGeometryKind::Polygon {
+        // Distance fields are a raster-only optimization. Polygon renderers
+        // consume their exact shared segments and do not need a dense field.
+        return ProvinceDistanceField {
+            data: Vec::new(),
+            width,
+            height,
+            max_distance,
+        };
+    }
     let mut ids = Vec::with_capacity((width as usize).saturating_mul(height as usize));
     for y in 0..height {
         for x in 0..width {

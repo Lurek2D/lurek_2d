@@ -438,9 +438,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
+    check_failed = args.check and bool(all_violations)
+
     if args.json:
         print(json.dumps(report, indent=2, ensure_ascii=False))
-        return 0
+        return 1 if check_failed else 0
 
     # ── Human-readable summary ────────────────────────────────────────────────
     total = len(all_violations)

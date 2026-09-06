@@ -46,27 +46,27 @@ end
 
 --@api: lurek.docs.loadAll
 do
-    local rel_dir = "save/_docs_example_load_all"
-    local abs_dir = lurek.filesystem.getSaveDirectory() .. "/_docs_example_load_all"
-    lurek.filesystem.createDirectory(rel_dir)
-    lurek.filesystem.write(rel_dir .. "/a.toml", [=[[[entries]]
+local rel_dir = "save/_docs_example_load_all"
+local abs_dir = lurek.filesystem.getSaveDirectory() .. "/_docs_example_load_all"
+lurek.filesystem.createDirectory(rel_dir)
+lurek.filesystem.write(rel_dir .. "/a.toml", [=[[[entries]]
 name = "one"
 qualifiedName = "lurek.test.one"
 module = "test"
 kind = "function"
 description = "First entry"
 ]=])
-    lurek.filesystem.write(rel_dir .. "/b.toml", [=[[[entries]]
+lurek.filesystem.write(rel_dir .. "/b.toml", [=[[[entries]]
 name = "two"
 qualifiedName = "lurek.test.two"
 module = "test"
 kind = "function"
 description = "Second entry"
 ]=])
-    local cat = lurek.docs.loadAll(abs_dir)
-    lurek.log.info("all entries = " .. cat:entryCount())
-    lurek.log.info("loadAll type = " .. cat:type())
-    lurek.log.info("has lurek.test.one = " .. tostring(cat:getEntry("lurek.test.one") ~= nil))
+local cat = lurek.docs.loadAll(abs_dir)
+lurek.log.info("all entries = " .. cat:entryCount())
+lurek.log.info("loadAll type = " .. cat:type())
+lurek.log.info("has lurek.test.one = " .. tostring(cat:getEntry("lurek.test.one") ~= nil))
 end
 
 --@api: lurek.docs.describe
@@ -697,9 +697,9 @@ end
 
 --@api: LApiCatalog:getTypes
 do
-    local rel_path = "save/_docs_catalog_types.toml"
-    local abs_path = lurek.filesystem.getSaveDirectory() .. "/_docs_catalog_types.toml"
-    lurek.filesystem.write(rel_path, [=[[[entries]]
+local rel_path = "save/_docs_catalog_types.toml"
+local abs_path = lurek.filesystem.getSaveDirectory() .. "/_docs_catalog_types.toml"
+lurek.filesystem.write(rel_path, [=[[[entries]]
 name = "spawn"
 qualifiedName = "lurek.demo.spawn"
 module = "demo"
@@ -720,17 +720,17 @@ module = "demo"
 kind = "method"
 description = "Tick method"
 ]=])
-    local types = lurek.docs.loadToml(abs_path):getTypes("demo")
-    lurek.log.info("type count = " .. #types)
-    lurek.log.info("first type = " .. tostring(types[1]))
-    lurek.log.info("second type = " .. tostring(types[2]))
+local types = lurek.docs.loadToml(abs_path):getTypes("demo")
+lurek.log.info("type count = " .. #types)
+lurek.log.info("first type = " .. tostring(types[1]))
+lurek.log.info("second type = " .. tostring(types[2]))
 end
 
 --@api: LApiCatalog:getTypeMethods
 do
-    local rel_path = "save/_docs_catalog_type_methods.toml"
-    local abs_path = lurek.filesystem.getSaveDirectory() .. "/_docs_catalog_type_methods.toml"
-    lurek.filesystem.write(rel_path, [=[[[entries]]
+local rel_path = "save/_docs_catalog_type_methods.toml"
+local abs_path = lurek.filesystem.getSaveDirectory() .. "/_docs_catalog_type_methods.toml"
+lurek.filesystem.write(rel_path, [=[[[entries]]
 name = "Thing"
 qualifiedName = "lurek.demo.Thing"
 module = "demo"
@@ -744,11 +744,7 @@ module = "demo"
 kind = "method"
 description = "Tick method"
 ]=])
-    local cat = lurek.docs.loadToml(abs_path)
-    local methods = cat:getTypeMethods("lurek.demo.Thing")
-    lurek.log.info("method count = " .. #methods)
-    lurek.log.info("first method = " .. tostring(methods[1] and methods[1]:getName()))
-    lurek.log.info("catalog entries = " .. cat:entryCount())
+local cat = lurek.docs.loadToml(abs_path)
 end
 
 --@api: LApiCatalog:entryCount

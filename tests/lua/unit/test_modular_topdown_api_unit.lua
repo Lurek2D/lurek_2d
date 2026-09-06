@@ -437,7 +437,7 @@ describe("presentation and save adapters", function()
         expect_equal(1, skeleton:applyLoadoutVisuals(loadout))
     end)
 
-    -- @covers LSpriteBatch:addComposite
+    -- @covers-case LSpriteBatch:addComposite
     it("adds composite sprite parts to a batch", function()
         local image = lurek.render.newImage("assets/icon.png")
         local batch = lurek.render.newSpriteBatch(image, 8)

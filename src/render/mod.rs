@@ -7,12 +7,18 @@
 //! Open this file first when adding a render owner or changing shared render API re-export policy.
 //! Use it to locate the right implementation file before editing orchestration, resources, geometry, or shaders.
 
+/// Generated canonical ID list used by catalogue checks.
+pub(crate) mod builtin_shape_catalog_generated;
+/// Deterministic native built-in shape catalogue.
+pub mod builtin_shapes;
 /// CPU-side canvas API: paint-style pixel and shape commands on an `ImageData` surface.
 pub mod canvas;
 /// Decal surface for projecting persistent paint-style marks onto world geometry.
 pub mod decal_surface;
 /// Draw-layer abstraction: ordered buckets of `RenderCommand`s flushed each frame.
 pub mod draw_layer;
+/// Renderer-owned CPU triangle and stroked-segment raster primitives.
+pub(crate) mod geometry;
 /// GPU canvas render-target synchronization and dimension helpers.
 pub mod gpu_canvas_pass;
 /// Prepared draw encoding into active GPU render passes.
@@ -98,8 +104,11 @@ pub use render_recovery::{
 };
 pub use renderer::StencilMode;
 pub use renderer::{
-    BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand,
-    RenderCommandCategory, StencilAction, TextAlign, TextureData,
+    BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, PathSegment, RenderCommand,
+    RenderCommandCategory, ShapeInstance, StencilAction, TextAlign, TextureData,
 };
 pub use shader::{Shader, ShaderTarget, ShaderTrust, UniformValue};
-pub use shape::{CompoundShape, ShapeCommand};
+pub use shape::{
+    CompiledShape, CompoundShape, FillRule, ShapeCommand, StrokeCap, StrokeJoin, StrokeStyle,
+    PALETTE_ROLES,
+};

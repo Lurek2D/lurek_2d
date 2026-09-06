@@ -54,6 +54,8 @@ pub struct PipelineKey {
     pub color_mask_bits: u32,
     /// Stencil operation or test applied by this pipeline.
     pub stencil_mode: GpuStencilMode,
+    /// Target sample count; part of the cache key so a renderer can safely switch MSAA mode.
+    pub sample_count: u32,
 }
 /// Full pipeline selection key: default vs. custom shader, plus geometry kind and blend/stencil state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -177,8 +179,14 @@ pub(crate) fn custom_fragment_call_args(
         .collect::<Vec<_>>()
         .join(", ")
 }
-/// Build fragment call arguments for the particle shader vertex output contract.
-pub(crate) fn particle_fragment_call_args(inputs: &[ShaderFragmentInput]) -> String {
+/// Build fragment call arguments for a particle wrapper's fragment contract.
+///
+/// The textured-particle path supplies its fragment-local sampled color, while
+/// the untextured path forwards the interpolated fallback field.
+pub(crate) fn particle_fragment_call_args(
+    inputs: &[ShaderFragmentInput],
+    sampled_texture_expr: &str,
+) -> String {
     inputs
         .iter()
         .map(|input| match input {
@@ -191,7 +199,7 @@ pub(crate) fn particle_fragment_call_args(inputs: &[ShaderFragmentInput]) -> Str
             ShaderFragmentInput::Scalar1 => "in.lifetime",
             ShaderFragmentInput::Scalar2 => "in.seed",
             ShaderFragmentInput::Scalar3 => "0.0",
-            ShaderFragmentInput::SampledTextureColor => "in.sampled_color",
+            ShaderFragmentInput::SampledTextureColor => sampled_texture_expr,
             ShaderFragmentInput::AmbientColor => "vec4<f32>(0.0, 0.0, 0.0, 1.0)",
             ShaderFragmentInput::LightDirection => "vec4<f32>(0.0, 0.0, 0.0, 0.0)",
         })
@@ -286,13 +294,95 @@ fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
         fragment_call_args = fragment_call_args,
     )
 }
+
+/// Assemble the custom flat-color shader used by retained shape instances.
+///
+/// Instanced geometry has a separate WGSL entry contract so the same user
+/// shader can still be used by ordinary (non-instanced) color draws without
+/// requiring instance attributes in that pipeline.
+pub fn build_custom_color_instanced_shader_source(
+    shader: &Shader,
+    uniform_signature: &[(String, ShaderUniformKind)],
+) -> String {
+    let uniform_decls = custom_uniform_declarations(uniform_signature, 1);
+    let fragment_call_args = custom_fragment_call_args(
+        shader.fragment_inputs(),
+        "in.color",
+        "in.uv",
+        "in.local_pos",
+        "lurek.lurek_ScreenSize",
+        "1.0 / max(lurek.lurek_ScreenSize, vec2<f32>(1.0, 1.0))",
+    );
+    format!(
+        r#"
+struct VertexInput {{
+    @location(0) position: vec2<f32>,
+    @location(1) color: vec4<f32>,
+    @location(2) col0: vec2<f32>,
+    @location(3) col1: vec2<f32>,
+    @location(4) col2: vec2<f32>,
+    @location(5) tint: vec4<f32>,
+}}
+struct VertexOutput {{
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) local_pos: vec2<f32>,
+}}
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}}
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
+{uniform_decls}
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {{
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
+    );
+    let world_pos = vec2<f32>(
+        in.position.x * in.col0.x + in.position.y * in.col1.x + in.col2.x,
+        in.position.x * in.col0.y + in.position.y * in.col1.y + in.col2.y,
+    );
+    let cam_pos = view * vec3<f32>(world_pos, 1.0);
+    out.clip_position = vec4<f32>(
+        (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0,
+        0.0,
+        1.0
+    );
+    out.color = in.color * in.tint;
+    out.uv = vec2<f32>(0.0, 0.0);
+    out.local_pos = in.position;
+    return out;
+}}
+{user_source}
+@fragment
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+    return {fragment_entry}({fragment_call_args});
+}}
+"#,
+        user_source = shader.wrapper_source(),
+        fragment_entry = shader.fragment_entry_name(),
+        fragment_call_args = fragment_call_args,
+    )
+}
+
 /// Assemble the full WGSL source for a custom particle shader pipeline.
 pub fn build_custom_particle_shader_source(
     shader: &Shader,
     uniform_signature: &[(String, ShaderUniformKind)],
 ) -> String {
     let uniform_decls = custom_uniform_declarations(uniform_signature, 1);
-    let fragment_call_args = particle_fragment_call_args(shader.fragment_inputs());
+    let fragment_call_args =
+        particle_fragment_call_args(shader.fragment_inputs(), "in.sampled_color");
     format!(
         r#"
 struct VertexInput {{
@@ -371,7 +461,7 @@ pub fn build_custom_textured_particle_shader_source(
     uniform_signature: &[(String, ShaderUniformKind)],
 ) -> String {
     let uniform_decls = custom_uniform_declarations(uniform_signature, 2);
-    let fragment_call_args = particle_fragment_call_args(shader.fragment_inputs());
+    let fragment_call_args = particle_fragment_call_args(shader.fragment_inputs(), "sampled_color");
     format!(
         r#"
 struct VertexInput {{
@@ -395,7 +485,6 @@ struct VertexOutput {{
     @location(5) normalized_age: f32,
     @location(6) lifetime: f32,
     @location(7) seed: f32,
-    @location(8) sampled_color: vec4<f32>,
 }}
 struct LurekGlobals {{
     lurek_ScreenSize: vec2<f32>,
@@ -432,12 +521,12 @@ fn vs_main(in: VertexInput) -> VertexOutput {{
     out.normalized_age = in.normalized_age;
     out.lifetime = in.lifetime;
     out.seed = in.seed;
-    out.sampled_color = textureSample(t_particle, s_particle, in.uv) * in.color;
     return out;
 }}
 {user_source}
 @fragment
 fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+    let sampled_color = textureSample(t_particle, s_particle, in.uv) * in.color;
     return {fragment_entry}({fragment_call_args});
 }}
 "#,
@@ -641,7 +730,93 @@ fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
         fragment_call_args = fragment_call_args,
     )
 }
+
+/// Assemble the instanced variant of a custom textured shader pipeline.
+///
+/// The vertex layout mirrors the retained shape instance buffer: the first
+/// four attributes are per-vertex data and the final four are the affine
+/// transform columns plus an RGBA tint.  Keeping this as a separate WGSL
+/// module is important because wgpu validates vertex locations against the
+/// shader interface when the pipeline is created.
+pub fn build_custom_texture_instanced_shader_source(
+    shader: &Shader,
+    uniform_signature: &[(String, ShaderUniformKind)],
+) -> String {
+    let uniform_decls = custom_uniform_declarations(uniform_signature, 2);
+    let fragment_call_args = custom_fragment_call_args(
+        shader.fragment_inputs(),
+        "sampled",
+        "in.uv",
+        "in.local_pos",
+        "lurek.lurek_ScreenSize",
+        "1.0 / max(lurek.lurek_ScreenSize, vec2<f32>(1.0, 1.0))",
+    );
+    format!(
+        r#"
+struct VertexInput {{
+    @location(0) position: vec2<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) color: vec4<f32>,
+    @location(3) w_depth: f32,
+    @location(4) col0: vec2<f32>,
+    @location(5) col1: vec2<f32>,
+    @location(6) col2: vec2<f32>,
+    @location(7) tint: vec4<f32>,
+}}
+struct VertexOutput {{
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+    @location(2) local_pos: vec2<f32>,
+}}
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
+    _pad: f32,
+    view_col0: vec4<f32>,
+    view_col1: vec4<f32>,
+    view_col2: vec4<f32>,
+}}
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
+@group(1) @binding(0) var t_diffuse: texture_2d<f32>;
+@group(1) @binding(1) var s_diffuse: sampler;
+{uniform_decls}
+@vertex
+fn vs_main(in: VertexInput) -> VertexOutput {{
+    var out: VertexOutput;
+    let view = mat3x3<f32>(
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
+    );
+    let world_pos = vec2<f32>(
+        in.position.x * in.col0.x + in.position.y * in.col1.x + in.col2.x,
+        in.position.x * in.col0.y + in.position.y * in.col1.y + in.col2.y,
+    );
+    let cam_pos = view * vec3<f32>(world_pos, 1.0);
+    let w = max(in.w_depth, 0.001);
+    let ndc_x = (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0;
+    let ndc_y = 1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0;
+    out.clip_position = vec4<f32>(ndc_x * w, ndc_y * w, 0.0, w);
+    out.color = in.color * in.tint;
+    out.uv = in.uv;
+    out.local_pos = in.position;
+    return out;
+}}
+{user_source}
+@fragment
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+    let sampled = textureSample(t_diffuse, s_diffuse, in.uv) * in.color;
+    return {fragment_entry}({fragment_call_args});
+}}
+"#,
+        user_source = shader.wrapper_source(),
+        fragment_entry = shader.fragment_entry_name(),
+        fragment_call_args = fragment_call_args,
+    )
+}
 /// Create a wgpu render pipeline for the given geometry kind, blend/stencil key, and shader module.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn create_render_pipeline(
     device: &wgpu::Device,
     surface_format: wgpu::TextureFormat,
@@ -650,6 +825,7 @@ pub(crate) fn create_render_pipeline(
     geometry: GeometryKind,
     key: PipelineKey,
     fragment_entry: &str,
+    sample_count: u32,
 ) -> wgpu::RenderPipeline {
     let primitive = wgpu::PrimitiveState {
         topology: wgpu::PrimitiveTopology::TriangleList,
@@ -691,7 +867,7 @@ pub(crate) fn create_render_pipeline(
             }),
             primitive,
             depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
-            multisample: wgpu::MultisampleState::default(),
+            multisample: multisample_state(sample_count),
             multiview: None,
             cache: None,
         }),
@@ -716,7 +892,7 @@ pub(crate) fn create_render_pipeline(
             }),
             primitive,
             depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
-            multisample: wgpu::MultisampleState::default(),
+            multisample: multisample_state(sample_count),
             multiview: None,
             cache: None,
         }),
@@ -736,7 +912,7 @@ pub(crate) fn create_render_pipeline(
                     wgpu::VertexBufferLayout {
                         array_stride: std::mem::size_of::<crate::render::gpu_types::InstanceData>() as wgpu::BufferAddress,
                         step_mode: wgpu::VertexStepMode::Instance,
-                        attributes: &wgpu::vertex_attr_array![2 => Float32x2, 3 => Float32x2, 4 => Float32x2],
+                        attributes: &wgpu::vertex_attr_array![2 => Float32x2, 3 => Float32x2, 4 => Float32x2, 5 => Float32x4],
                     },
                 ],
             },
@@ -748,7 +924,7 @@ pub(crate) fn create_render_pipeline(
             }),
             primitive,
             depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
-            multisample: wgpu::MultisampleState::default(),
+            multisample: multisample_state(sample_count),
             multiview: None,
             cache: None,
         }),
@@ -768,7 +944,7 @@ pub(crate) fn create_render_pipeline(
                     wgpu::VertexBufferLayout {
                         array_stride: std::mem::size_of::<crate::render::gpu_types::InstanceData>() as wgpu::BufferAddress,
                         step_mode: wgpu::VertexStepMode::Instance,
-                        attributes: &wgpu::vertex_attr_array![4 => Float32x2, 5 => Float32x2, 6 => Float32x2],
+                        attributes: &wgpu::vertex_attr_array![4 => Float32x2, 5 => Float32x2, 6 => Float32x2, 7 => Float32x4],
                     },
                 ],
             },
@@ -780,7 +956,7 @@ pub(crate) fn create_render_pipeline(
             }),
             primitive,
             depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
-            multisample: wgpu::MultisampleState::default(),
+            multisample: multisample_state(sample_count),
             multiview: None,
             cache: None,
         }),
@@ -815,7 +991,7 @@ pub(crate) fn create_render_pipeline(
             }),
             primitive,
             depth_stencil: Some(depth_stencil_state(key.stencil_mode)),
-            multisample: wgpu::MultisampleState::default(),
+            multisample: multisample_state(sample_count),
             multiview: None,
             cache: None,
         }),
@@ -852,10 +1028,19 @@ pub(crate) fn create_render_pipeline(
             }),
             primitive,
             depth_stencil: None,
-            multisample: wgpu::MultisampleState::default(),
+            multisample: multisample_state(sample_count),
             multiview: None,
             cache: None,
         }),
+    }
+}
+
+/// Construct the multisample state shared by all main-target pipelines.
+pub(crate) fn multisample_state(sample_count: u32) -> wgpu::MultisampleState {
+    wgpu::MultisampleState {
+        count: if sample_count == 4 { 4 } else { 1 },
+        mask: !0,
+        alpha_to_coverage_enabled: false,
     }
 }
 /// Build the depth/stencil descriptor for a given stencil mode.

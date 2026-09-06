@@ -44,6 +44,7 @@ describe("workbench tilemap integration", function()
     -- @integration lurek.filesystem.write
     -- @integration lurek.tilemap.loadTMX
     -- @integration lurek.tileset.newTileSet
+    -- @integration lurek.filesystem.exists
     it("saves a Workbench-painted TMX document linked to a real Lurek tileset", function()
         local Registry = load_workbench_module("app/editor_registry.lua")
         local State = load_workbench_module("app/state.lua")

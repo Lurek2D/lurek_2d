@@ -12,7 +12,7 @@ use crate::render::gpu_pipeline::GpuStencilMode;
 use crate::render::gpu_renderer::GpuRenderer;
 use crate::render::gpu_tess::{append_color_draw_range, normalize_scissor, push_thick_line};
 use crate::render::gpu_types::{ColorVertex, PreparedDraw, RenderTargetId};
-use crate::render::renderer::{BlendMode, DrawMode};
+use crate::render::renderer::{BlendMode, DrawMode, PathSegment};
 use crate::render::shader::Shader;
 use crate::render::shape::{CompoundShape, ShapeCommand};
 use crate::runtime::resource_keys::{CanvasKey, ShaderKey};
@@ -67,6 +67,12 @@ impl GpuRenderer {
                 }
                 ShapeCommand::SetLineWidth(width) => {
                     shape_line_width = *width;
+                }
+                ShapeCommand::SetStrokeStyle(style) => {
+                    shape_line_width = style.width;
+                }
+                ShapeCommand::SetColorRole(role) => {
+                    shape_color = shape.palette_color(role);
                 }
                 ShapeCommand::Rectangle { mode, x, y, w, h } => {
                     let mode = if wireframe { &DrawMode::Line } else { mode };
@@ -256,6 +262,130 @@ impl GpuRenderer {
                         shape_line_width,
                     );
                     append_shape_color_range!(idx_start, all_color_idxs.len());
+                }
+                ShapeCommand::Point { x, y, size } => {
+                    let radius = size.abs() * 0.5;
+                    let segments =
+                        crate::render::renderer::adaptive_circle_ellipse_segments(radius, radius);
+                    let idx_start = all_color_idxs.len();
+                    self.tess_ellipse(
+                        all_color_verts,
+                        all_color_idxs,
+                        shape_transform,
+                        shape_color,
+                        &DrawMode::Fill,
+                        *x,
+                        *y,
+                        radius,
+                        radius,
+                        segments,
+                        shape_line_width,
+                    );
+                    append_shape_color_range!(idx_start, all_color_idxs.len());
+                }
+                ShapeCommand::Points { points, size } => {
+                    if points.len() >= 2 {
+                        let radius = size.abs() * 0.5;
+                        let segments = crate::render::renderer::adaptive_circle_ellipse_segments(
+                            radius, radius,
+                        );
+                        let idx_start = all_color_idxs.len();
+                        for pair in points.chunks_exact(2) {
+                            self.tess_ellipse(
+                                all_color_verts,
+                                all_color_idxs,
+                                shape_transform,
+                                shape_color,
+                                &DrawMode::Fill,
+                                pair[0],
+                                pair[1],
+                                radius,
+                                radius,
+                                segments,
+                                shape_line_width,
+                            );
+                        }
+                        append_shape_color_range!(idx_start, all_color_idxs.len());
+                    }
+                }
+                ShapeCommand::Path {
+                    segments,
+                    mode,
+                    close,
+                    ..
+                } => {
+                    let mut points: Vec<f32> = Vec::new();
+                    let mut first: Option<(f32, f32)> = None;
+                    for segment in segments {
+                        match segment {
+                            PathSegment::MoveTo { x, y } => {
+                                if !points.is_empty() && *close {
+                                    if let Some((fx, fy)) = first {
+                                        points.extend([fx, fy]);
+                                    }
+                                }
+                                points.clear();
+                                points.extend([*x, *y]);
+                                first = Some((*x, *y));
+                            }
+                            PathSegment::LineTo { x, y } => points.extend([*x, *y]),
+                            PathSegment::QuadTo { x, y, .. }
+                            | PathSegment::CubicTo { x, y, .. } => points.extend([*x, *y]),
+                        }
+                    }
+                    if points.len() >= 4 {
+                        if *close {
+                            if let Some((fx, fy)) = first {
+                                points.extend([fx, fy]);
+                            }
+                        }
+                        let idx_start = all_color_idxs.len();
+                        let mode = if wireframe { &DrawMode::Line } else { mode };
+                        self.tess_polygon(
+                            all_color_verts,
+                            all_color_idxs,
+                            shape_transform,
+                            shape_color,
+                            mode,
+                            &points,
+                            shape_line_width,
+                        );
+                        append_shape_color_range!(idx_start, all_color_idxs.len());
+                    }
+                }
+                ShapeCommand::Transformed {
+                    commands,
+                    transform,
+                    palette,
+                } => {
+                    let nested = CompoundShape {
+                        commands: commands.clone(),
+                        current_color: shape_color,
+                        current_line_width: shape_line_width,
+                        current_stroke_style: shape.current_stroke_style.clone(),
+                        palette: *palette,
+                        revision: shape.revision,
+                        compile_tolerance: shape.compile_tolerance,
+                        compiled: None,
+                    };
+                    let nested_transform = *shape_transform * *transform;
+                    self.replay_compound_shape(
+                        &nested,
+                        &nested_transform,
+                        wireframe,
+                        current_target,
+                        current_blend_mode,
+                        current_scissor,
+                        color_mask_bits,
+                        active_shader,
+                        stencil_mode,
+                        stencil_reference,
+                        canvases,
+                        shaders,
+                        all_color_verts,
+                        all_color_idxs,
+                        draws,
+                    );
                 }
             }
         }

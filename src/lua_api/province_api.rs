@@ -6,6 +6,7 @@ use crate::image::ImageData;
 use crate::image::TextureColorSpace;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::{resolve_color_fallback, MapModeConfig};
+use crate::province::polygon_geometry::PolygonImportOptions;
 use crate::province::registry::ProvinceRegistry;
 use crate::province::render::{
     generate_capital_path_commands, generate_render_commands, render_segment_raster,
@@ -17,7 +18,7 @@ use crate::province::types::{
     parse_province_effect_flag_token, BorderPairFlags, BorderPairStyle, BorderTypeConfig,
     ProvinceClimateKind, ProvinceId, ProvinceVisualState, ProvinceWeatherKind,
 };
-use crate::province::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};
+use crate::province::{fit_camera_to_screen, screen_to_map, zoom_camera_at};
 use crate::province::{
     import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions,
     ProvinceMetadataImportOptions,
@@ -26,6 +27,7 @@ use crate::province::{ProvinceGrid, ProvinceShapeCacheEntry};
 use crate::render::renderer::{ProvinceMapEffectOptions, RenderCommand, TextureData};
 use crate::render::ShaderTarget;
 use crate::runtime::shared_state::ProvinceSegmentTextureCache;
+use crate::tilemap::{load_tiled, TileMapLimits};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::{hash_map::DefaultHasher, HashMap};
@@ -669,6 +671,8 @@ impl LuaProvinceRegistry {
         opts.draw_borders.hash(&mut hasher);
         opts.edge_gradient_radius.to_bits().hash(&mut hasher);
         opts.edge_gradient_strength.to_bits().hash(&mut hasher);
+        opts.hovered_id.hash(&mut hasher);
+        opts.selected_id.hash(&mut hasher);
         for value in opts.tint {
             value.to_bits().hash(&mut hasher);
         }
@@ -730,24 +734,33 @@ impl LuaProvinceRegistry {
             draw_borders: options.draw_borders,
             edge_gradient_radius,
             edge_gradient_strength,
+            hovered_id: options.hovered_id,
+            selected_id: options.selected_id,
         };
         let fingerprint = Self::segment_render_fingerprint(&segment_opts);
-        let (registry_revision, should_rebuild, cached_key) = {
+        let (registry_revision, geometry_version, should_rebuild, cached_key) = {
             let st = self.state.borrow();
             let reg = st.province_registries.get(&self.name).ok_or_else(|| {
                 LuaError::RuntimeError(format!("province registry '{}' not found", self.name))
             })?;
             let revision = reg.revision();
+            let geometry_version = reg.geometry_version();
             let cache = st.province_segment_texture_cache.get(&self.name);
             let cached_key = cache.map(|entry| entry.texture_key);
             let valid = cache
                 .map(|entry| {
                     entry.registry_revision == revision
+                        && entry.geometry_version == geometry_version
                         && entry.options_fingerprint == fingerprint
                         && st.textures.contains_key(entry.texture_key)
                 })
                 .unwrap_or(false);
-            (revision, has_new_tints || !valid, cached_key)
+            (
+                revision,
+                geometry_version,
+                has_new_tints || !valid,
+                cached_key,
+            )
         };
 
         if should_rebuild && !has_new_tints && reuse_cached_tints {
@@ -790,6 +803,7 @@ impl LuaProvinceRegistry {
                         ProvinceSegmentTextureCache {
                             texture_key: key,
                             registry_revision,
+                            geometry_version,
                             options_fingerprint: fingerprint,
                             width: raster.width,
                             height: raster.height,
@@ -812,6 +826,7 @@ impl LuaProvinceRegistry {
                         ProvinceSegmentTextureCache {
                             texture_key: key,
                             registry_revision,
+                            geometry_version,
                             options_fingerprint: fingerprint,
                             width: raster.width,
                             height: raster.height,
@@ -854,13 +869,19 @@ impl LuaUserData for LuaProvinceRegistry {
         /// Returns the string name used to identify this registry in the province system.
         /// @return | string | The registry name passed to `newFromPng`.
         methods.add_method("getName", |_, this, ()| Ok(this.name.clone()));
+        // -- getGeometryKind --
+        /// Returns `"raster"` for PNG/grid-backed registries or `"polygon"` for Tiled polygon registries.
+        /// @return | string | Registry geometry kind.
+        methods.add_method("getGeometryKind", |_, this, ()| {
+            this.with_registry(|r| r.geometry_kind().as_str().to_string())
+        });
         // -- getWidth --
-        /// Returns the width of the province grid in cells (pixels of the source PNG).
-        /// @return | integer | Grid width in cells.
+        /// Returns the width of the province map. Raster registries report PNG cells; polygon registries report the Tiled map pixel extent.
+        /// @return | integer | Map width in source pixels/cells.
         methods.add_method("getWidth", |_, this, ()| this.with_registry(|r| r.width()));
         // -- getHeight --
-        /// Returns the height of the province grid in cells (pixels of the source PNG).
-        /// @return | integer | Grid height in cells.
+        /// Returns the height of the province map. Raster registries report PNG cells; polygon registries report the Tiled map pixel extent.
+        /// @return | integer | Map height in source pixels/cells.
         methods.add_method("getHeight", |_, this, ()| {
             this.with_registry(|r| r.height())
         });
@@ -903,7 +924,7 @@ impl LuaUserData for LuaProvinceRegistry {
             }))
         });
         // -- getAt --
-        /// Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
+        /// Returns the province ID at the given grid cell coordinates. Raster maps sample the cell directly; polygon maps sample the cell center `(x + 0.5, y + 0.5)`. Returns 0 if unowned.
         /// @param | x | integer | Zero-based column index.
         /// @param | y | integer | Zero-based row index.
         /// @return | integer | Province ID at (x, y), or 0 for unowned cells.
@@ -983,7 +1004,6 @@ impl LuaUserData for LuaProvinceRegistry {
                 f32,
                 Option<f32>,
             )| {
-                let (map_w, map_h) = this.with_registry(|r| (r.width(), r.height()))?;
                 let (map_x, map_y) = screen_to_map(
                     screen_x,
                     screen_y,
@@ -992,15 +1012,7 @@ impl LuaUserData for LuaProvinceRegistry {
                     zoom,
                     pixel_size.unwrap_or(1.0),
                 );
-                let Some((cell_x, cell_y)) = map_to_cell(map_x, map_y, map_w, map_h) else {
-                    return Ok(None::<u32>);
-                };
-                let id = this.with_registry(|r| r.get_at(cell_x, cell_y))?;
-                if id == 0 {
-                    Ok(None::<u32>)
-                } else {
-                    Ok(Some(id))
-                }
+                this.with_registry(|r| r.pick_province(map_x, map_y).map(|id| id.0))
             },
         );
         // -- viewportRect --
@@ -1049,6 +1061,56 @@ impl LuaUserData for LuaProvinceRegistry {
         methods.add_method("provinceCount", |_, this, ()| {
             this.with_registry(|r| r.province_count() as u32)
         });
+        // -- getPolygonCount --
+        /// Returns the total polygon component count, or the component count for one province.
+        /// @param | province_id | integer? | Optional province ID filter.
+        /// @return | integer | Number of polygon components.
+        methods.add_method("getPolygonCount", |_, this, province_id: Option<u32>| {
+            this.with_registry(|r| r.polygon_count(province_id.map(ProvinceId)) as u32)
+        });
+        // -- getProvincePolygons --
+        /// Returns read-only polygon component geometry for one province.
+        /// @param | province_id | integer | Province ID.
+        /// @return | table | Array of component tables with source_object_id, vertices, area, and bounds.
+        methods.add_method("getProvincePolygons", |lua, this, province_id: u32| {
+            let polygons = this.with_registry(|r| {
+                r.polygons_for(ProvinceId(province_id))
+                    .unwrap_or_default()
+                    .into_iter()
+                    .cloned()
+                    .collect::<Vec<_>>()
+            })?;
+            let out = lua.create_table()?;
+            for (index, polygon) in polygons.into_iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("source_object_id", polygon.source_object_id)?;
+                let vertices = lua.create_table()?;
+                for (vertex_index, value) in polygon.vertices.into_iter().enumerate() {
+                    vertices.set(vertex_index + 1, value)?;
+                }
+                row.set("vertices", vertices)?;
+                row.set("area", polygon.signed_area.abs())?;
+                let bounds = lua.create_table()?;
+                bounds.set("x", polygon.bounds.0)?;
+                bounds.set("y", polygon.bounds.1)?;
+                bounds.set("w", polygon.bounds.2 - polygon.bounds.0)?;
+                bounds.set("h", polygon.bounds.3 - polygon.bounds.1)?;
+                row.set("bounds", bounds)?;
+                out.set(index + 1, row)?;
+            }
+            Ok(out)
+        });
+        // -- pickProvince --
+        /// Returns the province under a floating-point map coordinate, or nil for a gap/outside.
+        /// @param | map_x | number | Map-space x coordinate.
+        /// @param | map_y | number | Map-space y coordinate.
+        /// @return | integer | Province ID, or nil.
+        methods.add_method("pickProvince", |_, this, (map_x, map_y): (f32, f32)| {
+            if !map_x.is_finite() || !map_y.is_finite() {
+                return Ok(None::<u32>);
+            }
+            this.with_registry(|r| r.pick_province(map_x, map_y).map(|id| id.0))
+        });
         // -- provinceIds --
         /// Returns a sequential table of all province IDs in this registry.
         /// @return | integer[] | Province ID numbers.
@@ -1086,6 +1148,13 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @field | x0 | number | Start x coordinate.
         /// @field | x1 | number | End x coordinate.
         methods.add_method("provinceSpans", |lua, this, ()| {
+            let geometry_kind = this.with_registry(|r| r.geometry_kind())?;
+            if geometry_kind == crate::province::types::ProvinceGeometryKind::Polygon {
+                return Err(LuaError::RuntimeError(
+                    "LProvinceRegistry:provinceSpans is unavailable for polygon geometry"
+                        .to_string(),
+                ));
+            }
             let spans = this.with_registry(|r| r.spans().to_vec())?;
             let out = lua.create_table()?;
             for (i, (id, y, x0, x1)) in spans.into_iter().enumerate() {
@@ -1112,9 +1181,14 @@ impl LuaUserData for LuaProvinceRegistry {
         /// @field | x1 | number | Segment end x.
         /// @field | y1 | number | Segment end y.
         methods.add_method("borderSegments", |lua, this, ()| {
-            let segs = this.with_registry(|r| r.border_segments().to_vec())?;
             let out = lua.create_table()?;
-            for (i, (a, b, x0, y0, x1, y1)) in segs.into_iter().enumerate() {
+            let (raster, polygon) = this.with_registry(|r| {
+                (
+                    r.border_segments().to_vec(),
+                    r.polygon_border_segments().map(|items| items.to_vec()),
+                )
+            })?;
+            for (i, (a, b, x0, y0, x1, y1)) in raster.into_iter().enumerate() {
                 let seg = lua.create_table()?;
                 /// Performs the 'province_a' operation.
                 seg.set("province_a", a)?;
@@ -1129,6 +1203,17 @@ impl LuaUserData for LuaProvinceRegistry {
                 /// The 'y1' field value exposed to Lua scripts.
                 seg.set("y1", y1)?;
                 out.set(i + 1, seg)?;
+            }
+            let offset = out.raw_len();
+            for (i, segment) in polygon.unwrap_or_default().into_iter().enumerate() {
+                let seg = lua.create_table()?;
+                seg.set("province_a", segment.province_a.0)?;
+                seg.set("province_b", segment.province_b.0)?;
+                seg.set("x0", segment.x0)?;
+                seg.set("y0", segment.y0)?;
+                seg.set("x1", segment.x1)?;
+                seg.set("y1", segment.y1)?;
+                out.set(offset + i + 1, seg)?;
             }
             Ok(out)
         });
@@ -1163,8 +1248,11 @@ impl LuaUserData for LuaProvinceRegistry {
                         opts.as_ref()
                             .and_then(|t| t.get::<_, Option<u8>>("borderType").ok().flatten())
                     });
-                let rows = this.with_registry(|r| {
-                    r.border_segments()
+                let out = lua.create_table()?;
+                let mut row_index = 1usize;
+                let (raster_rows, polygon_rows) = this.with_registry(|r| {
+                    let raster = r
+                        .border_segments()
                         .iter()
                         .copied()
                         .filter(|(a, b, _, _, _, _)| {
@@ -1179,10 +1267,36 @@ impl LuaUserData for LuaProvinceRegistry {
                                     })
                                     .unwrap_or(true)
                         })
-                        .collect::<Vec<_>>()
+                        .collect::<Vec<_>>();
+                    let polygon = r
+                        .polygon_border_segments()
+                        .map(|segments| {
+                            segments
+                                .iter()
+                                .copied()
+                                .filter(|segment| {
+                                    let a = segment.province_a.0;
+                                    let b = segment.province_b.0;
+                                    province.map(|id| a == id || b == id).unwrap_or(true)
+                                        && province_a.map(|id| a == id).unwrap_or(true)
+                                        && province_b.map(|id| b == id).unwrap_or(true)
+                                        && border_type
+                                            .map(|kind| {
+                                                r.get_border_type(
+                                                    segment.province_a,
+                                                    segment.province_b,
+                                                )
+                                                .unwrap_or(0)
+                                                    == kind
+                                            })
+                                            .unwrap_or(true)
+                                })
+                                .collect::<Vec<_>>()
+                        })
+                        .unwrap_or_default();
+                    (raster, polygon)
                 })?;
-                let out = lua.create_table()?;
-                for (i, (a, b, x0, y0, x1, y1)) in rows.into_iter().enumerate() {
+                for (a, b, x0, y0, x1, y1) in raster_rows {
                     let seg = lua.create_table()?;
                     seg.set("province_a", a)?;
                     seg.set("province_b", b)?;
@@ -1190,7 +1304,19 @@ impl LuaUserData for LuaProvinceRegistry {
                     seg.set("y0", y0)?;
                     seg.set("x1", x1)?;
                     seg.set("y1", y1)?;
-                    out.set(i + 1, seg)?;
+                    out.set(row_index, seg)?;
+                    row_index += 1;
+                }
+                for segment in polygon_rows {
+                    let seg = lua.create_table()?;
+                    seg.set("province_a", segment.province_a.0)?;
+                    seg.set("province_b", segment.province_b.0)?;
+                    seg.set("x0", segment.x0)?;
+                    seg.set("y0", segment.y0)?;
+                    seg.set("x1", segment.x1)?;
+                    seg.set("y1", segment.y1)?;
+                    out.set(row_index, seg)?;
+                    row_index += 1;
                 }
                 Ok(out)
             },
@@ -2013,6 +2139,22 @@ impl LuaUserData for LuaProvinceRegistry {
                     .map(ProvinceId),
             };
             if backend == "gpu" {
+                let polygon_geometry = this.with_registry(|reg| reg.geometry_kind() == crate::province::types::ProvinceGeometryKind::Polygon)?;
+                if polygon_geometry {
+                    let font_key = {
+                        let st = this.state.borrow();
+                        st.active_font.or(st.default_font)
+                    };
+                    let cmds = this.with_registry(|reg| {
+                        // Polygon GPU rendering uses the renderer's generic
+                        // triangle/line mesh path. Keep the established
+                        // `mapviz` custom-shader limitation: those shaders
+                        // remain commands-backend-only.
+                        generate_render_commands(reg, &options, font_key)
+                    })?;
+                    extend_province_render_commands(&mut this.state.borrow_mut(), cmds);
+                    return Ok(());
+                }
                 let (left, top, right, bottom) = viewport_bounds(&options);
                 let zoom_mode = match resolve_zoom_mode(&options) {
                     ProvinceZoomMode::Strategic | ProvinceZoomMode::Auto => 0,
@@ -2441,6 +2583,132 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 state: s.clone(),
             })
         })?,
+    )?;
+    let s = state.clone();
+    // -- newFromTiled --
+    /// Creates a polygon-backed province registry from a Tiled TMX, TMJ, or JSON object map.
+    /// @param | name | string | Unique registry name for later retrieval.
+    /// @param | filename | string | GameFS-relative `.tmx`, `.tmj`, or `.json` path.
+    /// @param | opts | table? | Layer/property names and strict grid snapping options.
+    /// @return | LProvinceRegistry | The newly created polygon registry handle.
+    tbl.set(
+        "newFromTiled",
+        lua.create_function(
+            move |_, (name, filename, opts): (String, String, Option<LuaValue>)| {
+                let opts = match opts {
+                    Some(LuaValue::Table(table)) => Some(table),
+                    Some(LuaValue::Nil) | None => None,
+                    Some(_) => {
+                        return Err(LuaError::RuntimeError(
+                            "lurek.province.newFromTiled: opts must be a table or nil".to_string(),
+                        ))
+                    }
+                };
+                let extension = Path::new(&filename)
+                    .extension()
+                    .and_then(|value| value.to_str())
+                    .unwrap_or("")
+                    .to_ascii_lowercase();
+                if !matches!(extension.as_str(), "tmx" | "tmj" | "json") {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.province.newFromTiled: unsupported Tiled extension '.{}'",
+                        extension
+                    )));
+                }
+                let mut import_options = PolygonImportOptions::default();
+                if let Some(table) = opts {
+                    if let Some(value) =
+                        table
+                            .get::<_, Option<String>>("province_layer")
+                            .map_err(|error| {
+                                LuaError::RuntimeError(format!(
+                                    "lurek.province.newFromTiled: invalid province_layer: {error}"
+                                ))
+                            })?
+                    {
+                        import_options.province_layer = value;
+                    }
+                    if let Some(value) =
+                        table
+                            .get::<_, Option<String>>("capital_layer")
+                            .map_err(|error| {
+                                LuaError::RuntimeError(format!(
+                                    "lurek.province.newFromTiled: invalid capital_layer: {error}"
+                                ))
+                            })?
+                    {
+                        import_options.capital_layer = value;
+                    }
+                    if let Some(value) =
+                        table
+                            .get::<_, Option<String>>("id_property")
+                            .map_err(|error| {
+                                LuaError::RuntimeError(format!(
+                                    "lurek.province.newFromTiled: invalid id_property: {error}"
+                                ))
+                            })?
+                    {
+                        import_options.id_property = value;
+                    }
+                    if let Some(value) =
+                        table.get::<_, Option<f32>>("snap_size").map_err(|error| {
+                            LuaError::RuntimeError(format!(
+                                "lurek.province.newFromTiled: invalid snap_size: {error}"
+                            ))
+                        })?
+                    {
+                        import_options.snap_size = value;
+                    }
+                    if let Some(value) =
+                        table
+                            .get::<_, Option<f32>>("snap_tolerance")
+                            .map_err(|error| {
+                                LuaError::RuntimeError(format!(
+                                    "lurek.province.newFromTiled: invalid snap_tolerance: {error}"
+                                ))
+                            })?
+                    {
+                        import_options.snap_tolerance = value;
+                    }
+                }
+                let bytes = s.borrow().fs.read_bytes(&filename).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.province.newFromTiled: {error}"))
+                })?;
+                let limits = TileMapLimits::default();
+                if bytes.len() > limits.max_import_bytes {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.province.newFromTiled: Tiled input exceeds {} bytes",
+                        limits.max_import_bytes
+                    )));
+                }
+                let text = String::from_utf8(bytes).map_err(|error| {
+                    LuaError::RuntimeError(format!(
+                        "lurek.province.newFromTiled: Tiled input is not UTF-8: {error}"
+                    ))
+                })?;
+                let tiled = load_tiled(&text, &extension, &limits).map_err(|error| {
+                    LuaError::RuntimeError(format!("lurek.province.newFromTiled: {error}"))
+                })?;
+                let geometry =
+                    crate::province::polygon_geometry::PolygonProvinceGeometry::from_tiled(
+                        &tiled,
+                        &import_options,
+                    )
+                    .map_err(|error| {
+                        LuaError::RuntimeError(format!("lurek.province.newFromTiled: {error}"))
+                    })?;
+                let registry = ProvinceRegistry::from_polygon_geometry(geometry);
+                {
+                    let mut st = s.borrow_mut();
+                    st.province_registries.insert(name.clone(), registry);
+                    st.active_province_registry = Some(name.clone());
+                }
+                Ok(LuaProvinceRegistry {
+                    name,
+                    state: s.clone(),
+                })
+            },
+        )?,
     )?;
     let s = state.clone();
     // -- sanitizeMarkedPng --

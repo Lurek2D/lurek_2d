@@ -611,7 +611,7 @@ end)
 
 -- @describe lurek.render.saveScreenshot
 describe("lurek.render.saveScreenshot", function()
-    -- @covers lurek.render.saveScreenshot
+    -- @covers-case lurek.render.saveScreenshot
     it("accepts save-relative paths and rejects paths outside save", function()
         local ok = pcall(lurek.render.saveScreenshot, "save/test_render.png")
         expect_equal(ok, true)
@@ -1859,6 +1859,22 @@ describe("render strict: LShader methods", function()
         local ok = pcall(function() shader:release() end)
         expect_true(ok)
     end)
+
+    -- @covers-case lurek.render.drawPath
+    it("drawPath accepts the retained-style options overload", function()
+        local path = {
+            { verb="moveTo", x=0, y=0 },
+            { verb="lineTo", x=10, y=0 },
+            { verb="lineTo", x=10, y=10 },
+        }
+          local ok = pcall(lurek.render.drawPath, path, {
+              mode="fill",
+              close=true,
+              fillRule="evenodd",
+              stroke={ width=2, cap="round", join="bevel", dash={3, 2}, dashOffset=1 },
+          })
+          expect_true(ok)
+      end)
 end)
 
 -- @describe render strict: LQuad methods
@@ -1919,6 +1935,223 @@ describe("render strict: LShape methods", function()
         expect_true(shape:typeOf("LShape"))
         expect_true(shape:typeOf("LObject"))
         expect_false(shape:typeOf("LMesh"))
+    end)
+
+    -- @covers LShape:setPalette
+    it("LShape setPalette accepts normalized role colors", function()
+        local shape = lurek.render.newShape()
+        expect_no_error(function()
+            shape:setPalette({ primary = { 1, 0, 0, 1 }, outline = { 0, 0, 0 } })
+        end)
+    end)
+
+    -- @covers LShape:setColorRole
+    it("LShape setColorRole selects a known palette role", function()
+        local shape = lurek.render.newShape()
+        expect_no_error(function() shape:setColorRole("accent") end)
+        expect_error(function() shape:setColorRole("missing") end)
+    end)
+
+    -- @covers LShape:setStrokeStyle
+    it("LShape setStrokeStyle validates stroke options", function()
+        local shape = lurek.render.newShape()
+        expect_no_error(function()
+            shape:setStrokeStyle({ width = 2, cap = "round", join = "bevel", dash = { 3, 2 } })
+        end)
+    end)
+
+    -- @covers LShape:regularPolygon
+    it("LShape regularPolygon appends polygon geometry", function()
+        local shape = lurek.render.newShape()
+        shape:regularPolygon("fill", 0, 0, 10, 6)
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:addShape
+    it("LShape addShape snapshots child commands", function()
+        local child = lurek.render.newShape()
+        child:rectangle("fill", 0, 0, 4, 4)
+        local parent = lurek.render.newShape()
+        expect_no_error(function() parent:addShape(child, { x = 2, y = 3 }) end)
+        expect_true(parent:getCommandCount() > 0)
+    end)
+
+    -- @covers LShape:point
+    it("LShape point appends a point command", function()
+        local shape = lurek.render.newShape()
+        shape:point(1, 2, 3)
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:points
+    it("LShape points accepts flat coordinates and size", function()
+        local shape = lurek.render.newShape()
+        shape:points(0, 0, 4, 4, 2)
+        expect_equal(1, shape:getCommandCount())
+        expect_no_error(function()
+            shape:points({ { x = 1, y = 2 }, { 3, 4 } }, 1.5)
+        end)
+    end)
+
+    -- @covers LShape:path
+    it("LShape path accepts move and line segments", function()
+        local shape = lurek.render.newShape()
+        shape:path({ { verb = "moveTo", x = 0, y = 0 }, { verb = "lineTo", x = 4, y = 4 } })
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    it("LShape path accepts an explicit close verb", function()
+        local shape = lurek.render.newShape()
+        shape:path({
+            { verb = "moveTo", x = 0, y = 0 },
+            { verb = "lineTo", x = 4, y = 0 },
+            { verb = "lineTo", x = 4, y = 4 },
+            { verb = "close" },
+        })
+        expect_true(shape:compile())
+    end)
+
+    it("LShape path accepts direct fill-rule and stroke options", function()
+        local shape = lurek.render.newShape()
+        shape:path({
+            { verb = "moveTo", x = 0, y = 0 },
+            { verb = "lineTo", x = 8, y = 0 },
+            { verb = "lineTo", x = 8, y = 8 },
+            { verb = "close" },
+        }, { mode = "line", fillRule = "even-odd", width = 2, join = "round" })
+        expect_true(shape:compile())
+    end)
+
+    -- @covers LShape:star
+    it("LShape star appends alternating radial vertices", function()
+        local shape = lurek.render.newShape()
+        shape:star("fill", 0, 0, 8, 3, 5)
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:capsule
+    it("LShape capsule accepts explicit radius", function()
+        local shape = lurek.render.newShape()
+        shape:capsule("line", 0, 0, 12, 6, 2)
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:ring
+    it("LShape ring accepts inner and outer radii", function()
+        local shape = lurek.render.newShape()
+        shape:ring("line", 0, 0, 8, 4, 8)
+        expect_true(shape:getCommandCount() > 0)
+    end)
+
+    -- @covers LShape:sector
+    it("LShape sector accepts angular bounds", function()
+        local shape = lurek.render.newShape()
+        shape:sector("fill", 0, 0, 8, 0, math.pi, 8)
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:arrow
+    it("LShape arrow accepts optional width and head", function()
+        local shape = lurek.render.newShape()
+        shape:arrow("fill", 0, 0, 8, 4, 2, 4)
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:symbol
+    it("LShape symbol accepts a named marker", function()
+        local shape = lurek.render.newShape()
+        shape:symbol("circle", 0, 0, 4)
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:trail
+    it("LShape trail accepts one width per point", function()
+        local shape = lurek.render.newShape()
+        shape:trail({ 0, 0, 4, 2, 8, 0 }, { 1, 2, 1 })
+        expect_equal(1, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:compile
+    it("LShape compile returns a success boolean", function()
+        local shape = lurek.render.newShape()
+        shape:rectangle("fill", 0, 0, 4, 4)
+        expect_true(shape:compile())
+    end)
+
+    it("LShape draw keeps the selected tolerance after mutation", function()
+        local shape = lurek.render.newShape()
+        shape:circle("fill", 0, 0, 8)
+        expect_true(shape:compile({ tolerance = 0.5 }))
+        shape:rectangle("fill", -2, -2, 4, 4)
+        expect_no_error(function() shape:draw(0, 0) end)
+        local diagnostics = shape:getDiagnostics()
+        expect_equal(0.5, diagnostics.tolerance)
+    end)
+
+    it("LShape primitives reject non-finite geometry before mutation", function()
+        local shape = lurek.render.newShape()
+        local nan = 0 / 0
+        expect_error(function() shape:rectangle("fill", nan, 0, 4, 4) end)
+        expect_error(function() shape:circle("fill", 0, 0, -1) end)
+        expect_equal(0, shape:getCommandCount())
+    end)
+
+    -- @covers LShape:getBounds
+    it("LShape getBounds returns local dimensions", function()
+        local shape = lurek.render.newShape()
+        shape:rectangle("fill", -2, -1, 6, 5)
+        local bounds = shape:getBounds()
+        expect_equal(6, bounds.w)
+        expect_equal(5, bounds.h)
+    end)
+
+    -- @covers LShape:getDiagnostics
+    it("LShape getDiagnostics reports command and compile state", function()
+        local shape = lurek.render.newShape()
+        shape:circle("fill", 0, 0, 2)
+        local diagnostics = shape:getDiagnostics()
+        expect_equal(1, diagnostics.commands)
+        expect_equal(false, diagnostics.compiled)
+    end)
+
+    -- @covers LShape:release
+    it("LShape release invalidates the shape handle", function()
+        local shape = lurek.render.newShape()
+        expect_true(shape:release())
+        expect_false(shape:release())
+    end)
+
+    -- @covers LShape:drawMany
+    it("LShape drawMany accepts compiled instances", function()
+        local shape = lurek.render.newShape()
+        shape:rectangle("fill", 0, 0, 4, 4)
+        shape:compile()
+        expect_no_error(function() shape:drawMany({ { x = 1, y = 2 } }) end)
+    end)
+
+    -- @covers lurek.render.listBuiltinShapes
+    it("listBuiltinShapes filters the native catalogue", function()
+        local shapes = lurek.render.listBuiltinShapes({ category = "ui", query = "heart" })
+        expect_true(#shapes >= 1)
+        expect_equal("ui/heart", shapes[1].id)
+    end)
+
+    -- @covers lurek.render.getBuiltinShapeInfo
+    it("getBuiltinShapeInfo returns canonical metadata", function()
+        local info = lurek.render.getBuiltinShapeInfo("ui/heart")
+        expect_equal("ui/heart", info.id)
+        expect_equal("ui", info.category)
+        expect_equal(0.5, info.anchor.x)
+        expect_equal(0.5, info.anchor.y)
+        expect_true(#info.tags >= 1)
+        expect_true(info.palette.primary ~= nil)
+    end)
+
+    -- @covers lurek.render.loadBuiltinShape
+    it("loadBuiltinShape creates a retained shape handle", function()
+        local shape = lurek.render.loadBuiltinShape("ui/heart")
+        expect_type("userdata", shape)
+        expect_true(shape:getCommandCount() > 0)
     end)
 end)
 
@@ -2092,6 +2325,46 @@ describe("render strict: batch text and OBJ APIs", function()
         expect_equal(-1, bounds.minX)
         expect_equal(2, bounds.maxY)
 
+    end)
+
+    -- @covers LVoxelModel:getVoxelCount
+    it("LVoxelModel getVoxelCount reports occupied voxels", function()
+        local function le32(value)
+            return string.char(
+                value % 256,
+                math.floor(value / 256) % 256,
+                math.floor(value / 65536) % 256,
+                math.floor(value / 16777216) % 256
+            )
+        end
+        local children =
+            "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) ..
+            "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+        local path = "save/_render_voxel_count_unit.vox"
+        lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+        local voxel = lurek.render.loadVoxel(path, 2)
+        expect_equal(1, voxel:getVoxelCount())
+    end)
+
+    -- @covers LVoxelModel:getBounds
+    it("LVoxelModel getBounds returns scaled local bounds", function()
+        local function le32(value)
+            return string.char(
+                value % 256,
+                math.floor(value / 256) % 256,
+                math.floor(value / 65536) % 256,
+                math.floor(value / 16777216) % 256
+            )
+        end
+        local children =
+            "SIZE" .. le32(12) .. le32(0) .. le32(1) .. le32(1) .. le32(1) ..
+            "XYZI" .. le32(8) .. le32(0) .. le32(1) .. string.char(0, 0, 0, 1)
+        local path = "save/_render_voxel_bounds_unit.vox"
+        lurek.filesystem.writeBytes(path, "VOX " .. le32(150) .. "MAIN" .. le32(0) .. le32(#children) .. children)
+        local voxel = lurek.render.loadVoxel(path, 2)
+        local bounds = voxel:getBounds()
+        expect_equal(-1, bounds.minX)
+        expect_equal(2, bounds.maxY)
     end)
 
     -- @covers lurek.render.setBold

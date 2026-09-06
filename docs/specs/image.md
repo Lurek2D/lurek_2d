@@ -351,9 +351,9 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 - `LPaletteLUT:type() -> string`: Returns the Lua-visible type name for this palette lookup table handle.
 - `LPaletteLUT:typeOf(name) -> boolean`: Returns whether this palette lookup table handle matches a supported type name.
 
-#### LUnknown Type
+#### LProvinceGrid Type
 
-- Lua-visible object type.
+- Compatibility re-export; the canonical Lua-visible province grid owns topology,
 
 ##### Fields
 
@@ -361,22 +361,22 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 ##### Methods
 
-- `LUnknown:adjacencies() -> table`: Returns province adjacency records and shared border pixel counts.
-- `LUnknown:borderSegments() -> table`: Returns border line segments between neighboring provinces.
-- `LUnknown:deserializeShapeData(bytes) -> LuaValue`: Decodes serialized province shape data into span and segment tables.
-- `LUnknown:drawShapes(x?, y?, w?, h?) -> integer`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
-- `LUnknown:getAt(x, y) -> integer`: Returns the province id stored at grid coordinates.
-- `LUnknown:getHeight() -> integer`: Returns the province grid height. This method is available to Lua scripts.
-- `LUnknown:getPolygons() -> table`: Returns polygon rings for every province.
-- `LUnknown:getPolygonsSimplified() -> table`: Returns simplified polygon rings for every province.
-- `LUnknown:getWidth() -> integer`: Returns the province grid width. This method is available to Lua scripts.
-- `LUnknown:provinceCount() -> integer`: Returns the number of distinct provinces in the grid.
-- `LUnknown:provinceSpans() -> table`: Returns horizontal province spans by row.
-- `LUnknown:serializeShapeData() -> string`: Serializes province span and border shape data into a binary Lua string.
-- `LUnknown:type() -> string`: Returns the Lua-visible type name for this province grid handle.
-- `LUnknown:typeOf(name) -> boolean`: Returns whether this province grid handle matches a supported type name.
+- `LProvinceGrid:adjacencies() -> table`: Returns province adjacency records and shared border pixel counts.
+- `LProvinceGrid:borderSegments() -> table`: Returns border line segments between neighboring provinces.
+- `LProvinceGrid:deserializeShapeData(bytes) -> LuaValue`: Decodes serialized province shape data into span and segment tables.
+- `LProvinceGrid:drawShapes(x?, y?, w?, h?) -> integer`: Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+- `LProvinceGrid:getAt(x, y) -> integer`: Returns the province id stored at grid coordinates.
+- `LProvinceGrid:getHeight() -> integer`: Returns the province grid height. This method is available to Lua scripts.
+- `LProvinceGrid:getPolygons() -> table`: Returns polygon rings for every province.
+- `LProvinceGrid:getPolygonsSimplified() -> table`: Returns simplified polygon rings for every province.
+- `LProvinceGrid:getWidth() -> integer`: Returns the province grid width. This method is available to Lua scripts.
+- `LProvinceGrid:provinceCount() -> integer`: Returns the number of distinct provinces in the grid.
+- `LProvinceGrid:provinceSpans() -> table`: Returns horizontal province spans by row.
+- `LProvinceGrid:serializeShapeData() -> string`: Serializes province span and border shape data into a binary Lua string.
+- `LProvinceGrid:type() -> string`: Returns the Lua-visible type name for this province grid handle.
+- `LProvinceGrid:typeOf(name) -> boolean`: Returns whether this province grid handle matches a supported type name.
 
-#### LUnknownAdjacenciesResult Type
+#### LProvinceGridAdjacenciesResult Type
 
 - Generated result shape from @field tags.
 
@@ -390,7 +390,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LUnknownBorderSegmentsResult Type
+#### LProvinceGridBorderSegmentsResult Type
 
 - Generated result shape from @field tags.
 
@@ -407,7 +407,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LUnknownGetPolygonsResult Type
+#### LProvinceGridGetPolygonsResult Type
 
 - Generated result shape from @field tags.
 
@@ -420,7 +420,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LUnknownGetPolygonsSimplifiedResult Type
+#### LProvinceGridGetPolygonsSimplifiedResult Type
 
 - Generated result shape from @field tags.
 
@@ -433,7 +433,7 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 - No documented methods.
 
-#### LUnknownProvinceSpansResult Type
+#### LProvinceGridProvinceSpansResult Type
 
 - Generated result shape from @field tags.
 
@@ -458,6 +458,9 @@ This module primarily collaborates with `color`, `math`, `province`, `render`, a
 
 ## Notes
 
+- Built-in procedural graphics belong to `lurek.render`, not this CPU image module. The native catalogue is compiled into the executable, so portable packages do not need an asset-relative SVG directory.
+- Use `lurek.render.listBuiltinShapes`, `getBuiltinShapeInfo`, and `loadBuiltinShape` for the 96 primitive-based templates. Keep `LShape` handles retained and compiled; use `LShape:drawMany` for repeated instances.
+- `lurek.svg` remains available for user-provided SVG files. It is intentionally separate from the native shape catalogue and does not add built-in SVG dependencies to a release package.
 - `lurek.province.newGrid` is the canonical GameFS-backed constructor for province id grids. `lurek.image.newProvinceGrid` remains a compatibility facade for image-origin content and delegates to the same bounded province adapter; migrate new code to `lurek.province.newGrid`.
 - Lua image construction, codecs, callbacks, frames, layers, and byte exports use `ImageLimits`; oversized dimensions, encoded input, decompression output, aggregate state, or pixel work fail before allocation or iteration.
 - Lua save operations encode bounded bytes and write through GameFS atomically. Normal output is restricted to `save/`; the engine's approved `tests/artifacts/current/` evidence root is available to test runs through the same checked atomic writer. Host paths, traversal, and direct filesystem writes are not image responsibilities.

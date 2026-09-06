@@ -10,8 +10,9 @@
 use std::collections::HashMap;
 
 use crate::render::gpu_pipeline::{
-    build_custom_color_shader_source, build_custom_light_shader_source,
-    build_custom_particle_shader_source, build_custom_texture_shader_source,
+    build_custom_color_instanced_shader_source, build_custom_color_shader_source,
+    build_custom_light_shader_source, build_custom_particle_shader_source,
+    build_custom_texture_instanced_shader_source, build_custom_texture_shader_source,
     build_custom_textured_particle_shader_source, create_render_pipeline, GeometryKind,
     PipelineKey,
 };
@@ -36,7 +37,9 @@ fn cached_pipeline_count(cache: &GpuShader) -> usize {
     cache
         .color_pipelines
         .len()
+        .saturating_add(cache.color_instanced_pipelines.len())
         .saturating_add(cache.texture_pipelines.len())
+        .saturating_add(cache.texture_instanced_pipelines.len())
         .saturating_add(cache.particle_pipelines.len())
         .saturating_add(cache.textured_particle_pipelines.len())
         .saturating_add(cache.light_pipelines.len())
@@ -283,18 +286,28 @@ impl GpuRenderer {
                 })
             });
             let color_source = build_custom_color_shader_source(shader, &uniform_signature);
+            let color_instanced_source =
+                build_custom_color_instanced_shader_source(shader, &uniform_signature);
             let light_source = (shader.target() == ShaderTarget::Light)
                 .then(|| build_custom_light_shader_source(shader, &uniform_signature));
             let particle_source = build_custom_particle_shader_source(shader, &uniform_signature);
             let textured_particle_source =
                 build_custom_textured_particle_shader_source(shader, &uniform_signature);
             let texture_source = build_custom_texture_shader_source(shader, &uniform_signature);
+            let texture_instanced_source =
+                build_custom_texture_instanced_shader_source(shader, &uniform_signature);
             let color_module = self
                 .device
                 .create_shader_module(wgpu::ShaderModuleDescriptor {
                     label: Some("custom_color_shader"),
                     source: wgpu::ShaderSource::Wgsl(color_source.into()),
                 });
+            let color_instanced_module =
+                self.device
+                    .create_shader_module(wgpu::ShaderModuleDescriptor {
+                        label: Some("custom_color_instanced_shader"),
+                        source: wgpu::ShaderSource::Wgsl(color_instanced_source.into()),
+                    });
             let particle_module = self
                 .device
                 .create_shader_module(wgpu::ShaderModuleDescriptor {
@@ -320,6 +333,12 @@ impl GpuRenderer {
                     label: Some("custom_texture_shader"),
                     source: wgpu::ShaderSource::Wgsl(texture_source.into()),
                 });
+            let texture_instanced_module =
+                self.device
+                    .create_shader_module(wgpu::ShaderModuleDescriptor {
+                        label: Some("custom_texture_instanced_shader"),
+                        source: wgpu::ShaderSource::Wgsl(texture_instanced_source.into()),
+                    });
             let color_layout = {
                 let bind_group_layouts = match uniform_bind_group_layout.as_ref() {
                     Some(uniform_layout) => vec![&self.viewport_bind_group_layout, uniform_layout],
@@ -416,7 +435,9 @@ impl GpuRenderer {
                     uniform_buffers,
                     uniform_bind_group,
                     color_module,
+                    color_instanced_module,
                     texture_module,
+                    texture_instanced_module,
                     particle_module,
                     textured_particle_module,
                     light_module,
@@ -426,7 +447,9 @@ impl GpuRenderer {
                     textured_particle_layout,
                     light_layout,
                     color_pipelines: HashMap::new(),
+                    color_instanced_pipelines: HashMap::new(),
                     texture_pipelines: HashMap::new(),
+                    texture_instanced_pipelines: HashMap::new(),
                     particle_pipelines: HashMap::new(),
                     textured_particle_pipelines: HashMap::new(),
                     light_pipelines: HashMap::new(),
@@ -498,11 +521,11 @@ impl GpuRenderer {
                 return None;
             };
             match geometry {
-                GeometryKind::Color | GeometryKind::ColorInstanced => {
-                    !cache.color_pipelines.contains_key(&key)
-                }
-                GeometryKind::Texture | GeometryKind::TextureInstanced => {
-                    !cache.texture_pipelines.contains_key(&key)
+                GeometryKind::Color => !cache.color_pipelines.contains_key(&key),
+                GeometryKind::ColorInstanced => !cache.color_instanced_pipelines.contains_key(&key),
+                GeometryKind::Texture => !cache.texture_pipelines.contains_key(&key),
+                GeometryKind::TextureInstanced => {
+                    !cache.texture_instanced_pipelines.contains_key(&key)
                 }
                 GeometryKind::Particle => !cache.particle_pipelines.contains_key(&key),
                 GeometryKind::ParticleTextured => {
@@ -529,7 +552,7 @@ impl GpuRenderer {
                     return None;
                 };
                 match geometry {
-                    GeometryKind::Color | GeometryKind::ColorInstanced => create_render_pipeline(
+                    GeometryKind::Color => create_render_pipeline(
                         &self.device,
                         self.surface_format,
                         &cache.color_layout,
@@ -537,18 +560,38 @@ impl GpuRenderer {
                         geometry,
                         key,
                         "lurek_fragment_main",
+                        key.sample_count,
                     ),
-                    GeometryKind::Texture | GeometryKind::TextureInstanced => {
-                        create_render_pipeline(
-                            &self.device,
-                            self.surface_format,
-                            &cache.texture_layout,
-                            &cache.texture_module,
-                            geometry,
-                            key,
-                            "lurek_fragment_main",
-                        )
-                    }
+                    GeometryKind::ColorInstanced => create_render_pipeline(
+                        &self.device,
+                        self.surface_format,
+                        &cache.color_layout,
+                        &cache.color_instanced_module,
+                        geometry,
+                        key,
+                        "lurek_fragment_main",
+                        key.sample_count,
+                    ),
+                    GeometryKind::Texture => create_render_pipeline(
+                        &self.device,
+                        self.surface_format,
+                        &cache.texture_layout,
+                        &cache.texture_module,
+                        geometry,
+                        key,
+                        "lurek_fragment_main",
+                        key.sample_count,
+                    ),
+                    GeometryKind::TextureInstanced => create_render_pipeline(
+                        &self.device,
+                        self.surface_format,
+                        &cache.texture_layout,
+                        &cache.texture_instanced_module,
+                        geometry,
+                        key,
+                        "lurek_fragment_main",
+                        key.sample_count,
+                    ),
                     GeometryKind::Particle => create_render_pipeline(
                         &self.device,
                         self.surface_format,
@@ -557,6 +600,7 @@ impl GpuRenderer {
                         geometry,
                         key,
                         "lurek_fragment_main",
+                        key.sample_count,
                     ),
                     GeometryKind::ParticleTextured => create_render_pipeline(
                         &self.device,
@@ -566,6 +610,7 @@ impl GpuRenderer {
                         geometry,
                         key,
                         "lurek_fragment_main",
+                        key.sample_count,
                     ),
                     GeometryKind::Light => {
                         let (Some(light_layout), Some(light_module)) =
@@ -581,6 +626,7 @@ impl GpuRenderer {
                             geometry,
                             key,
                             "lurek_fragment_main",
+                            1,
                         )
                     }
                 }
@@ -590,11 +636,17 @@ impl GpuRenderer {
                 return None;
             };
             match geometry {
-                GeometryKind::Color | GeometryKind::ColorInstanced => {
+                GeometryKind::Color => {
                     cache.color_pipelines.insert(key, pipeline);
                 }
-                GeometryKind::Texture | GeometryKind::TextureInstanced => {
+                GeometryKind::ColorInstanced => {
+                    cache.color_instanced_pipelines.insert(key, pipeline);
+                }
+                GeometryKind::Texture => {
                     cache.texture_pipelines.insert(key, pipeline);
+                }
+                GeometryKind::TextureInstanced => {
+                    cache.texture_instanced_pipelines.insert(key, pipeline);
                 }
                 GeometryKind::Particle => {
                     cache.particle_pipelines.insert(key, pipeline);
@@ -612,7 +664,7 @@ impl GpuRenderer {
             return None;
         };
         match geometry {
-            GeometryKind::Color | GeometryKind::ColorInstanced => {
+            GeometryKind::Color => {
                 let pipeline = cache.color_pipelines.get(&key);
                 debug_assert!(
                     pipeline.is_some(),
@@ -620,11 +672,27 @@ impl GpuRenderer {
                 );
                 pipeline
             }
-            GeometryKind::Texture | GeometryKind::TextureInstanced => {
+            GeometryKind::ColorInstanced => {
+                let pipeline = cache.color_instanced_pipelines.get(&key);
+                debug_assert!(
+                    pipeline.is_some(),
+                    "custom instanced color pipeline missing after ensure"
+                );
+                pipeline
+            }
+            GeometryKind::Texture => {
                 let pipeline = cache.texture_pipelines.get(&key);
                 debug_assert!(
                     pipeline.is_some(),
                     "custom texture pipeline missing after ensure"
+                );
+                pipeline
+            }
+            GeometryKind::TextureInstanced => {
+                let pipeline = cache.texture_instanced_pipelines.get(&key);
+                debug_assert!(
+                    pipeline.is_some(),
+                    "custom instanced texture pipeline missing after ensure"
                 );
                 pipeline
             }
@@ -671,10 +739,10 @@ impl GpuRenderer {
     ) -> Option<&wgpu::RenderPipeline> {
         let cache = self.shader_cache.get(shader_key)?;
         match geometry {
-            GeometryKind::Color | GeometryKind::ColorInstanced => cache.color_pipelines.get(&key),
-            GeometryKind::Texture | GeometryKind::TextureInstanced => {
-                cache.texture_pipelines.get(&key)
-            }
+            GeometryKind::Color => cache.color_pipelines.get(&key),
+            GeometryKind::ColorInstanced => cache.color_instanced_pipelines.get(&key),
+            GeometryKind::Texture => cache.texture_pipelines.get(&key),
+            GeometryKind::TextureInstanced => cache.texture_instanced_pipelines.get(&key),
             GeometryKind::Particle => cache.particle_pipelines.get(&key),
             GeometryKind::ParticleTextured => cache.textured_particle_pipelines.get(&key),
             GeometryKind::Light => cache.light_pipelines.get(&key),

@@ -278,7 +278,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 ##### Methods
 
 - `LCombo:completedWithin(ms) -> boolean`: Returns whether the combo completed within a recent millisecond window.
-- `LCombo:consume() -> nil`: Marks the latest combo completion as consumed.
+- `LCombo:consume() -> boolean`: Marks the latest combo completion as consumed.
 - `LCombo:feed(key) -> string`: Feeds one key into the combo detector and returns progress status.
 - `LCombo:getStep(index) -> table`: Returns step data by one-based index.
 - `LCombo:isInProgress() -> boolean`: Returns whether the combo sequence is partially matched.
@@ -392,7 +392,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 
 - `LPlayerInputContext:assignGamepad(id, opts?) -> nil`: Assigns a persistent gamepad slot to this context.
 - `LPlayerInputContext:assignKeyboardMouse(opts?) -> nil`: Assigns keyboard and mouse to this context.
-- `LPlayerInputContext:clearActions() -> nil`: Removes every local action.
+- `LPlayerInputContext:clearActions() -> nil`: Removes every local action from this player input context.
 - `LPlayerInputContext:defineAxis1D(name, opts) -> nil`: Defines or replaces a continuous one-dimensional action.
 - `LPlayerInputContext:defineAxis2D(name, opts) -> nil`: Defines or replaces a continuous radial two-dimensional action.
 - `LPlayerInputContext:defineButton(name, opts) -> nil`: Defines or replaces a player-local digital action.
@@ -402,7 +402,7 @@ This module primarily collaborates with `filesystem`, `runtime`. Its responsibil
 - `LPlayerInputContext:getConflicts() -> table`: Returns local binding conflicts in deterministic order.
 - `LPlayerInputContext:isDown(name) -> boolean`: Returns whether a button or thresholded analog action is currently active.
 - `LPlayerInputContext:isEnabled() -> boolean`: Returns whether this context is enabled.
-- `LPlayerInputContext:removeAction(name) -> boolean`: Removes one local action.
+- `LPlayerInputContext:removeAction(name) -> boolean`: Removes one local action from this player input context.
 - `LPlayerInputContext:restoreBindings(json) -> nil`: Atomically restores definitions and enabled state from JSON.
 - `LPlayerInputContext:serializeBindings() -> string`: Serializes local definitions and enabled state as versioned JSON.
 - `LPlayerInputContext:setEnabled(enabled) -> nil`: Enables or disables all queries for this context.

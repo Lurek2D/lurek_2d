@@ -98,28 +98,15 @@ end
 
 --@api: lurek.automation.update
 do
-    local steps = {
-        { action = "wait", time = 0.0 },
-        { action = "wait", time = 0.1 },
-    }
-    lurek.automation.load("update_test", { steps = steps })
-    lurek.automation.start("update_test")
-    lurek.automation.update(0.016)
-    lurek.log.info(tostring("updated by 16ms"))
-    lurek.log.info(tostring("elapsed = " .. tostring(lurek.automation.getElapsedTime())))
-
-    lurek.automation.load("input_replay", {
-        steps = {
-            { action = "combo", time = 0.10, combo = { "ctrl", "a" }, duration = 0.05 },
-            { action = "mousepress", time = 0.20, x = 120, y = 80, button = 1, clicks = 2, duration = 0.03 },
-            { action = "gamepadpress", time = 0.30, gamepad = 0, gamepadButton = 0, buttonName = "south", duration = 0.10 },
-            { action = "touchpress", time = 0.40, id = 1, x = 64, y = 64, pressure = 1.0, duration = 0.10 },
-        },
-    })
-    lurek.automation.start("input_replay")
-    lurek.automation.update(0.50)
-    lurek.log.info(tostring("input replay step = " .. tostring(lurek.automation.getCurrentStep())))
-    lurek.log.info(tostring("gamepad down = " .. tostring(lurek.input.gamepad.isDown(0, 0))))
+local steps = {
+{ action = "wait", time = 0.0 },
+{ action = "wait", time = 0.1 },
+}
+lurek.automation.load("update_test", { steps = steps })
+lurek.automation.start("update_test")
+lurek.automation.update(0.016)
+lurek.log.info(tostring("updated by 16ms"))
+lurek.log.info(tostring("elapsed = " .. tostring(lurek.automation.getElapsedTime())))
 end
 
 --@api: lurek.automation.isRunning

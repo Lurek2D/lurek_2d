@@ -408,6 +408,31 @@ pub fn validate_render_command(
                 oy: *oy,
             },
         ),
+        DrawShapeMany { instances, .. } => {
+            if instances.len() > 250_000 {
+                return Err(RenderInputError::TooMany {
+                    field: "shape.instances",
+                    len: instances.len(),
+                    max: 250_000,
+                });
+            }
+            for instance in instances {
+                validate_transform(
+                    "shape.instance.transform",
+                    TransformInput {
+                        x: instance.x,
+                        y: instance.y,
+                        rotation: instance.rotation,
+                        sx: instance.sx,
+                        sy: instance.sy,
+                        ox: instance.ox,
+                        oy: instance.oy,
+                    },
+                )?;
+                validate_color("shape.instance.tint", instance.tint)?;
+            }
+            Ok(())
+        }
         DrawStaticGeometry {
             x,
             y,
@@ -984,9 +1009,12 @@ pub fn validate_compound_shape(
     validate_positive("shape.current_line_width", shape.current_line_width)?;
     validate_count(
         "shape.commands",
-        shape.commands.len(),
+        shape.command_count(),
         limits.max_vertices_per_command,
     )?;
+    for color in shape.palette.iter() {
+        validate_color("shape.palette", *color)?;
+    }
     for command in &shape.commands {
         validate_shape_command(command, limits)?;
     }
@@ -1000,6 +1028,34 @@ fn validate_shape_command(
     match command {
         ShapeCommand::SetColor(r, g, b, a) => validate_color("shape.color", [*r, *g, *b, *a]),
         ShapeCommand::SetLineWidth(width) => validate_positive("shape.line_width", *width),
+        ShapeCommand::SetStrokeStyle(style) => {
+            validate_positive("shape.stroke.width", style.width)?;
+            if !style.miter_limit.is_finite() || style.miter_limit <= 0.0 {
+                return Err(RenderInputError::OutOfRange {
+                    field: "shape.stroke.miter_limit",
+                });
+            }
+            if !style.dash_offset.is_finite()
+                || style
+                    .dash
+                    .iter()
+                    .any(|value| !value.is_finite() || *value < 0.0)
+            {
+                return Err(RenderInputError::OutOfRange {
+                    field: "shape.stroke.dash",
+                });
+            }
+            Ok(())
+        }
+        ShapeCommand::SetColorRole(role) => {
+            if crate::render::shape::role_index(role).is_some() {
+                Ok(())
+            } else {
+                Err(RenderInputError::OutOfRange {
+                    field: "shape.color_role",
+                })
+            }
+        }
         ShapeCommand::Rectangle { x, y, w, h, .. } => {
             validate_finite_many(&[("shape.rectangle.x", *x), ("shape.rectangle.y", *y)])?;
             validate_non_negative("shape.rectangle.w", *w)?;
@@ -1071,6 +1127,106 @@ fn validate_shape_command(
             ])?;
             validate_non_negative("shape.arc.radius", *radius)?;
             validate_segments("shape.arc.segments", *segments, limits)
+        }
+        ShapeCommand::Point { x, y, size } => {
+            validate_finite_many(&[("shape.point.x", *x), ("shape.point.y", *y)])?;
+            validate_non_negative("shape.point.size", *size)
+        }
+        ShapeCommand::Points { points, size } => {
+            validate_flat_points("shape.points", points, limits)?;
+            validate_non_negative("shape.points.size", *size)
+        }
+        ShapeCommand::Path {
+            segments, stroke, ..
+        } => {
+            validate_count(
+                "shape.path.segments",
+                segments.len(),
+                limits.max_segments_per_command as usize,
+            )?;
+            if !stroke.width.is_finite() || stroke.width < 0.0 {
+                return Err(RenderInputError::OutOfRange {
+                    field: "shape.path.stroke.width",
+                });
+            }
+            if !stroke.miter_limit.is_finite() || stroke.miter_limit <= 0.0 {
+                return Err(RenderInputError::OutOfRange {
+                    field: "shape.path.stroke.miter_limit",
+                });
+            }
+            if !stroke.dash_offset.is_finite()
+                || stroke
+                    .dash
+                    .iter()
+                    .any(|value| !value.is_finite() || *value < 0.0)
+            {
+                return Err(RenderInputError::OutOfRange {
+                    field: "shape.path.stroke.dash",
+                });
+            }
+            for segment in segments {
+                match segment {
+                    crate::render::renderer::PathSegment::MoveTo { x, y }
+                    | crate::render::renderer::PathSegment::LineTo { x, y } => {
+                        validate_finite_many(&[("shape.path.x", *x), ("shape.path.y", *y)])?;
+                    }
+                    crate::render::renderer::PathSegment::QuadTo { cx, cy, x, y } => {
+                        validate_finite_many(&[
+                            ("shape.path.cx", *cx),
+                            ("shape.path.cy", *cy),
+                            ("shape.path.x", *x),
+                            ("shape.path.y", *y),
+                        ])?;
+                    }
+                    crate::render::renderer::PathSegment::CubicTo {
+                        cx1,
+                        cy1,
+                        cx2,
+                        cy2,
+                        x,
+                        y,
+                    } => {
+                        validate_finite_many(&[
+                            ("shape.path.cx1", *cx1),
+                            ("shape.path.cy1", *cy1),
+                            ("shape.path.cx2", *cx2),
+                            ("shape.path.cy2", *cy2),
+                            ("shape.path.x", *x),
+                            ("shape.path.y", *y),
+                        ])?;
+                    }
+                }
+            }
+            Ok(())
+        }
+        ShapeCommand::Transformed {
+            commands,
+            transform,
+            palette,
+        } => {
+            if transform.m.iter().flatten().any(|value| !value.is_finite()) {
+                return Err(RenderInputError::OutOfRange {
+                    field: "shape.transform",
+                });
+            }
+            if palette
+                .iter()
+                .flatten()
+                .any(|value| !value.is_finite() || !(0.0..=1.0).contains(value))
+            {
+                return Err(RenderInputError::OutOfRange {
+                    field: "shape.child.palette",
+                });
+            }
+            validate_count(
+                "shape.child.commands",
+                commands.len(),
+                limits.max_vertices_per_command,
+            )?;
+            for child in commands {
+                validate_shape_command(child, limits)?;
+            }
+            Ok(())
         }
     }
 }

@@ -329,25 +329,22 @@ end
 --@api: LWorld:newCircleBody
 do
 
-    local world = lurek.physics.newWorld(0, 400)
-    local rubber = lurek.physics.newMaterial({
-        name = "rubber",
-        density = 1.1,
-        friction = 0.85,
-        restitution = 0.7,
-    })
-    local ball = world:newCircleBody(200, 100, 16, "dynamic", {
-        material = rubber,
-        bullet = true,
-        layer = 0x2,
-        mask = 0x3,
-    })
-    local target = world:newBody(200, 260, "static")
-    ball:setVelocity(15, -20)
-    world:step(1 / 60)
-    lurek.log.info("projectile pos=" .. select(1, ball:getPosition()) .. "," .. select(2, ball:getPosition()))
-    lurek.log.info("projectile size=" .. ball:getWidth() .. "x" .. ball:getHeight() .. " target=" .. target:getType())
-    lurek.log.info("projectile bullet=" .. tostring(ball:isBullet()) .. " layer=" .. tostring(ball:getLayer()))
+local world = lurek.physics.newWorld(0, 400)
+local rubber = lurek.physics.newMaterial({
+name = "rubber",
+density = 1.1,
+friction = 0.85,
+restitution = 0.7,
+})
+local ball = world:newCircleBody(200, 100, 16, "dynamic", {
+material = rubber,
+bullet = true,
+layer = 0x2,
+mask = 0x3,
+})
+local target = world:newBody(200, 260, "static")
+ball:setVelocity(15, -20)
+world:step(1 / 60)
 end
 
 --@api: LWorld:kinematic
@@ -1184,68 +1181,64 @@ end
 --@api: LWorld:newPolygonBody
 do
 
-    local world = lurek.physics.newWorld(0, 400)
-    local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic", {
-        material = lurek.physics.newMaterial({
-            name = "wedge",
-            density = 1.3,
-            friction = 0.7,
-            restitution = 0.2,
-        }),
-        bullet = true,
-        layer = 0x4,
-        mask = 0x7,
-    })
-    tri:setAngularVelocity(1.5)
-    world:step(1 / 60)
-    local x, y = tri:getPosition()
-    lurek.log.info("falling wedge pos=" .. x .. "," .. y)
-    lurek.log.info("body type=" .. tri:getType() .. " angle=" .. tri:getAngle())
-    lurek.log.info("material=" .. tostring(tri:getMaterial().name) .. " bullet=" .. tostring(tri:isBullet()))
+local world = lurek.physics.newWorld(0, 400)
+local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic", {
+material = lurek.physics.newMaterial({
+name = "wedge",
+density = 1.3,
+friction = 0.7,
+restitution = 0.2,
+}),
+bullet = true,
+layer = 0x4,
+mask = 0x7,
+})
+tri:setAngularVelocity(1.5)
+world:step(1 / 60)
+local x, y = tri:getPosition()
+lurek.log.info("falling wedge pos=" .. x .. "," .. y)
 end
 
 --@api: LWorld:newEdgeBody
 do
 
-    local world = lurek.physics.newWorld(0, 400)
-    local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static", {
-        material = lurek.physics.newMaterial({
-            name = "rail",
-            friction = 0.4,
-            restitution = 0.0,
-            beamReflectivity = 0.8,
-        }),
-        layer = 0x8,
-        mask = 0x2,
-    })
-    local player = world:newCircleBody(100, 420, 10, "dynamic")
-    player:setVelocity(40, 0)
-    world:step(1 / 60)
-    lurek.log.info("ledge body type=" .. wall:getType() .. " pos_y=" .. select(2, wall:getPosition()))
-    lurek.log.info("runner pos=" .. select(1, player:getPosition()) .. "," .. select(2, player:getPosition()))
-    lurek.log.info("material=" .. tostring(wall:getMaterial().name) .. " layer=" .. tostring(wall:getLayer()))
+local world = lurek.physics.newWorld(0, 400)
+local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static", {
+material = lurek.physics.newMaterial({
+name = "rail",
+friction = 0.4,
+restitution = 0.0,
+beamReflectivity = 0.8,
+}),
+layer = 0x8,
+mask = 0x2,
+})
+local player = world:newCircleBody(100, 420, 10, "dynamic")
+player:setVelocity(40, 0)
+world:step(1 / 60)
+lurek.log.info("ledge body type=" .. wall:getType() .. " pos_y=" .. select(2, wall:getPosition()))
+lurek.log.info("runner pos=" .. select(1, player:getPosition()) .. "," .. select(2, player:getPosition()))
 end
 
 --@api: LWorld:newChainBody
 do
 
-    local world = lurek.physics.newWorld(0, 400)
-    local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static", {
-        material = lurek.physics.newMaterial({
-            name = "track",
-            friction = 0.9,
-            restitution = 0.0,
-            surfaceType = "ground",
-        }),
-        layer = 0x10,
-        mask = 0x1F,
-    })
-    local bike = world:newCircleBody(120, 420, 8, "dynamic")
-    bike:setVelocity(30, 0)
-    world:step(1 / 60)
-    lurek.log.info("track body type=" .. ground:getType() .. " start_y=" .. select(2, ground:getPosition()))
-    lurek.log.info("bike pos=" .. select(1, bike:getPosition()) .. "," .. select(2, bike:getPosition()))
-    lurek.log.info("material=" .. tostring(ground:getMaterial().surfaceType) .. " mask=" .. tostring(ground:getMask()))
+local world = lurek.physics.newWorld(0, 400)
+local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static", {
+material = lurek.physics.newMaterial({
+name = "track",
+friction = 0.9,
+restitution = 0.0,
+surfaceType = "ground",
+}),
+layer = 0x10,
+mask = 0x1F,
+})
+local bike = world:newCircleBody(120, 420, 8, "dynamic")
+bike:setVelocity(30, 0)
+world:step(1 / 60)
+lurek.log.info("track body type=" .. ground:getType() .. " start_y=" .. select(2, ground:getPosition()))
+lurek.log.info("bike pos=" .. select(1, bike:getPosition()) .. "," .. select(2, bike:getPosition()))
 end
 
 --@api: LWorld:newBodies
@@ -1688,27 +1681,20 @@ end
 --@api: LWorld:castBeam
 do
 
-    local world = lurek.physics.newWorld(0, 0)
-    local mirror = world:newBody(120, 120, 8, 80, "static")
-    mirror:setMirror(true)
-    mirror:setBeamReflectivity(0.75)
-    local blocker = world:newBody(120, 40, 80, 8, "static")
-    local trace = world:castBeam(40, 120, 1, 0, 260, {
-        reflect = true,
-        maxBounces = 2,
-        energy = 1.0,
-        minEnergy = 0.2,
-    })
-    lurek.log.info("beam_hits=" .. tostring(#trace.hits))
-    lurek.log.info("beam_segments=" .. tostring(#trace.segments))
-    lurek.log.info("beam_reached_max=" .. tostring(trace.reachedMaxRange))
-    if trace.hits[1] then
-        lurek.log.info("beam_first=" .. tostring(trace.hits[1].bodyId) .. " reflected=" .. tostring(trace.hits[1].reflected))
-    end
-    if trace.hits[2] then
-        lurek.log.info("beam_second=" .. tostring(trace.hits[2].bodyId) .. " " .. tostring(trace.hits[2].distance))
-    end
-    lurek.log.info("blocker=" .. tostring(blocker:getId()))
+local world = lurek.physics.newWorld(0, 0)
+local mirror = world:newBody(120, 120, 8, 80, "static")
+mirror:setMirror(true)
+mirror:setBeamReflectivity(0.75)
+local blocker = world:newBody(120, 40, 80, 8, "static")
+local trace = world:castBeam(40, 120, 1, 0, 260, {
+reflect = true,
+maxBounces = 2,
+energy = 1.0,
+minEnergy = 0.2,
+})
+lurek.log.info("beam_hits=" .. tostring(#trace.hits))
+lurek.log.info("beam_segments=" .. tostring(#trace.segments))
+lurek.log.info("beam_reached_max=" .. tostring(trace.reachedMaxRange))
 end
 
 --@api: LWorld:reflectBodyVelocity
@@ -1727,23 +1713,16 @@ end
 --@api: LWorld:beamClosest
 do
 
-    local world = lurek.physics.newWorld(0, 0)
-    local shooter = world:newCircleBody(50, 260, 8, "dynamic")
-    shooter:setLayer(0x2)
-    local target = world:newCircleBody(190, 260, 14, "static")
-    target:setLayer(0x2)
-    local hit = world:beamClosest(50, 260, 1, 0, 240, {
-        excludeBody = shooter:getId(),
-        layer = 0x1,
-        mask = 0x2,
-    })
-    if hit then
-        lurek.log.info("beam_closest_body=" .. tostring(hit.bodyId))
-        lurek.log.info("beam_closest_point=" .. tostring(hit.x) .. " " .. tostring(hit.y))
-        lurek.log.info("beam_closest_distance=" .. tostring(hit.distance))
-    else
-        lurek.log.info("beam_closest_body=" .. tostring(nil))
-    end
+local world = lurek.physics.newWorld(0, 0)
+local shooter = world:newCircleBody(50, 260, 8, "dynamic")
+shooter:setLayer(0x2)
+local target = world:newCircleBody(190, 260, 14, "static")
+target:setLayer(0x2)
+local hit = world:beamClosest(50, 260, 1, 0, 240, {
+excludeBody = shooter:getId(),
+layer = 0x1,
+mask = 0x2,
+})
 end
 
 --@api: LWorld:beamAll
@@ -2293,27 +2272,18 @@ end
 --@api: LTerrain:collapseUnsupported
 do
 
-    local world = lurek.physics.newWorld(0, 400)
-    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
-    terrain:fillRect(0, 248, 256, 8, true)
-    terrain:addRect(72, 72, 24, 24)
-    local debris_result = terrain:collapseUnsupported({
-        support = "bottom",
-        mode = "spawnDebris",
-        minComponentCells = 2,
-        maxDebris = 2,
-    })
-    local terrain2 = lurek.physics.newTerrain(32, 32, 8, world)
-    terrain2:addRect(72, 72, 24, 24)
-    local chunk_result = terrain2:collapseUnsupported({
-        support = "bottom",
-        mode = "spawnDynamicChunks",
-        minComponentCells = 2,
-    })
-    terrain:flush()
-    lurek.log.info("debris_components=" .. tostring(debris_result.components))
-    lurek.log.info("debris_bodies=" .. tostring(#debris_result.debrisBodies))
-    lurek.log.info("chunk_bodies=" .. tostring(#chunk_result.bodyIds))
+local world = lurek.physics.newWorld(0, 400)
+local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+terrain:fillRect(0, 248, 256, 8, true)
+terrain:addRect(72, 72, 24, 24)
+local debris_result = terrain:collapseUnsupported({
+support = "bottom",
+mode = "spawnDebris",
+minComponentCells = 2,
+maxDebris = 2,
+})
+local terrain2 = lurek.physics.newTerrain(32, 32, 8, world)
+terrain2:addRect(72, 72, 24, 24)
 end
 
 --@api: LTerrain:solidPositions
@@ -2849,24 +2819,22 @@ end
 --@api: LLiquidMap:step
 do
 
-    local world = lurek.physics.newWorld(0, 200)
-    local terrain = lurek.physics.newTerrain(8, 8, 8, world)
-    for x = 1, 6 do
-        terrain:setCell(x, 6, true)
-    end
-    for y = 2, 6 do
-        terrain:setCell(1, y, true)
-        terrain:setCell(6, y, true)
-    end
-    local liquid = lurek.physics.newLiquidMap(8, 8, 8, world, terrain)
-    liquid:fillRect(2, 2, 3, 3, 1.0, "water")
-    terrain:setCell(3, 6, false)
-    local stats = nil
-    for _ = 1, 18 do
-        stats = liquid:step({ gravityFlow = 1.0, sidewaysFlow = 0.5, pressureFlow = 0.15, maxSteps = 2 })
-    end
-    lurek.log.info("step moved=" .. tostring(stats.movedAmount))
-    lurek.log.info("step outside=" .. tostring(liquid:getAmountAt(28, 60)))
+local world = lurek.physics.newWorld(0, 200)
+local terrain = lurek.physics.newTerrain(8, 8, 8, world)
+for x = 1, 6 do
+terrain:setCell(x, 6, true)
+end
+for y = 2, 6 do
+terrain:setCell(1, y, true)
+terrain:setCell(6, y, true)
+end
+local liquid = lurek.physics.newLiquidMap(8, 8, 8, world, terrain)
+liquid:fillRect(2, 2, 3, 3, 1.0, "water")
+terrain:setCell(3, 6, false)
+local stats = nil
+for _ = 1, 18 do
+stats = liquid:step({ gravityFlow = 1.0, sidewaysFlow = 0.5, pressureFlow = 0.15, maxSteps = 2 })
+end
 end
 
 --@api: LLiquidMap:getAmountAt
@@ -3253,28 +3221,22 @@ end
 
 --@api: LWorld:addFlowField
 do
-    local world = lurek.physics.newWorld(0, 220)
-    local field = world:addFlowField({
-        name = "canyon_wind",
-        geometry = "path",
-        points = {
-            { x = 80, y = 180 },
-            { x = 200, y = 160 },
-            { x = 340, y = 190 },
-        },
-        width = 70,
-        strength = 180,
-        direction = "alongPath",
-        application = "acceleration",
-    })
-    local projectile = world:newCircleBody(120, 120, 4, "dynamic")
-    projectile:setBullet(true)
-    projectile:applyImpulse(420, -160)
-    for _ = 1, 30 do
-        world:step(1 / 60)
-    end
-    local x, y = projectile:getPosition()
-    lurek.log.info("[physics] flow field id=" .. tostring(field:getId()) .. " projectile=" .. tostring(math.floor(x)) .. "," .. tostring(math.floor(y)))
+local world = lurek.physics.newWorld(0, 220)
+local field = world:addFlowField({
+name = "canyon_wind",
+geometry = "path",
+points = {
+{ x = 80, y = 180 },
+{ x = 200, y = 160 },
+{ x = 340, y = 190 },
+},
+width = 70,
+strength = 180,
+direction = "alongPath",
+application = "acceleration",
+})
+local projectile = world:newCircleBody(120, 120, 4, "dynamic")
+projectile:setBullet(true)
 end
 
 --@api: LWorld:addFan
@@ -3659,45 +3621,42 @@ end
 
 --@api: LBody:setWaterScale
 do
-    local world = lurek.physics.newWorld(0, 0)
-    local body = world:newCircleBody(20, 20, 8, "dynamic")
-    body:setWaterScale(1.5)
-    world:addFlowField({
-        geometry = "path",
-        points = {
-            { x = 0, y = 20 },
-            { x = 120, y = 20 },
-            { x = 180, y = 48 },
-        },
-        width = 48,
-        direction = "alongPath",
-        strength = 50,
-        medium = "water",
-    })
-    world:step(1 / 60)
-    lurek.log.info("[physics] waterScale vx=" .. tostring(select(1, body:getVelocity())))
+local world = lurek.physics.newWorld(0, 0)
+local body = world:newCircleBody(20, 20, 8, "dynamic")
+body:setWaterScale(1.5)
+world:addFlowField({
+geometry = "path",
+points = {
+{ x = 0, y = 20 },
+{ x = 120, y = 20 },
+{ x = 180, y = 48 },
+},
+width = 48,
+direction = "alongPath",
+strength = 50,
+medium = "water",
+})
+world:step(1 / 60)
 end
 
 --@api: LBody:setFlowCrossSection
 do
-    local world = lurek.physics.newWorld(0, 0)
-    local body = world:newCircleBody(20, 20, 8, "dynamic")
-    body:setFlowCrossSection(2.0)
-    world:addFlowField({
-        geometry = "rect",
-        x = 0,
-        y = 0,
-        w = 80,
-        h = 80,
-        direction = "explicit",
-        directionVector = { x = 1, y = 0 },
-        medium = "water",
-        application = "targetVelocityDrag",
-        strength = 50,
-        drag = 2.0,
-    })
-    world:step(1 / 60)
-    lurek.log.info("[physics] flowCrossSection vx=" .. tostring(select(1, body:getVelocity())))
+local world = lurek.physics.newWorld(0, 0)
+local body = world:newCircleBody(20, 20, 8, "dynamic")
+body:setFlowCrossSection(2.0)
+world:addFlowField({
+geometry = "rect",
+x = 0,
+y = 0,
+w = 80,
+h = 80,
+direction = "explicit",
+directionVector = { x = 1, y = 0 },
+medium = "water",
+application = "targetVelocityDrag",
+strength = 50,
+drag = 2.0,
+})
 end
 
 --@api: lurek.physics.newAltitudeLayer

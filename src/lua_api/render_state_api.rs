@@ -203,6 +203,7 @@ pub(super) fn register_state_api(
     let s = state.clone();
     // -- setColorMask --
     /// Sets which color channels are written during draw calls. Call with no args to enable all.
+    /// @param | args | any... | Up to four booleans for red, green, blue, and alpha.
     graphics.set(
         "setColorMask",
         lua.create_function(move |_, args: LuaMultiValue| {

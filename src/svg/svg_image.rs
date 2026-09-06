@@ -83,7 +83,11 @@ impl SvgImage {
         let opt = usvg::Options::default();
         let tree = usvg::Tree::from_data(bytes, &opt)
             .map_err(|e| format!("Failed to parse SVG '{}': {}", label, e))?;
+        Ok(Self::from_usvg_tree(tree, label))
+    }
 
+    /// Converts an already parsed SVG tree into the engine's mutable vector scene.
+    pub fn from_usvg_tree(tree: usvg::Tree, _label: &str) -> Self {
         let width = tree.size.width();
         let height = tree.size.height();
 
@@ -219,13 +223,13 @@ impl SvgImage {
         let root_node = tree.root;
         let root_id = walk_node(&root_node, None, &mut elements, &convert_transform);
 
-        Ok(Self {
+        Self {
             width,
             height,
             root_id,
             elements,
             cached_canvases: HashMap::new(),
-        })
+        }
     }
 
     /// Recursively submits render commands to draw the elements.
@@ -315,6 +319,8 @@ impl SvgImage {
                                     segments: path.segments.clone(),
                                     mode: DrawMode::Fill,
                                     close: true,
+                                    fill_rule: crate::render::shape::FillRule::NonZero,
+                                    stroke: crate::render::shape::StrokeStyle::default(),
                                 });
                             }
                         }
@@ -347,6 +353,11 @@ impl SvgImage {
                                     segments: path.segments.clone(),
                                     mode: DrawMode::Line,
                                     close: true,
+                                    fill_rule: crate::render::shape::FillRule::NonZero,
+                                    stroke: crate::render::shape::StrokeStyle {
+                                        width: path.stroke_width,
+                                        ..crate::render::shape::StrokeStyle::default()
+                                    },
                                 });
                             }
                         }
@@ -666,6 +677,8 @@ impl SvgImage {
                         segments: path.segments.clone(),
                         mode: DrawMode::Fill,
                         close: true,
+                        fill_rule: crate::render::shape::FillRule::NonZero,
+                        stroke: crate::render::shape::StrokeStyle::default(),
                     });
                 }
 
@@ -682,6 +695,11 @@ impl SvgImage {
                         segments: path.segments.clone(),
                         mode: DrawMode::Line,
                         close: true,
+                        fill_rule: crate::render::shape::FillRule::NonZero,
+                        stroke: crate::render::shape::StrokeStyle {
+                            width: path.stroke_width,
+                            ..crate::render::shape::StrokeStyle::default()
+                        },
                     });
                 }
             }

@@ -119,7 +119,7 @@ impl LuaUserData for LuaEcsBatch {
             Ok(this.changeset.borrow().is_some())
         });
         // -- type --
-        /// Returns this userdata type name.
+        /// Returns this userdata type name for Lua-side ECS batch inspection.
         /// @return | string | Always `"LEcsBatch"`.
         methods.add_method("type", |_, _, ()| Ok("LEcsBatch"));
         // -- typeOf --
@@ -1622,7 +1622,7 @@ impl LuaUserData for LuaStatBlock {
             Ok(this.inner.borrow().get(&name))
         });
         // -- set --
-        /// Replaces one stat value.
+        /// Replaces one stat value in this additive stat block.
         /// @param | name | string | Stat key.
         /// @param | value | number | Finite stat value.
         methods.add_method("set", |_, this, (name, value): (String, f64)| {
@@ -1633,7 +1633,7 @@ impl LuaUserData for LuaStatBlock {
             Ok(())
         });
         // -- add --
-        /// Adds a numeric delta to one stat.
+        /// Adds a numeric delta to one stat in this additive stat block.
         /// @param | name | string | Stat key.
         /// @param | value | number | Finite delta to add.
         methods.add_method("add", |_, this, (name, value): (String, f64)| {
@@ -1666,7 +1666,7 @@ impl LuaUserData for LuaStatBlock {
 impl LuaUserData for LuaSlotDef {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getName --
-        /// Returns the slot name.
+        /// Returns the configured slot name for this loadout slot definition.
         /// @return | string | Slot name.
         methods.add_method("getName", |_, this, ()| {
             Ok(this.inner.borrow().name.clone())
@@ -1704,17 +1704,17 @@ impl LuaUserData for LuaSlotDef {
 impl LuaUserData for LuaPartDef {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getId --
-        /// Returns the stable part id.
+        /// Returns the stable part id for this loadout part definition.
         /// @return | string | Part id.
         methods.add_method("getId", |_, this, ()| Ok(this.inner.borrow().id.clone()));
         // -- getSlot --
-        /// Returns the preferred slot name.
+        /// Returns the preferred slot name for this loadout part definition.
         /// @return | string | Slot name, or empty string when unrestricted.
         methods.add_method("getSlot", |_, this, ()| {
             Ok(this.inner.borrow().slot.clone())
         });
         // -- getTags --
-        /// Returns compatibility tags.
+        /// Returns compatibility tags configured on this loadout part definition.
         /// @return | string[] | Part tags.
         methods.add_method("getTags", |lua, this, ()| {
             string_vec_to_lua(lua, this.inner.borrow().tags.iter().cloned())
@@ -1726,7 +1726,7 @@ impl LuaUserData for LuaPartDef {
             stat_block_to_lua(lua, &this.inner.borrow().stats)
         });
         // -- getCost --
-        /// Returns the part cost value.
+        /// Returns the part cost value configured for this loadout definition.
         /// @return | number | Part cost.
         methods.add_method("getCost", |_, this, ()| Ok(this.inner.borrow().cost));
         // -- getHardpoints --
@@ -1771,9 +1771,9 @@ impl LuaUserData for LuaLoadout {
         });
         // -- equip --
         /// Equips a part into a named slot after compatibility checks.
-        /// @return boolean
         /// @param | slot | string | Slot name.
         /// @param | part | LPartDef | Part definition to equip.
+        /// @return | boolean | True when the part was accepted and equipped.
         methods.add_method("equip", |_, this, args: LuaMultiValue| {
             let mut values = args.into_iter();
             let first = values.next().unwrap_or(LuaValue::Nil);

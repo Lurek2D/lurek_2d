@@ -125,6 +125,9 @@ impl RaycasterScene {
         scene.background = params.background.clone();
         scene.overlays = params.overlays.clone();
         scene.time_seconds = params.time_seconds;
+        scene.camera_angle = params.player_angle;
+        scene.camera_fov = params.fov;
+        scene.horizon_y = params.screen_height * 0.5 - params.horizon_offset;
         let limits = RaycasterLimits::default();
         if params.validate(&limits).is_err()
             || limits
@@ -163,6 +166,21 @@ impl RaycasterScene {
             &mut lighting_cache,
             vertical_planes(params.camera_height.clamp(0.1, 0.9), 0.0, 1.0),
         );
+        if let Some(layers) = params.background.as_ref().and_then(|background| {
+            if let RaycasterBackground::LayeredSky { layers, .. } = background {
+                Some(layers.as_slice())
+            } else {
+                None
+            }
+        }) {
+            super::sky::build_sky_tiles(
+                raycaster,
+                params,
+                vertical_planes(params.camera_height.clamp(0.1, 0.9), 0.0, 1.0),
+                layers,
+                &mut scene.sky_quads,
+            );
+        }
         scene.sprites.sort_by(|a, b| {
             b.depth
                 .partial_cmp(&a.depth)
@@ -235,6 +253,9 @@ impl RaycasterScene {
         scene.background = params.background.clone();
         scene.overlays = params.overlays.clone();
         scene.time_seconds = params.time_seconds;
+        scene.camera_angle = params.player_angle;
+        scene.camera_fov = params.fov;
+        scene.horizon_y = params.screen_height * 0.5 - params.horizon_offset;
         let limits = RaycasterLimits::default();
         if params.validate(&limits).is_err()
             || limits
@@ -327,6 +348,25 @@ impl RaycasterScene {
                     },
                     &mut lighting_cache,
                     vertical_planes(camera_world_z, level.floor_offset, level.ceiling_height),
+                );
+            });
+        }
+
+        if let Some(layers) = params.background.as_ref().and_then(|background| {
+            if let RaycasterBackground::LayeredSky { layers, .. } = background {
+                Some(layers.clone())
+            } else {
+                None
+            }
+        }) {
+            let active_level = grid.active_level();
+            let _ = grid.with_runtime_level(active_level, |level, raycaster| {
+                super::sky::build_sky_tiles(
+                    raycaster,
+                    params,
+                    vertical_planes(camera_world_z, level.floor_offset, level.ceiling_height),
+                    &layers,
+                    &mut scene.sky_quads,
                 );
             });
         }

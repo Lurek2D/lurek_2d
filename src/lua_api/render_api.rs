@@ -12,10 +12,13 @@ use crate::render::draw_layer::allocate_callback_id;
 use crate::render::renderer::{
     BevelStyle, GradientDirection, HexOrientation, PathSegment, PostFxPass,
 };
-use crate::render::shape::{CompoundShape, ShapeCommand};
+use crate::render::shape::{
+    role_index, CompoundShape, FillRule, ShapeCommand, StrokeCap, StrokeJoin, StrokeStyle,
+};
 use crate::render::{
     BlendMode, Canvas, CompareMode, DepthMode, DrawMode, Mesh, MeshDrawMode, MeshVertex,
-    RenderCommand, Shader, ShaderTarget, StencilAction, StencilMode, TextAlign, UniformValue,
+    RenderCommand, Shader, ShaderTarget, ShapeInstance, StencilAction, StencilMode, TextAlign,
+    UniformValue,
 };
 use crate::runtime::resource_keys::*;
 use crate::runtime::{
@@ -130,7 +133,7 @@ impl LuaUserData for LuaShaderPrewarmRequest {
                 .is_some())
         });
         // -- type --
-        /// Returns the userdata type name.
+        /// Returns the userdata type name for this shader prewarm request handle.
         /// @return | string | `LShaderPrewarmRequest`.
         methods.add_method("type", |_, _, ()| Ok("LShaderPrewarmRequest"));
         // -- typeOf --
@@ -245,7 +248,7 @@ impl LuaUserData for LuaSurfaceReadbackRequest {
             }
         });
         // -- type --
-        /// Returns the userdata type name.
+        /// Returns the userdata type name for this surface readback request handle.
         /// @return | string | `LReadbackRequest`.
         methods.add_method("type", |_, _, ()| Ok("LReadbackRequest"));
         // -- typeOf --
@@ -2071,6 +2074,310 @@ fn parse_draw_mode(mode: &str) -> Result<DrawMode, LuaError> {
         ))),
     }
 }
+
+/// Parse the closed set of path fill winding rules exposed by the Lua API.
+fn parse_fill_rule(rule: &str, api: &str) -> LuaResult<FillRule> {
+    match rule.to_ascii_lowercase().as_str() {
+        "nonzero" | "non-zero" | "winding" => Ok(FillRule::NonZero),
+        "evenodd" | "even-odd" | "odd" => Ok(FillRule::EvenOdd),
+        other => Err(LuaError::RuntimeError(format!(
+            "{api}: fillRule must be 'nonzero' or 'evenodd', got '{other}'"
+        ))),
+    }
+}
+
+fn validate_shape_finite(api: &str, values: &[f32]) -> LuaResult<()> {
+    if values.iter().any(|value| !value.is_finite()) {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: coordinates and dimensions must be finite"
+        )));
+    }
+    Ok(())
+}
+
+fn validate_shape_non_negative(api: &str, field: &str, value: f32) -> LuaResult<()> {
+    if !value.is_finite() || value < 0.0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must be finite and non-negative"
+        )));
+    }
+    Ok(())
+}
+
+fn parse_shape_rgba<'lua>(value: LuaValue<'lua>, api: &str, field: &str) -> LuaResult<[f32; 4]> {
+    let table = match value {
+        LuaValue::Table(table) => table,
+        _ => {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: {field} must be an array table"
+            )))
+        }
+    };
+    let len = table.raw_len();
+    if len != 3 && len != 4 {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: {field} must contain 3 or 4 channels"
+        )));
+    }
+    let mut color = [1.0; 4];
+    for index in 1..=len {
+        let value: f32 = table.get(index).map_err(|_| {
+            LuaError::RuntimeError(format!("{api}: {field}[{index}] must be a number"))
+        })?;
+        if !value.is_finite() || !(0.0..=1.0).contains(&value) {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: {field}[{index}] must be finite and within 0..1"
+            )));
+        }
+        color[index - 1] = value;
+    }
+    if len == 3 {
+        color[3] = 1.0;
+    }
+    Ok(color)
+}
+
+fn parse_shape_stroke_style(opts: Option<&LuaTable>, api: &str) -> LuaResult<StrokeStyle> {
+    let Some(opts) = opts else {
+        return Ok(StrokeStyle::default());
+    };
+    let width = opts.get::<_, Option<f32>>("width")?.unwrap_or(1.0);
+    let miter_limit = opts.get::<_, Option<f32>>("miterLimit")?.unwrap_or(4.0);
+    let dash_offset = opts.get::<_, Option<f32>>("dashOffset")?.unwrap_or(0.0);
+    if !width.is_finite() || width < 0.0 || !miter_limit.is_finite() || miter_limit <= 0.0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: stroke width must be finite >= 0 and miterLimit must be positive"
+        )));
+    }
+    if !dash_offset.is_finite() {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: dashOffset must be finite"
+        )));
+    }
+    let cap = match opts
+        .get::<_, Option<String>>("cap")?
+        .unwrap_or_else(|| "butt".to_string())
+        .as_str()
+    {
+        "butt" => StrokeCap::Butt,
+        "round" => StrokeCap::Round,
+        "square" => StrokeCap::Square,
+        other => {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: unknown stroke cap '{other}'"
+            )))
+        }
+    };
+    let join = match opts
+        .get::<_, Option<String>>("join")?
+        .unwrap_or_else(|| "miter".to_string())
+        .as_str()
+    {
+        "miter" => StrokeJoin::Miter,
+        "round" => StrokeJoin::Round,
+        "bevel" => StrokeJoin::Bevel,
+        other => {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: unknown stroke join '{other}'"
+            )))
+        }
+    };
+    let dash = match opts.get::<_, LuaValue>("dash")? {
+        LuaValue::Nil => Vec::new(),
+        LuaValue::Table(table) => {
+            let mut values = Vec::with_capacity(table.raw_len());
+            for index in 1..=table.raw_len() {
+                let value: f32 = table.get(index).map_err(|_| {
+                    LuaError::RuntimeError(format!("{api}: dash values must be numbers"))
+                })?;
+                if !value.is_finite() || value < 0.0 {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api}: dash values must be finite and non-negative"
+                    )));
+                }
+                values.push(value);
+            }
+            if values.len() % 2 != 0 {
+                values.push(values.last().copied().unwrap_or(1.0));
+            }
+            values
+        }
+        _ => {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: dash must be an array table"
+            )))
+        }
+    };
+    Ok(StrokeStyle {
+        width,
+        cap,
+        join,
+        miter_limit,
+        dash,
+        dash_offset,
+    })
+}
+
+fn parse_path_segments(table: LuaTable, api: &str) -> LuaResult<(Vec<PathSegment>, bool)> {
+    let count = table.raw_len();
+    if count == 0 || count > 4096 {
+        return Err(LuaError::RuntimeError(format!(
+            "{api}: segments must contain 1..4096 entries"
+        )));
+    }
+    let mut segments = Vec::with_capacity(count);
+    let mut subpath_start: Option<[f32; 2]> = None;
+    let mut has_close_verb = false;
+    for index in 1..=count {
+        let entry: LuaTable = table.get(index).map_err(|_| {
+            LuaError::RuntimeError(format!("{api}: segment {index} must be a table"))
+        })?;
+        let verb = entry
+            .get::<_, Option<String>>("verb")?
+            .or(entry.get::<_, Option<String>>("type")?)
+            .or_else(|| entry.get::<_, Option<String>>(1).ok().flatten())
+            .ok_or_else(|| {
+                LuaError::RuntimeError(format!("{api}: segment {index} is missing verb"))
+            })?;
+        let number = |name: &str, positional: i64| -> LuaResult<f32> {
+            let value = entry
+                .get::<_, Option<f32>>(name)?
+                .or_else(|| entry.get::<_, Option<f32>>(positional).ok().flatten())
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(format!("{api}: segment {index} is missing {name}"))
+                })?;
+            if !value.is_finite() {
+                return Err(LuaError::RuntimeError(format!(
+                    "{api}: segment {index}.{name} must be finite"
+                )));
+            }
+            Ok(value)
+        };
+        if matches!(verb.as_str(), "close" | "closePath") {
+            has_close_verb = true;
+            let [x, y] = subpath_start.ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "{api}: segment {index} close requires a preceding moveTo"
+                ))
+            })?;
+            segments.push(PathSegment::LineTo { x, y });
+            continue;
+        }
+        if subpath_start.is_none() && !matches!(verb.as_str(), "moveTo" | "move") {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: segment {index} must start a subpath with moveTo"
+            )));
+        }
+        let segment = match verb.as_str() {
+            "moveTo" | "move" => PathSegment::MoveTo {
+                x: number("x", 2)?,
+                y: number("y", 3)?,
+            },
+            "lineTo" | "line" => PathSegment::LineTo {
+                x: number("x", 2)?,
+                y: number("y", 3)?,
+            },
+            "quadTo" | "quad" => PathSegment::QuadTo {
+                cx: number("cx", 2)?,
+                cy: number("cy", 3)?,
+                x: number("x", 4)?,
+                y: number("y", 5)?,
+            },
+            "cubicTo" | "cubic" => PathSegment::CubicTo {
+                cx1: number("cx1", 2)?,
+                cy1: number("cy1", 3)?,
+                cx2: number("cx2", 4)?,
+                cy2: number("cy2", 5)?,
+                x: number("x", 6)?,
+                y: number("y", 7)?,
+            },
+            other => {
+                return Err(LuaError::RuntimeError(format!(
+                    "{api}: unknown path verb '{other}'"
+                )))
+            }
+        };
+        if let PathSegment::MoveTo { x, y } = &segment {
+            subpath_start = Some([*x, *y]);
+        }
+        segments.push(segment);
+    }
+    Ok((segments, has_close_verb))
+}
+
+fn parse_shape_transform(opts: Option<&LuaTable>, api: &str) -> LuaResult<crate::math::Mat3> {
+    let Some(opts) = opts else {
+        return Ok(crate::math::Mat3::identity());
+    };
+    let number = |name: &str, default: f32| -> LuaResult<f32> {
+        let value = opts.get::<_, Option<f32>>(name)?.unwrap_or(default);
+        if !value.is_finite() {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: transform.{name} must be finite"
+            )));
+        }
+        Ok(value)
+    };
+    Ok(crate::math::Mat3::from_translation(crate::math::Vec2 {
+        x: number("x", 0.0)?,
+        y: number("y", 0.0)?,
+    }) * crate::math::Mat3::from_rotation(number("rotation", 0.0)?)
+        * crate::math::Mat3::from_scale(crate::math::Vec2 {
+            x: number("sx", 1.0)?,
+            y: number("sy", 1.0)?,
+        })
+        * crate::math::Mat3::from_translation(crate::math::Vec2 {
+            x: -number("ox", 0.0)?,
+            y: -number("oy", 0.0)?,
+        }))
+}
+
+fn parse_shape_instance(table: LuaTable, api: &str) -> LuaResult<ShapeInstance> {
+    let number = |name: &str, default: f32| -> LuaResult<f32> {
+        let value = table.get::<_, Option<f32>>(name)?.unwrap_or(default);
+        if !value.is_finite() {
+            return Err(LuaError::RuntimeError(format!(
+                "{api}: instance.{name} must be finite"
+            )));
+        }
+        Ok(value)
+    };
+    let tint = match table.get::<_, LuaValue>("tint")? {
+        LuaValue::Nil => [1.0, 1.0, 1.0, 1.0],
+        value => parse_shape_rgba(value, api, "instance.tint")?,
+    };
+    Ok(ShapeInstance {
+        x: number("x", 0.0)?,
+        y: number("y", 0.0)?,
+        rotation: number("rotation", 0.0)?,
+        sx: number("sx", 1.0)?,
+        sy: number("sy", 1.0)?,
+        ox: number("ox", 0.0)?,
+        oy: number("oy", 0.0)?,
+        tint,
+    })
+}
+
+/// Snapshot child role colours when composing a shape.  The child handle may
+/// be mutated or released later, so the parent must not retain role lookups
+/// into the child's mutable palette.
+fn snapshot_shape_commands(commands: &[ShapeCommand]) -> Vec<ShapeCommand> {
+    commands
+        .iter()
+        .map(|command| match command {
+            ShapeCommand::Transformed {
+                commands,
+                transform,
+                palette: child_palette,
+            } => ShapeCommand::Transformed {
+                commands: snapshot_shape_commands(commands),
+                transform: *transform,
+                palette: *child_palette,
+            },
+            other => other.clone(),
+        })
+        .collect()
+}
 /// Parses a Lua blend mode string into the renderer blend mode enum.
 fn parse_blend_mode(s: &str) -> Result<BlendMode, LuaError> {
     match s {
@@ -2122,11 +2429,16 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "setColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+                let color = [r, g, b, a.unwrap_or(1.0)];
+                crate::render::shape::validate_color(color, "setColor")
+                    .map_err(LuaError::RuntimeError)?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
                 })?;
-                shape.push_command(ShapeCommand::SetColor(r, g, b, a.unwrap_or(1.0)));
+                shape.push_command(ShapeCommand::SetColor(
+                    color[0], color[1], color[2], color[3],
+                ));
                 Ok(())
             },
         );
@@ -2134,11 +2446,72 @@ impl LuaUserData for LuaShape {
         /// Sets the line width for subsequent line-mode shape commands.
         /// @param | w | number | Line width in pixels.
         methods.add_method("setLineWidth", |_, this, w: f32| {
+            if !w.is_finite() || w <= 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "setLineWidth: width must be finite and positive".into(),
+                ));
+            }
             let mut st = this.state.borrow_mut();
             let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                 LuaError::RuntimeError("Shape handle is stale or was released".into())
             })?;
+            shape.current_line_width = w;
             shape.push_command(ShapeCommand::SetLineWidth(w));
+            Ok(())
+        });
+        // -- setPalette --
+        /// Replaces one or more semantic palette roles with normalized RGBA colors.
+        /// @param | palette | table | Keys are background/primary/secondary/accent/outline/highlight/shadow/emissive.
+        methods.add_method("setPalette", |_, this, palette: LuaTable| {
+            let mut updates = Vec::new();
+            for pair in palette.pairs::<String, LuaValue>() {
+                let (role, value) = pair?;
+                if role_index(&role).is_none() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "setPalette: unknown palette role '{role}'"
+                    )));
+                }
+                updates.push((role.clone(), parse_shape_rgba(value, "setPalette", &role)?));
+            }
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            for (role, color) in updates {
+                shape
+                    .set_palette_role(&role, color)
+                    .map_err(LuaError::RuntimeError)?;
+            }
+            Ok(())
+        });
+        // -- setColorRole --
+        /// Selects a semantic palette role for subsequent commands.
+        /// @param | role | string | Semantic palette role name.
+        methods.add_method("setColorRole", |_, this, role: String| {
+            if role_index(&role).is_none() {
+                return Err(LuaError::RuntimeError(format!(
+                    "setColorRole: unknown palette role '{role}'"
+                )));
+            }
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.push_command(ShapeCommand::SetColorRole(role));
+            Ok(())
+        });
+        // -- setStrokeStyle --
+        /// Sets cap, join, miter and dash parameters for subsequent stroke commands.
+        /// @param | opts | table | Stroke width, cap, join, miter and dash options.
+        methods.add_method("setStrokeStyle", |_, this, opts: LuaTable| {
+            let style = parse_shape_stroke_style(Some(&opts), "setStrokeStyle")?;
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.current_line_width = style.width;
+            shape.current_stroke_style = style.clone();
+            shape.push_command(ShapeCommand::SetStrokeStyle(style));
             Ok(())
         });
         // -- rectangle --
@@ -2151,11 +2524,10 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "rectangle",
             |_, this, (mode, x, y, w, h): (String, f32, f32, f32, f32)| {
-                let dm = if mode == "line" {
-                    DrawMode::Line
-                } else {
-                    DrawMode::Fill
-                };
+                let dm = parse_draw_mode(&mode)?;
+                validate_shape_finite("LShape:rectangle", &[x, y, w, h])?;
+                validate_shape_non_negative("LShape:rectangle", "w", w)?;
+                validate_shape_non_negative("LShape:rectangle", "h", h)?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2180,8 +2552,13 @@ impl LuaUserData for LuaShape {
         /// @param | rx | number | Horizontal corner radius.
         /// @param | ry | number? | Vertical corner radius (defaults to rx).
         methods.add_method("roundedRectangle", |_, this, (mode, x, y, w, h, rx, ry): (String, f32, f32, f32, f32, f32, Option<f32>)| {
-                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let dm = parse_draw_mode(&mode)?;
                 let ry = ry.unwrap_or(rx);
+                validate_shape_finite("LShape:roundedRectangle", &[x, y, w, h, rx, ry])?;
+                validate_shape_non_negative("LShape:roundedRectangle", "w", w)?;
+                validate_shape_non_negative("LShape:roundedRectangle", "h", h)?;
+                validate_shape_non_negative("LShape:roundedRectangle", "rx", rx)?;
+                validate_shape_non_negative("LShape:roundedRectangle", "ry", ry)?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2199,11 +2576,9 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "circle",
             |_, this, (mode, x, y, r): (String, f32, f32, f32)| {
-                let dm = if mode == "line" {
-                    DrawMode::Line
-                } else {
-                    DrawMode::Fill
-                };
+                let dm = parse_draw_mode(&mode)?;
+                validate_shape_finite("LShape:circle", &[x, y, r])?;
+                validate_shape_non_negative("LShape:circle", "r", r)?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2222,11 +2597,10 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "ellipse",
             |_, this, (mode, x, y, rx, ry): (String, f32, f32, f32, f32)| {
-                let dm = if mode == "line" {
-                    DrawMode::Line
-                } else {
-                    DrawMode::Fill
-                };
+                let dm = parse_draw_mode(&mode)?;
+                validate_shape_finite("LShape:ellipse", &[x, y, rx, ry])?;
+                validate_shape_non_negative("LShape:ellipse", "rx", rx)?;
+                validate_shape_non_negative("LShape:ellipse", "ry", ry)?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2253,11 +2627,8 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "triangle",
             |_, this, (mode, x1, y1, x2, y2, x3, y3): (String, f32, f32, f32, f32, f32, f32)| {
-                let dm = if mode == "line" {
-                    DrawMode::Line
-                } else {
-                    DrawMode::Fill
-                };
+                let dm = parse_draw_mode(&mode)?;
+                validate_shape_finite("LShape:triangle", &[x1, y1, x2, y2, x3, y3])?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2287,11 +2658,8 @@ impl LuaUserData for LuaShape {
                         "polygon requires at least 3 vertices (6 coordinate values)".into(),
                     ));
                 }
-                let dm = if mode == "line" {
-                    DrawMode::Line
-                } else {
-                    DrawMode::Fill
-                };
+                validate_shape_finite("LShape:polygon", &vertices)?;
+                let dm = parse_draw_mode(&mode)?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2307,6 +2675,7 @@ impl LuaUserData for LuaShape {
         /// @param | x2 | number | End X.
         /// @param | y2 | number | End Y.
         methods.add_method("line", |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+            validate_shape_finite("LShape:line", &[x1, y1, x2, y2])?;
             let mut st = this.state.borrow_mut();
             let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                 LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2324,6 +2693,7 @@ impl LuaUserData for LuaShape {
                     "polyline requires at least 2 points (4 coordinate values)".into(),
                 ));
             }
+            validate_shape_finite("LShape:polyline", &points)?;
             let mut st = this.state.borrow_mut();
             let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                 LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2353,11 +2723,9 @@ impl LuaUserData for LuaShape {
                 f32,
                 Option<u32>,
             )| {
-                let dm = if mode == "line" {
-                    DrawMode::Line
-                } else {
-                    DrawMode::Fill
-                };
+                let dm = parse_draw_mode(&mode)?;
+                validate_shape_finite("LShape:arc", &[x, y, r, astart, aend])?;
+                validate_shape_non_negative("LShape:arc", "r", r)?;
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -2374,6 +2742,710 @@ impl LuaUserData for LuaShape {
                 Ok(())
             },
         );
+        // -- point --
+        /// Adds one point or disc primitive to the shape.
+        /// @param | x | number | Point center X.
+        /// @param | y | number | Point center Y.
+        /// @param | size | number? | Point diameter (default 1).
+        methods.add_method("point", |_, this, (x, y, size): (f32, f32, Option<f32>)| {
+            let size = size.unwrap_or(1.0);
+            if !x.is_finite() || !y.is_finite() || !size.is_finite() || size < 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "point: coordinates must be finite and size non-negative".into(),
+                ));
+            }
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.push_command(ShapeCommand::Point { x, y, size });
+            Ok(())
+        });
+        // -- points --
+        /// Adds many point/disc primitives from flat coordinates or `{x,y}` pairs.
+        methods.add_method("points", |lua, this, args: mlua::MultiValue| {
+            let mut args = args.into_iter();
+            let first = args
+                .next()
+                .ok_or_else(|| LuaError::RuntimeError("points: expected coordinates".into()))?;
+            let (points, size) = match first {
+                LuaValue::Table(table) => {
+                    let mut points = Vec::new();
+                    let first_entry: LuaValue = table.get(1)?;
+                    if matches!(first_entry, LuaValue::Table(_)) {
+                        for index in 1..=table.raw_len() {
+                            let entry: LuaTable = table.get(index).map_err(|_| {
+                                LuaError::RuntimeError("points: pair entries must be tables".into())
+                            })?;
+                            let x = entry
+                                .get::<_, Option<f32>>("x")?
+                                .or_else(|| entry.get::<_, Option<f32>>(1).ok().flatten())
+                                .ok_or_else(|| {
+                                    LuaError::RuntimeError(
+                                        "points: each pair needs an x coordinate".into(),
+                                    )
+                                })?;
+                            let y = entry
+                                .get::<_, Option<f32>>("y")?
+                                .or_else(|| entry.get::<_, Option<f32>>(2).ok().flatten())
+                                .ok_or_else(|| {
+                                    LuaError::RuntimeError(
+                                        "points: each pair needs a y coordinate".into(),
+                                    )
+                                })?;
+                            points.extend([x, y]);
+                        }
+                    } else {
+                        for index in 1..=table.raw_len() {
+                            points.push(table.get::<_, f32>(index).map_err(|_| {
+                                LuaError::RuntimeError(
+                                    "points: flat coordinates must be numbers".into(),
+                                )
+                            })?);
+                        }
+                    }
+                    let size = match args.next() {
+                        None => 1.0,
+                        Some(value) => f32::from_lua(value, lua).map_err(|_| {
+                            LuaError::RuntimeError("points: size must be a number".into())
+                        })?,
+                    };
+                    if args.next().is_some() {
+                        return Err(LuaError::RuntimeError(
+                            "points: expected one optional size after coordinates".into(),
+                        ));
+                    }
+                    (points, size)
+                }
+                value => {
+                    let mut values = vec![f32::from_lua(value, lua).map_err(|_| {
+                        LuaError::RuntimeError("points: coordinates must be numbers".into())
+                    })?];
+                    for value in args {
+                        values.push(f32::from_lua(value, lua).map_err(|_| {
+                            LuaError::RuntimeError("points: coordinates must be numbers".into())
+                        })?);
+                    }
+                    let size = if values.len() % 2 == 1 {
+                        values.pop().unwrap_or(1.0)
+                    } else {
+                        1.0
+                    };
+                    (values, size)
+                }
+            };
+            if points.len() < 2 || points.len() % 2 != 0 || points.iter().any(|v| !v.is_finite()) {
+                return Err(LuaError::RuntimeError(
+                    "points: expected an even, finite coordinate list".into(),
+                ));
+            }
+            if !size.is_finite() || size < 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "points: size must be finite and non-negative".into(),
+                ));
+            }
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.push_command(ShapeCommand::Points { points, size });
+            Ok(())
+        });
+        // -- path --
+        /// Adds a native path with move, line, quadratic, cubic, and close verbs.
+        /// @param | segments | table | Path segment records.
+        /// @param | opts | table? | Fill, close and stroke options.
+        methods.add_method(
+            "path",
+            |_, this, (segments, opts): (LuaTable, Option<LuaTable>)| {
+                let api = "LShape:path";
+                let (segments, has_close_verb) = parse_path_segments(segments, api)?;
+                let mode = opts
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<String>>("mode"))
+                    .transpose()?
+                    .flatten()
+                    .map(|value| parse_draw_mode(&value))
+                    .transpose()?
+                    .unwrap_or(DrawMode::Fill);
+                let close = opts
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<bool>>("close"))
+                    .transpose()?
+                    .flatten()
+                    .unwrap_or(has_close_verb);
+                let fill_rule_name = opts
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<String>>("fillRule"))
+                    .transpose()?
+                    .flatten();
+                let fill_rule =
+                    parse_fill_rule(fill_rule_name.as_deref().unwrap_or("nonzero"), api)?;
+                let stroke_opts = opts
+                    .as_ref()
+                    .map(|table| table.get::<_, Option<LuaTable>>("stroke"))
+                    .transpose()?
+                    .flatten();
+                let direct_stroke = opts.as_ref().filter(|table| {
+                    ["width", "cap", "join", "miterLimit", "dash", "dashOffset"]
+                        .iter()
+                        .any(|key| table.contains_key(*key).unwrap_or(false))
+                });
+                let stroke = stroke_opts
+                    .as_ref()
+                    .map(|table| parse_shape_stroke_style(Some(table), api))
+                    .or_else(|| {
+                        direct_stroke.map(|table| parse_shape_stroke_style(Some(table), api))
+                    })
+                    .transpose()?;
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                let stroke = stroke.unwrap_or_else(|| shape.current_stroke_style.clone());
+                shape.push_command(ShapeCommand::Path {
+                    segments,
+                    mode,
+                    close,
+                    fill_rule,
+                    stroke,
+                });
+                Ok(())
+            },
+        );
+        // -- regularPolygon --
+        /// Adds a regular polygon, useful for icons and data-viz marks.
+        /// @param | mode | string | "fill" or "line".
+        /// @param | x | number | Center X.
+        /// @param | y | number | Center Y.
+        /// @param | radius | number | Polygon radius.
+        /// @param | sides | integer | Number of polygon sides.
+        /// @param | rotation | number? | Rotation in radians (default -pi/2).
+        methods.add_method(
+            "regularPolygon",
+            |_, this, (mode, x, y, radius, sides, rotation): (String, f32, f32, f32, u32, Option<f32>)| {
+                let mode = parse_draw_mode(&mode)?;
+                let rotation = rotation.unwrap_or(-std::f32::consts::FRAC_PI_2);
+                if !(3..=4096).contains(&sides)
+                    || ![x, y, radius, rotation].iter().all(|v| v.is_finite())
+                    || radius < 0.0
+                {
+                    return Err(LuaError::RuntimeError(
+                        "regularPolygon: invalid center, radius, rotation, or side count".into(),
+                    ));
+                }
+                let mut points = Vec::with_capacity(sides as usize * 2);
+                for i in 0..sides {
+                    let a = rotation + std::f32::consts::TAU * i as f32 / sides as f32;
+                    points.extend([x + radius * a.cos(), y + radius * a.sin()]);
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| LuaError::RuntimeError("Shape handle is stale or was released".into()))?;
+                shape.push_command(ShapeCommand::Polygon { mode, vertices: points });
+                Ok(())
+            },
+        );
+        // -- star --
+        /// Adds a regular star with alternating outer/inner radii.
+        /// @param | mode | string | "fill" or "line".
+        /// @param | x | number | Center X.
+        /// @param | y | number | Center Y.
+        /// @param | outer | number | Outer radius.
+        /// @param | inner | number | Inner radius.
+        /// @param | points | integer | Number of star points.
+        /// @param | rotation | number? | Rotation in radians (default -pi/2).
+        methods.add_method(
+            "star",
+            |_,
+             this,
+             (mode, x, y, outer, inner, points, rotation): (
+                String,
+                f32,
+                f32,
+                f32,
+                f32,
+                u32,
+                Option<f32>,
+            )| {
+                let mode = parse_draw_mode(&mode)?;
+                let rotation = rotation.unwrap_or(-std::f32::consts::FRAC_PI_2);
+                if !(2..=4096).contains(&points)
+                    || outer < 0.0
+                    || inner < 0.0
+                    || ![x, y, outer, inner, rotation].iter().all(|v| v.is_finite())
+                {
+                    return Err(LuaError::RuntimeError(
+                        "star: invalid radii, center, rotation, or point count".into(),
+                    ));
+                }
+                let mut vertices = Vec::with_capacity(points as usize * 4);
+                for i in 0..points * 2 {
+                    let radius = if i % 2 == 0 { outer } else { inner };
+                    let a = rotation + std::f32::consts::TAU * i as f32 / (points * 2) as f32;
+                    vertices.extend([x + radius * a.cos(), y + radius * a.sin()]);
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Polygon { mode, vertices });
+                Ok(())
+            },
+        );
+        // -- capsule --
+        /// Adds a rounded capsule (horizontal or vertical according to its dimensions).
+        /// @param | mode | string | "fill" or "line".
+        /// @param | x | number | Left edge X.
+        /// @param | y | number | Top edge Y.
+        /// @param | w | number | Capsule width.
+        /// @param | h | number | Capsule height.
+        /// @param | radius | number? | Corner radius (defaults from dimensions).
+        methods.add_method(
+            "capsule",
+            |_, this, (mode, x, y, w, h, radius): (String, f32, f32, f32, f32, Option<f32>)| {
+                let mode = parse_draw_mode(&mode)?;
+                if ![x, y, w, h].iter().all(|v| v.is_finite()) || w < 0.0 || h < 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "capsule: invalid bounds or radius".into(),
+                    ));
+                }
+                let radius = radius.unwrap_or((w.min(h) * 0.5).max(0.0));
+                if !radius.is_finite() || radius < 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "capsule: invalid bounds or radius".into(),
+                    ));
+                }
+                let segments = 16u32;
+                let mut points = Vec::new();
+                if w >= h {
+                    let r = radius.min(h * 0.5);
+                    for i in 0..=segments {
+                        let a = -std::f32::consts::FRAC_PI_2
+                            + std::f32::consts::PI * i as f32 / segments as f32;
+                        points.extend([x + w - r + r * a.cos(), y + h * 0.5 + r * a.sin()]);
+                    }
+                    for i in 0..=segments {
+                        let a = std::f32::consts::FRAC_PI_2
+                            + std::f32::consts::PI * i as f32 / segments as f32;
+                        points.extend([x + r + r * a.cos(), y + h * 0.5 + r * a.sin()]);
+                    }
+                } else {
+                    let r = radius.min(w * 0.5);
+                    for i in 0..=segments {
+                        let a = 0.0 + std::f32::consts::PI * i as f32 / segments as f32;
+                        points.extend([x + w * 0.5 + r * a.cos(), y + r + r * a.sin()]);
+                    }
+                    for i in 0..=segments {
+                        let a = std::f32::consts::PI
+                            + std::f32::consts::PI * i as f32 / segments as f32;
+                        points.extend([x + w * 0.5 + r * a.cos(), y + h - r + r * a.sin()]);
+                    }
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Polygon {
+                    mode,
+                    vertices: points,
+                });
+                Ok(())
+            },
+        );
+        // -- ring / sector --
+        /// Adds a ring or annulus approximation from two circles.
+        /// @param | mode | string | "fill" or "line".
+        /// @param | x | number | Center X.
+        /// @param | y | number | Center Y.
+        /// @param | outer | number | Outer radius.
+        /// @param | inner | number | Inner radius.
+        /// @param | segments | integer? | Segment count (default 32).
+        methods.add_method(
+            "ring",
+            |_, this, (mode, x, y, outer, inner, segments): (String, f32, f32, f32, f32, Option<u32>)| {
+                let mode = parse_draw_mode(&mode)?;
+                let segments = segments.unwrap_or(32).clamp(3, 2048);
+                if outer < 0.0 || inner < 0.0 || inner > outer || ![x, y, outer, inner].iter().all(|v| v.is_finite()) {
+                    return Err(LuaError::RuntimeError("ring: expected 0 <= inner <= outer".into()));
+                }
+                let mut vertices = Vec::with_capacity(segments as usize * 4);
+                for i in 0..segments {
+                    let a0 = std::f32::consts::TAU * i as f32 / segments as f32;
+                    let a1 = std::f32::consts::TAU * (i + 1) as f32 / segments as f32;
+                    vertices.extend([
+                        x + outer * a0.cos(), y + outer * a0.sin(),
+                        x + outer * a1.cos(), y + outer * a1.sin(),
+                        x + inner * a1.cos(), y + inner * a1.sin(),
+                        x + inner * a0.cos(), y + inner * a0.sin(),
+                    ]);
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| LuaError::RuntimeError("Shape handle is stale or was released".into()))?;
+                for quad in vertices.chunks_exact(8) {
+                    shape.push_command(ShapeCommand::Polygon { mode: mode.clone(), vertices: quad.to_vec() });
+                }
+                Ok(())
+            },
+        );
+        /// Adds a filled sector or stroked arc.
+        /// @param | mode | string | "fill" or "line".
+        /// @param | x | number | Center X.
+        /// @param | y | number | Center Y.
+        /// @param | radius | number | Sector radius.
+        /// @param | angle1 | number | Start angle in radians.
+        /// @param | angle2 | number | End angle in radians.
+        /// @param | segments | integer? | Segment count (default 32).
+        methods.add_method(
+            "sector",
+            |_,
+             this,
+             (mode, x, y, radius, angle1, angle2, segments): (
+                String,
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                Option<u32>,
+            )| {
+                let mode = parse_draw_mode(&mode)?;
+                if radius < 0.0 || ![x, y, radius, angle1, angle2].iter().all(|v| v.is_finite()) {
+                    return Err(LuaError::RuntimeError(
+                        "sector: invalid center, radius, or angles".into(),
+                    ));
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Arc {
+                    mode,
+                    x,
+                    y,
+                    radius,
+                    angle1,
+                    angle2,
+                    segments: segments.unwrap_or(32).clamp(2, 2048),
+                });
+                Ok(())
+            },
+        );
+        // -- arrow / symbol / trail --
+        /// Adds an arrow from `(x1,y1)` to `(x2,y2)` with a triangular head.
+        /// @param | mode | string | "fill" or "line".
+        /// @param | x1 | number | Start X.
+        /// @param | y1 | number | Start Y.
+        /// @param | x2 | number | End X.
+        /// @param | y2 | number | End Y.
+        /// @param | width | number? | Arrow width (default 6).
+        /// @param | head | number? | Head length (default twice width).
+        methods.add_method(
+            "arrow",
+            |_,
+             this,
+             (mode, x1, y1, x2, y2, width, head): (
+                String,
+                f32,
+                f32,
+                f32,
+                f32,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                let mode = parse_draw_mode(&mode)?;
+                let width = width.unwrap_or(6.0);
+                let head = head.unwrap_or(width * 2.0);
+                let dx = x2 - x1;
+                let dy = y2 - y1;
+                let len = (dx * dx + dy * dy).sqrt();
+                if len <= f32::EPSILON
+                    || ![x1, y1, x2, y2, width, head].iter().all(|v| v.is_finite())
+                    || width < 0.0
+                    || head < 0.0
+                {
+                    return Err(LuaError::RuntimeError(
+                        "arrow: endpoints must be finite and distinct".into(),
+                    ));
+                }
+                let ux = dx / len;
+                let uy = dy / len;
+                let nx = -uy * width * 0.5;
+                let ny = ux * width * 0.5;
+                let bx = x2 - ux * head;
+                let by = y2 - uy * head;
+                let vertices = vec![
+                    x1 + nx,
+                    y1 + ny,
+                    bx + nx,
+                    by + ny,
+                    bx + nx * 2.0,
+                    by + ny * 2.0,
+                    x2,
+                    y2,
+                    bx - nx * 2.0,
+                    by - ny * 2.0,
+                    bx - nx,
+                    by - ny,
+                    x1 - nx,
+                    y1 - ny,
+                ];
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Polygon { mode, vertices });
+                Ok(())
+            },
+        );
+        /// Adds a data-viz marker symbol (circle, square, diamond, triangle, cross, plus, times, asterisk, wye).
+        /// @param | name | string | Symbol name.
+        /// @param | x | number | Center X.
+        /// @param | y | number | Center Y.
+        /// @param | size | number | Symbol size.
+        /// @param | mode | string? | "fill" or "line" (default "fill").
+        methods.add_method(
+            "symbol",
+            |_, this, (name, x, y, size, mode): (String, f32, f32, f32, Option<String>)| {
+                let mode = parse_draw_mode(mode.as_deref().unwrap_or("fill"))?;
+                let half = size.abs() * 0.5;
+                if ![x, y, size].iter().all(|v| v.is_finite()) || size < 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "symbol: invalid center or size".into(),
+                    ));
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                match name.as_str() {
+                    "circle" => shape.push_command(ShapeCommand::Circle {
+                        mode,
+                        x,
+                        y,
+                        r: half,
+                    }),
+                    "square" => shape.push_command(ShapeCommand::Rectangle {
+                        mode,
+                        x: x - half,
+                        y: y - half,
+                        w: size,
+                        h: size,
+                    }),
+                    "diamond" => shape.push_command(ShapeCommand::Polygon {
+                        mode,
+                        vertices: vec![x, y - half, x + half, y, x, y + half, x - half, y],
+                    }),
+                    "triangle_up" => shape.push_command(ShapeCommand::Polygon {
+                        mode,
+                        vertices: vec![x, y - half, x + half, y + half, x - half, y + half],
+                    }),
+                    "triangle_down" => shape.push_command(ShapeCommand::Polygon {
+                        mode,
+                        vertices: vec![x - half, y - half, x + half, y - half, x, y + half],
+                    }),
+                    "cross" | "plus" | "times" | "asterisk" | "wye" => {
+                        let arm = half.max(1.0) * 0.25;
+                        let line_mode = DrawMode::Line;
+                        if name == "times" || name == "asterisk" {
+                            shape.push_command(ShapeCommand::Line {
+                                x1: x - half,
+                                y1: y - half,
+                                x2: x + half,
+                                y2: y + half,
+                            });
+                            shape.push_command(ShapeCommand::Line {
+                                x1: x + half,
+                                y1: y - half,
+                                x2: x - half,
+                                y2: y + half,
+                            });
+                        } else {
+                            shape.push_command(ShapeCommand::Rectangle {
+                                mode: mode.clone(),
+                                x: x - arm,
+                                y: y - half,
+                                w: arm * 2.0,
+                                h: size,
+                            });
+                            shape.push_command(ShapeCommand::Rectangle {
+                                mode,
+                                x: x - half,
+                                y: y - arm,
+                                w: size,
+                                h: arm * 2.0,
+                            });
+                        }
+                        let _ = line_mode;
+                    }
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "symbol: unknown symbol '{other}'"
+                        )))
+                    }
+                }
+                Ok(())
+            },
+        );
+        /// Adds a variable-width trail as a strip between two point lists.
+        /// @param | coords | table | Flat x,y coordinate list.
+        /// @param | width_table | table | One non-negative width per point.
+        methods.add_method(
+            "trail",
+            |_, this, (coords, width_table): (LuaTable, LuaTable)| {
+                let mut points = Vec::with_capacity(coords.raw_len());
+                for index in 1..=coords.raw_len() {
+                    points.push(coords.get::<_, f32>(index).map_err(|_| {
+                        LuaError::RuntimeError("trail: point coordinates must be numbers".into())
+                    })?);
+                }
+                let mut widths = Vec::with_capacity(width_table.raw_len());
+                for index in 1..=width_table.raw_len() {
+                    widths.push(width_table.get::<_, f32>(index).map_err(|_| {
+                        LuaError::RuntimeError("trail: widths must be numbers".into())
+                    })?);
+                }
+                if points.len() < 4
+                    || points.len() % 2 != 0
+                    || widths.len() * 2 != points.len()
+                    || points.iter().any(|v| !v.is_finite())
+                    || widths.iter().any(|v| !v.is_finite() || *v < 0.0)
+                {
+                    return Err(LuaError::RuntimeError(
+                        "trail: expected x/y pairs and one non-negative width per point".into(),
+                    ));
+                }
+                let mut left = Vec::with_capacity(widths.len());
+                let mut right = Vec::with_capacity(widths.len());
+                for i in 0..widths.len() {
+                    let x = points[i * 2];
+                    let y = points[i * 2 + 1];
+                    let (px, py) = if i == 0 {
+                        (points[2] - x, points[3] - y)
+                    } else if i + 1 == widths.len() {
+                        (x - points[(i - 1) * 2], y - points[(i - 1) * 2 + 1])
+                    } else {
+                        (
+                            points[(i + 1) * 2] - points[(i - 1) * 2],
+                            points[(i + 1) * 2 + 1] - points[(i - 1) * 2 + 1],
+                        )
+                    };
+                    let len = (px * px + py * py).sqrt().max(f32::EPSILON);
+                    let nx = -py / len * widths[i] * 0.5;
+                    let ny = px / len * widths[i] * 0.5;
+                    left.extend([x + nx, y + ny]);
+                    right.extend([x - nx, y - ny]);
+                }
+                right.reverse();
+                let mut vertices = left;
+                vertices.extend(right);
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Polygon {
+                    mode: DrawMode::Fill,
+                    vertices,
+                });
+                Ok(())
+            },
+        );
+        // -- addShape --
+        /// Snapshots another shape's IR under an optional local transform.
+        /// @param | child | LShape | Shape whose commands are copied.
+        /// @param | opts | table? | Optional local transform.
+        methods.add_method(
+            "addShape",
+            |_, this, (child, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                let child = child.borrow::<LuaShape>()?;
+                let child_state = child.state.borrow();
+                let child_shape = child_state.shapes.get(child.key).ok_or_else(|| {
+                    LuaError::RuntimeError("addShape: child handle is stale".into())
+                })?;
+                let commands = snapshot_shape_commands(&child_shape.commands);
+                let palette = child_shape.palette;
+                let transform = parse_shape_transform(opts.as_ref(), "addShape")?;
+                drop(child_state);
+                drop(child);
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Transformed {
+                    commands,
+                    transform,
+                    palette,
+                });
+                Ok(())
+            },
+        );
+        // -- compile --
+        /// Compiles the shape once on the CPU; the next frame uploads one static GPU mesh.
+        /// @param | opts | table? | Optional compile tolerance settings.
+        /// @return | boolean | True when compilation succeeds.
+        methods.add_method("compile", |_, this, opts: Option<LuaTable>| {
+            let tolerance = opts
+                .as_ref()
+                .map(|table| table.get::<_, Option<f32>>("tolerance"))
+                .transpose()?
+                .flatten()
+                .unwrap_or(0.1);
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.compile(tolerance).map_err(LuaError::RuntimeError)?;
+            Ok(true)
+        });
+        // -- getBounds --
+        /// Returns `{x,y,w,h,minX,minY,maxX,maxY}` in local shape coordinates.
+        /// @return | table | Shape bounds in local coordinates.
+        methods.add_method("getBounds", |lua, this, ()| {
+            let st = this.state.borrow();
+            let shape = st.shapes.get(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            let bounds = shape.bounds();
+            let result = lua.create_table()?;
+            result.set("minX", bounds[0])?;
+            result.set("minY", bounds[1])?;
+            result.set("maxX", bounds[2])?;
+            result.set("maxY", bounds[3])?;
+            result.set("x", bounds[0])?;
+            result.set("y", bounds[1])?;
+            result.set("w", (bounds[2] - bounds[0]).max(0.0))?;
+            result.set("h", (bounds[3] - bounds[1]).max(0.0))?;
+            Ok(result)
+        });
+        // -- getDiagnostics --
+        /// Returns compile revision, geometry counters, tolerance, and warnings.
+        /// @return | table | Shape compilation diagnostics.
+        methods.add_method("getDiagnostics", |lua, this, ()| {
+            let st = this.state.borrow();
+            let shape = st.shapes.get(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            let result = lua.create_table()?;
+            result.set("revision", shape.revision)?;
+            result.set("commands", shape.command_count())?;
+            result.set("compiled", shape.compiled.is_some())?;
+            if let Some(compiled) = shape.compiled.as_ref() {
+                result.set("vertices", compiled.vertex_count())?;
+                result.set("indices", compiled.index_count())?;
+                result.set("tolerance", compiled.tolerance)?;
+                let warnings = lua.create_table()?;
+                for (index, warning) in compiled.diagnostics.iter().enumerate() {
+                    warnings.set(index + 1, warning.as_str())?;
+                }
+                result.set("warnings", warnings)?;
+            }
+            Ok(result)
+        });
+        // -- release --
+        /// Releases the shape slot and makes this handle stale.
+        /// @return | boolean | True when the shape slot was released.
+        methods.add_method("release", |_, this, ()| {
+            Ok(this.state.borrow_mut().shapes.remove(this.key).is_some())
+        });
         // -- draw --
         /// Renders the accumulated shape commands to the screen with optional transform.
         /// @param | x | number | X position.
@@ -2396,22 +3468,88 @@ impl LuaUserData for LuaShape {
                 Option<f32>,
                 Option<f32>,
             )| {
-                this.state
-                    .borrow_mut()
-                    .render_commands
-                    .push(RenderCommand::DrawShape {
-                        shape_key: this.key,
-                        x,
-                        y,
-                        rotation: rotation.unwrap_or(0.0),
-                        sx: sx.unwrap_or(1.0),
-                        sy: sy.unwrap_or(1.0),
-                        ox: ox.unwrap_or(0.0),
-                        oy: oy.unwrap_or(0.0),
-                    });
+                let values = [
+                    x,
+                    y,
+                    rotation.unwrap_or(0.0),
+                    sx.unwrap_or(1.0),
+                    sy.unwrap_or(1.0),
+                    ox.unwrap_or(0.0),
+                    oy.unwrap_or(0.0),
+                ];
+                if values.iter().any(|value| !value.is_finite()) {
+                    return Err(LuaError::RuntimeError(
+                        "LShape:draw transform values must be finite".into(),
+                    ));
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                // Warm the retained CPU mesh at authoring time.  Preserve a
+                // caller-selected compile tolerance (built-ins may be loaded
+                // with one) and only compile when the current revision is cold.
+                if shape
+                    .compiled
+                    .as_ref()
+                    .is_none_or(|compiled| compiled.revision != shape.revision)
+                {
+                    shape
+                        .compile(shape.compile_tolerance)
+                        .map_err(LuaError::RuntimeError)?;
+                }
+                st.render_commands.push(RenderCommand::DrawShape {
+                    shape_key: this.key,
+                    x,
+                    y,
+                    rotation: values[2],
+                    sx: values[3],
+                    sy: values[4],
+                    ox: values[5],
+                    oy: values[6],
+                });
                 Ok(())
             },
         );
+        // -- drawMany --
+        /// Queues up to 250,000 instances of one compiled shape for a single compatible draw.
+        /// @param | instances | table | Array of `{x,y,rotation,sx,sy,ox,oy,tint}` records.
+        methods.add_method("drawMany", |_, this, instances: LuaTable| {
+            let count = instances.raw_len();
+            if count == 0 {
+                return Ok(());
+            }
+            if count > 250_000 {
+                return Err(LuaError::RuntimeError(
+                    "drawMany: maximum is 250000 instances".into(),
+                ));
+            }
+            let mut parsed = Vec::with_capacity(count);
+            for index in 1..=count {
+                let table: LuaTable = instances.get(index).map_err(|_| {
+                    LuaError::RuntimeError(format!("drawMany: instance {index} must be a table"))
+                })?;
+                parsed.push(parse_shape_instance(table, "LShape:drawMany")?);
+            }
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            if shape
+                .compiled
+                .as_ref()
+                .is_none_or(|compiled| compiled.revision != shape.revision)
+            {
+                shape
+                    .compile(shape.compile_tolerance)
+                    .map_err(LuaError::RuntimeError)?;
+            }
+            st.render_commands.push(RenderCommand::DrawShapeMany {
+                shape_key: this.key,
+                instances: parsed,
+            });
+            Ok(())
+        });
         // -- typeOf --
         /// Checks whether this object matches the given type name.
         /// @param | name | string | Type name to check ("Shape" or "Object").
@@ -3862,6 +5000,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | shader_cache_rejections | integer | Shader or pipeline cache limit rejections this frame.
     /// @field | shader_cache_evictions | integer | Shader cache entries evicted to stay within source-memory limits this frame.
     /// @field | cpu_render_ms | number | CPU render time in milliseconds.
+    /// @field | msaa_samples | integer | Active screen/canvas MSAA sample count (1 or 4).
+    /// @field | msaa_fallback | boolean | True when 4x MSAA was unavailable and 1x was selected.
+    /// @field | shape_tessellations | integer | CPU retained-shape tessellations performed this frame.
+    /// @field | shape_cache_hits | integer | Compiled shape cache hits this frame.
+    /// @field | shape_cache_misses | integer | Compiled shape cache misses this frame.
+    /// @field | shape_uploads | integer | Compiled shape GPU uploads this frame.
+    /// @field | shape_instances | integer | Retained-shape instances submitted this frame.
     graphics.set(
         "getStats",
         lua.create_function(move |lua, ()| {
@@ -3902,6 +5047,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 "shader_cache_evictions",
                 st.render_stats.shader_cache_evictions,
             )?;
+            stats.set("shape_tessellations", st.render_stats.shape_tessellations)?;
+            stats.set("shape_cache_hits", st.render_stats.shape_cache_hits)?;
+            stats.set("shape_cache_misses", st.render_stats.shape_cache_misses)?;
+            stats.set("shape_uploads", st.render_stats.shape_uploads)?;
+            stats.set("shape_instances", st.render_stats.shape_instances)?;
+            stats.set("msaa_samples", st.render_stats.msaa_samples)?;
+            stats.set("msaa_fallback", st.render_stats.msaa_fallback)?;
             /// Performs the 'cpu_render_ms' operation.
             stats.set("cpu_render_ms", st.render_stats.cpu_render_ms)?;
             Ok(stats)
@@ -4046,8 +5198,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "captureScreenshot",
         lua.create_function(move |lua, callback: LuaFunction| {
             let st = s.borrow();
-            let img = crate::render::software_capture::capture_commands_to_image(
+            let img = crate::render::software_capture::capture_commands_to_image_with_shapes(
                 &st.render_commands,
+                &st.shapes,
                 st.background_color,
             );
             drop(st);
@@ -4096,6 +5249,165 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
     let s = state.clone();
+    // -- listBuiltinShapes --
+    /// Lists the 96 native primitive-based shape templates.
+    /// @param | filter | table|string? | Optional category or query filter.
+    /// @return | table | Metadata records sorted by canonical ID. Each row also contains tags, primitive vocabulary, and the default role palette.
+    graphics.set(
+        "listBuiltinShapes",
+        lua.create_function(move |lua, filter: Option<LuaValue>| {
+            let (category, query) = match filter {
+                None | Some(LuaValue::Nil) => (None, None),
+                Some(LuaValue::String(value)) => (None, Some(value.to_str()?.to_ascii_lowercase())),
+                Some(LuaValue::Table(table)) => (
+                    table.get::<_, Option<String>>("category")?,
+                    table
+                        .get::<_, Option<String>>("query")?
+                        .map(|value| value.to_ascii_lowercase()),
+                ),
+                Some(_) => {
+                    return Err(LuaError::RuntimeError(
+                        "lurek.render.listBuiltinShapes: filter must be a table or string".into(),
+                    ))
+                }
+            };
+            let result = lua.create_table()?;
+            let mut output_index = 1usize;
+            for info in crate::render::builtin_shapes::all() {
+                if category
+                    .as_deref()
+                    .is_some_and(|value| value != info.category)
+                {
+                    continue;
+                }
+                if query
+                    .as_deref()
+                    .is_some_and(|value| !info.id.to_ascii_lowercase().contains(value))
+                {
+                    continue;
+                }
+                let row = lua.create_table()?;
+                row.set("id", info.id)?;
+                row.set("label", info.label)?;
+                row.set("category", info.category)?;
+                row.set("viewBox", "0 0 64 64")?;
+                let anchor = lua.create_table()?;
+                anchor.set("x", info.anchor[0])?;
+                anchor.set("y", info.anchor[1])?;
+                row.set("anchor", anchor)?;
+                let tags = lua.create_table()?;
+                for (index, tag) in info.tags.iter().enumerate() {
+                    tags.set(index + 1, *tag)?;
+                }
+                row.set("tags", tags)?;
+                let primitives = lua.create_table()?;
+                for (index, primitive) in info.primitives.iter().enumerate() {
+                    primitives.set(index + 1, *primitive)?;
+                }
+                row.set("primitives", primitives)?;
+                let palette = lua.create_table()?;
+                for entry in info.palette {
+                    palette.set(
+                        entry.role,
+                        lua.create_sequence_from(entry.color.iter().copied())?,
+                    )?;
+                }
+                row.set("palette", palette)?;
+                result.set(output_index, row)?;
+                output_index += 1;
+            }
+            Ok(result)
+        })?,
+    )?;
+    // -- getBuiltinShapeInfo --
+    /// Returns metadata for one native shape template.
+    /// @param | id | string | Canonical built-in shape identifier.
+    /// @return | table | Shape metadata including category, anchor, tags, primitive vocabulary, and default role palette.
+    graphics.set(
+        "getBuiltinShapeInfo",
+        lua.create_function(move |lua, id: String| {
+            let info = crate::render::builtin_shapes::info(&id).ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "lurek.render.getBuiltinShapeInfo: unknown or ambiguous shape '{id}'"
+                ))
+            })?;
+            let row = lua.create_table()?;
+            row.set("id", info.id)?;
+            row.set("label", info.label)?;
+            row.set("category", info.category)?;
+            row.set("viewBox", "0 0 64 64")?;
+            let anchor = lua.create_table()?;
+            anchor.set("x", info.anchor[0])?;
+            anchor.set("y", info.anchor[1])?;
+            row.set("anchor", anchor)?;
+            let tags = lua.create_table()?;
+            for (index, tag) in info.tags.iter().enumerate() {
+                tags.set(index + 1, *tag)?;
+            }
+            row.set("tags", tags)?;
+            let primitives = lua.create_table()?;
+            for (index, primitive) in info.primitives.iter().enumerate() {
+                primitives.set(index + 1, *primitive)?;
+            }
+            row.set("primitives", primitives)?;
+            let palette = lua.create_table()?;
+            for entry in info.palette {
+                palette.set(
+                    entry.role,
+                    lua.create_sequence_from(entry.color.iter().copied())?,
+                )?;
+            }
+            row.set("palette", palette)?;
+            Ok(row)
+        })?,
+    )?;
+    // -- loadBuiltinShape --
+    /// Creates and compiles one native shape template into the shape registry.
+    /// @param | id | string | Canonical built-in shape identifier.
+    /// @param | opts | table? | Optional palette overrides.
+    /// @return | LShape | The created built-in shape handle.
+    let builtin_state = state.clone();
+    graphics.set(
+        "loadBuiltinShape",
+        lua.create_function(move |_lua, (id, opts): (String, Option<LuaTable>)| {
+            let api = "lurek.render.loadBuiltinShape";
+            let mut palette = Vec::new();
+            let mut tolerance = 0.1f32;
+            if let Some(opts) = opts.as_ref() {
+                match opts.get::<_, LuaValue>("palette")? {
+                    LuaValue::Nil => {}
+                    LuaValue::Table(table) => {
+                        for pair in table.pairs::<String, LuaValue>() {
+                            let (role, value) = pair?;
+                            if role_index(&role).is_none() {
+                                return Err(LuaError::RuntimeError(format!(
+                                    "{api}: unknown palette role '{role}'"
+                                )));
+                            }
+                            palette.push((role.clone(), parse_shape_rgba(value, api, &role)?));
+                        }
+                    }
+                    _ => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "{api}: opts.palette must be a table"
+                        )))
+                    }
+                }
+                tolerance = opts.get::<_, Option<f32>>("tolerance")?.unwrap_or(0.1);
+                if !tolerance.is_finite() || !(0.01..=2.0).contains(&tolerance) {
+                    return Err(LuaError::RuntimeError(format!(
+                        "{api}: opts.tolerance must be finite and within 0.01..2.0"
+                    )));
+                }
+            }
+            let shape =
+                crate::render::builtin_shapes::build_with_tolerance(&id, &palette, tolerance)
+                    .map_err(|error| LuaError::RuntimeError(format!("{api}: {error}")))?;
+            let state = builtin_state.clone();
+            let key = state.borrow_mut().shapes.insert(shape);
+            Ok(LuaShape { state, key })
+        })?,
+    )?;
     // -- newShape --
     /// Creates a new retained compound shape for accumulating draw commands.
     /// @return | LShape | The created shape handle.
@@ -4198,60 +5510,101 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- drawPath --
-    /// Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
-    /// @param | path | table | Array of segment tables, each with a "type" field and coordinates.
-    /// @param | mode | string? | "line" (default) or "fill".
-    /// @param | close | boolean? | Close the path back to start (default false).
+    /// Draws a vector path composed of moveTo, lineTo, quadTo, cubicTo, and close segments.
+    /// @param | path | table | Array of segment tables, each with a "type" or "verb" field and coordinates.
+    /// @param | modeOrOpts | string/table? | Legacy "line"/"fill" mode, or options with mode, close, fillRule, and stroke fields.
+    /// @param | close | boolean? | Legacy close flag (default false); an explicit close verb also closes its subpath.
     graphics.set(
         "drawPath",
-        lua.create_function(
-            move |_, (path, mode, close): (LuaTable, Option<String>, Option<bool>)| {
-                let draw_mode = parse_draw_mode(mode.as_deref().unwrap_or("line"))?;
-                let mut segs: Vec<PathSegment> = Vec::new();
-                for i in 1..=path.raw_len() {
-                    let entry: LuaTable = path.get(i)?;
-                    let seg_type: String = entry.get("type")?;
-                    let seg = match seg_type.as_str() {
-                        "moveTo" => PathSegment::MoveTo {
-                            x: entry.get("x")?,
-                            y: entry.get("y")?,
-                        },
-                        "lineTo" => PathSegment::LineTo {
-                            x: entry.get("x")?,
-                            y: entry.get("y")?,
-                        },
-                        "quadTo" => PathSegment::QuadTo {
-                            cx: entry.get("cx")?,
-                            cy: entry.get("cy")?,
-                            x: entry.get("x")?,
-                            y: entry.get("y")?,
-                        },
-                        "cubicTo" => PathSegment::CubicTo {
-                            cx1: entry.get("cx1")?,
-                            cy1: entry.get("cy1")?,
-                            cx2: entry.get("cx2")?,
-                            cy2: entry.get("cy2")?,
-                            x: entry.get("x")?,
-                            y: entry.get("y")?,
-                        },
-                        other => {
-                            return Err(LuaError::RuntimeError(format!(
-                                "drawPath: unknown segment type '{other}'"
-                            )))
+        lua.create_function(move |_, args: LuaMultiValue| {
+            let mut args = args.into_iter();
+            let path = match args.next() {
+                Some(LuaValue::Table(path)) => path,
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "drawPath: path must be a table".into(),
+                    ))
+                }
+            };
+            let second = args.next();
+            let third = args.next();
+            let (mode, close, fill_rule, stroke) = match second {
+                None | Some(LuaValue::Nil) => (
+                    "line".to_string(),
+                    false,
+                    FillRule::NonZero,
+                    StrokeStyle {
+                        width: 0.0,
+                        ..StrokeStyle::default()
+                    },
+                ),
+                Some(LuaValue::String(value)) => {
+                    let mode = value
+                        .to_str()
+                        .map_err(|_| LuaError::RuntimeError("drawPath: mode must be UTF-8".into()))?
+                        .to_string();
+                    let close = match third {
+                        None | Some(LuaValue::Nil) => false,
+                        Some(LuaValue::Boolean(value)) => value,
+                        Some(_) => {
+                            return Err(LuaError::RuntimeError(
+                                "drawPath: close must be boolean".into(),
+                            ))
                         }
                     };
-                    segs.push(seg);
+                    (
+                        mode,
+                        close,
+                        FillRule::NonZero,
+                        StrokeStyle {
+                            width: 0.0,
+                            ..StrokeStyle::default()
+                        },
+                    )
                 }
-                s.borrow_mut()
-                    .render_commands
-                    .push(RenderCommand::DrawPath {
-                        segments: segs,
-                        mode: draw_mode,
-                        close: close.unwrap_or(false),
-                    });
-                Ok(())
-            },
-        )?,
+                Some(LuaValue::Table(opts)) => {
+                    let mode = opts
+                        .get::<_, Option<String>>("mode")?
+                        .unwrap_or_else(|| "line".into());
+                    let close = opts.get::<_, Option<bool>>("close")?.unwrap_or(false);
+                    let fill_rule = parse_fill_rule(
+                        &opts
+                            .get::<_, Option<String>>("fillRule")?
+                            .unwrap_or_else(|| "nonzero".into()),
+                        "drawPath",
+                    )?;
+                    let stroke_table = opts
+                        .get::<_, Option<LuaTable>>("stroke")?
+                        .or_else(|| Some(opts.clone()));
+                    let mut stroke = parse_shape_stroke_style(stroke_table.as_ref(), "drawPath")?;
+                    // A missing width means “use the current immediate-mode line width”.
+                    if opts.get::<_, Option<f32>>("width")?.is_none()
+                        && opts.get::<_, Option<LuaTable>>("stroke")?.is_none()
+                    {
+                        stroke.width = 0.0;
+                    }
+                    (mode, close, fill_rule, stroke)
+                }
+                Some(_) => {
+                    return Err(LuaError::RuntimeError(
+                        "drawPath: mode or opts must be a string/table".into(),
+                    ))
+                }
+            };
+            let draw_mode = parse_draw_mode(&mode)?;
+            let (segs, has_close_verb) = parse_path_segments(path, "drawPath")?;
+            let close = close || has_close_verb;
+            s.borrow_mut()
+                .render_commands
+                .push(RenderCommand::DrawPath {
+                    segments: segs,
+                    mode: draw_mode,
+                    close,
+                    fill_rule,
+                    stroke,
+                });
+            Ok(())
+        })?,
     )?;
     let s = state.clone();
     // -- drawGradientRect --
@@ -4985,9 +6338,11 @@ impl LuaUserData for LuaVoxelModel {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getVoxelCount --
         /// Returns the number of occupied source voxels.
+        /// @return | integer | Number of occupied voxels in the model.
         methods.add_method("getVoxelCount", |_, this, ()| Ok(this.model.voxel_count()));
         // -- getBounds --
         /// Returns local model bounds as `{minX, minY, minZ, maxX, maxY, maxZ}`.
+        /// @return | table | Bounds table with six numeric coordinates.
         methods.add_method("getBounds", |lua, this, ()| {
             let bounds = this.model.bounds();
             let result = lua.create_table()?;

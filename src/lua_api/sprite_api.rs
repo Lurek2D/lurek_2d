@@ -856,7 +856,7 @@ impl LuaUserData for LuaAtlasPacker {
         /// @param | w | integer | Region width in pixels.
         /// @param | h | integer | Region height in pixels.
         /// @return | boolean | True when the region was packed.
-        /// @return | string? | `duplicate`, `invalid`, `overflow`, or `full` when packing fails.
+        /// @return | string | `duplicate`, `invalid`, `overflow`, or `full` when packing fails.
         methods.add_method_mut(
             "pack",
             |lua, this, (name, w, h): (String, u32, u32)| match this
@@ -970,6 +970,7 @@ impl LuaUserData for LuaSpriteAnimator {
         /// Plays or restarts a named animation clip.
         /// @param | name | string | Clip name.
         /// @param | restart | boolean? | Whether to restart when already playing this clip. Defaults to true.
+        /// @return | boolean | True when the named clip exists and playback started.
         methods.add_method(
             "play",
             |_, this, (name, restart): (String, Option<bool>)| {
@@ -1132,20 +1133,18 @@ impl LuaUserData for LuaSpriteAnimator {
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
+    let s = state.clone();
     // -- newBatch --
     /// Creates a sprite-owned batch that draws many instances of one render texture.
     /// @param | texture | LImage | Live render texture shared by every batch entry.
     /// @param | max | integer? | Maximum entries, defaulting to 1000.
     /// @return | LSpriteBatch | Batch handle with sprite entry semantics.
-    {
-        let s = state.clone();
-        tbl.set(
-            "newBatch",
-            lua.create_function(move |_, (texture, max): (LuaAnyUserData, Option<usize>)| {
-                create_sprite_batch(&s, &texture, max, "lurek.sprite.newBatch")
-            })?,
-        )?;
-    }
+    tbl.set(
+        "newBatch",
+        lua.create_function(move |_, (texture, max): (LuaAnyUserData, Option<usize>)| {
+            create_sprite_batch(&s, &texture, max, "lurek.sprite.newBatch")
+        })?,
+    )?;
 
     // --- sprite instance and lightweight animator ---
     // -- newSprite --

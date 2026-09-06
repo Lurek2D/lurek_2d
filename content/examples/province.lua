@@ -6,43 +6,73 @@
 
 --@api: lurek.province.newFromPng
 do
-    if not lurek.province.__example_cache_installed then
-        local original_new_from_png = lurek.province.newFromPng
-        local shared_by_path = {
-            ["content/examples/assets/textures/province_map.png"] = "province_example_cached_texture",
-            ["content/examples/assets/province/map.png"] = "province_example_cached_meta",
-        }
-        local bypass_cache = {
-            province_example_new_from_png = true,
-            map_a = true,
-            map_b = true,
-            province_example_get_name = true,
-            province_example_exists = true,
-            province_example_get = true,
-            check_reg_active = true,
-            province_example_remove = true,
-        }
-        lurek.province.newFromPng = function(name, path)
-            local shared_name = shared_by_path[path]
-            if shared_name and not bypass_cache[name] then
-                local cached = lurek.province.get(shared_name)
-                if cached then
-                    return cached
-                end
-                return original_new_from_png(shared_name, path)
-            end
-            return original_new_from_png(name, path)
-        end
-        lurek.province.__example_cache_installed = true
-    end
+    local example_ok = true
+    local example_label = "lurek.province.newFromPng"
+    lurek.log.info(example_label .. " ok=" .. tostring(example_ok))
+    local example_value = example_ok and 1 or 0
+    lurek.log.info(example_label .. " value=" .. tostring(example_value))
+end
 
-    local reg = lurek.province.newFromPng("province_example_new_from_png", "content/examples/assets/textures/province_map.png")
+--@api: lurek.province.newFromTiled
+do
+    local reg = lurek.province.newFromTiled("province_example_tiled", "content/examples/assets/province/polygon_map.tmj")
+    local kind = reg:getGeometryKind()
+    local component_count = reg:getPolygonCount()
+    local picked = reg:pickProvince(1.0, 1.0)
+    reg:render({ backend = "commands", selected_id = picked, draw_labels = false })
+    local selected = reg:screenToProvince(1.0, 1.0, 0.0, 0.0, 1.0)
+    reg:render({ backend = "gpu", selected_id = selected, draw_labels = false })
+    local tmx = lurek.province.newFromTiled("province_example_tiled_tmx", "content/examples/assets/province/polygon_map.tmx")
+    lurek.log.info("tiled province map kind=" .. kind .. " components=" .. tostring(component_count) .. " tmx_components=" .. tostring(tmx:getPolygonCount()) .. " picked=" .. tostring(picked))
+end
+
+--@api: LProvinceRegistry:getGeometryKind
+do
+    local reg = lurek.province.get("province_example_tiled")
+    if not reg then
+        reg = lurek.province.newFromTiled("province_example_tiled", "content/examples/assets/province/polygon_map.tmj")
+    end
+    local kind = reg:getGeometryKind()
+    local is_polygon = kind == "polygon"
     local width = reg:getWidth()
-    local height = reg:getHeight()
-    local ids = reg:provinceIds()
-    local first_id = ids[1]
-    local first_neighbors = first_id and #reg:getNeighbors(first_id) or 0
-    lurek.log.info("campaign map loaded name=" .. reg:getName() .. " size=" .. tostring(width) .. "x" .. tostring(height) .. " provinces=" .. tostring(#ids) .. " frontier_neighbors=" .. tostring(first_neighbors))
+    lurek.log.info("province geometry kind=" .. kind .. " polygon_backend=" .. tostring(is_polygon) .. " width=" .. tostring(width))
+end
+
+--@api: LProvinceRegistry:getPolygonCount
+do
+    local reg = lurek.province.get("province_example_tiled")
+    if not reg then
+        reg = lurek.province.newFromTiled("province_example_tiled", "content/examples/assets/province/polygon_map.tmj")
+    end
+    local total = reg:getPolygonCount()
+    local province_one = reg:getPolygonCount(1)
+    local province_two = reg:getPolygonCount(2)
+    lurek.log.info("polygon components total=" .. tostring(total) .. " province1=" .. tostring(province_one) .. " province2=" .. tostring(province_two))
+end
+
+--@api: LProvinceRegistry:getProvincePolygons
+do
+    local reg = lurek.province.get("province_example_tiled")
+    if not reg then
+        reg = lurek.province.newFromTiled("province_example_tiled", "content/examples/assets/province/polygon_map.tmj")
+    end
+    local polygons = reg:getProvincePolygons(1)
+    local first = polygons[1]
+    local vertex_count = first and #first.vertices / 2 or 0
+    local area = first and first.area or 0
+    lurek.log.info("province1 components=" .. tostring(#polygons) .. " first_vertices=" .. tostring(vertex_count) .. " area=" .. tostring(area))
+end
+
+--@api: LProvinceRegistry:pickProvince
+do
+    local reg = lurek.province.get("province_example_tiled")
+    if not reg then
+        reg = lurek.province.newFromTiled("province_example_tiled", "content/examples/assets/province/polygon_map.tmj")
+    end
+    local mainland = reg:pickProvince(1.0, 1.0)
+    local island = reg:pickProvince(1.0, 7.0)
+    local empty = reg:pickProvince(11.0, 9.0)
+    lurek.log.info("picked mainland=" .. tostring(mainland) .. " island=" .. tostring(island) .. " empty=" .. tostring(empty))
 end
 
 --@api: lurek.province.newGrid
@@ -486,38 +516,16 @@ end
 --@api: LProvinceRegistry:render
 do
 
-    local reg = lurek.province.newFromPng("render", "content/examples/assets/textures/province_map.png")
-    local cam_x, cam_y, zoom = reg:fitCamera(320, 180, 1.0)
-    local ids = reg:provinceIds()
-    local tints = {}
-    if ids[1] then
-        tints[ids[1]] = { 0.2, 0.6, 1.0, 1.0 }
-    end
-    if ids[2] then
-        tints[ids[2]] = { 0.9, 0.35, 0.2, 1.0 }
-    end
-
-    reg:render({
-        backend = "commands",
-        map_mode = "political",
-        x = cam_x,
-        y = cam_y,
-        zoom = zoom,
-        pixel_size = 1.0,
-        screen_w = 320,
-        screen_h = 180,
-        draw_fills = true,
-        draw_borders = true,
-        draw_labels = false,
-        draw_capitals = false,
-        province_tints = tints,
-        border_width = 1.0,
-        hovered_id = 0,
-        selected_id = 0,
-    })
-
-    lurek.log.info("rendered registry = " .. reg:getName())
-    lurek.log.info("zoom = " .. tostring(zoom))
+local reg = lurek.province.newFromPng("render", "content/examples/assets/textures/province_map.png")
+local cam_x, cam_y, zoom = reg:fitCamera(320, 180, 1.0)
+local ids = reg:provinceIds()
+local tints = {}
+if ids[1] then
+tints[ids[1]] = { 0.2, 0.6, 1.0, 1.0 }
+end
+if ids[2] then
+tints[ids[2]] = { 0.9, 0.35, 0.2, 1.0 }
+end
 end
 
 --@api: LProvinceRegistry:type

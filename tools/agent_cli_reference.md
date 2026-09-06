@@ -25,7 +25,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/docstring_audit.py` - docstring_audit.py -- Audit Lurek2D Lua API docstrings for missing content. [durable; mcp:no]
 - `audit/docstring_quality_audit.py` - Audit docstring quality - identifies files with poor/unclear module documentation. [durable; mcp:no]
 - `audit/example_add_missing.py` - Append stub sections to content/examples/ for uncovered lurek.* API items. [durable; mcp:no]
-- `audit/example_coverage.py` - Cross-reference Lua example scripts against the lurek.* Lua API. [durable; mcp:candidate]
+- `audit/example_coverage.py` - Cross-reference Lua examples against the lurek.* API and enforce 5-16 useful LOC per owner block. [durable; mcp:candidate]
 - `audit/extract_constructors.py` - Extract all lurek.module.function signatures from docs/api/lurek.lua [durable; mcp:no]
 - `audit/gen_coverage_gaps.py` - gen_coverage_gaps.py — Generate an API gap report for Lurek2D. [durable; mcp:no]
 - `audit/gen_lua_contract_tests.py` - gen_lua_contract_tests.py — generate Lua contract smoke tests from lua_api_data.json. [durable; mcp:no]

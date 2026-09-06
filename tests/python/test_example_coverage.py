@@ -68,6 +68,34 @@ class ExampleCoverageLintTests(unittest.TestCase):
         )
         self.assertIn("E4", codes)
 
+    def test_accepts_block_at_maximum_body_length(self) -> None:
+        code_lines = "\n".join(f"                local v{i} = {i}" for i in range(15))
+        codes = self.lint_codes(
+            "max.lua",
+            f"""
+            --@api: lurek.render.print
+            do
+{code_lines}
+                lurek.render.print("hello", 0, 0)
+            end
+            """,
+        )
+        self.assertNotIn("E10", codes)
+
+    def test_flags_block_above_maximum_body_length(self) -> None:
+        code_lines = "\n".join(f"                local v{i} = {i}" for i in range(16))
+        codes = self.lint_codes(
+            "oversized.lua",
+            f"""
+            --@api: lurek.render.print
+            do
+{code_lines}
+                lurek.render.print("hello", 0, 0)
+            end
+            """,
+        )
+        self.assertIn("E10", codes)
+
     def test_flags_top_level_do_without_marker(self) -> None:
         codes = self.lint_codes(
             "orphan.lua",
@@ -145,6 +173,19 @@ class ExampleCoverageLintTests(unittest.TestCase):
             """,
         )
         self.assertIn("E9", codes)
+
+    def test_focused_demo_is_not_api_catalog_linted(self) -> None:
+        codes = self.lint_codes(
+            "feature.demo.lua",
+            """
+            local value = 1
+            local function run_demo()
+                return value + 1
+            end
+            lurek.log.info("demo result=" .. run_demo())
+            """,
+        )
+        self.assertEqual(codes, [])
 
 
 if __name__ == "__main__":

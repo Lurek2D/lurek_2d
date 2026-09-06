@@ -85,7 +85,10 @@ cp "$BINARY_SOURCE" "$PACKAGE_DIR/lurek2d"
 chmod +x "$PACKAGE_DIR/lurek2d"
 ok "Copied lurek2d binary."
 
-[[ -d "$WORKSPACE/assets"          ]] && cp -r "$WORKSPACE/assets"          "$PACKAGE_DIR/assets"   && ok "Copied assets/"
+if [[ -d "$WORKSPACE/assets" ]]; then
+    cp -r "$WORKSPACE/assets" "$PACKAGE_DIR/assets"
+    ok "Copied assets/"
+fi
 [[ -d "$WORKSPACE/content/examples" ]] && cp -r "$WORKSPACE/content/examples" "$PACKAGE_DIR/examples" && ok "Copied content/examples/"
 [[ -f "$WORKSPACE/README.md" ]] && cp "$WORKSPACE/README.md" "$PACKAGE_DIR/"
 [[ -f "$WORKSPACE/LICENSE"   ]]  && cp "$WORKSPACE/LICENSE"  "$PACKAGE_DIR/"

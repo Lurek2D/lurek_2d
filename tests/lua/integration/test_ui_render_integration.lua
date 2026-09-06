@@ -10,6 +10,7 @@ describe("integration: UI capture through render and image", function()
     -- @integration lurek.ui.newButton
     -- @integration lurek.ui.renderToImage
     -- @integration lurek.image.newImageData
+    -- @integration lurek.ui.getRoot
     it("lowers retained UI into a capture that image can decode", function()
         local button = lurek.ui.newButton("Capture me")
         button:setPosition(8, 8)

@@ -59,6 +59,9 @@ pub struct ProvinceSegmentTextureCache {
     pub texture_key: TextureKey,
     /// Registry revision used for the cached raster.
     pub registry_revision: u64,
+    /// Immutable geometry hash used to invalidate caches when a registry name
+    /// is replaced by a different raster or polygon source.
+    pub geometry_version: u64,
     /// Render-option fingerprint used for the cached raster.
     pub options_fingerprint: u64,
     /// Cached texture width in pixels.
@@ -371,6 +374,8 @@ pub struct ResourceMemoryStats {
     pub canvas_bytes: u64,
     /// Stores shader_bytes state.
     pub shader_bytes: u64,
+    /// Bytes held by compiled retained shape meshes.
+    pub shape_bytes: u64,
     /// Bytes held by renderer-owned reconstructible caches; this public-resource snapshot has none.
     pub evictable_bytes: u64,
     /// Bytes held by live public handles and therefore never reclaimed implicitly.
@@ -387,6 +392,10 @@ pub struct ResourceMemoryStats {
     pub canvas_count: u64,
     /// Stores shader_count state.
     pub shader_count: u64,
+    /// Number of live retained shape handles.
+    pub shape_count: u64,
+    /// Number of retained shape handles with compiled CPU geometry.
+    pub compiled_shape_count: u64,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -840,7 +849,11 @@ impl SharedState {
             .retain(|name, _| self.province_registries.contains_key(name));
         for (name, registry) in &self.province_registries {
             let stale = match self.province_render_snapshots.get(name) {
-                Some(snapshot) => snapshot.revision != registry.revision(),
+                Some(snapshot) => {
+                    snapshot.revision != registry.revision()
+                        || snapshot.geometry_version != registry.geometry_version()
+                        || snapshot.geometry_kind != registry.geometry_kind()
+                }
                 None => true,
             };
             if stale {
@@ -1006,7 +1019,22 @@ impl SharedState {
                 src + wrapper + uniforms_overhead
             })
             .sum();
-        let total_bytes = texture_bytes + font_bytes + canvas_bytes + shader_bytes;
+        let compiled_shape_count = self
+            .shapes
+            .values()
+            .filter(|shape| shape.compiled.is_some())
+            .count() as u64;
+        let shape_bytes: u64 = self
+            .shapes
+            .values()
+            .filter_map(|shape| shape.compiled.as_ref())
+            .map(|compiled| {
+                (compiled.vertices.len()
+                    * std::mem::size_of::<crate::render::gpu_types::ColorVertex>()
+                    + compiled.indices.len() * std::mem::size_of::<u32>()) as u64
+            })
+            .sum();
+        let total_bytes = texture_bytes + font_bytes + canvas_bytes + shader_bytes + shape_bytes;
         // All resources counted here are live public handles. The GPU cache has
         // its own bounded accounting and eviction policy in render ownership.
         let evictable_bytes = 0;
@@ -1016,6 +1044,7 @@ impl SharedState {
             font_bytes,
             canvas_bytes,
             shader_bytes,
+            shape_bytes,
             evictable_bytes,
             non_evictable_bytes,
             total_bytes,
@@ -1024,6 +1053,8 @@ impl SharedState {
             font_count: self.fonts.len() as u64,
             canvas_count: self.canvases.len() as u64,
             shader_count: self.shaders.len() as u64,
+            shape_count: self.shapes.len() as u64,
+            compiled_shape_count,
         }
     }
 

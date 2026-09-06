@@ -11,6 +11,7 @@ describe("integration: ui + i18n + data", function()
     -- @integration lurek.ui.getRoot
     -- @integration lurek.ui.getWidgetCount
     -- @integration lurek.ui.loadLayout
+    -- @integration LUiWidget:isValid
     -- @integration lurek.binary.pack
     -- @integration lurek.binary.unpack
     -- @integration lurek.i18n.loadTable

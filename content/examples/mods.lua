@@ -106,61 +106,32 @@ end
 --@api: LMod:setSandbox
 do
 
-    if not lurek.filesystem.exists("save") then
-        lurek.filesystem.createDirectory("save")
-    end
-    if not lurek.filesystem.exists("save/example-mods") then
-        lurek.filesystem.createDirectory("save/example-mods")
-    end
-    local root = "save/_mods_sandbox_unit"
-    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_unit"
-    if not lurek.filesystem.exists(root) then
-        lurek.filesystem.createDirectory(root)
-    end
-    local mod = lurek.mods.newMod({ id = "sandbox_guard", name = "Sandbox Guard" })
-    mod:setSandbox({
-        api_mode = "allow_list",
-        apis = { "filesystem" },
-        hook_mode = "allow_list",
-        hooks = { "on_load" },
-        read_mode = "allow_list",
-        read_roots = { root_abs },
-        allow_network = false,
-        allow_file_write = false,
-        max_memory = 4096,
-    })
-    local sandbox = mod:getSandbox()
-    lurek.log.info("sandbox api_mode=" .. tostring(sandbox and sandbox.api_mode))
-    lurek.log.info("sandbox max_memory=" .. tostring(sandbox and sandbox.max_memory))
+if not lurek.filesystem.exists("save") then
+lurek.filesystem.createDirectory("save")
+end
+if not lurek.filesystem.exists("save/example-mods") then
+lurek.filesystem.createDirectory("save/example-mods")
+end
+local root = "save/_mods_sandbox_unit"
+local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_unit"
+if not lurek.filesystem.exists(root) then
+lurek.filesystem.createDirectory(root)
+end
+local mod = lurek.mods.newMod({ id = "sandbox_guard", name = "Sandbox Guard" })
 end
 
 --@api: LMod:getSandbox
 do
 
-    if not lurek.filesystem.exists("save") then
-        lurek.filesystem.createDirectory("save")
-    end
-    local root = "save/_mods_sandbox_readback"
-    local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_readback"
-    if not lurek.filesystem.exists(root) then
-        lurek.filesystem.createDirectory(root)
-    end
-    local mod = lurek.mods.newMod({ id = "sandbox_readback", name = "Sandbox Readback" })
-    mod:setSandbox({
-        api_mode = "allow_list",
-        apis = { "filesystem" },
-        hook_mode = "allow_list",
-        hooks = { "on_load" },
-        read_mode = "allow_list",
-        read_roots = { root_abs },
-        blocked_ops = { "filesystem.remove" },
-        allow_network = false,
-        allow_file_write = false,
-    })
-    local sandbox = mod:getSandbox()
-    lurek.log.info("sandbox hooks=" .. tostring(sandbox and sandbox.hooks and sandbox.hooks[1]))
-    lurek.log.info("sandbox allow_network=" .. tostring(sandbox and sandbox.allow_network))
-    lurek.log.info("sandbox blocked_op=" .. tostring(sandbox and sandbox.blocked_ops and sandbox.blocked_ops[1]))
+if not lurek.filesystem.exists("save") then
+lurek.filesystem.createDirectory("save")
+end
+local root = "save/_mods_sandbox_readback"
+local root_abs = lurek.filesystem.getSaveDirectory() .. "/_mods_sandbox_readback"
+if not lurek.filesystem.exists(root) then
+lurek.filesystem.createDirectory(root)
+end
+local mod = lurek.mods.newMod({ id = "sandbox_readback", name = "Sandbox Readback" })
 end
 
 --@api: LMod:runHook
@@ -557,33 +528,21 @@ end
 --@api: LModManager:scanFolder
 do
 
-    local mgr = lurek.mods.newModManager()
-    local root = "save/example-mods/scan_case"
-    local mod_dir = root .. "/demo_pack"
-    if lurek.filesystem.exists(root) then
-        lurek.filesystem.removeDir(root)
-    end
-    if not lurek.filesystem.exists("save") then
-        lurek.filesystem.createDirectory("save")
-    end
-    if not lurek.filesystem.exists("save/example-mods") then
-        lurek.filesystem.createDirectory("save/example-mods")
-    end
-    if not lurek.filesystem.exists(root) then
-        lurek.filesystem.createDirectory(root)
-    end
-    if not lurek.filesystem.exists(mod_dir) then
-        lurek.filesystem.createDirectory(mod_dir)
-    end
-    lurek.filesystem.write(
-        mod_dir .. "/mod.toml",
-        "id = \"demo_pack\"\nname = \"Demo Pack\"\nversion = \"1.0.0\"\nauthor = \"Codex\"\n"
-    )
-    local found = mgr:scanFolder(root)
-    local has_demo = mgr:hasMod("demo_pack")
-    local all_mods = mgr:getAllMods()
-    local first_id = all_mods[1] and all_mods[1].id or "none"
-    lurek.log.info("scanned mods = " .. #found .. " registered=" .. tostring(mgr:getModCount()) .. " has_demo=" .. tostring(has_demo) .. " first_id=" .. tostring(first_id))
+local mgr = lurek.mods.newModManager()
+local root = "save/example-mods/scan_case"
+local mod_dir = root .. "/demo_pack"
+if lurek.filesystem.exists(root) then
+lurek.filesystem.removeDir(root)
+end
+if not lurek.filesystem.exists("save") then
+lurek.filesystem.createDirectory("save")
+end
+if not lurek.filesystem.exists("save/example-mods") then
+lurek.filesystem.createDirectory("save/example-mods")
+end
+if not lurek.filesystem.exists(root) then
+lurek.filesystem.createDirectory(root)
+end
 end
 
 --- Mods Module: LContentRegistry, LMod, LModManager

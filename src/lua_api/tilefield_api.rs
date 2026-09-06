@@ -182,7 +182,7 @@ impl LuaUserData for LuaTileFieldBatch {
             Ok(this.staged.borrow().is_some())
         });
         // -- type --
-        /// Returns this userdata type name.
+        /// Returns this userdata type name for Lua-side tile field batch inspection.
         /// @return | string | Always `"LTileFieldBatch"`.
         methods.add_method("type", |_, _, ()| Ok("LTileFieldBatch"));
         // -- typeOf --

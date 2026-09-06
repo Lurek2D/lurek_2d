@@ -7,12 +7,16 @@
 //! Neighboring systems include import, rendering, routing, map modes, and GPU bridges that consume registry records.
 //! Open this file whenever province state semantics, mutation APIs, or revision contracts need coordinated updates.
 
+use crate::math::widest_horizontal_chord;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::{MapModeConfig, MapModeRegistry};
+use crate::province::polygon_geometry::{
+    PolygonBorderSegment, PolygonProvinceGeometry, ProvincePolygon,
+};
 use crate::province::topology::ProvinceGraph;
 use crate::province::types::{
-    BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot, ProvinceStyle,
-    ProvinceVisualState,
+    BorderPairStyle, BorderType, BorderTypeConfig, ProvinceGeometryKind, ProvinceId,
+    ProvinceSnapshot, ProvinceStyle, ProvinceVisualState,
 };
 use crate::province::ProvinceGrid;
 use crate::runtime::resource_keys::ShaderKey;
@@ -75,6 +79,10 @@ pub struct ProvinceRegistry {
     changes: Vec<(u64, ProvinceChange)>,
     /// Optional render-owned shader binding for province command visualization.
     shader: Option<ShaderKey>,
+    /// Source geometry kind used for dispatching lookup and rendering.
+    geometry_kind: ProvinceGeometryKind,
+    /// Polygon inspection/topology data for raster-derived and authored maps.
+    polygon_geometry: Option<PolygonProvinceGeometry>,
 }
 
 impl ProvinceRegistry {
@@ -98,6 +106,8 @@ impl ProvinceRegistry {
             revision: 0,
             changes: Vec::new(),
             shader: None,
+            geometry_kind: ProvinceGeometryKind::Raster,
+            polygon_geometry: None,
         }
     }
 
@@ -181,6 +191,12 @@ impl ProvinceRegistry {
         }
         let auto_label_lines_by_province =
             compute_auto_label_lines(&spans_by_province, &bbox_by_province, &provinces);
+        let polygon_geometry = PolygonProvinceGeometry::from_grid_polygons(
+            width,
+            height,
+            grid.province_polygons_simplified(),
+        )
+        .ok();
         Self {
             width,
             height,
@@ -199,7 +215,85 @@ impl ProvinceRegistry {
             revision: 0,
             changes: Vec::new(),
             shader: None,
+            geometry_kind: ProvinceGeometryKind::Raster,
+            polygon_geometry,
         }
+    }
+
+    /// Build a registry from validated polygon-authored geometry.
+    pub fn from_polygon_geometry(geometry: PolygonProvinceGeometry) -> Self {
+        let mut graph = ProvinceGraph::new();
+        let mut pairs = Vec::new();
+        for border in &geometry.borders {
+            pairs.push((border.province_a, border.province_b));
+        }
+        graph.rebuild_from_pairs(&pairs);
+        let mut provinces = HashMap::new();
+        for id in geometry.by_province.keys().copied() {
+            provinces.insert(
+                id,
+                ProvinceRecord {
+                    centroid: geometry.centroids.get(&id).copied(),
+                    capital: geometry.capitals.get(&id).copied(),
+                    ..ProvinceRecord::default()
+                },
+            );
+        }
+        let mut bbox_by_province = HashMap::new();
+        let mut auto_label_lines_by_province = HashMap::new();
+        for (id, indexes) in &geometry.by_province {
+            let mut bounds: Option<(f32, f32, f32, f32)> = None;
+            for index in indexes {
+                let current = geometry.polygons[*index].bounds;
+                bounds = Some(match bounds {
+                    Some(existing) => (
+                        existing.0.min(current.0),
+                        existing.1.min(current.1),
+                        existing.2.max(current.2),
+                        existing.3.max(current.3),
+                    ),
+                    None => current,
+                });
+            }
+            if let Some((min_x, min_y, max_x, max_y)) = bounds {
+                bbox_by_province.insert(
+                    *id,
+                    (min_x as u32, min_y as u32, max_x as u32, max_y as u32),
+                );
+                let capital = geometry.capitals.get(id).copied();
+                let (start_x, end_x, y) = capital
+                    .and_then(|(capital_x, capital_y)| {
+                        geometry.by_province[id].iter().find_map(|index| {
+                            let polygon = &geometry.polygons[*index];
+                            if !matches!(
+                                crate::math::classify_point_in_polygon(
+                                    &polygon.vertices,
+                                    capital_x,
+                                    capital_y,
+                                    1.0e-4,
+                                ),
+                                crate::math::PolygonPointLocation::Inside
+                            ) {
+                                return None;
+                            }
+                            widest_horizontal_chord(&polygon.vertices, capital_y, capital_x, 1.0e-4)
+                                .map(|(left, right)| (left, right, capital_y))
+                        })
+                    })
+                    .unwrap_or((min_x, max_x, (min_y + max_y) * 0.5));
+                auto_label_lines_by_province.insert(*id, ((start_x, y), (end_x, y)));
+            }
+        }
+        let mut registry = Self::new();
+        registry.width = geometry.width;
+        registry.height = geometry.height;
+        registry.graph = graph;
+        registry.provinces = provinces;
+        registry.bbox_by_province = bbox_by_province;
+        registry.auto_label_lines_by_province = auto_label_lines_by_province;
+        registry.geometry_kind = ProvinceGeometryKind::Polygon;
+        registry.polygon_geometry = Some(geometry);
+        registry
     }
     /// Build a registry by loading a province colour-map PNG from path; return error on I/O or decode failure.
     pub fn from_png(path: &str) -> Result<Self, String> {
@@ -217,6 +311,12 @@ impl ProvinceRegistry {
     }
     /// Return the province id at pixel (x, y); returns 0 if coordinates are out of bounds.
     pub fn get_at(&self, x: u32, y: u32) -> u32 {
+        if self.geometry_kind == ProvinceGeometryKind::Polygon {
+            return self
+                .pick_province(x as f32 + 0.5, y as f32 + 0.5)
+                .map(|id| id.0)
+                .unwrap_or(0);
+        }
         if x >= self.width || y >= self.height {
             return 0;
         }
@@ -235,6 +335,149 @@ impl ProvinceRegistry {
     /// Return the number of provinces currently in the registry.
     pub fn province_count(&self) -> usize {
         self.provinces.len()
+    }
+
+    /// Return the source geometry kind.
+    pub fn geometry_kind(&self) -> ProvinceGeometryKind {
+        self.geometry_kind
+    }
+
+    /// Return a stable hash of immutable geometry and topology, independent
+    /// from mutable province styles and metadata revisions.
+    pub fn geometry_version(&self) -> u64 {
+        let mut hash = 0xcbf2_9ce4_8422_2325_u64;
+        let kind = match self.geometry_kind {
+            ProvinceGeometryKind::Raster => 0_u8,
+            ProvinceGeometryKind::Polygon => 1_u8,
+        };
+        hash = (hash ^ u64::from(kind)).wrapping_mul(0x100_0000_01b3);
+        for value in [self.width, self.height] {
+            for byte in value.to_le_bytes() {
+                hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+            }
+        }
+        if let Some(geometry) = &self.polygon_geometry {
+            for value in [geometry.width, geometry.height] {
+                for byte in value.to_le_bytes() {
+                    hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                }
+            }
+            // The snap increment is part of the immutable topology contract:
+            // it controls quantized edge matching and boundary tolerances
+            // even when two authored maps happen to produce the same vertex
+            // coordinates.
+            for byte in geometry.snap_size.to_le_bytes() {
+                hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+            }
+            for value in &geometry.polygons {
+                for scalar in [value.source_object_id, value.province_id.raw()] {
+                    for byte in scalar.to_le_bytes() {
+                        hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                    }
+                }
+                for scalar in &value.vertices {
+                    for byte in scalar.to_le_bytes() {
+                        hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                    }
+                }
+                for index in &value.triangle_indices {
+                    for byte in index.to_le_bytes() {
+                        hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                    }
+                }
+            }
+            for border in &geometry.borders {
+                for scalar in [border.province_a.raw(), border.province_b.raw()] {
+                    for byte in scalar.to_le_bytes() {
+                        hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                    }
+                }
+                for scalar in [border.x0, border.y0, border.x1, border.y1] {
+                    for byte in scalar.to_le_bytes() {
+                        hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                    }
+                }
+            }
+            // Capitals are authored immutable geometry for polygon maps. Sort
+            // the map keys before hashing so the revision is deterministic
+            // regardless of HashMap iteration order.
+            let mut capital_ids = geometry.capitals.keys().copied().collect::<Vec<_>>();
+            capital_ids.sort_unstable();
+            for id in capital_ids {
+                for byte in id.raw().to_le_bytes() {
+                    hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                }
+                if let Some((x, y)) = geometry.capitals.get(&id) {
+                    for scalar in [*x, *y] {
+                        for byte in scalar.to_le_bytes() {
+                            hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                        }
+                    }
+                }
+            }
+        } else {
+            for id in &self.ids {
+                for byte in id.to_le_bytes() {
+                    hash = (hash ^ u64::from(byte)).wrapping_mul(0x100_0000_01b3);
+                }
+            }
+        }
+        hash
+    }
+
+    /// Return the total or per-province polygon component count.
+    pub fn polygon_count(&self, id: Option<ProvinceId>) -> usize {
+        let Some(geometry) = &self.polygon_geometry else {
+            return 0;
+        };
+        id.map(|province_id| geometry.polygon_indexes(province_id).len())
+            .unwrap_or(geometry.polygons.len())
+    }
+
+    /// Return polygon components for a province.
+    pub fn polygons_for(&self, id: ProvinceId) -> Option<Vec<&ProvincePolygon>> {
+        let geometry = self.polygon_geometry.as_ref()?;
+        Some(
+            geometry
+                .polygon_indexes(id)
+                .iter()
+                .map(|index| &geometry.polygons[*index])
+                .collect(),
+        )
+    }
+
+    /// Return the floating-point province ID under a map coordinate.
+    pub fn pick_province(&self, x: f32, y: f32) -> Option<ProvinceId> {
+        if let Some(geometry) = &self.polygon_geometry {
+            if self.geometry_kind == ProvinceGeometryKind::Polygon {
+                return geometry.pick(x, y);
+            }
+        }
+        if !x.is_finite() || !y.is_finite() || x < 0.0 || y < 0.0 {
+            return None;
+        }
+        let cell_x = x.floor() as u32;
+        let cell_y = y.floor() as u32;
+        if cell_x >= self.width || cell_y >= self.height {
+            return None;
+        }
+        let id = self.get_at(cell_x, cell_y);
+        (id != 0).then_some(ProvinceId(id))
+    }
+
+    /// Return authored or raster-derived polygon components.
+    pub fn polygon_geometry(&self) -> Option<&PolygonProvinceGeometry> {
+        self.polygon_geometry.as_ref()
+    }
+
+    /// Return polygon shared borders for polygon-aware renderers and Lua adapters.
+    pub fn polygon_border_segments(&self) -> Option<&[PolygonBorderSegment]> {
+        if self.geometry_kind != ProvinceGeometryKind::Polygon {
+            return None;
+        }
+        self.polygon_geometry
+            .as_ref()
+            .map(|geometry| geometry.borders.as_slice())
     }
     /// Return a snapshot of the province's style and metadata, or None if id is unknown.
     pub fn get_province(&self, id: ProvinceId) -> Option<ProvinceSnapshot> {

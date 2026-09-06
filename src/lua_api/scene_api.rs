@@ -301,11 +301,11 @@ impl LuaUserData for LSceneObjectContainer {
         });
 
         /// Call draw() on all objects that have a draw method, sorted by layer.
-        /// @return integer
+        /// @return | nil | No return value; object draw callbacks are invoked in order.
         methods.add_method("draw", |lua, this, ()| this.draw(lua));
 
         /// Get the number of objects currently in the container.
-        /// @return integer
+        /// @return | integer | Number of objects currently in the container.
         methods.add_method("getCount", |_, this, ()| Ok(this.count()));
 
         /// Get all objects as an array (layer-sorted).

@@ -90,9 +90,39 @@ impl GpuRenderer {
             .accumulate(&self.render_diagnostics);
         self.render_diagnostics.reset();
         self.render_stats = RenderStats::default();
+        self.render_stats.msaa_samples = self.sample_count;
+        self.render_stats.msaa_fallback = self.msaa_fallback;
         let render_budget_limits = RenderBudgetLimits::for_device(&self.device.limits());
         let mut render_budget = RenderBudget::default();
-        self.prune_released_resources(textures, fonts, canvases, shaders, meshes);
+        self.prune_released_resources(textures, fonts, canvases, shaders, meshes, shapes);
+        for (shape_key, shape) in shapes.iter() {
+            if let Some(compiled) = shape.compiled.as_ref() {
+                let static_key = crate::render::gpu_resources::shape_geometry_static_key(compiled);
+                let static_cached = self.mesh_cache.static_geometry.contains_key(&static_key);
+                let cached = self.mesh_cache.shape_revisions.get(&shape_key).copied()
+                    == Some(compiled.revision)
+                    && self.mesh_cache.shape_geometry_keys.get(&shape_key) == Some(&static_key)
+                    && static_cached;
+                if cached || static_cached {
+                    self.render_stats.shape_cache_hits =
+                        self.render_stats.shape_cache_hits.saturating_add(1);
+                } else {
+                    self.render_stats.shape_cache_misses =
+                        self.render_stats.shape_cache_misses.saturating_add(1);
+                }
+                if let Err(error) = self.sync_shape_geometry(shape_key, compiled) {
+                    self.render_diagnostics.record_invalid_render_input();
+                    log::warn!(
+                        "Skipping compiled shape upload for {:?}: {}",
+                        shape_key,
+                        error
+                    );
+                } else if !static_cached {
+                    self.render_stats.shape_uploads =
+                        self.render_stats.shape_uploads.saturating_add(1);
+                }
+            }
+        }
         for (key, tex_data) in textures.iter() {
             let existing = self
                 .gpu_textures
@@ -413,6 +443,7 @@ impl GpuRenderer {
             .texture
             .create_view(&wgpu::TextureViewDescriptor::default());
         self.ensure_screen_stencil_target();
+        self.ensure_screen_msaa_target();
         let mut encoder = self
             .device
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -448,77 +479,101 @@ impl GpuRenderer {
             }
             let (target_width, target_height) = self.target_dimensions(target, canvases);
             self.update_viewport_uniform(target_width, target_height, camera_matrix, frame_time);
-            let (color_view, color_load, stencil_view, stencil_load, clear_canvas_after_pass) =
-                match target {
-                    RenderTargetId::Screen => {
-                        let Some(stencil_target) = self.screen_stencil_target.as_ref() else {
-                            while cursor < draws.len() && draws[cursor].target == target {
-                                cursor += 1;
-                            }
-                            continue;
-                        };
-                        let stencil_view = &stencil_target.view;
-                        let color_load = if screen_started {
-                            wgpu::LoadOp::Load
-                        } else {
-                            wgpu::LoadOp::Clear(wgpu::Color {
-                                r: background_color[0] as f64,
-                                g: background_color[1] as f64,
-                                b: background_color[2] as f64,
-                                a: background_color[3] as f64,
-                            })
-                        };
-                        let stencil_load = if screen_started {
-                            wgpu::LoadOp::Load
-                        } else {
-                            wgpu::LoadOp::Clear(0)
-                        };
-                        (&view, color_load, stencil_view, stencil_load, None)
-                    }
-                    RenderTargetId::Canvas(key) => {
-                        let Some(canvas_texture) = self.canvas_gpu_textures.get(key) else {
-                            self.render_diagnostics.record_missing_canvas();
-                            while cursor < draws.len() && draws[cursor].target == target {
-                                cursor += 1;
-                            }
-                            continue;
-                        };
-                        let Some(stencil_target) = self.canvas_stencil_targets.get(key) else {
-                            self.render_diagnostics.record_missing_canvas();
-                            while cursor < draws.len() && draws[cursor].target == target {
-                                cursor += 1;
-                            }
-                            continue;
-                        };
-                        let canvas_view = &canvas_texture.view;
-                        let stencil_view = &stencil_target.view;
-                        let first_use_this_frame = touched_canvases.insert(key);
-                        let needs_clear = self.canvas_needs_clear.get(key).copied().unwrap_or(true);
-                        let color_load = if needs_clear {
-                            wgpu::LoadOp::Clear(wgpu::Color::TRANSPARENT)
-                        } else {
-                            wgpu::LoadOp::Load
-                        };
-                        let stencil_load = if first_use_this_frame {
-                            wgpu::LoadOp::Clear(0)
-                        } else {
-                            wgpu::LoadOp::Load
-                        };
-                        (
-                            canvas_view,
-                            color_load,
-                            stencil_view,
-                            stencil_load,
-                            if needs_clear { Some(key) } else { None },
-                        )
-                    }
-                };
+            let (
+                color_view,
+                resolve_view,
+                color_load,
+                stencil_view,
+                stencil_load,
+                clear_canvas_after_pass,
+            ) = match target {
+                RenderTargetId::Screen => {
+                    let Some(stencil_target) = self.screen_stencil_target.as_ref() else {
+                        while cursor < draws.len() && draws[cursor].target == target {
+                            cursor += 1;
+                        }
+                        continue;
+                    };
+                    let stencil_view = &stencil_target.view;
+                    let color_load = if screen_started {
+                        wgpu::LoadOp::Load
+                    } else {
+                        wgpu::LoadOp::Clear(wgpu::Color {
+                            r: background_color[0] as f64,
+                            g: background_color[1] as f64,
+                            b: background_color[2] as f64,
+                            a: background_color[3] as f64,
+                        })
+                    };
+                    let stencil_load = if screen_started {
+                        wgpu::LoadOp::Load
+                    } else {
+                        wgpu::LoadOp::Clear(0)
+                    };
+                    let color_view = self
+                        .screen_msaa_target
+                        .as_ref()
+                        .map(|target| &target.view)
+                        .unwrap_or(&view);
+                    let resolve_view = (self.sample_count > 1).then_some(&view);
+                    (
+                        color_view,
+                        resolve_view,
+                        color_load,
+                        stencil_view,
+                        stencil_load,
+                        None,
+                    )
+                }
+                RenderTargetId::Canvas(key) => {
+                    let Some(canvas_texture) = self.canvas_gpu_textures.get(key) else {
+                        self.render_diagnostics.record_missing_canvas();
+                        while cursor < draws.len() && draws[cursor].target == target {
+                            cursor += 1;
+                        }
+                        continue;
+                    };
+                    let Some(stencil_target) = self.canvas_stencil_targets.get(key) else {
+                        self.render_diagnostics.record_missing_canvas();
+                        while cursor < draws.len() && draws[cursor].target == target {
+                            cursor += 1;
+                        }
+                        continue;
+                    };
+                    let canvas_view = canvas_texture
+                        .render_view
+                        .as_ref()
+                        .unwrap_or(&canvas_texture.view);
+                    let resolve_view = (self.sample_count > 1).then_some(&canvas_texture.view);
+                    let stencil_view = &stencil_target.view;
+                    let first_use_this_frame = touched_canvases.insert(key);
+                    let needs_clear = self.canvas_needs_clear.get(key).copied().unwrap_or(true);
+                    let color_load = if needs_clear {
+                        wgpu::LoadOp::Clear(wgpu::Color::TRANSPARENT)
+                    } else {
+                        wgpu::LoadOp::Load
+                    };
+                    let stencil_load = if first_use_this_frame {
+                        wgpu::LoadOp::Clear(0)
+                    } else {
+                        wgpu::LoadOp::Load
+                    };
+                    (
+                        canvas_view,
+                        resolve_view,
+                        color_load,
+                        stencil_view,
+                        stencil_load,
+                        if needs_clear { Some(key) } else { None },
+                    )
+                }
+            };
             {
                 let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("ordered_render_pass"),
                     color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                         view: color_view,
-                        resolve_target: None,
+                        resolve_target: resolve_view,
                         ops: wgpu::Operations {
                             load: color_load,
                             store: wgpu::StoreOp::Store,
@@ -657,11 +712,16 @@ impl GpuRenderer {
             self.update_viewport_uniform(self.width, self.height, camera_matrix, frame_time);
             if let Some(stencil_target) = self.screen_stencil_target.as_ref() {
                 let screen_stencil_view = &stencil_target.view;
+                let screen_color_view = self
+                    .screen_msaa_target
+                    .as_ref()
+                    .map(|target| &target.view)
+                    .unwrap_or(&view);
                 let _pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("screen_clear_pass"),
                     color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                        view: &view,
-                        resolve_target: None,
+                        view: screen_color_view,
+                        resolve_target: (self.sample_count > 1).then_some(&view),
                         ops: wgpu::Operations {
                             load: wgpu::LoadOp::Clear(wgpu::Color {
                                 r: background_color[0] as f64,
@@ -919,6 +979,7 @@ impl GpuRenderer {
                 blend_mode: BlendMode::Add,
                 color_mask_bits: 0xF,
                 stencil_mode: GpuStencilMode::Disabled,
+                sample_count: 1,
             };
             let mut prepared_light_shaders = HashSet::new();
             for shader_key in light_draw_shaders.iter().flatten().copied() {
@@ -993,11 +1054,16 @@ impl GpuRenderer {
                 (self.light_gpu.as_ref(), self.screen_stencil_target.as_ref())
             {
                 let screen_stencil_view = &stencil_target.view;
+                let screen_color_view = self
+                    .screen_msaa_target
+                    .as_ref()
+                    .map(|target| &target.view)
+                    .unwrap_or(&view);
                 let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("light_composite_pass"),
                     color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                        view: &view,
-                        resolve_target: None,
+                        view: screen_color_view,
+                        resolve_target: (self.sample_count > 1).then_some(&view),
                         ops: wgpu::Operations {
                             load: wgpu::LoadOp::Load,
                             store: wgpu::StoreOp::Store,

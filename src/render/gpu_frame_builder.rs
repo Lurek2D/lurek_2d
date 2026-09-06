@@ -25,7 +25,18 @@ pub fn merge_adjacent_prepared_draws(
     for draw in draws.drain(..) {
         if let Some(last) = scratch.last_mut() {
             if prepared_draws_can_merge(last, &draw) {
-                last.idx_count += draw.idx_count;
+                if matches!(
+                    last.geometry,
+                    crate::render::gpu_pipeline::GeometryKind::ColorInstanced
+                        | crate::render::gpu_pipeline::GeometryKind::TextureInstanced
+                ) {
+                    // Instanced draws reuse the same static index span.  Only the
+                    // instance range grows; extending idx_count would walk past
+                    // the static mesh and issue invalid geometry.
+                    last.instance_count = last.instance_count.saturating_add(draw.instance_count);
+                } else {
+                    last.idx_count = last.idx_count.saturating_add(draw.idx_count);
+                }
                 continue;
             }
         }
@@ -49,7 +60,20 @@ fn prepared_draws_can_merge(left: &PreparedDraw, right: &PreparedDraw) -> bool {
         && left.stencil_reference == right.stencil_reference
         && left.static_geometry == right.static_geometry
         && left.instance_buffer == right.instance_buffer
-        && left.instance_start == right.instance_start
-        && left.instance_count == right.instance_count
-        && left.idx_start.checked_add(left.idx_count) == Some(right.idx_start)
+        && if matches!(
+            left.geometry,
+            crate::render::gpu_pipeline::GeometryKind::ColorInstanced
+                | crate::render::gpu_pipeline::GeometryKind::TextureInstanced
+        ) {
+            // Static retained geometry is indexed from zero for every draw.  Adjacent
+            // instances can share one dispatch when their instance ranges are contiguous.
+            left.idx_start == right.idx_start
+                && left.idx_count == right.idx_count
+                && left.instance_start.checked_add(left.instance_count)
+                    == Some(right.instance_start)
+        } else {
+            left.instance_start == right.instance_start
+                && left.instance_count == right.instance_count
+                && left.idx_start.checked_add(left.idx_count) == Some(right.idx_start)
+        }
 }

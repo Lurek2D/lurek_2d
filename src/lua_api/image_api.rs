@@ -205,7 +205,8 @@ fn parse_region(opts: Option<&LuaTable>) -> LuaResult<Option<(u32, u32, u32, u32
     )))
 }
 
-/// Compatibility re-export; province owns the province-grid userdata state.
+/// Compatibility re-export; the canonical Lua-visible province grid owns topology,
+/// polygon extraction, and draw geometry state in the province subsystem.
 pub use super::province_api::LuaProvinceGrid;
 /// Registers legacy province-grid methods until their bodies are fully relocated to province.
 pub(crate) fn add_legacy_province_grid_methods<

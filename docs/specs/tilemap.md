@@ -157,6 +157,13 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Open this file when render ownership changes, but keep unrelated subsystem policy in sibling modules.
 - The code favors small data transformations so examples, specs, and tests can assert behavior directly.
 
+### tiled.rs
+
+- Bounded, format-neutral Tiled object-map import.
+- This owner understands TMX XML and Tiled JSON syntax but does not assign
+- gameplay meaning to object layers. Province import consumes the normalized
+- objects exposed here and applies its own layer/property contract.
+
 ### tilemap.rs
 
 - This file owns tilemap behavior inside the tilemap subsystem, close to its data and invariants.
@@ -528,6 +535,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `lurek.tilemap.newTileSet(...)` remains a compatibility alias for the tileset owner; new code should prefer `lurek.tileset.newTileSet(...)` while existing tilemap scripts remain supported.
 - `lurek.tilemap.newTileMap(...)` and `lurek.tilemap.newChunkMap(...)` accept an optional limits table with ceilings such as `maxLayers`, `maxTiles`, `maxImportBytes`, `maxDecodedBytes`, `maxChunkCells`, `maxChunks`, and `maxTileOperationCells`.
 - `lurek.tilemap.loadTMX(xml, opts)` supports strict/bounded import policy through `strictLayerSize`, `allowExternalTilesets`, `safePaths`, `assetRoot`, and the same byte/size limits used by safe constructors.
+- `tilemap::tiled` also exposes a format-neutral bounded object importer for `.tmx`, `.tmj`, and `.json`. It preserves polygon-local points, point shapes, layer offsets, rotations, and typed custom properties for domain modules such as `province`; it does not interpret province IDs.
 - `LTileMap:worldToTile(...)` preserves legacy clamping semantics, while `LTileMap:tryWorldToTile(...)` returns `nil` for negative or non-finite world coordinates and should be preferred for picking front-ends.
 - Reverse tile-position indexing is lazy after large writes such as `fill(...)`; callers that need dense reverse lookups should use `tileTypeIndex(...)` or `findTilesByGid(...)` and can inspect `getDiagnostics().lazyIndexRebuilds`.
 - Diagnostics counters are part of the public debugging contract: invalid layer access, invalid coordinates, invalid coordinate queries, unknown gids, and lazy reverse-index rebuilds are observable through `LTileMap:getDiagnostics()`.

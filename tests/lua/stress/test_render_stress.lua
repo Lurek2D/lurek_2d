@@ -38,9 +38,7 @@ describe("graphics stress: shape throughput", function()
         end)
         expect_equal(10000, issued, "all line calls completed")
     end)
-
-    -- @stress lurek.render.setColor
-    it("rapid color changes do not error", function()
+    local function __audit_stress_1()
         local last_r, last_g, last_b, last_a = 1, 1, 1, 1
         for i = 1, 10000 do
             local r = (i % 256) / 255
@@ -54,9 +52,26 @@ describe("graphics stress: shape throughput", function()
         expect_near(last_g, g, 0.0001, "final green channel preserved")
         expect_near(last_b, b, 0.0001, "final blue channel preserved")
         expect_near(last_a, a, 0.0001, "final alpha channel preserved")
+    end
+
+
+    -- @stress lurek.render.setColor
+    it("rapid color changes do not error", function()
+        __audit_stress_1()
+    end)
+
+    -- @stress LShape:drawMany
+    it("10000 retained shape instances queue as one logical batch", function()
+        local shape = lurek.render.loadBuiltinShape("ui/heart")
+        local instances = {}
+        for i = 1, 10000 do
+            instances[i] = { x = i % 800, y = (i * 3) % 600, tint = { 1, 0.8, 0.8, 1 } }
+        end
+        expect_no_error(function()
+            shape:drawMany(instances)
+        end)
     end)
 end)
-
 -- @describe graphics stress: mixed draw commands
 describe("graphics stress: mixed draw commands", function()
     -- @stress lurek.render.arc

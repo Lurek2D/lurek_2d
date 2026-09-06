@@ -17,6 +17,9 @@ use crate::math::Vec2;
 use crate::province::map_modes::resolve_color_fallback;
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::{BorderPairFlags, ProvinceId};
+use crate::render::geometry::{
+    blend_pixel, distance_to_segment, draw_thick_segment, rasterize_triangle, smoothstep,
+};
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::resource_keys::FontKey;
 
@@ -54,6 +57,10 @@ pub struct ProvinceSegmentRasterOptions {
     pub edge_gradient_radius: f32,
     /// Border shadow opacity multiplier.
     pub edge_gradient_strength: f32,
+    /// Province to highlight with a hover outline.
+    pub hovered_id: Option<ProvinceId>,
+    /// Province to highlight with a selection outline.
+    pub selected_id: Option<ProvinceId>,
 }
 
 impl Default for ProvinceSegmentRasterOptions {
@@ -70,6 +77,8 @@ impl Default for ProvinceSegmentRasterOptions {
             draw_borders: true,
             edge_gradient_radius: 16.0,
             edge_gradient_strength: 0.25,
+            hovered_id: None,
+            selected_id: None,
         }
     }
 }
@@ -458,48 +467,6 @@ fn label_candidate(
     })
 }
 
-fn put_pixel(pixels: &mut [u8], width: u32, height: u32, x: i32, y: i32, color: [u8; 4]) {
-    if x < 0 || y < 0 || x >= width as i32 || y >= height as i32 {
-        return;
-    }
-    let idx = ((y as u32 * width + x as u32) * 4) as usize;
-    pixels[idx] = color[0];
-    pixels[idx + 1] = color[1];
-    pixels[idx + 2] = color[2];
-    pixels[idx + 3] = color[3];
-}
-
-fn blend_pixel(pixels: &mut [u8], width: u32, height: u32, x: i32, y: i32, color: [u8; 4]) {
-    if x < 0 || y < 0 || x >= width as i32 || y >= height as i32 {
-        return;
-    }
-    let idx = ((y as u32 * width + x as u32) * 4) as usize;
-    let alpha = color[3] as f32 / 255.0;
-    let inv = 1.0 - alpha;
-    pixels[idx] = (color[0] as f32 * alpha + pixels[idx] as f32 * inv).round() as u8;
-    pixels[idx + 1] = (color[1] as f32 * alpha + pixels[idx + 1] as f32 * inv).round() as u8;
-    pixels[idx + 2] = (color[2] as f32 * alpha + pixels[idx + 2] as f32 * inv).round() as u8;
-    pixels[idx + 3] = 255;
-}
-
-fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
-    let t = ((x - edge0) / (edge1 - edge0)).clamp(0.0, 1.0);
-    t * t * (3.0 - 2.0 * t)
-}
-
-fn distance_to_segment(px: f32, py: f32, x0: f32, y0: f32, x1: f32, y1: f32) -> f32 {
-    let dx = x1 - x0;
-    let dy = y1 - y0;
-    let len_sq = dx * dx + dy * dy;
-    if len_sq <= f32::EPSILON {
-        return ((px - x0) * (px - x0) + (py - y0) * (py - y0)).sqrt();
-    }
-    let t = (((px - x0) * dx + (py - y0) * dy) / len_sq).clamp(0.0, 1.0);
-    let qx = x0 + t * dx;
-    let qy = y0 + t * dy;
-    ((px - qx) * (px - qx) + (py - qy) * (py - qy)).sqrt()
-}
-
 fn pair_is_water(registry: &ProvinceRegistry, id: ProvinceId) -> bool {
     registry
         .style_for(id)
@@ -537,31 +504,6 @@ fn segment_border_style(
     ([64, 64, 60, 255], pair_style.thickness.max(1.0))
 }
 
-fn draw_thick_segment(
-    pixels: &mut [u8],
-    width: u32,
-    height: u32,
-    p0: (f32, f32),
-    p1: (f32, f32),
-    thickness: f32,
-    color: [u8; 4],
-) {
-    let half = ((thickness - 1.0) * 0.5).max(0.0);
-    let margin = half.ceil() as i32 + 1;
-    let min_x = p0.0.min(p1.0).floor() as i32 - margin;
-    let max_x = p0.0.max(p1.0).ceil() as i32 + margin;
-    let min_y = p0.1.min(p1.1).floor() as i32 - margin;
-    let max_y = p0.1.max(p1.1).ceil() as i32 + margin;
-    for y in min_y..=max_y {
-        for x in min_x..=max_x {
-            let d = distance_to_segment(x as f32 + 0.5, y as f32 + 0.5, p0.0, p0.1, p1.0, p1.1);
-            if d <= half + 0.5 {
-                put_pixel(pixels, width, height, x, y, color);
-            }
-        }
-    }
-}
-
 struct SegmentShadowContext<'a> {
     pixels: &'a mut [u8],
     shadow_alpha: &'a mut [u8],
@@ -579,15 +521,45 @@ fn draw_segment_shadow(registry: &ProvinceRegistry, ctx: &mut SegmentShadowConte
         return;
     }
     let scan_radius = ctx.radius.ceil() as i32 + 2;
-    for &(a, b, x0, y0, x1, y1) in registry.border_segments() {
-        let (_, thickness) = segment_border_style(registry, ProvinceId(a), ProvinceId(b));
+    let intervals = if let Some(segments) = registry.polygon_border_segments() {
+        segments
+            .iter()
+            .map(|segment| {
+                (
+                    segment.province_a,
+                    segment.province_b,
+                    segment.x0,
+                    segment.y0,
+                    segment.x1,
+                    segment.y1,
+                )
+            })
+            .collect::<Vec<_>>()
+    } else {
+        registry
+            .border_segments()
+            .iter()
+            .map(|&(a, b, x0, y0, x1, y1)| {
+                (
+                    ProvinceId(a),
+                    ProvinceId(b),
+                    x0 as f32,
+                    y0 as f32,
+                    x1 as f32,
+                    y1 as f32,
+                )
+            })
+            .collect::<Vec<_>>()
+    };
+    for (a, b, x0, y0, x1, y1) in intervals {
+        let (_, thickness) = segment_border_style(registry, a, b);
         let p0 = (
-            (x0 as i64 - ctx.origin_x as i64) as f32 * ctx.scale as f32,
-            (y0 as i64 - ctx.origin_y as i64) as f32 * ctx.scale as f32,
+            (x0 - ctx.origin_x as f32) * ctx.scale as f32,
+            (y0 - ctx.origin_y as f32) * ctx.scale as f32,
         );
         let p1 = (
-            (x1 as i64 - ctx.origin_x as i64) as f32 * ctx.scale as f32,
-            (y1 as i64 - ctx.origin_y as i64) as f32 * ctx.scale as f32,
+            (x1 - ctx.origin_x as f32) * ctx.scale as f32,
+            (y1 - ctx.origin_y as f32) * ctx.scale as f32,
         );
         let half = ((thickness - 1.0) * 0.5).max(0.0);
         let min_x = p0.0.min(p1.0).floor() as i32 - scan_radius;
@@ -651,6 +623,9 @@ pub fn render_segment_raster(
     registry: &ProvinceRegistry,
     opts: &ProvinceSegmentRasterOptions,
 ) -> ProvinceSegmentRaster {
+    if registry.geometry_kind() == crate::province::types::ProvinceGeometryKind::Polygon {
+        return render_polygon_segment_raster(registry, opts);
+    }
     let scale = opts.pixel_size.max(1);
     let origin_x = opts.map_x.min(registry.width());
     let origin_y = opts.map_y.min(registry.height());
@@ -762,6 +737,171 @@ pub fn render_segment_raster(
     }
 }
 
+/// Rasterize authored polygon components for the explicit `segments` backend.
+fn render_polygon_segment_raster(
+    registry: &ProvinceRegistry,
+    opts: &ProvinceSegmentRasterOptions,
+) -> ProvinceSegmentRaster {
+    let scale = opts.pixel_size.max(1);
+    let origin_x = opts.map_x.min(registry.width());
+    let origin_y = opts.map_y.min(registry.height());
+    let cell_w = if opts.map_w == 0 {
+        registry.width().saturating_sub(origin_x)
+    } else {
+        opts.map_w.min(registry.width().saturating_sub(origin_x))
+    };
+    let cell_h = if opts.map_h == 0 {
+        registry.height().saturating_sub(origin_y)
+    } else {
+        opts.map_h.min(registry.height().saturating_sub(origin_y))
+    };
+    let width = cell_w.saturating_mul(scale);
+    let height = cell_h.saturating_mul(scale);
+    let mut pixels = vec![
+        8u8;
+        (width as usize)
+            .saturating_mul(height as usize)
+            .saturating_mul(4)
+    ];
+    for chunk in pixels.chunks_exact_mut(4) {
+        chunk.copy_from_slice(&[8, 12, 20, 255]);
+    }
+    if opts.draw_fills {
+        let mode_config = registry.map_mode_config();
+        if let Some(geometry) = registry.polygon_geometry() {
+            for polygon in &geometry.polygons {
+                let Some(style) = registry.style_for(polygon.province_id) else {
+                    continue;
+                };
+                if is_hidden(style.visibility_state) {
+                    continue;
+                }
+                let base = if is_discovered(style.visibility_state) {
+                    discovered_fill_color()
+                } else {
+                    resolve_color_fallback(mode_config, style)
+                };
+                let color = opts
+                    .province_tints
+                    .get(&polygon.province_id)
+                    .copied()
+                    .unwrap_or(base);
+                let rgba = color_to_u8([
+                    color[0] * opts.tint[0],
+                    color[1] * opts.tint[1],
+                    color[2] * opts.tint[2],
+                    color[3] * opts.tint[3],
+                ]);
+                for triangle in polygon.triangle_indices.chunks_exact(3) {
+                    let ia = triangle[0] as usize * 2;
+                    let ib = triangle[1] as usize * 2;
+                    let ic = triangle[2] as usize * 2;
+                    if ic + 1 >= polygon.vertices.len()
+                        || ib + 1 >= polygon.vertices.len()
+                        || ia + 1 >= polygon.vertices.len()
+                    {
+                        continue;
+                    }
+                    rasterize_triangle(
+                        &mut pixels,
+                        width,
+                        height,
+                        origin_x,
+                        origin_y,
+                        scale,
+                        (polygon.vertices[ia], polygon.vertices[ia + 1]),
+                        (polygon.vertices[ib], polygon.vertices[ib + 1]),
+                        (polygon.vertices[ic], polygon.vertices[ic + 1]),
+                        rgba,
+                    );
+                }
+            }
+        }
+    }
+    if opts.draw_borders {
+        let mut shadow_alpha = vec![0u8; (width as usize).saturating_mul(height as usize)];
+        let mut shadow_ctx = SegmentShadowContext {
+            pixels: &mut pixels,
+            shadow_alpha: &mut shadow_alpha,
+            width,
+            height,
+            scale,
+            origin_x,
+            origin_y,
+            radius: opts.edge_gradient_radius.max(0.0),
+            strength: opts.edge_gradient_strength.clamp(0.0, 1.0),
+        };
+        draw_segment_shadow(registry, &mut shadow_ctx);
+        if let Some(segments) = registry.polygon_border_segments() {
+            for segment in segments {
+                let (color, thickness) =
+                    segment_border_style(registry, segment.province_a, segment.province_b);
+                draw_thick_segment(
+                    &mut pixels,
+                    width,
+                    height,
+                    (
+                        (segment.x0 - origin_x as f32) * scale as f32,
+                        (segment.y0 - origin_y as f32) * scale as f32,
+                    ),
+                    (
+                        (segment.x1 - origin_x as f32) * scale as f32,
+                        (segment.y1 - origin_y as f32) * scale as f32,
+                    ),
+                    thickness,
+                    color,
+                );
+            }
+        }
+    }
+    // Polygon segment captures must retain the same component-wide selection
+    // and hover semantics as command rendering. Raster captures keep their
+    // historical fill/border output when these IDs are not supplied.
+    if registry.geometry_kind() == crate::province::types::ProvinceGeometryKind::Polygon {
+        if let Some(geometry) = registry.polygon_geometry() {
+            for (id, color, width_px) in [
+                (opts.hovered_id, [255, 255, 255, 220], 2.0f32),
+                (opts.selected_id, [255, 230, 25, 240], 3.0f32),
+            ] {
+                let Some(id) = id else {
+                    continue;
+                };
+                for polygon in geometry
+                    .polygons
+                    .iter()
+                    .filter(|polygon| polygon.province_id == id)
+                {
+                    let points = polygon.vertices.chunks_exact(2).collect::<Vec<_>>();
+                    for index in 0..points.len() {
+                        let start = points[index];
+                        let end = points[(index + 1) % points.len()];
+                        draw_thick_segment(
+                            &mut pixels,
+                            width,
+                            height,
+                            (
+                                (start[0] - origin_x as f32) * scale as f32,
+                                (start[1] - origin_y as f32) * scale as f32,
+                            ),
+                            (
+                                (end[0] - origin_x as f32) * scale as f32,
+                                (end[1] - origin_y as f32) * scale as f32,
+                            ),
+                            width_px,
+                            color,
+                        );
+                    }
+                }
+            }
+        }
+    }
+    ProvinceSegmentRaster {
+        pixels,
+        width,
+        height,
+    }
+}
+
 /// Generate a RenderCommand Vec for the province map: fills, borders, capitals, and labels with viewport culling.
 pub fn generate_render_commands(
     registry: &ProvinceRegistry,
@@ -846,6 +986,36 @@ pub fn generate_render_commands(
                     });
                     i += height as usize;
                 }
+            } else if let Some(polygons) = registry.polygons_for(id) {
+                for polygon in polygons {
+                    if polygon.bounds.2 < left
+                        || polygon.bounds.0 > right
+                        || polygon.bounds.3 < top
+                        || polygon.bounds.1 > bottom
+                    {
+                        continue;
+                    }
+                    for triangle in polygon.triangle_indices.chunks_exact(3) {
+                        let a = triangle[0] as usize * 2;
+                        let b = triangle[1] as usize * 2;
+                        let c = triangle[2] as usize * 2;
+                        if c + 1 >= polygon.vertices.len()
+                            || b + 1 >= polygon.vertices.len()
+                            || a + 1 >= polygon.vertices.len()
+                        {
+                            continue;
+                        }
+                        cmds.push(RenderCommand::Triangle {
+                            mode: DrawMode::Fill,
+                            x1: polygon.vertices[a] * opts.pixel_size,
+                            y1: polygon.vertices[a + 1] * opts.pixel_size,
+                            x2: polygon.vertices[b] * opts.pixel_size,
+                            y2: polygon.vertices[b + 1] * opts.pixel_size,
+                            x3: polygon.vertices[c] * opts.pixel_size,
+                            y3: polygon.vertices[c + 1] * opts.pixel_size,
+                        });
+                    }
+                }
             }
         }
     }
@@ -908,6 +1078,57 @@ pub fn generate_render_commands(
                     x2: x1 as f32 * opts.pixel_size,
                     y2: y1 as f32 * opts.pixel_size,
                 });
+            }
+            if let Some(segments) = registry.polygon_border_segments() {
+                for segment in segments {
+                    let a = segment.province_a;
+                    let b = segment.province_b;
+                    let min_x = segment.x0.min(segment.x1);
+                    let max_x = segment.x0.max(segment.x1);
+                    let min_y = segment.y0.min(segment.y1);
+                    let max_y = segment.y0.max(segment.y1);
+                    if max_x < left || min_x > right || max_y < top || min_y > bottom {
+                        continue;
+                    }
+                    let Some(sa) = registry.style_for(a) else {
+                        continue;
+                    };
+                    let Some(sb) = registry.style_for(b) else {
+                        continue;
+                    };
+                    if !is_fully_visible(sa.visibility_state)
+                        || !is_fully_visible(sb.visibility_state)
+                    {
+                        continue;
+                    }
+                    let pair_style = registry.get_border_pair_style(a, b).unwrap_or_default();
+                    if !should_render_border_in_mode(
+                        zoom_mode,
+                        pair_style.flags.contains_bits(BorderPairFlags::COUNTRY),
+                    ) {
+                        continue;
+                    }
+                    let width = border_width_from_registry(registry, a, b, opts.border_width);
+                    if active_width != Some(width) {
+                        cmds.push(RenderCommand::SetLineWidth(width));
+                        active_width = Some(width);
+                    }
+                    let color = pair_style
+                        .color
+                        .unwrap_or_else(|| border_color_from_registry(registry, a, b));
+                    if active_color != Some(color) {
+                        cmds.push(RenderCommand::SetColor(
+                            color[0], color[1], color[2], color[3],
+                        ));
+                        active_color = Some(color);
+                    }
+                    cmds.push(RenderCommand::Line {
+                        x1: segment.x0 * opts.pixel_size,
+                        y1: segment.y0 * opts.pixel_size,
+                        x2: segment.x1 * opts.pixel_size,
+                        y2: segment.y1 * opts.pixel_size,
+                    });
+                }
             }
         }
     }
@@ -1101,7 +1322,26 @@ pub fn generate_render_commands(
             .map(|style| is_fully_visible(style.visibility_state))
             .unwrap_or(false);
         if can_draw_hover {
-            if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
+            if registry.geometry_kind() == crate::province::types::ProvinceGeometryKind::Polygon {
+                if let Some(polygons) = registry.polygons_for(id) {
+                    cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 0.35));
+                    cmds.push(RenderCommand::SetLineWidth(2.0));
+                    for polygon in polygons {
+                        for pair in polygon
+                            .vertices
+                            .chunks_exact(2)
+                            .zip(polygon.vertices.chunks_exact(2).cycle().skip(1))
+                        {
+                            cmds.push(RenderCommand::Line {
+                                x1: pair.0[0] * opts.pixel_size,
+                                y1: pair.0[1] * opts.pixel_size,
+                                x2: pair.1[0] * opts.pixel_size,
+                                y2: pair.1[1] * opts.pixel_size,
+                            });
+                        }
+                    }
+                }
+            } else if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
                 cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 0.35));
                 cmds.push(RenderCommand::SetLineWidth(2.0));
                 cmds.push(RenderCommand::Rectangle {
@@ -1120,7 +1360,26 @@ pub fn generate_render_commands(
             .map(|style| is_fully_visible(style.visibility_state))
             .unwrap_or(false);
         if can_draw_selected {
-            if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
+            if registry.geometry_kind() == crate::province::types::ProvinceGeometryKind::Polygon {
+                if let Some(polygons) = registry.polygons_for(id) {
+                    cmds.push(RenderCommand::SetColor(1.0, 0.9, 0.1, 0.9));
+                    cmds.push(RenderCommand::SetLineWidth(3.0));
+                    for polygon in polygons {
+                        for pair in polygon
+                            .vertices
+                            .chunks_exact(2)
+                            .zip(polygon.vertices.chunks_exact(2).cycle().skip(1))
+                        {
+                            cmds.push(RenderCommand::Line {
+                                x1: pair.0[0] * opts.pixel_size,
+                                y1: pair.0[1] * opts.pixel_size,
+                                x2: pair.1[0] * opts.pixel_size,
+                                y2: pair.1[1] * opts.pixel_size,
+                            });
+                        }
+                    }
+                }
+            } else if let Some((min_x, min_y, max_x, max_y)) = registry.bbox_for(id) {
                 cmds.push(RenderCommand::SetColor(1.0, 0.9, 0.1, 0.9));
                 cmds.push(RenderCommand::SetLineWidth(3.0));
                 cmds.push(RenderCommand::Rectangle {
